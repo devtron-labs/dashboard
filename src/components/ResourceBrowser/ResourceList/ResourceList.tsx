@@ -14,6 +14,8 @@ import PageHeader from '../../common/header/PageHeader'
 import {
     ApiResourceGroupType,
     ClusterOptionType,
+    K8SObjectChildMapType,
+    K8SObjectMapType,
     K8SObjectType,
     ResourceDetailType,
     ResourceListPayloadType,
@@ -30,6 +32,7 @@ import {
     ERROR_SCREEN_LEARN_MORE,
     ERROR_SCREEN_SUBTITLE,
     EVENT_LIST,
+    K8S_EMPTY_GROUP,
     K8S_RESOURCE_LIST,
     MARK_AS_STALE_DATA_CUT_OFF_MINS,
     ORDERED_AGGREGATORS,
@@ -37,7 +40,7 @@ import {
     STALE_DATA_WARNING_TEXT,
 } from '../Constants'
 import { DOCUMENTATION, LAST_SEEN, URLS } from '../../../config'
-import { Sidebar } from './Sidebar'
+import Sidebar from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ClusterSelection } from './ClusterSelection'
 import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
@@ -53,14 +56,18 @@ import moment from 'moment'
 import ConnectingToClusterState from './ConnectingToClusterState'
 import { ServerErrors } from '../../../modals/commonTypes'
 import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
+import searchWorker from '../../../config/searchWorker'
+import WebWorker from '../../app/WebWorker'
+import { ShortcutProvider } from 'react-keybind'
 import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
-    const { clusterId, namespace, nodeType, node } = useParams<{
+    const { clusterId, namespace, nodeType, node, group } = useParams<{
         clusterId: string
         namespace: string
         nodeType: string
         node: string
+        group: string
     }>()
     const { replace, push } = useHistory()
     const location = useLocation()
@@ -69,8 +76,7 @@ export default function ResourceList() {
     const [showErrorState, setShowErrorState] = useState(false)
     const [resourceListLoader, setResourceListLoader] = useState(true)
     const [noResults, setNoResults] = useState(false)
-    const [k8SObjectList, setK8SObjectList] = useState<K8SObjectType[]>([])
-    const [k8SObjectListIndexMap, setK8SObjectListIndexMap] = useState<Map<string, number>>()
+    const [k8SObjectMap, setK8SObjectMap] = useState<Map<string, K8SObjectMapType>>()
     const [resourceList, setResourceList] = useState<ResourceDetailType>()
     const [filteredResourceList, setFilteredResourceList] = useState<Record<string, any>[]>([])
     const [searchText, setSearchText] = useState('')
@@ -98,6 +104,7 @@ export default function ResourceList() {
         prev: null,
         new: new AbortController(),
     })
+    const searchWorkerRef = useRef(null)
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -118,6 +125,7 @@ export default function ResourceList() {
             if (typeof window['crate']?.show === 'function') {
                 window['crate'].show()
             }
+            stopSearchWorker()
             resourceListAbortController.abort()
             abortReqAndUpdateSideDataController()
         }
@@ -151,10 +159,12 @@ export default function ResourceList() {
             AppDetailsStore.updateK8sResourcesTabUrl(
                 `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
                     selectedNamespace.value
-                }/${selectedResource.gvk.Kind.toLowerCase()}`,
+                }/${selectedResource.gvk.Kind.toLowerCase()}/${
+                    selectedResource.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
+                }`,
             )
         }
-    }, [selectedCluster, selectedNamespace, selectedResource?.gvk?.Kind])
+    }, [selectedCluster, selectedNamespace, selectedResource])
 
     useEffect(() => {
         if (clusterId && selectedResource) {
@@ -262,25 +272,29 @@ export default function ResourceList() {
             if (result) {
                 const processedData = processK8SObjects(result.apiResources, nodeType)
                 const _k8SObjectMap = processedData.k8SObjectMap
-                let _selectedResource = processedData.selectedResource
                 const _k8SObjectList: K8SObjectType[] = []
-                const _k8SObjectListIndexMap: Map<string, number> = new Map()
-                for (let index = 0; index < ORDERED_AGGREGATORS.length; index++) {
-                    const element = ORDERED_AGGREGATORS[index]
+
+                for (const element of ORDERED_AGGREGATORS) {
                     if (_k8SObjectMap.get(element)) {
                         _k8SObjectList.push(_k8SObjectMap.get(element))
-                        _k8SObjectListIndexMap.set(element, _k8SObjectList.length - 1)
                     }
                 }
 
                 const parentNode = _k8SObjectList[0]
                 const childNode = parentNode.child.find((_ch) => _ch.gvk.Kind === Nodes.Pod) ?? parentNode.child[0]
                 let isResourceGroupPresent = false
+                let groupedChild = null
                 if (nodeType) {
                     for (const _parentNode of _k8SObjectList) {
                         for (const _childNode of _parentNode.child) {
-                            if (_childNode.gvk.Kind.toLowerCase() === nodeType) {
+                            if (
+                                _childNode.gvk.Kind.toLowerCase() === nodeType &&
+                                (_childNode.gvk.Group.toLowerCase() === group ||
+                                    SIDEBAR_KEYS.eventGVK.Group.toLowerCase() === group ||
+                                    K8S_EMPTY_GROUP === group)
+                            ) {
                                 isResourceGroupPresent = true
+                                groupedChild = _childNode
                                 break
                             }
                         }
@@ -293,18 +307,18 @@ export default function ResourceList() {
                     replace({
                         pathname: `${URLS.RESOURCE_BROWSER}/${_clusterId}/${
                             namespace || ALL_NAMESPACE_OPTION.value
-                        }/${_selectedResourceParam}`,
+                        }/${_selectedResourceParam}/${childNode.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP}`,
                     })
                 }
-                setK8SObjectList(_k8SObjectList)
-                setK8SObjectListIndexMap(_k8SObjectListIndexMap)
 
-                const defaultSelected = _selectedResource || {
-                    namespaced: childNode.namespaced,
-                    gvk: childNode.gvk,
-                }
+                const defaultSelected = groupedChild ??
+                    processedData.selectedResource ?? {
+                        namespaced: childNode.namespaced,
+                        gvk: childNode.gvk,
+                    }
+                setK8SObjectMap(getGroupedK8sObjectMap(_k8SObjectList))
                 setSelectedResource(defaultSelected)
-                updateResourceSelectionData(defaultSelected)
+                updateResourceSelectionData(defaultSelected, true)
                 setShowErrorState(false)
                 setErrorMsg('')
                 setErrorStatusCode(0)
@@ -333,6 +347,32 @@ export default function ResourceList() {
         }
     }
 
+    // Converts k8SObjects list to grouped map
+    const getGroupedK8sObjectMap = (_k8SObjectList: K8SObjectType[]) => {
+        return _k8SObjectList.reduce((map, _k8sObject) => {
+            const childObj = map.get(_k8sObject.name) ?? {
+                ..._k8sObject,
+                child: new Map<string, K8SObjectChildMapType>(),
+            }
+            for (const _child of _k8sObject.child) {
+                if (childObj.child.has(_child.gvk.Kind)) {
+                    childObj.child.set(_child.gvk.Kind, {
+                        isGrouped: true,
+                        isExpanded: _child.gvk.Kind.toLowerCase() === nodeType,
+                        data: [...childObj.child.get(_child.gvk.Kind).data, _child],
+                    })
+                } else {
+                    childObj.child.set(_child.gvk.Kind, {
+                        isExpanded: _child.gvk.Kind.toLowerCase() === nodeType,
+                        data: [_child],
+                    })
+                }
+            }
+            map.set(_k8sObject.name, childObj)
+            return map
+        }, new Map<string, K8SObjectMapType>())
+    }
+
     const sortEventListData = (eventList: Record<string, any>[]): Record<string, any>[] => {
         const warningEvents: Record<string, any>[] = [],
             otherEvents: Record<string, any>[] = []
@@ -350,20 +390,39 @@ export default function ResourceList() {
         ]
     }
 
+    const stopSearchWorker = () => {
+        if (searchWorkerRef.current) {
+            searchWorkerRef.current.postMessage({ type: 'stop' })
+            searchWorkerRef.current = null
+        }
+    }
+
     const handleFilterChanges = (_searchText: string, _resourceList: ResourceDetailType): void => {
-        const lowerCaseSearchText = _searchText.toLowerCase()
-        const _filteredData = _resourceList.data.filter(
-            (resource) =>
-                resource.name?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.namespace?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.status?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.message?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource[EVENT_LIST.dataKeys.involvedObject]?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.source?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.reason?.toLowerCase().indexOf(lowerCaseSearchText) >= 0 ||
-                resource.type?.toLowerCase().indexOf(lowerCaseSearchText) >= 0,
-        )
-        setFilteredResourceList(_filteredData)
+        if (!searchWorkerRef.current) {
+            searchWorkerRef.current = new WebWorker(searchWorker)
+            searchWorkerRef.current.onmessage = (e) => {
+                setFilteredResourceList(e.data)
+            }
+        }
+
+        searchWorkerRef.current.postMessage({
+            type: 'start',
+            payload: {
+                searchText: _searchText,
+                list: _resourceList.data,
+                searchInKeys: [
+                    'name',
+                    'namespace',
+                    'status',
+                    'message',
+                    EVENT_LIST.dataKeys.involvedObject,
+                    'source',
+                    'reason',
+                    'type',
+                ],
+                origin: new URL(process.env.PUBLIC_URL, window.location.href).origin,
+            },
+        })
     }
 
     const getResourceListData = async (retainSearched?: boolean): Promise<void> => {
@@ -408,11 +467,31 @@ export default function ResourceList() {
         }
     }
 
-    const handleGroupHeadingClick = (e): void => {
-        const _k8SObjectList = [...k8SObjectList]
-        const groupIndex = k8SObjectListIndexMap.get(e.currentTarget.dataset.groupName)
-        _k8SObjectList[groupIndex].isExpanded = !_k8SObjectList[groupIndex].isExpanded
-        setK8SObjectList(_k8SObjectList)
+    const handleGroupHeadingClick = (e: any, preventCollapse?: boolean): void => {
+        const splittedKey = e.currentTarget.dataset.groupName.split('/')
+        const _k8SObjectMap = new Map<string, K8SObjectMapType>(k8SObjectMap)
+
+        if (splittedKey.length > 1) {
+            const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0]).child.get(splittedKey[1])
+            if (preventCollapse && _selectedK8SObjectObj.isExpanded) {
+                return
+            }
+
+            _selectedK8SObjectObj.isExpanded = !_selectedK8SObjectObj.isExpanded
+            const _childObj = _k8SObjectMap.get(splittedKey[0])
+            _childObj.child.set(splittedKey[1], _selectedK8SObjectObj)
+            _k8SObjectMap.set(splittedKey[0], _childObj)
+        } else {
+            const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0])
+            if (preventCollapse && _selectedK8SObjectObj.isExpanded) {
+                return
+            }
+
+            _selectedK8SObjectObj.isExpanded = !_selectedK8SObjectObj.isExpanded
+            _k8SObjectMap.set(splittedKey[0], _selectedK8SObjectObj)
+        }
+
+        setK8SObjectMap(_k8SObjectMap)
     }
 
     const onChangeCluster = (selected, fromClusterSelect?: boolean, skipRedirection?: boolean): void => {
@@ -432,7 +511,7 @@ export default function ResourceList() {
 
         if (!skipRedirection) {
             const path = `${URLS.RESOURCE_BROWSER}/${selected.value}/${ALL_NAMESPACE_OPTION.value}${
-                nodeType ? `/${nodeType}` : ``
+                nodeType ? `/${nodeType}/${group || K8S_EMPTY_GROUP}` : ''
             }`
             if (fromClusterSelect) {
                 replace({
@@ -453,14 +532,14 @@ export default function ResourceList() {
         getSidebarData(selectedCluster.value)
     }
 
-    const updateResourceSelectionData = (_selected: ApiResourceGroupType) => {
+    const updateResourceSelectionData = (_selected: ApiResourceGroupType, initSelection?: boolean) => {
         if (_selected) {
+            stopSearchWorker()
             setResourceSelectionData((prevData) => ({
                 ...prevData,
-                [_selected.gvk.Kind.toLowerCase()]: {
-                    namespaced: _selected.namespaced,
-                    gvk: _selected.gvk,
-                },
+                [`${_selected.gvk.Kind.toLowerCase()}_${
+                    (initSelection && group) || _selected.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
+                }`]: _selected,
             }))
         }
     }
@@ -471,12 +550,12 @@ export default function ResourceList() {
                 const _resourceName = _selected.name.split('_')[1]
                 setNodeSelectionData((prevData) => ({
                     ...prevData,
-                    [`${_selected.name}`]: { ..._selected, name: _resourceName },
+                    [`${_selected.name}_${group}`]: { ..._selected, name: _resourceName },
                 }))
             } else {
                 setNodeSelectionData((prevData) => ({
                     ...prevData,
-                    [`${nodeType}_${_selected.name}`]: _selected,
+                    [`${nodeType}_${_selected.name}_${group}`]: _selected,
                 }))
             }
         }
@@ -494,25 +573,30 @@ export default function ResourceList() {
     }
 
     const getEventObjectTypeGVK = () => {
-        const resourceGroup = getAggregator(nodeType as NodeType)
-        const groupIndex = k8SObjectListIndexMap.get(resourceGroup)
-        for (let index = 0; index < k8SObjectList[groupIndex].child.length; index++) {
-            const element = k8SObjectList[groupIndex].child[index]
-            if (element.gvk.Kind.toLowerCase() === nodeType) {
-                return element.gvk
+        const _resourceGroupType = getAggregator(nodeType as NodeType)
+        const _selectedGroup = k8SObjectMap.get(_resourceGroupType)
+        for (const [key, value] of _selectedGroup.child) {
+            if (key.toLowerCase() === nodeType) {
+                return value.data[0].gvk
             }
         }
+
+        return null
     }
 
     const getSelectedResourceData = () => {
+        if (resourceListLoader) {
+            return null
+        }
+
         const selectedNode =
-            nodeSelectionData?.[`${nodeType}_${node}`] ??
+            nodeSelectionData?.[`${nodeType}_${node}_${group}`] ??
             resourceList?.data?.find((_resource) => _resource.name === node)
         const _selectedResource = selectedNode?.isFromEvent
             ? getEventObjectTypeGVK()
-            : resourceSelectionData?.[nodeType]?.gvk ?? selectedResource?.gvk
+            : resourceSelectionData?.[`${nodeType}_${group}`]?.gvk ?? selectedResource?.gvk
 
-        if (!nodeSelectionData?.[`${nodeType}_${node}`]) {
+        if (!nodeSelectionData?.[`${nodeType}_${node}_${group}`]) {
             updateNodeSelectionData(selectedNode)
         }
 
@@ -593,10 +677,12 @@ export default function ResourceList() {
         ) : (
             <div className="resource-browser bcn-0">
                 <Sidebar
-                    k8SObjectList={k8SObjectList}
+                    k8SObjectMap={k8SObjectMap}
                     handleGroupHeadingClick={handleGroupHeadingClick}
+                    selectedResource={selectedResource}
                     setSelectedResource={setSelectedResource}
                     updateResourceSelectionData={updateResourceSelectionData}
+                    isCreateModalOpen={showCreateResourceModal}
                 />
                 <K8SResourceList
                     selectedResource={selectedResource}
@@ -618,6 +704,7 @@ export default function ResourceList() {
                     setSearchApplied={setSearchApplied}
                     handleFilterChanges={handleFilterChanges}
                     clearSearch={clearSearch}
+                    isCreateModalOpen={showCreateResourceModal}
                 />
             </div>
         )
@@ -719,10 +806,12 @@ export default function ResourceList() {
     }
 
     return (
-        <div className="resource-browser-container">
-            <PageHeader headerName="Kubernetes Resource Browser" markAsBeta={true} />
-            {renderResourceListBody()}
-            {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
-        </div>
+        <ShortcutProvider>
+            <div className="resource-browser-container">
+                <PageHeader headerName="Kubernetes Resource Browser" />
+                {renderResourceListBody()}
+                {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
+            </div>
+        </ShortcutProvider>
     )
 }

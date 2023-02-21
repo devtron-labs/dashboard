@@ -672,7 +672,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                                 )}
                                 <span className="mr-16"></span>
                                 <div className="w-50">
-                                    <span className="form__label">Chart Values*</span>
+                                    <span className="form__label dc__required-field">Chart Values</span>
                                     <ChartValuesSelect
                                         chartValuesList={chartValuesList}
                                         chartValues={chartValues}

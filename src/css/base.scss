@@ -275,7 +275,7 @@ a:focus {
 }
 
 .dc__right-0 {
-    right: 0;
+      right: 0;
 }
 
 .dc__vertical-align-middle {
@@ -301,6 +301,10 @@ a:focus {
 
 .cursor-not-allowed {
     cursor: not-allowed !important;
+}
+
+.cursor-text {
+    cursor: text;
 }
 
 // block
@@ -1352,6 +1356,7 @@ button.anchor {
     }
 }
 
+
 .grayscale {
     filter: grayscale(1);
 }
@@ -2196,13 +2201,17 @@ textarea,
 // width fix content
 
 .dc__w-fit-content {
-    width: fit-content;
+      width: fit-content;
 }
 
 // Height in pixels
 
 .dc__height-inherit {
     height: inherit;
+}
+
+.dc__min-width-fit-content {
+    min-width: fit-content!important;
 }
 
 .h-0 {
@@ -2277,10 +2286,7 @@ textarea,
     height: 300px !important;
 }
 
-.mh-300 {
-    min-height: 300px;
-}
-
+// Minimum Height
 .mh-28 {
     min-height: 28px;
 }
@@ -2295,6 +2301,14 @@ textarea,
 
 .mh-66 {
     min-height: 66px;
+}
+
+.mh-300 {
+    min-height: 300px;
+}
+
+.mh-600 {
+    min-height: 600px;
 }
 
 // Height in percentage
@@ -2386,6 +2400,10 @@ textarea,
     padding-top: 4px !important;
 }
 
+.pl-8-imp {
+    padding-left: 8px !important;
+}
+
 // Margin in pixels
 .dc__m-auto {
     margin: auto;
@@ -2425,6 +2443,10 @@ textarea,
     margin-top: 0px !important;
 }
 
+.mr-0-imp {
+    margin-right: 0px !important;
+}
+
 .mb-0-imp {
     margin-bottom: 0px !important;
 }
@@ -2448,7 +2470,7 @@ textarea,
 }
 
 .dc__overflow-auto {
-    overflow: auto !important;
+      overflow: auto !important;
 }
 
 .dc__overflow-scroll {
@@ -2516,12 +2538,20 @@ textarea::placeholder {
 }
 // opacity
 .dc__opacity-0_5 {
-    opacity: 0.5;
+      opacity: 0.5;
 }
 
 .dc__hover-n50:hover,
 .dc__bg-n50 {
     background-color: var(--N50);
+}
+
+.dc__hover-n100:hover {
+    background-color: var(--N100);
+}
+
+.dc__hover-r100:hover {
+    background-color: var(--R100);
 }
 
 .dc__user-select-none {
@@ -2575,5 +2605,24 @@ textarea::placeholder {
                 text-transform: none;
             }
         }
+    }
+}
+
+.dc__divider {
+    width: 1px;
+    min-height: 16px;
+    background-color: var(--N200);
+}
+
+.dc__required-field::after {
+  content: ' *';
+  color: var(--R500);
+}
+
+.dc__highlight-text {
+    mark {
+        padding: 0;
+        background-color: var(--Y300) !important;
+        font-weight: 600;
     }
 }
