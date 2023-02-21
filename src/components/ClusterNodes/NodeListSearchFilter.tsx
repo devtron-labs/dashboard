@@ -111,6 +111,15 @@ export default function NodeListSearchFliter({
         setOpenFilterPopup(false)
     }
     const renderTextFilter = (): JSX.Element => {
+        let placeholderText = ''
+        if(selectedSearchTextType === 'name'){
+            placeholderText = 'Search by node name Eg. ip-172-31-2-152.us-east-2.compute.internal'
+        } else if (selectedSearchTextType === 'label'){
+            placeholderText = 'Search by key=value Eg. environment=production, tier=frontend'
+        } else {
+            placeholderText = 'Search by node group name Eg. mainnode'
+        }
+        
         return (
             <div className="dc__position-rel" style={{ background: 'var(--N50)' }}>
                 <div
@@ -120,17 +129,15 @@ export default function NodeListSearchFliter({
                     <Search className="mr-5 ml-10 icon-dim-18" />
                     {selectedSearchTextType ? (
                         <>
-                            <span className="dc__position-rel bottom-2px">{selectedSearchTextType}:</span>
+                            <span className="dc__position-rel bottom-2px">
+                                {selectedSearchTextType === 'nodeGroup' ? 'node group' : selectedSearchTextType}:
+                            </span>
                             <input
                                 autoComplete="off"
                                 type="text"
                                 className="dc__transparent flex-1 outline-none"
                                 autoFocus
-                                placeholder={
-                                    selectedSearchTextType === 'name'
-                                        ? 'Search by node name Eg. ip-172-31-2-152.us-east-2.compute.internal'
-                                        : 'Search by key=value Eg. environment=production, tier=frontend'
-                                }
+                                placeholder={placeholderText}
                                 onKeyDown={handleFilterTag}
                                 onChange={handleFilterInput}
                                 value={searchInputText}
@@ -149,7 +156,7 @@ export default function NodeListSearchFliter({
                                 {[
                                     { value: 1, label: 'name', type: 'main' },
                                     { value: 2, label: 'label', type: 'main' },
-                                    { value: 2, label: 'nodeGroup', type: 'main' },
+                                    { value: 3, label: 'nodeGroup', type: 'main' },
                                 ].map((o) => {
                                     return (
                                         <div
@@ -159,7 +166,7 @@ export default function NodeListSearchFliter({
                                                 selectFilterType(o)
                                             }}
                                         >
-                                            {o.label}
+                                            {o.label === 'nodeGroup' ? 'node group' : o.label}
                                         </div>
                                     )
                                 })}
