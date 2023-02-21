@@ -34,6 +34,8 @@ import {
     preventBodyScroll,
     Progressing,
     showError,
+    sortCallback,
+    sortObjectArrayAlphabetically,
     stopPropagation,
 } from '../../../common'
 import { getWorkflows, getWorkflowStatus } from '../../Environment.service'
@@ -1056,7 +1058,7 @@ export default function EnvTriggerView() {
         if (isLoading) return
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCITriggered)
         setLoading(true)
-        let node, dockerfileConfiguredGitMaterialId
+        let node
         const nodeList: NodeAttr[] = [],
             triggeredAppList: { appId: number; appName: string }[] = []
         for (const _wf of workflows) {
@@ -1065,10 +1067,8 @@ export default function EnvTriggerView() {
                 node = _wf.nodes.find((node) => {
                     return node.type === WorkflowNodeType.CI
                 })
-
                 if (node && !node.isLinkedCI) {
                     nodeList.push(node)
-                    dockerfileConfiguredGitMaterialId = _wf.ciConfiguredGitMaterialId
                 }
             }
         }
@@ -1160,7 +1160,7 @@ export default function EnvTriggerView() {
                 }
             }
         })
-        return _selectedAppWorkflowList
+        return _selectedAppWorkflowList.sort((a, b) => sortCallback('name', a, b))
     }
 
     const getWarningMessage = (_ciNode): string => {
@@ -1246,7 +1246,7 @@ export default function EnvTriggerView() {
                 }
             }
         })
-        return _selectedAppWorkflowList
+        return _selectedAppWorkflowList.sort((a, b) => sortCallback('name', a, b))
     }
 
     if (pageViewType === ViewType.LOADING) {
@@ -1488,9 +1488,9 @@ export default function EnvTriggerView() {
                         {selectedAppList.length} application{selectedAppList.length > 1 ? 's' : ''} selected
                     </div>
                     <div className="fs-13 fw-4 cn-7 dc__ellipsis-right__2nd-line">
-                        {selectedAppList.map((app, index) => (
-                            <span key={`selected-app-${app.id}`}>
-                                {app.name}
+                        {sortObjectArrayAlphabetically(selectedAppList, 'name').map((app, index) => (
+                            <span key={`selected-app-${app['id']}`}>
+                                {app['name']}
                                 {index !== selectedAppList.length - 1 && <span>, </span>}
                             </span>
                         ))}
