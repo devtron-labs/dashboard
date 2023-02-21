@@ -1102,16 +1102,6 @@ export default function EnvTriggerView() {
                     ciPipelineMaterials.push(historyItem)
                 })
             }
-            // if (gitMaterials[dockerfileConfiguredGitMaterialId][1] === DEFAULT_GIT_BRANCH_VALUE) {
-            //     toast.error(
-            //         CI_CONFIGURED_GIT_MATERIAL_ERROR.replace(
-            //             '$GIT_MATERIAL_ID',
-            //             `"${gitMaterials[dockerfileConfiguredGitMaterialId][0]}"`,
-            //         ),
-            //     )
-            //     setLoading(false)
-            //     return
-            // }
             const payload = {
                 pipelineId: +node.id,
                 ciPipelineMaterials: ciPipelineMaterials,
