@@ -234,16 +234,15 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         const _nameSelectionKey = isHibernateReq ? 'scaleDown' : 'restore'
 
         try {
-            let payloadAppId = appId;
             if(appDetails.appType != AppType.EXTERNAL_HELM_CHART){
-                payloadAppId=appDetails.clusterId+"|"+appDetails.namespace+"|"+appDetails.appName;
+                appId=appDetails.clusterId+"|"+appDetails.namespace+"|"+appDetails.appName;
             }
             setScalingInProgress(true)
             const workloadUpdate = isHibernateReq ? hibernateApp : unhibernateApp
             const _workloadsList = isHibernateReq ? workloadsToScaleDown : workloadsToRestore
             const _setWorkloadsList = isHibernateReq ? setWorkloadsToScaleDown : setWorkloadsToRestore
             const requestPayload: HibernateRequest = {
-                appId:payloadAppId,
+                appId,
                 resources: Array.from(_workloadsList.values())
                     .filter((workload) => workload.isChecked)
                     .map((workload) => ({
