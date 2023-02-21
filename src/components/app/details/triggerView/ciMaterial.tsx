@@ -139,7 +139,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         const canTrigger = this.props.material.reduce((isValid, mat) => {
             isValid =
                 (isValid && !mat.isMaterialLoading && !!mat.history.find((history) => history.isSelected)) ||
-                (mat.branchErrorMsg === SOURCE_NOT_CONFIGURED && isMaterialActive)
+                (!mat.isDockerFileError && mat.branchErrorMsg === SOURCE_NOT_CONFIGURED && isMaterialActive)
             return isValid
         }, true)
         if (this.props.material.length > 0) {
@@ -158,6 +158,10 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         isWebhookPayloadLoading={this.props.isWebhookPayloadLoading}
                         workflowId={this.props.workflowId}
                         onClickShowBranchRegexModal={this.props.onClickShowBranchRegexModal}
+                        fromAppGrouping={this.props.fromAppGrouping}
+                        appId={this.props.appId}
+                        fromBulkCITrigger={false}
+                        hideSearchHeader={false}
                     />
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(canTrigger)}
                 </>
