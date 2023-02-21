@@ -12,8 +12,8 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 function ExpirationDate({ selectedExpirationDate, onChangeSelectFormData, handleDatesChange, customDate }) {
     return (
         <div className="w-100">
-            <span className="form__label">
-                Expiration <span className="cr-5"> *</span>
+            <span className="form__label dc__required-field">
+                Expiration
             </span>
             <div className="flex left">
                 <ReactSelect
