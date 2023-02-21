@@ -1,7 +1,7 @@
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 
-export const CLUSTER_SELECT_STYLE = {
+export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
     menu: (base) => ({
         ...base,
@@ -12,27 +12,68 @@ export const CLUSTER_SELECT_STYLE = {
         ...base,
         height: '28px',
         minHeight: '32px',
-        border: state.isFocused && !state.isDisabled ? '1px solid #06c' : '1px solid #d6dbdf',
-        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N000)',
+        borderColor: 'none',
+        boxShadow: 'none',
+        border: state.isFocused && !state.isDisabled ? '1px solid var(--B500)' : '1px solid #d6dbdf',
+        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N50)',
         pointerEvents: 'auto',
         cursor: state.isDisabled ? 'not-allowed' : 'pointer',
     }),
-    singleValue: (base, state) => ({
+    singleValue: (base) => ({
         ...base,
         color: 'var(--N900)',
         direction: 'rtl',
         textAlign: 'left',
         marginLeft: '2px',
     }),
-    indicatorsContainer: (base, state) => ({
+    indicatorsContainer: (base) => ({
         ...base,
         height: '32px',
     }),
-    valueContainer: (base, state) => ({
+    valueContainer: (base) => ({
         ...base,
         display: 'flex',
         height: '32px',
         padding: '0 6px',
+    }),
+    input: (base) => ({
+        ...base,
+        paddingLeft: '24px',
+    }),
+}
+
+export const KIND_SEARCH_COMMON_STYLES = {
+    ...FILTER_SELECT_COMMON_STYLES,
+    control: (base, state) => ({
+        ...FILTER_SELECT_COMMON_STYLES.control(base, state),
+        border: state.isFocused ? '1px solid var(--B500)' : 'none',
+        backgroundColor: state.isFocused ? 'var(--N50)' : 'var(--N000)',
+        cursor: 'text',
+    }),
+    input: (base) => ({
+        ...base,
+        paddingLeft: '24px',
+        maxWidth: '135px',
+    }),
+    valueContainer: (base) => ({
+        ...FILTER_SELECT_COMMON_STYLES.valueContainer(base),
+        height: 'inherit',
+    }),
+    indicatorsContainer: (base) => ({
+        ...base,
+        height: '0px',
+    }),
+    option: (base, state) => ({
+        ...base,
+        backgroundColor: state.isFocused ? 'var(--N50)' : 'var(--N000)',
+        color: 'var(--N900)',
+        textOverflow: 'ellipsis',
+        fontWeight: '500',
+        overflow: 'hidden',
+        textAlign: 'left',
+        whiteSpace: 'nowrap',
+        cursor: 'pointer',
+        fontSize: '13px',
     }),
 }
 
@@ -44,6 +85,7 @@ export const RESOURCE_ACTION_MENU = {
     delete: 'Delete',
 }
 
+export const K8S_EMPTY_GROUP = 'k8sEmptyGroup'
 export const ALL_NAMESPACE_OPTION = { value: 'all', label: 'All namespaces' }
 export const NAMESPACE_NOT_APPLICABLE_OPTION = {
     label: 'Namespace: Not applicable',
