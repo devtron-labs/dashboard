@@ -250,7 +250,9 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                             <div style={{ marginBottom: '60px' }}></div>
                         )}
                     </div>
-                    <div>{this.renderEmailAgentSelector()}</div>
+                    {this.state.selectedRecipient.some(
+                        (selected) => selected.data.dest === 'ses' || selected.data.dest === 'smtp',
+                    ) && <div>{this.renderEmailAgentSelector()}</div>}
                 </div>
                 <div className="form__button-group-bottom flex right">
                     <button
