@@ -217,7 +217,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                                         <button
                                             type="button"
                                             className="dc__transparent"
-                                            onClick={(event) => {
+                                            onClick={() => {
                                                 this.removeRecipient(p)
                                             }}
                                         >
