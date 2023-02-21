@@ -129,11 +129,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         }
 
         _terminal.onData(function (data) {
-            let dim = _fitAddon.proposeDimensions()
-            if (dim) {
-                _socket.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
-                _fitAddon.fit()
-            }
+            resizeSocket()
             const inData = { Op: 'stdin', SessionID: '', Data: data }
             if (_socket.readyState === WebSocket.OPEN) {
                 _socket?.send(JSON.stringify(inData))
