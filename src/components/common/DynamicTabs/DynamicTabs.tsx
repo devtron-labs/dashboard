@@ -142,7 +142,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                             >
                                 {getTabNavLink(tab)}
                                 {!isFixed && (
-                                    <div className="dynamic-tab__close flex br-5  ml-8">
+                                    <div className="dynamic-tab__close flex br-5 ml-auto">
                                         <Cross
                                             data-title={tab.title}
                                             onClick={handleTabCloseAction}
