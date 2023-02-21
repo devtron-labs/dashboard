@@ -232,11 +232,13 @@ export default function GitInfoMaterial({
                         <EmptyStateCIMaterial
                             isRepoError={selectedMaterial.isRepoError}
                             isBranchError={selectedMaterial.isBranchError}
+                            isDockerFileError={selectedMaterial.isDockerFileError}
                             isWebHook={isWebhook}
                             gitMaterialName={selectedMaterial.gitMaterialName}
                             sourceValue={selectedMaterial.value}
                             repoErrorMsg={selectedMaterial.repoErrorMsg}
                             branchErrorMsg={selectedMaterial.branchErrorMsg}
+                            dockerFileErrorMsg={selectedMaterial.dockerFileErrorMsg}
                             repoUrl={selectedMaterial.gitURL}
                             isMaterialLoading={selectedMaterial.isMaterialLoading}
                             toggleWebHookModal={_toggleWebhookModal}
