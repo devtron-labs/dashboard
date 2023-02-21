@@ -17,7 +17,6 @@ import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../extern
 import { getExternalLinks, getMonitoringTools } from '../externalLinks/ExternalLinks.service';
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils';
 import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState';
-import { LOCAL_STORAGE } from '../../config/constantMessaging';
 
 let initTimer = null;
 
