@@ -1,4 +1,4 @@
-import { DEFAULT_GIT_BRANCH_VALUE, SOURCE_NOT_CONFIGURED } from '../../config'
+import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
 import { CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import { WorkflowType } from '../app/details/triggerView/types'
 import { CDWorkflowStatusType, CIWorkflowStatusType, ProcessWorkFlowStatusType } from './Environments.types'
@@ -71,6 +71,7 @@ export const handleSourceNotConfigured = (
     configuredMaterialList: Map<number, Set<number>>,
     wf: WorkflowType,
     _materialList: any[],
+    isDockerFileError: boolean,
 ) => {
     if (_materialList?.length > 0) {
         _materialList.forEach((node) => configuredMaterialList[wf.name].add(node.gitMaterialId))
@@ -96,6 +97,8 @@ export const handleSourceNotConfigured = (
             isSelected: _materialList.length === 0,
             lastFetchTime: '',
             isRegex: false,
+            isDockerFileError: isDockerFileError,
+            dockerFileErrorMsg: isDockerFileError ? DOCKER_FILE_ERROR_TITLE : '',
         }
         _materialList.push(ciMaterial)
     }

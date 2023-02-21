@@ -1190,12 +1190,16 @@ export default function EnvTriggerView() {
                 const selectedCIPipeline = filteredCIPipelines.get(_appId).find((_ci) => _ci.id === +_ciNode.id)
                 if (selectedCIPipeline?.ciMaterial) {
                     const invalidInputMaterial = _ciNode.inputMaterialList.find((_mat) => {
-                        return _mat.isBranchError || _mat.isRepoError
+                        return _mat.isBranchError || _mat.isRepoError || _mat.isDockerFileError
                     })
                     if (invalidInputMaterial) {
-                        errorMessage = invalidInputMaterial.isBranchError
-                            ? invalidInputMaterial.branchErrorMsg
-                            : invalidInputMaterial.repoErrorMsg
+                        if (invalidInputMaterial.isRepoError) {
+                            errorMessage = invalidInputMaterial.repoErrorMsg
+                        } else if (invalidInputMaterial.isDockerFileError) {
+                            errorMessage = invalidInputMaterial.dockerFileErrorMsg
+                        } else if (invalidInputMaterial.isBranchError) {
+                            errorMessage = invalidInputMaterial.branchErrorMsg
+                        }
                     }
                 }
             }
@@ -1217,7 +1221,19 @@ export default function EnvTriggerView() {
                         _ciNode[MATERIAL_TYPE.inputMaterialList] = []
                     }
                     if (!_ciNode.isLinkedCI && _ciNode.type !== WorkflowNodeType.WEBHOOK) {
-                        handleSourceNotConfigured(configuredMaterialList, wf, _ciNode[MATERIAL_TYPE.inputMaterialList])
+                        const gitMaterials = new Map<number, string[]>()
+                        for (const _inputMaterial of _ciNode.inputMaterialList) {
+                            gitMaterials[_inputMaterial.gitMaterialId] = [
+                                _inputMaterial.gitMaterialName.toLowerCase(),
+                                _inputMaterial.value,
+                            ]
+                        }
+                        handleSourceNotConfigured(
+                            configuredMaterialList,
+                            wf,
+                            _ciNode[MATERIAL_TYPE.inputMaterialList],
+                            !gitMaterials[wf.ciConfiguredGitMaterialId],
+                        )
                     }
                     _selectedAppWorkflowList.push({
                         workFlowId: wf.id,
@@ -1262,9 +1278,21 @@ export default function EnvTriggerView() {
             for (const _wf of workflows) {
                 nd = _wf.nodes.find((node) => +node.id == selectedCINode.id && node.type === selectedCINode.type)
                 if (nd) {
+                    const gitMaterials = new Map<number, string[]>()
+                    for (const _inputMaterial of nd.inputMaterialList) {
+                        gitMaterials[_inputMaterial.gitMaterialId] = [
+                            _inputMaterial.gitMaterialName.toLowerCase(),
+                            _inputMaterial.value,
+                        ]
+                    }
                     configuredMaterialList[_wf.name] = new Set<number>()
                     _appID = _wf.appId
-                    handleSourceNotConfigured(configuredMaterialList, _wf, nd[materialType])
+                    handleSourceNotConfigured(
+                        configuredMaterialList,
+                        _wf,
+                        nd[materialType],
+                        !gitMaterials[_wf.ciConfiguredGitMaterialId],
+                    )
                     break
                 }
             }

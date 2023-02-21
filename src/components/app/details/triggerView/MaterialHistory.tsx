@@ -41,6 +41,8 @@ export interface CIMaterialType {
     noSearchResultsMsg?: string
     noSearchResult?: boolean
     isRegex: boolean
+    isDockerFileError?: boolean
+    dockerFileErrorMsg?: string
 }
 
 export interface MaterialHistoryProps {

@@ -10,7 +10,7 @@ import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled
 import externalCiImg from '../../../../assets/img/external-ci.png'
 import linkedCiImg from '../../../../assets/img/linked-ci.png'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
-import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, URLS } from '../../../../config'
+import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED, URLS } from '../../../../config'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { getCIMaterialList } from '../../../app/service'
@@ -480,7 +480,7 @@ export default function BulkCITrigger({
         return appList.some(
             (app) =>
                 app.errorMessage &&
-                (app.errorMessage !== 'Source not configured' ||
+                (app.errorMessage !== SOURCE_NOT_CONFIGURED ||
                     !app.material.some((_mat) => !_mat.isBranchError && !_mat.isRepoError)),
         )
     }

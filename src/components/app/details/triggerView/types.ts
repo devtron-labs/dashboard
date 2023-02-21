@@ -623,6 +623,8 @@ export const STAGE_TYPE = {
 export interface EmptyStateCIMaterialProps {
     isRepoError: boolean;
     isBranchError: boolean;
+    isDockerFileError: boolean
+    dockerFileErrorMsg: string
     gitMaterialName: string;
     sourceValue: string;
     repoUrl: string;

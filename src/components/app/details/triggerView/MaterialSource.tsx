@@ -6,7 +6,23 @@ import { SourceTypeMap } from '../../../../config'
 import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
 import { MaterialSourceProps } from './types'
 
-export default function MaterialSource({ material, refreshMaterial, selectMaterial, ciPipelineId }: MaterialSourceProps) {
+export default function MaterialSource({
+    material,
+    refreshMaterial,
+    selectMaterial,
+    ciPipelineId,
+}: MaterialSourceProps) {
+    const renderErrorMessage = (mat: CIMaterialType): string => {
+        if (mat.isRepoError) {
+            return mat.repoErrorMsg
+        } else if (mat.isDockerFileError) {
+            return mat.dockerFileErrorMsg
+        } else if (mat.isBranchError) {
+            return mat.branchErrorMsg
+        } else {
+            return ''
+        }
+    }
     const renderMaterialUpdateInfo = (mat: CIMaterialType) => {
         if (mat.isMaterialLoading) {
             return (
@@ -14,13 +30,11 @@ export default function MaterialSource({ material, refreshMaterial, selectMateri
                     <div className="material-last-update__fetching dc__loading-dots">Fetching</div>
                 </div>
             )
-        } else if (mat.isBranchError || mat.isRepoError) {
+        } else if (mat.isBranchError || mat.isRepoError || mat.isDockerFileError) {
             return (
                 <div className="flex fs-10">
                     <Error className="form__icon--error icon-dim-14 mr-5" />
-                    <div className="material__error dc__ellipsis-right">
-                        {mat.isRepoError ? mat.repoErrorMsg : mat.isBranchError ? mat.branchErrorMsg : ''}
-                    </div>
+                    <div className="material__error dc__ellipsis-right">{renderErrorMessage(mat)}</div>
                 </div>
             )
         } else {

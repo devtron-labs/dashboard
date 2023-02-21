@@ -830,11 +830,19 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 nd = this.state.workflows[i].nodes.find((node) => +node.id == this.state.ciNodeId && node.type === 'CI')
 
                 if (nd) {
+                    const gitMaterials = new Map<number, string[]>()
+                    for (const _inputMaterial of nd.inputMaterialList) {
+                        gitMaterials[_inputMaterial.gitMaterialId] = [
+                            _inputMaterial.gitMaterialName.toLowerCase(),
+                            _inputMaterial.value,
+                        ]
+                    }
                     configuredMaterialList[this.state.workflows[i].name] = new Set<number>()
                     handleSourceNotConfigured(
                         configuredMaterialList,
                         this.state.workflows[i],
                         nd[this.state.materialType],
+                        !gitMaterials[this.state.workflows[i].ciConfiguredGitMaterialId],
                     )
                     break
                 }
