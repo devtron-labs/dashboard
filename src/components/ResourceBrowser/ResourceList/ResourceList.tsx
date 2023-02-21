@@ -117,11 +117,13 @@ export default function ResourceList() {
         getClusterData()
 
         // Initialize tabs on load
-        initTabs(
-            AppDetailsTabs.k8s_Resources,
-            `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
-            true,
-        )
+        initTabs([
+            {
+                tabName: AppDetailsTabs.k8s_Resources,
+                url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
+                positionFixed: true,
+            },
+        ])
         return (): void => {
             if (typeof window['crate']?.show === 'function') {
                 window['crate'].show()
@@ -759,13 +761,8 @@ export default function ResourceList() {
                         boxShadow: 'inset 0 -1px 0 0 var(--N200)',
                     }}
                 >
-                    <div className="resource-browser-tab flex left">
-                        <DynamicTabs
-                            tabs={tabs}
-                            removeTabByIdentifier={removeTabByIdentifier}
-                            showTitleTippyKey={AppDetailsTabs.k8s_Resources}
-                            preventCloseKey={AppDetailsTabs.k8s_Resources}
-                        />
+                    <div className="resource-browser-tab flex left w-100">
+                        <DynamicTabs tabs={tabs} removeTabByIdentifier={removeTabByIdentifier} />
                     </div>
                     <div className="fs-13 flex pt-12 pb-12">
                         {!loader && !showErrorState && (

@@ -27,28 +27,44 @@ export function useTabs(persistanceKey: string) {
         })
     }
 
-    const initTabs = (tabName: string, _url: string, positionFixed: boolean) => {
-        const url = `${_url}${_url.endsWith('/') ? '' : '/'}`
+    const populateInitTab = (
+        _initTab: { tabName: string; url: string; kind?: string; positionFixed?: boolean },
+        idx: number,
+    ) => {
+        const url = `${_initTab.url}${_initTab.url.endsWith('/') ? '' : '/'}`
+        const title = _initTab.kind ? `${_initTab.kind}/${_initTab.tabName}` : _initTab.tabName
+        return populateTabData(title, url, idx === 0, title, _initTab.positionFixed)
+    }
+
+    const initTabs = (initTabsData: { tabName: string; url: string; kind?: string; positionFixed?: boolean }[]) => {
+        const persistedTabs = localStorage.getItem('persisted-tabs-data')
         let _tabs
         try {
-            const persistedTabs = localStorage.getItem('persisted-tabs-data')
             _tabs = persistedTabs ? JSON.parse(persistedTabs).data : tabs
         } catch (err) {
             _tabs = tabs
         }
 
-        if (!_tabs.length) {
-            _tabs.push(populateTabData(tabName, url, true, tabName, positionFixed))
+        if (_tabs.length > 0) {
+            initTabsData.forEach((_initTab, idx) => {
+                if (_tabs.findIndex((_tab) => _tab.tabName === _initTab.tabName) !== -1) {
+                    _tabs.push(populateInitTab(_initTab, idx))
+                }
+            })
+        } else {
+            initTabsData.forEach((_initTab, idx) => {
+                _tabs.push(populateInitTab(_initTab, idx))
+            })
         }
 
         localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
         setTabs(_tabs)
     }
 
-    const addTab = (objectKind: string, objectName: string, tabURL: string) => {
-        if (!objectName || !tabURL || !objectKind) return
+    const addTab = (tabKind: string, tabName: string, tabURL: string, positionFixed?: boolean) => {
+        if (!tabName || !tabURL || !tabKind) return
 
-        const title = objectKind + '/' + objectName
+        const title = `${tabKind}/${tabName}`
         let alreadyAdded = false
         const _tabs = tabs.map((tab) => {
             tab.isSelected = false
@@ -61,7 +77,7 @@ export function useTabs(persistanceKey: string) {
         })
 
         if (!alreadyAdded) {
-            _tabs.push(populateTabData(`${objectKind}/${objectName}`, tabURL, true, title, false))
+            _tabs.push(populateTabData(title, tabURL, true, title, positionFixed))
         }
 
         localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
@@ -90,13 +106,13 @@ export function useTabs(persistanceKey: string) {
         return pushURL
     }
 
-    const markTabActiveByIdentifier = (objectName: string, objectKind?: string, tabUrl?: string) => {
-        if (!objectName) return
+    const markTabActiveByIdentifier = (tabName: string, tabKind?: string, tabUrl?: string) => {
+        if (!tabName) return
 
         let isTabFound = false
-        let title = objectName
-        if (objectKind) {
-            title = objectKind + '/' + objectName
+        let title = tabName
+        if (tabKind) {
+            title = tabKind + '/' + tabName
         }
 
         const _tabs = tabs.map((tab) => {
@@ -114,10 +130,10 @@ export function useTabs(persistanceKey: string) {
         return isTabFound
     }
 
-    const markTabResourceDeletedByIdentifier = (objectName: string, objectKind?: string) => {
-        let title = objectName
-        if (objectKind) {
-            title = objectKind + '/' + objectName
+    const markTabResourceDeletedByIdentifier = (tabName: string, tabKind?: string) => {
+        let title = tabName
+        if (tabKind) {
+            title = tabKind + '/' + tabName
         }
 
         const _tabs = tabs.map((tab) => {

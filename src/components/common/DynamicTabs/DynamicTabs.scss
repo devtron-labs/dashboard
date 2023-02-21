@@ -1,6 +1,4 @@
 .dynamic-tabs-section {
-    overflow-x: auto;
-
     .dynamic-tabs-container {
         overflow-x: auto;
         -ms-overflow-style: none;
@@ -9,59 +7,80 @@
         &::-webkit-scrollbar {
             display: none;
         }
+    }
 
-        .dynamic-tabs-wrapper {
+    .more-tabs-option {
+        margin-left: 8px;
+
+        &.hide-more-tabs-option {
+            display: none !important;
+        }
+    }
+
+    .dynamic-tab__border {
+        height: 16px;
+        border-left: 1px solid var(--N200);
+    }
+
+    .dynamic-tabs-container,
+    .fixed-tabs-container {
+
+        .dynamic-tabs-wrapper,
+        .fixed-tabs-wrapper {
             list-style: none;
             display: flex;
             margin: 0px;
             padding: 0px;
 
             .dynamic-tab {
-                max-width: 275px;
+                max-width: 276px;
                 width: 100%;
-                min-width: 75px;
+                min-width: 91px;
             }
 
-            .dynamic-tab-selected {
-                border-top: 1px solid var(--N200);
-                border-bottom: 1px solid var(--N0);
-                border-left: 1px solid var(--N200);
-                border-right: 1px solid var(--N200);
-                border-top-right-radius: 8px;
-                border-top-left-radius: 8px;
-
-                .dynamic-tab__resource {
-                    user-select: none;
-                    text-align: center;
-                    color: var(--N700);
-
-                    &:hover {
-                        color: var(--B500) !important;
-                    }
-
-                    .dynamic-tab__deleted {
-                        text-decoration: line-through;
+            .dynamic-tab,
+            .fixed-tab {
+                &.dynamic-tab__item-selected {
+                    +.dynamic-tab__border {
+                        display: none;
                     }
                 }
 
-                .dynamic-tab__close {
-                    width: 16px;
-                    height: 16px;
+                .dynamic-tab-selected {
+                    border-top: 1px solid var(--N200);
+                    border-bottom: 1px solid var(--N0);
+                    border-left: 1px solid var(--N200);
+                    border-right: 1px solid var(--N200);
+                    border-top-right-radius: 8px;
+                    border-top-left-radius: 8px;
 
-                    &:hover {
-                        background-color: var(--R100);
+                    .dynamic-tab__resource {
+                        user-select: none;
+                        text-align: center;
+                        color: var(--N700);
 
-                        svg use {
-                            fill: var(--R500);
+                        &:hover {
+                            color: var(--B500) !important;
+                        }
+
+                        .dynamic-tab__deleted {
+                            text-decoration: line-through;
+                        }
+                    }
+
+                    .dynamic-tab__close {
+                        width: 16px;
+                        height: 16px;
+
+                        &:hover {
+                            background-color: var(--R100);
+
+                            svg use {
+                                fill: var(--R500);
+                            }
                         }
                     }
                 }
-            }
-
-            .dynamic-tab__border {
-                width: 1px;
-                height: 16px;
-                background-color: var(--N200);
             }
         }
     }
