@@ -115,6 +115,7 @@ export default function EnvironmentsList() {
         const queryParams = new URLSearchParams(location.search)
         queryParams.delete('cluster')
         queryParams.delete('search')
+        queryParams.set('offset', '0')
         setSearchApplied(false)
         setSearchText('')
         history.push(`${match.path}?${queryParams.toString()}`)
@@ -130,7 +131,7 @@ export default function EnvironmentsList() {
                 <Search className="search__icon icon-dim-18" />
                 <input
                     type="text"
-                    placeholder="Search env"
+                    placeholder="Search environment"
                     value={searchText}
                     className="search__input"
                     onChange={handleSearchText}

@@ -25,7 +25,7 @@ export default function ApplicationRoute({ envListData }: ApplicationRouteType) 
                 className={`env-compose__nav-item flex cursor ${collapsed ? 'fw-4' : 'fw-6 no-hover'}`}
                 onClick={handleNavItemClick}
             >
-                {envListData.name}
+                <div className="dc__truncate-text dc__mxw-180">{envListData.name}</div>
                 <Dropdown
                     className="icon-dim-24 rotate"
                     style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}

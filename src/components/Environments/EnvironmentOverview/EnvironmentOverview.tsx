@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ReactComponent as GridIcon } from '../../../assets/icons/ic-grid-view.svg'
 import { URLS } from '../../../config'
 import AppStatus from '../../app/AppStatus'
 import { StatusConstants } from '../../app/list-new/Constants'
 import { getAppList } from '../../app/service'
-import { Progressing, processDeployedTime, useAsync } from '../../common'
+import { Progressing, processDeployedTime, showError } from '../../common'
 import { GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../Constants'
 import { AppInfoListType, AppListDataType } from '../EnvironmentGroup.types'
 import { getDeploymentStatus } from '../EnvironmentListService'
@@ -14,20 +14,33 @@ import './envOverview.scss'
 export default function EnvironmentOverview() {
     const { envId } = useParams<{ envId: string }>()
     const [appListData, setAppListData] = useState<AppListDataType>()
-    const [loading, response] = useAsync(
-        () => Promise.all([getAppList({ environments: [+envId], size: 20 }), getDeploymentStatus(+envId)]),
-        [envId],
-    )
+    const [loading, setLoading] = useState<boolean>()
+    const timerId = useRef(null)
+
+    async function fetchDeployments() {
+        try {
+            const response = await Promise.all([getAppList({ environments: [+envId] }), getDeploymentStatus(+envId)])
+            if (response?.[0]?.result && response[1]?.result) {
+                let statusRecord = {}
+                response[1].result.forEach((item) => {
+                    statusRecord = { ...statusRecord, [item.appId]: item.deployStatus }
+                })
+                setLoading(false)
+                parseAppListData(response[0]?.result, statusRecord)
+            }
+        } catch (err) {
+            showError(err)
+        }
+    }
 
     useEffect(() => {
-        if (response?.[0]?.result && response[1]?.result) {
-            let statusRecord = {}
-            response[1].result.forEach((item) => {
-                statusRecord = { ...statusRecord, [item.appId]: item.deployStatus }
-            })
-            parseAppListData(response[0]?.result, statusRecord)
+        setLoading(true)
+        fetchDeployments()
+        timerId.current = setInterval(fetchDeployments, 30000)
+        return () => {
+            if (timerId.current) clearInterval(timerId.current)
         }
-    }, [response])
+    }, [envId])
 
     const parseAppListData = (data: any, statusRecord: Record<string, string>): void => {
         const parsedData = {
@@ -55,7 +68,7 @@ export default function EnvironmentOverview() {
                 parsedData.appInfoList.push(appInfo)
             })
         })
-
+        parsedData.appInfoList = parsedData.appInfoList.sort((a, b) => a.application.localeCompare(b.application))
         setAppListData(parsedData)
     }
 
@@ -73,9 +86,7 @@ export default function EnvironmentOverview() {
                 key={`${item.application}-${index}`}
                 className="app-deployments-info-row display-grid dc__align-items-center"
             >
-                <Link to={`${URLS.APP}/${item.appId}/details/${envId}/`} className="fs-13">
-                    {item.application}
-                </Link>
+                <span className="fs-13 fw-4 cn-7">{item.application}</span>
                 <AppStatus appStatus={item.lastDeployed ? item.appStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower} />
                 <AppStatus appStatus={item.lastDeployed ? item.deploymentStatus : '-'} />
                 <span className="fs-13 fw-4 cn-7">{processDeployedTime(item.lastDeployed, true)}</span>

@@ -114,5 +114,7 @@ export const GROUP_LIST_HEADER = {
     ENVIRONMENT: 'Environment',
     NAMESPACE: 'Namespace',
     CLUSTER: 'Cluster',
-    APPLICATIONS: 'Applications'
+    APPLICATIONS: 'Applications',
+    APPLICATION: 'Application'
+
 }

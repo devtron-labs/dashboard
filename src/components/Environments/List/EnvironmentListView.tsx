@@ -44,7 +44,7 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
 
     const changePage = (pageNo: number): void => {
         const pageSize = params.get('pageSize') || '20'
-        const newOffset = (+pageSize) * (pageNo - 1)
+        const newOffset = +pageSize * (pageNo - 1)
         params.set('pageSize', pageSize)
         params.set('offset', newOffset.toString())
         history.push(`${match.url}?${params.toString()}`)
@@ -77,17 +77,33 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
         }
     }
 
+    const renderEmptyLoader = () => {
+        if (loading) {
+            return <Progressing pageLoader />
+        }
+        return (
+            <EnvEmptyStates
+                title={emptyStateData.title}
+                subTitle={emptyStateData.subTitle}
+                actionHandler={removeAllFilters}
+            />
+        )
+    }
+
+    const renderApplicationCount = (envData) => {
+        return (
+            <div>
+                {envData.appCount || 0}&nbsp;
+                {envData.appCount == 0 || envData.appCount == 1
+                    ? GROUP_LIST_HEADER.APPLICATION
+                    : GROUP_LIST_HEADER.APPLICATIONS}
+            </div>
+        )
+    }
+
     return filteredEnvList.length === 0 || loading ? (
         <div className="flex dc__border-top-n1" style={{ height: `calc(100vh - 120px)` }}>
-            {loading ? (
-                <Progressing />
-            ) : (
-                <EnvEmptyStates
-                    title={emptyStateData.title}
-                    subTitle={emptyStateData.subTitle}
-                    actionHandler={removeAllFilters}
-                />
-            )}
+            {renderEmptyLoader()}
         </div>
     ) : (
         <>
@@ -113,9 +129,9 @@ export default function EnvironmentsListView({ removeAllFilters }: EnvironmentsL
                                 {envData.environment_name}
                             </NavLink>
                         </div>
-                        <div>{envData.namespace}</div>
+                        <div className='dc__truncate-text'>{envData.namespace}</div>
                         <div>{envData.cluster_name}</div>
-                        <div>{envData.appCount || 0} {GROUP_LIST_HEADER.APPLICATIONS}</div>
+                        {renderApplicationCount(envData)}
                     </div>
                 ))}
             </div>

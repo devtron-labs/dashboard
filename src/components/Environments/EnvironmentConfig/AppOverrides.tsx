@@ -11,7 +11,7 @@ export default function AppOverrides({ appList, environments, setEnvironments }:
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>
                     <Route path={`${path}/:appId(\\d+)?`}>
-                        <EnvironmentOverride environments={environments} setEnvironments={setEnvironments} />
+                        <EnvironmentOverride appList={appList} environments={environments} setEnvironments={setEnvironments} />
                     </Route>
                 </Switch>
             </Suspense>

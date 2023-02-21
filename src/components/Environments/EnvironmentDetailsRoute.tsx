@@ -14,13 +14,14 @@ import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceList
 import EmptyFolder from '../../assets/img/Empty-folder.png'
 import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS } from './Constants'
 import { EnvHeaderType } from './EnvironmentGroup.types'
+import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
 
 export default function EnvironmentDetailsRoute() {
     const { path } = useRouteMatch()
     const { envId } = useParams<{ envId: string }>()
     const [envName, setEnvName] = useState('')
     const [showEmpty, setShowEmpty] = useState<boolean>(true)
-    const [loading, envList] = useAsync(() => getEnvAppList({ size: '1000' }), [])
+    const [loading, envList] = useAsync(getEnvAppList, [])
 
     useEffect(() => {
         if (envList?.result) {
@@ -30,21 +31,21 @@ export default function EnvironmentDetailsRoute() {
         }
     }, [envList])
 
+    const renderEmptyAndLoading = () => {
+        if (loading) {
+            return <Progressing pageLoader />
+        }
+        return (
+            <ResourceListEmptyState
+                imgSource={EmptyFolder}
+                title={EMPTY_LIST_MESSAGING.TITLE}
+                subTitle={EMPTY_LIST_MESSAGING.SUBTITLE}
+            />
+        )
+    }
+
     const renderRoute = () => {
-        if (showEmpty)
-            return (
-                <div className="empty-state flex w-100">
-                    {loading ? (
-                        <Progressing pageLoader />
-                    ) : (
-                        <ResourceListEmptyState
-                            imgSource={EmptyFolder}
-                            title={EMPTY_LIST_MESSAGING.TITLE}
-                            subTitle={EMPTY_LIST_MESSAGING.SUBTITLE}
-                        />
-                    )}
-                </div>
-            )
+        if (showEmpty) return <div className="env-empty-state flex w-100">{renderEmptyAndLoading()}</div>
         return (
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
@@ -76,12 +77,7 @@ export default function EnvironmentDetailsRoute() {
     )
 }
 
-export function EnvHeader({
-    envName,
-    setEnvName,
-    setShowEmpty,
-    showEmpty,
-}: EnvHeaderType ) {
+export function EnvHeader({ envName, setEnvName, setShowEmpty, showEmpty }: EnvHeaderType) {
     const { envId } = useParams<{ envId: string }>()
     const match = useRouteMatch()
     const history = useHistory()
@@ -116,7 +112,7 @@ export function EnvHeader({
                     linked: false,
                 },
                 environment: {
-                    component: <span className="cb-5 fs-16 dc__capitalize">Environments</span>,
+                    component: <span className="cb-5 fs-16 dc__capitalize">Application Groups</span>,
                     linked: true,
                 },
             },
@@ -163,10 +159,11 @@ export function EnvHeader({
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
-                        className="tab-list__tab-link"
+                        className="tab-list__tab-link flex"
                         onClick={handleConfigClick}
                     >
-                        Configuration
+                        <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
+                        Configurations
                     </NavLink>
                 </li>
             </ul>
