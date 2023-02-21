@@ -33,16 +33,23 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const socketConnectionRef = useRef<SocketConnectionType>(terminalViewProps.socketConnection)
     const { serverMode } = useContext(mainContext)
     const autoSelectNodeRef = useRef('')
-    
+   
+    const resizeSocket = ()=>{
+        if (terminal && fitAddon && terminalViewProps.isTerminalTab) {
+            const dim = fitAddon.proposeDimensions() 
+            if (dim && socket){
+                socket.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows })) 
+            }
+            fitAddon.fit()
+        }
+    }
     useEffect(() => {
         if (!popupText) return
         setTimeout(() => setPopupText(false), 2000)
     }, [popupText])
 
     useEffect(() => {
-        if (terminal && fitAddon && terminalViewProps.isTerminalTab) {
-            fitAddon.fit()
-        }
+        resizeSocket()
     }, [terminalViewProps.isFullScreen])
     
     const appDetails = IndexStore.getAppDetails()
@@ -125,7 +132,9 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         _terminal.onData(function (data) {
             let dim = _fitAddon.proposeDimensions()
             if (dim) {
+                console.log("hello gireesh")
                 _socket.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
+                _fitAddon.fit() 
             }
             _fitAddon.fit()
             const inData = { Op: 'stdin', SessionID: '', Data: data }
