@@ -1,4 +1,4 @@
-import { ReactNode } from 'react'
+import { FunctionComponent, ReactNode, SVGProps } from 'react'
 
 export interface DynamicTabType {
     name: string
@@ -8,6 +8,7 @@ export interface DynamicTabType {
     title?: string
     isDeleted?: boolean
     positionFixed: boolean
+    iconPath?: string
 }
 
 export interface DynamicTabsProps {

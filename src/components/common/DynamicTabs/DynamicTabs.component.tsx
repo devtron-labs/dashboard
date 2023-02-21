@@ -12,35 +12,6 @@ export const TabsMenu = (props: MenuProps<any, false, any>) => {
     )
 }
 
-export const Menu = (props: JSX.IntrinsicElements['div']) => {
-    return (
-        <div
-            style={{
-                backgroundColor: 'var(--N0)',
-                borderRadius: '4px 4px 0 0',
-                marginTop: '8px',
-                position: 'absolute',
-                left: '8px',
-                zIndex: 10,
-                width: '300px',
-            }}
-            {...props}
-        />
-    )
-}
-const Blanket = (props: JSX.IntrinsicElements['div']) => (
-    <div
-        style={{
-            bottom: 0,
-            left: 0,
-            top: 0,
-            right: 0,
-            position: 'fixed',
-            zIndex: 9,
-        }}
-        {...props}
-    />
-)
 export const MoreButtonWrapper = ({ children, isMenuOpen, onClose, toggleMenu }: MoreButtonWrapperProps) => (
     <div className="more-tabs-wrapper" style={{ position: 'relative' }}>
         <button className="more-tabs-option" onClick={toggleMenu}>
@@ -51,8 +22,8 @@ export const MoreButtonWrapper = ({ children, isMenuOpen, onClose, toggleMenu }:
         </button>
         {isMenuOpen && (
             <>
-                <Menu>{children}</Menu>
-                <Blanket onClick={onClose} />
+                <div className="more-tabs__menu-wrapper">{children}</div>
+                <div className="more-tabs__blanket" onClick={onClose} />
             </>
         )}
     </div>

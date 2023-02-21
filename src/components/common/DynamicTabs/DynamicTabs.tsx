@@ -6,7 +6,7 @@ import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap, stopPropagation } from '../helpers/Helpers'
 import './DynamicTabs.scss'
-import ReactSelect, { components, GroupBase, InputActionMeta } from 'react-select'
+import ReactSelect, { components, GroupBase, InputActionMeta, OptionProps } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
 import {
     COMMON_TABS_SELECT_STYLES,
@@ -71,25 +71,25 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
     }
 
     const updateRef = (_node: HTMLAnchorElement) => {
-        if (_node?.dataset?.selected === 'true') {
+        if (_node?.dataset?.selected === 'true' && _node !== tabRef.current) {
+            _node.focus()
             tabRef.current = _node
         }
     }
 
-    const getTabNavLink = (tab) => {
+    const getTabNavLink = ({ name, url, isDeleted, isSelected, iconPath }: DynamicTabType) => {
         return (
             <NavLink
-                to={tab.url}
+                to={url}
                 ref={updateRef}
-                className="dynamic-tab__resource cursor cn-9 dc__no-decor m-0-imp dc__ellipsis-right"
-                data-selected={tab.isSelected}
+                className="dynamic-tab__resource cursor cn-9 dc__no-decor dc__outline-none-imp m-0-imp dc__ellipsis-right"
+                data-selected={isSelected}
             >
                 <div
-                    className={`flex left ${tab.isSelected ? 'cn-9' : ''} ${
-                        tab.isDeleted ? 'dynamic-tab__deleted cr-5' : ''
-                    }`}
+                    className={`flex left ${isSelected ? 'cn-9' : ''} ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
                 >
-                    <span className="fs-12 fw-6 lh-20 dc__ellipsis-right">{tab.name}</span>
+                    {iconPath && <img className="icon-dim-16 mr-8" src={iconPath} alt={name} />}
+                    <span className="fs-12 fw-6 lh-20 dc__ellipsis-right">{name}</span>
                 </div>
             </NavLink>
         )
@@ -110,7 +110,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
         )
     }
 
-    const renderTab = (tab, idx: number, isFixed?: boolean) => {
+    const renderTab = (tab: DynamicTabType, idx: number, isFixed?: boolean) => {
         return (
             <Fragment key={`${idx}-tab`}>
                 <li
@@ -161,7 +161,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
 
     const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
 
-    const TabsOption = (props) => {
+    const TabsOption = (props: OptionProps<any, false, any>) => {
         const { selectProps, data } = props
         selectProps.styles.option = getCustomOptionSelectionStyle({
             display: 'flex',

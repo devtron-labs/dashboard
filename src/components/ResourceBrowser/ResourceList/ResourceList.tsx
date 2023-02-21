@@ -46,6 +46,7 @@ import { ClusterSelection } from './ClusterSelection'
 import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
+import K8ResourceIcon from '../../../assets/icons/ic-object.svg'
 import { CreateResource } from './CreateResource'
 import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
@@ -123,6 +124,7 @@ export default function ResourceList() {
                 url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
                 isSelected: true,
                 positionFixed: true,
+                iconPath: K8ResourceIcon,
             },
         ])
         return (): void => {

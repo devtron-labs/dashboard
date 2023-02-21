@@ -23,6 +23,25 @@
             border-radius: 4px;
         }
 
+        .more-tabs__menu-wrapper {
+            background-color: var(--N0);
+            border-radius: 4px 4px 0 0;
+            margin-top: 8px;
+            position: absolute;
+            left: 8px;
+            z-index: 10;
+            width: 300px;
+        }
+
+        .more-tabs__blanket {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            top: 0;
+            right: 0;
+            z-index: 9;
+        }
+
         &.hide-more-tabs-option {
             display: none !important;
         }

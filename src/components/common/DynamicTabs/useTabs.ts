@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { FunctionComponent, SVGProps, useState } from 'react'
 import { DynamicTabType } from './DynamicTabs.type'
 
 export function useTabs(persistanceKey: string) {
@@ -8,17 +8,19 @@ export function useTabs(persistanceKey: string) {
         name: string,
         url: string,
         isSelected: boolean,
-        title?: string,
-        positionFixed?: boolean,
+        title: string,
+        positionFixed: boolean,
+        iconPath: string,
     ) => {
-        let tab = {} as DynamicTabType
-        tab.name = name
-        tab.url = url
-        tab.isSelected = isSelected
-        tab.title = title || name
-        tab.isDeleted = false
-        tab.positionFixed = positionFixed
-        return tab
+        return {
+            name: name,
+            url: url,
+            isSelected: isSelected,
+            title: title || name,
+            isDeleted: false,
+            positionFixed: positionFixed,
+            iconPath: iconPath,
+        } as DynamicTabType
     }
 
     const stringifyData = (_tabs: any[]) => {
@@ -31,7 +33,7 @@ export function useTabs(persistanceKey: string) {
     const populateInitTab = (_initTab: DynamicTabType, idx: number) => {
         const url = `${_initTab.url}${_initTab.url.endsWith('/') ? '' : '/'}`
         const title = _initTab.kind ? `${_initTab.kind}/${_initTab.name}` : _initTab.name
-        return populateTabData(title, url, idx === 0, title, _initTab.positionFixed)
+        return populateTabData(title, url, idx === 0, title, _initTab.positionFixed, _initTab.iconPath)
     }
 
     const initTabs = (initTabsData: DynamicTabType[]) => {
@@ -60,7 +62,13 @@ export function useTabs(persistanceKey: string) {
         setTabs(_tabs)
     }
 
-    const addTab = (kind: string, name: string, url: string, positionFixed?: boolean) => {
+    const addTab = (
+        kind: string,
+        name: string,
+        url: string,
+        positionFixed?: boolean,
+        iconPath?: string,
+    ) => {
         if (!name || !url || !kind) return
 
         const title = `${kind}/${name}`
@@ -76,7 +84,7 @@ export function useTabs(persistanceKey: string) {
         })
 
         if (!alreadyAdded) {
-            _tabs.push(populateTabData(title, url, true, title, positionFixed))
+            _tabs.push(populateTabData(title, url, true, title, positionFixed, iconPath))
         }
 
         localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
