@@ -931,7 +931,7 @@ export default function EnvTriggerView() {
                 } else if (bulkTriggerType === DeploymentNodeType.CD) {
                     _selectedNode = _cdNode
                 } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
-                    _selectedNode = _cdNode.preNode
+                    _selectedNode = _cdNode.postNode
                 }
                 if (_selectedNode) {
                     _selectedNode.inputMaterialList = materialList[_appId]
@@ -960,7 +960,7 @@ export default function EnvTriggerView() {
                 } else if (bulkTriggerType === DeploymentNodeType.CD) {
                     _selectedNode = _cdNode
                 } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
-                    _selectedNode = _cdNode.preNode
+                    _selectedNode = _cdNode.postNode
                 }
 
                 if (_selectedNode && _selectedNode[materialType]) {
@@ -1134,7 +1134,7 @@ export default function EnvTriggerView() {
                         name: wf.name,
                         cdPipelineName: _cdNode.title,
                         cdPipelineId: _cdNode.id,
-                        stageType: WorkflowNodeType[_selectedNode.type],
+                        stageType: DeploymentNodeType[_selectedNode.type],
                         envName: _selectedNode.environmentName,
                         parentPipelineId: _selectedNode.parentPipelineId,
                         parentPipelineType: WorkflowNodeType[_selectedNode.parentPipelineType],
