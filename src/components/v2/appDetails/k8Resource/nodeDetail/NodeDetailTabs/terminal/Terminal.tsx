@@ -34,11 +34,11 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const { serverMode } = useContext(mainContext)
     const autoSelectNodeRef = useRef('')
    
-    const resizeSocket = ()=>{
+    const resizeSocket = () => {
         if (terminal && fitAddon && terminalViewProps.isTerminalTab) {
-            const dim = fitAddon.proposeDimensions() 
-            if (dim && socket){
-                socket.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows })) 
+            const dim = fitAddon.proposeDimensions()
+            if (dim && socket) {
+                socket.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
             }
             fitAddon.fit()
         }
@@ -132,11 +132,9 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         _terminal.onData(function (data) {
             let dim = _fitAddon.proposeDimensions()
             if (dim) {
-                console.log("hello gireesh")
                 _socket.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
                 _fitAddon.fit() 
             }
-            _fitAddon.fit()
             const inData = { Op: 'stdin', SessionID: '', Data: data }
             if (_socket.readyState === WebSocket.OPEN) {
                 _socket?.send(JSON.stringify(inData))
