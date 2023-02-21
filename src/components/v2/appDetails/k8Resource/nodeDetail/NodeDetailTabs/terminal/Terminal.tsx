@@ -44,7 +44,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             fitAddon.fit()
         }
     }, [terminalViewProps.isFullScreen])
-
+    
     const appDetails = IndexStore.getAppDetails()
 
     const createNewTerminal = () => {
@@ -127,6 +127,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             if (dim) {
                 _socket.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
             }
+            _fitAddon.fit()
             const inData = { Op: 'stdin', SessionID: '', Data: data }
             if (_socket.readyState === WebSocket.OPEN) {
                 _socket?.send(JSON.stringify(inData))
