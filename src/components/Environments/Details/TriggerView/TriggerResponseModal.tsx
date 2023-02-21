@@ -1,5 +1,5 @@
 import React from 'react'
-import { Progressing } from '../../../common'
+import { Progressing, sortCallback } from '../../../common'
 import { ReactComponent as RetryIcon } from '../../../../assets/icons/ic-arrow-clockwise.svg'
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
@@ -37,16 +37,18 @@ export default function TriggerResponseModal({
                     <div className="fs-12 fw-6 cn-7">Trigger status</div>
                     <div className="fs-12 fw-6 cn-7">Message</div>
                 </div>
-                {responseList.map((response) => (
-                    <div className="response-row pt-8 pb-8" key={`response-${response.appId}`}>
-                        <div className="fs-13 fw-4 cn-9">{response.appName}</div>
-                        <div className="flex left top fs-13 fw-4 cn-9">
-                            {renderStatusIcon(response)}
-                            <span>{response.statusText}</span>
+                {responseList
+                    .sort((a, b) => sortCallback('appName', a, b))
+                    .map((response) => (
+                        <div className="response-row pt-8 pb-8" key={`response-${response.appId}`}>
+                            <div className="fs-13 fw-4 cn-9">{response.appName}</div>
+                            <div className="flex left top fs-13 fw-4 cn-9">
+                                {renderStatusIcon(response)}
+                                <span>{response.statusText}</span>
+                            </div>
+                            <div className="fs-13 fw-4 cn-9">{response.message}</div>
                         </div>
-                        <div className="fs-13 fw-4 cn-9">{response.message}</div>
-                    </div>
-                ))}
+                    ))}
             </div>
         )
     }
