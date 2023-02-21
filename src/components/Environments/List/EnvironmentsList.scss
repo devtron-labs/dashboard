@@ -3,6 +3,7 @@
         height: calc(100vh - 48px);
         overflow: hidden;
     }
+
     .env-list-row {
         display: grid;
         grid-template-columns: 20px 250px repeat(3, 200px);
@@ -87,7 +88,7 @@
     }
 
     .nav-text {
-      max-width: 192px;
+        max-width: 192px;
     }
 }
 
@@ -147,18 +148,20 @@
 }
 
 .env-details-page {
-  height: calc(100vh - 77px);
-  .tab-list__tab-link {
-    padding: 0 0 8px 0;
-}
+    height: calc(100vh - 77px);
 
-.tab-list__tab-link.active .tab-list__icon path {
-    fill: var(--B500);
+    .tab-list__tab-link {
+        padding: 0 0 8px 0;
+    }
 
-}
+    .tab-list__tab-link.active .tab-list__icon path {
+        fill: var(--B500);
 
-.tab-list__tab-link:hover path {
-    color: var(--B500);
-    text-decoration: none;
-    fill: var(--B500);
+    }
+
+    .tab-list__tab-link:hover path {
+        color: var(--B500);
+        text-decoration: none;
+        fill: var(--B500);
+    }
 }
