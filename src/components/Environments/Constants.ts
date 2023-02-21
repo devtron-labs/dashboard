@@ -130,4 +130,5 @@ export const GROUP_LIST_HEADER = {
     NAMESPACE: 'Namespace',
     CLUSTER: 'Cluster',
     APPLICATIONS: 'Applications',
+    APPLICATION: 'Application'
 }
