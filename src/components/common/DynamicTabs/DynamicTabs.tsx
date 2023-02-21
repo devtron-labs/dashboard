@@ -1,11 +1,18 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 import { NavLink, useHistory } from 'react-router-dom'
-import { ReactComponent as Cross } from '../../../assets/icons/ic-close.svg'
+import { ReactComponent as Cross } from '../../../assets/icons/ic-cross.svg'
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap, stopPropagation } from '../helpers/Helpers'
 import './DynamicTabs.scss'
 import ReactSelect, { components } from 'react-select'
-import { getCustomOptionSelectionStyle, Option } from '../../v2/common/ReactSelect.utils'
+import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
+import {
+    COMMON_TABS_SELECT_STYLES,
+    computeAndToggleMoreOptions,
+    EMPTY_TABS_DATA,
+    initTabsData,
+} from './DynamicTabs.utils'
+import { TabsDataType } from './DynamicTabs.type'
 
 /**
  * This component enables a way to display dynamic tabs with the following functionalities,
@@ -18,85 +25,33 @@ import { getCustomOptionSelectionStyle, Option } from '../../v2/common/ReactSele
  */
 export function DynamicTabs({ tabs, removeTabByIdentifier }) {
     const { push } = useHistory()
+    const [selectedTab, setSelectedTab] = useState(null)
     const tabsSectionRef = useRef<HTMLDivElement>(null)
     const fixedContainerRef = useRef<HTMLDivElement>(null)
     const dynamicWrapperRef = useRef<HTMLUListElement>(null)
     const tabRef = useRef<HTMLAnchorElement>(null)
-    const [tabsData, setTabsData] = useState<{
-        fixedTabs: any[]
-        dynamicTabs: any[]
-    }>({
-        fixedTabs: [],
-        dynamicTabs: [],
-    })
+    const [tabsData, setTabsData] = useState<TabsDataType>(EMPTY_TABS_DATA)
 
     useEffect(() => {
-        window.addEventListener('resize', doAdapt)
+        const resizeHandler = () => {
+            computeAndToggleMoreOptions(tabsSectionRef, fixedContainerRef, dynamicWrapperRef)
+        }
 
+        window.addEventListener('resize', resizeHandler)
         return (): void => {
-            window.addEventListener('resize', doAdapt)
+            window.addEventListener('resize', resizeHandler)
         }
     }, [])
 
     useEffect(() => {
-        initTabsData()
+        initTabsData(tabs, setTabsData, setSelectedTab)
     }, [tabs])
 
     useEffect(() => {
         if (tabsData.fixedTabs.length > 0 || tabsData.dynamicTabs.length > 0) {
-            doAdapt()
+            computeAndToggleMoreOptions(tabsSectionRef, fixedContainerRef, dynamicWrapperRef)
         }
     }, [tabsData])
-
-    const initTabsData = (): void => {
-        const fixedTabs = []
-        const dynamicTabs = []
-        for (const tab of tabs) {
-            const tabOption = {
-                ...tab,
-                label: tab.name,
-                value: tab.title,
-            }
-            if (tab.positionFixed) {
-                fixedTabs.push(tabOption)
-            } else {
-                dynamicTabs.push(tabOption)
-            }
-        }
-
-        setTabsData({
-            fixedTabs,
-            dynamicTabs,
-        })
-    }
-
-    const doAdapt = () => {
-        const moreButtonRef = tabsSectionRef.current?.querySelector('.more-tabs-option')
-        if (!tabsSectionRef.current || !fixedContainerRef.current || !dynamicWrapperRef.current || !moreButtonRef) {
-            return
-        }
-
-        const primaryItems = dynamicWrapperRef.current.querySelectorAll('li') as NodeListOf<HTMLLIElement>
-        let stopWidth = 0 // initialized with more button width
-        const hiddenItems = []
-        const primaryWidth = tabsSectionRef.current.offsetWidth - fixedContainerRef.current.offsetWidth
-
-        // Compute the stop width & get hidden indices
-        primaryItems.forEach((item, i) => {
-            if (primaryWidth >= stopWidth + item.offsetWidth) {
-                stopWidth += item.offsetWidth
-            } else {
-                hiddenItems.push(i)
-            }
-        })
-
-        // Toggle the visibility of More button and items in Secondary
-        if (!hiddenItems.length) {
-            moreButtonRef.classList.add('hide-more-tabs-option')
-        } else {
-            moreButtonRef.classList.remove('hide-more-tabs-option')
-        }
-    }
 
     const handleCloseTab = (e: any, tabIdentifier: string) => {
         e.stopPropagation()
@@ -197,33 +152,47 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }) {
         )
     }
 
-    const formatHighlightedText = (option) => {
-        const splittedLabel = option.label.split('/')
-        const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
+    const TabsOption = (props) => {
+        const { selectProps, data } = props
+        selectProps.styles.option = getCustomOptionSelectionStyle({
+            display: 'flex',
+            alignItems: 'center',
+        })
+
+        const splittedLabel = data.label.split('/')
         const regex = new RegExp(splittedLabel[0], 'gi')
+
         return (
-            <div className="flex left column dc__highlight-text">
-                <small
-                    className="cn-6"
-                    dangerouslySetInnerHTML={{
-                        // __html: splittedLabel[0].replace(regex, highLightText),
-                        __html: splittedLabel[0]
-                    }}
-                />
-                {splittedLabel[1] && (
-                    <span
-                        className="w-100 dc__ellipsis-right"
-                        dangerouslySetInnerHTML={{
-                            // __html: splittedLabel[1].replace(regex, highLightText),
-                            __html: splittedLabel[1]
-                        }}
-                    />
-                )}
+            <div onClick={stopPropagation}>
+                <components.Option {...props}>
+                    <div className="tab-option__select dc__highlight-text">
+                        <small
+                            className="cn-7"
+                            dangerouslySetInnerHTML={{
+                                // __html: splittedLabel[0].replace(regex, highLightText),
+                                __html: splittedLabel[0],
+                            }}
+                        />
+                        {splittedLabel[1] && (
+                            <div
+                                className="w-100 dc__ellipsis-right"
+                                dangerouslySetInnerHTML={{
+                                    // __html: splittedLabel[1].replace(regex, highLightText),
+                                    __html: splittedLabel[1],
+                                }}
+                            />
+                        )}
+                    </div>
+                    <div className="dynamic-tab__close flex br-5  ml-8">
+                        <Cross data-title={data.title} onClick={handleTabCloseAction} className="icon-dim-16 cursor" />
+                    </div>
+                </components.Option>
             </div>
         )
     }
 
     const onChangeTab = (option): void => {
+        setSelectedTab(option)
         push(option.url)
     }
 
@@ -252,50 +221,17 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }) {
             </div>
             <ReactSelect
                 className="more-tabs-option"
-                value={null}
+                value={selectedTab}
                 placeholder=""
                 options={tabsData.dynamicTabs}
                 isSearchable={false}
                 onChange={onChangeTab}
                 blurInputOnSelect={true}
-                formatOptionLabel={formatHighlightedText}
                 components={{
                     IndicatorSeparator: null,
-                    Option,
+                    Option: TabsOption,
                 }}
-                styles={{
-                    dropdownIndicator: (base, state) => ({
-                        ...base,
-                        padding: 0,
-                        marginTop: '-3px',
-                        marginLeft: '1px',
-                        transition: 'all .2s ease',
-                        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                    }),
-                    container: (base) => ({
-                        ...base,
-                        marginLeft: '8px',
-                    }),
-                    valueContainer: () => ({
-                        height: '0px',
-                    }),
-                    control: (base) => ({
-                        ...base,
-                        cursor: 'pointer',
-                        width: '24px',
-                        minHeight: '24px',
-                    }),
-                    menu: (base) => ({
-                        ...base,
-                        width: '300px',
-                        zIndex: 9,
-                    }),
-                    menuList: (base) => ({
-                        ...base,
-                        width: '300px',
-                        zIndex: 9,
-                    }),
-                }}
+                styles={COMMON_TABS_SELECT_STYLES}
             />
         </div>
     )

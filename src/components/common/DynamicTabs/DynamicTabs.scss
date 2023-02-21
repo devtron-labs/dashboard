@@ -15,6 +15,35 @@
         &.hide-more-tabs-option {
             display: none !important;
         }
+
+        .tab-option__select {
+            width: calc(100% - 24px);
+        }
+    }
+
+    .dynamic-tab__close {
+        width: 16px;
+        height: 16px;
+
+        svg {
+            padding: 2px;
+
+            path {
+                fill: var(--N600);
+                stroke: var(--N600);
+            }
+        }
+
+        &:hover {
+            background-color: var(--R100);
+
+            svg {
+                path {
+                    fill: var(--R500);
+                    stroke: var(--R500);
+                }
+            }
+        }
     }
 
     .dynamic-tab__border {
@@ -65,19 +94,6 @@
 
                         .dynamic-tab__deleted {
                             text-decoration: line-through;
-                        }
-                    }
-
-                    .dynamic-tab__close {
-                        width: 16px;
-                        height: 16px;
-
-                        &:hover {
-                            background-color: var(--R100);
-
-                            svg use {
-                                fill: var(--R500);
-                            }
                         }
                     }
                 }
