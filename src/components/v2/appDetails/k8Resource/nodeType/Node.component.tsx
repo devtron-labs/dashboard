@@ -253,10 +253,10 @@ function NodeComponent({
                                         />
                                     </Tippy>
                                 <div className='flex left'>
-                                    <div className={`${node.kind === NodeType.Containers ? '' : 'node__tabs' }  en-2 bw-1 br-4 dc__w-fit-content`}>
+                                    <div className={`flex left ${node.kind === NodeType.Containers ? '' : 'node__tabs' }  en-2 bw-1 br-4 dc__w-fit-content`}>
                                      {getNodeDetailTabs(node.kind).map((kind, index) => {
                                         return (
-                                            <a
+                                            <div
                                                 key={'tab__' + index}
                                                 onClick={() => {
                                                     if (node.kind === NodeType.Containers) {
@@ -266,10 +266,10 @@ function NodeComponent({
                                                     }
                                                     handleFocusTabs();
                                                 }}
-                                                className={`cn-7 fw-6 cursor ${node.kind === NodeType.Containers ? '' : 'resource-action-tabs__active'}  ${index === (getNodeDetailTabs(node.kind)?.length - 1) ? '' : 'dc__border-right'} p-6`}
+                                                className={`dc__capitalize flex cn-7 fw-6 cursor ${node.kind === NodeType.Containers ? '' : 'resource-action-tabs__active'}  ${index === (getNodeDetailTabs(node.kind)?.length - 1) ? '' : 'dc__border-right'} pl-6 pr-6`}
                                             >
-                                                <span>{kind}</span>
-                                            </a>
+                                                {kind.toLowerCase()}
+                                            </div>
                                         );
                                     })}
                                     </div>

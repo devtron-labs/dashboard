@@ -7,16 +7,16 @@ import {
     SelectedResourceType,
 } from '../../appDetails.type'
 import IndexStore from '../../index.store'
-import { NodeDetailTabCapitalize } from './nodeDetail.type'
+import { NodeDetailTab } from './nodeDetail.type'
 import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
 
 export const getNodeDetailTabs = (nodeType: NodeType) => {
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
-        return [NodeDetailTabCapitalize.MANIFEST, NodeDetailTabCapitalize.EVENTS, NodeDetailTabCapitalize.LOGS, NodeDetailTabCapitalize.TERMINAL]
+        return [NodeDetailTab.MANIFEST, NodeDetailTab.EVENTS, NodeDetailTab.LOGS, NodeDetailTab.TERMINAL]
     } else if (nodeType.toLowerCase() === NodeType.Containers.toLowerCase()) {
-        return [NodeDetailTabCapitalize.LOGS]
+        return [NodeDetailTab.LOGS]
     } else {
-        return [NodeDetailTabCapitalize.MANIFEST, NodeDetailTabCapitalize.EVENTS]
+        return [NodeDetailTab.MANIFEST, NodeDetailTab.EVENTS]
     }
 }
 
