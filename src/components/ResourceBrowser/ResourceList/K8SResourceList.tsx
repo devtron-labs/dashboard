@@ -102,7 +102,7 @@ export function K8SResourceList({
             .slice(0, group ? -2 : -1)
             .join('/')}/${resourceParam}${tab ? `/${tab.toLowerCase()}` : ''}`
 
-        const isAdded = addTab(kind, resourceName, _url)
+        const isAdded = addTab(selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP, kind, resourceName, _url)
 
         if (isAdded) {
             updateNodeSelectionData(_nodeSelectionData)

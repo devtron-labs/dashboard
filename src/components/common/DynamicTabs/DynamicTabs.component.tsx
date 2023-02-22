@@ -1,7 +1,7 @@
 import React from 'react'
 import { components, MenuProps } from 'react-select'
 import { ReactComponent as DropDown } from '../../../assets/icons/ic-arrow-left.svg'
-import { MoreButtonWrapperProps } from './DynamicTabs.type'
+import { MoreButtonWrapperProps } from './Types'
 
 export const TabsMenu = (props: MenuProps<any, false, any>) => {
     return (

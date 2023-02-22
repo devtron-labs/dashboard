@@ -1,6 +1,6 @@
-import { FunctionComponent, ReactNode, SVGProps } from 'react'
+import { ReactNode } from 'react'
 
-export interface DynamicTabType {
+interface CommonTabArgsType {
     name: string
     kind?: string
     url: string
@@ -9,6 +9,14 @@ export interface DynamicTabType {
     isDeleted?: boolean
     positionFixed: boolean
     iconPath?: string
+}
+
+export interface InitTabType extends CommonTabArgsType {
+    idPrefix: string
+}
+
+export interface DynamicTabType extends CommonTabArgsType {
+    id: string
 }
 
 export interface DynamicTabsProps {

@@ -13,8 +13,8 @@ import {
     computeAndToggleMoreOptions,
     EMPTY_TABS_DATA,
     initTabsData,
-} from './DynamicTabs.utils'
-import { DynamicTabsProps, DynamicTabType, TabsDataType } from './DynamicTabs.type'
+} from './Utils'
+import { DynamicTabsProps, DynamicTabType, TabsDataType } from './Types'
 import { MoreButtonWrapper, noMatchingTabs, TabsMenu } from './DynamicTabs.component'
 import Select from 'react-select/dist/declarations/src/Select'
 
@@ -82,7 +82,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
             <NavLink
                 to={url}
                 ref={updateRef}
-                className="dynamic-tab__resource cursor cn-9 dc__no-decor dc__outline-none-imp m-0-imp dc__ellipsis-right"
+                className="dynamic-tab__resource cursor cn-9 dc__no-decor dc__outline-none-imp mr-8 dc__ellipsis-right"
                 data-selected={isSelected}
             >
                 <div

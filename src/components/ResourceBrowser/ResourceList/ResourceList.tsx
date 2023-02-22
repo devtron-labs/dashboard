@@ -48,9 +48,9 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import K8ResourceIcon from '../../../assets/icons/ic-object.svg'
 import { CreateResource } from './CreateResource'
-import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
+import { AppDetailsTabs, AppDetailsTabsIdPrefix } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
-import { getAggregator, SelectedResourceType, NodeType } from '../../v2/appDetails/appDetails.type'
+import { SelectedResourceType } from '../../v2/appDetails/appDetails.type'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import ConnectingToClusterState from './ConnectingToClusterState'
@@ -61,6 +61,16 @@ import WebWorker from '../../app/WebWorker'
 import { ShortcutProvider } from 'react-keybind'
 import '../ResourceBrowser.scss'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
+import {
+    checkIfDataIsStale,
+    getEventObjectTypeGVK,
+    getGroupedK8sObjectMap,
+    getK8SObjectMapAfterGroupHeadingClick,
+    getParentAndChildNodes,
+    getUpdatedNodeSelectionData,
+    getUpdatedResourceSelectionData,
+    sortEventListData,
+} from '../Utils'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node, group } = useParams<{
@@ -115,11 +125,11 @@ export default function ResourceList() {
             window['crate'].hide()
         }
 
+        // Get cluster data &  Initialize tabs on mount
         getClusterData()
-
-        // Initialize tabs on load
         initTabs([
             {
+                idPrefix: AppDetailsTabsIdPrefix.k8s_Resources,
                 name: AppDetailsTabs.k8s_Resources,
                 url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}${nodeType ? `/${nodeType}` : ''}`,
                 isSelected: true,
@@ -127,6 +137,18 @@ export default function ResourceList() {
                 iconPath: K8ResourceIcon,
             },
         ])
+
+        // Retain selection data
+        try {
+            const persistedTabsData = localStorage.getItem('persisted-tabs-data')
+            if (persistedTabsData) {
+                const parsedTabsData = JSON.parse(persistedTabsData)
+                setResourceSelectionData(parsedTabsData.resourceSelectionData)
+                setNodeSelectionData(parsedTabsData.nodeSelectionData)
+            }
+        } catch (err) {}
+
+        // Clean up on unmount
         return (): void => {
             if (typeof window['crate']?.show === 'function') {
                 window['crate'].show()
@@ -140,7 +162,7 @@ export default function ResourceList() {
     // Mark tab active on path change
     useEffect(() => {
         if (selectedResource && !node) {
-            markTabActiveByIdentifier(AppDetailsTabs.k8s_Resources)
+            markTabActiveByIdentifier(AppDetailsTabsIdPrefix.k8s_Resources, AppDetailsTabs.k8s_Resources)
         }
 
         if (location.pathname === URLS.RESOURCE_BROWSER) {
@@ -163,7 +185,7 @@ export default function ResourceList() {
     useEffect(() => {
         if (selectedCluster?.value && selectedNamespace?.value && selectedResource?.gvk?.Kind) {
             updateTabUrl(
-                AppDetailsTabs.k8s_Resources,
+                `${AppDetailsTabsIdPrefix.k8s_Resources}-${AppDetailsTabs.k8s_Resources}`,
                 `${URLS.RESOURCE_BROWSER}/${selectedCluster.value}/${
                     selectedNamespace.value
                 }/${selectedResource.gvk.Kind.toLowerCase()}/${
@@ -198,11 +220,11 @@ export default function ResourceList() {
     useEffect(() => {
         const _lastDataSyncTime = Date()
         const _staleDataCheckTime = moment()
-
         isStaleDataRef.current = false
+
         setLastDataSyncTimeString(`Synced ${handleUTCTime(_lastDataSyncTime, true)}`)
         const interval = setInterval(() => {
-            checkIfDataIsStale(_staleDataCheckTime)
+            checkIfDataIsStale(isStaleDataRef, _staleDataCheckTime)
             setLastDataSyncTimeString(`Synced ${handleUTCTime(_lastDataSyncTime, true)}`)
         }, 1000)
 
@@ -210,20 +232,6 @@ export default function ResourceList() {
             clearInterval(interval)
         }
     }, [lastDataSync])
-
-    const checkIfDataIsStale = (_staleDataCheckTime: moment.Moment) => {
-        /**
-         * Stale data warning to be shown after 15 min. However, kept the cut off mins at 13 instead of 15 to,
-         * 1. skip 1st min as render for 1st min has already been started/done
-         * 2. skip maintaining unnecessary state just for re-rendering
-         */
-        if (
-            !isStaleDataRef.current &&
-            moment().diff(_staleDataCheckTime, 'minutes') > MARK_AS_STALE_DATA_CUT_OFF_MINS
-        ) {
-            isStaleDataRef.current = true
-        }
-    }
 
     const getClusterData = async () => {
         try {
@@ -287,26 +295,11 @@ export default function ResourceList() {
                     }
                 }
 
-                const parentNode = _k8SObjectList[0]
-                const childNode = parentNode.child.find((_ch) => _ch.gvk.Kind === Nodes.Pod) ?? parentNode.child[0]
-                let isResourceGroupPresent = false
-                let groupedChild = null
-                if (nodeType) {
-                    for (const _parentNode of _k8SObjectList) {
-                        for (const _childNode of _parentNode.child) {
-                            if (
-                                _childNode.gvk.Kind.toLowerCase() === nodeType &&
-                                (_childNode.gvk.Group.toLowerCase() === group ||
-                                    SIDEBAR_KEYS.eventGVK.Group.toLowerCase() === group ||
-                                    K8S_EMPTY_GROUP === group)
-                            ) {
-                                isResourceGroupPresent = true
-                                groupedChild = _childNode
-                                break
-                            }
-                        }
-                    }
-                }
+                const { parentNode, childNode, isResourceGroupPresent, groupedChild } = getParentAndChildNodes(
+                    _k8SObjectList,
+                    nodeType,
+                    group,
+                )
 
                 if (!isResourceGroupPresent) {
                     parentNode.isExpanded = true
@@ -323,7 +316,7 @@ export default function ResourceList() {
                         namespaced: childNode.namespaced,
                         gvk: childNode.gvk,
                     }
-                setK8SObjectMap(getGroupedK8sObjectMap(_k8SObjectList))
+                setK8SObjectMap(getGroupedK8sObjectMap(_k8SObjectList, nodeType))
                 setSelectedResource(defaultSelected)
                 updateResourceSelectionData(defaultSelected, true)
                 setShowErrorState(false)
@@ -352,49 +345,6 @@ export default function ResourceList() {
                 sideDataAbortController.current.prev = null
             }
         }
-    }
-
-    // Converts k8SObjects list to grouped map
-    const getGroupedK8sObjectMap = (_k8SObjectList: K8SObjectType[]) => {
-        return _k8SObjectList.reduce((map, _k8sObject) => {
-            const childObj = map.get(_k8sObject.name) ?? {
-                ..._k8sObject,
-                child: new Map<string, K8SObjectChildMapType>(),
-            }
-            for (const _child of _k8sObject.child) {
-                if (childObj.child.has(_child.gvk.Kind)) {
-                    childObj.child.set(_child.gvk.Kind, {
-                        isGrouped: true,
-                        isExpanded: _child.gvk.Kind.toLowerCase() === nodeType,
-                        data: [...childObj.child.get(_child.gvk.Kind).data, _child],
-                    })
-                } else {
-                    childObj.child.set(_child.gvk.Kind, {
-                        isExpanded: _child.gvk.Kind.toLowerCase() === nodeType,
-                        data: [_child],
-                    })
-                }
-            }
-            map.set(_k8sObject.name, childObj)
-            return map
-        }, new Map<string, K8SObjectMapType>())
-    }
-
-    const sortEventListData = (eventList: Record<string, any>[]): Record<string, any>[] => {
-        const warningEvents: Record<string, any>[] = [],
-            otherEvents: Record<string, any>[] = []
-        eventList = eventList.reverse()
-        for (const iterator of eventList) {
-            if (iterator.type === 'Warning') {
-                warningEvents.push(iterator)
-            } else {
-                otherEvents.push(iterator)
-            }
-        }
-        return [
-            ...warningEvents.sort(eventAgeComparator<Record<string, any>>(LAST_SEEN)),
-            ...otherEvents.sort(eventAgeComparator<Record<string, any>>(LAST_SEEN)),
-        ]
     }
 
     const stopSearchWorker = () => {
@@ -475,30 +425,7 @@ export default function ResourceList() {
     }
 
     const handleGroupHeadingClick = (e: any, preventCollapse?: boolean): void => {
-        const splittedKey = e.currentTarget.dataset.groupName.split('/')
-        const _k8SObjectMap = new Map<string, K8SObjectMapType>(k8SObjectMap)
-
-        if (splittedKey.length > 1) {
-            const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0]).child.get(splittedKey[1])
-            if (preventCollapse && _selectedK8SObjectObj.isExpanded) {
-                return
-            }
-
-            _selectedK8SObjectObj.isExpanded = !_selectedK8SObjectObj.isExpanded
-            const _childObj = _k8SObjectMap.get(splittedKey[0])
-            _childObj.child.set(splittedKey[1], _selectedK8SObjectObj)
-            _k8SObjectMap.set(splittedKey[0], _childObj)
-        } else {
-            const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0])
-            if (preventCollapse && _selectedK8SObjectObj.isExpanded) {
-                return
-            }
-
-            _selectedK8SObjectObj.isExpanded = !_selectedK8SObjectObj.isExpanded
-            _k8SObjectMap.set(splittedKey[0], _selectedK8SObjectObj)
-        }
-
-        setK8SObjectMap(_k8SObjectMap)
+        setK8SObjectMap(getK8SObjectMapAfterGroupHeadingClick(e, k8SObjectMap, preventCollapse))
     }
 
     const onChangeCluster = (selected, fromClusterSelect?: boolean, skipRedirection?: boolean): void => {
@@ -534,36 +461,33 @@ export default function ResourceList() {
 
     const refreshData = (): void => {
         setSelectedResource(null)
-        setResourceSelectionData(null)
-        setNodeSelectionData(null)
         getSidebarData(selectedCluster.value)
     }
 
     const updateResourceSelectionData = (_selected: ApiResourceGroupType, initSelection?: boolean) => {
         if (_selected) {
             stopSearchWorker()
-            setResourceSelectionData((prevData) => ({
-                ...prevData,
-                [`${_selected.gvk.Kind.toLowerCase()}_${
-                    (initSelection && group) || _selected.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
-                }`]: _selected,
-            }))
+            setResourceSelectionData((prevData) =>
+                getUpdatedResourceSelectionData(prevData, _selected, initSelection, group),
+            )
         }
     }
 
     const updateNodeSelectionData = (_selected: Record<string, any>) => {
         if (_selected) {
             if (_selected.isFromEvent) {
-                const _resourceName = _selected.name.split('_')[1]
-                setNodeSelectionData((prevData) => ({
-                    ...prevData,
-                    [`${_selected.name}_${group}`]: { ..._selected, name: _resourceName },
-                }))
+                setNodeSelectionData((prevData) =>
+                    getUpdatedNodeSelectionData(
+                        prevData,
+                        _selected,
+                        `${_selected.name}_${group}`,
+                        _selected.name.split('_')[1],
+                    ),
+                )
             } else {
-                setNodeSelectionData((prevData) => ({
-                    ...prevData,
-                    [`${nodeType}_${_selected.name}_${group}`]: _selected,
-                }))
+                setNodeSelectionData((prevData) =>
+                    getUpdatedNodeSelectionData(prevData, _selected, `${nodeType}_${_selected.name}_${group}`),
+                )
             }
         }
     }
@@ -579,18 +503,6 @@ export default function ResourceList() {
         setShowCreateResourceModal(false)
     }
 
-    const getEventObjectTypeGVK = () => {
-        const _resourceGroupType = getAggregator(nodeType as NodeType)
-        const _selectedGroup = k8SObjectMap.get(_resourceGroupType)
-        for (const [key, value] of _selectedGroup.child) {
-            if (key.toLowerCase() === nodeType) {
-                return value.data[0].gvk
-            }
-        }
-
-        return null
-    }
-
     const getSelectedResourceData = () => {
         if (resourceListLoader) {
             return null
@@ -600,7 +512,7 @@ export default function ResourceList() {
             nodeSelectionData?.[`${nodeType}_${node}_${group}`] ??
             resourceList?.data?.find((_resource) => _resource.name === node)
         const _selectedResource = selectedNode?.isFromEvent
-            ? getEventObjectTypeGVK()
+            ? getEventObjectTypeGVK(k8SObjectMap, nodeType)
             : resourceSelectionData?.[`${nodeType}_${group}`]?.gvk ?? selectedResource?.gvk
 
         if (!nodeSelectionData?.[`${nodeType}_${node}_${group}`]) {
@@ -650,6 +562,7 @@ export default function ResourceList() {
                         isResourceBrowserView={true}
                         selectedResource={getSelectedResourceData()}
                         markTabActiveByIdentifier={markTabActiveByIdentifier}
+                        addTab={addTab}
                         logSearchTerms={logSearchTerms}
                         setLogSearchTerms={setLogSearchTerms}
                     />

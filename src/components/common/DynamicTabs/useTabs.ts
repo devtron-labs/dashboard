@@ -1,10 +1,11 @@
-import { FunctionComponent, SVGProps, useState } from 'react'
-import { DynamicTabType } from './DynamicTabs.type'
+import { useState } from 'react'
+import { DynamicTabType, InitTabType } from './Types'
 
 export function useTabs(persistanceKey: string) {
     const [tabs, setTabs] = useState<DynamicTabType[]>([])
 
     const populateTabData = (
+        id: string,
         name: string,
         url: string,
         isSelected: boolean,
@@ -13,34 +14,50 @@ export function useTabs(persistanceKey: string) {
         iconPath: string,
     ) => {
         return {
-            name: name,
-            url: url,
-            isSelected: isSelected,
+            id,
+            name,
+            url,
+            isSelected,
             title: title || name,
             isDeleted: false,
-            positionFixed: positionFixed,
-            iconPath: iconPath,
+            positionFixed,
+            iconPath,
         } as DynamicTabType
     }
 
-    const stringifyData = (_tabs: any[]) => {
+    const stringifyData = (_tabs: any[], parsedTabsData?: Record<string, any>) => {
+        let _parsedTabsData: Record<string, any> = {}
+
+        if (parsedTabsData) {
+            _parsedTabsData = parsedTabsData
+        } else {
+            const persistedTabsData = localStorage.getItem('persisted-tabs-data')
+            try {
+                _parsedTabsData = JSON.parse(persistedTabsData)
+            } catch (err) {}
+        }
+
         return JSON.stringify({
+            ..._parsedTabsData,
             key: persistanceKey,
             data: _tabs,
         })
     }
 
-    const populateInitTab = (_initTab: DynamicTabType, idx: number) => {
+    const populateInitTab = (_initTab: InitTabType, idx: number) => {
         const url = `${_initTab.url}${_initTab.url.endsWith('/') ? '' : '/'}`
         const title = _initTab.kind ? `${_initTab.kind}/${_initTab.name}` : _initTab.name
-        return populateTabData(title, url, idx === 0, title, _initTab.positionFixed, _initTab.iconPath)
+        const _id = `${_initTab.idPrefix}-${title}`
+        return populateTabData(_id, title, url, idx === 0, title, _initTab.positionFixed, _initTab.iconPath)
     }
 
-    const initTabs = (initTabsData: DynamicTabType[]) => {
-        const persistedTabs = localStorage.getItem('persisted-tabs-data')
+    const initTabs = (initTabsData: InitTabType[]) => {
+        const persistedTabsData = localStorage.getItem('persisted-tabs-data')
+        let parsedTabsData: Record<string, any> = {}
         let _tabs: DynamicTabType[]
         try {
-            _tabs = persistedTabs ? JSON.parse(persistedTabs).data : tabs
+            parsedTabsData = JSON.parse(persistedTabsData)
+            _tabs = persistedTabsData ? parsedTabsData.data : tabs
         } catch (err) {
             _tabs = tabs
         }
@@ -58,24 +75,26 @@ export function useTabs(persistanceKey: string) {
             })
         }
 
-        localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
+        localStorage.setItem('persisted-tabs-data', stringifyData(_tabs, parsedTabsData))
         setTabs(_tabs)
     }
 
     const addTab = (
+        idPrefix: string,
         kind: string,
         name: string,
         url: string,
         positionFixed?: boolean,
         iconPath?: string,
-    ) => {
+    ): boolean => {
         if (!name || !url || !kind) return
 
         const title = `${kind}/${name}`
         let alreadyAdded = false
+        const _id = `${idPrefix}-${title}`
         const _tabs = tabs.map((tab) => {
             tab.isSelected = false
-            if (tab.title.toLowerCase() === title.toLowerCase()) {
+            if (tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id) {
                 tab.isSelected = true
                 tab.url = url
                 alreadyAdded = true
@@ -84,7 +103,7 @@ export function useTabs(persistanceKey: string) {
         })
 
         if (!alreadyAdded) {
-            _tabs.push(populateTabData(title, url, true, title, positionFixed, iconPath))
+            _tabs.push(populateTabData(_id, title, url, true, title, positionFixed, iconPath))
         }
 
         localStorage.setItem('persisted-tabs-data', stringifyData(_tabs))
@@ -113,7 +132,7 @@ export function useTabs(persistanceKey: string) {
         return pushURL
     }
 
-    const markTabActiveByIdentifier = (name: string, kind?: string, url?: string) => {
+    const markTabActiveByIdentifier = (idPrefix: string, name: string, kind?: string, url?: string) => {
         if (!name) return
 
         let isTabFound = false
@@ -122,9 +141,10 @@ export function useTabs(persistanceKey: string) {
             title = kind + '/' + name
         }
 
+        const _id = `${idPrefix}-${title}`
         const _tabs = tabs.map((tab) => {
             tab.isSelected = false
-            if (tab.title.toLowerCase() === title.toLowerCase()) {
+            if (tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id) {
                 tab.isSelected = true
                 tab.url = url || tab.url
                 isTabFound = true
@@ -137,14 +157,15 @@ export function useTabs(persistanceKey: string) {
         return isTabFound
     }
 
-    const markTabResourceDeletedByIdentifier = (name: string, kind?: string) => {
+    const markTabResourceDeletedByIdentifier = (idPrefix: string, name: string, kind?: string) => {
         let title = name
         if (kind) {
             title = kind + '/' + name
         }
 
+        const _id = `${idPrefix}-${title}`
         const _tabs = tabs.map((tab) => {
-            if (tab.title.toLowerCase() === title.toLowerCase()) {
+            if (tab.title.toLowerCase() === title.toLowerCase() && tab.id === _id) {
                 tab.isDeleted = true
             }
             return tab
@@ -153,9 +174,9 @@ export function useTabs(persistanceKey: string) {
         setTabs(_tabs)
     }
 
-    const updateTabUrl = (name: string, url: string) => {
+    const updateTabUrl = (id: string, url: string) => {
         const _tabs = tabs.map((tab) => {
-            if (tab.name === name) {
+            if (tab.id === id) {
                 tab.url = url
             }
             return tab

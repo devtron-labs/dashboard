@@ -1,4 +1,4 @@
-import { TabsDataType } from './DynamicTabs.type'
+import { TabsDataType } from './Types'
 
 export const COMMON_TABS_SELECT_STYLES = {
     control: (base) => ({
