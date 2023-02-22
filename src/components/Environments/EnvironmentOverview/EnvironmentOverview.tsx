@@ -88,7 +88,7 @@ export default function EnvironmentOverview() {
             >
                 <span className="fs-13 fw-4 cn-7">{item.application}</span>
                 <AppStatus appStatus={item.lastDeployed ? item.appStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower} />
-                <AppStatus appStatus={item.lastDeployed ? item.deploymentStatus : '-'} />
+                <AppStatus appStatus={item.lastDeployed ? item.deploymentStatus : '-'} isDeploymentStatus={true} />
                 <span className="fs-13 fw-4 cn-7">{processDeployedTime(item.lastDeployed, true)}</span>
             </div>
         )
