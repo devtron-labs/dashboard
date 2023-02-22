@@ -197,6 +197,20 @@ function NodeComponent({
             // Only render node kind header when it's the first node or it's a different kind header
             _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
 
+            const onClickClipboard = (e) => {
+              e.stopPropagation();
+              copyToClipboard(node?.name, () => setCopied(true));
+            }
+
+            const onClickNodeDetailsTab = (kind: string) => {
+              if (node.kind === NodeType.Containers) {
+                  handleActionTabClick(node['pNode'], kind, node.name);
+              } else {
+                  handleActionTabClick(node, kind);
+              }
+              handleFocusTabs();
+          }
+
             return (
                 <React.Fragment key={'grt' + index}>
                     {showHeader && !!_currentNodeHeader && (
@@ -246,27 +260,17 @@ function NodeComponent({
                                     >
                                         <Clipboard
                                             className="icon-dim-12 pointer ml-8 mr-8 mt-4"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                copyToClipboard(node?.name, () => setCopied(true));
-                                            }}
+                                            onClick={onClickClipboard}
                                         />
                                     </Tippy>
-                                <div className='flex left'>
-                                    <div className={`flex left ${node.kind === NodeType.Containers ? '' : 'node__tabs' }  en-2 bw-1 br-4 dc__w-fit-content`}>
+                                <div className="flex left">
+                                    <div className={`flex left ${node.kind === NodeType.Containers ? "" : "node__tabs" } en-2 bw-1 br-4 dc__w-fit-content`}>
                                      {getNodeDetailTabs(node.kind).map((kind, index) => {
                                         return (
                                             <div
                                                 key={'tab__' + index}
-                                                onClick={() => {
-                                                    if (node.kind === NodeType.Containers) {
-                                                        handleActionTabClick(node['pNode'], kind, node.name);
-                                                    } else {
-                                                        handleActionTabClick(node, kind);
-                                                    }
-                                                    handleFocusTabs();
-                                                }}
-                                                className={`dc__capitalize flex cn-7 fw-6 cursor ${node.kind === NodeType.Containers ? '' : 'resource-action-tabs__active'}  ${index === (getNodeDetailTabs(node.kind)?.length - 1) ? '' : 'dc__border-right'} pl-6 pr-6`}
+                                                onClick={() => onClickNodeDetailsTab(kind)}
+                                                className={`dc__capitalize flex cn-7 fw-6 cursor ${node.kind === NodeType.Containers ? "" : "resource-action-tabs__active"}  ${index === (getNodeDetailTabs(node.kind)?.length - 1) ? "" : "dc__border-right"} pl-6 pr-6`}
                                             >
                                                 {kind.toLowerCase()}
                                             </div>
@@ -276,9 +280,9 @@ function NodeComponent({
                                     {
                                       node.kind !== NodeType.Containers &&
                                     <>
-                                    <div className='bw-1 en-2 dc__right-radius-4 node-empty'/>
-                                    <div className='bw-1 en-2 dc__right-radius-4 node-empty'/>
-                                    <div className='bw-1 en-2 dc__right-radius-4 node-empty'/>
+                                    <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border"/>
+                                    <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border"/>
+                                    <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border"/>
                                     </>
                                     }
                                 </div>

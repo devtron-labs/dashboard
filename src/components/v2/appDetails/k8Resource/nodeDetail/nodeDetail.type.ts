@@ -6,4 +6,3 @@ export enum NodeDetailTab {
     TERMINAL = 'TERMINAL',
     SUMMARY = 'SUMMARY',
 }
-
