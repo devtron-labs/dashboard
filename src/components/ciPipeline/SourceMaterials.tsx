@@ -97,6 +97,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
             {_materials.map((mat, index) => {
                 const isBranchRegex = mat.type === SourceTypeMap.BranchRegex || mat.isRegex
                 const isBranchFixed = mat.type === SourceTypeMap.BranchFixed && !mat.isRegex
+               let itemsForSelection=ciPipelineId==='0'?props.ciPipelineSourceTypeOptions:props.ciPipelineSourceTypeOptions.slice(0,2)
                 const _selectedWebhookEvent =
                     mat.type === SourceTypeMap.WEBHOOK && mat.value && props.webhookData.getSelectedWebhookEvent(mat)
                 let selectedMaterial
@@ -108,17 +109,17 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                         mat.value = ''
                         setProviderChanged(true)
                     }
-                } else if (props.ciPipelineSourceTypeOptions.length == 1) {
+                } else if (itemsForSelection.length== 1) {
                     selectedMaterial = props.ciPipelineSourceTypeOptions[0]
                 } else {
                     selectedMaterial =
-                        props.ciPipelineSourceTypeOptions.find((i) =>
+                        itemsForSelection.find((i) =>
                             i.value === SourceTypeMap.WEBHOOK
                                 ? i.isSelected
                                 : isBranchRegex
                                 ? i.value === SourceTypeMap.BranchRegex
                                 : i.value === mat.type,
-                        ) || props.ciPipelineSourceTypeOptions[0]
+                        ) ||itemsForSelection[0]
                 }
                 let errorObj = props.validationRules?.sourceValue(isBranchRegex ? mat.regex : mat.value)
                 return (
@@ -140,15 +141,11 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                         placeholder="Source Type"
                                         isSearchable={false}
                                         menuPortalTarget={document.getElementById('visible-modal')}
-                                        options={props.ciPipelineSourceTypeOptions}
+                                        options={itemsForSelection}
                                         value={selectedMaterial}
                                         closeMenuOnSelect={true}
                                         onChange={(selected) => props?.selectSourceType(selected, mat.gitMaterialId)}
                                         isClearable={false}
-                                        isDisabled={
-                                            ciPipelineId !== '0' &&
-                                            (props.includeWebhookEvents ? !isProviderChanged : !!mat.id)
-                                        }
                                         isMulti={false}
                                         components={{
                                             DropdownIndicator,
@@ -238,7 +235,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                 )}
                             </div>
                         </div>
-                        {isBranchRegex && (
+                        {isBranchRegex  && (
                             <div className={`${errorObj && !errorObj.isValid ? 'mt-16' : ''}`}>
                                 <InfoColourBar
                                     message="Branch Regex allows you to easily switch between branches matching the configured regex before triggering the build pipeline."
@@ -248,7 +245,9 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             </div>
                         )}
 
-                        {props.includeWebhookEvents && mat.type == SourceTypeMap.WEBHOOK && _selectedWebhookEvent && (
+                       
+                        {props.includeWebhookEvents && mat.type == SourceTypeMap.WEBHOOK && _selectedWebhookEvent &&(
+                            
                             <ConfigureWebhook
                                 webhookConditionList={props.webhookData.webhookConditionList}
                                 gitHost={props.webhookData.gitHost}
@@ -262,6 +261,8 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                 }
                                 canEditPipeline={props.canEditPipeline}
                             />
+                        
+                        
                         )}
                     </div>
                 )
