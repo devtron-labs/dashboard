@@ -111,8 +111,8 @@ export function EnvHeader({ envName, setEnvName, setShowEmpty, showEmpty }: EnvH
                     component: <EnvSelector onChange={handleEnvChange} envId={+envId} envName={envName} />,
                     linked: false,
                 },
-                environment: {
-                    component: <span className="cb-5 fs-16 dc__capitalize">Application Groups</span>,
+                'application-group': {
+                    component: <span className="cb-5 fs-16 dc__capitalize">Application groups</span>,
                     linked: true,
                 },
             },
