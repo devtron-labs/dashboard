@@ -1,5 +1,6 @@
 import React from 'react'
 import { toast } from 'react-toastify'
+import { TOAST_ACCESS_DENIED } from '../../config/constantMessaging'
 
 export class ToastBody extends React.Component<{
     title: string
@@ -54,8 +55,8 @@ export class ToastBodyWithButton extends React.Component<{
 export const toastAccessDenied = (title?: string, subtitle?: string) => {
     return toast.info(
         <ToastBody
-            title={title || "Access denied"}
-            subtitle={subtitle || "You do not have required access to perform this action"}
+            title={title || TOAST_ACCESS_DENIED.TITLE}
+            subtitle={subtitle || TOAST_ACCESS_DENIED.SUBTITLE}
         />,
         {
             className: 'devtron-toast unauthorized',
