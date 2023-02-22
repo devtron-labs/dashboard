@@ -237,8 +237,7 @@ function NodeComponent({
                                     </div>
                                 </div>
 
-                                <div>
-                                    <Tippy
+                                <Tippy
                                         className="default-tt"
                                         arrow={false}
                                         placement="bottom"
@@ -246,14 +245,16 @@ function NodeComponent({
                                         trigger="mouseenter click"
                                     >
                                         <Clipboard
-                                            className="resource-action-tabs__active icon-dim-12 pointer ml-8 mr-8"
+                                            className="icon-dim-12 pointer ml-8 mr-8 mt-4"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 copyToClipboard(node?.name, () => setCopied(true));
                                             }}
                                         />
                                     </Tippy>
-                                    {getNodeDetailTabs(node.kind).map((kind, index) => {
+                                <div className='flex left'>
+                                    <div className={`${node.kind === NodeType.Containers ? '' : 'node__tabs' }  en-2 bw-1 br-4 dc__w-fit-content`}>
+                                     {getNodeDetailTabs(node.kind).map((kind, index) => {
                                         return (
                                             <a
                                                 key={'tab__' + index}
@@ -265,13 +266,21 @@ function NodeComponent({
                                                     }
                                                     handleFocusTabs();
                                                 }}
-                                                className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active"
-
+                                                className={`cn-7 fw-6 cursor ${node.kind === NodeType.Containers ? '' : 'resource-action-tabs__active'}  ${index === (getNodeDetailTabs(node.kind)?.length - 1) ? '' : 'dc__border-right'} p-6`}
                                             >
-                                                {kind}
+                                                <span>{kind}</span>
                                             </a>
                                         );
                                     })}
+                                    </div>
+                                    {
+                                      node.kind !== NodeType.Containers &&
+                                    <>
+                                    <div className='bw-1 en-2 dc__right-radius-4 node-empty'/>
+                                    <div className='bw-1 en-2 dc__right-radius-4 node-empty'/>
+                                    <div className='bw-1 en-2 dc__right-radius-4 node-empty'/>
+                                    </>
+                                    }
                                 </div>
                             </div>
                         </div>

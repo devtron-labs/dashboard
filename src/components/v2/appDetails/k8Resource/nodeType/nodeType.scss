@@ -53,17 +53,33 @@
 }
 
 .resource-row:hover {
+  .resource-action-tabs__active{
+    color: var(--B500);
+ }
     background-color: var(--N50);
+    .node__tabs{
+      width: 100%;
+    }
 
-    .resource-action-tabs__active{
-        visibility: visible;
-     }
+    .node-empty{
+      visibility: hidden;
+    }
 }
 
 .resource-row{
-    .resource-action-tabs__active{
-       visibility: hidden;
-    }
+      .node__tabs{
+        display: block;
+        transition: width 0.5s;
+        overflow: hidden;
+        width: 64px;
+      }
+
+      .node-empty{
+        width: 4px;
+        min-height: 22px;
+        right: 260px;
+        border-left: 0px
+      }
 }
 
 .resource-tree__nodes:hover {
