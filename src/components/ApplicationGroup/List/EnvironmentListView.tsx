@@ -5,8 +5,8 @@ import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-do
 import { Pagination, Progressing, toastAccessDenied, useAsync } from '../../common'
 import { toast } from 'react-toastify'
 import { EMPTY_LIST_MESSAGING, GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
-import { getEnvAppList } from '../Environment.service'
-import { EnvironmentsListViewType, EnvAppList } from '../Environments.types'
+import { getEnvAppList } from '../AppGroup.service'
+import { EnvironmentsListViewType, EnvAppList } from '../AppGroup.types'
 
 export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }: EnvironmentsListViewType) {
     const match = useRouteMatch()

@@ -7,8 +7,8 @@ import { StatusConstants } from '../../../app/list-new/Constants'
 import { getAppList } from '../../../app/service'
 import { Progressing, processDeployedTime, showError } from '../../../common'
 import { GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
-import { getDeploymentStatus } from '../../Environment.service'
-import { AppInfoListType, AppListDataType } from '../../Environments.types'
+import { getDeploymentStatus } from '../../AppGroup.service'
+import { AppInfoListType, AppListDataType } from '../../AppGroup.types'
 import './envOverview.scss'
 
 export default function EnvironmentOverview() {

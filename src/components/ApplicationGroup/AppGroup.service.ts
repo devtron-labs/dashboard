@@ -13,7 +13,7 @@ import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { Routes, URLS } from '../../config'
 import { get } from '../../services/api'
 import { ResponseType } from '../../services/service.types'
-import { ConfigAppList, EnvApp, EnvDeploymentStatus, WorkflowsResponseType } from './Environments.types'
+import { ConfigAppList, EnvApp, EnvDeploymentStatus, WorkflowsResponseType } from './AppGroup.types'
 
 export function getEnvWorkflowList(envId: string) {
     return get(`${Routes.ENV_WORKFLOW}/${envId}/${Routes.APP_WF}`)

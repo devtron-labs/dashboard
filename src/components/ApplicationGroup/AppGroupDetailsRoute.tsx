@@ -13,8 +13,8 @@ import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceList
 import EmptyFolder from '../../assets/img/Empty-folder.png'
 import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
-import { getEnvAppList } from './Environment.service'
-import { EnvHeaderType } from './Environments.types'
+import { getEnvAppList } from './AppGroup.service'
+import { EnvHeaderType } from './AppGroup.types'
 
 export default function EnvironmentDetailsRoute({isSuperAdmin}:{isSuperAdmin: boolean}) {
     const { path } = useRouteMatch()
