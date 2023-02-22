@@ -339,6 +339,7 @@ function Cluster({
                                         prometheus_url,
                                         namespace,
                                         default: isProduction,
+                                        description,
                                     }) => (
                                         <List
                                             onClick={(e) =>
@@ -349,6 +350,7 @@ function Cluster({
                                                     namespace,
                                                     prometheus_url,
                                                     isProduction,
+                                                    description,
                                                 })
                                             }
                                             key={id}
@@ -832,6 +834,7 @@ function Environment({
     handleClose,
     prometheus_endpoint,
     isProduction,
+    description,
     reload,
 }) {
     const [loading, setLoading] = useState(false)
@@ -840,6 +843,7 @@ function Environment({
             environment_name: { value: environment_name, error: '' },
             namespace: { value: namespace, error: '' },
             isProduction: { value: isProduction ? 'true' : 'false', error: '' },
+            description: { value: description, error: '' },
         },
         {
             environment_name: {
@@ -864,6 +868,12 @@ function Environment({
                 required: true,
                 validator: { error: 'token is required', regex: /[^]+/ },
             },
+            description: {
+                required: false,
+                validators: [
+                    { error: 'Maximum 50 characters required', regex: /^.{0,50}$/ },
+                ],
+            },
         },
         onValidation,
     )
@@ -879,6 +889,7 @@ function Environment({
             namespace: state.namespace.value || '',
             active: true,
             default: state.isProduction.value === 'true',
+            description: state.description.value || '',
         }
     }
     async function onValidation() {
@@ -929,7 +940,7 @@ function Environment({
                         value={state.namespace.value}
                         error={state.namespace.error}
                         onChange={handleOnChange}
-                        label="Enter Namespace*"
+                        label="Namespace*"
                     />
                 </div>
                 <div className="form__row">
@@ -960,6 +971,17 @@ function Environment({
                             </label>
                         </div>
                     </div>
+                </div>
+                <div className="form__row">
+                    <CustomInput
+                        autoComplete="off"
+                        disabled={!!description}
+                        name="description"
+                        value={state.description.value}
+                        error={state.description.error}
+                        onChange={handleOnChange}
+                        label="Description (Max 50 characters)"
+                    />
                 </div>
                 <div className={`form__buttons`}>
                     {id && (
