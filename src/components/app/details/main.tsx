@@ -16,6 +16,9 @@ import { EnvType } from '../../v2/appDetails/appDetails.type'
 import PageHeader from '../../common/header/PageHeader'
 import { AppDetailsProps } from './triggerView/types'
 import AppOverview from './appOverview/AppOverview'
+import { trackByGAEvent } from '../../common/helpers/Helpers'
+
+
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -104,19 +107,18 @@ export function AppHeader({ appName }: { appName: string }) {
     const location = useLocation()
     const currentPathname = useRef('')
 
-    function trackEvent(category: string, action: string): void {
-        ReactGA.event({
-            category: category,
-            action: action,
-        });
-    }
-
-    function preventLinkDefault(event: React.MouseEvent<Element, MouseEvent>, className: string) {
+    function onClickTabPreventDefault(event: React.MouseEvent<Element, MouseEvent>, className: string) {
         const linkDisabled = (event.target as Element)?.classList.contains(className)
         if (linkDisabled) {
             event.preventDefault()
         }
     }
+
+    function handleEventClick(event: React.MouseEvent<Element, MouseEvent>, action: string) {
+        trackByGAEvent('App', action)
+        onClickTabPreventDefault(event, 'active')
+    }
+      
 
     useEffect(() => {
         currentPathname.current = location.pathname
@@ -160,9 +162,7 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_OVERVIEW}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            trackEvent('App', 'Overview Clicked');
-                          }} 
+                        onClick={(event) => handleEventClick(event, 'Overview Clicked')}
                     >
                         Overview
                     </NavLink>
@@ -172,10 +172,7 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DETAILS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            trackEvent('App', 'App Details Clicked');
-                            preventLinkDefault(event, 'active')
-                          }}    
+                        onClick={(event) => handleEventClick(event, 'App Details Clicked')}
                     >
                         App Details
                     </NavLink>
@@ -185,9 +182,7 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_TRIGGER}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            trackEvent('App', 'Build & Deploy Clicked');
-                          }} 
+                        onClick={(event) => handleEventClick(event, 'Build & Deploy Clicked')}
                     >
                         Build & Deploy
                     </NavLink>
@@ -197,10 +192,7 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CI_DETAILS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            trackEvent('App', 'Build History Clicked');
-                            preventLinkDefault(event, 'active')
-                          }} 
+                        onClick={(event) => handleEventClick(event, 'Build History Clicked')}
                     >
                         Build History
                     </NavLink>
@@ -210,10 +202,7 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CD_DETAILS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            trackEvent('App', 'Deployment History Clicked');
-                            preventLinkDefault(event, 'active')
-                          }} 
+                        onClick={(event) => handleEventClick(event, 'Deployment History Clicked')}
                     >
                         Deployment History
                     </NavLink>
@@ -223,10 +212,7 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            trackEvent('App', 'Deployment Metrics Clicked');
-                            preventLinkDefault(event, 'active')
-                          }} 
+                        onClick={(event) => handleEventClick(event, 'Deployment Metrics Clicked')}
                     >
                         Deployment Metrics
                     </NavLink>
@@ -236,10 +222,7 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"
-                        onClick={(event) => {
-                            trackEvent('App', 'App Configuration Clicked');
-                            preventLinkDefault(event, 'active')
-                          }} 
+                        onClick={(event) => handleEventClick(event, 'App Configuration Clicked')}
                     >
                         <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
                         App Configuration
