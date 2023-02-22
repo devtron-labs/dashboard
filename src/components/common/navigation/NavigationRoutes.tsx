@@ -299,7 +299,7 @@ export default function NavigationRoutes() {
                                                 />
                                             )}
                                         />
-                                        <Route path={URLS.ENVIRONMENT}>
+                                        <Route path={URLS.APPLICATION_GROUP}>
                                             <EnvironmentsRoute />
                                         </Route>
 
