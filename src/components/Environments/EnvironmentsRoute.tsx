@@ -5,7 +5,7 @@ import EnvironmentsList from './List/EnvironmentsList'
 import EnvironmentDetailsRoute from './EnvironmentDetailsRoute'
 import { AppContext } from '../common'
 
-export default function EnvironmentsRoute({isSuperAdmin}) {
+export default function EnvironmentsRoute({isSuperAdmin}:{isSuperAdmin: boolean}) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     

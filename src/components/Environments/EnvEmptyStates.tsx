@@ -1,8 +1,8 @@
 import React from 'react'
 import EmptyState from '../EmptyState/EmptyState'
 import emptyNoResults from '../../assets/img/empty-noresult@2x.png'
-import { EmptyEnvState } from './EnvironmentGroup.types'
 import { EMPTY_LIST_MESSAGING } from './Constants'
+import { EmptyEnvState } from './Environments.types'
 
 export default function EnvEmptyStates({ title, subTitle, actionHandler }: EmptyEnvState) {
     return (

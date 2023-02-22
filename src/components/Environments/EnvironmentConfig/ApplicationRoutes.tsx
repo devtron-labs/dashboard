@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useRouteMatch, useLocation, NavLink } from 'react-router-dom'
-import { ApplicationRouteType } from '../EnvironmentGroup.types'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
+import { ApplicationRouteType } from '../Environments.types'
 
 export default function ApplicationRoute({ envListData }: ApplicationRouteType) {
     const { url } = useRouteMatch()

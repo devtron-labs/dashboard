@@ -7,16 +7,16 @@ import { URLS } from '../../config'
 import PageHeader from '../common/header/PageHeader'
 import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
 import EnvConfig from './EnvironmentConfig/EnvConfig'
-import { getEnvAppList } from './EnvironmentListService'
 import EnvironmentOverview from './EnvironmentOverview/EnvironmentOverview'
 import { EnvSelector } from './EnvSelector'
 import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceListEmptyState'
 import EmptyFolder from '../../assets/img/Empty-folder.png'
 import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
-import { EnvHeaderType } from './EnvironmentGroup.types'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
+import { getEnvAppList } from './Environment.service'
+import { EnvHeaderType } from './Environments.types'
 
-export default function EnvironmentDetailsRoute({isSuperAdmin}) {
+export default function EnvironmentDetailsRoute({isSuperAdmin}:{isSuperAdmin: boolean}) {
     const { path } = useRouteMatch()
     const { envId } = useParams<{ envId: string }>()
     const [envName, setEnvName] = useState('')
@@ -39,7 +39,7 @@ export default function EnvironmentDetailsRoute({isSuperAdmin}) {
             <ResourceListEmptyState
                 imgSource={EmptyFolder}
                 title={isSuperAdmin ? EMPTY_LIST_MESSAGING.TITLE : EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT}
-                subTitle={isSuperAdmin ? NO_ACCESS_TOAST_MESSAGE.forSuperAdmin : NO_ACCESS_TOAST_MESSAGE.forNonAdmin}
+                subTitle={isSuperAdmin ? NO_ACCESS_TOAST_MESSAGE.SUPER_ADMIN : NO_ACCESS_TOAST_MESSAGE.NON_ADMIN}
             />
         )
     }

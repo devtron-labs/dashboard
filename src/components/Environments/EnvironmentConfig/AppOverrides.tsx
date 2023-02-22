@@ -2,7 +2,7 @@ import React, { Suspense } from 'react'
 import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import { ErrorBoundary, Progressing } from '../../common'
 import EnvironmentOverride from '../../EnvironmentOverride/EnvironmentOverride'
-import { AppOverridesType } from '../EnvironmentGroup.types'
+import { AppOverridesType } from '../Environments.types'
 
 export default function AppOverrides({ appList, environments, setEnvironments }: AppOverridesType) {
     const { path } = useRouteMatch()

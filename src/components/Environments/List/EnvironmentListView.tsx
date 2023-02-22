@@ -3,10 +3,10 @@ import EnvEmptyStates from '../EnvEmptyStates'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import { Pagination, Progressing, toastAccessDenied, useAsync } from '../../common'
-import { getEnvAppList } from '../EnvironmentListService'
-import { EnvAppList, EnvironmentsListViewType } from '../EnvironmentGroup.types'
 import { toast } from 'react-toastify'
 import { EMPTY_LIST_MESSAGING, GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
+import { getEnvAppList } from '../Environment.service'
+import { EnvironmentsListViewType, EnvAppList } from '../Environments.types'
 
 export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }: EnvironmentsListViewType) {
     const match = useRouteMatch()
@@ -73,10 +73,10 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
     const handleClusterClick = (e: any): void => {
         if (e.currentTarget.dataset.noapp === 'true') {
             e.preventDefault()
-            if (!isSuperAdmin) {
-                toast.info(NO_ACCESS_TOAST_MESSAGE.forSuperAdmin)
+            if (isSuperAdmin) {
+                toast.info(NO_ACCESS_TOAST_MESSAGE.SUPER_ADMIN)
             } else {
-                toastAccessDenied(EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT ,NO_ACCESS_TOAST_MESSAGE.forNonAdmin)
+                toastAccessDenied(EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT ,NO_ACCESS_TOAST_MESSAGE.NON_ADMIN)
             }
         }
     }

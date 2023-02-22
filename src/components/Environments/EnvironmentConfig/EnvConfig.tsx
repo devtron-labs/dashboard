@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { Progressing, useAsync } from '../../common'
-import { ConfigAppList } from '../EnvironmentGroup.types'
-import { getConfigAppList } from '../EnvironmentListService'
+import { getConfigAppList } from '../Environment.service'
+import { ConfigAppList } from '../Environments.types'
 import ApplicationRoute from './ApplicationRoutes'
 import AppOverrides from './AppOverrides'
 

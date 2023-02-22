@@ -103,9 +103,8 @@ export const EMPTY_LIST_MESSAGING = {
 }
 
 export const NO_ACCESS_TOAST_MESSAGE = {
-    
-    forSuperAdmin: 'There are no applications in this application group.',
-    forNonAdmin: 'You don’t have access to any application in this app group',
+    SUPER_ADMIN: 'There are no applications in this application group.',
+    NON_ADMIN: 'You don’t have access to any application in this app group',
 }
 
 export const OVERVIEW_HEADER = {

@@ -1,7 +1,7 @@
 import React from 'react'
 import { ServerErrors } from '../../modals/commonTypes'
 import { showError } from '../common'
-import { getEnvAppList } from './EnvironmentListService'
+import { getEnvAppList } from './Environment.service'
 
 let timeoutId
 
