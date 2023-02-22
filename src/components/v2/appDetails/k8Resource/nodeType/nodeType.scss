@@ -68,14 +68,15 @@
 
 .resource-row{
       .node__tabs{
-        transition: width 0.5s;
+        transition: width 0.3s;
         overflow: hidden;
-        width: 64px;
+        width: 40px;
       }
 
       .node-empty{
-        width: 6px;
-        min-height: 20px;
+        width: 8px;
+        min-height: 22px;
+        margin-left: -4px;
       }
 }
 
