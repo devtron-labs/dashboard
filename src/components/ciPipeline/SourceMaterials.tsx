@@ -133,9 +133,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             </div>
                             <div className="mt-16 flex left">
                                 <div className="w-50 mr-8">
-                                    <label className="form__label mb-6 dc__required-field">
-                                        Source Type
-                                    </label>
+                                    <label className="form__label mb-6 dc__required-field">Source Type</label>
                                     <ReactSelect
                                         className="workflow-ci__source"
                                         placeholder="Source Type"
@@ -171,9 +169,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                 {isBranchFixed && (
                                     <div className="w-50 ml-8 left">
                                         <div>
-                                            <label className="form__label mb-6 dc__required-field">
-                                                Branch Name
-                                            </label>
+                                            <label className="form__label mb-6 dc__required-field">Branch Name</label>
                                             <input
                                                 className="form__input"
                                                 autoComplete="off"
@@ -204,9 +200,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
 
                                 {isBranchRegex && (
                                     <div className="w-50 ml-8">
-                                        <label className="form__label mb-6 dc__required-field">
-                                            Branch Regex
-                                        </label>
+                                        <label className="form__label mb-6 dc__required-field">Branch Regex</label>
                                         <input
                                             className="form__input"
                                             autoComplete="off"
@@ -235,7 +229,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                 )}
                             </div>
                         </div>
-                        {isBranchRegex  && (
+                        {isBranchRegex && (
                             <div className={`${errorObj && !errorObj.isValid ? 'mt-16' : ''}`}>
                                 <InfoColourBar
                                     message="Branch Regex allows you to easily switch between branches matching the configured regex before triggering the build pipeline."
@@ -245,9 +239,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             </div>
                         )}
 
-                       
-                        {props.includeWebhookEvents && mat.type == SourceTypeMap.WEBHOOK && _selectedWebhookEvent &&(
-                            
+                        {props.includeWebhookEvents && mat.type == SourceTypeMap.WEBHOOK && _selectedWebhookEvent && (
                             <ConfigureWebhook
                                 webhookConditionList={props.webhookData.webhookConditionList}
                                 gitHost={props.webhookData.gitHost}
@@ -261,8 +253,6 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                 }
                                 canEditPipeline={props.canEditPipeline}
                             />
-                        
-                        
                         )}
                     </div>
                 )
