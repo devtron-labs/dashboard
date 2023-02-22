@@ -423,7 +423,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                     className="dc__align-right dc__transparent"
                                     onClick={this.toggleShowDeleteDialog}
                                 >
-                                    <img src={trash} alt="delete" />
+                                    <img src={trash} alt="delete" className="h-20" />
                                 </button>
                             </>
                         )}

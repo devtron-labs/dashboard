@@ -32,15 +32,23 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const socketConnectionRef = useRef<SocketConnectionType>(terminalViewProps.socketConnection)
     const { serverMode } = useContext(mainContext)
 
+    const resizeSocket = () => {
+        if (terminal && fitAddon && terminalViewProps.isTerminalTab) {
+            const dim = fitAddon.proposeDimensions()
+            if (dim && socket) {
+                socket.send(JSON.stringify({Op: 'resize', Cols: dim.cols, Rows: dim.rows}))
+            }
+            fitAddon.fit()
+        }
+    }
+
     useEffect(() => {
         if (!popupText) return
         setTimeout(() => setPopupText(false), 2000)
     }, [popupText])
 
     useEffect(() => {
-        if (terminal && fitAddon && terminalViewProps.isTerminalTab) {
-            fitAddon.fit()
-        }
+        resizeSocket()
     }, [terminalViewProps.isFullScreen])
 
     const appDetails = IndexStore.getAppDetails()
@@ -121,6 +129,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         }
 
         _terminal.onData(function (data) {
+            resizeSocket()
             const inData = { Op: 'stdin', SessionID: '', Data: data }
             if (_socket.readyState === WebSocket.OPEN) {
                 _socket?.send(JSON.stringify(inData))
@@ -508,7 +517,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                                         onClick={onClickResume}
                                         className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
                                     >
-                                        Resume
+                                        {terminalViewProps.isClusterTerminal ? 'Reconnect' : 'Resume'}
                                     </button>
                                 </React.Fragment>
                             )}

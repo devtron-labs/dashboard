@@ -292,6 +292,7 @@ export const groupStyle = () => {
         indicatorsContainer: (provided, state) => ({
             ...provided,
         }),
+        option: getCustomOptionSelectionStyle(),
     }
 }
 

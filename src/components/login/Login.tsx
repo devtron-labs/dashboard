@@ -3,7 +3,7 @@ import dt from '../../assets/icons/logo/logo-dt.svg'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import { Switch, Redirect, NavLink, Link } from 'react-router-dom'
 import { Route } from 'react-router'
-import { Icons, toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 import { ServerErrors } from '../../modals/commonTypes'
 import { URLS, Host, DOCUMENTATION, TOKEN_COOKIE_NAME } from '../../config'
 import { Progressing, showError, getCookie } from '../common'
@@ -162,7 +162,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             </a>
                         )
                     })}
-
                 {localStorage.isDashboardLoggedIn !== 'true' && (
                     <InfoColourBar
                         classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp mt-20 mb-20 w-300"
