@@ -15,7 +15,7 @@ import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
 import Tippy from '@tippyjs/react'
 import { getCIPipelineURL, stopPropagation } from '../common'
 import { useHistory } from 'react-router'
-import { useParams } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { TriggerViewContext } from '../app/details/triggerView/config'
 
 export default function GitInfoMaterial({
@@ -39,6 +39,7 @@ export default function GitInfoMaterial({
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const { push } = useHistory()
+    const location = useLocation()
     const triggerViewContext = useContext(TriggerViewContext)
 
     useEffect(() => {
@@ -172,7 +173,7 @@ export default function GitInfoMaterial({
     const goToWorkFlowEditor = () => {
         const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId)
         if (fromAppGrouping) {
-            window.open(ciPipelineURL, '_blank', 'noreferrer')
+            window.open(window.location.href.replace(location.pathname, ciPipelineURL), '_blank', 'noreferrer')
         } else {
             push(ciPipelineURL)
         }

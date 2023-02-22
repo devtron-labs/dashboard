@@ -76,7 +76,7 @@ export default function BulkCDTrigger({
                             return { materialList: r, appId: appDetails.appId }
                         })
                         .catch((e) => {
-                            throw { response: e.response, appId: appDetails.appId }
+                            throw { response: e?.response, appId: appDetails.appId }
                         }),
                 )
             }
@@ -220,7 +220,7 @@ export default function BulkCDTrigger({
     }
 
     const isDeployDisabled = (): boolean => {
-        return appList.every((app) => app.warningMessage || !app.material.length)
+        return appList.every((app) => app.warningMessage || !app.material?.length)
     }
 
     const renderFooterSection = (): JSX.Element => {

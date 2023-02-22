@@ -40,7 +40,7 @@ const NavigationList = [
         type: 'link',
         iconClass: 'nav-short-env',
         icon: EnvIcon,
-        href: URLS.ENVIRONMENT,
+        href: URLS.APPLICATION_GROUP,
         isAvailableInEA: false,
     },
     {
