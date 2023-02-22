@@ -15,6 +15,8 @@ import EmptyFolder from '../../assets/img/Empty-folder.png'
 import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS } from './Constants'
 import { EnvHeaderType } from './EnvironmentGroup.types'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
+import EnvCDDetails from './EnvCDDetails/EnvCDDetails'
+import EnvCIDetails from './EnvCIDetails/EnvCIDetails'
 
 export default function EnvironmentDetailsRoute() {
     const { path } = useRouteMatch()
@@ -58,6 +60,12 @@ export default function EnvironmentDetailsRoute() {
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                             <EnvTriggerView />
+                        </Route>
+                        <Route path={`${path}/${URLS.APP_CI_DETAILS}`}>
+                            <EnvCIDetails />
+                        </Route>
+                        <Route path={`${path}/${URLS.APP_CD_DETAILS}`}>
+                            <EnvCDDetails />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
                             <EnvConfig />
@@ -153,6 +161,26 @@ export function EnvHeader({ envName, setEnvName, setShowEmpty, showEmpty }: EnvH
                         onClick={handleBuildClick}
                     >
                         Build & Deploy
+                    </NavLink>
+                </li>
+                <li className="tab-list__tab">
+                    <NavLink
+                        activeClassName="active"
+                        to={`${match.url}/${URLS.APP_CI_DETAILS}`}
+                        className="tab-list__tab-link"
+                        // onClick={handleBuildClick}
+                    >
+                        build history
+                    </NavLink>
+                </li>
+                <li className="tab-list__tab">
+                    <NavLink
+                        activeClassName="active"
+                        to={`${match.url}/${URLS.APP_CD_DETAILS}`}
+                        className="tab-list__tab-link"
+                        // onClick={handleBuildClick}
+                    >
+                        Deployment history
                     </NavLink>
                 </li>
                 <li className="tab-list__tab">
