@@ -300,7 +300,7 @@ export default function NavigationRoutes() {
                                             )}
                                         />
                                         <Route path={URLS.APPLICATION_GROUP}>
-                                            <EnvironmentsRoute />
+                                            <EnvironmentsRoute isSuperAdmin={isSuperAdmin} />
                                         </Route>
 
                                         <Route

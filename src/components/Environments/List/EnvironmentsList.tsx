@@ -11,7 +11,7 @@ import { Cluster } from '../../../services/service.types'
 import { AppListConstants } from '../../../config'
 import { useHistory, useLocation } from 'react-router-dom'
 
-export default function EnvironmentsList() {
+export default function EnvironmentsList({isSuperAdmin}:{isSuperAdmin: boolean}) {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
@@ -203,7 +203,7 @@ export default function EnvironmentsList() {
                     />
                 </div>
                 {renderAppliedFilters()}
-                <EnvironmentsListView removeAllFilters={removeAllFilters} />
+                <EnvironmentsListView isSuperAdmin={isSuperAdmin} removeAllFilters={removeAllFilters} />
             </div>
         </div>
     )

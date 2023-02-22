@@ -5,7 +5,7 @@ import EnvironmentsList from './List/EnvironmentsList'
 import EnvironmentDetailsRoute from './EnvironmentDetailsRoute'
 import { AppContext } from '../common'
 
-export default function EnvironmentsRoute() {
+export default function EnvironmentsRoute({isSuperAdmin}) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     
@@ -13,10 +13,10 @@ export default function EnvironmentsRoute() {
         <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
             <Switch>
             <Route path={`${path}/${URLS.APP_LIST}`}>
-                <EnvironmentsList />
+                <EnvironmentsList isSuperAdmin={isSuperAdmin} />
             </Route>
             <Route path={`${path}/:envId`}>
-                <EnvironmentDetailsRoute />
+                <EnvironmentDetailsRoute isSuperAdmin={isSuperAdmin} />
             </Route>
             <Redirect to={`${path}/${URLS.APP_LIST}`} />
         </Switch>

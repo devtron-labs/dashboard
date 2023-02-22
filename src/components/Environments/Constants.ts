@@ -95,13 +95,18 @@ export const BULK_CD_MESSAGING = {
 
 export const EMPTY_LIST_MESSAGING = {
     TITLE: 'No applications available',
+    UNAUTHORIZE_TEXT: 'Not authorized',
     SUBTITLE: 'You don’t have access to any application in this app group.',
     NO_MATCHING_ENV: 'No matching env',
     NO_MATCHING_RESULT: 'We couldn’t find any matching results',
     EMPTY_ENV: 'Empty environment',
 }
 
-export const NO_ACCESS_TOAST_MESSAGE = 'You don’t have access to any application in this app group'
+export const NO_ACCESS_TOAST_MESSAGE = {
+    
+    forSuperAdmin: 'There are no applications in this application group.',
+    forNonAdmin: 'You don’t have access to any application in this app group',
+}
 
 export const OVERVIEW_HEADER = {
     APPLICATION: 'application',

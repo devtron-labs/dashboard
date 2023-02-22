@@ -12,11 +12,11 @@ import EnvironmentOverview from './EnvironmentOverview/EnvironmentOverview'
 import { EnvSelector } from './EnvSelector'
 import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceListEmptyState'
 import EmptyFolder from '../../assets/img/Empty-folder.png'
-import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS } from './Constants'
+import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import { EnvHeaderType } from './EnvironmentGroup.types'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
 
-export default function EnvironmentDetailsRoute() {
+export default function EnvironmentDetailsRoute({isSuperAdmin}) {
     const { path } = useRouteMatch()
     const { envId } = useParams<{ envId: string }>()
     const [envName, setEnvName] = useState('')
@@ -38,8 +38,8 @@ export default function EnvironmentDetailsRoute() {
         return (
             <ResourceListEmptyState
                 imgSource={EmptyFolder}
-                title={EMPTY_LIST_MESSAGING.TITLE}
-                subTitle={EMPTY_LIST_MESSAGING.SUBTITLE}
+                title={isSuperAdmin ? EMPTY_LIST_MESSAGING.TITLE : EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT}
+                subTitle={isSuperAdmin ? NO_ACCESS_TOAST_MESSAGE.forSuperAdmin : NO_ACCESS_TOAST_MESSAGE.forNonAdmin}
             />
         )
     }

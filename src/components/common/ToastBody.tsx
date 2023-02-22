@@ -51,10 +51,10 @@ export class ToastBodyWithButton extends React.Component<{
     }
 }
 
-export const toastAccessDenied = (subtitle?: string) => {
+export const toastAccessDenied = (title?: string, subtitle?: string) => {
     return toast.info(
         <ToastBody
-            title="Access denied"
+            title={title || "Access denied"}
             subtitle={subtitle || "You do not have required access to perform this action"}
         />,
         {

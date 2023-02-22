@@ -60,6 +60,7 @@ export interface ApplicationRouteType {
 
 export interface EnvironmentsListViewType {
     removeAllFilters: () => void
+    isSuperAdmin: boolean
 }
 
 export interface AppOverridesType {
