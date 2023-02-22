@@ -453,7 +453,8 @@ export default function ResourceList() {
             if (retainSearched) {
                 handleFilterChanges(searchText, result)
             } else {
-                setFilteredResourceList(result.data)
+                const sorted_data = result.data.sort((a, b) => a.name > b.name ? 1:-1)
+                setFilteredResourceList(sorted_data)
             }
             setNoResults(result.data.length === 0)
             setResourceListLoader(false)
