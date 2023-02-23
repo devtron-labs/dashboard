@@ -38,7 +38,7 @@ import {
     sortObjectArrayAlphabetically,
     stopPropagation,
 } from '../../../common'
-import { getWorkflows, getWorkflowStatus } from '../../Environment.service'
+import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import { TIME_STAMP_ORDER } from '../../../app/details/triggerView/Constants'
 import { toast } from 'react-toastify'
 import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
@@ -63,8 +63,8 @@ import {
     ResponseRowType,
     WorkflowAppSelectionType,
     WorkflowNodeSelectionType,
-} from '../../Environments.types'
-import { handleSourceNotConfigured, processWorkflowStatuses } from '../../AppGrouping.utils'
+} from '../../AppGroup.types'
+import { handleSourceNotConfigured, processWorkflowStatuses } from '../../AppGroup.utils'
 import Tippy from '@tippyjs/react'
 
 let timerRef
@@ -75,8 +75,8 @@ export default function EnvTriggerView() {
     const history = useHistory()
     const match = useRouteMatch<CIMaterialRouterProps>()
     const [pageViewType, setPageViewType] = useState<string>(ViewType.LOADING)
-    const [loader, setLoader] = useState(false)
-    const [isLoading, setLoading] = useState(false)
+    const [isCILoading, setCILoading] = useState(false)
+    const [isCDLoading, setCDLoading] = useState(false)
     const [showPreDeployment, setShowPreDeployment] = useState(false)
     const [showPostDeployment, setShowPostDeployment] = useState(false)
     const [errorCode, setErrorCode] = useState(0)
@@ -417,7 +417,7 @@ export default function EnvTriggerView() {
     }
 
     const onClickCIMaterial = (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) => {
-        setLoader(true)
+        setCILoading(true)
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
         updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection)
             .catch((errors: ServerErrors) => {
@@ -425,7 +425,7 @@ export default function EnvTriggerView() {
                 setErrorCode(errors.code)
             })
             .finally(() => {
-                setLoader(false)
+                setCILoading(false)
             })
     }
 
@@ -454,7 +454,7 @@ export default function EnvTriggerView() {
                 setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
                 setMaterialType(MATERIAL_TYPE.inputMaterialList)
                 setShowCDModal(true)
-                setLoading(false)
+                setCDLoading(false)
                 preventBodyScroll(true)
             })
             .catch((errors: ServerErrors) => {
@@ -498,7 +498,7 @@ export default function EnvTriggerView() {
                 setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
                 setMaterialType(MATERIAL_TYPE.rollbackMaterialList)
                 setShowCDModal(true)
-                setLoading(false)
+                setCDLoading(false)
                 preventBodyScroll(true)
                 getWorkflowStatusData(_workflows)
                 if (callback && response.result) {
@@ -522,7 +522,7 @@ export default function EnvTriggerView() {
         wfrId?: number,
     ): void => {
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
-        setLoading(true)
+        setCDLoading(true)
         let node
         for (const _wf of workflows) {
             node = _wf.nodes.find((nd) => +nd.id == selectedCDNode.id && nd.type == selectedCDNode.type)
@@ -541,7 +541,7 @@ export default function EnvTriggerView() {
                                 : 'Deployment Initiated'
                         toast.success(msg)
                         setShowCDModal(false)
-                        setLoading(false)
+                        setCDLoading(false)
                         setErrorCode(response.code)
                         preventBodyScroll(false)
                         getWorkflowStatusData(workflows)
@@ -549,7 +549,7 @@ export default function EnvTriggerView() {
                 })
                 .catch((errors: ServerErrors) => {
                     showError(errors)
-                    setLoading(false)
+                    setCDLoading(false)
                     setErrorCode(errors.code)
                 })
         } else {
@@ -562,7 +562,7 @@ export default function EnvTriggerView() {
 
     const onClickTriggerCINode = () => {
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CITriggered)
-        setLoading(true)
+        setCDLoading(true)
         let node, dockerfileConfiguredGitMaterialId
         for (const wf of workflows) {
             node = wf.nodes.find((node) => {
@@ -612,7 +612,7 @@ export default function EnvTriggerView() {
                     `"${gitMaterials[dockerfileConfiguredGitMaterialId][0]}"`,
                 ),
             )
-            setLoading(false)
+            setCDLoading(false)
             return
         }
         const payload = {
@@ -626,7 +626,7 @@ export default function EnvTriggerView() {
                 if (response.result) {
                     toast.success('Pipeline Triggered')
                     setShowCIModal(false)
-                    setLoading(false)
+                    setCDLoading(false)
                     setErrorCode(response.code)
                     setInvalidateCache(false)
                     preventBodyScroll(false)
@@ -636,7 +636,7 @@ export default function EnvTriggerView() {
             .catch((errors: ServerErrors) => {
                 showError(errors)
 
-                setLoading(false)
+                setCDLoading(false)
 
                 setErrorCode(errors.code)
             })
@@ -892,14 +892,14 @@ export default function EnvTriggerView() {
     }
 
     const hideBulkCDModal = () => {
-        if (!isLoading) {
+        if (!isCDLoading) {
             setShowBulkCDModal(false)
             setResponseList([])
         }
     }
 
     const onShowBulkCDModal = (e) => {
-        setLoading(true)
+        setCDLoading(true)
         setBulkTriggerType(e.currentTarget.dataset.triggerType)
         setTimeout(() => {
             setShowBulkCDModal(true)
@@ -907,14 +907,14 @@ export default function EnvTriggerView() {
     }
 
     const hideBulkCIModal = () => {
-        if (!loader) {
+        if (!isCILoading) {
             setShowBulkCIModal(false)
             setResponseList([])
         }
     }
 
     const onShowBulkCIModal = () => {
-        setLoader(true)
+        setCILoading(true)
         setShowBulkCIModal(true)
     }
 
@@ -943,9 +943,9 @@ export default function EnvTriggerView() {
     }
 
     const onClickTriggerBulkCD = (appsToRetry?: Record<string, boolean>) => {
-        if (isLoading) return
+        if (isCDLoading) return
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCDTriggered(bulkTriggerType))
-        setLoading(true)
+        setCDLoading(true)
         const _appIdMap = new Map<string, string>(),
             nodeList: NodeAttr[] = [],
             triggeredAppList: { appId: number; appName: string }[] = []
@@ -1030,13 +1030,15 @@ export default function EnvTriggerView() {
                     }
                 })
                 setResponseList(_responseList)
-                setLoading(false)
+                setCDLoading(false)
+                setCILoading(false)
                 preventBodyScroll(false)
                 getWorkflowStatusData(workflows)
             })
         } else {
-            setLoading(false)
+            setCDLoading(false)
             setShowBulkCDModal(false)
+            setCILoading(false)
             setShowBulkCIModal(false)
             setResponseList([])
         }
@@ -1055,9 +1057,9 @@ export default function EnvTriggerView() {
     }
 
     const onClickTriggerBulkCI = (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => {
-        if (isLoading) return
+        if (isCILoading) return
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCITriggered)
-        setLoading(true)
+        setCILoading(true)
         let node
         const nodeList: NodeAttr[] = [],
             triggeredAppList: { appId: number; appName: string }[] = []
@@ -1295,7 +1297,7 @@ export default function EnvTriggerView() {
                     match={match}
                     material={material}
                     pipelineName={selectedCINode.name}
-                    isLoading={isLoading}
+                    isLoading={isCDLoading}
                     title={selectedCINode.name}
                     pipelineId={selectedCINode.id}
                     showWebhookModal={showWebhookModal}
@@ -1313,8 +1315,8 @@ export default function EnvTriggerView() {
                     onShowCIModal={onShowCIModal}
                     isChangeBranchClicked={isChangeBranchClicked}
                     getWorkflows={getWorkflowsData}
-                    loader={loader}
-                    setLoader={setLoader}
+                    loader={isCILoading}
+                    setLoader={setCILoading}
                     isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
                     isCacheAvailable={nd?.storageConfigured}
                     fromAppGrouping={true}
@@ -1342,8 +1344,8 @@ export default function EnvTriggerView() {
                 toggleSourceInfo={toggleSourceInfo}
                 selectImage={selectImage}
                 responseList={responseList}
-                isLoading={isLoading}
-                setLoading={setLoading}
+                isLoading={isCDLoading}
+                setLoading={setCDLoading}
             />
         )
     }
@@ -1366,8 +1368,8 @@ export default function EnvTriggerView() {
                 isWebhookPayloadLoading={isWebhookPayloadLoading}
                 isShowRegexModal={isShowRegexModal}
                 responseList={responseList}
-                isLoading={loader}
-                setLoading={setLoader}
+                isLoading={isCILoading}
+                setLoading={setCILoading}
             />
         )
     }
@@ -1394,7 +1396,7 @@ export default function EnvTriggerView() {
                     material={material}
                     materialType={materialType}
                     envName={node.environmentName}
-                    isLoading={isLoading}
+                    isLoading={isCDLoading}
                     changeTab={changeTab}
                     triggerDeploy={onClickTriggerCDNode}
                     onClickRollbackMaterial={onClickRollbackMaterial}
@@ -1456,14 +1458,14 @@ export default function EnvTriggerView() {
         return (
             <div className="flex dc__min-width-fit-content">
                 <button className="cta flex h-36 mr-12" onClick={onShowBulkCIModal}>
-                    {loader ? <Progressing /> : 'Build image'}
+                    {isCILoading ? <Progressing /> : 'Build image'}
                 </button>
                 <button
                     className={`cta flex h-36 ${_showPopupMenu ? 'dc__no-right-radius' : ''}`}
                     data-trigger-type={'CD'}
                     onClick={onShowBulkCDModal}
                 >
-                    {isLoading ? (
+                    {isCDLoading ? (
                         <Progressing />
                     ) : (
                         <>

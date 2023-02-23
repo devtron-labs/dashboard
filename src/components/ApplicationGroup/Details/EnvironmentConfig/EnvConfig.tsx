@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Progressing, useAsync } from '../../common'
-import { ConfigAppList } from '../EnvironmentGroup.types'
-import { getConfigAppList } from '../EnvironmentListService'
+import { Progressing, useAsync } from '../../../common'
+import { getConfigAppList } from '../../AppGroup.service'
+import { ConfigAppList } from '../../AppGroup.types'
 import ApplicationRoute from './ApplicationRoutes'
 import AppOverrides from './AppOverrides'
 
@@ -37,8 +37,8 @@ export default function EnvConfig() {
             <div className="env-compose__nav flex column left top dc__position-rel dc__overflow-scroll">
                 <div className="pt-4 pb-4 w-100">
                     <div className="cn-6 pl-8 pr-8 pt-4 pb-4 fs-12 fw-6 w-100">APPLICATIONS</div>
-                    {envAppList.map((envData) => (
-                        <ApplicationRoute envListData={envData} />
+                    {envAppList.map((envData,key) => (
+                        <ApplicationRoute envListData={envData} key={key} />
                     ))}
                 </div>
             </div>

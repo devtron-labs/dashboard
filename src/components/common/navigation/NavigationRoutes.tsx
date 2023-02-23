@@ -38,7 +38,7 @@ const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
 const ClusterNodeContainer = lazy(() => import('../../ClusterNodes/ClusterNodeContainer'))
 const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
-const EnvironmentsRoute = lazy(() => import('../../Environments/EnvironmentsRoute'))
+const EnvironmentsRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 
 export const mainContext = createContext(null)
 
@@ -300,7 +300,7 @@ export default function NavigationRoutes() {
                                             )}
                                         />
                                         <Route path={URLS.APPLICATION_GROUP}>
-                                            <EnvironmentsRoute />
+                                            <EnvironmentsRoute isSuperAdmin={isSuperAdmin} />
                                         </Route>
 
                                         <Route
