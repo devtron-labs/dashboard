@@ -38,6 +38,7 @@ export function K8SResourceList({
     setSearchApplied,
     handleFilterChanges,
     clearSearch,
+    isCreateModalOpen,
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -160,7 +161,6 @@ export function K8SResourceList({
                                 </div>
                                 <ResourceBrowserActionMenu
                                     clusterId={clusterId}
-                                    namespace={namespace}
                                     resourceData={resourceData}
                                     selectedResource={selectedResource}
                                     getResourceListData={getResourceListData}
@@ -304,6 +304,7 @@ export function K8SResourceList({
                 handleFilterChanges={handleFilterChanges}
                 clearSearch={clearSearch}
                 isSearchInputDisabled={resourceListLoader}
+                isCreateModalOpen={isCreateModalOpen}
             />
             {resourceListLoader ? <Progressing pageLoader /> : renderList()}
         </div>

@@ -118,8 +118,8 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                 )}
                 <div>
                     <div>
-                        <span className="fs-13 fw-4 cn-7">
-                            Chart Name <span className="cr-5"> *</span>
+                        <span className="fs-13 fw-4 cn-7 dc__required-field">
+                            Chart Name
                         </span>
                         <input
                             type="text"

@@ -10,7 +10,7 @@ import {
 import { ReactComponent as ApplicationsIcon } from '../../../assets/icons/ic-nav-applications.svg'
 import { ReactComponent as ChartStoreIcon } from '../../../assets/icons/ic-nav-helm.svg'
 import { ReactComponent as DeploymentGroupIcon } from '../../../assets/icons/ic-nav-rocket.svg'
-import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-bug.svg'
+import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-security.svg'
 import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-code.svg'
 import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
 import { ReactComponent as StackManagerIcon } from '../../../assets/icons/ic-nav-stack.svg'
@@ -23,6 +23,7 @@ import ReactGA from 'react-ga4'
 import './navigation.scss'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
 import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
+import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 
 const NavigationList = [
@@ -33,6 +34,14 @@ const NavigationList = [
         icon: ApplicationsIcon,
         href: URLS.APP,
         isAvailableInEA: true,
+    },
+    {
+        title: 'Application Groups',
+        type: 'link',
+        iconClass: 'nav-short-env',
+        icon: EnvIcon,
+        href: URLS.APPLICATION_GROUP,
+        isAvailableInEA: false,
     },
     {
         title: 'Resource Browser',
@@ -274,7 +283,7 @@ export default class Navigation extends Component<
                                 <svg className="devtron-logo" viewBox="0 0 40 40">
                                     <use href={`${NavSprite}#nav-short-devtron-logo`}></use>
                                 </svg>
-                                <div className="pl-12 pt-10">
+                                <div className="pl-12 pt-10 pt-0">
                                     <img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
                                 </div>
                             </div>

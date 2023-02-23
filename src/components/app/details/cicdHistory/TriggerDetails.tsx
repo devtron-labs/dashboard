@@ -92,7 +92,7 @@ export const TriggerDetails = React.memo(
 
 const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: FinishedType): JSX.Element => {
     return (
-        <div className="flex column left">
+        <div className="flex column left dc__min-width-fit-content">
             <div className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`}>
                 {status && status.toLowerCase() === 'cancelled' ? 'ABORTED' : status}
             </div>            
@@ -189,7 +189,7 @@ const ProgressingStatus = React.memo(
         return (
             <>
                 <div className="flex left">
-                    <div>
+                    <div className="dc__min-width-fit-content">
                         <div className={`${status} fs-14 fw-6 flex left inprogress-status-color`}>
                             In progress
                         </div>
