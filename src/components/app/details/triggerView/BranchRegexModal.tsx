@@ -23,6 +23,7 @@ export default function BranchRegexModal({
     handleRegexInputValue,
     regexValue,
     onCloseBranchRegexModal,
+    hideHeaderFooter
 }: BranchRegexModalProps) {
     const triggerViewContext = useContext(TriggerViewContext)
 
@@ -46,14 +47,15 @@ export default function BranchRegexModal({
     }
 
     const renderBranchRegexMaterialHeader = () => {
-        return (
-            <div className="trigger-modal__header">
-                <h1 className="modal__title flex left fs-16">{title}</h1>
-                <button type="button" className="dc__transparent" onClick={_closeCIModal}>
-                    <Close />
-                </button>
-            </div>
-        )
+      if (hideHeaderFooter) return null
+      return (
+          <div className="trigger-modal__header">
+              <h1 className="modal__title flex left fs-16">{title}</h1>
+              <button type="button" className="dc__transparent" onClick={_closeCIModal}>
+                  <Close />
+              </button>
+          </div>
+      )
     }
 
     const renderMaterialRegexFooterNextButton = () => {
@@ -158,7 +160,7 @@ export default function BranchRegexModal({
                     )
                 })}
             </div>
-            {!showWebhookModal && renderMaterialRegexFooterNextButton()}
+            {!showWebhookModal && !hideHeaderFooter && renderMaterialRegexFooterNextButton()}
         </>
     )
 }
