@@ -16,7 +16,7 @@ import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
 import { getEnvAppList } from './AppGroup.service'
 import { AppGroupAdminType, EnvHeaderType } from './AppGroup.types'
 
-export default function EnvironmentDetailsRoute({ isSuperAdmin }: AppGroupAdminType) {
+export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType) {
     const { path } = useRouteMatch()
     const { envId } = useParams<{ envId: string }>()
     const [envName, setEnvName] = useState('')

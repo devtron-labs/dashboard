@@ -2,11 +2,11 @@ import React, { useState } from 'react'
 import { URLS } from '../../config'
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
 import EnvironmentsList from './List/EnvironmentsList'
-import EnvironmentDetailsRoute from './AppGroupDetailsRoute'
 import { AppContext } from '../common'
 import { AppGroupAdminType } from './AppGroup.types'
+import AppGroupDetailsRoute from './AppGroupDetailsRoute'
 
-export default function EnvironmentsRoute({ isSuperAdmin }: AppGroupAdminType) {
+export default function AppGroupRoute({ isSuperAdmin }: AppGroupAdminType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
 
@@ -17,7 +17,7 @@ export default function EnvironmentsRoute({ isSuperAdmin }: AppGroupAdminType) {
                     <EnvironmentsList isSuperAdmin={isSuperAdmin} />
                 </Route>
                 <Route path={`${path}/:envId`}>
-                    <EnvironmentDetailsRoute isSuperAdmin={isSuperAdmin} />
+                    <AppGroupDetailsRoute isSuperAdmin={isSuperAdmin} />
                 </Route>
                 <Redirect to={`${path}/${URLS.APP_LIST}`} />
             </Switch>
