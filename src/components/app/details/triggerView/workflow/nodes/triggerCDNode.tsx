@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TriggerCDNodeProps } from '../../types';
+import { DeploymentNodeType, TriggerCDNodeProps } from '../../types';
 import { statusColor, statusIcon } from '../../../../config';
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg';
 import { URLS, DEFAULT_STATUS } from '../../../../../../config';
@@ -21,7 +21,10 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     }
 
     redirectToCDDetails() {
-        this.props.history.push(this.getCDNodeDetailsURL())
+      if (this.props.fromAppGrouping) {
+          return
+      }
+      this.props.history.push(this.getCDNodeDetailsURL())
     }
 
     renderStatus() {
@@ -43,10 +46,14 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                         <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
                     </span>
                     <span>{statusText}</span>
-                    <span className="mr-5 ml-5">/</span>
-                    <Link to={url} className="workflow-node__details-link">
-                        Details
-                    </Link>
+                    {!this.props.fromAppGrouping && (
+                        <>
+                            <span className="mr-5 ml-5">/</span>
+                            <Link to={url} className="workflow-node__details-link">
+                                Details
+                            </Link>
+                        </>
+                    )}
                 </div>
             )
     }
@@ -91,7 +98,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                     className="workflow-node__deploy-btn"
                                     onClick={(event) => {
                                         event.stopPropagation()
-                                        context.onClickCDMaterial(this.props.id, this.props.type)
+                                        context.onClickCDMaterial(this.props.id, DeploymentNodeType[this.props.type])
                                     }}
                                 >
                                     Select Image

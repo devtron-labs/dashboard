@@ -7,6 +7,7 @@ import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
 import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
+import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
 import { toastAccessDenied } from '../ToastBody'
 import { AggregationKeys, OptionType } from '../../app/types'
@@ -1207,6 +1208,13 @@ export const k8sStyledAgeToSeconds = (duration: string): number => {
 
 export const eventAgeComparator = <T,>(key: string): any => {
     return (a: T, b: T) => k8sStyledAgeToSeconds(a[key]) - k8sStyledAgeToSeconds(b[key])
+}
+
+export const trackByGAEvent = (category: string, action: string): void => {
+    ReactGA.event({
+        category: category,
+        action: action,
+    })
 }
 
 export const createGroupSelectList = (list,nodeLabel): SelectGroupType[] => {
