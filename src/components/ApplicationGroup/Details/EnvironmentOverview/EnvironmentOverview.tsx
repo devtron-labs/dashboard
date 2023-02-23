@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ReactComponent as GridIcon } from '../../../assets/icons/ic-grid-view.svg'
-import { URLS } from '../../../config'
-import AppStatus from '../../app/AppStatus'
-import { StatusConstants } from '../../app/list-new/Constants'
-import { getAppList } from '../../app/service'
-import { Progressing, processDeployedTime, showError } from '../../common'
-import { GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../Constants'
-import { AppInfoListType, AppListDataType } from '../EnvironmentGroup.types'
-import { getDeploymentStatus } from '../EnvironmentListService'
+import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
+import { URLS } from '../../../../config'
+import AppStatus from '../../../app/AppStatus'
+import { StatusConstants } from '../../../app/list-new/Constants'
+import { getAppList } from '../../../app/service'
+import { Progressing, processDeployedTime, showError } from '../../../common'
+import { GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
+import { getDeploymentStatus } from '../../AppGroup.service'
+import { AppInfoListType, AppListDataType } from '../../AppGroup.types'
 import './envOverview.scss'
 
 export default function EnvironmentOverview() {
@@ -88,7 +88,7 @@ export default function EnvironmentOverview() {
             >
                 <span className="fs-13 fw-4 cn-7">{item.application}</span>
                 <AppStatus appStatus={item.lastDeployed ? item.appStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower} />
-                <AppStatus appStatus={item.lastDeployed ? item.deploymentStatus : '-'} />
+                <AppStatus appStatus={item.lastDeployed ? item.deploymentStatus : '-'} isDeploymentStatus={true} />
                 <span className="fs-13 fw-4 cn-7">{processDeployedTime(item.lastDeployed, true)}</span>
             </div>
         )

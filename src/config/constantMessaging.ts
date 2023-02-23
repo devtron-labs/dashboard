@@ -58,3 +58,8 @@ export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
     linkText: 'Go to SSO login services',
     redirectLink: '/global-config/login-service',
 }
+
+export const TOAST_ACCESS_DENIED = {
+    TITLE: 'Access denied',
+    SUBTITLE: 'You do not have required access to perform this action'
+}

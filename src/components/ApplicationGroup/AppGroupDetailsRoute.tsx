@@ -6,17 +6,17 @@ import ReactGA from 'react-ga4'
 import { URLS } from '../../config'
 import PageHeader from '../common/header/PageHeader'
 import EnvTriggerView from './Details/TriggerView/EnvTriggerView'
-import EnvConfig from './EnvironmentConfig/EnvConfig'
-import { getEnvAppList } from './EnvironmentListService'
-import EnvironmentOverview from './EnvironmentOverview/EnvironmentOverview'
+import EnvConfig from './Details/EnvironmentConfig/EnvConfig'
+import EnvironmentOverview from './Details/EnvironmentOverview/EnvironmentOverview'
 import { EnvSelector } from './EnvSelector'
 import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceListEmptyState'
 import EmptyFolder from '../../assets/img/Empty-folder.png'
-import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS } from './Constants'
-import { EnvHeaderType } from './EnvironmentGroup.types'
+import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
+import { getEnvAppList } from './AppGroup.service'
+import { AppGroupAdminType, EnvHeaderType } from './AppGroup.types'
 
-export default function EnvironmentDetailsRoute() {
+export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType) {
     const { path } = useRouteMatch()
     const { envId } = useParams<{ envId: string }>()
     const [envName, setEnvName] = useState('')
@@ -38,8 +38,8 @@ export default function EnvironmentDetailsRoute() {
         return (
             <ResourceListEmptyState
                 imgSource={EmptyFolder}
-                title={EMPTY_LIST_MESSAGING.TITLE}
-                subTitle={EMPTY_LIST_MESSAGING.SUBTITLE}
+                title={isSuperAdmin ? EMPTY_LIST_MESSAGING.TITLE : EMPTY_LIST_MESSAGING.UNAUTHORIZE_TEXT}
+                subTitle={isSuperAdmin ? NO_ACCESS_TOAST_MESSAGE.SUPER_ADMIN : NO_ACCESS_TOAST_MESSAGE.NON_ADMIN}
             />
         )
     }
@@ -111,8 +111,8 @@ export function EnvHeader({ envName, setEnvName, setShowEmpty, showEmpty }: EnvH
                     component: <EnvSelector onChange={handleEnvChange} envId={+envId} envName={envName} />,
                     linked: false,
                 },
-                environment: {
-                    component: <span className="cb-5 fs-16 dc__capitalize">Application Groups</span>,
+                'application-group': {
+                    component: <span className="cb-5 fs-16 dc__capitalize">Application groups</span>,
                     linked: true,
                 },
             },
