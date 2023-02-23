@@ -945,28 +945,28 @@ button.anchor {
     z-index: 2;
 
     &.pending {
-        background-size: contain, contain;
         background: url('../assets/icons/ic-clock.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.failed,
     &.error {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/ic-appstatus-failed.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.cancelled,
     &.aborted {
-        background-size: contain, contain;
         background: url('../assets/icons/ic-appstatus-cancelled.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.healthy,
     &.synced,
     &.sync.ok,
     &.succeeded {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/healthy.svg'), $background;
+        background-size: contain, contain;
         &.healthy--node {
             background: url('../assets/icons/appstatus/ic-heart-green.svg'), transparent;
             background-size: contain, contain;
@@ -979,14 +979,14 @@ button.anchor {
     }
 
     &.unknown {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/unknown.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.not-deployed,
     &.not-triggered {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/notdeployed.svg'), $background;
+        background-size: contain, contain;
         &.not-deployed--node {
             background: url('../assets/icons/ic-close.svg'), transparent;
             background-size: contain, contain;
@@ -994,28 +994,28 @@ button.anchor {
     }
 
     &.suspended {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/suspended.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.degraded {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/degraded.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.progressing,
     &.running,
     &.request_accepted,
     &.starting {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/progressing-rotating.svg'), $background;
+        background-size: contain, contain;
         animation: unset;
     }
 
     &.hibernating,
     &.hibernated {
-        background-size: contain, contain;
         background: url('../assets/icons/ic-hibernate-2.svg'), $background;
+        background-size: contain, contain;
     }
 }
 

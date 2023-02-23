@@ -8,13 +8,11 @@ import {
     Progressing,
     showError,
     sortObjectArrayAlphabetically,
-    eventAgeComparator,
 } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
 import {
     ApiResourceGroupType,
     ClusterOptionType,
-    K8SObjectChildMapType,
     K8SObjectMapType,
     K8SObjectType,
     ResourceDetailType,
@@ -26,7 +24,7 @@ import {
     getResourceList,
     namespaceListByClusterId,
 } from '../ResourceBrowser.service'
-import { Nodes, OptionType } from '../../app/types'
+import { OptionType } from '../../app/types'
 import {
     ALL_NAMESPACE_OPTION,
     ERROR_SCREEN_LEARN_MORE,
@@ -34,12 +32,11 @@ import {
     EVENT_LIST,
     K8S_EMPTY_GROUP,
     K8S_RESOURCE_LIST,
-    MARK_AS_STALE_DATA_CUT_OFF_MINS,
     ORDERED_AGGREGATORS,
     SIDEBAR_KEYS,
     STALE_DATA_WARNING_TEXT,
 } from '../Constants'
-import { DOCUMENTATION, LAST_SEEN, URLS } from '../../../config'
+import { DOCUMENTATION, URLS } from '../../../config'
 import Sidebar from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ClusterSelection } from './ClusterSelection'
@@ -59,7 +56,6 @@ import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
 import searchWorker from '../../../config/searchWorker'
 import WebWorker from '../../app/WebWorker'
 import { ShortcutProvider } from 'react-keybind'
-import '../ResourceBrowser.scss'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
 import {
     checkIfDataIsStale,
@@ -71,6 +67,7 @@ import {
     getUpdatedResourceSelectionData,
     sortEventListData,
 } from '../Utils'
+import '../ResourceBrowser.scss'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node, group } = useParams<{

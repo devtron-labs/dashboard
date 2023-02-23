@@ -90,6 +90,12 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
         )
     }
 
+    const tabTitleTippyContent = (children: any, tab: DynamicTabType) => (
+        <Tippy singleton={target} content={getTabTippyContent(tab.title)}>
+            {children}
+        </Tippy>
+    )
+
     const renderTab = (tab: DynamicTabType, idx: number, isFixed?: boolean) => {
         return (
             <Fragment key={`${idx}-tab`}>
@@ -99,14 +105,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                         tab.isSelected ? 'dynamic-tab__item-selected' : ''
                     }`}
                 >
-                    <ConditionalWrap
-                        condition={!isFixed}
-                        wrap={(children) => (
-                            <Tippy singleton={target} content={getTabTippyContent(tab.title)}>
-                                {children}
-                            </Tippy>
-                        )}
-                    >
+                    <ConditionalWrap condition={!isFixed} wrap={(children) => tabTitleTippyContent(children, tab)}>
                         <div className="flex w-100">
                             <div
                                 className={`w-100 ${
@@ -134,7 +133,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
 
     const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
 
-    const TabsOption = (props: OptionProps<any, false, any>) => {
+    const tabsOption = (props: OptionProps<any, false, any>) => {
         const { selectProps, data } = props
         selectProps.styles.option = getCustomOptionSelectionStyle({
             display: 'flex',
@@ -270,7 +269,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                             components={{
                                 IndicatorSeparator: null,
                                 DropdownIndicator: null,
-                                Option: TabsOption,
+                                Option: tabsOption,
                                 Menu: TabsMenu,
                             }}
                             styles={COMMON_TABS_SELECT_STYLES}
