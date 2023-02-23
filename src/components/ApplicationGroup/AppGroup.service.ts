@@ -13,7 +13,7 @@ import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { Routes, URLS } from '../../config'
 import { get } from '../../services/api'
 import { ResponseType } from '../../services/service.types'
-import { WorkflowsResponseType } from './Environments.types'
+import { ConfigAppList, EnvApp, EnvDeploymentStatus, WorkflowsResponseType } from './AppGroup.types'
 
 export function getEnvWorkflowList(envId: string) {
     return get(`${Routes.ENV_WORKFLOW}/${envId}/${Routes.APP_WF}`)
@@ -114,4 +114,39 @@ function getParentNode(nodes: Map<string, NodeAttr>, node: NodeAttr): NodeAttr |
         parentNode.downstreamNodes = [node]
     }
     return parentNode
+}
+
+export interface ConfigAppListType extends ResponseType {
+    result?: ConfigAppList[]
+}
+export interface EnvAppType extends ResponseType {
+    result?: EnvApp
+}
+
+export interface EnvDeploymentStatusType extends ResponseType {
+    result?: EnvDeploymentStatus[]
+}
+
+export const getConfigAppList = (envId: number): Promise<ConfigAppListType> => {
+    return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.ENV_APPLICATIONS}`)
+}
+
+export const getEnvAppList = (params?: {
+    envName?: string
+    clusterIds?: string
+    offset?: string
+    size?: string
+}): Promise<EnvAppType> => {
+    if(params){
+        const urlParams = Object.entries(params).map(([key, value]) => {
+            if (!value) return
+            return `${key}=${value}`
+        })
+        return get(`${Routes.ENVIRONMENT_APPS}?${urlParams.filter((s) => s).join('&')}`)
+    }
+    return  get(Routes.ENVIRONMENT_APPS)
+}
+
+export const getDeploymentStatus = (envId: number): Promise<EnvDeploymentStatusType> => {
+    return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.ENV_DEPLOYMENT_STATUS}`)
 }

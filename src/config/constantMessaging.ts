@@ -60,6 +60,11 @@ export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
     redirectLink: '/global-config/login-service',
 }
 
+export const TOAST_ACCESS_DENIED = {
+    TITLE: 'Access denied',
+    SUBTITLE: 'You do not have required access to perform this action'
+}
+
 export const SSO_LOGGING_INFO = {
     frontText: "You don't have an account on this workplace. Please contact your manager for ",
     tailText: ' or login as adminstration.',

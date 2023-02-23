@@ -1,7 +1,12 @@
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
+import { ServerErrors } from '../../modals/commonTypes'
 import { CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import { WorkflowType } from '../app/details/triggerView/types'
-import { CDWorkflowStatusType, CIWorkflowStatusType, ProcessWorkFlowStatusType } from './Environments.types'
+import { showError } from '../common'
+import { getEnvAppList } from './AppGroup.service'
+import { CDWorkflowStatusType, CIWorkflowStatusType, ProcessWorkFlowStatusType } from './AppGroup.types'
+
+let timeoutId
 
 export const processWorkflowStatuses = (
     allCIs: CIWorkflowStatusType[],
@@ -103,3 +108,35 @@ export const handleSourceNotConfigured = (
         _materialList.push(ciMaterial)
     }
 }
+
+export const envListOptions = (inputValue: string): Promise<[]> =>
+    new Promise((resolve) => {
+        if (timeoutId) {
+            clearTimeout(timeoutId)
+        }
+        timeoutId = setTimeout(() => {
+            if (inputValue.length < 3) {
+                resolve([])
+                return
+            }
+            getEnvAppList({envName: inputValue})
+                .then((response) => {
+                    let appList = []
+                    if (response.result) {
+                        appList = response.result.envList?.map((res) => ({
+                            value: res['id'],
+                            label: res['environment_name'],
+                            appCount: res['appCount'],
+                            ...res,
+                        }))
+                    }
+                    resolve(appList as [])
+                })
+                .catch((errors: ServerErrors) => {
+                    resolve([])
+                    if (errors.code) {
+                        showError(errors)
+                    }
+                })
+        }, 300)
+    })
