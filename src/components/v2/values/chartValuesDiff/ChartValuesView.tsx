@@ -75,7 +75,7 @@ import { convertSchemaJsonToMap, getAndUpdateSchemaValue, updateGeneratedManifes
 import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ChartValuesGUIForm from './ChartValuesGUIView'
 import './ChartValuesView.scss'
-import '../../../../components/app/details/appOverview/AppOverview.scss'
+import '../../../app/Overview/AppOverview.scss'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../../services/service'
 import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfiguredWarning'
 import { AppMetaInfo } from '../../../app/types'

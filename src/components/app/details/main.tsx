@@ -15,7 +15,7 @@ import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.s
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import PageHeader from '../../common/header/PageHeader'
 import { AppDetailsProps } from './triggerView/types'
-import AppOverview from './appOverview/AppOverview'
+import AppOverview from '../Overview/Overview'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
