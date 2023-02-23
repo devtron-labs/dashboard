@@ -15,6 +15,8 @@ import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE 
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
 import { getEnvAppList } from './AppGroup.service'
 import { AppGroupAdminType, EnvHeaderType } from './AppGroup.types'
+import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
+import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
 
 export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType) {
     const { path } = useRouteMatch()
