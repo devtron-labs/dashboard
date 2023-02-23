@@ -1,7 +1,5 @@
 .dynamic-tabs-section {
     .dynamic-tabs-container {
-        border-left: 1px solid var(--N200);
-        border-right: 1px solid var(--N200);
         overflow-x: auto;
         -ms-overflow-style: none;
         scrollbar-width: none;
@@ -12,31 +10,13 @@
     }
 
     .more-tabs-wrapper {
-        .more-tabs-option {
-            margin-left: 8px;
-            box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            padding: 2px;
-            width: 24px;
-            height: 24px;
-            background-color: var(--N0);
-            border: 1px solid var(--N200);
-            border-radius: 4px;
-        }
-
         .more-tabs__menu-wrapper {
-            background-color: var(--N0);
             border-radius: 4px 4px 0 0;
-            margin-top: 8px;
-            position: absolute;
             left: 8px;
             z-index: 10;
-            width: 300px;
         }
 
         .more-tabs__blanket {
-            position: fixed;
             bottom: 0;
             left: 0;
             top: 0;
@@ -49,13 +29,7 @@
         }
 
         .tab-search-select__open-tabs {
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: none;
-            color: var(--N900);
             background-color: var(--window-bg);
-            padding: 4px 10px;
-            margin: 0;
         }
 
         .tab-search-select__control {
@@ -78,8 +52,6 @@
 
         .tab-search-select__option {
             .dynamic-tab__close {
-                width: 20px;
-                height: 20px;
                 display: none;
             }
 
@@ -113,18 +85,6 @@
     }
 
     .dynamic-tab__close {
-        width: 16px;
-        height: 16px;
-
-        svg {
-            padding: 2px;
-
-            path {
-                fill: var(--N600);
-                stroke: var(--N600);
-            }
-        }
-
         &:hover {
             background-color: var(--R100);
 

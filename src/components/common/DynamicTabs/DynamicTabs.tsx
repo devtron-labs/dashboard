@@ -121,11 +121,11 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                                 {getTabNavLink(tab, isFixed)}
                                 {!isFixed && (
                                     <div
-                                        className="dynamic-tab__close flex br-5 ml-auto"
+                                        className="dynamic-tab__close icon-dim-16 flex br-5 ml-auto"
                                         data-title={tab.title}
                                         onClick={handleTabCloseAction}
                                     >
-                                        <Cross className="icon-dim-16 cursor" />
+                                        <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
                                     </div>
                                 )}
                             </div>
@@ -169,11 +169,11 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                         )}
                     </div>
                     <div
-                        className="dynamic-tab__close flex br-5 ml-8"
+                        className="dynamic-tab__close icon-dim-20 flex br-5 ml-8"
                         data-title={data.title}
                         onClick={handleTabCloseAction}
                     >
-                        <Cross className="icon-dim-16 cursor" />
+                        <Cross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
                     </div>
                 </components.Option>
             </div>
@@ -233,7 +233,7 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
             {tabsData.dynamicTabs.length > 0 && (
                 <>
                     <div
-                        className="dynamic-tabs-container"
+                        className="dynamic-tabs-container dc__border-left dc__border-right"
                         style={{
                             width: fixedContainerRef.current
                                 ? `calc(100% - ${fixedContainerRef.current.offsetWidth + 32}px)`
