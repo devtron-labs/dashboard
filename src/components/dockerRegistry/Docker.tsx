@@ -9,6 +9,8 @@ import {
     CustomInput,
     not,
     multiSelectStyles,
+    handleOnBlur,
+    handleOnFocus,
 } from '../common'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'
@@ -334,17 +336,7 @@ function DockerForm({
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
     }
 
-    const handleOnFocus = (e): void => {
-        if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
-            e.target.value = ''
-        }
-    }
-
-    const handleOnBlur = (e): void => {
-        if (id && id != 0 && !e.target.value) {
-            e.target.value = DEFAULT_SECRET_PLACEHOLDER
-        }
-    }
+    
 
     const handleRegistryTypeChange = (selectedRegistry) => {
         setSelectedDockerRegistryType(selectedRegistry)
@@ -749,7 +741,7 @@ function DockerForm({
                                     tabIndex={6}
                                     value={customState.awsSecretAccessKey.value}
                                     error={customState.awsSecretAccessKey.error}
-                                    onBlur={handleOnBlur}
+                                    onBlur={id&&handleOnBlur}
                                     onFocus={handleOnFocus}
                                     onChange={customHandleChange}
                                     label={selectedDockerRegistryType.password.label}
@@ -786,7 +778,7 @@ function DockerForm({
                                 value={customState.password.value}
                                 error={customState.password.error}
                                 onChange={customHandleChange}
-                                onBlur={handleOnBlur}
+                                onBlur={id&&handleOnBlur}
                                 onFocus={handleOnFocus}
                                 label={selectedDockerRegistryType.password.label}
                                 placeholder={selectedDockerRegistryType.password.placeholder}

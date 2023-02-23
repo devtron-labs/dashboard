@@ -231,11 +231,6 @@
     top: 8px;
     right: 8px;
 }
-.login__selected-icon {
-    position: absolute;
-    top: 0;
-    right: 0;
-}
 
 .login__auth-link {
     text-decoration: none !important;

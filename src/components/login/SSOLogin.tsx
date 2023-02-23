@@ -61,16 +61,26 @@ const SSOTabIcons: React.FC<{ SSOName: string }> = ({ SSOName }) => {
 }
 
 const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => {
-    return <label className="dc__tertiary-tab__radio">
-        <input type="radio" value={value} checked={checked} name="status" onClick={handleSSOClick} />
-        <span className="dc__tertiary-tab sso-icons">
-            <aside className="login__icon-alignment"><SSOTabIcons SSOName={SSOName} /></aside>
-            <aside className="login__text-alignment">{SSOName}</aside>
-            <label>
-                {lastActiveSSO?.name === value ? <aside className="login__selected-icon"><img src={Check} height={'32px'} /></aside> : ""}
-            </label>
-        </span>
-    </label>
+    return (
+        <label className="dc__tertiary-tab__radio">
+            <input type="radio" value={value} checked={checked} name="status" onClick={handleSSOClick} />
+            <span className="dc__tertiary-tab sso-icons">
+                <aside className="login__icon-alignment">
+                    <SSOTabIcons SSOName={SSOName} />
+                </aside>
+                <aside className="login__text-alignment">{SSOName}</aside>
+                <label>
+                    {lastActiveSSO?.name === value ? (
+                        <aside className="dc__position-abs dc__right-0 dc__top-0">
+                            <img src={Check} className="h-32" />
+                        </aside>
+                    ) : (
+                        ''
+                    )}
+                </label>
+            </span>
+        </label>
+    )
 }
 
 export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {

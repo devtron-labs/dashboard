@@ -144,10 +144,13 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     componentDidMount() {
         this.fetchGitOpsConfigurationList()
         this.setState({
-            form:{
+            form: {
                 ...this.state.form,
-                token:this.state.form.token==""&&this.state.form.id?DEFAULT_SECRET_PLACEHOLDER:this.state.form.token
-            }
+                token:
+                    this.state.form.token == '' && this.state.form.id
+                        ? DEFAULT_SECRET_PLACEHOLDER
+                        : this.state.form.token,
+            },
         })
     }
 
@@ -168,7 +171,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     providerTab: form.provider,
                     form: {
                         ...form,
-                        token:form.id&&form.token===""?DEFAULT_SECRET_PLACEHOLDER:form.token
+                        token: form.id && form.token === '' ? DEFAULT_SECRET_PLACEHOLDER : form.token,
                     },
                     isError: DefaultShortGitOps,
                     isFormEdited: false,
@@ -213,7 +216,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             },
             isError: {
                 ...this.state.isError,
-                [key]: (key=='token'&&this.state.form.id)||event.target.value.length !== 0 ? '' : 'This is a required field' ,
+                [key]:
+                    (key === 'token' && this.state.form.id) || event.target.value.length !== 0
+                        ? ''
+                        : 'This is a required field',
             },
             isFormEdited: false,
             //After entering any text,if GitOpsFieldKeyType is of type host then the url validation error must dissapear
@@ -228,7 +234,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
     }
 
     handleOnBlur(e): void {
-        if (this.state.form.id && this.state.form.id != 0 && !e.target.value) {
+        if (this.state.form.id && !e.target.value) {
             e.target.value = DEFAULT_SECRET_PLACEHOLDER
         }
     }

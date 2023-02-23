@@ -254,6 +254,10 @@ a:focus {
     padding: 2px;
 }
 
+.dc__top-0 {
+    top: 0;
+}
+
 .dc__bottom-0 {
     bottom: 0;
 }
@@ -275,7 +279,7 @@ a:focus {
 }
 
 .dc__right-0 {
-      right: 0;
+    right: 0;
 }
 
 .dc__vertical-align-middle {
@@ -1348,10 +1352,9 @@ button.anchor {
         }
         .dc__show-second--icon {
             display: inherit;
-         }
+        }
     }
 }
-
 
 .grayscale {
     filter: grayscale(1);
@@ -2197,7 +2200,7 @@ textarea,
 // width fix content
 
 .dc__w-fit-content {
-      width: fit-content;
+    width: fit-content;
 }
 
 // Height in pixels
@@ -2462,7 +2465,7 @@ textarea,
 }
 
 .dc__overflow-auto {
-      overflow: auto !important;
+    overflow: auto !important;
 }
 
 .dc__overflow-scroll {
@@ -2530,7 +2533,7 @@ textarea::placeholder {
 }
 // opacity
 .dc__opacity-0_5 {
-      opacity: 0.5;
+    opacity: 0.5;
 }
 
 .dc__hover-n50:hover,

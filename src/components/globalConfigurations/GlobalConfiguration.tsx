@@ -533,12 +533,8 @@ export function CustomInput({
                     e.persist()
                     onChange(e)
                 }}
-                onBlur={(e)=>{
-                    onBlur(e)
-                }}
-                onFocus={(e)=>{
-                    onFocus(e)
-                }}
+                onBlur={onBlur}
+                onFocus={onFocus}
                 placeholder={placeholder}
                 value={value}
                 disabled={disabled}

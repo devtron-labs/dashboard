@@ -159,15 +159,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             'editor.background': '#0B0F22',
         }
     });
-
-    function handleOnBlur() {
-        onBlur()
-    }
-
-    function handleOnFocus() {
-        onFocus()
-    }
-
+    
     function editorDidMount(editor, monaco) {
         if (
             mode === 'yaml' &&
@@ -181,10 +173,10 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         editorRef.current = editor
         monacoRef.current = monaco
         editor.onDidFocusEditorWidget(() => {
-            handleOnFocus()
+            onFocus()
         })
         editor.onDidBlurEditorWidget(() => {
-            handleOnBlur()
+            onBlur()
         })
     }
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getGitHostList, getGitProviderList } from '../../services/service';
 import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service';
-import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorScreenManager } from '../common';
+import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorScreenManager, handleOnBlur, handleOnFocus } from '../common';
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
 import { DOCUMENTATION } from '../../config';
@@ -378,18 +378,6 @@ function GitForm({
         }));
     }
 
-    const handleOnFocus = (e): void => {
-        if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
-            e.target.value = ''
-        }
-    }
-
-    const handleOnBlur = (e): void => {
-        if (id && id != 0 && !e.target.value) {
-            e.target.value = DEFAULT_SECRET_PLACEHOLDER
-        }
-    }
-
     function handleGithostChange(host) {
         setGithost({
             value: host,
@@ -648,7 +636,7 @@ function GitForm({
                             <CustomInput
                                 value={customState.password.value}
                                 onChange={customHandleChange}
-                                onBlur={handleOnBlur}
+                                onBlur={id&&handleOnBlur}
                                 onFocus={handleOnFocus}
                                 name="password"
                                 error={customState.password.error}
@@ -669,7 +657,7 @@ function GitForm({
                             className="form__input w-100"
                             style={{ height: '100px', backgroundColor: '#f7fafc' }}
                             onChange={customHandleChange}
-                            onBlur={handleOnBlur}
+                            onBlur={id&&handleOnBlur}
                             onFocus={handleOnFocus}
                             name="sshInput"
                             value={customState.sshInput.value}
