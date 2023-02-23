@@ -4,7 +4,7 @@ import { ReactComponent as RetryIcon } from '../../../../assets/icons/ic-arrow-c
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'
-import { ResponseRowType, TriggerResponseModalType } from '../../Environments.types'
+import { ResponseRowType, TriggerResponseModalType } from '../../AppGroup.types'
 import { BulkResponseStatus } from '../../Constants'
 
 export default function TriggerResponseModal({

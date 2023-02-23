@@ -983,8 +983,8 @@ button.anchor {
     }
 
     &.unknown {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/unknown.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.not-deployed,
