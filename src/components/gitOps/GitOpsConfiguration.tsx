@@ -12,7 +12,7 @@ import { ProtectedInput, CustomInput as CustomPassInput } from '../globalConfigu
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg'
-import { CustomInput, ErrorScreenManager, Progressing, showError } from '../common'
+import { CustomInput, ErrorScreenManager, handleOnBlur, handleOnFocus, Progressing, showError } from '../common'
 import Check from '../../assets/icons/ic-outline-check.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
 import { ReactComponent as InfoFill } from '../../assets/icons/appstatus/info-filled.svg'
@@ -137,8 +137,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         this.handleGitopsTab = this.handleGitopsTab.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.fetchGitOpsConfigurationList = this.fetchGitOpsConfigurationList.bind(this)
-        this.handleOnFocus = this.handleOnFocus.bind(this)
-        this.handleOnBlur = this.handleOnBlur.bind(this)
     }
 
     componentDidMount() {
@@ -225,18 +223,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             //After entering any text,if GitOpsFieldKeyType is of type host then the url validation error must dissapear
             isUrlValidationError: key === 'host' ? false : this.state.isUrlValidationError,
         })
-    }
-
-    handleOnFocus(e): void  {
-        if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
-            e.target.value = ''
-        }
-    }
-
-    handleOnBlur(e): void {
-        if (this.state.form.id && !e.target.value) {
-            e.target.value = DEFAULT_SECRET_PLACEHOLDER
-        }
     }
 
     requiredFieldCheck(formValueType: string): string {
@@ -679,8 +665,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 name="Enter token"
                                 tabIndex={4}
                                 error={this.state.isError.token}
-                                onBlur={this.handleOnBlur}
-                                onFocus={this.handleOnFocus}
+                                onBlur={this.state.form.id&&handleOnBlur}
+                                onFocus={handleOnFocus}
                                 label={
                                     <>
                                         {this.state.providerTab === GitProvider.AZURE_DEVOPS

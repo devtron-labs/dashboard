@@ -268,14 +268,14 @@ function DockerForm({
     const [customState, setCustomState] = useState({
         awsAccessKeyId: { value: awsAccessKeyId, error: '' },
         awsSecretAccessKey: {
-            value: id && awsSecretAccessKey === '' ? DEFAULT_SECRET_PLACEHOLDER : awsSecretAccessKey,
+            value: id && !awsSecretAccessKey ? DEFAULT_SECRET_PLACEHOLDER : awsSecretAccessKey,
             error: '',
         },
         registryUrl: { value: registryUrl, error: '' },
         username: { value: username, error: '' },
         password: {
             value:
-                id && password === ''
+                id && !password
                     ? DEFAULT_SECRET_PLACEHOLDER
                     : state.registryType.value === 'gcr' || state.registryType.value === 'artifact-registry'
                     ? password.substring(1, password.length - 1)

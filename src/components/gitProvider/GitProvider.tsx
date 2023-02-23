@@ -359,11 +359,11 @@ function GitForm({
 
     const [loading, setLoading] = useState(false);
     const [customState, setCustomState] = useState({
-        password: { value: password === '' && id ? DEFAULT_SECRET_PLACEHOLDER : password, error: '' },
+        password: { value: !password && id ? DEFAULT_SECRET_PLACEHOLDER : password, error: '' },
         username: { value: userName, error: '' },
         accessToken: { value: accessToken, error: '' },
         hostName: { value: gitHost.value, error: '' },
-        sshInput: { value: sshPrivateKey === '' && id ? DEFAULT_SECRET_PLACEHOLDER : sshPrivateKey, error: '' },
+        sshInput: { value: !sshPrivateKey && id ? DEFAULT_SECRET_PLACEHOLDER : sshPrivateKey, error: '' },
     })
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
@@ -394,11 +394,21 @@ function GitForm({
             authMode: state.auth.value,
             active,
             ...(state.auth.value === 'USERNAME_PASSWORD'
-                ? { username: customState.username.value, password: customState.password.value===DEFAULT_SECRET_PLACEHOLDER?"":customState.password.value }
+                ? {
+                      username: customState.username.value,
+                      password: customState.password.value === DEFAULT_SECRET_PLACEHOLDER ? '' : customState.password.value,
+                  }
                 : {}),
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {}),
-            ...(state.auth.value === 'SSH' ? { sshPrivateKey: safeTrim(customState.sshInput.value)===DEFAULT_SECRET_PLACEHOLDER?"":safeTrim(customState.sshInput.value) } : {}),
-        };
+            ...(state.auth.value === 'SSH'
+                ? {
+                      sshPrivateKey:
+                          safeTrim(customState.sshInput.value) === DEFAULT_SECRET_PLACEHOLDER
+                              ? ''
+                              : safeTrim(customState.sshInput.value),
+                  }
+                : {}),
+        }
 
         const api = id ? updateGitProviderConfig : saveGitProviderConfig;
         try {
