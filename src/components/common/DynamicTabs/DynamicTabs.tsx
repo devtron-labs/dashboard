@@ -3,7 +3,7 @@ import { NavLink, useHistory } from 'react-router-dom'
 import { ReactComponent as Cross } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as SearchIcon } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ClearIcon } from '../../../assets/icons/ic-error.svg'
-import Tippy, { useSingleton } from '@tippyjs/react'
+import Tippy from '@tippyjs/react'
 import { ConditionalWrap, stopPropagation } from '../helpers/Helpers'
 import ReactSelect, { components, GroupBase, InputActionMeta, OptionProps } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../../v2/common/ReactSelect.utils'
@@ -24,7 +24,6 @@ import './DynamicTabs.scss'
  */
 export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
     const { push } = useHistory()
-    const [source, target] = useSingleton()
     const tabsSectionRef = useRef<HTMLDivElement>(null)
     const fixedContainerRef = useRef<HTMLDivElement>(null)
     const dynamicWrapperRef = useRef<HTMLUListElement>(null)
@@ -93,12 +92,6 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
         )
     }
 
-    const tabTitleTippyContent = (children: any, tab: DynamicTabType) => (
-        <Tippy singleton={target} content={getTabTippyContent(tab.title)}>
-            {children}
-        </Tippy>
-    )
-
     const renderTab = (tab: DynamicTabType, idx: number, isFixed?: boolean) => {
         return (
             <Fragment key={`${idx}-tab`}>
@@ -110,7 +103,18 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                 >
                     <ConditionalWrap
                         condition={!isFixed}
-                        wrap={(children) => <>{tabTitleTippyContent(children, tab)}</>}
+                        wrap={(children) => (
+                            <Tippy
+                                className="default-tt dc__mxw-300 dc__mnw-100"
+                                arrow={false}
+                                placement="top"
+                                duration={[600, 0]}
+                                moveTransition="transform 0.1s ease-out"
+                                content={getTabTippyContent(tab.title)}
+                            >
+                                {children}
+                            </Tippy>
+                        )}
                     >
                         <div className="flex w-100">
                             <div
@@ -240,13 +244,6 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                                 : 'calc(100% - 32px)',
                         }}
                     >
-                        <Tippy
-                            singleton={source}
-                            className="default-tt dc__mxw-300 dc__mnw-100"
-                            arrow={false}
-                            placement="top"
-                            moveTransition="transform 0.1s ease-out"
-                        />
                         <ul ref={dynamicWrapperRef} className="dynamic-tabs-wrapper flex left p-0 m-0">
                             {tabsData.dynamicTabs.map((tab, idx) => renderTab(tab, idx))}
                         </ul>
