@@ -18,8 +18,6 @@ import { AppDetailsProps } from './triggerView/types'
 import AppOverview from './appOverview/AppOverview'
 import { trackByGAEvent } from '../../common/helpers/Helpers'
 
-
-
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
 const CIDetails = lazy(() => import('./cIDetails/CIDetails'))
