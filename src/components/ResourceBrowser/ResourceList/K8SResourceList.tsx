@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Pagination, Progressing } from '../../common'
+import { highlightSearchedText, Pagination, Progressing } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
     K8S_EMPTY_GROUP,
@@ -17,6 +17,7 @@ import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
+import { log } from 'console'
 
 export function K8SResourceList({
     selectedResource,
@@ -152,9 +153,10 @@ export function K8SResourceList({
                                             <a
                                                 className="dc__link dc__ellipsis-right dc__block cursor"
                                                 data-name={resourceData.name}
-                                                onClick={handleResourceClick}
-                                            >
-                                                {resourceData.name}
+                                                onClick={handleResourceClick}>
+                                                <span dangerouslySetInnerHTML={{
+                                                    __html: highlightSearchedText(searchText, resourceData.name),
+                                                }}></span>
                                             </a>
                                         </Tippy>
                                     </div>
@@ -246,6 +248,7 @@ export function K8SResourceList({
                 {filteredResourceList
                     .slice(resourceListOffset, resourceListOffset + pageSize)
                     .map((clusterData, index) => renderResourceRow(clusterData, index))}
+
             </div>
         )
     }
