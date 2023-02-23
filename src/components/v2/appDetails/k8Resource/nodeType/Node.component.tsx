@@ -199,11 +199,12 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                 copyToClipboard(node?.name, () => setCopied(true))
             }
 
-            const onClickNodeDetailsTab = (kind: string) => {
+            const onClickNodeDetailsTab = (e) => {
+              const _kind = e.target.dataset.name
                 if (node.kind === NodeType.Containers) {
-                    handleActionTabClick(node['pNode'], kind, node.name)
+                    handleActionTabClick(node['pNode'], _kind, node.name)
                 } else {
-                    handleActionTabClick(node, kind)
+                    handleActionTabClick(node, _kind)
                 }
                 handleFocusTabs()
             }
@@ -274,7 +275,8 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                             return (
                                                 <div
                                                     key={'tab__' + index}
-                                                    onClick={() => onClickNodeDetailsTab(kind)}
+                                                    data-name = {kind}
+                                                    onClick={onClickNodeDetailsTab}
                                                     className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
                                                         node.kind === NodeType.Containers
                                                             ? ''
