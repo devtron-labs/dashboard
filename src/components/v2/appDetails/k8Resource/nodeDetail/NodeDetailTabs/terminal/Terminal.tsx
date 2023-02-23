@@ -33,6 +33,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const socketConnectionRef = useRef<SocketConnectionType>(terminalViewProps.socketConnection)
     const { serverMode } = useContext(mainContext)
     const autoSelectNodeRef = useRef('')
+    const prevNode = useRef('')
+    const currNode = useRef('')
    
     const resizeSocket = () => {
         if (terminal && fitAddon && terminalViewProps.isTerminalTab) {
@@ -205,39 +207,51 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         _terminal?.reset()
 
-        if(terminalViewProps.isShellSwitched){
-            startingText = 'shell'
-        }
-
-        if(startingText){
-            if(startingText === 'create'){
-                _terminal.write('Creating pod.')
-            } else if(startingText === 'shell'){
-                _terminal.write(`Switching shell to ${terminalViewProps.shell.value}.`)
-            }
-        }
-        if(startingText !== 'shell' && podState){
-            if (podState === CLUSTER_STATUS.RUNNING) {
-                _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
+        if(prevNode.current === 'autoSelectNode'){
+            _terminal.write('Selecting a node')
+            if(currNode.current){
+                _terminal.write(` > ${currNode.current} selected`)
                 _terminal.writeln('')
-                _terminal.write('Connecting to pod terminal.')
+            }else {
+                _terminal.write('...')
             }
         }
 
-        if(status){
-            if (status === 'timedOut') {
-                _terminal.write(' \u001b[38;5;196mTimed out\u001b[0m')
-            } else if (status === 'failed'){
-                _terminal.write(' \u001b[38;5;196mFailed\u001b[0m')
-            } else if (status === 'Succeded') {
-                _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
+        if(prevNode.current !== 'autoSelectNode' || currNode.current){
+            if(terminalViewProps.isShellSwitched){
+                startingText = 'shell'
             }
-            _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
-            _terminal.write(' | ')
-            _terminal.write('\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m')
-            _terminal.writeln('')
-        } else {
-            _terminal.write('..')
+    
+            if(startingText){
+                if(startingText === 'create'){
+                    _terminal.write('Creating pod.')
+                } else if(startingText === 'shell'){
+                    _terminal.write(`Switching shell to ${terminalViewProps.shell.value}.`)
+                }
+            }
+            if(startingText !== 'shell' && podState){
+                if (podState === CLUSTER_STATUS.RUNNING) {
+                    _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
+                    _terminal.writeln('')
+                    _terminal.write('Connecting to pod terminal.')
+                }
+            }
+    
+            if(status){
+                if (status === 'timedOut') {
+                    _terminal.write(' \u001b[38;5;196mTimed out\u001b[0m')
+                } else if (status === 'failed'){
+                    _terminal.write(' \u001b[38;5;196mFailed\u001b[0m')
+                } else if (status === 'Succeded') {
+                    _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
+                }
+                _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
+                _terminal.write(' | ')
+                _terminal.write('\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m')
+                _terminal.writeln('')
+            } else {
+                _terminal.write('..')
+            }
         }
     }
 
@@ -256,6 +270,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (terminalViewProps.socketConnection === SocketConnectionType.CONNECTING) {
             setErrorMessage({message: '', reason: ''})
             autoSelectNodeRef.current = terminalViewProps.terminalId
+            prevNode.current = terminalViewProps.nodeName
+            currNode.current = ''
             getNewSession()
         }
     }, [terminalViewProps.socketConnection, terminalViewProps.terminalId])
@@ -397,6 +413,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     }
                     if (socketConnectionRef.current === SocketConnectionType.CONNECTING) {
                         postInitialize(sessionId)
+                        currNode.current = _nodeName
                         preFetchData(status)
                     }
                 } else {

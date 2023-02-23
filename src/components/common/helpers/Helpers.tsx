@@ -1217,22 +1217,24 @@ export const trackByGAEvent = (category: string, action: string): void => {
     })
 }
 
-export const createGroupSelectList = (list,nodeLabel): SelectGroupType[] => {
+export const createGroupSelectList = (list, nodeLabel): SelectGroupType[] => {
+    let emptyHeadingCount = 0
     const objList: Record<string, OptionType[]> = list.reduce((acc, obj) => {
-        const key = obj.nodeGroup ? obj.nodeGroup : 'Independent nodes'
+        if (obj.nodeGroup) {
+            emptyHeadingCount++
+        }
+        const key = obj.nodeGroup || 'Independent nodes'
         if (!acc[key]) {
             acc[key] = []
         }
-        acc[key].push({label: obj[nodeLabel], value: obj[nodeLabel]})
+        acc[key].push({ label: obj[nodeLabel], value: obj[nodeLabel] })
         return acc
     }, {})
 
-    const groupList = Object.entries(objList).map(([key, value]) => {
-        return {
-            label: key,
-            options: value,
-        }
-    })
+    const groupList = Object.entries(objList).map(([key, value]) => ({
+        label: emptyHeadingCount ? key : '',
+        options: value,
+    }))
 
-    return [{label: '',options: [AUTO_SELECT]},...groupList]
-}
+    return [{ label: '', options: [AUTO_SELECT] }, ...groupList]
+}  
