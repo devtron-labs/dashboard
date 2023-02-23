@@ -309,8 +309,12 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                     {node.kind !== NodeType.Containers && (
                                         <>
                                             <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
-                                            <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
-                                            <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                            {node.kind.toLowerCase() == NodeType.Pod.toLowerCase() && (
+                                                <>
+                                                    <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                    <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                </>
+                                            )}
                                         </>
                                     )}
                                 </div>
