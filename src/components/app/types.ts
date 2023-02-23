@@ -439,6 +439,7 @@ export interface LabelTagsType {
 export interface AppOverviewProps {
     appMetaInfo: AppMetaInfo
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
+    isJobOverview: boolean
 }
 
 export interface AboutAppInfoModalProps {

@@ -6,6 +6,8 @@ import { getAppOtherEnvironment, getTeamList } from '../../../services/service'
 import { handleUTCTime, Progressing, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../common'
 import { AppDetails, AppOverviewProps, TagType } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg' 
+import { ReactComponent as WorkflowIcon } from '../../../assets/icons/ic-workflow.svg' 
+import { ReactComponent as DescriptionIcon } from '../../../assets/icons/ic-note.svg' 
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
 import { ReactComponent as LinkedIcon } from '../../../assets/icons/ic-linked.svg'  
 import { ReactComponent as RocketIcon } from '../../../assets/icons/ic-nav-rocket.svg' 
@@ -27,7 +29,7 @@ import { StatusConstants } from '../list-new/Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 
-export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverviewProps) {
+export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview  }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
     const [isLoading, setIsLoading] = useState(true)
     const [currentLabelTags, setCurrentLabelTags] = useState<TagType[]>([])
@@ -123,7 +125,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         return (
             <div className="pt-16 pb-16 pl-20 pr-20 dc__border-right">
                 <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7">App name</div>
+                {isJobOverview ? 'Job name' : 'App name'}
                     <div className="fs-13 fw-4 lh-20 cn-9">{appMetaInfo?.appName}</div>
                 </div>
                 <div className="mb-16">
@@ -157,7 +159,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                     </div>
                     <div className="flex fs-12 fw-4 lh-16 cn-7 cursor" onClick={toggleTagsUpdateModal}>
                         <EditIcon className="icon-dim-16 scn-7 mr-4" />
-                        Edit tags
+                        Edit 
                     </div>
                 </div>
                 <div className="flex left flex-wrap dc__gap-8">
@@ -198,7 +200,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                             </div>
                         ))
                     ) : (
-                        <span className="fs-13 fw-4 cn-7">No tags added.</span>
+                        <span className="fs-13 fw-4 cn-7">No tags added.</span> 
                     )}
                 </div>
             </div>
@@ -279,6 +281,46 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
 
         return <div className="fs-13 fw-4 cn-7">This application has not been deployed yet.</div>
     }
+    
+    const renderWorkflowComponent = () => {
+        if(otherEnvsResult[0].result?.length > 0){
+            return (
+                <div className="env-deployments-info-wrapper w-100">
+                    <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
+                        <span>Environment</span>
+                        {isAgroInstalled && <span>App status</span>}
+                        <span>Last deployed</span>
+                    </div>
+                    <div className="env-deployments-info-body">
+                        {otherEnvsResult[0].result.map((_env) => (
+                            <div
+                                key={`${_env.environmentName}-${_env.environmentId}`}
+                                className="env-deployments-info-row display-grid dc__align-items-center"
+                            >
+                                <Link to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`} className="fs-13">
+                                    {_env.environmentName}
+                                </Link>
+                                {isAgroInstalled && (
+                                    <AppStatus
+                                        appStatus={
+                                            _env.lastDeployed
+                                                ? _env.appStatus
+                                                : StatusConstants.NOT_DEPLOYED.noSpaceLower
+                                        }
+                                    />
+                                )}
+                                <span className="fs-13 fw-4 cn-7">
+                                    {renderDeployedTime(_env)}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )
+        } 
+
+        return <div className="fs-13 fw-4 cn-7">No job pipelines are configured</div>
+    }
 
     const renderEnvironmentDeploymentsStatus = () => {
         return (
@@ -294,17 +336,90 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         )
     }
 
+    const renderWorkflowsStatus = () => {
+        return (
+            <div className="flex column left pt-16 pb-16 pl-20 pr-20">
+                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
+                    <WorkflowIcon className="icon-dim-20 scn-9 mr-8" />
+                    Job pipelines
+                </div>
+                {otherEnvsLoading ? (
+                    <div className="dc__loading-dots" />
+                ) : renderWorkflowComponent()}
+            </div>
+        )
+    }
+
     if (!appMetaInfo || fetchingProjects) {
         return <Progressing pageLoader />
     }
+
+    const renderJobDescription = () => {
+        return (
+            <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
+                <div className="flex left dc__content-space mb-12 w-100">
+                    <div className="flex left fs-14 fw-6 lh-20 cn-9">
+                        <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
+                        Description
+                    </div>
+                    <div className="flex fs-12 fw-4 lh-16 cn-7 cursor" onClick={toggleTagsUpdateModal}>
+                        <EditIcon className="icon-dim-16 scn-7 mr-4" />
+                        Edit 
+                    </div>
+                </div>
+                <div className="flex left flex-wrap dc__gap-8">
+                    {currentLabelTags.length > 0 ? (
+                        currentLabelTags.map((tag) => (
+                            <div className="flex">
+                                <div
+                                    className={`flex bc-n50 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
+                                        !tag.value ? ' br-4' : ' dc__left-radius-4'
+                                    }`}
+                                >
+                                    {tag.propagate && <InjectTag className="icon-dim-16 mt-2 mr-4" />}
+                                    <Tippy
+                                        className="default-tt dc__word-break-all"
+                                        arrow={false}
+                                        placement="bottom"
+                                        content={tag.key}
+                                        trigger="mouseenter"
+                                        interactive={true}
+                                    >
+                                        <div className="dc__mxw-400 dc__ellipsis-right">{tag.key}</div>
+                                    </Tippy>
+                                </div>
+                                {tag.value && (
+                                    <Tippy
+                                        className="default-tt dc__word-break-all"
+                                        arrow={false}
+                                        placement="bottom"
+                                        content={tag.value}
+                                        trigger="mouseenter"
+                                        interactive={true}
+                                    >
+                                        <div className="bcn-0 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4 dc__no-left-border dc__mxw-400 dc__ellipsis-right">
+                                            {tag.value}
+                                        </div>
+                                    </Tippy>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        <span className="fs-13 fw-4 cn-7">No description</span>
+                    )}
+                </div>
+            </div>
+        )
+    }
+
 
     return (
         <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
             {renderSideInfoColumn()}
             <div className="app-overview-wrapper dc__overflow-scroll">
-                {renderLabelTags()}
-                {renderAppLevelExternalLinks()}
-                {renderEnvironmentDeploymentsStatus()}
+                {isJobOverview ? renderJobDescription(): renderLabelTags()} 
+                {isJobOverview ? renderLabelTags(): renderAppLevelExternalLinks()}  
+                {isJobOverview ? renderWorkflowsStatus(): renderEnvironmentDeploymentsStatus()} 
             </div>
             {showUpdateAppModal && renderInfoModal()}
             {showUpdateTagModal && renderEditTagsModal()}

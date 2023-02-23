@@ -67,7 +67,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                             />
                         )}
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <AppOverview appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
+                            <AppOverview appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} isJobOverview />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
