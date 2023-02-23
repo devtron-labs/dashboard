@@ -156,7 +156,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                         )}
                                     </div>
                                     <label className="form__row">
-                                        <span className="form__label">Stage Name*</span>
+                                        <span className="form__label dc__required-field">Stage Name</span>
                                         <input
                                             className="form__input"
                                             autoComplete="off"
@@ -169,7 +169,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                         />
                                     </label>
                                     <label className="form__row">
-                                        <span className="form__label">Script to execute*</span>
+                                        <span className="form__label dc__required-field">Script to execute</span>
                                         <div className="script-container">
                                             <CodeEditor
                                                 value={stage.script}
@@ -234,7 +234,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                         )}
                                     </div>
                                     <label className="form__row">
-                                        <span className="form__label">Stage Name*</span>
+                                        <span className="form__label dc__required-field">Stage Name</span>
                                         <input
                                             className="form__input"
                                             autoComplete="off"
@@ -247,7 +247,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                                         />
                                     </label>
                                     <label className="form__row">
-                                        <span className="form__label">Script to execute*</span>
+                                        <span className="form__label dc__required-field">Script to execute</span>
                                         <div className="script-container">
                                             <CodeEditor
                                                 value={stage.script}
@@ -311,7 +311,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
     renderTriggerType() {
         return (
             <div className="form__row">
-                <label className="form__label form__label--sentence">When do you want the pipeline to execute?*</label>
+                <label className="form__label form__label--sentence dc__required-field">When do you want the pipeline to execute?</label>
                 <RadioGroup
                     value={this.props.form.triggerType}
                     name="trigger-type"
@@ -488,7 +488,7 @@ export class CIPipelineAdvanced extends Component<CIPipelineAdvancedProps, {}> {
                     }`}
                 >
                     <label className="form__row">
-                        <span className="form__label">Pipeline Name*</span>
+                        <span className="form__label dc__required-field">Pipeline Name</span>
                         <input
                             className="form__input"
                             autoComplete="off"

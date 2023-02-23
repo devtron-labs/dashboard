@@ -132,8 +132,8 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             </div>
                             <div className="mt-16 flex left">
                                 <div className="w-50 mr-8">
-                                    <label className="form__label mb-6">
-                                        Source Type <span className="cr-5"> *</span>
+                                    <label className="form__label mb-6 dc__required-field">
+                                        Source Type
                                     </label>
                                     <ReactSelect
                                         className="workflow-ci__source"
@@ -174,8 +174,8 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                 {isBranchFixed && (
                                     <div className="w-50 ml-8 left">
                                         <div>
-                                            <label className="form__label mb-6">
-                                                Branch Name<span className="cr-5"> *</span>
+                                            <label className="form__label mb-6 dc__required-field">
+                                                Branch Name
                                             </label>
                                             <input
                                                 className="form__input"
@@ -207,8 +207,8 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
 
                                 {isBranchRegex && (
                                     <div className="w-50 ml-8">
-                                        <label className="form__label mb-6">
-                                            Branch Regex<span className="cr-5"> *</span>
+                                        <label className="form__label mb-6 dc__required-field">
+                                            Branch Regex
                                         </label>
                                         <input
                                             className="form__input"

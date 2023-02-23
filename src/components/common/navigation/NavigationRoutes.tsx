@@ -38,6 +38,7 @@ const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
 const ClusterNodeContainer = lazy(() => import('../../ClusterNodes/ClusterNodeContainer'))
 const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
+const EnvironmentsRoute = lazy(() => import('../../Environments/EnvironmentsRoute'))
 
 export const mainContext = createContext(null)
 
@@ -298,8 +299,12 @@ export default function NavigationRoutes() {
                                                 />
                                             )}
                                         />
+                                        <Route path={URLS.APPLICATION_GROUP}>
+                                            <EnvironmentsRoute />
+                                        </Route>
+
                                         <Route
-                                            path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:node?`}
+                                            path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:group?/:node?`}
                                         >
                                             <ResourceBrowserContainer />
                                         </Route>
@@ -407,7 +412,13 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
                 <Switch>
                     <Route
                         path={`${path}/:appType`}
-                        render={() => <NewAppList isSuperAdmin={isSuperAdmin} isArgoInstalled={isArgoInstalled} appListCount={appListCount} />}
+                        render={() => (
+                            <NewAppList
+                                isSuperAdmin={isSuperAdmin}
+                                isArgoInstalled={isArgoInstalled}
+                                appListCount={appListCount}
+                            />
+                        )}
                     />
                     <Route exact path="">
                         <RedirectToAppList />
