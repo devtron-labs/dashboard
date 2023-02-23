@@ -37,7 +37,7 @@ import { Build } from './Build'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
-
+import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 
 export const ciPipelineContext = createContext(null)
 
@@ -380,7 +380,7 @@ export default function CIPipeline({
             setLoadingData(false)
             let branchNameNotPresent = formData.materials.some((_mat) => !_mat.value)
             if (formData.name === '' || branchNameNotPresent) {
-                toast.error('Some required fields are missing')
+                toast.error(MULTI_REQUIRED_FIELDS_MSG)
             }
             return
         }
