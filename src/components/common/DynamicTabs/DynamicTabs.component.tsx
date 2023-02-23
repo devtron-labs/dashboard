@@ -6,14 +6,14 @@ import { MoreButtonWrapperProps } from './Types'
 export const TabsMenu = (props: MenuProps<any, false, any>) => {
     return (
         <components.Menu {...props}>
-            <div className="tab-search-select__open-tabs">Open tabs</div>
+            <div className="tab-search-select__open-tabs">Open tabs ({props.options.length})</div>
             {props.children}
         </components.Menu>
     )
 }
 
 export const MoreButtonWrapper = ({ children, isMenuOpen, onClose, toggleMenu }: MoreButtonWrapperProps) => (
-    <div className="more-tabs-wrapper" style={{ position: 'relative' }}>
+    <div className="more-tabs-wrapper dc__position-rel ml-auto">
         <button className="more-tabs-option" onClick={toggleMenu}>
             <DropDown
                 className={`rotate icon-dim-20 pointer ${isMenuOpen ? 'fcn-9' : 'fcn-5'}`}

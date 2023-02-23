@@ -1,5 +1,7 @@
 .dynamic-tabs-section {
     .dynamic-tabs-container {
+        border-left: 1px solid var(--N200);
+        border-right: 1px solid var(--N200);
         overflow-x: auto;
         -ms-overflow-style: none;
         scrollbar-width: none;
@@ -71,7 +73,21 @@
         }
 
         .tab-option__select {
-            width: calc(100% - 24px);
+            width: calc(100% - 28px);
+        }
+
+        .tab-search-select__option {
+            .dynamic-tab__close {
+                width: 20px;
+                height: 20px;
+                display: none;
+            }
+
+            &:hover {
+                .dynamic-tab__close {
+                    display: flex;
+                }
+            }
         }
 
         .more-tabs__search-icon,
@@ -121,7 +137,7 @@
         }
     }
 
-    .dynamic-tab__border {
+    .dynamic-tab__border:not(:last-of-type) {
         height: 16px;
         border-left: 1px solid var(--N200);
     }
@@ -144,6 +160,8 @@
 
             .dynamic-tab,
             .fixed-tab {
+                cursor: pointer;
+
                 &.dynamic-tab__item-selected {
                     +.dynamic-tab__border {
                         display: none;

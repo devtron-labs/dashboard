@@ -297,7 +297,7 @@ function Sidebar({
             <div className="k8s-object-kind-search bcn-0 pt-16 pb-8 w-200 dc__m-auto cursor">
                 <ReactSelect
                     ref={searchInputRef}
-                    placeholder="Search Kind"
+                    placeholder="Jump to Kind"
                     options={k8sObjectOptionsList}
                     value={k8sObjectOptionsList[0]} // Just to enable clear indicator
                     inputValue={searchText}

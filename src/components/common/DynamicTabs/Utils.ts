@@ -40,6 +40,7 @@ export const initTabsData = (
     tabs: any[],
     setTabsData: React.Dispatch<React.SetStateAction<TabsDataType>>,
     setSelectedTab: React.Dispatch<React.SetStateAction<any>>,
+    updateMenuState: () => void,
 ): void => {
     const fixedTabs = []
     const dynamicTabs = []
@@ -64,42 +65,9 @@ export const initTabsData = (
         fixedTabs,
         dynamicTabs,
     })
-}
 
-export const computeAndToggleMoreOptions = (
-    tabsSectionRef: React.MutableRefObject<HTMLDivElement>,
-    fixedContainerRef: React.MutableRefObject<HTMLDivElement>,
-    dynamicWrapperRef: React.MutableRefObject<HTMLUListElement>,
-    isMenuOpen: boolean,
-    setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
-) => {
-    const moreButtonEle = tabsSectionRef.current?.querySelector('.more-tabs-wrapper')
-    if (!tabsSectionRef.current || !fixedContainerRef.current || !dynamicWrapperRef.current || !moreButtonEle) {
-        return
-    }
-
-    const primaryItems = dynamicWrapperRef.current.querySelectorAll('li') as NodeListOf<HTMLLIElement>
-    let stopWidth = 0 // init with more options button width
-    const hiddenItems = []
-    const primaryWidth = tabsSectionRef.current.offsetWidth - fixedContainerRef.current.offsetWidth
-
-    // Compute the stop width & get hidden indices
-    primaryItems.forEach((item, i) => {
-        if (primaryWidth >= stopWidth + item.offsetWidth) {
-            stopWidth += item.offsetWidth
-        } else {
-            hiddenItems.push(i)
-        }
-    })
-
-    // Toggle the visibility of More button and items in Secondary
-    if (!hiddenItems.length) {
-        moreButtonEle.classList.add('hide-more-tabs-option')
-    } else {
-        moreButtonEle.classList.remove('hide-more-tabs-option')
-
-        if (isMenuOpen) {
-            setIsMenuOpen(false)
-        }
+    // Update menu state when dynamicTabs are not present
+    if (dynamicTabs.length === 0) {
+        updateMenuState()
     }
 }
