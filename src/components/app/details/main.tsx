@@ -114,8 +114,8 @@ export function AppHeader({ appName }: { appName: string }) {
         }
     }
 
-    function handleEventClick(event: React.MouseEvent<Element, MouseEvent>, action: string) {
-        trackByGAEvent('App', action)
+    function handleEventClick(event){
+        trackByGAEvent('App', event.currentTarget.dataset.action)
         onClickTabPreventDefault(event, 'active')
     }
       
@@ -162,7 +162,8 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_OVERVIEW}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => handleEventClick(event, 'Overview Clicked')}
+                        data-action="Overview Clicked"
+                        onClick={handleEventClick}
                     >
                         Overview
                     </NavLink>
@@ -172,7 +173,8 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DETAILS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => handleEventClick(event, 'App Details Clicked')}
+                        data-action="App Details Clicked"
+                        onClick={handleEventClick}
                     >
                         App Details
                     </NavLink>
@@ -182,7 +184,8 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_TRIGGER}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => handleEventClick(event, 'Build & Deploy Clicked')}
+                        data-action="Build & Deploy Clicked"
+                        onClick={handleEventClick}
                     >
                         Build & Deploy
                     </NavLink>
@@ -192,7 +195,8 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CI_DETAILS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => handleEventClick(event, 'Build History Clicked')}
+                        data-action="Build History Clicked"
+                        onClick={handleEventClick}
                     >
                         Build History
                     </NavLink>
@@ -202,7 +206,8 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CD_DETAILS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => handleEventClick(event, 'Deployment History Clicked')}
+                        data-action="Deployment History Clicked"
+                        onClick={handleEventClick}
                     >
                         Deployment History
                     </NavLink>
@@ -212,7 +217,8 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => handleEventClick(event, 'Deployment Metrics Clicked')}
+                        data-action="Deployment Metrics Clicked"
+                        onClick={handleEventClick}
                     >
                         Deployment Metrics
                     </NavLink>
@@ -222,7 +228,8 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"
-                        onClick={(event) => handleEventClick(event, 'App Configuration Clicked')}
+                        data-action="App Configuration Clicked"
+                        onClick={handleEventClick}
                     >
                         <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
                         App Configuration
