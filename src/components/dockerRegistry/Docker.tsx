@@ -645,7 +645,7 @@ function DockerForm({
                     name="id"
                     autoFocus={true}
                     value={state.id.value}
-                    autoComplete={'off'}
+                    autoComplete="off"
                     error={state.id.error}
                     tabIndex={1}
                     onChange={handleOnChange}
@@ -731,7 +731,7 @@ function DockerForm({
                                     error={customState.awsAccessKeyId.error}
                                     onChange={customHandleChange}
                                     label={selectedDockerRegistryType.id.label}
-                                    autoComplete={'off'}
+                                    autoComplete="off"
                                     placeholder={selectedDockerRegistryType.id.placeholder}
                                 />
                             </div>
@@ -741,7 +741,7 @@ function DockerForm({
                                     tabIndex={6}
                                     value={customState.awsSecretAccessKey.value}
                                     error={customState.awsSecretAccessKey.error}
-                                    onBlur={id&&handleOnBlur}
+                                    onBlur={id && handleOnBlur}
                                     onFocus={handleOnFocus}
                                     onChange={customHandleChange}
                                     label={selectedDockerRegistryType.password.label}
@@ -759,7 +759,7 @@ function DockerForm({
                             name="username"
                             tabIndex={5}
                             value={customState.username.value || selectedDockerRegistryType.id.defaultValue}
-                            autoComplete={'off'}
+                            autoComplete="off"
                             error={customState.username.error}
                             onChange={customHandleChange}
                             label={selectedDockerRegistryType.id.label}
@@ -778,12 +778,11 @@ function DockerForm({
                                 value={customState.password.value}
                                 error={customState.password.error}
                                 onChange={customHandleChange}
-                                onBlur={id&&handleOnBlur}
+                                onBlur={id && handleOnBlur}
                                 onFocus={handleOnFocus}
                                 label={selectedDockerRegistryType.password.label}
                                 placeholder={selectedDockerRegistryType.password.placeholder}
-                                autoComplete={'off'}
-                                
+                                autoComplete="off"
                             />
                         )}
                         {(selectedDockerRegistryType.value === 'artifact-registry' ||
@@ -801,7 +800,12 @@ function DockerForm({
                                     onChange={customHandleChange}
                                     placeholder={selectedDockerRegistryType.password.placeholder}
                                 />
-                                {customState.password?.error && <div className="form__error"> <Error className="form__icon form__icon--error" />{customState.password?.error}</div>}
+                                {customState.password?.error && (
+                                    <div className="form__error">
+                                        <Error className="form__icon form__icon--error" />
+                                        {customState.password?.error}
+                                    </div>
+                                )}
                             </>
                         )}
                     </div>

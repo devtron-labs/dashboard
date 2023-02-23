@@ -113,7 +113,7 @@ interface CodeEditorState {
     code: string;
     noParsing: boolean;
 }
-const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernetes = true, cleanData = false,onBlur,onFocus}) {
+const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernetes = true, cleanData = false, onBlur, onFocus}) {
     if (cleanData) {
         value = cleanKubeManifest(value);
         defaultValue = cleanKubeManifest(defaultValue);

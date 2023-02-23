@@ -197,7 +197,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             providerTab: form.provider,
             form: {
                 ...form,
-                token:form.id&&form.token===""?DEFAULT_SECRET_PLACEHOLDER:form.token
+                token: form.id && form.token === '' ? DEFAULT_SECRET_PLACEHOLDER : form.token,
             },
             isError: DefaultShortGitOps,
             isFormEdited: false,
