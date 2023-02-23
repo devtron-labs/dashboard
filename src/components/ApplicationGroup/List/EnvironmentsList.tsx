@@ -10,8 +10,9 @@ import { getClusterListMinWithoutAuth } from '../../../services/service'
 import { Cluster } from '../../../services/service.types'
 import { AppListConstants } from '../../../config'
 import { useHistory, useLocation } from 'react-router-dom'
+import { AppGroupAdminType } from '../AppGroup.types'
 
-export default function EnvironmentsList() {
+export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
@@ -203,7 +204,7 @@ export default function EnvironmentsList() {
                     />
                 </div>
                 {renderAppliedFilters()}
-                <EnvironmentsListView removeAllFilters={removeAllFilters} />
+                <EnvironmentsListView isSuperAdmin={isSuperAdmin} removeAllFilters={removeAllFilters} />
             </div>
         </div>
     )
