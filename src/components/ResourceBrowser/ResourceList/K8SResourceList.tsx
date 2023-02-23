@@ -151,7 +151,7 @@ export function K8SResourceList({
                                             content={resourceData.name}
                                         >
                                             <a
-                                                className="dc__link dc__ellipsis-right dc__block cursor"
+                                                className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
                                                 data-name={resourceData.name}
                                                 onClick={handleResourceClick}>
                                                 <span dangerouslySetInnerHTML={{
@@ -172,13 +172,15 @@ export function K8SResourceList({
                         </div>
                     ) : (
                         <div
-                            className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
+                            className={`dc__highlight-text dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
                                     : ''
                             }`}
                         >
-                            {resourceData[columnName]}
+                            <span dangerouslySetInnerHTML={{
+                                    __html: highlightSearchedText(searchText, resourceData[columnName]),
+                            }}></span>
                         </div>
                     ),
                 )}
