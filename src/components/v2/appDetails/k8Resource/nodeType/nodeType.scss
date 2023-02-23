@@ -70,7 +70,14 @@
       .node__tabs{
         transition: width 0.3s;
         overflow: hidden;
+      }
+
+      .node__logs{
         width: 40px;
+      }
+
+      .node__manifest{
+        width: 62px;
       }
 
       .node-empty{

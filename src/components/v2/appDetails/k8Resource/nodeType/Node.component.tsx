@@ -18,6 +18,7 @@ import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.
 import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
 import { NoPod } from '../../../../app/ResourceTreeNodes'
+import { NodeDetailTab } from '../nodeDetail/nodeDetail.type'
 
 function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) {
     const { url } = useRouteMatch()
@@ -200,13 +201,26 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             }
 
             const onClickNodeDetailsTab = (e) => {
-              const _kind = e.target.dataset.name
+                const _kind = e.target.dataset.name
                 if (node.kind === NodeType.Containers) {
                     handleActionTabClick(node['pNode'], _kind, node.name)
                 } else {
                     handleActionTabClick(node, _kind)
                 }
                 handleFocusTabs()
+            }
+
+            const getWidthClassnameForTabs = (): string => {
+                let _classname = ''
+                if (
+                    node.kind.toLowerCase() === NodeType.Pod.toLowerCase() ||
+                    node.kind.toLowerCase() === NodeType.Containers.toLowerCase()
+                ) {
+                    _classname = 'node__logs'
+                } else {
+                    _classname = 'node__manifest'
+                }
+                return _classname
             }
 
             return (
@@ -267,7 +281,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                 </Tippy>
                                 <div className="flex left">
                                     <div
-                                        className={`flex left ${
+                                        className={`flex left ${getWidthClassnameForTabs()} ${
                                             node.kind === NodeType.Containers ? '' : 'node__tabs'
                                         } en-2 bw-1 br-4 dc__w-fit-content`}
                                     >
@@ -275,7 +289,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                             return (
                                                 <div
                                                     key={'tab__' + index}
-                                                    data-name = {kind}
+                                                    data-name={kind}
                                                     onClick={onClickNodeDetailsTab}
                                                     className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
                                                         node.kind === NodeType.Containers
