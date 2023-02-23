@@ -71,6 +71,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                         responses.map((response) => response?.value?.result || [])
 
                     let chartRepos = chartRepoList
+                        .filter((chartRepo) => chartRepo.active)
                         .map((chartRepo) => {
                             return {
                                 value: chartRepo.id,
