@@ -56,12 +56,15 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
         }
     }
 
-    const getTabNavLink = ({ name, url, isDeleted, isSelected, iconPath }: DynamicTabType) => {
+    const getTabNavLink = (tab: DynamicTabType, isFixed: boolean) => {
+        const { name, url, isDeleted, isSelected, iconPath } = tab
         return (
             <NavLink
                 to={url}
                 ref={updateRef}
-                className="dynamic-tab__resource cursor cn-9 dc__no-decor dc__outline-none-imp dc__ellipsis-right pl-12 pt-8 pb-8 pr-8 w-100"
+                className={`dynamic-tab__resource cursor cn-9 dc__no-decor dc__outline-none-imp dc__ellipsis-right pl-12 pt-8 pb-8 ${
+                    isFixed ? 'pr-12' : 'pr-8'
+                } w-100`}
                 data-selected={isSelected}
             >
                 <div
@@ -105,14 +108,17 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                         tab.isSelected ? 'dynamic-tab__item-selected' : ''
                     }`}
                 >
-                    <ConditionalWrap condition={!isFixed} wrap={(children) => tabTitleTippyContent(children, tab)}>
+                    <ConditionalWrap
+                        condition={!isFixed}
+                        wrap={(children) => <>{tabTitleTippyContent(children, tab)}</>}
+                    >
                         <div className="flex w-100">
                             <div
                                 className={`w-100 ${
                                     tab.isSelected ? 'dynamic-tab-selected bcn-0 cn-9' : ''
-                                } flex left pr-12 h-36`}
+                                } flex left ${isFixed ? '' : 'pr-12'} h-36`}
                             >
-                                {getTabNavLink(tab)}
+                                {getTabNavLink(tab, isFixed)}
                                 {!isFixed && (
                                     <div
                                         className="dynamic-tab__close flex br-5 ml-auto"
