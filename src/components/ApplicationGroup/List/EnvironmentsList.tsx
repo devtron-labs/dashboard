@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useRouteMatch } from 'react-router'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
@@ -11,9 +11,11 @@ import { Cluster } from '../../../services/service.types'
 import { AppListConstants } from '../../../config'
 import { useHistory, useLocation } from 'react-router-dom'
 import { AppGroupAdminType } from '../AppGroup.types'
+import { mainContext } from '../../common/navigation/NavigationRoutes'
 
 export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
     const match = useRouteMatch()
+    const { setPageOverflowEnabled } = useContext(mainContext)
     const location = useLocation()
     const history = useHistory()
     const [searchText, setSearchText] = useState('')
@@ -126,6 +128,10 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
         setSearchText(event.target.value)
     }
 
+    const onShowHideFilterContent = (show: boolean): void => {
+        setPageOverflowEnabled(!show)
+    }
+
     const renderSearch = (): JSX.Element => {
         return (
             <div className="search dc__position-rel margin-right-0 en-2 bw-1 br-4 h-32">
@@ -201,6 +207,7 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
                         placeholder="Search Cluster"
                         type={AppListConstants.FilterType.CLUTSER}
                         applyFilter={applyFilter}
+                        onShowHideFilterContent={onShowHideFilterContent}
                     />
                 </div>
                 {renderAppliedFilters()}
