@@ -207,3 +207,7 @@ export interface EnvHeaderType {
     setShowEmpty: (empty: boolean) => void
     showEmpty: boolean
 }
+
+export interface AppGroupAdminType {
+    isSuperAdmin: boolean
+}

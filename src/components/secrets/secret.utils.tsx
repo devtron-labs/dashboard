@@ -170,7 +170,7 @@ export const dataHeaders = {
             #Sample Data <br />
             #accessKeyIDSecretRef.name: Name of secret created that would be used for authentication <br />
             #region: The region where Secret is created <br />
-            #secretKey: Variable name to store secret. <br />
+            #secretKey: Name of the secret created. <br />
             #key: AWS Secrets Manager secret name <br />
             #property: AWS Secrets Manager secret key <br />
         </div>
