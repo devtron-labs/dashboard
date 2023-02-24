@@ -235,7 +235,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
         try {
             if(appDetails.appType != AppType.EXTERNAL_HELM_CHART){
-                appId=appDetails.clusterId+"|"+appDetails.namespace+"|"+appDetails.appName;
+                appId = appDetails.clusterId + '|' + appDetails.namespace + '|' + appDetails.appName
             }
             setScalingInProgress(true)
             const workloadUpdate = isHibernateReq ? hibernateApp : unhibernateApp
