@@ -352,7 +352,7 @@ export enum SERVER_MODE {
 export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE
 
 export enum ACCESS_TYPE_MAP {
-    DEVTRON_APPS = '', // devtron app work flow
+    DEVTRON_APPS = 'devtron-app', // devtron app work flow
     HELM_APPS = 'helm-app', //helm app work flow
 }
 
