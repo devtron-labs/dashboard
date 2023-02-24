@@ -28,6 +28,8 @@ import AppStatus from '../AppStatus'
 import { StatusConstants } from '../list-new/Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { toast } from 'react-toastify'
+import { createAppLabels } from '../service'
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview  }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
@@ -38,7 +40,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
     const [editMode, setEditMode] = useState(false)
     const [newDescription, setNewDescription] = useState<string>(appMetaInfo?.description)
-    const [showEditButton, setShowEditButton] = useState(true);
+    const [showEditButton, setShowEditButton] = useState(true)
+    const [submitting, setSubmitting] = useState(false)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         fetchingExternalLinks: true,
         externalLinks: [],
@@ -106,7 +109,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 onClose={toggleChangeProjectModal}
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 fetchingProjects={fetchingProjects}
-                projectsList={projectsListRes?.result} description={''}            />
+                projectsList={projectsListRes?.result} 
+                description={appMetaInfo.description}            />
         )
     }
 
@@ -118,9 +122,33 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 appMetaInfo={appMetaInfo}
                 onClose={toggleTagsUpdateModal}
                 getAppMetaInfoRes={getAppMetaInfoRes}
-                currentLabelTags={currentLabelTags} description={''}            />
+                currentLabelTags={currentLabelTags} description={appMetaInfo.description}            />
         )
     }
+
+    const handleSave = async () => {
+        try {
+          const payload = {
+            id: parseInt(appId),
+            description: newDescription,
+          }
+
+          await createAppLabels(payload)
+      
+        //   setAppMetaInfo((prevState) => ({
+        //     ...prevState,
+        //     description: newDescription,
+        //   }))
+          
+
+          setEditMode(false);
+          setShowEditButton(true)
+        } catch (error) {
+          console.error(error)
+          toast.error('Failed to update job description')
+        }
+      }
+ 
 
     const renderSideInfoColumn = () => {
         return (
@@ -356,12 +384,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     }
 
     const renderJobDescription = () => {
-        const handleSave = () => {
-          // TODO: implement save functionality here
-          setEditMode(false);
-          setShowEditButton(true);
-        }
-      
+        
         const handleCancel = () => {
           setNewDescription(appMetaInfo.description);
           setEditMode(false);
@@ -378,7 +401,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 {editMode ? (
                   <div className="flex left ml-auto dc__gap-8">
                     <button className="btn btn-link p-0 fw-6 cn-7" onClick={handleCancel}>Cancel</button>
-                    <button className="btn btn-link p-0 fw-6 cb-5" onClick={handleSave}>Save</button>
+                    <button className="btn btn-link p-0 fw-6 cb-5"
+                            type="submit"
+                            disabled={submitting}
+                            onClick={handleSave}
+                            >{submitting ? <Progressing /> : 'Save'}</button>
                   </div>
                 ) : (
                   <div className="flex fs-12 fw-4 lh-16 cn-7 cursor ml-auto" onClick={() => {
@@ -410,6 +437,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             </div>
           )          
       }
+
 
     return (
         <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
