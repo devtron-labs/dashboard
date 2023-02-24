@@ -38,6 +38,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
     const [editMode, setEditMode] = useState(false)
     const [newDescription, setNewDescription] = useState<string>(appMetaInfo?.description)
+    const [showEditButton, setShowEditButton] = useState(true);
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         fetchingExternalLinks: true,
         externalLinks: [],
@@ -355,6 +356,18 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     }
 
     const renderJobDescription = () => {
+        const handleSave = () => {
+          // TODO: implement save functionality here
+          setEditMode(false);
+          setShowEditButton(true);
+        }
+      
+        const handleCancel = () => {
+          setNewDescription(appMetaInfo.description);
+          setEditMode(false);
+          setShowEditButton(true);
+        }
+      
         return (
             <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
               <div className="flex left dc__content-space mb-12 w-100">
@@ -362,30 +375,41 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                   <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
                   Description
                 </div>
-                <div className="flex fs-12 fw-4 lh-16 cn-7 cursor" onClick={() => setEditMode(true)}>
-                  <EditIcon className="icon-dim-16 scn-7 mr-4" />
-                  Edit 
-                </div>
+                {editMode ? (
+                  <div className="flex left ml-auto dc__gap-8">
+                    <button className="btn btn-link p-0 fw-6 cn-7" onClick={handleCancel}>Cancel</button>
+                    <button className="btn btn-link p-0 fw-6 cb-5" onClick={handleSave}>Save</button>
+                  </div>
+                ) : (
+                  <div className="flex fs-12 fw-4 lh-16 cn-7 cursor ml-auto" onClick={() => {
+                    setShowEditButton(false);
+                    setEditMode(true);
+                  }}>
+                    <EditIcon className="icon-dim-16 scn-7 mr-4" />
+                    Edit
+                  </div>
+                )}
               </div>
               {editMode ? (
-                <textarea
-                  value={newDescription}
-                  onChange={(e) => setNewDescription(e.target.value)}
-                  className="flex left flex-wrap dc__gap-8 dc__description-textarea"
-                />
+                <div className="flex left flex-wrap dc__gap-8 w-100">
+                  <textarea
+                    value={newDescription}
+                    onChange={(e) => setNewDescription(e.target.value)}
+                    className="flex left flex-wrap dc__gap-8 dc__description-textarea"
+                  />
+                </div>
               ) : (
-                <div className="flex left flex-wrap dc__gap-8 ">
+                <div className="flex left flex-wrap dc__gap-8">
                   {appMetaInfo.description.length > 0 ? (
-                    <div>{appMetaInfo.description}</div> 
+                    <div>{appMetaInfo.description}</div>
                   ) : (
                     <span className="fs-13 fw-4 cn-7">No description</span>
                   )}
                 </div>
               )}
             </div>
-          )         
-    }
-
+          )          
+      }
 
     return (
         <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
