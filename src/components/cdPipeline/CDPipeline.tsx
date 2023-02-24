@@ -57,6 +57,7 @@ import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { PipelineType } from '../app/details/triggerView/types'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
 import { groupStyle } from '../secrets/secret.utils'
+import { TOAST_INFO } from '../../config/constantMessaging'
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -667,7 +668,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         deleteCDPipeline(payload, force)
             .then((response) => {
                 if (response.result) {
-                    toast.success('Pipeline Deleted')
+                    toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
                     this.setState({ loadingData: false })
                     this.props.close()
                     if(this.isWebhookCD){

@@ -80,6 +80,10 @@ export const CONFIRMATION_DIALOG_MESSAGING = {
     DELETION_IN_PROGRESS: 'Deployment pipeline configurations cannot be edited when deletion is in progress.',
 }
 
+export const TOAST_INFO = {
+  PIPELINE_DELETION_INIT: 'Pipeline Deletion Intiated'
+}
+
 export const VIEW_DELETION_STATUS= 'View deletion status'
 
 export const BUTTON_TEXT = {
