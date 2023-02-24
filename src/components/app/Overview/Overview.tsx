@@ -371,9 +371,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 <textarea
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
+                  className="flex left flex-wrap dc__gap-8 dc__description-textarea"
                 />
               ) : (
-                <div className="flex left flex-wrap dc__gap-8">
+                <div className="flex left flex-wrap dc__gap-8 ">
                   {appMetaInfo.description.length > 0 ? (
                     <div>{appMetaInfo.description}</div> 
                   ) : (

@@ -2613,3 +2613,14 @@ textarea::placeholder {
         font-weight: 600;
     }
 }
+
+.dc__description-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #333;
+  }
