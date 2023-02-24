@@ -3,12 +3,13 @@ import EmptyState from '../../EmptyState/EmptyState'
 import notFound from '../../../assets/img/ic-empty-error@2x.png'
 import { useHistory } from 'react-router'
 import { ERROR_EMPTY_SCREEN} from '../../../config/constantMessaging'
+import { URLS } from '../../../config'
 
 function ErrorScreenNotFound() {
   const history = useHistory()
 
   const redirectToHome = () => {
-    history.push(`/`)
+    history.push(`/${URLS.APP}/${URLS.APP_LIST}`)
   }
 
   return (

@@ -71,6 +71,9 @@ export const ERROR_EMPTY_SCREEN = {
     PAGE_NOT_FOUND: 'We could not find this page',
     PAGE_NOT_EXIST: 'This page doesn’t exist or was removed. We suggest you go back to home',
     TAKE_BACK_HOME: 'Take me home',
+    APP_NOT_AVAILABLE: 'This application is not available on this environment',
+    DEPLOYMENT_NOT_EXIST : 'Deployment on this environment doesn’t exist or was removed.',
+    SELECT_ANOTHER_ENVIRONMENT: 'Please select another environment'
 }
 
 export const CONFIRMATION_DIALOG_MESSAGING = {

@@ -26,7 +26,7 @@ import {
     useAsync,
     ScanDetailsModal,
 } from '../../../common'
-import { CustomValueContainer, Option } from './../../../v2/common/ReactSelect.utils'
+import { Option } from './../../../v2/common/ReactSelect.utils'
 import {
     getAppConfigStatus,
     getAppOtherEnvironment,
@@ -58,6 +58,7 @@ import {
     getSelectedNodeItems,
     getPodNameSuffix,
     processDeploymentStatusDetailsData,
+    CustomValueContainer,
 } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
@@ -69,7 +70,7 @@ import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab'
 import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
-import { AppType, DeploymentAppType, NodeType as NodeTypes } from '../../../v2/appDetails/appDetails.type'
+import { AppType, DeploymentAppType, EnvType, NodeType as NodeTypes } from '../../../v2/appDetails/appDetails.type'
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import { getDeploymentStatusDetail } from './appDetails.service'
 import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type'
@@ -427,13 +428,13 @@ export const Details: React.FC<{
                 )}
 
                 {isAppDeleted ? (
-                    <AppDetailsEmptyState />
+                    <AppDetailsEmptyState envType={EnvType.APPLICATION}/>
                 ) : (
                     <AppNotConfigured
                         style={{ height: 'calc(100vh - 150px)' }}
                         image={noGroups}
-                        title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
-                        subtitle={'Once deployed, details for the deployment will be available here.'}
+                        title={'Looks like you’re all set. Go ahead and select an image to deploy'}
+                        subtitle={'Once deployed, details for the deployment will be available here'}
                         buttonTitle={'Go to deploy'}
                         appConfigTabs={URLS.APP_TRIGGER}
                     />

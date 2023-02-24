@@ -568,7 +568,7 @@ function ChartValuesView({
                     type: ChartValuesViewActionTypes.isDeleteInProgress,
                     payload: false,
                 })
-                toast.success('Deletetion intiated.')
+                toast.success('Deletion intiated.')
                 init()
                 history.push(
                     isCreateValueView ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
