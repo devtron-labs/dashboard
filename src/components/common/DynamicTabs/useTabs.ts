@@ -115,7 +115,7 @@ export function useTabs(persistanceKey: string) {
         let pushURL = ''
         let selectedRemoved = false
         const _tabs = tabs.filter((tab) => {
-            if (tab.title.toLowerCase() == title.toLowerCase()) {
+            if (tab.title.toLowerCase() === title.toLowerCase()) {
                 selectedRemoved = tab.isSelected
                 return false
             }
