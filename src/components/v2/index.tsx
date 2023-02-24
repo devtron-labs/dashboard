@@ -153,7 +153,7 @@ function RouterComponent({ envType }) {
                     ) : (
                         <ChartHeaderComponent errorResponseCode={errorResponseCode} />
                     )}
-                    <AppDetailsEmptyState isDevtronApps = {envType === EnvType.APPLICATION}/>
+                    <AppDetailsEmptyState envType = { EnvType.CHART}/>
                 </div>
             )
         } else if (errorResponseCode) {
