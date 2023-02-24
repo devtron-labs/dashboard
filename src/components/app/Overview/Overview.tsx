@@ -40,8 +40,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
     const [editMode, setEditMode] = useState(false)
     const [newDescription, setNewDescription] = useState<string>(appMetaInfo?.description)
-    const [showEditButton, setShowEditButton] = useState(true)
-    const [submitting, setSubmitting] = useState(false)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         fetchingExternalLinks: true,
         externalLinks: [],
@@ -53,6 +51,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     useEffect(() => {
         if (appMetaInfo?.appName) {
             setCurrentLabelTags(appMetaInfo.labels)
+            setNewDescription(appMetaInfo?.description)
             setIsLoading(false)
         }
     }, [appMetaInfo])
@@ -133,16 +132,12 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             description: newDescription,
           }
 
-          await createAppLabels(payload)
-      
-        //   setAppMetaInfo((prevState) => ({
-        //     ...prevState,
-        //     description: newDescription,
-        //   }))
-          
+          const appLabel = await createAppLabels(payload)
 
-          setEditMode(false);
-          setShowEditButton(true)
+          setNewDescription(appLabel.result.description);
+        
+          setEditMode(false)
+
         } catch (error) {
           console.error(error)
           toast.error('Failed to update job description')
@@ -316,9 +311,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             return (
                 <div className="env-deployments-info-wrapper w-100">
                     <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
-                        <span>Environment</span>
-                        {isAgroInstalled && <span>App status</span>}
-                        <span>Last deployed</span>
+                        <span>Pipeline name</span>
+                        <span>Last run status</span>
+                        <span>Last run at</span>
                     </div>
                     <div className="env-deployments-info-body">
                         {otherEnvsResult[0].result.map((_env) => (
@@ -386,9 +381,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const renderJobDescription = () => {
         
         const handleCancel = () => {
-          setNewDescription(appMetaInfo.description);
-          setEditMode(false);
-          setShowEditButton(true);
+          setNewDescription(newDescription)
+          setEditMode(false)
         }
       
         return (
@@ -400,18 +394,24 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 </div>
                 {editMode ? (
                   <div className="flex left ml-auto dc__gap-8">
-                    <button className="btn btn-link p-0 fw-6 cn-7" onClick={handleCancel}>Cancel</button>
-                    <button className="btn btn-link p-0 fw-6 cb-5"
-                            type="submit"
-                            disabled={submitting}
-                            onClick={handleSave}
-                            >{submitting ? <Progressing /> : 'Save'}</button>
+                    <button className="btn btn-link p-0 fw-6 cn-7" onClick={handleCancel}>
+                      Cancel
+                    </button>
+                    <button
+                      className="btn btn-link p-0 fw-6 cb-5"
+                      type="submit"
+                      onClick={handleSave}
+                    >
+                      Save
+                    </button>
                   </div>
                 ) : (
-                  <div className="flex fs-12 fw-4 lh-16 cn-7 cursor ml-auto" onClick={() => {
-                    setShowEditButton(false);
-                    setEditMode(true);
-                  }}>
+                  <div
+                    className="flex fs-12 fw-4 lh-16 cn-7 cursor ml-auto"
+                    onClick={() => {
+                      setEditMode(true);
+                    }}
+                  >
                     <EditIcon className="icon-dim-16 scn-7 mr-4" />
                     Edit
                   </div>
@@ -420,24 +420,26 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
               {editMode ? (
                 <div className="flex left flex-wrap dc__gap-8 w-100">
                   <textarea
+                    placeholder="No description"
                     value={newDescription}
                     onChange={(e) => setNewDescription(e.target.value)}
                     className="flex left flex-wrap dc__gap-8 dc__description-textarea"
                   />
                 </div>
               ) : (
-                <div className="flex left flex-wrap dc__gap-8">
-                  {appMetaInfo.description.length > 0 ? (
-                    <div>{appMetaInfo.description}</div>
+                <div className="flex left flex-wrap dc__gap-8 w-100">
+                  {newDescription ? (
+                    newDescription
                   ) : (
-                    <span className="fs-13 fw-4 cn-7">No description</span>
+                    <span className="cn-7">No description</span>
                   )}
                 </div>
               )}
             </div>
-          )          
+          )
       }
-
+          
+           
 
     return (
         <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
