@@ -144,22 +144,33 @@ function RouterComponent({ envType }) {
         );
     };
 
+    const renderErrorScreen = () => {
+        if (errorResponseCode === 404) {
+            return (
+                <div className="h-100">
+                    {EnvType.APPLICATION === envType ? (
+                        <AppHeaderComponent />
+                    ) : (
+                        <ChartHeaderComponent errorResponseCode={errorResponseCode} />
+                    )}
+                    <AppDetailsEmptyState />
+                </div>
+            )
+        } else if (errorResponseCode) {
+            return (
+                <div className="dc__loading-wrapper">
+                    <ErrorScreenManager code={errorResponseCode} />
+                </div>
+            )
+        } else {
+            return null
+        }
+    }
+
     return (
         <React.Fragment>
             {isLoading && <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />}
-            {
-                errorResponseCode === 404 ?
-                (
-                    <div className='h-100'>
-                       {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent errorResponseCode={errorResponseCode}/>}
-                        <AppDetailsEmptyState />
-                    </div>
-                ) : errorResponseCode ? (
-                    <div className="dc__loading-wrapper">
-                        <ErrorScreenManager code={errorResponseCode} />
-                    </div>
-                ) : null
-              }
+          {renderErrorScreen()}
 
             {!isLoading && !errorResponseCode && (
                 <>
@@ -175,7 +186,7 @@ function RouterComponent({ envType }) {
                                 />
                             </Route>
                             <Route path={`${path}/${URLS.APP_VALUES}`}>
-                                <ValuesComponent appId={params.appId} _init={_init} />
+                                <ValuesComponent appId={params.appId} init={_init} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
                                 <ChartDeploymentHistory appId={params.appId} isExternal={false} />

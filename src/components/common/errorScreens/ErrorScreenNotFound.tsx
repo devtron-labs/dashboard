@@ -2,6 +2,7 @@ import React from 'react'
 import EmptyState from '../../EmptyState/EmptyState'
 import notFound from '../../../assets/img/ic-empty-error@2x.png'
 import { useHistory } from 'react-router'
+import { ERROR_EMPTY_SCREEN} from '../../../config/constantMessaging'
 
 function ErrorScreenNotFound() {
   const history = useHistory()
@@ -17,16 +18,16 @@ function ErrorScreenNotFound() {
                   <img src={notFound} alt="Not Found" />
               </EmptyState.Image>
               <EmptyState.Title>
-                  <h3 className="title">We could not find this page</h3>
+                  <h3 className="title">{ERROR_EMPTY_SCREEN.PAGE_NOT_FOUND}</h3>
               </EmptyState.Title>
               <EmptyState.Subtitle >
-                   <p>This page doesn’t exist or was removed. We suggest you go back to home.</p>
+                   <p>{ERROR_EMPTY_SCREEN.PAGE_NOT_EXIST}</p>
               </EmptyState.Subtitle>
               <EmptyState.Button>
                         <button className="flex cta h-32"
                         onClick={redirectToHome}
                         >
-                            Take me home
+                            {ERROR_EMPTY_SCREEN.TAKE_BACK_HOME}
                         </button>
                     </EmptyState.Button>
           </EmptyState>

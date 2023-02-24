@@ -24,6 +24,7 @@ import { ReactComponent as Dots} from '../../assets/icons/ic-menu-dot.svg'
 import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component';
 import { checkIfDevtronOperatorHelmRelease, URLS } from '../../../../config';
 import  BinWithDots from '../../../../assets/img/delete-bin-with-dots.png'
+import { DELETE_DEPLOYMENT_PIPELINE } from '../../../../config/constantMessaging';
 
 function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: boolean; _init?: () => void}) {
     const params = useParams<{ appId: string; envId?: string }>();
@@ -219,13 +220,13 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
                             )}
                         </Tippy>
                     )}
-                     {appDetails?.deploymentAppDeleteRequest && (
-                    <>
-                     <img src={BinWithDots} alt="error" className='icon-dim-20 mr-4 ml-12' />
-                        <span className="cr-5 fw-6">Deleting deployment pipeline </span>
-                        <span className="dc__loading-dots cr-5" />
-                    </>
-                )}
+                    {appDetails?.deploymentAppDeleteRequest && (
+                        <>
+                            <img src={BinWithDots} alt="error" className="icon-dim-20 mr-4 ml-12" />
+                            <span className="cr-5 fw-6">{DELETE_DEPLOYMENT_PIPELINE}</span>
+                            <span className="dc__loading-dots cr-5" />
+                        </>
+                    )}
                 </div>
             </div>
 

@@ -62,7 +62,7 @@ import {
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
 import { TriggerInfoModal } from '../../list/TriggerInfo'
-import { sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers'
+import { sortObjectArrayAlphabetically, sortOptionsByValue, stopPropagation } from '../../../common/helpers/Helpers'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
@@ -77,6 +77,7 @@ import { TriggerUrlModal } from '../../list/TriggerUrl'
 import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
+import { APP_DETAILS } from '../../../../config/constantMessaging'
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING'
 
@@ -424,15 +425,19 @@ export const Details: React.FC<{
                         />
                     </div>
                 )}
-                {!isAppDeleted  && <AppNotConfigured
-                    style={{ height: 'calc(100vh - 150px)' }}
-                    image={noGroups}
-                    title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
-                    subtitle={'Once deployed, details for the deployment will be available here.'}
-                    buttonTitle={'Go to deploy'}
-                    appConfigTabs={URLS.APP_TRIGGER}
-                />}
-                {isAppDeleted && <AppDetailsEmptyState />}
+
+                {isAppDeleted ? (
+                    <AppDetailsEmptyState />
+                ) : (
+                    <AppNotConfigured
+                        style={{ height: 'calc(100vh - 150px)' }}
+                        image={noGroups}
+                        title={'Looks like you’re all set. Go ahead and select an image to deploy.'}
+                        subtitle={'Once deployed, details for the deployment will be available here.'}
+                        buttonTitle={'Go to deploy'}
+                        appConfigTabs={URLS.APP_TRIGGER}
+                    />
+                )}
             </>
         )
     }
@@ -703,7 +708,7 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
                             e.stopPropagation()
                             history.push(generatePath(path, { ...params, tab: title }) + location.search)
                         }}
-                        onMouseDown={(e) => e.stopPropagation()}
+                        onMouseDown={stopPropagation}
                     >
                         {title}
                     </div>
@@ -867,6 +872,23 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
         setTimeout(() => setLogsCleared(false), 1000)
     }
 
+    const onClickDisconnectTab = () => {
+        setSocketConnection('DISCONNECTING')
+        setIsReconnection(true)
+    }
+
+    const onClickConnectTab = () => {
+        setSocketConnection('CONNECTING')
+    }
+
+    const onClickAbort = () => {
+        setTerminalCleared(true)
+    }
+
+    const onClickPlayStop = () => {
+        handleLogsPause(!logsPaused)
+    }
+
     let isSocketConnecting = socketConnection === 'CONNECTING' || socketConnection === 'CONNECTED'
     let podItems = params.tab?.toLowerCase() == 'logs' ? selectedNodes : nodeName
     return (
@@ -883,17 +905,12 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                             {isSocketConnecting ? (
                                 <Disconnect
                                     className="icon-dim-20 mr-5"
-                                    onClick={(e) => {
-                                        setSocketConnection('DISCONNECTING')
-                                        setIsReconnection(true)
-                                    }}
+                                    onClick={onClickDisconnectTab}
                                 />
                             ) : (
                                 <Connect
                                     className="icon-dim-20 mr-5"
-                                    onClick={(e) => {
-                                        setSocketConnection('CONNECTING')
-                                    }}
+                                    onClick={onClickConnectTab}
                                 />
                             )}
                         </Tippy>
@@ -901,9 +918,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={'Clear'}>
                             <Abort
                                 className="icon-dim-20 mr-8 ml-8"
-                                onClick={(e) => {
-                                    setTerminalCleared(true)
-                                }}
+                                onClick={onClickAbort}
                             />
                         </Tippy>
                     </div>
@@ -920,7 +935,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                     >
                         <div
                             className={`toggle-logs mr-8 ${logsPaused ? 'play' : 'stop'}`}
-                            onClick={(e) => handleLogsPause(!logsPaused)}
+                            onClick={onClickPlayStop}
                         >
                             {logsPaused ? (
                                 <PlayButton className="icon-dim-20" />
@@ -931,7 +946,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                     </Tippy>
 
                     <Tippy className="default-tt" arrow={false} placement="bottom" content={'Clear'}>
-                        <Abort className="icon-dim-20 mr-16 ml-8" onClick={() => onLogsCleared()} />
+                        <Abort className="icon-dim-20 mr-16 ml-8" onClick={onLogsCleared} />
                     </Tippy>
                     <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
                 </>
@@ -1139,10 +1154,9 @@ export function AppNotConfigured({
                     subtitle
                 ) : (
                     <>
-                        This application is not fully configured. Complete the configuration, trigger a deployment and
-                        come back here.
+                        {APP_DETAILS.APP_FULLY_NOT_CONFIGURED}
                         <a href={DOCUMENTATION.APP_CREATE} target="_blank">
-                            Need help?
+                            {APP_DETAILS.NEED_HELP}
                         </a>
                     </>
                 )}

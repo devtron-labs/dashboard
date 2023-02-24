@@ -107,7 +107,7 @@ function ChartValuesView({
     chartVersionsDataFromParent = [],
     chartValuesFromParent,
     selectedVersionFromParent,
-    _init
+    init
 }: ChartValuesViewType) {
     const history = useHistory()
     const { url } = useRouteMatch()
@@ -569,7 +569,7 @@ function ChartValuesView({
                     payload: false,
                 })
                 toast.success('Deletetion intiated.')
-                _init()
+                init()
                 history.push(
                     isCreateValueView ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
                     : `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`

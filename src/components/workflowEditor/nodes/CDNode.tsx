@@ -2,36 +2,32 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import Tippy from '@tippyjs/react'
-import { CDNodeProps } from '../types'
+import { CDNodeProps, CDNodeState } from '../types'
 import { toast } from 'react-toastify'
-import {ERR_MESSAGE_ARGOCD} from '../../../config/constantMessaging'
+import {BUTTON_TEXT, CONFIRMATION_DIALOG_MESSAGING, ERR_MESSAGE_ARGOCD, VIEW_DELETION_STATUS} from '../../../config/constantMessaging'
 import { ConfirmationDialog } from '../../common'
 import warningIconSrc from '../../../assets/icons/info-filled.svg'
 
-interface CDNodeState{
-  showDeletePipelinePopup: boolean
-  previousEnvironmentName: string
-}
 
 export class CDNode extends Component<CDNodeProps, CDNodeState> {
-  constructor(props) {
-    super(props)
-    this.state = {
-      showDeletePipelinePopup: false,
-      previousEnvironmentName: ''
+    constructor(props) {
+        super(props)
+        this.state = {
+            showDeletePipelinePopup: false,
+            previousEnvironmentName: '',
+        }
     }
-  }
 
-  onClickShowDeletePipelinePopup = () =>{
-    this.setState({
-      showDeletePipelinePopup: true,
-      previousEnvironmentName: this.props.environmentName
-    })
-  }
+    onClickShowDeletePipelinePopup = () => {
+        this.setState({
+            showDeletePipelinePopup: true,
+            previousEnvironmentName: this.props.environmentName,
+        })
+    }
 
-  onClickHideDeletePipelinePopup = () =>{
-    this.setState({showDeletePipelinePopup: false})
-  }
+    onClickHideDeletePipelinePopup = () => {
+        this.setState({ showDeletePipelinePopup: false })
+    }
 
     renderReadOnlyCard() {
         return (
@@ -55,52 +51,72 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         if (this.props.deploymentAppDeleteRequest) {
             toast.error(ERR_MESSAGE_ARGOCD)
         } else {
-           event.stopPropagation()
+            event.stopPropagation()
             let { top, left } = event.target.getBoundingClientRect()
             top = top + 25
             this.props.toggleCDMenu()
         }
     }
 
-     getAppDetailsURL(): string {
-       return  `${this.props.match.url.replace('edit/workflow', `details/${this.props.environmentId}/`)}`
-     }
+    getAppDetailsURL(): string {
+        return `${this.props.match.url.replace('edit/workflow', `details/${this.props.environmentId}/`)}`
+    }
 
-     renderConfirmationModal = (): JSX.Element => {
-      return (
-          <ConfirmationDialog>
-              <ConfirmationDialog.Icon src={warningIconSrc} />
-              <ConfirmationDialog.Body title={`Deployment pipeline for ${this.state.previousEnvironmentName} environment is being deleted`} />
-              <p className="fs-13 cn-7 lh-1-54 mt-20">
-                  Deployment pipeline configurations cannot be edited when deletion is in progress.
-              </p>
-              <ConfirmationDialog.ButtonGroup>
-                  <button type="button" className="cta cancel" onClick={this.onClickHideDeletePipelinePopup}>
-                      Cancel
-                  </button>
-                  <Link to={this.getAppDetailsURL()}>
-                    <button className="cta ml-12 dc__no-decor">View deletion status</button>
-                  </Link>
-              </ConfirmationDialog.ButtonGroup>
-          </ConfirmationDialog>
-      )
-  }
+    renderConfirmationModal = (): JSX.Element => {
+        return (
+            <ConfirmationDialog>
+                <ConfirmationDialog.Icon src={warningIconSrc} />
+                <ConfirmationDialog.Body
+                    title={`Deployment pipeline for ${this.state.previousEnvironmentName} environment is being deleted`}
+                />
+                <p className="fs-13 cn-7 lh-1-54 mt-20">{CONFIRMATION_DIALOG_MESSAGING.DELETION_IN_PROGRESS}</p>
+                <ConfirmationDialog.ButtonGroup>
+                    <button type="button" className="cta cancel" onClick={this.onClickHideDeletePipelinePopup}>
+                        {BUTTON_TEXT.CANCEL}
+                    </button>
+                    <Link to={this.getAppDetailsURL()}>
+                        <button className="cta ml-12 dc__no-decor">{VIEW_DELETION_STATUS}</button>
+                    </Link>
+                </ConfirmationDialog.ButtonGroup>
+            </ConfirmationDialog>
+        )
+    }
+
+    onClickNodeCard = () => {
+        if (this.props.deploymentAppDeleteRequest) {
+            this.onClickShowDeletePipelinePopup()
+        } else {
+            this.props.hideWebhookTippy()
+        }
+    }
 
     renderCardContent() {
         return (
             <>
-                <Link to={!this.props.deploymentAppDeleteRequest && this.props.to} onClick={() => this.props.deploymentAppDeleteRequest ? this.onClickShowDeletePipelinePopup() : this.props.hideWebhookTippy()} className="dc__no-decor">
+                <Link
+                    to={!this.props.deploymentAppDeleteRequest && this.props.to}
+                    onClick={this.onClickNodeCard}
+                    className="dc__no-decor"
+                >
                     <div className={`workflow-node cursor ${this.props.deploymentAppDeleteRequest ? 'pl-0' : 'pl-16'}`}>
-                      {
-                        this.props.deploymentAppDeleteRequest ? <div className='workflow-node__trigger-type-delete workflow-node__trigger-type--create-delete'></div>
-                        :
-                        <div className="workflow-node__trigger-type workflow-node__trigger-type--create">
-                            {this.props.triggerType}
-                        </div>}
+                        {this.props.deploymentAppDeleteRequest ? (
+                            <div className="workflow-node__trigger-type-delete workflow-node__trigger-type--create-delete"></div>
+                        ) : (
+                            <div className="workflow-node__trigger-type workflow-node__trigger-type--create">
+                                {this.props.triggerType}
+                            </div>
+                        )}
                         <div className="workflow-node__title flex">
                             <div className="workflow-node__full-width-minus-Icon">
                                 <span className="workflow-node__text-light">
-                                    {this.props.deploymentAppDeleteRequest  ? <div className="cr-5">Deleting<span className="dc__loading-dots" /></div> : this.props.title}
+                                    {this.props.deploymentAppDeleteRequest ? (
+                                        <div className="cr-5">
+                                            Deleting
+                                            <span className="dc__loading-dots" />
+                                        </div>
+                                    ) : (
+                                        this.props.title
+                                    )}
                                 </span>
                                 <span className="dc__ellipsis-right">{this.props.environmentName}</span>
                             </div>
@@ -116,10 +132,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                         placement="top"
                         content={<span className="add-cd-btn-tippy"> Add deployment pipeline </span>}
                     >
-                        <Add
-                            className="icon-dim-18 fcb-5"
-                            onClick={this.onClickAddNode}
-                        />
+                        <Add className="icon-dim-18 fcb-5" onClick={this.onClickAddNode} />
                     </Tippy>
                 </button>
                 {this.state.showDeletePipelinePopup && this.renderConfirmationModal()}

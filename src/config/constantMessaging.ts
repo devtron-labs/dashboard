@@ -64,3 +64,28 @@ export const TOAST_ACCESS_DENIED = {
     TITLE: 'Access denied',
     SUBTITLE: 'You do not have required access to perform this action'
 }
+
+export const DELETE_DEPLOYMENT_PIPELINE = 'Deleting deployment pipeline'
+
+export const ERROR_EMPTY_SCREEN = {
+    PAGE_NOT_FOUND: 'We could not find this page',
+    PAGE_NOT_EXIST: 'This page doesn’t exist or was removed. We suggest you go back to home',
+    TAKE_BACK_HOME: 'Take me home',
+}
+
+export const CONFIRMATION_DIALOG_MESSAGING = {
+    DELETION_IN_PROGRESS: 'Deployment pipeline configurations cannot be edited when deletion is in progress.',
+}
+
+export const VIEW_DELETION_STATUS= 'View deletion status'
+
+export const BUTTON_TEXT = {
+    SAVE: 'Save',
+    DELETE: 'Delete',
+    CANCEL: 'Cancel'
+}
+
+export const APP_DETAILS = {
+   APP_FULLY_NOT_CONFIGURED : 'This application is not fully configured. Complete the configuration, trigger a deployment and come back here.',
+   NEED_HELP: 'Need help?'
+}

@@ -6,7 +6,11 @@ import IndexStore from '../appDetails/index.store'
 import ChartValuesView from './chartValuesDiff/ChartValuesView'
 // TODO: appDetails from useSharedState
 
-function ValuesComponent({ appId, _init }: { appId: string, _init: () => void }) {
+export interface ValueComponentTypes {
+   appId: string, init: () => void
+}
+
+function ValuesComponent({ appId, init }: ValueComponentTypes) {
     const [installedConfig, setInstalledConfig] = useState(null)
     const appDetails = IndexStore.getAppDetails()
 
@@ -28,7 +32,7 @@ function ValuesComponent({ appId, _init }: { appId: string, _init: () => void })
             {!installedConfig ? (
                 <DetailsProgressing loadingText="Please wait…" size={24} />
             ) : (
-                <ChartValuesView appId={appId} installedConfigFromParent={installedConfig} appDetails={appDetails} _init={_init} />
+                <ChartValuesView appId={appId} installedConfigFromParent={installedConfig} appDetails={appDetails} init={init} />
             )}
         </div>
     )

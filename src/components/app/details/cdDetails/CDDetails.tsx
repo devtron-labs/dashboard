@@ -142,9 +142,12 @@ export default function CDDetails() {
         }
     })
 
-    const isEnvDeleted = result[0]['value']?.result.find(_res => _res.deploymentAppDeleteRequest).deploymentAppDeleteRequest
-    if(result[0]['value'].result.length === 1 && !envId && !isEnvDeleted ){
-      replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
+    const isEnvDeleted = result[0]['value'].result.find(
+        (_res) => _res.deploymentAppDeleteRequest,
+    ).deploymentAppDeleteRequest
+
+    if (result[0]['value'].result.length === 1 && !envId && !isEnvDeleted) {
+        replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
     }
     return (
         <>

@@ -110,3 +110,8 @@ export interface WebhookTippyType {
 export interface DeprecatedWarningModalType {
   closePopup: () => void
 }
+
+export interface CDNodeState{
+  showDeletePipelinePopup: boolean
+  previousEnvironmentName: string
+}

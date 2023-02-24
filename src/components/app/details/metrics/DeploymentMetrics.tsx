@@ -2,13 +2,13 @@ import React, { Component } from 'react'
 import { getDeploymentMetrics } from './deploymentMetrics.service';
 import { DatePicker, ErrorScreenManager, Progressing, showError } from '../../../common';
 import { ViewType } from '../../../../config';
-import { RouteComponentProps, generatePath } from 'react-router';
+import { generatePath } from 'react-router';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts';
 import { DeploymentTable } from './DeploymentTable';
 import { getAppOtherEnvironment } from '../../../../services/service';
 import { DeploymentTableModal } from './DeploymentTableModal';
 import { BenchmarkModal } from './BenchmarkModal';
-import moment, { Moment } from 'moment';
+import moment from 'moment';
 import { DropdownIndicator, styles, BenchmarkLine, frequencyXAxisLabel, leadTimeXAxisLabel, recoveryTimeLabel, ReferenceLineLegend, renderCategoryTag, FrequencyTooltip, RecoveryTimeTooltip, LeadTimeTooltip, EliteCategoryMessage, FailureLegendEmptyState } from './deploymentMetrics.util';
 import ReactSelect from 'react-select';
 import { Option } from '../../../v2/common/ReactSelect.utils';
@@ -22,69 +22,9 @@ import { ReactComponent as Success } from '../../../../assets/icons/appstatus/he
 import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclamation.svg';
 import ReactGA from 'react-ga4';
 import './deploymentMetrics.css';
+import { DeploymentMetricsProps, DeploymentMetricsState } from './deploymentMetrics.types';
 
-interface DeploymentMetricsProps extends RouteComponentProps<{ appId: string; envId: string; }> {
 
-}
-
-interface Environment{
-  label: string;
-  value: number;
-  deploymentAppDeleteRequest?: boolean
-}
-
-interface DeploymentMetricsState {
-    code: number;
-    view: string;
-    //used by ReactSelect Menu
-    selectedEnvironment: undefined | { label: string; value: number; };
-    environments: Array<Environment>;
-    frequencyAndLeadTimeGraph: {
-        startTime: number;
-        endTime: number;
-        frequency: number;
-        failures: number;
-        success: number;
-        maxLeadTime: number;
-        xAxisLabel: string;
-    }[];
-    recoveryTimeGraph: { recoveryTime: number }[]
-    rows: any[],
-    avgFrequency: number;
-    maxFrequency: number;
-    totalDeployments: number;
-    failedDeployments: number;
-    frequencyBenchmark: any;
-
-    failureRate: number;
-    failureRateBenchmark: any;
-
-    meanLeadTime: number;
-    meanLeadTimeLabel: string;
-    leadTimeBenchmark: any;
-
-    meanRecoveryTime: number;
-    meanRecoveryTimeLabel: string;
-    recoveryTimeBenchmark: any;
-
-    statusFilter: number;
-
-    benchmarkModalData: {
-        metric: "DEPLOYMENT_FREQUENCY" | "LEAD_TIME" | "RECOVERY_TIME" | "FAILURE_RATE";
-        valueLabel: string;
-        catgory: string;
-        value: number;
-    } | undefined;
-
-    startDate: Moment;
-    endDate: Moment;
-    focusedInput: any;
-    filterBy: {
-        startDate: undefined | Moment;
-        endDate: undefined | Moment;
-    };
-    deploymentTableView: string;
-}
 export default class DeploymentMetrics extends Component<DeploymentMetricsProps, DeploymentMetricsState> {
 
     constructor(props) {
@@ -253,7 +193,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     renderInputs() {
       const _filteredEnvironment = this.state.environments.filter((_env) => !_env.deploymentAppDeleteRequest)
         return <div className="deployment-metrics__inputs bcn-0">
-            <div style={{ width: "180px" }}>
+            <div className='w-180'>
                 <ReactSelect defaultValue={this.state.selectedEnvironment}
                     value={this.state.selectedEnvironment}
                     placeholder="Select Environment"
