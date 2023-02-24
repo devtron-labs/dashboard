@@ -36,6 +36,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const [fetchingProjects, projectsListRes] = useAsync(() => getTeamList(), [appId])
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
     const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
+    const [editMode, setEditMode] = useState(false)
+    const [newDescription, setNewDescription] = useState<string>(appMetaInfo?.description)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         fetchingExternalLinks: true,
         externalLinks: [],
@@ -103,8 +105,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 onClose={toggleChangeProjectModal}
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 fetchingProjects={fetchingProjects}
-                projectsList={projectsListRes?.result}
-            />
+                projectsList={projectsListRes?.result} description={''}            />
         )
     }
 
@@ -116,8 +117,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 appMetaInfo={appMetaInfo}
                 onClose={toggleTagsUpdateModal}
                 getAppMetaInfoRes={getAppMetaInfoRes}
-                currentLabelTags={currentLabelTags}
-            />
+                currentLabelTags={currentLabelTags} description={''}            />
         )
     }
 
@@ -357,59 +357,32 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const renderJobDescription = () => {
         return (
             <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
-                <div className="flex left dc__content-space mb-12 w-100">
-                    <div className="flex left fs-14 fw-6 lh-20 cn-9">
-                        <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
-                        Description
-                    </div>
-                    <div className="flex fs-12 fw-4 lh-16 cn-7 cursor" onClick={toggleTagsUpdateModal}>
-                        <EditIcon className="icon-dim-16 scn-7 mr-4" />
-                        Edit 
-                    </div>
+              <div className="flex left dc__content-space mb-12 w-100">
+                <div className="flex left fs-14 fw-6 lh-20 cn-9">
+                  <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
+                  Description
                 </div>
+                <div className="flex fs-12 fw-4 lh-16 cn-7 cursor" onClick={() => setEditMode(true)}>
+                  <EditIcon className="icon-dim-16 scn-7 mr-4" />
+                  Edit 
+                </div>
+              </div>
+              {editMode ? (
+                <textarea
+                  value={newDescription}
+                  onChange={(e) => setNewDescription(e.target.value)}
+                />
+              ) : (
                 <div className="flex left flex-wrap dc__gap-8">
-                    {currentLabelTags.length > 0 ? (
-                        currentLabelTags.map((tag) => (
-                            <div className="flex">
-                                <div
-                                    className={`flex bc-n50 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
-                                        !tag.value ? ' br-4' : ' dc__left-radius-4'
-                                    }`}
-                                >
-                                    {tag.propagate && <InjectTag className="icon-dim-16 mt-2 mr-4" />}
-                                    <Tippy
-                                        className="default-tt dc__word-break-all"
-                                        arrow={false}
-                                        placement="bottom"
-                                        content={tag.key}
-                                        trigger="mouseenter"
-                                        interactive={true}
-                                    >
-                                        <div className="dc__mxw-400 dc__ellipsis-right">{tag.key}</div>
-                                    </Tippy>
-                                </div>
-                                {tag.value && (
-                                    <Tippy
-                                        className="default-tt dc__word-break-all"
-                                        arrow={false}
-                                        placement="bottom"
-                                        content={tag.value}
-                                        trigger="mouseenter"
-                                        interactive={true}
-                                    >
-                                        <div className="bcn-0 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4 dc__no-left-border dc__mxw-400 dc__ellipsis-right">
-                                            {tag.value}
-                                        </div>
-                                    </Tippy>
-                                )}
-                            </div>
-                        ))
-                    ) : (
-                        <span className="fs-13 fw-4 cn-7">No description</span>
-                    )}
+                  {appMetaInfo.description.length > 0 ? (
+                    <div>{appMetaInfo.description}</div> 
+                  ) : (
+                    <span className="fs-13 fw-4 cn-7">No description</span>
+                  )}
                 </div>
+              )}
             </div>
-        )
+          )         
     }
 
 
