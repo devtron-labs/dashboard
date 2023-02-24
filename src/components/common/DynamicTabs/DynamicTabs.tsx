@@ -38,16 +38,6 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
         initTabsData(tabs, setTabsData, setSelectedTab, closeMenu)
     }, [tabs])
 
-    const handleCloseTab = (e: any, tabIdentifier: string) => {
-        e.stopPropagation()
-        const pushURL = removeTabByIdentifier(tabIdentifier)
-        setTimeout(() => {
-            if (pushURL) {
-                push(pushURL)
-            }
-        }, 1)
-    }
-
     const updateRef = (_node: HTMLAnchorElement) => {
         if (_node?.dataset?.selected === 'true' && _node !== tabRef.current) {
             _node.focus()
@@ -78,7 +68,12 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
 
     const handleTabCloseAction = (e) => {
         e.stopPropagation()
-        handleCloseTab(e, e.currentTarget.dataset.title)
+        const pushURL = removeTabByIdentifier(e.currentTarget.dataset.title)
+        setTimeout(() => {
+            if (pushURL) {
+                push(pushURL)
+            }
+        }, 1)
     }
 
     const getTabTippyContent = (title: string) => {
