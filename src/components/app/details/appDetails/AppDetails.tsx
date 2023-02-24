@@ -701,10 +701,11 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
                     NodeDetailTabs.EVENTS,
                     ...(kind === Nodes.Pod ? [NodeDetailTabs.LOGS, NodeDetailTabs.TERMINAL] : []),
                 ].map((title, idx) => (
+
                     <div
                         key={idx}
                         className={`tab dc__first-letter-capitalize ${
-                            params.tab?.toLowerCase() === title.toLowerCase() ? 'active' : ''
+                            params.tab?.toUpperCase() === title ? 'active' : ''
                         }`}
                         onClick={(e) => {
                             e.stopPropagation()
