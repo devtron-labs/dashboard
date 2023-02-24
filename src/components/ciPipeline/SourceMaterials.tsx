@@ -97,7 +97,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
             {_materials.map((mat, index) => {
                 const isBranchRegex = mat.type === SourceTypeMap.BranchRegex || mat.isRegex
                 const isBranchFixed = mat.type === SourceTypeMap.BranchFixed && !mat.isRegex
-               let itemsForSelection=ciPipelineId==='0'?props.ciPipelineSourceTypeOptions:props.ciPipelineSourceTypeOptions.slice(0,2)
+               const sourceTypeOptions=!ciPipelineId?props.ciPipelineSourceTypeOptions:props.ciPipelineSourceTypeOptions.slice(0,2)
                 const _selectedWebhookEvent =
                     mat.type === SourceTypeMap.WEBHOOK && mat.value && props.webhookData.getSelectedWebhookEvent(mat)
                 let selectedMaterial
@@ -109,17 +109,17 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                         mat.value = ''
                         setProviderChanged(true)
                     }
-                } else if (itemsForSelection.length== 1) {
+                } else if (sourceTypeOptions.length== 1) {
                     selectedMaterial = props.ciPipelineSourceTypeOptions[0]
                 } else {
                     selectedMaterial =
-                        itemsForSelection.find((i) =>
+                        sourceTypeOptions.find((i) =>
                             i.value === SourceTypeMap.WEBHOOK
                                 ? i.isSelected
                                 : isBranchRegex
                                 ? i.value === SourceTypeMap.BranchRegex
                                 : i.value === mat.type,
-                        ) ||itemsForSelection[0]
+                        ) ||sourceTypeOptions[0]
                 }
                 let errorObj = props.validationRules?.sourceValue(isBranchRegex ? mat.regex : mat.value)
                 return (
@@ -139,7 +139,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                         placeholder="Source Type"
                                         isSearchable={false}
                                         menuPortalTarget={document.getElementById('visible-modal')}
-                                        options={itemsForSelection}
+                                        options={sourceTypeOptions}
                                         value={selectedMaterial}
                                         closeMenuOnSelect={true}
                                         onChange={(selected) => props?.selectSourceType(selected, mat.gitMaterialId)}

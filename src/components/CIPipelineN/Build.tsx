@@ -66,15 +66,15 @@ export function Build({
         const _formData = { ...formData }
         let isPrevWebhook =
             _formData.ciPipelineSourceTypeOptions.find((sto) => sto.isSelected)?.value === SourceTypeMap.WEBHOOK
-          
+
         const allMaterials = _formData.materials.map((mat) => {
-            const _type = gitMaterialId === mat.gitMaterialId ? selectedSource.value : mat.type
-            const branchDecision=_type==='SOURCE_TYPE_BRANCH_REGEX'
+            const sourceType = gitMaterialId === mat.gitMaterialId ? selectedSource.value : mat.type
+            const isBranchRegexType = sourceType === 'SOURCE_TYPE_BRANCH_REGEX'
             return {
                 ...mat,
-                type: _type,
-                isRegex:branchDecision,
-                regex:!branchDecision?"":mat.regex,
+                type: sourceType,
+                isRegex: isBranchRegexType,
+                regex: !isBranchRegexType ? '' : mat.regex,
                 value: isPrevWebhook && selectedSource.value !== SourceTypeMap.WEBHOOK ? '' : mat.value,
             }
         })
