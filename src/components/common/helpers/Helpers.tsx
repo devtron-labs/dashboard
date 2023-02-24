@@ -1209,6 +1209,7 @@ export const k8sStyledAgeToSeconds = (duration: string): number => {
 export const eventAgeComparator = <T,>(key: string): any => {
     return (a: T, b: T) => k8sStyledAgeToSeconds(a[key]) - k8sStyledAgeToSeconds(b[key])
 }
+
 export const handleOnFocus = (e): void => {
     if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
         e.target.value = ''
