@@ -37,7 +37,7 @@ export function updateChart(request) {
 export function deleteInstalledChart(installedAppId: string | number, isGitops?: boolean, force?: boolean) {
     let URL
     if (force) {
-        URL = `app-store/deployment/application/delete/${installedAppId}?force=${force}?partialDelete=false}`
+        URL = `app-store/deployment/application/delete/${installedAppId}?force=${force}&partialDelete=false`
     } else {
         URL = `app-store/deployment/application/delete/${installedAppId}?partialDelete=${isGitops ? 'true' : 'false'}`
     }
