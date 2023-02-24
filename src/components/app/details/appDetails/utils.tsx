@@ -620,17 +620,3 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
   }
   return deploymentData
 }
-
-export const CustomValueContainer = (props): JSX.Element => {
-  return (
-      <components.ValueContainer {...props}>
-          {(!props.selectProps.menuIsOpen || !props.selectProps.inputValue) &&
-              (props.selectProps.value?.label ? (
-                  <span className="dc__position-abs cb-5 ml-8 fw-6">{props.selectProps.value.label}</span>
-              ) : (
-                  <span className="dc__position-abs cn-5 ml-8">{props.selectProps.placeholder}</span>
-              ))}
-          {React.cloneElement(props.children[1])}
-      </components.ValueContainer>
-  )
-}

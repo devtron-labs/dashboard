@@ -26,7 +26,7 @@ import {
     useAsync,
     ScanDetailsModal,
 } from '../../../common'
-import { Option } from './../../../v2/common/ReactSelect.utils'
+import { CustomValueContainer, Option } from './../../../v2/common/ReactSelect.utils'
 import {
     getAppConfigStatus,
     getAppOtherEnvironment,
@@ -58,7 +58,6 @@ import {
     getSelectedNodeItems,
     getPodNameSuffix,
     processDeploymentStatusDetailsData,
-    CustomValueContainer,
 } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
@@ -623,6 +622,7 @@ export function EnvSelector({
         singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: 'var(--B500)' }),
         indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
     }
+    // cb-5 ml-8 fw-6
     const sortedEnvironments =
         environments && !environments.deploymentAppDeleteRequest
             ? sortObjectArrayAlphabetically(environments, 'environmentName')
@@ -663,7 +663,7 @@ export function EnvSelector({
                         IndicatorSeparator: null,
                         Option,
                         DropdownIndicator: disabled ? null : components.DropdownIndicator,
-                        ValueContainer: CustomValueContainer,
+                        ValueContainer: (props) => <CustomValueContainer {...props} valClassName= "env-select"/>,
                     }}
                     styles={envSelectorStyle}
                     isDisabled={disabled}

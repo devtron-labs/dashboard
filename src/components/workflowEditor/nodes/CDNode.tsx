@@ -100,7 +100,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                 >
                     <div className={`workflow-node cursor ${this.props.deploymentAppDeleteRequest ? 'pl-0' : 'pl-16'}`}>
                         {this.props.deploymentAppDeleteRequest ? (
-                            <div className="workflow-node__trigger-type-delete workflow-node__trigger-type--create-delete"></div>
+                            <div className="workflow-node__trigger-type-delete workflow-node__trigger-type--create-delete bcr-5 m-0 dc__position-abs fs-10 dc__uppercase dc__top-radius-8 dc__text-center"></div>
                         ) : (
                             <div className="workflow-node__trigger-type workflow-node__trigger-type--create">
                                 {this.props.triggerType}

@@ -1868,6 +1868,11 @@ button.anchor {
     border-top-right-radius: 4px;
 }
 
+.dc__top-radius-8 {
+border-top-right-radius: 8px;
+border-top-left-radius: 8px;
+}
+
 .dc__no-top-radius {
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;

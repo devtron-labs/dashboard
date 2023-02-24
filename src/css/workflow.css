@@ -93,15 +93,7 @@
 
 .workflow-node__trigger-type-delete {
     height: 6px;
-    background-color: var(--R500);
-    margin: 0px;
     transform: rotate(-90deg);
-    position: absolute;
-    text-align: center;
-    font-size: 10px;
-    text-transform: uppercase;
-    border-top-right-radius: 8px;
-    border-top-left-radius: 8px;
 }
 
 .workflow-node__details-link {
