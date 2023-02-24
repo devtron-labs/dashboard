@@ -2615,7 +2615,7 @@ textarea::placeholder {
 }
 
 .dc__description-textarea {
-    width: 100%;
+    width: 100% !important;
     min-height: 100px;
     padding: 8px;
     border: 1px solid #ccc;
@@ -2624,3 +2624,5 @@ textarea::placeholder {
     line-height: 20px;
     color: #333;
   }
+  
+  
