@@ -710,7 +710,7 @@ function DockerForm({
             {selectedDockerRegistryType.value === 'ecr' ? (
                 <>
                     <div className="form__row">
-                        <span className="form__label">Authentication Type*</span>
+                        <span className="form__label dc__required-field">Authentication Type</span>
                         <RadioGroup
                             className="ecr-authType__radio-group"
                             value={isIAMAuthType ? AuthenticationType.IAM : AuthenticationType.BASIC}
@@ -951,7 +951,6 @@ function DockerForm({
                         placement="top"
                         content={
                             <span style={{ display: 'block', width: '160px' }}>
-                                {' '}
                                 Default container registry is automatically selected while creating an application.{' '}
                             </span>
                         }

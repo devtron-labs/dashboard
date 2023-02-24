@@ -546,7 +546,7 @@ function GitForm({
                 <div className="form__row form__row--two-third">
                     <div>
                         <div>
-                            <label className="form__label">Git host*</label>
+                            <label className="form__label dc__required-field">Git host</label>
                             <ReactSelect
                                 name="host"
                                 value={gitHost.value}
@@ -661,7 +661,7 @@ function GitForm({
                 )}
                 {state.auth.value === 'SSH' && (
                     <div className="form__row ">
-                        <div className="form__label">Private SSH key*</div>
+                        <div className="form__label dc__required-field">Private SSH key</div>
                         <textarea
                             placeholder="Enter key text"
                             className="form__input w-100"

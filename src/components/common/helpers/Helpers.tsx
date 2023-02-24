@@ -7,6 +7,7 @@ import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
 import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
+import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
 import { toastAccessDenied } from '../ToastBody'
 import { AggregationKeys, OptionType } from '../../app/types'
@@ -1212,6 +1213,13 @@ export const handleOnFocus = (e): void => {
     if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
         e.target.value = ''
     }
+}
+
+export const trackByGAEvent = (category: string, action: string): void => {
+    ReactGA.event({
+        category: category,
+        action: action,
+    })
 }
 
 export const handleOnBlur = (e): void => {
