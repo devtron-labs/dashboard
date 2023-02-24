@@ -3,7 +3,7 @@ import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../../config'
 import { getAppOtherEnvironment, getTeamList } from '../../../../services/service'
-import { handleUTCTime, Progressing, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../../common'
+import { Progressing, processDeployedTime, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../../common'
 import { AppDetails, AppOverviewProps, TagType } from '../../types'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../../assets/icons/ic-tag.svg'
@@ -232,14 +232,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         )
     }
 
-    const renderDeployedTime = (_env) => {
-        if (_env.lastDeployed) {
-            return handleUTCTime(_env.lastDeployed, true)
-        } else {
-            return isAgroInstalled ? '' : 'Not deployed'
-        }
-    }
-
     const renderDeploymentComponent = () => {
         if(otherEnvsResult[0].result?.length > 0){
             return (
@@ -269,7 +261,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                                     />
                                 )}
                                 <span className="fs-13 fw-4 cn-7">
-                                    {renderDeployedTime(_env)}
+                                    {processDeployedTime(_env.lastDeployed, isAgroInstalled)}
                                 </span>
                             </div>
                         ))}
@@ -312,3 +304,4 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         </div>
     )
 }
+

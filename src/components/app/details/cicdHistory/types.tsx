@@ -98,6 +98,7 @@ export interface GitChangesType {
     ciMaterials: CiMaterial[]
 }
 export interface EmptyViewType {
+    imgSrc?: string
     title: string
     subTitle: string
     link?: string
