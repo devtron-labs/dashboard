@@ -81,7 +81,7 @@ export const CONFIRMATION_DIALOG_MESSAGING = {
 }
 
 export const TOAST_INFO = {
-  PIPELINE_DELETION_INIT: 'Pipeline Deletion Intiated'
+  PIPELINE_DELETION_INIT: 'Pipeline Deletion Initiated'
 }
 
 export const VIEW_DELETION_STATUS= 'View deletion status'
