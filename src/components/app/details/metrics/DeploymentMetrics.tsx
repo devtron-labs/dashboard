@@ -62,6 +62,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                 endDate: undefined,
             },
             deploymentTableView: ViewType.FORM,
+            filteredEnvironment: []
         }
         this.handleDatesChange = this.handleDatesChange.bind(this);
         this.handleFocusChange = this.handleFocusChange.bind(this);
@@ -122,7 +123,9 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
             let callAPIOnEnvOfPrevApp = prevEnvId && allEnv.find(e => Number(e.value) === Number(prevEnvId));
             this.setState({
                 environments: allEnv,
-                view: this.props.match.params.envId || callAPIOnEnvOfPrevApp ? ViewType.LOADING : ViewType.FORM
+                filteredEnvironment: allEnv.filter((_env) => !_env.deploymentAppDeleteRequest),
+                view: this.props.match.params.envId || callAPIOnEnvOfPrevApp ? ViewType.LOADING : ViewType.FORM,
+
             });
         }).then(() => {
             if (prevEnvId && this.state.environments.find(e => Number(e.value) === Number(prevEnvId))) {
@@ -191,7 +194,6 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     }
 
     renderInputs() {
-      const _filteredEnvironment = this.state.environments.filter((_env) => !_env.deploymentAppDeleteRequest)
         return <div className="deployment-metrics__inputs bcn-0">
             <div className='w-180'>
                 <ReactSelect defaultValue={this.state.selectedEnvironment}
@@ -203,7 +205,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                     }}
                     styles={{ ...styles }}
                     onChange={(selected) => { this.handleEnvironmentChange(selected) }}
-                    options={_filteredEnvironment} />
+                    options={this.state.filteredEnvironment} />
             </div>
             <div className="dc__align-right ">
                 {this.props.match.params.envId ?
