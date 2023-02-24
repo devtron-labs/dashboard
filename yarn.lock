@@ -13076,11 +13076,6 @@ react-transition-group@^4.3.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-uuid@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/react-uuid/-/react-uuid-2.0.0.tgz#e3c97e190db9eef53cb9dacfcc7314d913a411fa"
-  integrity sha512-FNUH/8WR/FEtx0Bu6gmt1eONfc413hhvrEXFWUSFGvznUhI4dYoVZA09p7JHoTpnM4WC2D/bG2YSxGKXF4oVLg==
-
 react-virtualized@^9.22.3:
   version "9.22.3"
   resolved "https://registry.npmjs.org/react-virtualized/-/react-virtualized-9.22.3.tgz"

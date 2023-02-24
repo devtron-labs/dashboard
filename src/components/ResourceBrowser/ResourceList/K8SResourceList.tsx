@@ -16,7 +16,6 @@ import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
-import uuid from 'react-uuid'
 
 export function K8SResourceList({
     selectedResource,
@@ -134,10 +133,10 @@ export function K8SResourceList({
                 key={`row--${index}-${resourceData.name}`}
                 className="dc_width-max-content dc_min-w-100 fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover"
             >
-                {resourceList.headers.map((columnName) =>
+                {resourceList.headers.map((columnName, idx) =>
                     columnName === 'name' ? (
                         <div
-                            key={`${resourceData.name}-${uuid()}`}
+                            key={`${resourceData.name}-${idx}`}
                             className={`w-350 dc__inline-flex mr-16 pl-20 pr-8 pt-12 pb-12 ${
                                 fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
                             }`}
@@ -172,7 +171,7 @@ export function K8SResourceList({
                         </div>
                     ) : (
                         <div
-                            key={`${resourceData.name}-${uuid()}`}
+                            key={`${resourceData.name}-${idx}`}
                             className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
