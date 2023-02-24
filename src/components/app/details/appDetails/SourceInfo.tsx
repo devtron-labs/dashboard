@@ -18,7 +18,7 @@ import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
-import  Trash from '../../../../assets/img/delete-bin-with-dots.png'
+import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 
 export function SourceInfo({
     appDetails,
@@ -94,7 +94,7 @@ export function SourceInfo({
                 )}
                 {appDetails?.deploymentAppDeleteRequest && (
                     <>
-                     <img src={Trash} alt="error" className='icon-dim-20 mr-4 ml-12' />
+                     <Trash className='icon-dim-16 mr-8 ml-12'/>
                         <span className="cr-5 fw-6">Deleting deployment pipeline </span>
                         <span className="dc__loading-dots cr-5" />
                     </>

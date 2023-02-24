@@ -26,7 +26,7 @@ import {
     useAsync,
     ScanDetailsModal,
 } from '../../../common'
-import { Option } from './../../../v2/common/ReactSelect.utils'
+import { CustomValueContainer, Option } from './../../../v2/common/ReactSelect.utils'
 import {
     getAppConfigStatus,
     getAppOtherEnvironment,
@@ -644,8 +644,9 @@ export function EnvSelector({
                     ENV
                 </div>
             </div>
-            <div style={{ width: '200px' }}>
+            <div className='app-details__selector w-200'>
                 <Select
+                    placeholder="Select Environment"
                     options={
                         Array.isArray(sortedEnvironments)
                             ? sortedEnvironments.map((env) => ({
@@ -654,7 +655,6 @@ export function EnvSelector({
                               }))
                             : []
                     }
-                    placeholder="Select Environment"
                     value={envId ? { value: +envId, label: environmentName } : null}
                     onChange={(selected, meta) => selectEnvironment((selected as any).value)}
                     closeMenuOnSelect
@@ -662,6 +662,7 @@ export function EnvSelector({
                         IndicatorSeparator: null,
                         Option,
                         DropdownIndicator: disabled ? null : components.DropdownIndicator,
+                        ValueContainer: CustomValueContainer,
                     }}
                     styles={envSelectorStyle}
                     isDisabled={disabled}

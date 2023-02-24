@@ -23,7 +23,7 @@ import { toast } from 'react-toastify';
 import { ReactComponent as Dots} from '../../assets/icons/ic-menu-dot.svg'
 import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component';
 import { checkIfDevtronOperatorHelmRelease, URLS } from '../../../../config';
-import  BinWithDots from '../../../../assets/img/delete-bin-with-dots.png'
+import { ReactComponent as BinWithDots} from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE } from '../../../../config/constantMessaging';
 
 function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: boolean; _init?: () => void}) {
@@ -37,8 +37,6 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
     const [urlInfo, showUrlInfo] = useState<boolean>(false)
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
-    const location = useLocation()
-
 
     useEffect(() => {
         if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
@@ -214,7 +212,7 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
                             content={`Deployed using ${isGitops ? `GitOps` : `Helm`}`}
                         >
                             {isGitops ? (
-                                <ArgoCD className="icon-dim-32 ml-16" />
+                                <ArgoCD className="icon-dim-32 ml-16 mr-8" />
                             ) : (
                                 <Helm className="icon-dim-32 ml-16" />
                             )}
@@ -222,7 +220,7 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
                     )}
                     {appDetails?.deploymentAppDeleteRequest && (
                         <>
-                            <img src={BinWithDots} alt="error" className="icon-dim-20 mr-4 ml-12" />
+                            <BinWithDots className='icon-dim-16 mr-8 ml-12'/>
                             <span className="cr-5 fw-6">{DELETE_DEPLOYMENT_PIPELINE}</span>
                             <span className="dc__loading-dots cr-5" />
                         </>
