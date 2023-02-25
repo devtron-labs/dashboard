@@ -46,6 +46,7 @@ export default function CDDetails() {
             ]),
         [appId],
     )
+    console.log(result)
     const [loadingDeploymentHistory, deploymentHistoryResult, deploymentHistoryError, , , dependencyState] = useAsync(
         () => getTriggerHistory(+appId, +envId, pipelineId, pagination),
         [pagination, appId, envId],
@@ -132,8 +133,8 @@ export default function CDDetails() {
             }),
         )
     }
-    const environment = result[0]['value'].result.find((envData) => envData.environmentId === +envId) || null
-    const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value'].result || []).map((item) => {
+    const environment = result[0]['value']?.result?.find((envData) => envData.environmentId === +envId) || null
+    const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value']?.result || []).map((item) => {
         return {
             value: `${item.environmentId}`,
             label: item.environmentName,
@@ -142,11 +143,11 @@ export default function CDDetails() {
         }
     })
 
-    const isEnvDeleted = result[0]['value'].result.find(
+    const isEnvDeleted = result[0]['value']?.result?.find(
         (_res) => _res.deploymentAppDeleteRequest,
     ).deploymentAppDeleteRequest
 
-    if (result[0]['value'].result.length === 1 && !envId && !isEnvDeleted) {
+    if (result[0]['value']?.result?.length === 1 && !envId && !isEnvDeleted) {
         replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
     }
     return (
