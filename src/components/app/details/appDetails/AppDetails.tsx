@@ -73,14 +73,12 @@ import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
 import { AppType, DeploymentAppType, EnvType } from '../../../v2/appDetails/appDetails.type'
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import { getDeploymentStatusDetail } from './appDetails.service'
-import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type'
+import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType, DetailsType, NodeSelectorsType } from './appDetails.type'
 import { TriggerUrlModal } from '../../list/TriggerUrl'
 import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
 import { APP_DETAILS } from '../../../../config/constantMessaging'
-
-export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING'
 
 export default function AppDetail() {
     const params = useParams<{ appId: string; envId?: string }>()
@@ -154,18 +152,7 @@ export default function AppDetail() {
     )
 }
 
-export const Details: React.FC<{
-    environment?: any
-    appDetailsAPI: (appId: string, envId: string, timeout: number) => Promise<any>
-    setAppDetailResultInParent?: (appDetails) => void
-    isAppDeployment?: boolean
-    environments: any
-    isPollingRequired?: boolean
-    setIsAppDeleted?: any
-    commitInfo?: boolean
-    isAppDeleted?: boolean
-    showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
-}> = ({
+export const Details: React.FC<DetailsType> = ({
     appDetailsAPI,
     setAppDetailResultInParent,
     environment,
@@ -734,36 +721,8 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
     )
 }
 
-interface NodeItems {
-    label: string
-    value: string
-}
 
-interface NodeSelectors {
-    logsPaused: boolean
-    logsCleared: boolean
-    socketConnection: SocketConnectionType
-    nodeName?: string
-    selectedNodes?: string
-    isAppDeployment?: boolean
-    containerName?: string
-    selectedContainer?: string
-    nodes: AggregatedNodes
-    shell: { label: string; value: string }
-    isReconnection: boolean
-    nodeItems: NodeItems[]
-    setSelectNode: (flag) => void
-    setIsReconnection: (flag) => void
-    selectShell: (shell: { label: string; value: string }) => void
-    setTerminalCleared: (flag: boolean) => void
-    handleLogsPause: (e: any) => void
-    selectNode: (nodeName: string) => void
-    selectContainer: (containerName: string) => void
-    setSocketConnection: (value: SocketConnectionType) => void
-    setLogsCleared: (e: any) => void
-    children?: any
-}
-export const NodeSelectors: React.FC<NodeSelectors> = ({
+export const NodeSelectors: React.FC<NodeSelectorsType> = ({
     logsPaused = false,
     socketConnection = true,
     nodeName,

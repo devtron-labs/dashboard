@@ -11,7 +11,7 @@ import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
 import NodeDeleteComponent from './NodeDelete.component'
 import AppDetailsStore from '../../appDetails.store'
 import { toast } from 'react-toastify'
-import { getNodeMessage, getNodeStatus } from './nodeType.util'
+import { getNodeStatus } from './nodeType.util'
 import { useSharedState } from '../../../utils/useSharedState'
 import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
 import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
@@ -264,11 +264,11 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                             >
                                                 {getNodeStatus(node)}
                                             </span>
-                                            {getNodeMessage(node).length > 0 && (
+                                            {node?.health?.message && (
                                                 <>
                                                     <div className="dc__bullet ml-4 mr-4"></div>
                                                     <span className="dc__truncate-text">
-                                                        {getNodeMessage(node)}
+                                                        {node.health.message.toLowerCase()}
                                                     </span>
                                                 </>
                                             )}

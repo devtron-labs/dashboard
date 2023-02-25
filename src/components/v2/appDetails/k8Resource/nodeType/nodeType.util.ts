@@ -1,4 +1,4 @@
-import { Node, iNode } from '../../appDetails.type'
+import { iNode } from '../../appDetails.type'
 
 export const getNodeStatus = (node: iNode) => {
     if (node.info && node.info.length > 0) {
@@ -14,13 +14,6 @@ export const getNodeStatus = (node: iNode) => {
     }
     if (node.health?.status) {
         return node.health?.status
-    }
-    return ''
-}
-
-export const getNodeMessage = (node: Node) => {
-    if (node?.health?.message?.length > 0) {
-        return node.health.message.toLowerCase()
     }
     return ''
 }

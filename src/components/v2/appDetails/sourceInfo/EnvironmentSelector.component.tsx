@@ -4,7 +4,7 @@ import { multiSelectStyles, PopupMenu, showError } from '../../../common';
 import './sourceInfo.css';
 import IndexStore from '../index.store';
 import { AppEnvironment } from './environment.type';
-import { useParams, useHistory, useRouteMatch, useLocation } from 'react-router';
+import { useParams, useHistory, useRouteMatch } from 'react-router';
 
 import { getAppOtherEnvironment } from '../appDetails.api';
 import { useSharedState } from '../../utils/useSharedState';
@@ -22,7 +22,7 @@ import { deleteInstalledChart } from '../../../charts/charts.service';
 import { toast } from 'react-toastify';
 import { ReactComponent as Dots} from '../../assets/icons/ic-menu-dot.svg'
 import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component';
-import { checkIfDevtronOperatorHelmRelease, URLS } from '../../../../config';
+import { checkIfDevtronOperatorHelmRelease } from '../../../../config';
 import { ReactComponent as BinWithDots} from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging';
 

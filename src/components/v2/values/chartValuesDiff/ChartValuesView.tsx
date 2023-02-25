@@ -84,7 +84,7 @@ import ProjectUpdateModal from './ProjectUpdateModal'
 import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 import ChartValuesEditor from './ChartValuesEditor'
 import { ChartRepoSelector } from './ChartRepoSelector'
-import { MULTI_REQUIRED_FIELDS_MSG, SOME_ERROR_MSG } from '../../../../config/constantMessaging'
+import { MULTI_REQUIRED_FIELDS_MSG, SOME_ERROR_MSG, TOAST_INFO } from '../../../../config/constantMessaging'
 import {
     CHART_VALUE_TOAST_MSGS,
     COMPARISON_OPTION_LABELS,
@@ -568,7 +568,7 @@ function ChartValuesView({
                     type: ChartValuesViewActionTypes.isDeleteInProgress,
                     payload: false,
                 })
-                toast.success('Deletion intiated.')
+                toast.success(TOAST_INFO.DELETION_INITIATED)
                 init()
                 history.push(
                     isCreateValueView ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
