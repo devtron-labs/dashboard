@@ -24,7 +24,7 @@ import { ReactComponent as Dots} from '../../assets/icons/ic-menu-dot.svg'
 import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component';
 import { checkIfDevtronOperatorHelmRelease, URLS } from '../../../../config';
 import { ReactComponent as BinWithDots} from '../../../../assets/icons/ic-delete-dots.svg'
-import { DELETE_DEPLOYMENT_PIPELINE } from '../../../../config/constantMessaging';
+import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging';
 
 function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: boolean; _init?: () => void}) {
     const params = useParams<{ appId: string; envId?: string }>();
@@ -82,8 +82,6 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
     const showDeleteConfitmationPopup = () => {
         setShowDeleteConfirmation(true)
     }
-
-    //Local storage for the first time empty state show
 
     const Popup = () => {
         return (
@@ -209,7 +207,7 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
                             className="default-tt"
                             arrow={false}
                             placement="top"
-                            content={`Deployed using ${isGitops ? `GitOps` : `Helm`}`}
+                            content={`Deployed using ${isGitops ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm}`}
                         >
                             {isGitops ? (
                                 <ArgoCD className="icon-dim-32 ml-16 mr-8" />

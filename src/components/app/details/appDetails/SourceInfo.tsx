@@ -5,6 +5,7 @@ import moment from 'moment'
 import { Link, useHistory } from 'react-router-dom'
 import { URLS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { EnvSelector } from './AppDetails'
+import {DeploymentAppTypeNameMapping} from '../../../../config/constantMessaging'
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
@@ -82,7 +83,7 @@ export function SourceInfo({
                         arrow={false}
                         placement="top"
                         content={`Deployed using ${
-                            appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? `GitOps` : `Helm`
+                            appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
                         }`}
                     >
                         {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (

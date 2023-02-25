@@ -66,6 +66,9 @@ export const TOAST_ACCESS_DENIED = {
 }
 
 export const DELETE_DEPLOYMENT_PIPELINE = 'Deleting deployment pipeline'
+export const VIEW_DELETION_STATUS= 'View deletion status'
+
+// Empty state messgaes
 
 export const ERROR_EMPTY_SCREEN = {
     PAGE_NOT_FOUND: 'We could not find this page',
@@ -76,15 +79,23 @@ export const ERROR_EMPTY_SCREEN = {
     SELECT_ANOTHER_ENVIRONMENT: 'Please select another environment'
 }
 
+//Confirmation Dialog messgaes
 export const CONFIRMATION_DIALOG_MESSAGING = {
     DELETION_IN_PROGRESS: 'Deployment pipeline configurations cannot be edited when deletion is in progress.',
 }
+
+// Toast messages
 
 export const TOAST_INFO = {
   PIPELINE_DELETION_INIT: 'Pipeline Deletion Initiated'
 }
 
-export const VIEW_DELETION_STATUS= 'View deletion status'
+export const APP_DETAILS = {
+  APP_FULLY_NOT_CONFIGURED : 'This application is not fully configured. Complete the configuration, trigger a deployment and come back here.',
+  NEED_HELP: 'Need help?'
+}
+
+// All CTA
 
 export const BUTTON_TEXT = {
     SAVE: 'Save',
@@ -92,7 +103,8 @@ export const BUTTON_TEXT = {
     CANCEL: 'Cancel'
 }
 
-export const APP_DETAILS = {
-   APP_FULLY_NOT_CONFIGURED : 'This application is not fully configured. Complete the configuration, trigger a deployment and come back here.',
-   NEED_HELP: 'Need help?'
+//Deployment App Types
+export enum DeploymentAppTypeNameMapping {
+  Helm = 'Helm',
+  GitOps = 'GitOps',
 }

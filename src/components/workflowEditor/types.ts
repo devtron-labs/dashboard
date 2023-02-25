@@ -113,5 +113,4 @@ export interface DeprecatedWarningModalType {
 
 export interface CDNodeState{
   showDeletePipelinePopup: boolean
-  previousEnvironmentName: string
 }

@@ -7,6 +7,7 @@ import { toast } from 'react-toastify'
 import {BUTTON_TEXT, CONFIRMATION_DIALOG_MESSAGING, ERR_MESSAGE_ARGOCD, VIEW_DELETION_STATUS} from '../../../config/constantMessaging'
 import { ConfirmationDialog } from '../../common'
 import warningIconSrc from '../../../assets/icons/info-filled.svg'
+import { URLS } from '../../../config'
 
 
 export class CDNode extends Component<CDNodeProps, CDNodeState> {
@@ -14,14 +15,12 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         super(props)
         this.state = {
             showDeletePipelinePopup: false,
-            previousEnvironmentName: '',
         }
     }
 
     onClickShowDeletePipelinePopup = () => {
         this.setState({
             showDeletePipelinePopup: true,
-            previousEnvironmentName: this.props.environmentName,
         })
     }
 
@@ -59,7 +58,8 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
     }
 
     getAppDetailsURL(): string {
-        return `${this.props.match.url.replace('edit/workflow', `details/${this.props.environmentId}/`)}`
+      const url = `/${URLS.APP_DETAILS}/${this.props.environmentId}`
+        return `${this.props.match.url.replace('edit/workflow', url)}`
     }
 
     renderConfirmationModal = (): JSX.Element => {
@@ -67,7 +67,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
             <ConfirmationDialog>
                 <ConfirmationDialog.Icon src={warningIconSrc} />
                 <ConfirmationDialog.Body
-                    title={`Deployment pipeline for ${this.state.previousEnvironmentName} environment is being deleted`}
+                    title={`Deployment pipeline for ${this.props.environmentName} environment is being deleted`}
                 />
                 <p className="fs-13 cn-7 lh-1-54 mt-20">{CONFIRMATION_DIALOG_MESSAGING.DELETION_IN_PROGRESS}</p>
                 <ConfirmationDialog.ButtonGroup>

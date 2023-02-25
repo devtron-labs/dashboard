@@ -318,11 +318,6 @@ export enum DeploymentAppType {
     GitOps = 'argo_cd',
 }
 
-export enum DeploymentAppTypeNameMapping {
-    HelmKeyValue = 'Helm',
-    GitOpsKeyValue = 'GitOps',
-}
-
 export interface ChartValuesViewAction {
     type: ChartValuesViewActionTypes
     payload: any

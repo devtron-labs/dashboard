@@ -620,3 +620,13 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
   }
   return deploymentData
 }
+
+export const ValueContainer = (props) => {
+  const { children, ...rest } = props
+  return (
+      <components.ValueContainer {...rest}>
+          {'' + props.getValue()[0].value}
+          {React.cloneElement(children[1])}
+      </components.ValueContainer>
+  )
+}

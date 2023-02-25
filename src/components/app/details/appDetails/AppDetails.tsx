@@ -58,6 +58,7 @@ import {
     getSelectedNodeItems,
     getPodNameSuffix,
     processDeploymentStatusDetailsData,
+    ValueContainer,
 } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
@@ -69,7 +70,7 @@ import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab'
 import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
-import { AppType, DeploymentAppType, EnvType, NodeType as NodeTypes } from '../../../v2/appDetails/appDetails.type'
+import { AppType, DeploymentAppType, EnvType } from '../../../v2/appDetails/appDetails.type'
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import { getDeploymentStatusDetail } from './appDetails.service'
 import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from './appDetails.type'
@@ -179,7 +180,6 @@ export const Details: React.FC<{
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
     const [streamData, setStreamData] = useState<AppStreamData>(null)
-    const [detailedNode, setDetailedNode] = useState<{ name: string; containerName?: string }>(null)
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('')
@@ -246,10 +246,6 @@ export const Details: React.FC<{
             clearTimeout(deploymentStatusTimer)
         }
     }
-
-    const isValidEnvironmentId =
-        environments?.find((_env) => _env.environmentId === Number(params.envId))?.environmentId ===
-        Number(params.envId)
 
     useEffect(() => {
         return () => {
@@ -319,10 +315,6 @@ export const Details: React.FC<{
                 setAppDetailsLoading(false)
             }
         }
-    }
-
-    function describeNode(name: string, containerName: string) {
-        setDetailedNode({ name, containerName })
     }
 
     async function callLastExecutionMinAPI(appId, envId) {
@@ -703,7 +695,7 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
                 ].map((title, idx) => (
 
                     <div
-                        key={idx}
+                        key={`kind-${idx}`}
                         className={`tab dc__first-letter-capitalize ${
                             params.tab?.toUpperCase() === title ? 'active' : ''
                         }`}
@@ -866,7 +858,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
     })
 
     function selectPod(selected) {
-        setSelectNode((selected as any).value)
+        setSelectNode((selected).value)
         onLogsCleared()
     }
 
@@ -980,7 +972,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                         onChange={(selected) => {
                             params.tab?.toLowerCase() == 'logs'
                                 ? selectPod(selected)
-                                : selectNode((selected as any).value)
+                                : selectNode((selected).value)
                         }}
                         components={{
                             IndicatorSeparator: null,
@@ -1031,7 +1023,7 @@ export const NodeSelectors: React.FC<NodeSelectors> = ({
                                     }
                                     value={containerName ? { label: containerName, value: containerName } : null}
                                     onChange={(selected) => {
-                                        selectContainer((selected as any).value)
+                                        selectContainer((selected).value)
                                         onLogsCleared()
                                     }}
                                     styles={{
@@ -1234,21 +1226,13 @@ export function TimeRangeSelector({
         }
     }, [selectedRange])
 
-    const ValueContainer = (props) => {
-        const { children, ...rest } = props
-        return (
-            <components.ValueContainer {...rest}>
-                {prefix + props.getValue()[0].value}
-                {React.cloneElement(children[1])}
-            </components.ValueContainer>
-        )
-    }
+
     return (
         <div style={{ width: '210px' }}>
             <Select
                 options={options.map((time) => ({ label: time, value: time }))}
                 value={{ label: selectedRange, value: selectedRange }}
-                onChange={(selected) => selectRange((selected as any).value)}
+                onChange={(selected) => selectRange((selected).value)}
                 menuPortalTarget={document.body}
                 components={{ IndicatorSeparator: null, ValueContainer, Option }}
                 styles={{
@@ -1262,7 +1246,6 @@ export function TimeRangeSelector({
 }
 
 export function SyncStatusMessage(app: Application) {
-    const rev = app.status.sync.revision || app.spec.source.targetRevision || 'HEAD'
     let message = app.spec.source.targetRevision || 'HEAD'
     if (app.status.sync.revision) {
         if (app.spec.source?.chart) {

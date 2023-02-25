@@ -4,7 +4,7 @@ import { useRouteMatch, useParams, useHistory, generatePath, useLocation } from 
 import ReactSelect from 'react-select'
 import { Option, DropdownIndicator } from '../../../v2/common/ReactSelect.utils'
 import moment from 'moment'
-import { Moment12HourFormat, SourceTypeMap, URLS } from '../../../../config'
+import { Moment12HourFormat, SourceTypeMap } from '../../../../config'
 import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
 import {
     CICDSidebarFilterOptionType,
