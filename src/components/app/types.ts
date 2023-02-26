@@ -486,3 +486,10 @@ export interface ResizableTagTextAreaProps {
   refVar?: React.MutableRefObject<HTMLTextAreaElement>
   dependentRef?: React.MutableRefObject<HTMLTextAreaElement>
 }
+
+export interface JobPipeline {
+    ci_pipeline_id: number;
+    ci_pipeline_name: string;
+    started_on: string;
+    status: string;
+}

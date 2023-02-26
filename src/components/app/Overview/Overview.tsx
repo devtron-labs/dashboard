@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
-import { getAppOtherEnvironment, getTeamList } from '../../../services/service'
+import { getAppOtherEnvironment, getJobCIPiprline, getTeamList } from '../../../services/service'
 import { handleUTCTime, Progressing, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../common'
-import { AppDetails, AppOverviewProps, TagType } from '../types'
+import { AppDetails, AppOverviewProps, JobPipeline, TagType } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg' 
 import { ReactComponent as WorkflowIcon } from '../../../assets/icons/ic-workflow.svg' 
 import { ReactComponent as DescriptionIcon } from '../../../assets/icons/ic-note.svg' 
@@ -12,6 +12,9 @@ import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
 import { ReactComponent as LinkedIcon } from '../../../assets/icons/ic-linked.svg'  
 import { ReactComponent as RocketIcon } from '../../../assets/icons/ic-nav-rocket.svg' 
 import { ReactComponent as InjectTag } from '../../../assets/icons/inject-tag.svg'
+import { ReactComponent as SucceededIcon } from '../../../assets/icons/ic-success.svg'
+import { ReactComponent as InProgressIcon } from '../../../assets/icons/ic-progressing.svg'
+import { ReactComponent as FailedIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import AboutAppInfoModal from '../details/AboutAppInfoModal'
 import {
     ExternalLinkIdentifierType,
@@ -47,6 +50,19 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     })
     const [otherEnvsLoading, otherEnvsResult] = useAsync(() => Promise.all([getAppOtherEnvironment(appId), getModuleInfo(ModuleNameMap.ARGO_CD)]), [appId])
     const isAgroInstalled: boolean = otherEnvsResult?.[1].result.status === ModuleStatus.INSTALLED
+    const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
+  
+    useEffect(() => {
+        getJobCIPiprline(appId)
+            .then(response => {
+                setJobPipelines(response.result);
+                setIsLoading(false);
+            })
+            .catch(error => {
+                console.error(error);
+                setIsLoading(false);
+            });
+    }, []);
 
     useEffect(() => {
         if (appMetaInfo?.appName) {
@@ -306,45 +322,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         return <div className="fs-13 fw-4 cn-7">This application has not been deployed yet.</div>
     }
     
-    const renderWorkflowComponent = () => {
-        if(otherEnvsResult[0].result?.length > 0){
-            return (
-                <div className="env-deployments-info-wrapper w-100">
-                    <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
-                        <span>Pipeline name</span>
-                        <span>Last run status</span>
-                        <span>Last run at</span>
-                    </div>
-                    <div className="env-deployments-info-body">
-                        {otherEnvsResult[0].result.map((_env) => (
-                            <div
-                                key={`${_env.environmentName}-${_env.environmentId}`}
-                                className="env-deployments-info-row display-grid dc__align-items-center"
-                            >
-                                <Link to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`} className="fs-13">
-                                    {_env.environmentName}
-                                </Link>
-                                {isAgroInstalled && (
-                                    <AppStatus
-                                        appStatus={
-                                            _env.lastDeployed
-                                                ? _env.appStatus
-                                                : StatusConstants.NOT_DEPLOYED.noSpaceLower
-                                        }
-                                    />
-                                )}
-                                <span className="fs-13 fw-4 cn-7">
-                                    {renderDeployedTime(_env)}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )
-        } 
-
-        return <div className="fs-13 fw-4 cn-7">No job pipelines are configured</div>
-    }
 
     const renderEnvironmentDeploymentsStatus = () => {
         return (
@@ -360,19 +337,54 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         )
     }
 
-    const renderWorkflowsStatus = () => {
-        return (
-            <div className="flex column left pt-16 pb-16 pl-20 pr-20">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
-                    <WorkflowIcon className="icon-dim-20 scn-9 mr-8" />
-                    Job pipelines
+    
+        const renderWorkflowsStatus = () => {
+                const renderWorkflowComponent = () => {
+                if (isLoading) {
+                    return <div className="dc__loading-dots" />;
+                }
+        
+                if (jobPipelines != null) {
+                    return (
+                        <div className="env-deployments-info-wrapper w-100">
+                            <div className=" flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space">
+                                <div className= "m-tb-3">Pipeline name</div>
+                                <div className= "flex">
+                                    <div className= "m-tb-3 mr-16 w-150">Last run status</div>
+                                    <div className="w-150 m-tb-3">Last run at</div>
+                                </div>
+                            </div>
+                            {jobPipelines.map(jobPipeline => (
+                                <div key={jobPipeline.ci_pipeline_id} className="dc__content-space flex dc__border-bottom-n1">
+                                    <div className="h-20 m-tb-3 ci-pipeline-name-color fs-13" >{jobPipeline.ci_pipeline_name}</div>
+                                    <div className= "flex">
+                                        <div className= "mr-16 w-150 h-20 m-tb-3 fs-13 flex dc__content-start">
+                                        {jobPipeline.status === 'Succeeded' && <SucceededIcon className="dc__app-summary__icon icon-dim-20 mr-8" />}
+                                        {jobPipeline.status === 'Failed' && <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />}
+                                        {jobPipeline.status === 'InProgres' && <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />}
+                                        {jobPipeline.status === 'Starting' && <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />}
+                                            {jobPipeline.status}
+                                            </div>
+                                        <div className="w-150 h-20 m-tb-3 fs-13">{handleUTCTime(jobPipeline.started_on, true)}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )
+                 }                   
+                 return <div className="fs-13 fw-4 cn-7">No job pipelines are configured</div>               
+            }        
+            return (
+                <div className="flex column left pt-16 pb-16 pl-20 pr-20">
+                    <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
+                        <WorkflowIcon className="icon-dim-20 scn-9 mr-8" />
+                        Job pipelines
+                    </div>
+                    {renderWorkflowComponent()}
                 </div>
-                {otherEnvsLoading ? (
-                    <div className="dc__loading-dots" />
-                ) : renderWorkflowComponent()}
-            </div>
-        )
-    }
+            )
+        }
+      
 
     if (!appMetaInfo || fetchingProjects) {
         return <Progressing pageLoader />
