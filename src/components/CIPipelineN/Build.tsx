@@ -74,11 +74,11 @@ export function Build({
                 ...mat,
                 type: sourceType,
                 isRegex: isBranchRegexType,
-                regex: !isBranchRegexType ? '' : mat.regex,
+                regex: isBranchRegexType ? mat.regex : '',
                 value: isPrevWebhook && selectedSource.value !== SourceTypeMap.WEBHOOK ? '' : mat.value,
             }
         })
-
+        
         _formData.materials = allMaterials
         // update source type selected option in dropdown
         const _ciPipelineSourceTypeOptions = _formData.ciPipelineSourceTypeOptions.map((sourceTypeOption) => {
