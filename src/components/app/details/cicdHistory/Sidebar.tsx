@@ -117,12 +117,13 @@ const HistorySummaryCard = React.memo(
         const { triggerId, envId, ...rest } = useParams<{ triggerId: string, envId: string }>()
 
         const getPath = (): string => {
-            if (type === HistoryComponentType.CD) {
-                return generatePath(match.path, { ...rest, triggerId: id }) + '/' + currentTab
-              }
-             else {
-                return generatePath(match.path, { ...rest, buildId: id }) + '/' + currentTab
-            }
+          let buildKey = ''
+          if (type === HistoryComponentType.CD) {
+              buildKey = 'triggerId'
+          } else {
+              buildKey = 'buildId'
+          }
+          return generatePath(match.path, { ...rest, [buildKey]: id }) + '/' + currentTab
         }
 
         return (
