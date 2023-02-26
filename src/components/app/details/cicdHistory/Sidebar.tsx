@@ -111,7 +111,7 @@ const HistorySummaryCard = React.memo(
         type,
         stage,
     }: HistorySummaryCardType): JSX.Element => {
-        const match = useRouteMatch()
+        const { path } = useRouteMatch()
         const { pathname } = useLocation()
         const currentTab = pathname.split('/').pop()
         const { triggerId, envId, ...rest } = useParams<{ triggerId: string, envId: string }>()
@@ -123,7 +123,7 @@ const HistorySummaryCard = React.memo(
           } else {
               buildKey = 'buildId'
           }
-          return generatePath(match.path, { ...rest, [buildKey]: id }) + '/' + currentTab
+          return generatePath(path, { ...rest, [buildKey]: id }) + '/' + currentTab
         }
 
         return (
