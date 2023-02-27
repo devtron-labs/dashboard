@@ -24,20 +24,21 @@ import { BreadCrumb, ErrorBoundary, Progressing, showError, trackByGAEvent, useB
 import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import './JobDetails.scss'
+import JobSelector from '../JobSelector/JobSelector'
 
 export default function JobDetails() {
     const { path } = useRouteMatch()
-    const { appId } = useParams<{ appId }>()
+    const { jobId } = useParams<{ jobId: string }>()
     const [jobName, setJobName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
 
     useEffect(() => {
         getAppMetaInfoRes()
-    }, [appId])
+    }, [jobId])
 
     const getAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
         try {
-            const { result } = await getAppMetaInfo(Number(appId))
+            const { result } = await getAppMetaInfo(Number(jobId))
             if (result) {
                 setJobName(result.appName)
                 setAppMetaInfo(result)
@@ -59,12 +60,12 @@ export default function JobDetails() {
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                            <CIDetails key={appId} />
+                            <CIDetails key={jobId} />
                         </Route>
                         <Route
                             path={`${path}/${URLS.APP_CD_DETAILS}/:envId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
                         >
-                            <CDDetails key={appId} />
+                            <CDDetails key={jobId} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
                             <AppConfig appName={jobName} />
@@ -106,8 +107,8 @@ function JobHeader({ jobName }: { jobName: string }) {
             const newUrl = generatePath(match.path, { appId: value })
             history.push(`${newUrl}/${tab}`)
             ReactGA.event({
-                category: 'App Selector',
-                action: 'App Selection Changed',
+                category: 'Job Selector',
+                action: 'Job Selection Changed',
                 label: tab,
             })
         },
@@ -118,7 +119,7 @@ function JobHeader({ jobName }: { jobName: string }) {
         {
             alias: {
                 ':jobId(\\d+)': {
-                    component: <span className="cb-5 fs-16 dc__capitalize">{jobName}</span>,//<AppSelector onChange={handleAppChange} jobId={jobId} jobName={jobName} />,
+                    component: <JobSelector onChange={handleAppChange} jobId={Number(jobId)} jobName={jobName} />,
                     linked: false,
                 },
                 app: {

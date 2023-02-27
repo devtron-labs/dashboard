@@ -56,7 +56,7 @@ export interface Job {
     name: string
     description: string
     ciPipelines: JobCIPipeline[]
-    defaultPipeline: JobCIPipeline,
+    defaultPipeline: JobCIPipeline
 }
 
 export interface JobListState {
@@ -78,10 +78,10 @@ export interface JobListState {
 }
 
 export interface ExpandedRowProps {
-    job: Job;
-    handleEdit: (jobId: number) => void;
-    redirect: (job: Job) => string;
-    close: (e: any) => void;
+    job: Job
+    handleEdit: (jobId: number) => void
+    redirect: (job: Job) => string
+    close: (e: any) => void
     isArgoInstalled: boolean
 }
 
@@ -113,4 +113,10 @@ export interface JobListViewProps extends JobListState, RouteComponentProps<{}> 
     updateDataSyncing: (loading: boolean) => void
     toggleExpandAllRow: () => void
     isArgoInstalled: boolean
+}
+
+export interface JobSelectorType {
+    onChange: ({ label, value }) => void
+    jobId: number
+    jobName: string
 }
