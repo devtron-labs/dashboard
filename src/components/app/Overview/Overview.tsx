@@ -371,7 +371,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                             <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
                                         )}
                                         {jobPipeline.status === 'Starting' && (
-                                            <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                                            <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
                                         )}
                                         {jobPipeline.status}
                                     </div>
