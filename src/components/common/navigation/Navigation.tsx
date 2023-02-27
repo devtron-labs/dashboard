@@ -23,6 +23,7 @@ import ReactGA from 'react-ga4'
 import './navigation.scss'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
 import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
+import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 
@@ -36,6 +37,14 @@ const NavigationList = [
         isAvailableInEA: true,
     },
     {
+        title: 'Jobs',
+        type: 'link',
+        iconClass: 'nav-short-jobs',
+        icon: JobsIcon,
+        href: URLS.JOBS,
+        isAvailableInEA: false,
+    },
+    {
         title: 'Application Groups',
         type: 'link',
         iconClass: 'nav-short-env',
@@ -46,7 +55,7 @@ const NavigationList = [
     {
         title: 'Resource Browser',
         type: 'link',
-        iconClass: 'nav-short-apps',
+        iconClass: 'nav-short-resource-browser',
         icon: CubeIcon,
         href: URLS.RESOURCE_BROWSER,
         isAvailableInEA: true,

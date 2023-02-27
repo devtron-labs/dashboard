@@ -39,6 +39,7 @@ const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/Devt
 const ClusterNodeContainer = lazy(() => import('../../ClusterNodes/ClusterNodeContainer'))
 const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
+const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
 export const mainContext = createContext(null)
 
@@ -316,10 +317,12 @@ export default function NavigationRoutes() {
                                                 />
                                             )}
                                         />
+                                        <Route path={URLS.JOBS}>
+                                            <Jobs />
+                                        </Route>
                                         <Route path={URLS.APPLICATION_GROUP}>
                                             <AppGroupRoute isSuperAdmin={isSuperAdmin} />
                                         </Route>
-
                                         <Route
                                             path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:group?/:node?`}
                                         >

@@ -204,7 +204,11 @@ export const Routes = {
     CLUSTER_LIST_PERMISSION: 'cluster/auth-list',
     ENVIRONMENT_APPS: 'env/app-grouping',
     ENV_APPLICATIONS: 'applications',
-    ENV_DEPLOYMENT_STATUS: 'deployment/status'
+    ENV_DEPLOYMENT_STATUS: 'deployment/status',
+    JOB: 'job',
+    JOB_LIST: 'job/list',
+    JOB_CI_PIPELINE_LIST: 'job/ci-pipeline/list',
+    JOB_CI_PIPELINE_PATCH: 'job//ci-pipeline/patch',
 }
 
 export const ViewType = {
