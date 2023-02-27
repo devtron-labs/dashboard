@@ -6,8 +6,7 @@ import { copyToClipboard, getElapsedTime } from '../../../../common'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
 import PodHeaderComponent from './PodHeader.component'
-import { NodeType, Node, iNode, AppType, NodeComponentProps } from '../../appDetails.type'
-import './nodeType.scss'
+import { NodeType, Node, iNode, NodeComponentProps } from '../../appDetails.type'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
 import NodeDeleteComponent from './NodeDelete.component'
 import AppDetailsStore from '../../appDetails.store'
@@ -15,10 +14,10 @@ import { toast } from 'react-toastify'
 import { getNodeStatus } from './nodeType.util'
 import { useSharedState } from '../../../utils/useSharedState'
 import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
-import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
+import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
 import { NoPod } from '../../../../app/ResourceTreeNodes'
-import { NodeDetailTab } from '../nodeDetail/nodeDetail.type'
+import './nodeType.scss'
 
 function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) {
     const { url } = useRouteMatch()
@@ -255,14 +254,24 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                     )}
                                     <div>
                                         <div>{node.name}</div>
-                                        <div
-                                            className={` app-summary__status-name f-${(
-                                                node?.status ||
-                                                node?.health?.status ||
-                                                ''
-                                            ).toLowerCase()}`}
-                                        >
-                                            {getNodeStatus(node)}
+                                        <div className="flex left">
+                                            <span
+                                                className={`mr-4 app-summary__status-name f-${(
+                                                    node?.status ||
+                                                    node?.health?.status ||
+                                                    ''
+                                                ).toLowerCase()}`}
+                                            >
+                                                {getNodeStatus(node)}
+                                            </span>
+                                            {node?.health?.message && (
+                                                <>
+                                                    <div className="dc__bullet ml-4 mr-4"></div>
+                                                    <span className="dc__truncate-text">
+                                                        {node.health.message.toLowerCase()}
+                                                    </span>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
