@@ -4,12 +4,7 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import Tippy from '@tippyjs/react'
 import { CDNodeProps, CDNodeState } from '../types'
 import { toast } from 'react-toastify'
-import {
-    BUTTON_TEXT,
-    CONFIRMATION_DIALOG_MESSAGING,
-    ERR_MESSAGE_ARGOCD,
-    VIEW_DELETION_STATUS,
-} from '../../../config/constantMessaging'
+import {BUTTON_TEXT, CONFIRMATION_DIALOG_MESSAGING, ERR_MESSAGE_ARGOCD, VIEW_DELETION_STATUS} from '../../../config/constantMessaging'
 import { ConfirmationDialog } from '../../common'
 import warningIconSrc from '../../../assets/icons/info-filled.svg'
 import { URLS } from '../../../config'
@@ -62,7 +57,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
     }
 
     getAppDetailsURL(): string {
-        const url = `/${URLS.APP_DETAILS}/${this.props.environmentId}`
+        const url = `${URLS.APP_DETAILS}/${this.props.environmentId}`
         return `${this.props.match.url.replace('edit/workflow', url)}`
     }
 
