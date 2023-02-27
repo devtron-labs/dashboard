@@ -241,6 +241,8 @@ a:focus {
     hyphens: auto;
 }
 
+//Do not use dc__truncate-text use dc__ellipsis-right
+
 .dc__truncate-text {
     white-space: nowrap;
     overflow: hidden;
@@ -1870,6 +1872,11 @@ button.anchor {
 .dc__top-radius-4 {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
+}
+
+.dc__top-radius-8 {
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
 }
 
 .dc__no-top-radius {

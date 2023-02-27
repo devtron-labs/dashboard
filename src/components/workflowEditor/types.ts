@@ -62,7 +62,7 @@ export interface NoGitOpsConfiguredWarningType {
     closePopup: (isContinueWithHelm: boolean) => void
 }
 
-export interface CDNodeProps {
+export interface CDNodeProps{
     id: string
     deploymentStrategy: string
     triggerType: string
@@ -77,7 +77,10 @@ export interface CDNodeProps {
     to: string
     toggleCDMenu: () => void
     cdNamesList?: string[]
-    hideWebhookTippy?:  () => void
+    hideWebhookTippy?: () => void
+    deploymentAppDeleteRequest: boolean
+    deploymentAppCreated?: boolean
+    match: RouteComponentProps['match']
 }
 
 export interface WebhookNodeProps {
@@ -99,4 +102,8 @@ export interface WebhookTippyType {
 
 export interface DeprecatedWarningModalType {
   closePopup: () => void
+}
+
+export interface CDNodeState{
+  showDeletePipelinePopup: boolean
 }

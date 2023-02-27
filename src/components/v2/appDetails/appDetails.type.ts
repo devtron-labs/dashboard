@@ -180,6 +180,7 @@ export interface AppDetails {
     externalCi?: boolean
     clusterName?: string
     dockerRegistryId?: string
+    deploymentAppDeleteRequest?: boolean
 }
 
 interface MaterialInfo {
@@ -240,6 +241,7 @@ export interface Node {
 
 export interface Health {
     status: string
+    message?: string
 }
 
 export interface NetworkingInfo {
