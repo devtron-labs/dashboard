@@ -1,5 +1,5 @@
 import { ResponseType } from '../../../../services/service.types'
-import { AggregatedNodes, AppStreamData } from '../../types'
+import { AggregatedNodes, AppStreamData, OptionType } from '../../types'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
@@ -137,11 +137,6 @@ export interface ErrorInfoStatusBarType {
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING'
 
-interface NodeItems {
-  label: string
-  value: string
-}
-
 export interface NodeSelectorsType {
   logsPaused: boolean
   logsCleared: boolean
@@ -154,7 +149,7 @@ export interface NodeSelectorsType {
   nodes: AggregatedNodes
   shell: { label: string; value: string }
   isReconnection: boolean
-  nodeItems: NodeItems[]
+  nodeItems: OptionType[]
   setSelectNode: (flag) => void
   setIsReconnection: (flag) => void
   selectShell: (shell: { label: string; value: string }) => void

@@ -241,6 +241,8 @@ a:focus {
     hyphens: auto;
 }
 
+//Do not use dc__truncate-text use dc__ellipsis-right
+
 .dc__truncate-text {
     white-space: nowrap;
     overflow: hidden;

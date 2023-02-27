@@ -48,15 +48,25 @@ const AppDetailsComponent = ({
     return (
         <div className="helm-details">
             <div>
-                <EnvironmentSelectorComponent isExternalApp={isExternalApp} _init={_init}/>
-              {!appDetails.deploymentAppDeleteRequest && <EnvironmentStatusComponent appStreamData={streamData}/>}
+                <EnvironmentSelectorComponent isExternalApp={isExternalApp} _init={_init} />
+                {!appDetails.deploymentAppDeleteRequest && <EnvironmentStatusComponent appStreamData={streamData} />}
             </div>
 
-            <SyncErrorComponent appStreamData={streamData}/>
-           {!appDetails.deploymentAppDeleteRequest && <AppLevelExternalLinks helmAppDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />}
-            <NodeTreeDetailTab appDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />
+            <SyncErrorComponent appStreamData={streamData} />
+            {!appDetails.deploymentAppDeleteRequest && (
+                <AppLevelExternalLinks
+                    helmAppDetails={appDetails}
+                    externalLinks={externalLinks}
+                    monitoringTools={monitoringTools}
+                />
+            )}
+            <NodeTreeDetailTab
+                appDetails={appDetails}
+                externalLinks={externalLinks}
+                monitoringTools={monitoringTools}
+            />
         </div>
-    );
+    )
 };
 
 export default AppDetailsComponent;

@@ -46,7 +46,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
         })
         setPagination({ offset: triggerHistory.size, size: 20 })
     }
-    const selectedFilter = filterOptions?.filter((filterOption) => !filterOption.deploymentAppDeleteRequest )?.find(
+    const selectedFilter = filterOptions?.filter((filterOption) => !filterOption.deploymentAppDeleteRequest ).find(
         (filterOption) => filterOption.value === (type === HistoryComponentType.CI ? pipelineId : envId),
     )
 

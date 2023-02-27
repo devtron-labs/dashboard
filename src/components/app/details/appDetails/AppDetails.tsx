@@ -73,7 +73,12 @@ import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
 import { AppType, DeploymentAppType, EnvType } from '../../../v2/appDetails/appDetails.type'
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import { getDeploymentStatusDetail } from './appDetails.service'
-import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType, DetailsType, NodeSelectorsType } from './appDetails.type'
+import {
+    DeploymentStatusDetailsBreakdownDataType,
+    DeploymentStatusDetailsType,
+    DetailsType,
+    NodeSelectorsType,
+} from './appDetails.type'
 import { TriggerUrlModal } from '../../list/TriggerUrl'
 import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
@@ -110,18 +115,19 @@ export default function AppDetail() {
         setIsAppDeleted(false)
     }, [params.envId])
 
-
     const renderAppNotConfigured = () => {
         return (
-          otherEnvsResult && !otherEnvsLoading &&
-            <>
-                {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) && !isAppDeleted && (
-                    <AppNotConfigured/>
-                )}
-                {!params.envId && otherEnvsResult?.result?.length > 0 && (
-                    <EnvironmentNotConfigured environments={otherEnvsResult?.result} />
-                )}
-            </>
+            otherEnvsResult &&
+            !otherEnvsLoading && (
+                <>
+                    {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) && !isAppDeleted && (
+                        <AppNotConfigured />
+                    )}
+                    {!params.envId && otherEnvsResult?.result?.length > 0 && (
+                        <EnvironmentNotConfigured environments={otherEnvsResult?.result} />
+                    )}
+                </>
+            )
         )
     }
 
@@ -406,7 +412,7 @@ export const Details: React.FC<DetailsType> = ({
                 )}
 
                 {isAppDeleted ? (
-                    <AppDetailsEmptyState envType={EnvType.APPLICATION}/>
+                    <AppDetailsEmptyState envType={EnvType.APPLICATION} />
                 ) : (
                     <AppNotConfigured
                         style={{ height: 'calc(100vh - 150px)' }}
@@ -624,7 +630,7 @@ export function EnvSelector({
                     ENV
                 </div>
             </div>
-            <div className='app-details__selector w-200'>
+            <div className="app-details__selector w-200">
                 <Select
                     placeholder="Select Environment"
                     options={
@@ -642,7 +648,7 @@ export function EnvSelector({
                         IndicatorSeparator: null,
                         Option,
                         DropdownIndicator: disabled ? null : components.DropdownIndicator,
-                        ValueContainer: (props) => <CustomValueContainer {...props} valClassName= "env-select"/>,
+                        ValueContainer: (props) => <CustomValueContainer {...props} valClassName="env-select" />,
                     }}
                     styles={envSelectorStyle}
                     isDisabled={disabled}
@@ -680,7 +686,6 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
                     NodeDetailTabs.EVENTS,
                     ...(kind === Nodes.Pod ? [NodeDetailTabs.LOGS, NodeDetailTabs.TERMINAL] : []),
                 ].map((title, idx) => (
-
                     <div
                         key={`kind-${idx}`}
                         className={`tab dc__first-letter-capitalize ${
@@ -720,7 +725,6 @@ export function EventsLogsTabSelector({ onMouseDown = null }) {
         </FragmentHOC>
     )
 }
-
 
 export const NodeSelectors: React.FC<NodeSelectorsType> = ({
     logsPaused = false,
@@ -817,7 +821,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
     })
 
     function selectPod(selected) {
-        setSelectNode((selected).value)
+        setSelectNode(selected.value)
         onLogsCleared()
     }
 
@@ -857,23 +861,14 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                             content={isSocketConnecting ? 'Disconnect' : 'Connect'}
                         >
                             {isSocketConnecting ? (
-                                <Disconnect
-                                    className="icon-dim-20 mr-5"
-                                    onClick={onClickDisconnectTab}
-                                />
+                                <Disconnect className="icon-dim-20 mr-5" onClick={onClickDisconnectTab} />
                             ) : (
-                                <Connect
-                                    className="icon-dim-20 mr-5"
-                                    onClick={onClickConnectTab}
-                                />
+                                <Connect className="icon-dim-20 mr-5" onClick={onClickConnectTab} />
                             )}
                         </Tippy>
 
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={'Clear'}>
-                            <Abort
-                                className="icon-dim-20 mr-8 ml-8"
-                                onClick={onClickAbort}
-                            />
+                            <Abort className="icon-dim-20 mr-8 ml-8" onClick={onClickAbort} />
                         </Tippy>
                     </div>
                     <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
@@ -887,10 +882,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                         placement="bottom"
                         content={logsPaused ? 'Resume logs (Ctrl+C)' : 'Stop logs (Ctrl+C)'}
                     >
-                        <div
-                            className={`toggle-logs mr-8 ${logsPaused ? 'play' : 'stop'}`}
-                            onClick={onClickPlayStop}
-                        >
+                        <div className={`toggle-logs mr-8 ${logsPaused ? 'play' : 'stop'}`} onClick={onClickPlayStop}>
                             {logsPaused ? (
                                 <PlayButton className="icon-dim-20" />
                             ) : (
@@ -929,9 +921,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                         }
                         closeMenuOnSelect={false}
                         onChange={(selected) => {
-                            params.tab?.toLowerCase() == 'logs'
-                                ? selectPod(selected)
-                                : selectNode((selected).value)
+                            params.tab?.toLowerCase() == 'logs' ? selectPod(selected) : selectNode(selected.value)
                         }}
                         components={{
                             IndicatorSeparator: null,
@@ -982,7 +972,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
                                     }
                                     value={containerName ? { label: containerName, value: containerName } : null}
                                     onChange={(selected) => {
-                                        selectContainer((selected).value)
+                                        selectContainer(selected.value)
                                         onLogsCleared()
                                     }}
                                     styles={{
@@ -1185,13 +1175,12 @@ export function TimeRangeSelector({
         }
     }, [selectedRange])
 
-
     return (
         <div style={{ width: '210px' }}>
             <Select
                 options={options.map((time) => ({ label: time, value: time }))}
                 value={{ label: selectedRange, value: selectedRange }}
-                onChange={(selected) => selectRange((selected).value)}
+                onChange={(selected) => selectRange(selected.value)}
                 menuPortalTarget={document.body}
                 components={{ IndicatorSeparator: null, ValueContainer, Option }}
                 styles={{

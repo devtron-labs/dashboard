@@ -132,7 +132,7 @@ export default function CDDetails() {
             }),
         )
     }
-    const environment = result[0]['value']?.result?.find((envData) => envData.environmentId === +envId) || null
+    const environment = result[0]['value'].result.find((envData) => envData.environmentId === +envId) || null
     const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value']?.result || []).map((item) => {
         return {
             value: `${item.environmentId}`,
