@@ -15,7 +15,7 @@ import {
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'
-import { List, CustomInput as ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
+import { List } from '../globalConfigurations/GlobalConfiguration'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION, REGISTRY_TYPE_MAP } from '../../config'
 import Tippy from '@tippyjs/react'
@@ -736,7 +736,7 @@ function DockerForm({
                                 />
                             </div>
                             <div className="form__row">
-                                <ProtectedInput
+                                <CustomInput
                                     name="awsSecretAccessKey"
                                     tabIndex={6}
                                     value={customState.awsSecretAccessKey.value}
@@ -745,8 +745,8 @@ function DockerForm({
                                     onFocus={handleOnFocus}
                                     onChange={customHandleChange}
                                     label={selectedDockerRegistryType.password.label}
-                                    type="password"
                                     placeholder={selectedDockerRegistryType.password.placeholder}
+                                    autoComplete="off"
                                 />
                             </div>
                         </>
@@ -772,7 +772,7 @@ function DockerForm({
                             selectedDockerRegistryType.value === 'acr' ||
                             selectedDockerRegistryType.value === 'quay' ||
                             selectedDockerRegistryType.value === 'other') && (
-                            <ProtectedInput
+                            <CustomInput
                                 name="password"
                                 tabIndex={6}
                                 value={customState.password.value}

@@ -8,7 +8,6 @@ import {
     GitOpsOrganisationIdType,
     GitProvider,
 } from './gitops.type'
-import { ProtectedInput, CustomInput as CustomPassInput } from '../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg'
@@ -576,7 +575,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             </div>
                             {suggestedURL && (
                                 <>
-                                    {' '}
                                     Please Use:
                                     <button
                                         type="button"
@@ -659,7 +657,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             />
                         </div>
                         <div>
-                            <CustomPassInput
+                            <CustomInput
                                 value={this.state.form.token}
                                 onChange={(event) => this.handleChange(event, 'token')}
                                 name="Enter token"
@@ -682,6 +680,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                     </>
                                 }
                                 labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13"
+                                autoComplete="off"
                             />
                         </div>
                     </div>

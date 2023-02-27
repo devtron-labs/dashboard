@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import './customInput.css';
 
 export interface CustomInputProps {
-    label: string;
+    label: any;
     type?: 'text' | 'number';
     value: string | number;
     labelClassName?: string;
@@ -20,6 +20,8 @@ export interface CustomInputProps {
     link?: string;
     linkText?: string;
     onChange: (...args) => void;
+    onBlur?:(e)=>void;
+    onFocus?:(e)=>void;
 }
 
 export class CustomInput extends Component<CustomInputProps, any> {
@@ -45,6 +47,8 @@ export class CustomInput extends Component<CustomInputProps, any> {
                 placeholder={this.props.placeholder}
                 className={isError ? "form__input" : "form__input"}
                 onChange={e => { e.persist(); this.props.onChange(e) }}
+                onBlur={e=>{ this.props.onBlur && this.props.onBlur(e) }}
+                onFocus={e=>{ this.props.onFocus && this.props.onFocus(e) }}
                 value={this.props.value}
                 disabled={this.props.disabled} />
             {this.props.error && <div className="form__error">

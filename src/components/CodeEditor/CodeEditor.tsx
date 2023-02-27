@@ -173,10 +173,10 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
         editorRef.current = editor
         monacoRef.current = monaco
         editor.onDidFocusEditorWidget(() => {
-            onFocus()
+            onFocus && onFocus()
         })
         editor.onDidBlurEditorWidget(() => {
-            onBlur()
+            onBlur && onBlur()
         })
     }
 

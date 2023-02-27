@@ -365,21 +365,19 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         this.setState({ configMap: value })
     }
 
-    handleOnBlurAndFocus(
-        clientId: string,
-        clientSecret: string,
-        currentClientId: string,
-        currentClientSecret: string,
-    ): void {
+    handleOnBlur(): void {
         if (this.state.configMap !== SwitchItemValues.Configuration) return
-        const newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
-        if (newConfig.clientID === currentClientId) {
-            newConfig.clientID = clientId
+
+        let newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
+
+        if (!newConfig.clientID) {
+            newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
         }
-        if (newConfig.clientSecret === currentClientSecret) {
-            newConfig.clientSecret = clientSecret
+        if (!newConfig.clientSecret) {
+            newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
         }
-        const value = yamlJsParser.stringify(newConfig)
+        let value = yamlJsParser.stringify(newConfig)
+
         this.setState({
             ssoConfig: {
                 ...this.state.ssoConfig,
@@ -390,75 +388,38 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             },
         })
     }
-
+    
     renderSSOCodeEditor() {
-        let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 })
-        let codeEditorBody =
-            this.state.configMap === SwitchItemValues.Configuration
-                ? ssoConfig
-                : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 })
-        let shebangHtml =
-            this.state.configMap === SwitchItemValues.Configuration ? (
-                <div
-                    style={{
-                        resize: 'none',
-                        lineHeight: '1.4',
-                        border: 'none',
-                        padding: `0 35px`,
-                        overflow: 'none',
-                        color: '#f32e2e',
-                        fontSize: '14px',
-                        fontFamily: 'Consolas, "Courier New", monospace',
-                    }}
-                    className="w-100"
-                >
-                    <p className="m-0">config:</p>
-                    <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
-                    <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
-                    <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
-                    <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;config:</p>
-                </div>
-            ) : null
-        return (
-            <div className="mt-0 ml-24 mr-24 mb-24">
-                <div className="code-editor-container">
-                    <CodeEditor
-                        value={codeEditorBody}
-                        height={300}
-                        mode="yaml"
-                        lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? 50 : 0}
-                        shebang={shebangHtml}
-                        readOnly={this.state.configMap !== SwitchItemValues.Configuration}
-                        onChange={this.handleConfigChange}
-                        onBlur={() => {
-                            this.handleOnBlurAndFocus(DEFAULT_SECRET_PLACEHOLDER, DEFAULT_SECRET_PLACEHOLDER, '', '')
-                        }}
-                        onFocus={() => {
-                            this.handleOnBlurAndFocus(
-                                null,
-                                null,
-                                DEFAULT_SECRET_PLACEHOLDER,
-                                DEFAULT_SECRET_PLACEHOLDER,
-                            )
-                        }}
+        let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 });
+        let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
+        let shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? <div style={{ resize: 'none', lineHeight: '1.4', border: 'none', padding: `0 35px`, overflow: 'none', color: '#f32e2e', fontSize: '14px', fontFamily: 'Consolas, "Courier New", monospace' }} className="w-100">
+            <p className="m-0">config:</p>
+            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
+            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
+            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
+            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;config:</p>
+        </div> : null;
+        return <div className="mt-0 ml-24 mr-24 mb-24">
+            <div className="code-editor-container">
+                <CodeEditor value={codeEditorBody}
+                    height={300}
+                    mode='yaml'
+                    lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? 50 : 0}
+                    shebang={shebangHtml}
+                    readOnly={this.state.configMap !== SwitchItemValues.Configuration}
+                    onChange={this.handleConfigChange}
+                    onBlur={() => { this.handleOnBlur() }}
                     >
-                        <CodeEditor.Header>
-                            <Switch
-                                value={this.state.configMap}
-                                name={'tab'}
-                                onChange={(event) => {
-                                    this.handleCodeEditorTab(event.target.value)
-                                }}
-                            >
-                                <SwitchItem value={SwitchItemValues.Configuration}> Configuration </SwitchItem>
-                                <SwitchItem value={SwitchItemValues.Sample}> Sample Script</SwitchItem>
-                            </Switch>
-                            <CodeEditor.ValidationError />
-                        </CodeEditor.Header>
-                    </CodeEditor>
-                </div>
+                    <CodeEditor.Header >
+                        <Switch value={this.state.configMap} name={'tab'} onChange={(event) => { this.handleCodeEditorTab(event.target.value) }}>
+                            <SwitchItem value={SwitchItemValues.Configuration}> Configuration  </SwitchItem>
+                            <SwitchItem value={SwitchItemValues.Sample}>  Sample Script</SwitchItem>
+                        </Switch>
+                        <CodeEditor.ValidationError />
+                    </CodeEditor.Header>
+                </CodeEditor>
             </div>
-        )
+        </div>
     }
 
     handleSSOURLLocation(value: string): void {
@@ -506,9 +467,8 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             className="dc__link"
                             href={DOCUMENTATION.GLOBAL_CONFIG_SSO}
                         >
-                            {' '}
                             Learn more about SSO Login
-                        </a>{' '}
+                        </a>
                     </span>
                 </p>
 
@@ -544,7 +504,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 target="_blank"
                                 className="login__auth-link"
                             >
-                                {' '}
                                 Authentication through {this.state.sso}
                             </a>
                         </div>
@@ -566,7 +525,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 onClick={(e) => this.handleSSOURLLocation(`${window.location.origin}/orchestrator`)}
                                 className="login__btn cg-5"
                             >
-                                {' '}
                                 {window.location.origin}/orchestrator
                             </button>
                         </div>
