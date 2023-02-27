@@ -28,7 +28,6 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
         let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
         history.push(_url)
     }
-
     return (
         <div>
             <div className="flex left ml-20 mb-16">
@@ -133,18 +132,19 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                         <div className=" fw-6 fs-14">
                             {appDetails.appStoreChartName && <span>{appDetails.appStoreChartName}/</span>}
                             {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
+                            
                         </div>
                         <div className="flex left">
-                            {appDetails.notes && (
+                            {(appDetails.notes || appDetails['Notes']) && (
                                 <div className="details-hover flex cb-5 fw-6 cursor" onClick={() => setShowNotes(true)}>
                                     <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
                                 </div>
                             )}
-                            {appDetails.notes && appDetails.appStoreChartId && (
+                            {(appDetails.notes || appDetails['Notes']) && appDetails.appStoreChartId && (
                                 <div className="app-status-card__divider" />
                             )}
                             {appDetails.appStoreChartId && (
-                                <div>
+                                <div >
                                     <Link
                                         className="cb-5 fw-6"
                                         to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
@@ -184,7 +184,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
             )}
             {showNotes && (
                 <NotesDrawer
-                    notes={appDetails.notes}
+                    notes={appDetails.notes || appDetails['Notes']}
                     close={() => {
                         setShowNotes(false)
                     }}
