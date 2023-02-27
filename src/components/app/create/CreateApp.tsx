@@ -260,7 +260,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         return (
             <div className="scrollable-content p-20">
                 <div className="form__row">
-                    <span className="form__label">App Name*</span>
+                    <span className="form__label dc__required-field">App Name</span>
                     <input
                         ref={(node) => (this._inputAppName = node)}
                         className="form__input"
@@ -304,7 +304,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 {this.state.form.appCreationType === AppCreationType.Existing && (
                     <>
                         <div className="form__row clone-apps dc__inline-block">
-                            <span className="form__label">Select an app to clone*</span>
+                            <span className="form__label dc__required-field">Select an app to clone</span>
                             <AsyncSelect
                                 loadOptions={appListOptions}
                                 noOptionsMessage={noOptionsMessage}
@@ -340,7 +340,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     </>
                 )}
                 <div className="form__row">
-                    <span className="form__label">Project*</span>
+                    <span className="form__label dc__required-field">Project</span>
                     <ReactSelect
                         className="m-0"
                         tabIndex={4}

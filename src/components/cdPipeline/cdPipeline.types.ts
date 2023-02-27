@@ -3,6 +3,7 @@ import { RouteComponentProps } from 'react-router';
 export const CD_PATCH_ACTION = {
     DELETE: 1,
     UPDATE: 2,
+    DEPLOYMENT_PARTIAL_DELETE: 3
 };
 
 export interface DeploymentStrategy {
@@ -51,30 +52,31 @@ export interface CommonError {
     message: string
 }
 export interface CDPipelineState {
-    environments: Environment[]
-    view: string
-    code: number
-    loadingData: boolean
-    strategies: DeploymentStrategy[]
+    environments: Environment[];
+    view: string;
+    code: number;
+    loadingData: boolean;
+    strategies: DeploymentStrategy[];
     pipelineConfig: PipelineConfig & {
         environmentName?: string
         deploymentAppType: string
+        deploymentAppCreated: boolean
     }
-    showDeleteModal: boolean
-    shouldDeleteApp: boolean
-    showForceDeleteDialog: boolean
-    showError: boolean
+    showDeleteModal: boolean;
+    shouldDeleteApp: boolean;
+    showForceDeleteDialog: boolean;
+    showError: boolean;
     errorForm: {
         pipelineNameError: CommonError,
         envNameError: CommonError,
         nameSpaceError: CommonError
     }
-    showPreStage: boolean
-    showDeploymentStage: boolean
-    showPostStage: boolean
-    isAdvanced: boolean
-    forceDeleteDialogMessage: string
-    forceDeleteDialogTitle: string
+    showPreStage: boolean;
+    showDeploymentStage: boolean;
+    showPostStage: boolean;
+    isAdvanced: boolean;
+    forceDeleteDialogMessage: string;
+    forceDeleteDialogTitle: string;
 }
 
 export interface PipelineConfig {

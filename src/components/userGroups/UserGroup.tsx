@@ -540,7 +540,7 @@ const UserGroupList: React.FC<{
         return <ErrorScreenNotAuthorized subtitle="" />
     } else if (!addHash) {
         return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
-    } else if (!isSSOConfigured) {
+    } else if (type =='user' && !isSSOConfigured) {
         return <SSONotConfiguredState />
     } else {
         const filteredAndSorted = result.filter(
@@ -619,6 +619,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         [id, type],
         !collapsed,
     )
+    const isAdminOrSystemUser = email_id === 'admin' || email_id === 'system'
 
     useEffect(() => {
         if (!dataError) return
@@ -634,6 +635,15 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         setData((state) => ({ ...state, result: data }))
         updateCallback(index, data)
     }
+
+    const onClickUserDropdownHandler = () => {
+        if (isAdminOrSystemUser) {
+            noop()
+        } else {
+            setCollapsed(not)
+        }
+    }
+
     return (
         <article className={`user-list ${collapsed ? 'user-list--collapsed' : ''} flex column left`}>
             <div className="user-list__header w-100">
@@ -646,23 +656,23 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                 </span>
                 <span
                     className="user-list__direction-container flex rotate pointer"
-                    onClick={email_id === 'admin' ? noop : (e) => setCollapsed(not)}
+                    onClick={onClickUserDropdownHandler}
                     style={{ ['--rotateBy' as any]: collapsed ? '0deg' : '180deg' }}
                 >
                     <ConditionalWrap
-                        condition={email_id === 'admin'}
+                        condition={isAdminOrSystemUser}
                         wrap={(children) => (
                             <Tippy
                                 className="default-tt"
                                 arrow={false}
                                 placement="top"
-                                content="Admin user cannot be edited"
+                                content={`${email_id === 'admin' ? 'Admin' : 'System'} user cannot be edited`}
                             >
                                 <div className="flex">{children}</div>
                             </Tippy>
                         )}
                     >
-                        {email_id === 'admin' ? (
+                        {isAdminOrSystemUser ? (
                             <Lock />
                         ) : dataLoading ? (
                             <Progressing />

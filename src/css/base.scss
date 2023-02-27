@@ -241,6 +241,8 @@ a:focus {
     hyphens: auto;
 }
 
+//Do not use dc__truncate-text use dc__ellipsis-right
+
 .dc__truncate-text {
     white-space: nowrap;
     overflow: hidden;
@@ -275,7 +277,11 @@ a:focus {
 }
 
 .dc__right-0 {
-      right: 0;
+    right: 0;
+}
+
+.dc__top-0 {
+    top: 0;
 }
 
 .dc__vertical-align-middle {
@@ -301,6 +307,10 @@ a:focus {
 
 .cursor-not-allowed {
     cursor: not-allowed !important;
+}
+
+.cursor-text {
+    cursor: text;
 }
 
 // block
@@ -706,7 +716,7 @@ button.anchor {
 }
 
 .dc__empty-title {
-    max-width: 250px;
+    max-width: 300px;
     font-size: 16px;
     font-weight: normal;
     font-style: normal;
@@ -941,28 +951,28 @@ button.anchor {
     z-index: 2;
 
     &.pending {
-        background-size: contain, contain;
         background: url('../assets/icons/ic-clock.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.failed,
     &.error {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/ic-appstatus-failed.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.cancelled,
     &.aborted {
-        background-size: contain, contain;
         background: url('../assets/icons/ic-appstatus-cancelled.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.healthy,
     &.synced,
     &.sync.ok,
     &.succeeded {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/healthy.svg'), $background;
+        background-size: contain, contain;
         &.healthy--node {
             background: url('../assets/icons/appstatus/ic-heart-green.svg'), transparent;
             background-size: contain, contain;
@@ -975,14 +985,14 @@ button.anchor {
     }
 
     &.unknown {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/unknown.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.not-deployed,
     &.not-triggered {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/notdeployed.svg'), $background;
+        background-size: contain, contain;
         &.not-deployed--node {
             background: url('../assets/icons/ic-close.svg'), transparent;
             background-size: contain, contain;
@@ -990,28 +1000,28 @@ button.anchor {
     }
 
     &.suspended {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/suspended.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.degraded {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/degraded.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.progressing,
     &.running,
     &.request_accepted,
     &.starting {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/progressing-rotating.svg'), $background;
+        background-size: contain, contain;
         animation: unset;
     }
 
     &.hibernating,
     &.hibernated {
-        background-size: contain, contain;
         background: url('../assets/icons/ic-hibernate-2.svg'), $background;
+        background-size: contain, contain;
     }
 }
 
@@ -1348,10 +1358,9 @@ button.anchor {
         }
         .dc__show-second--icon {
             display: inherit;
-         }
+        }
     }
 }
-
 
 .grayscale {
     filter: grayscale(1);
@@ -1699,6 +1708,10 @@ button.anchor {
     border-left: solid 1px var(--N200);
 }
 
+.dc__border-left-b4 {
+    border-left: solid 1px var(--B400);
+}
+
 .dc__border-right {
     border-right: solid 1px var(--N200);
 }
@@ -1764,6 +1777,10 @@ button.anchor {
 
 .dc__mxw-1000 {
     max-width: 1000px;
+}
+
+.dc__mxw-180 {
+    max-width: 180px;
 }
 
 .fw-n {
@@ -1851,6 +1868,11 @@ button.anchor {
 .dc__top-radius-4 {
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
+}
+
+.dc__top-radius-8 {
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
 }
 
 .dc__no-top-radius {
@@ -1982,6 +2004,16 @@ textarea,
     }
 }
 
+.info-icon-n6 {
+    circle {
+        fill: var(--N600);
+    }
+}
+
+.icon-fill-blue-imp path {
+    fill: var(--B500) !important;
+}
+
 // Text Transform
 .dc__lowercase {
     text-transform: lowercase;
@@ -2060,6 +2092,18 @@ textarea,
     width: 0px;
 }
 
+.mw-4 {
+    min-width: 4px !important;
+}
+
+.mw-14 {
+    min-width: 14px !important;
+}
+
+.mw-18 {
+    min-width: 18px !important;
+}
+
 .w-32 {
     width: 32px !important;
 }
@@ -2074,10 +2118,6 @@ textarea,
 
 .min-w-385 {
     min-width: 385px;
-}
-
-.mw-4 {
-    min-width: 4px !important;
 }
 
 .w-100-px {
@@ -2194,16 +2234,22 @@ textarea,
     min-width: 200px;
 }
 
-// width fix content
+.dc__mnw-100 {
+    min-width: 100px;
+}
 
+// width fix content
 .dc__w-fit-content {
-      width: fit-content;
+    width: fit-content;
 }
 
 // Height in pixels
-
 .dc__height-inherit {
     height: inherit;
+}
+
+.dc__min-width-fit-content {
+    min-width: fit-content !important;
 }
 
 .h-0 {
@@ -2309,6 +2355,10 @@ textarea,
 }
 
 // Line height
+.lh-1-4 {
+    line-height: 1.4;
+}
+
 .lh-14 {
     line-height: 14px;
 }
@@ -2335,6 +2385,10 @@ textarea,
 
 .lh-28 {
     line-height: 28px;
+}
+
+.lh-28-imp {
+    line-height: 28px !important;
 }
 
 .lh-32 {
@@ -2462,7 +2516,11 @@ textarea,
 }
 
 .dc__overflow-auto {
-      overflow: auto !important;
+    overflow: auto !important;
+}
+
+.dc__overflow-y-auto {
+    overflow: auto !important;
 }
 
 .dc__overflow-scroll {
@@ -2530,7 +2588,7 @@ textarea::placeholder {
 }
 // opacity
 .dc__opacity-0_5 {
-      opacity: 0.5;
+    opacity: 0.5;
 }
 
 .dc__hover-n50:hover,
@@ -2604,4 +2662,21 @@ textarea::placeholder {
     width: 1px;
     min-height: 16px;
     background-color: var(--N200);
+}
+
+.dc__required-field::after {
+    content: ' *';
+    color: var(--R500);
+}
+
+.dc__highlight-text {
+    mark {
+        padding: 0;
+        background-color: var(--Y300) !important;
+        font-weight: 600;
+    }
+}
+
+.dc__outline-none-imp {
+    outline: none !important;
 }

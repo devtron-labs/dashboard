@@ -12,7 +12,6 @@ import {
 } from '../Constants'
 import { K8SResourceListType } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
-import AppDetailsStore from '../../v2/appDetails/appDetails.store'
 import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
@@ -38,6 +37,8 @@ export function K8SResourceList({
     setSearchApplied,
     handleFilterChanges,
     clearSearch,
+    isCreateModalOpen,
+    addTab,
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -101,7 +102,7 @@ export function K8SResourceList({
             .slice(0, group ? -2 : -1)
             .join('/')}/${resourceParam}${tab ? `/${tab.toLowerCase()}` : ''}`
 
-        const isAdded = AppDetailsStore.addAppDetailsTab(kind, resourceName, _url)
+        const isAdded = addTab(selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP, kind, resourceName, _url)
 
         if (isAdded) {
             updateNodeSelectionData(_nodeSelectionData)
@@ -129,12 +130,13 @@ export function K8SResourceList({
     const renderResourceRow = (resourceData: Record<string, any>, index: number): JSX.Element => {
         return (
             <div
-                key={`${resourceData.name}-${index}`}
+                key={`row--${index}-${resourceData.name}`}
                 className="dc_width-max-content dc_min-w-100 fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover"
             >
-                {resourceList.headers.map((columnName) =>
+                {resourceList.headers.map((columnName, idx) =>
                     columnName === 'name' ? (
                         <div
+                            key={`${resourceData.name}-${idx}`}
                             className={`w-350 dc__inline-flex mr-16 pl-20 pr-8 pt-12 pb-12 ${
                                 fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
                             }`}
@@ -160,7 +162,6 @@ export function K8SResourceList({
                                 </div>
                                 <ResourceBrowserActionMenu
                                     clusterId={clusterId}
-                                    namespace={namespace}
                                     resourceData={resourceData}
                                     selectedResource={selectedResource}
                                     getResourceListData={getResourceListData}
@@ -170,6 +171,7 @@ export function K8SResourceList({
                         </div>
                     ) : (
                         <div
+                            key={`${resourceData.name}-${idx}`}
                             className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
@@ -229,6 +231,7 @@ export function K8SResourceList({
                 <div className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header  bcn-0 dc__position-sticky">
                     {resourceList.headers.map((columnName) => (
                         <div
+                            key={columnName}
                             className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
                                 columnName === 'name'
                                     ? `${
@@ -304,6 +307,7 @@ export function K8SResourceList({
                 handleFilterChanges={handleFilterChanges}
                 clearSearch={clearSearch}
                 isSearchInputDisabled={resourceListLoader}
+                isCreateModalOpen={isCreateModalOpen}
             />
             {resourceListLoader ? <Progressing pageLoader /> : renderList()}
         </div>

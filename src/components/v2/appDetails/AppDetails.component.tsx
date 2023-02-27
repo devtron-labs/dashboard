@@ -12,14 +12,17 @@ import NodeTreeDetailTab from './NodeTreeDetailTab';
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type';
 import { getSaveTelemetry } from './appDetails.api';
 
+
 const AppDetailsComponent = ({
     externalLinks,
     monitoringTools,
-    isExternalApp
+    isExternalApp,
+    _init
 }: {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isExternalApp: boolean
+    _init?:() => void
 }) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const [streamData, setStreamData] = useState<AppStreamData>(null);
@@ -43,17 +46,27 @@ const AppDetailsComponent = ({
     );
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+        <div className="helm-details">
             <div>
-                <EnvironmentSelectorComponent isExternalApp={isExternalApp} />
-                <EnvironmentStatusComponent appStreamData={streamData}/>
+                <EnvironmentSelectorComponent isExternalApp={isExternalApp} _init={_init} />
+                {!appDetails.deploymentAppDeleteRequest && <EnvironmentStatusComponent appStreamData={streamData} />}
             </div>
 
-            <SyncErrorComponent appStreamData={streamData}/>
-            <AppLevelExternalLinks helmAppDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />
-            <NodeTreeDetailTab appDetails={appDetails} externalLinks={externalLinks} monitoringTools={monitoringTools} />
+            <SyncErrorComponent appStreamData={streamData} />
+            {!appDetails.deploymentAppDeleteRequest && (
+                <AppLevelExternalLinks
+                    helmAppDetails={appDetails}
+                    externalLinks={externalLinks}
+                    monitoringTools={monitoringTools}
+                />
+            )}
+            <NodeTreeDetailTab
+                appDetails={appDetails}
+                externalLinks={externalLinks}
+                monitoringTools={monitoringTools}
+            />
         </div>
-    );
+    )
 };
 
 export default AppDetailsComponent;

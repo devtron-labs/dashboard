@@ -46,6 +46,14 @@
     flex: 1;
 }
 
+.flex-grow-1 {
+    flex-grow: 1;
+}
+
+.flex-grow-1-imp {
+    flex-grow: 1 !important;
+}
+
 .flex-justify {
     justify-content: space-between !important;
 }

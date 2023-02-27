@@ -5,6 +5,15 @@
 
 .ci-details__build-card {
     cursor: pointer;
+
+    &:hover {
+        text-decoration: unset;
+        background: var(--N100);
+    }
+
+    &.active {
+        background: var(--B100);
+    }
 }
 
 .border-btm {
@@ -88,4 +97,3 @@
         max-height: 444px;
     }
 }
-
