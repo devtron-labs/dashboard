@@ -47,7 +47,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import config from './sampleConfig.json'
 import ReactSelect from 'react-select'
 import { styles, DropdownIndicator, Option } from './cdpipeline.util'
-import { EnvFormatOptions, GroupHeading } from '../v2/common/ReactSelect.utils'
+import { EnvFormatOptions, formatHighlightedText, GroupHeading } from '../v2/common/ReactSelect.utils'
 import './cdPipeline.css'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog'
@@ -1115,8 +1115,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
     }
 
-    selectOption = (props) => {
+    singleOption = (props) => {
         return <EnvFormatOptions {...props} environmentfieldName="name" />
+    }
+
+    handleFormatHighlightedText = (opt: Environment, { inputValue }) => {
+        return formatHighlightedText(opt, inputValue, 'name')
     }
 
     renderEnvNamespaceAndTriggerType() {
@@ -1144,13 +1148,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             components={{
                                 IndicatorSeparator: null,
                                 DropdownIndicator,
-                                Option: this.selectOption,
+                                SingleValue: this.singleOption,
                                 GroupHeading,
                             }}
                             styles={{
                                 ...groupStyle(),
                                 control: (base) => ({ ...base, border: '1px solid #d6dbdf' }),
                             }}
+                            formatOptionLabel={this.handleFormatHighlightedText}
                         />
                         {!this.state.errorForm.envNameError.isValid ? (
                             <span className="form__error">
@@ -1245,7 +1250,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         return (
             <>
                 <div className="form__row">
-                    <label className="form__label">Pipeline Name*</label>
+                    <label className="form__label dc__required-field">Pipeline Name</label>
                     <input
                         className="form__input"
                         autoComplete="off"

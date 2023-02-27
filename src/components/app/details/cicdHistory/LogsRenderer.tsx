@@ -14,13 +14,16 @@ export default function LogsRenderer({
     parentType,
 }: LogsRendererType): JSX.Element {
     const { pipelineId, envId, appId } = useParams<{ pipelineId: string; envId: string; appId: string }>()
-    const logsURL = parentType === HistoryComponentType.CI
-    ? `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`
-    : `${Host}/${Routes.CD_CONFIG}/workflow/logs/${appId}/${envId}/${pipelineId}/${triggerDetails.id}`
+    const logsURL =
+        parentType === HistoryComponentType.CI
+            ? `${Host}/${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${triggerDetails.id}/logs`
+            : `${Host}/${Routes.CD_CONFIG}/workflow/logs/${appId}/${envId}/${pipelineId}/${triggerDetails.id}`
     const [logs, eventSource, logsNotAvailable] = useCIEventSource(
-        triggerDetails.podStatus && triggerDetails.podStatus !== POD_STATUS.PENDING && logsURL
+        triggerDetails.podStatus && triggerDetails.podStatus !== POD_STATUS.PENDING && logsURL,
     )
-    function createMarkup(log) {
+    function createMarkup(log: string): {
+        __html: string
+    } {
         try {
             log = log.replace(/\[[.]*m/, (m) => '\x1B[' + m + 'm')
             const ansi_up = new AnsiUp()
@@ -36,8 +39,13 @@ export default function LogsRenderer({
         renderConfigurationError(isBlobStorageConfigured)
     ) : (
         <div className="logs__body">
-            {logs.map((log, index) => {
-                return <p className="mono fs-14" key={`logs-${index}`} dangerouslySetInnerHTML={createMarkup(log)} />
+            {logs.map((log: string, index: number) => {
+                return (
+                    <div className="flex top left mb-10 lh-24" key={`logs-${index}`}>
+                        <span className="cn-4 col-2 pr-10">{index + 1}</span>
+                        <p className="mono fs-14 mb-0-imp" dangerouslySetInnerHTML={createMarkup(log)} />
+                    </div>
+                )
             })}
             {(triggerDetails.podStatus === POD_STATUS.PENDING || (eventSource && eventSource.readyState <= 1)) && (
                 <div className="flex left event-source-status">
