@@ -121,23 +121,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 if (this.state.lastActiveSSO && this.state.lastActiveSSO?.id) {
                     getSSOConfig(this.state.lastActiveSSO?.name.toLowerCase())
                         .then((response) => {
-                            let newConfig = this.parseResponse(sample[this.state.lastActiveSSO.name.toLowerCase()])
-                            if (!response.result?.config?.config?.clientID) {
-                                response.result.config.config.clientID = DEFAULT_SECRET_PLACEHOLDER
-                            }
-
-                            if (!response.result?.config?.config?.clientSecret) {
-                                response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
-                            }
-
-                            if (response.result) {
-                                newConfig = this.parseResponse(response.result)
-                            }
-
-                            this.setState({
-                                view: ViewType.FORM,
-                                ssoConfig: newConfig,
-                            })
+                            this.setConfig(response,this.state.lastActiveSSO.name.toLowerCase())
                         })
                         .catch((error) => {
                             this.setState({ view: ViewType.ERROR, statusCode: error.code })
@@ -158,25 +142,31 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let newsso = event.target.value
         getSSOConfig(newsso)
             .then((response) => {
-                if (response.result?.config?.config?.clientID === '') {
-                    response.result.config.config.clientID = DEFAULT_SECRET_PLACEHOLDER
-                }
-                if (response.result?.config?.config?.clientSecret === '') {
-                    response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
-                }
-                let newConfig = this.parseResponse(sample[newsso])
-                if (response.result) {
-                    newConfig = this.parseResponse(response.result)
-                }
-                this.setState({
-                    view: ViewType.FORM,
-                    sso: newsso,
-                    ssoConfig: newConfig,
-                })
+                this.setConfig(response,newsso)
             })
             .catch((error) => {
                 this.setState({ view: ViewType.ERROR, statusCode: error.code })
             })
+    }
+
+    setConfig(response:any,newsso:any): void {
+        if (response.result?.config?.config?.clientID === '') {
+            response.result.config.config.clientID = DEFAULT_SECRET_PLACEHOLDER
+        }
+        if (response.result?.config?.config?.clientSecret === '') {
+            response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
+        }
+        let newConfig:SSOConfigType
+        if (response.result) {
+            newConfig = this.parseResponse(response.result)
+        } else {
+            newConfig = this.parseResponse(sample[newsso])
+        }
+        this.setState({
+            view: ViewType.FORM,
+            sso: newsso,
+            ssoConfig: newConfig,
+        })
     }
 
     handleURLChange(event): void {
@@ -408,7 +398,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     shebang={shebangHtml}
                     readOnly={this.state.configMap !== SwitchItemValues.Configuration}
                     onChange={this.handleConfigChange}
-                    onBlur={() => { this.handleOnBlur() }}
+                    onBlur={this.handleOnBlur}
                     >
                     <CodeEditor.Header >
                         <Switch value={this.state.configMap} name={'tab'} onChange={(event) => { this.handleCodeEditorTab(event.target.value) }}>

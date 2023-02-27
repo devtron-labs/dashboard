@@ -140,15 +140,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
 
     componentDidMount() {
         this.fetchGitOpsConfigurationList()
-        this.setState({
-            form: {
-                ...this.state.form,
-                token:
-                    this.state.form.token == '' && this.state.form.id
-                        ? DEFAULT_SECRET_PLACEHOLDER
-                        : this.state.form.token,
-            },
-        })
     }
 
     fetchGitOpsConfigurationList() {
