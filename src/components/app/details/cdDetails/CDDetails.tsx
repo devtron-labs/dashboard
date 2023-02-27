@@ -146,7 +146,7 @@ export default function CDDetails() {
         (_res) => _res?.deploymentAppDeleteRequest,
     )?.deploymentAppDeleteRequest
 
-    if (result[0]['value']?.result?.length === 1 && !envId && !isEnvDeleted) {
+    if (result[0]['value']?.result.length === 1 && !envId && !isEnvDeleted && envOptions.length) {
         replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
     }
     return (
