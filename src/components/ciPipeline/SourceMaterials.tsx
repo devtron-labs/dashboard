@@ -119,7 +119,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                 : isBranchRegex
                                 ? i.value === SourceTypeMap.BranchRegex
                                 : i.value === mat.type,
-                        ) ||sourceTypeOptions[0]
+                        ) || sourceTypeOptions[0]
                 }
                 let errorObj = props.validationRules?.sourceValue(isBranchRegex ? mat.regex : mat.value)
                 return (
