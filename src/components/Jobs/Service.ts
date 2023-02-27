@@ -1,8 +1,9 @@
 import { Routes } from '../../config'
 import { get, post } from '../../services/api'
+import { APIOptions } from '../../services/service.types'
 
-export const getJobs = (request) => {
-    return post(Routes.JOB_LIST, request)
+export const getJobs = (request, options: APIOptions) => {
+    return post(Routes.JOB_LIST, request, options)
 }
 
 export const createJob = (request) => {

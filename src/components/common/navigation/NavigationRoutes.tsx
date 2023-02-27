@@ -317,7 +317,7 @@ export default function NavigationRoutes() {
                                                 />
                                             )}
                                         />
-                                        <Route path={URLS.JOBS}>
+                                        <Route path={URLS.JOB}>
                                             <Jobs />
                                         </Route>
                                         <Route path={URLS.APPLICATION_GROUP}>

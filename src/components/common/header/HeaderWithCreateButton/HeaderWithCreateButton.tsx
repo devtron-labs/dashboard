@@ -33,7 +33,7 @@ export default function HeaderWithCreateButton({ headerName }) {
     }
 
     const openCreateJobModel = () => {
-        history.push(`${URLS.JOBS}/${URLS.APP_LIST}/${URLS.CREATE_JOB}`)
+        history.push(`${URLS.JOB}/${URLS.APP_LIST}/${URLS.CREATE_JOB}`)
     }
 
     const renderActionButtons = () => {

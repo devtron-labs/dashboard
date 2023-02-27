@@ -41,7 +41,7 @@ const NavigationList = [
         type: 'link',
         iconClass: 'nav-short-jobs',
         icon: JobsIcon,
-        href: URLS.JOBS,
+        href: URLS.JOB,
         isAvailableInEA: false,
     },
     {

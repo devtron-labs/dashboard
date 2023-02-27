@@ -1,7 +1,4 @@
-import { AppCreationType, ViewType } from '../../config'
-import { DEFAULT_TAG_DATA } from '../app/config'
 import { multiSelectStyles } from '../common'
-import { CreateJobViewState } from './Types'
 
 export const _multiSelectStyles = {
     ...multiSelectStyles,
@@ -27,3 +24,21 @@ export const JobCreationType = {
     Blank: 'BLANK',
     Existing: 'EXISTING',
 }
+
+export const JobListViewType = {
+    LOADING: 'LOADING',
+    LIST: 'LIST',
+    EMPTY: 'LIST_EMPTY',
+    NO_RESULT: 'NO_RESULT',
+    ERROR: 'ERROR',
+}
+
+export const JOB_LIST_HEADERS = {
+    Name: 'NAME',
+    LastJobStatus: 'LAST RUN STATUS',
+    LastRunAt: 'LAST RUN AT',
+    LastSuccessAt: 'LAST SUCCESS AT',
+    Description: 'Description',
+}
+
+export const YET_TO_RUN = 'Yet to run'
