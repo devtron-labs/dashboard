@@ -1,7 +1,7 @@
 import React from 'react'
 import { DOCUMENTATION, URLS } from '../../config'
 import { AppEnvironment } from '../../services/service.types'
-import { ConfigAppList } from '../Environments/EnvironmentGroup.types'
+import { ConfigAppList } from '../ApplicationGroup/AppGroup.types'
 
 export enum ComponentStates {
     loading = 'loading',

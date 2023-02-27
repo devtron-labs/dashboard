@@ -48,11 +48,7 @@ export default function EmptyStateCIMaterial({
             return {
                 img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
                 title: <h1 className="dc__empty-title">{dockerFileErrorMsg}</h1>,
-                subtitle: (
-                    <h1 className="dc__empty-title fs-13" style={{ color: 'gray' }}>
-                        {DOCKER_FILE_ERROR_MESSAGE}
-                    </h1>
-                ),
+                subtitle: DOCKER_FILE_ERROR_MESSAGE,
                 cta:
                     repoUrl?.length === 0 ? (
                         <button className="cta flex" onClick={handleGoToWorkFlowEditor}>
@@ -70,9 +66,7 @@ export default function EmptyStateCIMaterial({
                         {repoUrl}
                     </a>
                 ) : (
-                    <h1 className="dc__empty-title fs-13" style={{ color: 'gray' }}>
-                        {SOURCE_NOT_CONFIGURED_MESSAGE}
-                    </h1>
+                    SOURCE_NOT_CONFIGURED_MESSAGE
                 ),
                 cta:
                     repoUrl?.length === 0 ? (

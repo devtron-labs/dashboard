@@ -468,6 +468,7 @@ export interface DeleteComponentProps {
 
 export interface AppStatusType {
     appStatus: string
+    isDeploymentStatus?: boolean
 }
 
 export interface ResizableTagTextAreaProps {
