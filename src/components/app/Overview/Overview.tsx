@@ -5,12 +5,12 @@ import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getAppOtherEnvironment, getJobCIPiprline, getTeamList } from '../../../services/service'
 import { handleUTCTime, Progressing, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../common'
 import { AppDetails, AppOverviewProps, JobPipeline, TagType } from '../types'
-import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg' 
-import { ReactComponent as WorkflowIcon } from '../../../assets/icons/ic-workflow.svg' 
-import { ReactComponent as DescriptionIcon } from '../../../assets/icons/ic-note.svg' 
+import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
+import { ReactComponent as WorkflowIcon } from '../../../assets/icons/ic-workflow.svg'
+import { ReactComponent as DescriptionIcon } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
-import { ReactComponent as LinkedIcon } from '../../../assets/icons/ic-linked.svg'  
-import { ReactComponent as RocketIcon } from '../../../assets/icons/ic-nav-rocket.svg' 
+import { ReactComponent as LinkedIcon } from '../../../assets/icons/ic-linked.svg'
+import { ReactComponent as RocketIcon } from '../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as InjectTag } from '../../../assets/icons/inject-tag.svg'
 import { ReactComponent as SucceededIcon } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as InProgressIcon } from '../../../assets/icons/ic-progressing.svg'
@@ -34,7 +34,7 @@ import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.t
 import { toast } from 'react-toastify'
 import { createAppLabels } from '../service'
 
-export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview  }: AppOverviewProps) {
+export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
     const [isLoading, setIsLoading] = useState(true)
     const [currentLabelTags, setCurrentLabelTags] = useState<TagType[]>([])
@@ -48,21 +48,24 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         externalLinks: [],
         monitoringTools: [],
     })
-    const [otherEnvsLoading, otherEnvsResult] = useAsync(() => Promise.all([getAppOtherEnvironment(appId), getModuleInfo(ModuleNameMap.ARGO_CD)]), [appId])
+    const [otherEnvsLoading, otherEnvsResult] = useAsync(
+        () => Promise.all([getAppOtherEnvironment(appId), getModuleInfo(ModuleNameMap.ARGO_CD)]),
+        [appId],
+    )
     const isAgroInstalled: boolean = otherEnvsResult?.[1].result.status === ModuleStatus.INSTALLED
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
-  
+
     useEffect(() => {
         getJobCIPiprline(appId)
-            .then(response => {
-                setJobPipelines(response.result);
-                setIsLoading(false);
+            .then((response) => {
+                setJobPipelines(response.result)
+                setIsLoading(false)
             })
-            .catch(error => {
-                console.error(error);
-                setIsLoading(false);
-            });
-    }, []);
+            .catch((error) => {
+                console.error(error)
+                setIsLoading(false)
+            })
+    }, [])
 
     useEffect(() => {
         if (appMetaInfo?.appName) {
@@ -124,8 +127,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 onClose={toggleChangeProjectModal}
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 fetchingProjects={fetchingProjects}
-                projectsList={projectsListRes?.result} 
-                description={appMetaInfo.description}            />
+                projectsList={projectsListRes?.result}
+                description={appMetaInfo.description}
+            />
         )
     }
 
@@ -137,35 +141,35 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 appMetaInfo={appMetaInfo}
                 onClose={toggleTagsUpdateModal}
                 getAppMetaInfoRes={getAppMetaInfoRes}
-                currentLabelTags={currentLabelTags} description={appMetaInfo.description}            />
+                currentLabelTags={currentLabelTags}
+                description={appMetaInfo.description}
+            />
         )
     }
 
     const handleSave = async () => {
         try {
-          const payload = {
-            id: parseInt(appId),
-            description: newDescription,
-          }
+            const payload = {
+                id: parseInt(appId),
+                description: newDescription,
+            }
 
-          const appLabel = await createAppLabels(payload)
+            const appLabel = await createAppLabels(payload)
 
-          setNewDescription(appLabel.result.description);
-        
-          setEditMode(false)
+            setNewDescription(appLabel.result.description)
 
+            setEditMode(false)
         } catch (error) {
-          console.error(error)
-          toast.error('Failed to update job description')
+            console.error(error)
+            toast.error('Failed to update job description')
         }
-      }
- 
+    }
 
     const renderSideInfoColumn = () => {
         return (
             <div className="pt-16 pb-16 pl-20 pr-20 dc__border-right">
                 <div className="mb-16">
-                {isJobOverview ? 'Job name' : 'App name'}
+                    {isJobOverview ? 'Job name' : 'App name'}
                     <div className="fs-13 fw-4 lh-20 cn-9">{appMetaInfo?.appName}</div>
                 </div>
                 <div className="mb-16">
@@ -199,7 +203,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     </div>
                     <div className="flex fs-12 fw-4 lh-16 cn-7 cursor" onClick={toggleTagsUpdateModal}>
                         <EditIcon className="icon-dim-16 scn-7 mr-4" />
-                        Edit 
+                        Edit
                     </div>
                 </div>
                 <div className="flex left flex-wrap dc__gap-8">
@@ -240,7 +244,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             </div>
                         ))
                     ) : (
-                        <span className="fs-13 fw-4 cn-7">No tags added.</span> 
+                        <span className="fs-13 fw-4 cn-7">No tags added.</span>
                     )}
                 </div>
             </div>
@@ -283,7 +287,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     }
 
     const renderDeploymentComponent = () => {
-        if(otherEnvsResult[0].result?.length > 0){
+        if (otherEnvsResult[0].result?.length > 0) {
             return (
                 <div className="env-deployments-info-wrapper w-100">
                     <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
@@ -309,19 +313,16 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                         }
                                     />
                                 )}
-                                <span className="fs-13 fw-4 cn-7">
-                                    {renderDeployedTime(_env)}
-                                </span>
+                                <span className="fs-13 fw-4 cn-7">{renderDeployedTime(_env)}</span>
                             </div>
                         ))}
                     </div>
                 </div>
             )
-        } 
+        }
 
         return <div className="fs-13 fw-4 cn-7">This application has not been deployed yet.</div>
     }
-    
 
     const renderEnvironmentDeploymentsStatus = () => {
         return (
@@ -330,136 +331,136 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     <RocketIcon className="icon-dim-20 scn-9 mr-8" />
                     Deployments
                 </div>
-                {otherEnvsLoading ? (
-                    <div className="dc__loading-dots" />
-                ) : renderDeploymentComponent()}
+                {otherEnvsLoading ? <div className="dc__loading-dots" /> : renderDeploymentComponent()}
             </div>
         )
     }
 
-    
-        const renderWorkflowsStatus = () => {
-                const renderWorkflowComponent = () => {
-                if (isLoading) {
-                    return <div className="dc__loading-dots" />;
-                }
-        
-                if (jobPipelines != null) {
-                    return (
-                        <div className="env-deployments-info-wrapper w-100">
-                            <div className=" flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space">
-                                <div className= "m-tb-3">Pipeline name</div>
-                                <div className= "flex">
-                                    <div className= "m-tb-3 mr-16 w-150">Last run status</div>
-                                    <div className="w-150 m-tb-3">Last run at</div>
-                                </div>
+    const renderWorkflowsStatus = () => {
+        const renderWorkflowComponent = () => {
+            if (isLoading) {
+                return <div className="dc__loading-dots" />
+            }
+            if (jobPipelines != null) {
+                return (
+                    <div className="env-deployments-info-wrapper w-100">
+                        <div className=" flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space">
+                            <div className="m-tb-3">Pipeline name</div>
+                            <div className="flex">
+                                <div className="m-tb-3 mr-16 w-150">Last run status</div>
+                                <div className="w-150 m-tb-3">Last run at</div>
                             </div>
-                            {jobPipelines.map(jobPipeline => (
-                                <div key={jobPipeline.ci_pipeline_id} className="dc__content-space flex dc__border-bottom-n1">
-                                    <div className="h-20 m-tb-3 ci-pipeline-name-color fs-13" >{jobPipeline.ci_pipeline_name}</div>
-                                    <div className= "flex">
-                                        <div className= "mr-16 w-150 h-20 m-tb-3 fs-13 flex dc__content-start">
-                                        {jobPipeline.status === 'Succeeded' && <SucceededIcon className="dc__app-summary__icon icon-dim-20 mr-8" />}
-                                        {jobPipeline.status === 'Failed' && <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />}
-                                        {jobPipeline.status === 'InProgres' && <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />}
-                                        {jobPipeline.status === 'Starting' && <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />}
-                                            {jobPipeline.status}
-                                            </div>
-                                        <div className="w-150 h-20 m-tb-3 fs-13">{handleUTCTime(jobPipeline.started_on, true)}</div>
+                        </div>
+                        {jobPipelines.map((jobPipeline) => (
+                            <div
+                                key={jobPipeline.ci_pipeline_id}
+                                className="dc__content-space flex dc__border-bottom-n1"
+                            >
+                                <div className="h-20 m-tb-3 ci-pipeline-name-color fs-13">
+                                    {jobPipeline.ci_pipeline_name}
+                                </div>
+                                <div className="flex">
+                                    <div className="mr-16 w-150 h-20 m-tb-3 fs-13 flex dc__content-start">
+                                        {jobPipeline.status === 'Succeeded' && (
+                                            <SucceededIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                                        )}
+                                        {jobPipeline.status === 'Failed' && (
+                                            <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                                        )}
+                                        {jobPipeline.status === 'InProgres' && (
+                                            <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                                        )}
+                                        {jobPipeline.status === 'Starting' && (
+                                            <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                                        )}
+                                        {jobPipeline.status}
+                                    </div>
+                                    <div className="w-150 h-20 m-tb-3 fs-13">
+                                        {jobPipeline.started_on !== '0001-01-01T00:00:00Z' &&
+                                            handleUTCTime(jobPipeline.started_on, true)}
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    )
-                 }                   
-                 return <div className="fs-13 fw-4 cn-7">No job pipelines are configured</div>               
-            }        
-            return (
-                <div className="flex column left pt-16 pb-16 pl-20 pr-20">
-                    <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
-                        <WorkflowIcon className="icon-dim-20 scn-9 mr-8" />
-                        Job pipelines
+                            </div>
+                        ))}
                     </div>
-                    {renderWorkflowComponent()}
-                </div>
-            )
+                )
+            }
+            return <div className="fs-13 fw-4 cn-7">No job pipelines are configured</div>
         }
-      
+        return (
+            <div className="flex column left pt-16 pb-16 pl-20 pr-20">
+                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
+                    <WorkflowIcon className="icon-dim-20 scn-9 mr-8" />
+                    Job pipelines
+                </div>
+                {renderWorkflowComponent()}
+            </div>
+        )
+    }
 
     if (!appMetaInfo || fetchingProjects) {
         return <Progressing pageLoader />
     }
 
     const renderJobDescription = () => {
-        
         const handleCancel = () => {
-          setNewDescription(newDescription)
-          setEditMode(false)
+            setNewDescription(newDescription)
+            setEditMode(false)
         }
-      
+
         return (
             <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
-              <div className="flex left dc__content-space mb-12 w-100">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9">
-                  <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
-                  Description
+                <div className="flex left dc__content-space mb-12 w-100">
+                    <div className="flex left fs-14 fw-6 lh-20 cn-9">
+                        <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
+                        Description
+                    </div>
+                    {editMode ? (
+                        <div className="flex left ml-auto dc__gap-8">
+                            <button className="btn btn-link p-0 fw-6 cn-7" onClick={handleCancel}>
+                                Cancel
+                            </button>
+                            <button className="btn btn-link p-0 fw-6 cb-5" type="submit" onClick={handleSave}>
+                                Save
+                            </button>
+                        </div>
+                    ) : (
+                        <div
+                            className="flex fs-12 fw-4 lh-16 cn-7 cursor ml-auto"
+                            onClick={() => {
+                                setEditMode(true)
+                            }}
+                        >
+                            <EditIcon className="icon-dim-16 scn-7 mr-4" />
+                            Edit
+                        </div>
+                    )}
                 </div>
                 {editMode ? (
-                  <div className="flex left ml-auto dc__gap-8">
-                    <button className="btn btn-link p-0 fw-6 cn-7" onClick={handleCancel}>
-                      Cancel
-                    </button>
-                    <button
-                      className="btn btn-link p-0 fw-6 cb-5"
-                      type="submit"
-                      onClick={handleSave}
-                    >
-                      Save
-                    </button>
-                  </div>
+                    <div className="flex left flex-wrap dc__gap-8 w-100">
+                        <textarea
+                            placeholder="No description"
+                            value={newDescription}
+                            onChange={(e) => setNewDescription(e.target.value)}
+                            className="flex left flex-wrap dc__gap-8 dc__description-textarea"
+                        />
+                    </div>
                 ) : (
-                  <div
-                    className="flex fs-12 fw-4 lh-16 cn-7 cursor ml-auto"
-                    onClick={() => {
-                      setEditMode(true);
-                    }}
-                  >
-                    <EditIcon className="icon-dim-16 scn-7 mr-4" />
-                    Edit
-                  </div>
+                    <div className="flex left flex-wrap dc__gap-8 w-100">
+                        {newDescription ? newDescription : <span className="cn-7">No description</span>}
+                    </div>
                 )}
-              </div>
-              {editMode ? (
-                <div className="flex left flex-wrap dc__gap-8 w-100">
-                  <textarea
-                    placeholder="No description"
-                    value={newDescription}
-                    onChange={(e) => setNewDescription(e.target.value)}
-                    className="flex left flex-wrap dc__gap-8 dc__description-textarea"
-                  />
-                </div>
-              ) : (
-                <div className="flex left flex-wrap dc__gap-8 w-100">
-                  {newDescription ? (
-                    newDescription
-                  ) : (
-                    <span className="cn-7">No description</span>
-                  )}
-                </div>
-              )}
             </div>
-          )
-      }
-          
-           
+        )
+    }
 
     return (
         <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
             {renderSideInfoColumn()}
             <div className="app-overview-wrapper dc__overflow-scroll">
-                {isJobOverview ? renderJobDescription(): renderLabelTags()} 
-                {isJobOverview ? renderLabelTags(): renderAppLevelExternalLinks()}  
-                {isJobOverview ? renderWorkflowsStatus(): renderEnvironmentDeploymentsStatus()} 
+                {isJobOverview ? renderJobDescription() : renderLabelTags()}
+                {isJobOverview ? renderLabelTags() : renderAppLevelExternalLinks()}
+                {isJobOverview ? renderWorkflowsStatus() : renderEnvironmentDeploymentsStatus()}
             </div>
             {showUpdateAppModal && renderInfoModal()}
             {showUpdateTagModal && renderEditTagsModal()}
