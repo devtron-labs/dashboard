@@ -55,7 +55,6 @@ export default function CDDetails() {
     const { replace } = useHistory()
     useInterval(pollHistory, 30000)
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
-
     useEffect(() => {
         // check for more
         if (loading || !deploymentHistoryResult) return
@@ -122,6 +121,7 @@ export default function CDDetails() {
     const pipelines = result[1]['value'].pipelines
     const deploymentAppType = pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
     const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
+
     if (!triggerId && envId && pipelineId && deploymentHistoryResult?.result?.length) {
         replace(
             generatePath(path, {
@@ -133,16 +133,21 @@ export default function CDDetails() {
         )
     }
     const environment = result[0]['value'].result.find((envData) => envData.environmentId === +envId) || null
-    const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value'].result || []).map((item) => {
+    const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value']?.result || []).map((item) => {
         return {
             value: `${item.environmentId}`,
             label: item.environmentName,
             pipelineId: cdPipelinesMap.get(item.environmentId).id,
+            deploymentAppDeleteRequest: item.deploymentAppDeleteRequest,
         }
     })
 
-    if(result[0]['value'].result.length === 1 && !envId){
-      replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
+    const isEnvDeleted = result[0]['value']?.result?.find(
+        (_res) => _res?.deploymentAppDeleteRequest,
+    )?.deploymentAppDeleteRequest
+
+    if (envOptions.length === 1 && !envId && !isEnvDeleted) {
+        replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
     }
     return (
         <>
