@@ -59,7 +59,7 @@ export class ErrorScreenNotAuthorized extends Component<{
                 <EmptyState.Subtitle className={this.props.subtitleClass}>
                     {this.props.subtitle
                         ? this.props.subtitle
-                        : "Looks like you don't have access to information on this page. Please contact your manager to request access."}
+                        : "Information on this page is available only to superadmin users."}
                 </EmptyState.Subtitle>
             </EmptyState>
         )
