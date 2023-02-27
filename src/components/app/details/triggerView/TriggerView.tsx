@@ -43,7 +43,7 @@ import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
 import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
-import { handleSourceNotConfigured, processWorkflowStatuses } from '../../../Environments/AppGrouping.utils'
+import { handleSourceNotConfigured, processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.utils'
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
