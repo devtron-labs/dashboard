@@ -1,3 +1,4 @@
+import { MultiValue } from 'react-select'
 import {
     CDMdalTabType,
     DeploymentNodeType,
@@ -5,6 +6,7 @@ import {
     WorkflowNodeType,
     WorkflowType,
 } from '../app/details/triggerView/types'
+import { OptionType } from '../app/types'
 import { BulkResponseStatus } from './Constants'
 
 interface BulkTriggerAppDetailType {
@@ -206,8 +208,15 @@ export interface EnvHeaderType {
     setEnvName: (label: string) => void
     setShowEmpty: (empty: boolean) => void
     showEmpty: boolean
+    appListOptions: OptionType[]
+    selectedAppList: MultiValue<OptionType>
+    setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
 }
 
 export interface AppGroupAdminType {
     isSuperAdmin: boolean
+}
+
+export interface AppGroupDetailDefaultType {
+  filteredApps: MultiValue<OptionType>
 }

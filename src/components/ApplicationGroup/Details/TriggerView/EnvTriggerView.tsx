@@ -58,6 +58,7 @@ import './EnvTriggerView.scss'
 import BulkCDTrigger from './BulkCDTrigger'
 import BulkCITrigger from './BulkCITrigger'
 import {
+    AppGroupDetailDefaultType,
     BulkCDDetailType,
     BulkCIDetailType,
     ResponseRowType,
@@ -69,7 +70,7 @@ import Tippy from '@tippyjs/react'
 
 let timerRef
 let inprogressStatusTimer
-export default function EnvTriggerView() {
+export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultType) {
     const { envId } = useParams<{ envId: string }>()
     const location = useLocation()
     const history = useHistory()
@@ -95,6 +96,7 @@ export default function EnvTriggerView() {
     const [selectedAppID, setSelectedAppID] = useState<number>()
     const [selectedAppList, setSelectedAppList] = useState<WorkflowAppSelectionType[]>([])
     const [workflows, setWorkflows] = useState<WorkflowType[]>([])
+    const [filteredWorkflows, setFilteredWorkflows] = useState<WorkflowType[]>([])
     const [selectedCDNode, setSelectedCDNode] = useState<WorkflowNodeSelectionType>(null)
     const [selectedCINode, setSelectedCINode] = useState<WorkflowNodeSelectionType>(null)
     const [filteredCIPipelines, setFilteredCIPipelines] = useState(null)
@@ -125,6 +127,7 @@ export default function EnvTriggerView() {
             setErrorCode(0)
             setPageViewType(ViewType.FORM)
             getWorkflowStatusData(_workflows)
+            filterWorkflow(_workflows)
             timerRef && clearInterval(timerRef)
             timerRef = setInterval(() => {
                 getWorkflowStatusData(_workflows)
@@ -134,6 +137,21 @@ export default function EnvTriggerView() {
             setErrorCode(error['code'])
             setPageViewType(ViewType.ERROR)
         }
+    }
+
+    const filterWorkflow = (workflowsList: WorkflowType[]) => {
+        console.log('filterWorkflow', filteredApps)
+        const _filteredAppMap = new Map<number, string>()
+        filteredApps.forEach((app) => {
+            _filteredAppMap.set(+app.value, app.label)
+        })
+        const _filteredWorkflows: WorkflowType[] = []
+        workflowsList.forEach((wf) => {
+            if (_filteredAppMap.get(wf.appId)) {
+                _filteredWorkflows.push(wf)
+            }
+        })
+        setFilteredWorkflows(_filteredWorkflows)
     }
 
     const getWorkflowStatusData = (workflowsList: WorkflowType[]) => {
@@ -151,6 +169,7 @@ export default function EnvTriggerView() {
                     }, 10000)
                 }
                 setWorkflows(_processedWorkflowsData.workflows)
+                filterWorkflow(_processedWorkflowsData.workflows)
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
@@ -169,20 +188,26 @@ export default function EnvTriggerView() {
         }
     }, [envId])
 
+    useEffect(() => {
+        if (filteredApps.length) {
+            filterWorkflow(workflows)
+        }
+    }, [filteredApps])
+
     const clearAppList = (): void => {
         setSelectedAppList([])
-        const _workflows = workflows.map((wf) => {
+        const _workflows = filteredWorkflows.map((wf) => {
             wf.isSelected = false
             return wf
         })
-        setWorkflows(_workflows)
+        setFilteredWorkflows(_workflows)
     }
 
     const handleSelectionChange = (e): void => {
         const _appId = Number(e.currentTarget.dataset.appId)
         const _selectedAppList = [...selectedAppList]
         let _preNodeExist, _postNodeExist
-        const _workflows = workflows.map((wf) => {
+        const _workflows = filteredWorkflows.map((wf) => {
             if (_appId === wf.appId) {
                 const selectedAppIndex = selectedAppList.findIndex((app) => app.id === _appId)
                 if (wf.isSelected) {
@@ -223,7 +248,7 @@ export default function EnvTriggerView() {
         })
         setShowPreDeployment(_preNodeExist)
         setShowPostDeployment(_postNodeExist)
-        setWorkflows(_workflows)
+        setFilteredWorkflows(_workflows)
         setSelectedAppList(_selectedAppList)
     }
 
@@ -259,12 +284,12 @@ export default function EnvTriggerView() {
                     _selectedMaterial.noSearchResult = true
                     _selectedMaterial.isMaterialLoading = false
                 }
-                setWorkflows(workflows)
+                setFilteredWorkflows(workflows)
             })
             .catch((error: ServerErrors) => {
                 showError(error)
                 _selectedMaterial.isMaterialLoading = false
-                setWorkflows(workflows)
+                setFilteredWorkflows(workflows)
             })
     }
 
@@ -275,7 +300,7 @@ export default function EnvTriggerView() {
         commitHash = null,
     ) => {
         let _selectedMaterial
-        const _workflows = [...workflows].map((workflow) => {
+        const _workflows = [...filteredWorkflows].map((workflow) => {
             workflow.nodes.map((node) => {
                 if (node.type === 'CI' && +node.id == _ciNodeId) {
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
@@ -298,13 +323,13 @@ export default function EnvTriggerView() {
                 _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: true }]
                 _selectedMaterial.isMaterialLoading = false
 
-                setWorkflows(_workflows)
+                setFilteredWorkflows(_workflows)
             } else {
-                setWorkflows(_workflows)
+                setFilteredWorkflows(_workflows)
                 getCommitHistory(ciPipelineMaterialId, commitHash, _workflows, _selectedMaterial)
             }
         } else {
-            setWorkflows(_workflows)
+            setFilteredWorkflows(_workflows)
             updateCIMaterialList(selectedCINode.id.toString(), pipelineName, true).catch((errors: ServerErrors) => {
                 showError(errors)
                 setErrorCode(errors.code)
@@ -314,7 +339,7 @@ export default function EnvTriggerView() {
 
     //NOTE: GIT MATERIAL ID
     const refreshMaterial = (ciNodeId: number, pipelineName: string, gitMaterialId: number) => {
-        const _workflows = [...workflows].map((wf) => {
+        const _workflows = [...filteredWorkflows].map((wf) => {
             wf.nodes = wf.nodes.map((node) => {
                 if (node.id === ciNodeId.toString() && node.type === 'CI') {
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
@@ -328,7 +353,7 @@ export default function EnvTriggerView() {
             })
             return wf
         })
-        setWorkflows(_workflows)
+        setFilteredWorkflows(_workflows)
         refreshGitMaterial(gitMaterialId.toString())
             .then((response) => {
                 updateCIMaterialList(ciNodeId.toString(), pipelineName, true).catch((errors: ServerErrors) => {
@@ -353,7 +378,7 @@ export default function EnvTriggerView() {
             let _workflowId,
                 _appID,
                 showRegexModal = false
-            const _workflows = [...workflows].map((workflow) => {
+            const _workflows = [...filteredWorkflows].map((workflow) => {
                 workflow.nodes.map((node) => {
                     if (node.type === 'CI' && +node.id == +ciNodeId) {
                         const selectedCIPipeline = filteredCIPipelines.get(_appID)?.find((_ci) => _ci.id === +ciNodeId)
@@ -385,7 +410,7 @@ export default function EnvTriggerView() {
                 return workflow
             })
             showRegexModal = isShowRegexModal(_appID, +ciNodeId, response.result)
-            setWorkflows(_workflows)
+            setFilteredWorkflows(_workflows)
             setErrorCode(response.code)
             setSelectedCINode({ id: +ciNodeId, name: ciPipelineName, type: WorkflowNodeType.CI })
             setMaterialType(MATERIAL_TYPE.inputMaterialList)
@@ -435,7 +460,7 @@ export default function EnvTriggerView() {
         getCDMaterialList(cdNodeId, nodeType)
             .then((data) => {
                 let _selectedNode
-                const _workflows = [...workflows].map((workflow) => {
+                const _workflows = [...filteredWorkflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node[MATERIAL_TYPE.inputMaterialList] = data
@@ -450,7 +475,7 @@ export default function EnvTriggerView() {
                 })
                 setWorkflowID(_workflowId)
                 setSelectedAppID(_appID)
-                setWorkflows(_workflows)
+                setFilteredWorkflows(_workflows)
                 setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
                 setMaterialType(MATERIAL_TYPE.inputMaterialList)
                 setShowCDModal(true)
@@ -479,7 +504,7 @@ export default function EnvTriggerView() {
         getRollbackMaterialList(cdNodeId, _offset, _size)
             .then((response) => {
                 let _selectedNode
-                const _workflows = [...workflows].map((workflow) => {
+                const _workflows = [...filteredWorkflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
                             _selectedNode = node
@@ -494,7 +519,7 @@ export default function EnvTriggerView() {
                     workflow.nodes = nodes
                     return workflow
                 })
-                setWorkflows(_workflows)
+                setFilteredWorkflows(_workflows)
                 setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
                 setMaterialType(MATERIAL_TYPE.rollbackMaterialList)
                 setShowCDModal(true)
@@ -524,7 +549,7 @@ export default function EnvTriggerView() {
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
         setCDLoading(true)
         let node
-        for (const _wf of workflows) {
+        for (const _wf of filteredWorkflows) {
             node = _wf.nodes.find((nd) => +nd.id == selectedCDNode.id && nd.type == selectedCDNode.type)
             if (node) break
         }
@@ -564,7 +589,7 @@ export default function EnvTriggerView() {
         ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CITriggered)
         setCDLoading(true)
         let node, dockerfileConfiguredGitMaterialId
-        for (const wf of workflows) {
+        for (const wf of filteredWorkflows) {
             node = wf.nodes.find((node) => {
                 return node.type === selectedCINode.type && +node.id == selectedCINode.id
             })
@@ -643,7 +668,7 @@ export default function EnvTriggerView() {
     }
 
     const selectCommit = (materialId: string, hash: string, ciPipelineId?: string): void => {
-        const _workflows = [...workflows].map((workflow) => {
+        const _workflows = [...filteredWorkflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
                 if (node.type === WorkflowNodeType.CI && +node.id == (ciPipelineId ?? selectedCINode.id)) {
                     node.inputMaterialList.map((material) => {
@@ -665,11 +690,11 @@ export default function EnvTriggerView() {
             workflow.nodes = nodes
             return workflow
         })
-        setWorkflows(_workflows)
+        setFilteredWorkflows(_workflows)
     }
 
     const selectMaterial = (materialId, pipelineId?: number): void => {
-        const _workflows = [...workflows].map((workflow) => {
+        const _workflows = [...filteredWorkflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
                 if (node.type === WorkflowNodeType.CI && +node.id == (pipelineId ?? selectedCINode.id)) {
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
@@ -685,7 +710,7 @@ export default function EnvTriggerView() {
             workflow.nodes = nodes
             return workflow
         })
-        setWorkflows(_workflows)
+        setFilteredWorkflows(_workflows)
     }
 
     const selectImage = (
@@ -693,7 +718,7 @@ export default function EnvTriggerView() {
         materialType: string,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
     ): void => {
-        const _workflows = [...workflows].map((workflow) => {
+        const _workflows = [...filteredWorkflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
                 if (
                     (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
@@ -712,11 +737,11 @@ export default function EnvTriggerView() {
             workflow.nodes = nodes
             return workflow
         })
-        setWorkflows(_workflows)
+        setFilteredWorkflows(_workflows)
     }
 
     const toggleChanges = (materialId: string, hash: string): void => {
-        const _workflows = [...workflows].map((workflow) => {
+        const _workflows = [...filteredWorkflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
                 if (node.type === selectedCINode.type && +node.id == selectedCINode.id) {
                     node.inputMaterialList.map((material) => {
@@ -733,14 +758,14 @@ export default function EnvTriggerView() {
             return workflow
         })
 
-        setWorkflows(_workflows)
+        setFilteredWorkflows(_workflows)
     }
 
     const toggleSourceInfo = (
         materialIndex: number,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
     ): void => {
-        const _workflows = [...workflows].map((workflow) => {
+        const _workflows = [...filteredWorkflows].map((workflow) => {
             const nodes = workflow.nodes.map((node) => {
                 if (
                     (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
@@ -753,7 +778,7 @@ export default function EnvTriggerView() {
             workflow.nodes = nodes
             return workflow
         })
-        setWorkflows(_workflows)
+        setFilteredWorkflows(_workflows)
     }
 
     const toggleInvalidateCache = (): void => {
@@ -769,7 +794,7 @@ export default function EnvTriggerView() {
         appId?: number,
     ): void => {
         if (tab === CDModalTab.Changes) {
-            const _workflows = [...workflows].map((workflow) => {
+            const _workflows = [...filteredWorkflows].map((workflow) => {
                 const nodes = workflow.nodes.map((node) => {
                     if (
                         (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
@@ -782,12 +807,12 @@ export default function EnvTriggerView() {
                 workflow.nodes = nodes
                 return workflow
             })
-            setWorkflows(_workflows)
+            setFilteredWorkflows(_workflows)
             return
         }
 
         let targetNode
-        for (const _wf of workflows) {
+        for (const _wf of filteredWorkflows) {
             targetNode = _wf.nodes.find(
                 (node) =>
                     (selectedCDDetail && selectedCDDetail.id === +node.id && selectedCDDetail.type === node.type) ||
@@ -799,7 +824,7 @@ export default function EnvTriggerView() {
         if (targetNode || targetNode.scanned || targetNode.scanEnabled) {
             getLastExecutionByArtifactAppEnv(artifactId, appId || selectedAppID, targetNode.environmentId)
                 .then((response) => {
-                    const _workflows = [...workflows].map((workflow) => {
+                    const _workflows = [...filteredWorkflows].map((workflow) => {
                         const nodes = workflow.nodes.map((node) => {
                             if (
                                 (selectedCDDetail &&
@@ -817,11 +842,11 @@ export default function EnvTriggerView() {
                         workflow.nodes = nodes
                         return workflow
                     })
-                    setWorkflows(_workflows)
+                    setFilteredWorkflows(_workflows)
                 })
                 .catch((error) => {
                     showError(error)
-                    const _workflows = [...workflows].map((workflow) => {
+                    const _workflows = [...filteredWorkflows].map((workflow) => {
                         const nodes = workflow.nodes.map((node) => {
                             if (
                                 (selectedCDDetail &&
@@ -837,7 +862,7 @@ export default function EnvTriggerView() {
                         workflow.nodes = nodes
                         return workflow
                     })
-                    setWorkflows(_workflows)
+                    setFilteredWorkflows(_workflows)
                 })
         }
     }
@@ -919,7 +944,7 @@ export default function EnvTriggerView() {
     }
 
     const updateBulkCDInputMaterial = (materialList: Record<string, any[]>): void => {
-        const _workflows = workflows.map((wf) => {
+        const _workflows = filteredWorkflows.map((wf) => {
             if (wf.isSelected) {
                 const _appId = wf.appId
                 const _cdNode = wf.nodes.find(
@@ -939,7 +964,7 @@ export default function EnvTriggerView() {
             }
             return wf
         })
-        setWorkflows(_workflows)
+        setFilteredWorkflows(_workflows)
     }
 
     const onClickTriggerBulkCD = (appsToRetry?: Record<string, boolean>) => {
@@ -949,7 +974,7 @@ export default function EnvTriggerView() {
         const _appIdMap = new Map<string, string>(),
             nodeList: NodeAttr[] = [],
             triggeredAppList: { appId: number; appName: string }[] = []
-        for (const _wf of workflows) {
+        for (const _wf of filteredWorkflows) {
             if (_wf.isSelected && (!appsToRetry || appsToRetry[_wf.appId])) {
                 const _cdNode = _wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
@@ -1045,7 +1070,7 @@ export default function EnvTriggerView() {
     }
 
     const updateBulkCIInputMaterial = (materialList: Record<string, any[]>): void => {
-        const _workflows = [...workflows].map((wf) => {
+        const _workflows = [...filteredWorkflows].map((wf) => {
             const _appId = wf.appId
             const _ciNode = wf.nodes.find((node) => node.type === WorkflowNodeType.CI)
             if (_ciNode) {
@@ -1053,7 +1078,7 @@ export default function EnvTriggerView() {
             }
             return wf
         })
-        setWorkflows(_workflows)
+        setFilteredWorkflows(_workflows)
     }
 
     const onClickTriggerBulkCI = (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => {
@@ -1063,7 +1088,7 @@ export default function EnvTriggerView() {
         let node
         const nodeList: NodeAttr[] = [],
             triggeredAppList: { appId: number; appName: string }[] = []
-        for (const _wf of workflows) {
+        for (const _wf of filteredWorkflows) {
             if (_wf.isSelected && (!appsToRetry || appsToRetry[_wf.appId])) {
                 triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
                 node = _wf.nodes.find((node) => {
@@ -1116,7 +1141,7 @@ export default function EnvTriggerView() {
 
     const createBulkCDTriggerData = (): BulkCDDetailType[] => {
         const _selectedAppWorkflowList: BulkCDDetailType[] = []
-        workflows.forEach((wf) => {
+        filteredWorkflows.forEach((wf) => {
             if (wf.isSelected) {
                 const _cdNode = wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
@@ -1201,7 +1226,7 @@ export default function EnvTriggerView() {
 
     const createBulkCITriggerData = (): BulkCIDetailType[] => {
         const _selectedAppWorkflowList: BulkCIDetailType[] = []
-        workflows.forEach((wf) => {
+        filteredWorkflows.forEach((wf) => {
             if (wf.isSelected) {
                 const _ciNode = wf.nodes.find(
                     (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
@@ -1255,7 +1280,7 @@ export default function EnvTriggerView() {
         return <Progressing pageLoader />
     } else if (pageViewType === ViewType.ERROR) {
         return <ErrorScreenManager code={errorCode} />
-    } else if (!workflows.length) {
+    } else if (!filteredWorkflows.length) {
         return (
             <div>
                 <AppNotConfigured />
@@ -1267,7 +1292,7 @@ export default function EnvTriggerView() {
         if ((selectedCINode?.id && showCIModal) || showMaterialRegexModal) {
             let nd: NodeAttr, _appID
             const configuredMaterialList = new Map<number, Set<number>>()
-            for (const _wf of workflows) {
+            for (const _wf of filteredWorkflows) {
                 nd = _wf.nodes.find((node) => +node.id == selectedCINode.id && node.type === selectedCINode.type)
                 if (nd) {
                     const gitMaterials = new Map<number, string[]>()
@@ -1377,7 +1402,7 @@ export default function EnvTriggerView() {
     const renderCDMaterial = (): JSX.Element | null => {
         if (showCDModal && selectedCDNode?.id) {
             let node: NodeAttr, _appID
-            for (const _wf of workflows) {
+            for (const _wf of filteredWorkflows) {
                 node = _wf.nodes.find((el) => {
                     return +el.id == selectedCDNode.id && el.type == selectedCDNode.type
                 })
@@ -1505,7 +1530,7 @@ export default function EnvTriggerView() {
     const renderWorkflow = (): JSX.Element => {
         return (
             <>
-                {workflows.map((workflow) => {
+                {filteredWorkflows.map((workflow) => {
                     return (
                         <Workflow
                             key={workflow.id}

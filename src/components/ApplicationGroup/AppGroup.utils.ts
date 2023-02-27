@@ -119,7 +119,7 @@ export const envListOptions = (inputValue: string): Promise<[]> =>
                 resolve([])
                 return
             }
-            getEnvAppList({envName: inputValue})
+            getEnvAppList({ envName: inputValue })
                 .then((response) => {
                     let appList = []
                     if (response.result) {
@@ -140,3 +140,54 @@ export const envListOptions = (inputValue: string): Promise<[]> =>
                 })
         }, 300)
     })
+
+export const appGroupAppSelectorStyle = {
+    control: (base, state) => ({
+        ...base,
+        border: state.menuIsOpen ? '1px solid var(--B500)' : 'unset',
+        boxShadow: 'none',
+        minHeight: 'auto',
+        borderRadius: '4px',
+        height: '32px',
+        fontSize: '12px',
+        width: '200px',
+        cursor: state.isDisabled ? 'not-allowed' : 'normal',
+    }),
+    singleValue: (base, state) => ({
+        ...base,
+        fontWeight: '500',
+    }),
+    placeholder: (base, state) => ({
+        ...base,
+        fontWeight: '500',
+    }),
+    option: (base, state) => ({
+        ...base,
+        fontWeight: '500',
+        color: 'var(--N900)',
+        fontSize: '12px',
+        padding: '5px 10px',
+        backgroundColor: 'none',
+    }),
+    valueContainer: (base, state) => ({
+        ...base,
+        color: 'var(--N900)',
+        padding: '0px 10px',
+        display: 'flex',
+        height: '30px',
+        fontSize: '12px',
+        cursor: state.isDisabled ? 'not-allowed' : 'normal',
+        pointerEvents: 'all',
+        width: '100px',
+        whiteSpace: 'nowrap',
+    }),
+    menuList: (base) => {
+        return {
+            ...base,
+            paddingTop: '0',
+            paddingBottom: '0',
+            marginTop: '4px',
+            marginBottom: '4px',
+        }
+    },
+}

@@ -1,6 +1,6 @@
-import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react'
+import React, { Suspense, useCallback, useRef, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
-import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, showError, useAsync } from '../common'
+import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, useAsync, sortOptionsByLabel } from '../common'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
 import { URLS } from '../../config'
@@ -15,13 +15,30 @@ import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE 
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
 import { getEnvAppList } from './AppGroup.service'
 import { AppGroupAdminType, EnvHeaderType } from './AppGroup.types'
+import { getAppList } from '../app/service'
+import { MultiValue } from 'react-select'
+import { OptionType } from '../app/types'
+import AppGroupAppFilter from './AppGroupAppFilter'
+
+const AppGroupAppFilterContext = React.createContext(null)
+
+export function useAppGroupAppFilterContext() {
+    const context = React.useContext(AppGroupAppFilterContext)
+    if (!context) {
+        throw new Error(`cannot be rendered outside the component`)
+    }
+    return context
+}
 
 export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType) {
     const { path } = useRouteMatch()
     const { envId } = useParams<{ envId: string }>()
     const [envName, setEnvName] = useState('')
-    const [showEmpty, setShowEmpty] = useState<boolean>(true)
+    const [showEmpty, setShowEmpty] = useState<boolean>(false)
+    const [appListLoading, setAppListLoading] = useState<boolean>(false)
     const [loading, envList] = useAsync(getEnvAppList, [])
+    const [appListOptions, setAppListOptions] = useState<OptionType[]>([])
+    const [selectedAppList, setSelectedAppList] = useState<MultiValue<OptionType>>([])
 
     useEffect(() => {
         if (envList?.result) {
@@ -31,10 +48,31 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         }
     }, [envList])
 
-    const renderEmptyAndLoading = () => {
-        if (loading) {
-            return <Progressing pageLoader />
+    const getAppListData = async (): Promise<void> => {
+        setAppListLoading(true)
+        const { result } = await getAppList({ environments: [+envId] })
+        if (result.appContainers?.length) {
+            setAppListOptions(
+                result.appContainers
+                    .map((appDetails) => {
+                        return {
+                            value: appDetails.appId,
+                            label: appDetails.appName,
+                        }
+                    })
+                    .sort(sortOptionsByLabel),
+            )
         }
+        setAppListLoading(false)
+    }
+
+    useEffect(() => {
+        if (envId) {
+            getAppListData()
+        }
+    }, [envId])
+
+    const renderEmpty = () => {
         return (
             <ResourceListEmptyState
                 imgSource={EmptyFolder}
@@ -45,44 +83,67 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     }
 
     const renderRoute = () => {
-        if (showEmpty) return <div className="env-empty-state flex w-100">{renderEmptyAndLoading()}</div>
-        return (
-            <ErrorBoundary>
-                <Suspense fallback={<Progressing pageLoader />}>
-                    <Switch>
-                        <Route path={`${path}/${URLS.APP_DETAILS}`}>
-                            <div>Env detail</div>
-                        </Route>
-                        <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <EnvironmentOverview />
-                        </Route>
-                        <Route path={`${path}/${URLS.APP_TRIGGER}`}>
-                            <EnvTriggerView />
-                        </Route>
-                        <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                            <EnvConfig />
-                        </Route>
-                        <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
-                    </Switch>
-                </Suspense>
-            </ErrorBoundary>
-        )
+        if (loading || appListLoading) {
+            return <Progressing pageLoader />
+        } else if (showEmpty) {
+            return <div className="env-empty-state flex w-100">{renderEmpty()}</div>
+        } else {
+            const _filteredApps = selectedAppList.length > 0 ? selectedAppList : appListOptions
+            return (
+                <ErrorBoundary>
+                    <Suspense fallback={<Progressing pageLoader />}>
+                        <Switch>
+                            <Route path={`${path}/${URLS.APP_DETAILS}`}>
+                                <div>Env detail</div>
+                            </Route>
+                            <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
+                                <EnvironmentOverview />
+                            </Route>
+                            <Route path={`${path}/${URLS.APP_TRIGGER}`}>
+                                <EnvTriggerView filteredApps={_filteredApps} />
+                            </Route>
+                            <Route path={`${path}/${URLS.APP_CONFIG}`}>
+                                <EnvConfig />
+                            </Route>
+                            <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
+                        </Switch>
+                    </Suspense>
+                </ErrorBoundary>
+            )
+        }
     }
 
     return (
         <div className="env-details-page">
-            <EnvHeader envName={envName} setEnvName={setEnvName} setShowEmpty={setShowEmpty} showEmpty={showEmpty} />
+            <EnvHeader
+                envName={envName}
+                setEnvName={setEnvName}
+                setShowEmpty={setShowEmpty}
+                showEmpty={showEmpty}
+                appListOptions={appListOptions}
+                selectedAppList={selectedAppList}
+                setSelectedAppList={setSelectedAppList}
+            />
             {renderRoute()}
         </div>
     )
 }
 
-export function EnvHeader({ envName, setEnvName, setShowEmpty, showEmpty }: EnvHeaderType) {
+export function EnvHeader({
+    envName,
+    setEnvName,
+    setShowEmpty,
+    showEmpty,
+    appListOptions,
+    selectedAppList,
+    setSelectedAppList,
+}: EnvHeaderType) {
     const { envId } = useParams<{ envId: string }>()
     const match = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
     const currentPathname = useRef('')
+    const [isMenuOpen, setMenuOpen] = useState(false)
 
     useEffect(() => {
         currentPathname.current = location.pathname
@@ -171,7 +232,23 @@ export function EnvHeader({ envName, setEnvName, setShowEmpty, showEmpty }: EnvH
     }
 
     const renderBreadcrumbs = () => {
-        return <BreadCrumb breadcrumbs={breadcrumbs} />
+        return (
+            <>
+                <BreadCrumb breadcrumbs={breadcrumbs} />
+                <div className="dc__border-right ml-8 mr-8 h-16" />
+                <AppGroupAppFilterContext.Provider
+                    value={{
+                        appListOptions,
+                        isMenuOpen,
+                        setMenuOpen,
+                        selectedAppList,
+                        setSelectedAppList,
+                    }}
+                >
+                    <AppGroupAppFilter />
+                </AppGroupAppFilterContext.Provider>
+            </>
+        )
     }
 
     return (
