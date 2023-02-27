@@ -24,6 +24,11 @@ export const AppDetailsTabs = {
     log_analyzer: 'Log Analyzer',
 };
 
+export const AppDetailsTabsIdPrefix = {
+    k8s_Resources: 'k8s_resources',
+    log_analyzer: 'log_analyzer',
+};
+
 const AppDetailsStore = {
     getAppDetailsTabs: () => {
         return applicationObjectTabsSubject.getValue();
