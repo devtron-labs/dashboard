@@ -212,7 +212,7 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
   renderSavedFilters() {
     let filters = ['clusters', 'environments', 'severity'];
     let count = 0;
-    return <div className="flex left flex-1 pt-10 pb-10 pl-18 pr-18">
+    return <div className="flex left flex-1 pt-10 pb-10 pl-18 pr-18 flex-wrap">
       {filters.map((filter) => {
         return <>
           {this.state.filtersApplied[filter].map((cluster) => {

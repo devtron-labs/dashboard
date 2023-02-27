@@ -10,7 +10,7 @@ import {
 import { ReactComponent as ApplicationsIcon } from '../../../assets/icons/ic-nav-applications.svg'
 import { ReactComponent as ChartStoreIcon } from '../../../assets/icons/ic-nav-helm.svg'
 import { ReactComponent as DeploymentGroupIcon } from '../../../assets/icons/ic-nav-rocket.svg'
-import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-bug.svg'
+import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-security.svg'
 import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-code.svg'
 import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
 import { ReactComponent as StackManagerIcon } from '../../../assets/icons/ic-nav-stack.svg'
@@ -41,7 +41,7 @@ const NavigationList = [
         icon: CubeIcon,
         href: URLS.RESOURCE_BROWSER,
         isAvailableInEA: true,
-        markAsBeta: true,
+        markAsBeta: false,
     },
     {
         title: 'Chart Store',
@@ -271,7 +271,7 @@ export default class Navigation extends Component<
                                 <svg className="devtron-logo" viewBox="0 0 40 40">
                                     <use href={`${NavSprite}#nav-short-devtron-logo`}></use>
                                 </svg>
-                                <div className="pl-12 pt-10">
+                                <div className="pl-12 pt-10 pt-0">
                                     <img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
                                 </div>
                             </div>

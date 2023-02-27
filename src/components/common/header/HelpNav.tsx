@@ -1,27 +1,32 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useContext } from 'react'
 import ReactGA from 'react-ga4'
-import { DOCUMENTATION, URLS } from '../../config'
-import { ReactComponent as File } from '../../assets/icons/ic-file-text.svg'
-import { ReactComponent as Discord } from '../../assets/icons/ic-discord-fill.svg'
-import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Chat } from '../../assets/icons/ic-chat-circle-dots.svg'
-import { InstallationType, ServerInfo } from '../v2/devtronStackManager/DevtronStackManager.type'
-import { NavLink, useHistory } from 'react-router-dom'
-import { ReactComponent as GettingStartedIcon } from '../../assets/icons/ic-onboarding.svg'
+import { NavLink } from 'react-router-dom'
+import { SliderButton } from '@typeform/embed-react'
+import { DOCUMENTATION, URLS } from '../../../config'
+import { InstallationType } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
+import { ReactComponent as Discord } from '../../../assets/icons/ic-discord-fill.svg'
+import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
+import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
+import { ReactComponent as GettingStartedIcon } from '../../../assets/icons/ic-onboarding.svg'
+import { ReactComponent as Feedback } from '../../../assets/icons/ic-feedback.svg'
+import { HelpNavType, HelpOptionType } from './header.type'
+import { mainContext } from '../navigation/NavigationRoutes'
+import { stopPropagation } from '../helpers/Helpers'
 
-export interface HelpNavType {
-    className: string
-    showHelpCard: boolean
-    setShowHelpCard: React.Dispatch<React.SetStateAction<boolean>>
-    serverInfo: ServerInfo
-    fetchingServerInfo: boolean
-    setGettingStartedClicked: (isClicked: boolean) => void
-}
+function HelpNav({
+    className,
+    setShowHelpCard,
+    serverInfo,
+    fetchingServerInfo,
+    setGettingStartedClicked,
+    showHelpCard,
+}: HelpNavType) {
+    const { currentServerInfo } = useContext(mainContext)
+    const isEnterprise = currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
+    const FEEDBACK_FORM_ID = `UheGN3KJ#source=${window.location.hostname}`
 
-function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchingServerInfo, setGettingStartedClicked }: HelpNavType) {
-  const history = useHistory()
-
-    const HelpOptions = [
+    const HelpOptions: HelpOptionType[] = [
         {
             name: 'View documentation',
             link: DOCUMENTATION.HOME_PAGE,
@@ -32,7 +37,7 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
             name: 'Chat with support',
             link: 'https://discord.devtron.ai/',
             icon: Chat,
-            showSeparator: true,
+            showSeparator: !isEnterprise,
         },
         {
             name: 'Join discord community',
@@ -47,13 +52,40 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
         },
     ]
 
-    const onClickGettingStarted = () => {
-      setGettingStartedClicked(true)
+    const onClickGettingStarted = (): void => {
+        setGettingStartedClicked(true)
+    }
+
+    const onClickHelpOptions = (option: HelpOptionType): void => {
+        ReactGA.event({
+            category: 'Help Nav',
+            action: `${option.name} Clicked`,
+        })
+    }
+
+    const toggleHelpCard = (): void => {
+        setShowHelpCard(!showHelpCard)
+    }
+
+    const renderHelpFeedback = (): JSX.Element => {
+        return (
+            <div onClick={stopPropagation} className="help-card__option help-card__link flex left cn-9">
+                <Feedback />
+                <SliderButton
+                    className="dc__transparent help-card__option-name ml-12 cn-9 fs-14"
+                    id={FEEDBACK_FORM_ID}
+                    onClose={toggleHelpCard}
+                    autoClose={2000}
+                >
+                    Give feedback
+                </SliderButton>
+            </div>
+        )
     }
 
     return (
-        <div className="dc__transparent-div" onClick={() => setShowHelpCard(!showHelpCard)}>
-            <div className={`help-card pt-4 pb-4 ${className}`}>
+        <div className="dc__transparent-div" onClick={toggleHelpCard}>
+            <div className={`help-card pt-4 pb-4 ${className} ${isEnterprise ? `help-grid__feedback` : ''}`}>
                 <NavLink
                     to={`/${URLS.GETTING_STARTED}`}
                     className="help-card__option dc__no-decor help-card__link flex left cn-9"
@@ -63,7 +95,6 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
                     <GettingStartedIcon />
                     <div className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
                 </NavLink>
-
                 {HelpOptions.map((option) => {
                     return (
                         <Fragment key={option.name}>
@@ -73,11 +104,8 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
                                 href={option.link}
                                 target="_blank"
                                 rel="noreferrer noopener"
-                                onClick={(event) => {
-                                    ReactGA.event({
-                                        category: 'Main Navigation',
-                                        action: `${option.name} Clicked`,
-                                    })
+                                onClick={() => {
+                                    onClickHelpOptions(option)
                                 }}
                             >
                                 <option.icon />
@@ -87,6 +115,7 @@ function HelpNav({ className, showHelpCard, setShowHelpCard, serverInfo, fetchin
                         </Fragment>
                     )
                 })}
+                {isEnterprise && renderHelpFeedback()}
                 {serverInfo?.installationType === InstallationType.OSS_HELM && (
                     <div className="help-card__update-option fs-11 fw-6 mt-4">
                         {fetchingServerInfo ? (
