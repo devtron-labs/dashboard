@@ -446,7 +446,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                         />
                     </div>
                 ) : (
-                    <div className="flex left flex-wrap dc__gap-8 w-100">
+                    <div className="flex left flex-wrap fs-13 dc__gap-8 w-100">
                         {newDescription ? newDescription : <span className="cn-7 fs-13">No description</span>}
                     </div>
                 )}
