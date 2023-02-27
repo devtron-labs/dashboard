@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { CINode } from './nodes/CINode'
-import { CDNode } from './nodes/CDNode'
+import { CDNode }  from './nodes/CDNode'
 import { StaticNode } from './nodes/StaticNode'
 import {
     RectangularEdge as Edge,
@@ -337,7 +337,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 cdNamesList={cdNamesList}
                 hideWebhookTippy={this.props.hideWebhookTippy}
                 deploymentAppDeleteRequest={node.deploymentAppDeleteRequest}
-                match = {this.props.match}
+                match={this.props.match}
             />
         )
     }

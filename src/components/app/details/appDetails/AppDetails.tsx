@@ -78,7 +78,7 @@ import { TriggerUrlModal } from '../../list/TriggerUrl'
 import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
-import { APP_DETAILS } from '../../../../config/constantMessaging'
+import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
 
 export default function AppDetail() {
     const params = useParams<{ appId: string; envId?: string }>()
@@ -411,9 +411,9 @@ export const Details: React.FC<DetailsType> = ({
                     <AppNotConfigured
                         style={{ height: 'calc(100vh - 150px)' }}
                         image={noGroups}
-                        title={'Looks like you’re all set. Go ahead and select an image to deploy'}
-                        subtitle={'Once deployed, details for the deployment will be available here'}
-                        buttonTitle={'Go to deploy'}
+                        title={ERROR_EMPTY_SCREEN.ALL_SET_GO_CONFIGURE}
+                        subtitle={ERROR_EMPTY_SCREEN.DEPLOYEMENT_WILL_BE_HERE}
+                        buttonTitle={ERROR_EMPTY_SCREEN.GO_TO_DEPLOY}
                         appConfigTabs={URLS.APP_TRIGGER}
                     />
                 )}

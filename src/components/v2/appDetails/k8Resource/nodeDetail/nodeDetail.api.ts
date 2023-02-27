@@ -97,18 +97,14 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
         if (appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP) {
             return `${appDetails.appName}-${appDetails.environmentName}`
         } else {
-           return appDetails.appName
+            return appDetails.appName
         }
     }
 
     const appId =
         appDetails.deploymentAppType == DeploymentAppType.argo_cd
             ? ''
-            : getAppId(
-                  appDetails.clusterId,
-                  appDetails.namespace,
-                  getAppName()
-       )
+            : getAppId(appDetails.clusterId, appDetails.namespace, getAppName())
 
     const requestBody = {
         appId: appId,

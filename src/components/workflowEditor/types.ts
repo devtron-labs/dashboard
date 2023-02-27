@@ -62,14 +62,7 @@ export interface NoGitOpsConfiguredWarningType {
     closePopup: (isContinueWithHelm: boolean) => void
 }
 
-interface MatchType {
-  isExact: boolean
-  params?: {appId: string, workflowId?: string}
-  path: string
-  url: string
-}
-
-export interface CDNodeProps {
+export interface CDNodeProps{
     id: string
     deploymentStrategy: string
     triggerType: string
@@ -84,10 +77,10 @@ export interface CDNodeProps {
     to: string
     toggleCDMenu: () => void
     cdNamesList?: string[]
-    hideWebhookTippy?:  () => void
+    hideWebhookTippy?: () => void
     deploymentAppDeleteRequest: boolean
     deploymentAppCreated?: boolean
-    match: MatchType
+    match: RouteComponentProps['match']
 }
 
 export interface WebhookNodeProps {

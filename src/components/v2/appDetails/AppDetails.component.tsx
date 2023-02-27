@@ -46,7 +46,7 @@ const AppDetailsComponent = ({
     );
 
     return (
-        <div className='helm-details'>
+        <div className="helm-details">
             <div>
                 <EnvironmentSelectorComponent isExternalApp={isExternalApp} _init={_init}/>
               {!appDetails.deploymentAppDeleteRequest && <EnvironmentStatusComponent appStreamData={streamData}/>}
