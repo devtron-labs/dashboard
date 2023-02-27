@@ -103,6 +103,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         this.toggleWarningModal = this.toggleWarningModal.bind(this)
         this.handleURLChange = this.handleURLChange.bind(this)
         this.handleConfigChange = this.handleConfigChange.bind(this)
+        this.handleOnBlur = this.handleOnBlur.bind(this)
         this.saveNewSSO = this.saveNewSSO.bind(this)
     }
 
@@ -121,7 +122,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 if (this.state.lastActiveSSO && this.state.lastActiveSSO?.id) {
                     getSSOConfig(this.state.lastActiveSSO?.name.toLowerCase())
                         .then((response) => {
-                            this.setConfig(response,this.state.lastActiveSSO.name.toLowerCase())
+                            this.setConfig(response, this.state.lastActiveSSO.name.toLowerCase())
                         })
                         .catch((error) => {
                             this.setState({ view: ViewType.ERROR, statusCode: error.code })
@@ -142,21 +143,21 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let newsso = event.target.value
         getSSOConfig(newsso)
             .then((response) => {
-                this.setConfig(response,newsso)
+                this.setConfig(response, newsso)
             })
             .catch((error) => {
                 this.setState({ view: ViewType.ERROR, statusCode: error.code })
             })
     }
 
-    setConfig(response:any,newsso:any): void {
+    setConfig(response: any, newsso: any): void {
         if (response.result?.config?.config?.clientID === '') {
             response.result.config.config.clientID = DEFAULT_SECRET_PLACEHOLDER
         }
         if (response.result?.config?.config?.clientSecret === '') {
             response.result.config.config.clientSecret = DEFAULT_SECRET_PLACEHOLDER
         }
-        let newConfig:SSOConfigType
+        let newConfig: SSOConfigType
         if (response.result) {
             newConfig = this.parseResponse(response.result)
         } else {
@@ -378,38 +379,65 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             },
         })
     }
-    
+
     renderSSOCodeEditor() {
-        let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 });
-        let codeEditorBody = this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 });
-        let shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? <div style={{ resize: 'none', lineHeight: '1.4', border: 'none', padding: `0 35px`, overflow: 'none', color: '#f32e2e', fontSize: '14px', fontFamily: 'Consolas, "Courier New", monospace' }} className="w-100">
-            <p className="m-0">config:</p>
-            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
-            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
-            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
-            <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;config:</p>
-        </div> : null;
-        return <div className="mt-0 ml-24 mr-24 mb-24">
-            <div className="code-editor-container">
-                <CodeEditor value={codeEditorBody}
-                    height={300}
-                    mode='yaml'
-                    lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? 50 : 0}
-                    shebang={shebangHtml}
-                    readOnly={this.state.configMap !== SwitchItemValues.Configuration}
-                    onChange={this.handleConfigChange}
-                    onBlur={this.handleOnBlur}
+        let ssoConfig = this.state.ssoConfig.config.config || yamlJsParser.stringify({}, { indent: 2 })
+        let codeEditorBody =
+            this.state.configMap === SwitchItemValues.Configuration
+                ? ssoConfig
+                : yamlJsParser.stringify(sample[this.state.sso], { indent: 2 })
+        let shebangHtml =
+            this.state.configMap === SwitchItemValues.Configuration ? (
+                <div
+                    style={{
+                        resize: 'none',
+                        lineHeight: '1.4',
+                        border: 'none',
+                        padding: `0 35px`,
+                        overflow: 'none',
+                        color: '#f32e2e',
+                        fontSize: '14px',
+                        fontFamily: 'Consolas, "Courier New", monospace',
+                    }}
+                    className="w-100"
+                >
+                    <p className="m-0">config:</p>
+                    <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
+                    <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
+                    <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;id: {this.state.ssoConfig.config.id}</p>
+                    <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;config:</p>
+                </div>
+            ) : null
+        return (
+            <div className="mt-0 ml-24 mr-24 mb-24">
+                <div className="code-editor-container">
+                    <CodeEditor
+                        value={codeEditorBody}
+                        height={300}
+                        mode="yaml"
+                        lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? 50 : 0}
+                        shebang={shebangHtml}
+                        readOnly={this.state.configMap !== SwitchItemValues.Configuration}
+                        onChange={this.handleConfigChange}
+                        onBlur={this.handleOnBlur}
                     >
-                    <CodeEditor.Header >
-                        <Switch value={this.state.configMap} name={'tab'} onChange={(event) => { this.handleCodeEditorTab(event.target.value) }}>
-                            <SwitchItem value={SwitchItemValues.Configuration}> Configuration  </SwitchItem>
-                            <SwitchItem value={SwitchItemValues.Sample}>  Sample Script</SwitchItem>
-                        </Switch>
-                        <CodeEditor.ValidationError />
-                    </CodeEditor.Header>
-                </CodeEditor>
+                        <CodeEditor.Header>
+                            <Switch
+                                value={this.state.configMap}
+                                name={'tab'}
+                                onChange={(event) => {
+                                    this.handleCodeEditorTab(event.target.value)
+                                }}
+                            >
+                                <SwitchItem value={SwitchItemValues.Configuration}> Configuration </SwitchItem>
+                                <SwitchItem value={SwitchItemValues.Sample}> Sample Script</SwitchItem>
+                            </Switch>
+                            <CodeEditor.ValidationError />
+                        </CodeEditor.Header>
+                    </CodeEditor>
+                </div>
             </div>
-        </div>
+        )
     }
 
     handleSSOURLLocation(value: string): void {
