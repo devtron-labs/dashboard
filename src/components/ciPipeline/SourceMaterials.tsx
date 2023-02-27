@@ -97,7 +97,9 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
             {_materials.map((mat, index) => {
                 const isBranchRegex = mat.type === SourceTypeMap.BranchRegex || mat.isRegex
                 const isBranchFixed = mat.type === SourceTypeMap.BranchFixed && !mat.isRegex
-               const sourceTypeOptions=!ciPipelineId?props.ciPipelineSourceTypeOptions:props.ciPipelineSourceTypeOptions.slice(0,2)
+                const sourceTypeOptions = !ciPipelineId
+                    ? props.ciPipelineSourceTypeOptions
+                    : props.ciPipelineSourceTypeOptions.slice(0, 2)
                 const _selectedWebhookEvent =
                     mat.type === SourceTypeMap.WEBHOOK && mat.value && props.webhookData.getSelectedWebhookEvent(mat)
                 let selectedMaterial
@@ -109,7 +111,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                         mat.value = ''
                         setProviderChanged(true)
                     }
-                } else if (sourceTypeOptions.length== 1) {
+                } else if (sourceTypeOptions.length === 1) {
                     selectedMaterial = props.ciPipelineSourceTypeOptions[0]
                 } else {
                     selectedMaterial =
