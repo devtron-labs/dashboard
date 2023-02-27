@@ -155,5 +155,5 @@ export interface CopyToClipboardTextProps {
     text: string
     rootClassName?: string
     iconClass?: string
-    placement?: any
+    placement?: 'top' | 'bottom' | 'left' | 'right'
 }
