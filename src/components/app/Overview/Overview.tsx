@@ -15,6 +15,7 @@ import { ReactComponent as InjectTag } from '../../../assets/icons/inject-tag.sv
 import { ReactComponent as SucceededIcon } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as InProgressIcon } from '../../../assets/icons/ic-progressing.svg'
 import { ReactComponent as FailedIcon } from '../../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as CrossIcon } from '../../../assets/icons/ic-close.svg'
 import AboutAppInfoModal from '../details/AboutAppInfoModal'
 import {
     ExternalLinkIdentifierType,
@@ -367,17 +368,28 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                         {jobPipeline.status === 'Failed' && (
                                             <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
                                         )}
-                                        {jobPipeline.status === 'InProgres' && (
+                                        {jobPipeline.status === 'InProgress' && (
                                             <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
                                         )}
                                         {jobPipeline.status === 'Starting' && (
                                             <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
                                         )}
+                                        {jobPipeline.status !== 'Succeeded' &&
+                                            jobPipeline.status !== 'Failed' &&
+                                            jobPipeline.status !== 'InProgress' &&
+                                            jobPipeline.status !== 'Starting' && (
+                                                <>
+                                                    <CrossIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                                                    Yet to run
+                                                </>
+                                            )}
                                         {jobPipeline.status}
                                     </div>
+
                                     <div className="w-150 h-20 m-tb-8 fs-13">
-                                        {jobPipeline.started_on !== '0001-01-01T00:00:00Z' &&
-                                            handleUTCTime(jobPipeline.started_on, true)}
+                                        {jobPipeline.started_on !== '0001-01-01T00:00:00Z'
+                                            ? handleUTCTime(jobPipeline.started_on, true)
+                                            : '-'}
                                     </div>
                                 </div>
                             </div>
@@ -398,16 +410,16 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         )
     }
 
-    if (!appMetaInfo || fetchingProjects) {
-        return <Progressing pageLoader />
+    const handleDescriptionChange = (e) => {
+        setNewDescription(e.target.value)
+    }
+
+    const handleCancel = () => {
+        setNewDescription(newDescription)
+        setEditMode(false)
     }
 
     const renderJobDescription = () => {
-        const handleCancel = () => {
-            setNewDescription(newDescription)
-            setEditMode(false)
-        }
-
         return (
             <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
                 <div className="flex left dc__content-space mb-12 w-100">
@@ -441,7 +453,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                         <textarea
                             placeholder="No description"
                             value={newDescription}
-                            onChange={(e) => setNewDescription(e.target.value)}
+                            onChange={handleDescriptionChange}
                             className="flex left flex-wrap dc__gap-8 dc__description-textarea"
                         />
                     </div>
@@ -454,14 +466,34 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         )
     }
 
+    function renderOverviewContent(isJobOverview) {
+        if (isJobOverview) {
+            return (
+                <div className="app-overview-wrapper dc__overflow-scroll">
+                    {renderJobDescription()}
+                    {renderLabelTags()}
+                    {renderWorkflowsStatus()}
+                </div>
+            )
+        } else {
+            return (
+                <div className="app-overview-wrapper dc__overflow-scroll">
+                    {renderLabelTags()}
+                    {renderAppLevelExternalLinks()}
+                    {renderEnvironmentDeploymentsStatus()}
+                </div>
+            )
+        }
+    }
+
+    if (!appMetaInfo || fetchingProjects) {
+        return <Progressing pageLoader />
+    }
+
     return (
         <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
             {renderSideInfoColumn()}
-            <div className="app-overview-wrapper dc__overflow-scroll">
-                {isJobOverview ? renderJobDescription() : renderLabelTags()}
-                {isJobOverview ? renderLabelTags() : renderAppLevelExternalLinks()}
-                {isJobOverview ? renderWorkflowsStatus() : renderEnvironmentDeploymentsStatus()}
-            </div>
+            {renderOverviewContent(isJobOverview)}
             {showUpdateAppModal && renderInfoModal()}
             {showUpdateTagModal && renderEditTagsModal()}
         </div>
