@@ -61,10 +61,10 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                             <EnvTriggerView />
                         </Route>
-                        <Route path={`${path}/${URLS.APP_CI_DETAILS}`}>
+                        <Route path={`${path}/${URLS.APP_CI_DETAILS}/:appId(\\d+)?/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
                             <EnvCIDetails />
                         </Route>
-                        <Route path={`${path}/${URLS.APP_CD_DETAILS}`}>
+                        <Route path={`${path}/${URLS.APP_CD_DETAILS}/:appId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}>
                             <EnvCDDetails />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
@@ -170,7 +170,7 @@ export function EnvHeader({ envName, setEnvName, setShowEmpty, showEmpty }: EnvH
                         className="tab-list__tab-link"
                         // onClick={handleBuildClick}
                     >
-                        build history
+                        Build history
                     </NavLink>
                 </li>
                 <li className="tab-list__tab">

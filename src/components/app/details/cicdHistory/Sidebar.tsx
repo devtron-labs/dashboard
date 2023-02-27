@@ -30,6 +30,9 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
         if (type === HistoryComponentType.CI) {
             setPagination({ offset: 0, size: 20 })
             push(generatePath(path, { appId, pipelineId: selectedFilter.value }))
+        } else if (type === HistoryComponentType.GROUP_CI){
+            setPagination({ offset: 0, size: 20 })
+            push(generatePath(path, { envId, appId: selectedFilter.value, pipelineId: selectedFilter.pipelineId}))
         } else {
             setPagination({ offset: 0, size: 20 })
             push(generatePath(path, { appId, envId: selectedFilter.value, pipelineId: selectedFilter.pipelineId }))
@@ -44,14 +47,36 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
         })
         setPagination({ offset: triggerHistory.size, size: 20 })
     }
+
+    const filterOptionType = () => {
+        if(type === HistoryComponentType.CI){
+            return pipelineId
+        } else if (type === HistoryComponentType.GROUP_CI){
+            return appId
+        } else {
+            return envId
+        }
+    } 
+
     const selectedFilter = filterOptions?.find(
-        (filterOption) => filterOption.value === (type === HistoryComponentType.CI ? pipelineId : envId),
+        (filterOption) => filterOption.value === filterOptionType(),
     )
+
+    const selectLabel = () => {
+        if(type === HistoryComponentType.GROUP_CI){
+            return 'Application'
+        } else if (type === HistoryComponentType.CI){
+            return 'Pipeline'
+        } else {
+            return 'Environment'
+        }
+    }
+    
     return (
         <>
             <div className="select-pipeline-wrapper w-100 pl-16 pr-16 dc__overflow-hidden">
                 <label className="form__label">
-                    Select {type === HistoryComponentType.CI ? 'Pipeline' : 'Environment'}
+                    Select {selectLabel()}
                 </label>
                 <ReactSelect
                     value={selectedFilter}
