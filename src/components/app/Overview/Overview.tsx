@@ -339,76 +339,74 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
 
     const renderWorkflowsStatus = () => {
         const renderWorkflowComponent = () => {
-            if (isLoading) {
-                return <div className="dc__loading-dots" />
-            }
-            if (jobPipelines != null) {
-                return (
-                    <div className="env-deployments-info-wrapper w-100">
-                        <div className=" flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space">
-                            <div className="m-tb-8">Pipeline name</div>
-                            <div className="flex">
-                                <div className="m-tb-8 mr-16 w-150">Last run status</div>
-                                <div className="w-150 m-tb-8">Last run at</div>
-                            </div>
-                        </div>
-                        {jobPipelines.map((jobPipeline) => (
-                            <div
-                                key={jobPipeline.ci_pipeline_id}
-                                className="dc__content-space flex dc__border-bottom-n1"
-                            >
-                                <div className="h-20 m-tb-8 ci-pipeline-name-color fs-13">
-                                    {jobPipeline.ci_pipeline_name}
-                                </div>
-                                <div className="flex">
-                                    <div className="mr-16 w-150 h-20 m-tb-8 fs-13 flex dc__content-start">
-                                        {jobPipeline.status === 'Succeeded' && (
-                                            <SucceededIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
-                                        )}
-                                        {jobPipeline.status === 'Failed' && (
-                                            <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
-                                        )}
-                                        {jobPipeline.status === 'InProgress' && (
-                                            <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
-                                        )}
-                                        {jobPipeline.status === 'Starting' && (
-                                            <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
-                                        )}
-                                        {jobPipeline.status !== 'Succeeded' &&
-                                            jobPipeline.status !== 'Failed' &&
-                                            jobPipeline.status !== 'InProgress' &&
-                                            jobPipeline.status !== 'Starting' && (
-                                                <>
-                                                    <CrossIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
-                                                    Yet to run
-                                                </>
-                                            )}
-                                        {jobPipeline.status}
-                                    </div>
-
-                                    <div className="w-150 h-20 m-tb-8 fs-13">
-                                        {jobPipeline.started_on !== '0001-01-01T00:00:00Z'
-                                            ? handleUTCTime(jobPipeline.started_on, true)
-                                            : '-'}
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+          if (jobPipelines != null) {
+            return (
+              <div className="env-deployments-info-wrapper w-100">
+                <div className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space">
+                  <div className="m-tb-8">Pipeline name</div>
+                  <div className="flex">
+                    <div className="m-tb-8 mr-16 w-150">Last run status</div>
+                    <div className="w-150 m-tb-8">Last run at</div>
+                  </div>
+                </div>
+                {jobPipelines.map((jobPipeline) => (
+                  <div
+                    key={jobPipeline.ci_pipeline_id}
+                    className="dc__content-space flex dc__border-bottom-n1"
+                  >
+                    <div className="h-20 m-tb-8 ci-pipeline-name-color fs-13">
+                      {jobPipeline.ci_pipeline_name}
                     </div>
-                )
-            }
-            return <div className="fs-13 fw-4 cn-7">No job pipelines are configured</div>
+                    <div className="flex">
+                      <div className="mr-16 w-150 h-20 m-tb-8 fs-13 flex dc__content-start">
+                        {jobPipeline.status === 'Succeeded' && (
+                          <SucceededIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                        )}
+                        {jobPipeline.status === 'Failed' && (
+                          <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                        )}
+                        {jobPipeline.status === 'InProgress' && (
+                          <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                        )}
+                        {jobPipeline.status === 'Starting' && (
+                          <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
+                        )}
+                        {jobPipeline.status !== 'Succeeded' &&
+                          jobPipeline.status !== 'Failed' &&
+                          jobPipeline.status !== 'InProgress' &&
+                          jobPipeline.status !== 'Starting' && (
+                            <>
+                              <CrossIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                              Yet to run
+                            </>
+                          )}
+                        {jobPipeline.status}
+                      </div>
+      
+                      <div className="w-150 h-20 m-tb-8 fs-13">
+                        {jobPipeline.started_on !== '0001-01-01T00:00:00Z'
+                          ? handleUTCTime(jobPipeline.started_on, true)
+                          : '-'}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          }
+          return <div className="fs-13 fw-4 cn-7">No job pipelines are configured</div>
         }
         return (
-            <div className="flex column left pt-16 pb-16 pl-20 pr-20">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
-                    <WorkflowIcon className="icon-dim-20 scn-9 mr-8" />
-                    Job pipelines
-                </div>
-                {renderWorkflowComponent()}
+          <div className="flex column left pt-16 pb-16 pl-20 pr-20">
+            <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
+              <WorkflowIcon className="icon-dim-20 scn-9 mr-8" />
+              Job pipelines
             </div>
+            {renderWorkflowComponent()}
+          </div>
         )
-    }
+      }
+      
 
     const handleDescriptionChange = (e) => {
         setNewDescription(e.target.value)
