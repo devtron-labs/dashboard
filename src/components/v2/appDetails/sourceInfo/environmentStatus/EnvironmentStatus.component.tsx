@@ -28,6 +28,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
         let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
         history.push(_url)
     }
+    
     return (
         <div>
             <div className="flex left ml-20 mb-16">
