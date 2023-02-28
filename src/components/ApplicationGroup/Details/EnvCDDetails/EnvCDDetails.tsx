@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react'
-import { Progressing, showError, useAsync, useInterval, useScrollable, mapByKey, asyncWrap } from '../../../common'
+import React, { useState, useEffect } from 'react'
+import { Progressing, showError, useAsync, useInterval, mapByKey, asyncWrap } from '../../../common'
 import { ModuleNameMap } from '../../../../config'
 import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
 import '../../../app/details/cdDetails/cdDetail.scss'
@@ -13,6 +13,7 @@ import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../.
 import { DeploymentTemplateList } from '../../../app/details/cdDetails/cd.type'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
 import { Route } from 'react-router-dom'
+import '../../../app/details/appDetails/appDetails.scss';
 
 export default function EnvCDDetails() {
     const { appId, envId, triggerId, pipelineId } = useParams<{
@@ -121,7 +122,7 @@ export default function EnvCDDetails() {
         )
     }
     const selectedApp = pipelines.find((envData) => envData.appId === +appId)
-    
+
     const envOptions: CICDSidebarFilterOptionType[] = pipelines.map((item) => {
         return {
             value: `${item.appId}`,
@@ -130,7 +131,7 @@ export default function EnvCDDetails() {
         }
     })
 
-    if(result[0]['value'].result.length === 1 && !appId){
+    if(result[0]['value'].result.pipelines.length === 1 && !appId){
       replace(generatePath(path, { envId, appId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
     }
     return (
@@ -165,7 +166,7 @@ export default function EnvCDDetails() {
                                 isBlobStorageConfigured={result[1]?.['value']?.result?.enabled || false}
                             />
                         </Route>
-                    ) : !envId ? (
+                    ) : !appId ? (
                         <EmptyView
                             title="No application selected"
                             subTitle="Please select an application to see deployment history."

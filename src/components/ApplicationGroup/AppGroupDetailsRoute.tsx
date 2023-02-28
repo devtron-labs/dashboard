@@ -17,6 +17,7 @@ import { getEnvAppList } from './AppGroup.service'
 import { AppGroupAdminType, EnvHeaderType } from './AppGroup.types'
 import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
 import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
+import '../app/details/app.css'
 
 export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType) {
     const { path } = useRouteMatch()

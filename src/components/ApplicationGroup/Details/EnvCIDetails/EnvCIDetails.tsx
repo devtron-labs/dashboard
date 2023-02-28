@@ -96,7 +96,7 @@ export default function EnvCIDetails() {
     }
 
     if (initDataResults?.[0].length === 1 && !pipelineId) {
-        replace(generatePath(path, { envId, appId, pipelineId: initDataResults[0].id }))
+        replace(generatePath(path, { envId, appId, pipelineId: initDataResults[0][0].id }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (initDataResults?.[0] || []).map((item) => {
         return { value: `${item.appId}`, label: item.appName, pipelineId: item.id }
