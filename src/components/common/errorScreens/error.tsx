@@ -19,10 +19,7 @@ export class ErrorScreenManager extends Component<{
             case 401:
                 return 'Unauthorized'
             case 403:
-                return (
-                    <ErrorScreenNotAuthorized
-                    />
-                )
+                return <ErrorScreenNotAuthorized />
             case 404:
                 return <ErrorScreenNotFound />
             case 500:
@@ -45,8 +42,7 @@ export class ErrorScreenManager extends Component<{
     }
 }
 
-export class ErrorScreenNotAuthorized extends Component<{
-}> {
+export class ErrorScreenNotAuthorized extends Component<{}> {
     render() {
         return (
             <EmptyState className="dc__align-reload-center">
@@ -56,9 +52,7 @@ export class ErrorScreenNotAuthorized extends Component<{
                 <EmptyState.Title>
                     <h3 className="title">{ERROR_EMPTY_SCREEN.NOT_AUTHORIZED}</h3>
                 </EmptyState.Title>
-                <EmptyState.Subtitle>
-                    {ERROR_EMPTY_SCREEN.ONLY_FOR_SUPERADMIN}
-                </EmptyState.Subtitle>
+                <EmptyState.Subtitle>{ERROR_EMPTY_SCREEN.ONLY_FOR_SUPERADMIN}</EmptyState.Subtitle>
             </EmptyState>
         )
     }

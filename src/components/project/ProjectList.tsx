@@ -156,7 +156,6 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             return (
                 <ErrorScreenManager
                     code={this.props.isSuperAdmin ? this.state.code : 403}
-                    reloadClass="dc__align-reload-center"
                 />
             )
         } else {
