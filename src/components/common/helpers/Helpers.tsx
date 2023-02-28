@@ -1208,13 +1208,12 @@ export const eventAgeComparator = <T,>(key: string): any => {
     return (a: T, b: T) => k8sStyledAgeToSeconds(a[key]) - k8sStyledAgeToSeconds(b[key])
 }
 
-const highlightText = (highlighted) => `<mark>${highlighted}</mark>`
-
 export const highlightSearchedText = (searchText: string, matchString: string): string => {
     if (!searchText) {
         return matchString
     }
-    
+    const highlightText = (highlighted) => `<mark>${highlighted}</mark>`
+
     const regex = new RegExp(searchText, 'gi')
     return matchString.replace(regex, highlightText)
 }
