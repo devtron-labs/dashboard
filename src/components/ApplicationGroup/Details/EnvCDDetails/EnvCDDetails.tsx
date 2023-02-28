@@ -33,19 +33,17 @@ export default function EnvCDDetails() {
                 getCDConfig(envId),
                 getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
             ]),
-        [appId],
+        [envId],
     )
     const [loadingDeploymentHistory, deploymentHistoryResult, deploymentHistoryError, , , dependencyState] = useAsync(
         () => getTriggerHistory(+appId, +envId, pipelineId, pagination),
         [pagination, appId, envId],
-        !!pipelineId,
+        !!appId && !!pipelineId,
     )
-    
     const { path } = useRouteMatch()
     const { replace } = useHistory()
     useInterval(pollHistory, 30000)
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
-
     useEffect(() => {
         // check for more
         if (loading || !deploymentHistoryResult) return
@@ -67,13 +65,13 @@ export default function EnvCDDetails() {
           setTriggerHistory(new Map())
           setHasMoreLoading(false)
       }
-  }, [envId])
+  }, [appId])
 
     async function pollHistory() {
         // polling
-        if (!pipelineId || !envId) return
+        if (!pipelineId || !appId) return
         const [error, result] = await asyncWrap(
-            getTriggerHistory(+appId, +envId, pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
+            getTriggerHistory(+appId, +envId, +pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
         if (error) {
             showError(error)
@@ -102,7 +100,7 @@ export default function EnvCDDetails() {
         return <Progressing pageLoader />
     } else if (
         result &&
-        !Array.isArray(result[0]?.['value']?.result.pipelines)
+        !Array.isArray(result[0]?.['value']?.result?.pipelines)
     ) {
         return <AppNotConfigured />
     } else if (!result || (appId && dependencyState[1] !== appId)) {
