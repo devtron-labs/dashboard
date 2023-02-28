@@ -19,6 +19,9 @@ import { getAppList } from '../app/service'
 import { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
 import AppGroupAppFilter from './AppGroupAppFilter'
+import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
+import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
+import '../app/details/app.css'
 
 const AppGroupAppFilterContext = React.createContext(null)
 
@@ -102,6 +105,14 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                             <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                                 <EnvTriggerView filteredApps={_filteredApps} />
                             </Route>
+                            <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
+                                <EnvCIDetails />
+                            </Route>
+                            <Route
+                                path={`${path}/${URLS.APP_CD_DETAILS}/:appId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
+                            >
+                                <EnvCDDetails />
+                            </Route>
                             <Route path={`${path}/${URLS.APP_CONFIG}`}>
                                 <EnvConfig filteredApps={_filteredApps} />
                             </Route>
@@ -151,16 +162,18 @@ export function EnvHeader({
 
     const handleEnvChange = useCallback(
         ({ label, value, appCount }) => {
-            setEnvName(label)
-            setShowEmpty(!appCount)
-            const tab = currentPathname.current.replace(match.url, '').split('/')[1]
-            const newUrl = generatePath(match.path, { envId: value })
-            history.push(`${newUrl}/${tab}`)
-            ReactGA.event({
-                category: 'Env Selector',
-                action: 'Env Selection Changed',
-                label: label,
-            })
+            if (+envId !== value) {
+                setEnvName(label)
+                setShowEmpty(!appCount)
+                const tab = currentPathname.current.replace(match.url, '').split('/')[1]
+                const newUrl = generatePath(match.path, { envId: value })
+                history.push(`${newUrl}/${tab}`)
+                ReactGA.event({
+                    category: 'Env Selector',
+                    action: 'Env Selection Changed',
+                    label: label,
+                })
+            }
         },
         [location.pathname],
     )
@@ -214,6 +227,24 @@ export function EnvHeader({
                         onClick={handleBuildClick}
                     >
                         Build & Deploy
+                    </NavLink>
+                </li>
+                <li className="tab-list__tab">
+                    <NavLink
+                        activeClassName="active"
+                        to={`${match.url}/${URLS.APP_CI_DETAILS}`}
+                        className="tab-list__tab-link"
+                    >
+                        Build history
+                    </NavLink>
+                </li>
+                <li className="tab-list__tab">
+                    <NavLink
+                        activeClassName="active"
+                        to={`${match.url}/${URLS.APP_CD_DETAILS}`}
+                        className="tab-list__tab-link"
+                    >
+                        Deployment history
                     </NavLink>
                 </li>
                 <li className="tab-list__tab">

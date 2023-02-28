@@ -220,3 +220,8 @@ export interface AppGroupAdminType {
 export interface AppGroupDetailDefaultType {
   filteredApps: MultiValue<OptionType>
 }
+export interface CIConfigListType {
+    pipelineList: any
+    securityInfo: any
+    moduleConfig: any
+}
