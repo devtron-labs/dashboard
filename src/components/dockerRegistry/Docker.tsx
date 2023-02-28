@@ -77,8 +77,7 @@ export default function Docker({ ...props }) {
     if (!props.isSuperAdmin) {
         return (
             <div className="error-screen-wrapper flex column h-100">
-                <ErrorScreenNotAuthorized
-                />
+                <ErrorScreenNotAuthorized />
             </div>
         )
     }
