@@ -21,8 +21,6 @@ export class ErrorScreenManager extends Component<{
             case 403:
                 return (
                     <ErrorScreenNotAuthorized
-                        className={this.props.reloadClass}
-                        subtitleClass={this.props.subtitleClass}
                     />
                 )
             case 404:
@@ -48,19 +46,17 @@ export class ErrorScreenManager extends Component<{
 }
 
 export class ErrorScreenNotAuthorized extends Component<{
-    subtitleClass?: string
-    className?: string
 }> {
     render() {
         return (
-            <EmptyState className={this.props.className}>
+            <EmptyState className="dc__align-reload-center">
                 <EmptyState.Image>
                     <img src={notAuthorized} alt="Not Authorized" />
                 </EmptyState.Image>
                 <EmptyState.Title>
-                    <h3 className="title">Not authorized</h3>
+                    <h3 className="title">{ERROR_EMPTY_SCREEN.NOT_AUTHORIZED}</h3>
                 </EmptyState.Title>
-                <EmptyState.Subtitle className={this.props.subtitleClass}>
+                <EmptyState.Subtitle>
                     {ERROR_EMPTY_SCREEN.ONLY_FOR_SUPERADMIN}
                 </EmptyState.Subtitle>
             </EmptyState>

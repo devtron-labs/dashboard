@@ -78,7 +78,6 @@ export default function Docker({ ...props }) {
         return (
             <div className="error-screen-wrapper flex column h-100">
                 <ErrorScreenNotAuthorized
-                    className="dc__align-reload-center"
                 />
             </div>
         )

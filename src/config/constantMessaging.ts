@@ -81,6 +81,7 @@ export const ERROR_EMPTY_SCREEN = {
     DEPLOYEMENT_WILL_BE_HERE: 'Once deployed, details for the deployment will be available here',
     GO_TO_DEPLOY: 'Go to deploy',
     ONLY_FOR_SUPERADMIN:'Information on this page is available only to superadmin users.',
+    NOT_AUTHORIZED:"Not authorized",
 }
 
 //Confirmation Dialog messgaes
