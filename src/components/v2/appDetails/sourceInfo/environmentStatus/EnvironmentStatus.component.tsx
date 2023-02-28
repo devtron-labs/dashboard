@@ -136,12 +136,12 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                             
                         </div>
                         <div className="flex left">
-                            {(appDetails.notes || appDetails['Notes']) && (
+                            {(appDetails.notes || appDetails.gitOpsNotes) && (
                                 <div className="details-hover flex cb-5 fw-6 cursor" onClick={() => setShowNotes(true)}>
                                     <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
                                 </div>
                             )}
-                            {(appDetails.notes || appDetails['Notes']) && appDetails.appStoreChartId && (
+                            {(appDetails.notes || appDetails.gitOpsNotes) && appDetails.appStoreChartId && (
                                 <div className="app-status-card__divider" />
                             )}
                             {appDetails.appStoreChartId && (
@@ -185,7 +185,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
             )}
             {showNotes && (
                 <NotesDrawer
-                    notes={appDetails.notes || appDetails['Notes']}
+                    notes={appDetails.notes || appDetails.gitOpsNotes}
                     close={() => {
                         setShowNotes(false)
                     }}
