@@ -22,10 +22,12 @@ import ReactGA from 'react-ga4'
 import DetectBottom from '../../../common/DetectBottom'
 import { FILTER_STYLE } from './Constants'
 import { triggerStatus } from './History.components'
+
 const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setPagination }: SidebarType) => {
     const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
     const { push } = useHistory()
     const { path } = useRouteMatch()
+
     const handleFilterChange = (selectedFilter: CICDSidebarFilterOptionType): void => {
         if (type === HistoryComponentType.CI) {
             setPagination({ offset: 0, size: 20 })
@@ -44,9 +46,12 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
         })
         setPagination({ offset: triggerHistory.size, size: 20 })
     }
-    const selectedFilter = filterOptions?.find(
+    const selectedFilter = filterOptions?.filter((filterOption) => !filterOption.deploymentAppDeleteRequest ).find(
         (filterOption) => filterOption.value === (type === HistoryComponentType.CI ? pipelineId : envId),
     )
+
+    const _filterOptions = filterOptions?.filter((filterOption) => !filterOption.deploymentAppDeleteRequest )
+
     return (
         <>
             <div className="select-pipeline-wrapper w-100 pl-16 pr-16 dc__overflow-hidden">
@@ -55,7 +60,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
                 </label>
                 <ReactSelect
                     value={selectedFilter}
-                    options={filterOptions}
+                    options={type === HistoryComponentType.CI ? filterOptions : _filterOptions}
                     isSearchable={false}
                     onChange={handleFilterChange}
                     components={{
@@ -106,17 +111,17 @@ const HistorySummaryCard = React.memo(
         type,
         stage,
     }: HistorySummaryCardType): JSX.Element => {
-        const { path, url } = useRouteMatch()
+        const { path } = useRouteMatch()
         const { pathname } = useLocation()
         const currentTab = pathname.split('/').pop()
-        const { triggerId, ...rest } = useParams<{ triggerId: string }>()
+        const { triggerId, envId, ...rest } = useParams<{ triggerId: string, envId: string }>()
 
         const getPath = (): string => {
-            if (type === HistoryComponentType.CD) {
-                return generatePath(path, { ...rest, triggerId: id }) + '/' + currentTab
-            } else {
-                return generatePath(path, { ...rest, buildId: id }) + '/' + currentTab
-            }
+          const _params = {
+            ...rest,
+            [type === HistoryComponentType.CD ? 'triggerId' : 'buildId']: id,
+        }
+          return `${generatePath(path, _params)}/${currentTab}`
         }
 
         return (

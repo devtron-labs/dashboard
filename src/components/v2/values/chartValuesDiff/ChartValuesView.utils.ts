@@ -7,6 +7,7 @@ import {
     ChartDeploymentManifestDetailResponse,
     getDeploymentManifestDetails,
 } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
+import { groupStyle } from '../../../secrets/secret.utils'
 
 export const getCommonSelectStyle = (styleOverrides = {}) => {
     return {
@@ -371,4 +372,21 @@ export const convertSchemaJsonToMap = (valuesSchemaJson: string): Map<string, an
         }
     }
     return null
+}
+
+export const envGroupStyle = {
+    ...groupStyle(),
+    control: (base) => ({
+        ...base,
+        border: '1px solid #d6dbdf',
+        background: 'var(--N50)',
+        minHeight: '32px',
+    }),
+    dropdownIndicator: (base, state) => ({
+        ...base,
+        color: 'var(--N400)',
+        padding: '0 8px',
+        transition: 'all .2s ease',
+        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+    }),
 }

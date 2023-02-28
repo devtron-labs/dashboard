@@ -84,7 +84,7 @@ import ProjectUpdateModal from './ProjectUpdateModal'
 import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 import ChartValuesEditor from './ChartValuesEditor'
 import { ChartRepoSelector } from './ChartRepoSelector'
-import { MULTI_REQUIRED_FIELDS_MSG, SOME_ERROR_MSG } from '../../../../config/constantMessaging'
+import { MULTI_REQUIRED_FIELDS_MSG, SOME_ERROR_MSG, TOAST_INFO } from '../../../../config/constantMessaging'
 import {
     CHART_VALUE_TOAST_MSGS,
     COMPARISON_OPTION_LABELS,
@@ -94,6 +94,7 @@ import {
     MANIFEST_TAB_VALIDATION_ERROR,
     MANIFEST_INFO
 } from './ChartValuesView.constants'
+import { DeploymentAppType } from '../../appDetails/appDetails.type'
 
 function ChartValuesView({
     appId,
@@ -106,10 +107,11 @@ function ChartValuesView({
     chartVersionsDataFromParent = [],
     chartValuesFromParent,
     selectedVersionFromParent,
+    init
 }: ChartValuesViewType) {
     const history = useHistory()
     const { url } = useRouteMatch()
-    const { chartValueId, presetValueId } = useParams<{ chartValueId: string; presetValueId: string }>()
+    const { chartValueId, presetValueId, envId } = useParams<{ chartValueId: string; presetValueId: string; envId: string }>()
     const { serverMode } = useContext(mainContext)
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
@@ -118,6 +120,7 @@ function ChartValuesView({
     const [isProjectLoading, setProjectLoading] = useState(false)
     const [isUnlinkedCLIApp, setIsUnlinkedCLIApp] = useState(false)
     const [deploymentVersion, setDeploymentVersion] = useState(1)
+    const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -301,7 +304,7 @@ function ChartValuesView({
                 .catch((e) => {})
         }
 
-        if (!isDeployChartView) {
+        if (!isDeployChartView && !isCreateValueView) {
             getHelmAppMetaInfoRes()
         }
     }, [])
@@ -404,7 +407,7 @@ function ChartValuesView({
                     (e) => e.value.toString() === commonState.installedConfig.environmentId.toString(),
                 )
             })
-            
+
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
@@ -565,11 +568,11 @@ function ChartValuesView({
                     type: ChartValuesViewActionTypes.isDeleteInProgress,
                     payload: false,
                 })
-                toast.success('Successfully deleted.')
+                toast.success(TOAST_INFO.DELETION_INITIATED)
+                init()
                 history.push(
-                    isCreateValueView
-                        ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
-                        : `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`,
+                    isCreateValueView ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
+                    : `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`
                 )
             })
             .catch((error) => {
@@ -608,7 +611,7 @@ function ChartValuesView({
         } else if (isCreateValueView) {
             return deleteChartValues(parseInt(chartValueId))
         } else {
-            return deleteInstalledChart(commonState.installedConfig.installedAppId, force)
+            return deleteInstalledChart(commonState.installedConfig.installedAppId, isGitops,  force)
         }
     }
 
@@ -1321,7 +1324,7 @@ function ChartValuesView({
                             />
                         )}
 
-                        {!isDeployChartView && (
+                        {!isDeployChartView && !isCreateValueView && (
                             <div className="mb-16">
                                 <div className="fs-12 fw-4 lh-20 cn-7">Project</div>
                                 <div className="flex left dc__content-space fs-13 fw-6 lh-20 cn-9">
@@ -1331,7 +1334,7 @@ function ChartValuesView({
                             </div>
                         )}
 
-                        {!isDeployChartView && showUpdateAppModal && (
+                        {!isDeployChartView && showUpdateAppModal && !isCreateValueView &&(
                             <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
                                 <ProjectUpdateModal
                                     appId={appId}
@@ -1366,7 +1369,7 @@ function ChartValuesView({
                                 invalidaEnvironment={commonState.invalidaEnvironment}
                             />
                         )}
-                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp && (
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp && !isCreateValueView && (
                             <DeploymentAppSelector
                                 commonState={commonState}
                                 isUpdate={isUpdate}

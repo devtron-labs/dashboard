@@ -98,6 +98,7 @@ export interface GitChangesType {
     ciMaterials: CiMaterial[]
 }
 export interface EmptyViewType {
+    imgSrc?: string
     title: string
     subTitle: string
     link?: string
@@ -155,6 +156,7 @@ export interface TriggerDetailsStatusIconType {
 
 export interface FinishedType {
     status: string
+    startedOn:string
     finishedOn: string
     artifact: string
 }
@@ -165,6 +167,7 @@ export interface WorkerStatusType {
 }
 export interface ProgressingStatusType {
     status: string
+    startedOn: string
     message: string
     podStatus: string
     stage: DeploymentStageType
@@ -173,6 +176,7 @@ export interface ProgressingStatusType {
 
 export interface CurrentStatusType {
     status: string
+    startedOn:string
     finishedOn: string
     artifact: string
     message: string
@@ -193,6 +197,7 @@ export interface StartDetailsType {
 
 export interface CICDSidebarFilterOptionType extends OptionType {
     pipelineId: number
+    deploymentAppDeleteRequest?: boolean
 }
 
 export enum HistoryComponentType {

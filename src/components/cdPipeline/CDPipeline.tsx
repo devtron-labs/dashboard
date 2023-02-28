@@ -47,7 +47,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import config from './sampleConfig.json'
 import ReactSelect from 'react-select'
 import { styles, DropdownIndicator, Option } from './cdpipeline.util'
-import { EnvFormatOptions, GroupHeading } from '../v2/common/ReactSelect.utils'
+import { EnvFormatOptions, formatHighlightedText, GroupHeading } from '../v2/common/ReactSelect.utils'
 import './cdPipeline.css'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog'
@@ -57,6 +57,7 @@ import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { PipelineType } from '../app/details/triggerView/types'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
 import { groupStyle } from '../secrets/secret.utils'
+import { TOAST_INFO } from '../../config/constantMessaging'
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -120,6 +121,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 parentPipelineId: +parentPipelineId,
                 parentPipelineType: parentPipelineType,
                 deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? "" : DeploymentAppType.Helm,
+                deploymentAppCreated: false
             },
             showPreStage: false,
             showDeploymentStage: true,
@@ -152,7 +154,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             this.props.close()
         }
     }
-
     getDeploymentStrategies(): void {
         getDeploymentStrategyList(this.props.match.params.appId)
             .then((response) => {
@@ -655,8 +656,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     deleteCD = (force) => {
-        let payload = {
-            action: CD_PATCH_ACTION.DELETE,
+        const isPartialDelete = this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps && this.state.pipelineConfig.deploymentAppCreated && !force
+        const payload = {
+            action: isPartialDelete ? CD_PATCH_ACTION.DEPLOYMENT_PARTIAL_DELETE : CD_PATCH_ACTION.DELETE,
             appId: parseInt(this.props.match.params.appId),
             pipeline: {
                 id: this.state.pipelineConfig.id,
@@ -666,7 +668,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         deleteCDPipeline(payload, force)
             .then((response) => {
                 if (response.result) {
-                    toast.success('Pipeline Deleted')
+                    toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
                     this.setState({ loadingData: false })
                     this.props.close()
                     if(this.isWebhookCD){
@@ -965,24 +967,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         } else return null
     }
 
-    // renderTriggerType() {
-    //     return (
-    //         <div className="form__row">
-    //             <label className="form__label form__label--sentence dc__bold">
-    //                 When do you want the pipeline to execute?*
-    //             </label>
-    //             <RadioGroup
-    //                 value={this.state.pipelineConfig.triggerType}
-    //                 name="trigger-type"
-    //                 onChange={this.handleTriggerChange}
-    //             >
-    //                 <RadioGroupItem value={TriggerType.Auto}> Automatic </RadioGroupItem>
-    //                 <RadioGroupItem value={TriggerType.Manual}> Manual </RadioGroupItem>
-    //             </RadioGroup>
-    //         </div>
-    //     )
-    // }
-
     renderDeploymentAppType() {
         return (
             <div className="form__row">
@@ -1085,8 +1069,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
     }
 
-    selectOption = (props) => {
+    singleOption = (props) => {
         return <EnvFormatOptions {...props} environmentfieldName="name" />
+    }
+
+    handleFormatHighlightedText = (opt: Environment, { inputValue }) => {
+        return formatHighlightedText(opt, inputValue, 'name')
     }
 
     renderEnvNamespaceAndTriggerType() {
@@ -1096,7 +1084,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         let namespaceErroObj = this.validationRules.namespace(this.state.pipelineConfig.namespace)
         let envErrorObj = this.validationRules.environment(this.state.pipelineConfig.environmentId)
         const envList = createClusterEnvGroup(this.state.environments, 'clusterName')
-        
+
         return (
             <>
                 <div className="form__row form__row--flex">
@@ -1116,13 +1104,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             components={{
                                 IndicatorSeparator: null,
                                 DropdownIndicator,
-                                Option: this.selectOption,
+                                SingleValue: this.singleOption,
                                 GroupHeading,
                             }}
                             styles={{
                                 ...groupStyle(),
-                                control: (base) => ({ ...base, border: '1px solid #d6dbdf'}),
+                                control: (base) => ({ ...base, border: '1px solid #d6dbdf' }),
                             }}
+                            formatOptionLabel={this.handleFormatHighlightedText}
                         />
                         {this.state.showError && !envErrorObj.isValid ? (
                             <span className="form__error">
@@ -1217,7 +1206,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         return (
             <>
                 <div className="form__row">
-                    <label className="form__label">Pipeline Name*</label>
+                    <label className="form__label dc__required-field">Pipeline Name</label>
                     <input
                         className="form__input"
                         autoComplete="off"

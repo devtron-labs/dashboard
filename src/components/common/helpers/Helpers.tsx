@@ -7,6 +7,7 @@ import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
 import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
+import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
 import { toastAccessDenied } from '../ToastBody'
 import { AggregationKeys, OptionType } from '../../app/types'
@@ -1128,9 +1129,8 @@ export const processK8SObjects = (
         const element = k8sObjects[index]
         const groupParent = disableGroupFilter
             ? element.gvk.Group
-            : element.gvk.Group.endsWith('.k8s.io')
-            ? AggregationKeys['Other Resources']
-            : getAggregator(element.gvk.Kind)
+            : getAggregator(element.gvk.Kind, element.gvk.Group.endsWith('.k8s.io'))
+
         if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
             _selectedResource = { namespaced: element.namespaced, gvk: element.gvk }
         }
@@ -1207,4 +1207,11 @@ export const k8sStyledAgeToSeconds = (duration: string): number => {
 
 export const eventAgeComparator = <T,>(key: string): any => {
     return (a: T, b: T) => k8sStyledAgeToSeconds(a[key]) - k8sStyledAgeToSeconds(b[key])
+}
+
+export const trackByGAEvent = (category: string, action: string): void => {
+    ReactGA.event({
+        category: category,
+        action: action,
+    })
 }

@@ -28,6 +28,7 @@ import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import DeprecatedWarningModal from './DeprecatedWarningModal'
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
+    workflowTimer = null
     constructor(props) {
         super(props)
         this.state = {
@@ -63,6 +64,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     componentWillUnmount() {
         this.removeTakeMeThereClickedItem()
+       if (this.workflowTimer) {
+           clearTimeout(this.workflowTimer)
+       }
     }
 
     removeTakeMeThereClickedItem = () => {
@@ -81,6 +85,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             .then((result) => {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
+                let isDeletionInProgress;
                 for (const workFlow of result.workflows) {
                     for (const node of workFlow.nodes) {
                         if (node.type === WorkflowNodeType.CI) {
@@ -92,9 +97,15 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             ) {
                                 workFlow.showTippy = true
                             }
+                            if (!isDeletionInProgress && node.deploymentAppDeleteRequest) {
+                                isDeletionInProgress = true
+                            }
                             allDeploymentNodeMap.set(node.id, node)
                         }
                     }
+                }
+                if (isDeletionInProgress) {
+                    this.workflowTimer = setTimeout(this.getWorkflows, 10000)
                 }
                 this.setState({
                     appName: result.appName,
