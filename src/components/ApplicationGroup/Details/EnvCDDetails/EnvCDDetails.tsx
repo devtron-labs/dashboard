@@ -48,13 +48,13 @@ export default function EnvCDDetails() {
     useEffect(() => {
         // check for more
         if (loading || !deploymentHistoryResult) return
-        if (deploymentHistoryResult?.result?.length !== pagination.size) {
+        if (deploymentHistoryResult.result?.length !== pagination.size) {
             setHasMore(false)
         } else {
             setHasMore(true)
             setHasMoreLoading(true)
         }
-        const newTriggerHistory = (deploymentHistoryResult?.result || []).reduce((agg, curr) => {
+        const newTriggerHistory = (deploymentHistoryResult.result || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
         }, triggerHistory)
@@ -108,8 +108,8 @@ export default function EnvCDDetails() {
         return null
     }
 
-    const pipelines = result[0]['value'].result.pipelines.filter((pipeline) => pipeline.environmentId === +envId)
-    const deploymentAppType = pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
+    const pipelines = result[0]?.['value']?.result?.pipelines.filter((pipeline) => pipeline.environmentId === +envId) || []
+    const deploymentAppType = pipelines.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
 
     if (!triggerId && appId && pipelineId && deploymentHistoryResult?.result?.length) {
         replace(

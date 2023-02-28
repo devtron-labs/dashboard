@@ -20,7 +20,7 @@ import { statusColor as colorMap } from '../../config'
 import { ReactComponent as Docker } from '../../../../assets/icons/misc/docker.svg'
 import ReactGA from 'react-ga4'
 import DetectBottom from '../../../common/DetectBottom'
-import { FILTER_STYLE } from './Constants'
+import { FILTER_STYLE, HISTORY_LABEL } from './Constants'
 import { triggerStatus } from './History.components'
 
 const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setPagination }: SidebarType) => {
@@ -69,11 +69,11 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
 
     const selectLabel = () => {
         if (type === HistoryComponentType.GROUP_CI || type === HistoryComponentType.GROUP_CD) {
-            return 'Application'
+            return HISTORY_LABEL.APPLICATION
         } else if (type === HistoryComponentType.CI) {
-            return 'Pipeline'
+            return HISTORY_LABEL.PIPELINE
         } else {
-            return 'Environment'
+            return HISTORY_LABEL.ENVIRONMENT
         }
     }
 
@@ -142,13 +142,13 @@ const HistorySummaryCard = React.memo(
         const { pathname } = useLocation()
         const currentTab = pathname.split('/').pop()
         const { triggerId, envId, ...rest } = useParams<{ triggerId: string; envId: string }>()
-        const groupCDType: boolean = type === HistoryComponentType.CD || type === HistoryComponentType.GROUP_CD
+        const isCDType: boolean = (type === HistoryComponentType.CD || type === HistoryComponentType.GROUP_CD)
 
         const getPath = (): string => {
             const _params = {
                 ...rest,
                 envId,
-                [groupCDType ? 'triggerId' : 'buildId']: id,
+                [isCDType ? 'triggerId' : 'buildId']: id,
             }
             return `${generatePath(path, _params)}/${currentTab}`
         }
@@ -185,7 +185,7 @@ const HistorySummaryCard = React.memo(
                         <div className="flex column left dc__ellipsis-right">
                             <div className="cn-9 fs-14">{moment(startedOn).format(Moment12HourFormat)}</div>
                             <div className="flex left cn-7 fs-12">
-                                {groupCDType && (
+                                {isCDType && (
                                     <>
                                         <div className="dc__capitalize">
                                             {['pre', 'post'].includes(stage?.toLowerCase()) ? `${stage}-deploy` : stage}

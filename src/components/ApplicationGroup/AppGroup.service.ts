@@ -13,7 +13,7 @@ import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { ModuleNameMap, Routes, URLS } from '../../config'
 import { get } from '../../services/api'
 import { ResponseType } from '../../services/service.types'
-import { ConfigAppList, EnvApp, EnvDeploymentStatus, WorkflowsResponseType } from './AppGroup.types'
+import { CIConfigListType, ConfigAppList, EnvApp, EnvDeploymentStatus, WorkflowsResponseType } from './AppGroup.types'
 import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 
@@ -70,7 +70,7 @@ export const getWorkflows = (envID: string): Promise<WorkflowsResponseType> => {
     })
 }
 
-export const getCIConfigList = (envID: string): Promise<any> => {
+export const getCIConfigList = (envID: string): Promise<CIConfigListType> => {
     const pipelineList = []
     const _filteredworkflow: Map<string, any> = new Map()
     return Promise.all([
@@ -80,16 +80,18 @@ export const getCIConfigList = (envID: string): Promise<any> => {
         getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
     ]).then(([workflow, ciConfig, securityInfo, moduleConfig]) => {
         workflow.result.workflows.forEach((workFlow) => {
-            const selectedTree = workFlow.tree.find((list) => list.type === PipelineType.CI_PIPELINE)
+            const selectedTree = workFlow.tree?.find((list) => list.type === PipelineType.CI_PIPELINE)
             _filteredworkflow.set(workFlow.appId, selectedTree)
         })
 
         ciConfig.result.forEach((item) => {
             let ciPipeline = _filteredworkflow.get(item.appId)
-            let pipelineData = item.ciPipelines.find((pipeline) => pipeline.id === ciPipeline?.componentId)
-            pipelineList.push({...pipelineData, appName: item.appName, appId: item.appId})
+            let pipelineData = item.ciPipelines?.find((pipeline) => pipeline.id === ciPipeline?.componentId)
+            if (pipelineData) {
+                pipelineList.push({ ...pipelineData, appName: item.appName, appId: item.appId })
+            }
         })
-        return [pipelineList,securityInfo, moduleConfig]
+        return { pipelineList, securityInfo, moduleConfig }
     })
 }
 

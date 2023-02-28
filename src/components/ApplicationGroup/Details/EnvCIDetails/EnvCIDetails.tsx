@@ -9,6 +9,7 @@ import { getTriggerHistory } from '../../../app/service'
 import { asyncWrap, mapByKey, Progressing, showError, useAsync, useInterval } from '../../../common'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { getCIConfigList } from '../../AppGroup.service'
+import { CIConfigListType } from '../../AppGroup.types'
 
 export default function EnvCIDetails() {
     const { envId, pipelineId, buildId } = useParams<{
@@ -21,7 +22,7 @@ export default function EnvCIDetails() {
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
-    const [initDataResults, setInitResult] = useState<any[]>()
+    const [initDataResults, setInitResult] = useState<CIConfigListType>()
     const [ciGroupLoading, setCiGroupLoading] = useState(false)
 
     useEffect(() => {
@@ -30,13 +31,17 @@ export default function EnvCIDetails() {
             getCIConfigList(envId).then((result) => {
                 setInitResult(result)
                 setCiGroupLoading(false)
-                if (result?.[0].length === 1 && !pipelineId) {
-                    replace(generatePath(path, { envId, pipelineId: result[0][0].id }))
+                if (result?.pipelineList.length === 1 && !pipelineId) {
+                    replace(generatePath(path, { envId, pipelineId: result.pipelineList[0].id }))
                 }
             })
-        } catch (error) {}
+        } catch (error) {
+            setInitResult(null)
+            showError(error)
+            setHasMoreLoading(false)
+        }
         return () => {
-            setInitResult([])
+            setInitResult(null)
             setTriggerHistory(new Map())
             setHasMoreLoading(false)
         }
@@ -101,10 +106,10 @@ export default function EnvCIDetails() {
     } else if (!buildId && pipelineId && triggerHistory.size > 0) {
         replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], envId, pipelineId }))
     }
-    const pipelineOptions: CICDSidebarFilterOptionType[] = (initDataResults?.[0] || []).map((item) => {
+    const pipelineOptions: CICDSidebarFilterOptionType[] = (initDataResults?.pipelineList || []).map((item) => {
         return { value: `${item.id}`, label: item.appName, pipelineId: item.id }
     })
-    const pipelinesMap = mapByKey(initDataResults?.[0], 'id')
+    const pipelinesMap = mapByKey(initDataResults?.pipelineList, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
 
     return (
@@ -141,11 +146,11 @@ export default function EnvCIDetails() {
                                             synchroniseState={synchroniseState}
                                             triggerHistory={triggerHistory}
                                             isSecurityModuleInstalled={
-                                                initDataResults[1]?.['value']?.['result']?.status ===
+                                                initDataResults.securityInfo?.['value']?.['result']?.status ===
                                                     ModuleStatus.INSTALLED || false
                                             }
                                             isBlobStorageConfigured={
-                                                initDataResults?.[2]?.['value']?.['result']?.enabled || false
+                                                initDataResults?.moduleConfig?.['value']?.['result']?.enabled || false
                                             }
                                         />
                                     </Route>
