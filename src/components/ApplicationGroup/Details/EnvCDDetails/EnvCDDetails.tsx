@@ -131,7 +131,7 @@ export default function EnvCDDetails() {
         }
     })
 
-    if(result[0]['value'].result.pipelines.length === 1 && !appId){
+    if(envOptions.length === 1 && !appId){
       replace(generatePath(path, { envId, appId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
     }
     return (

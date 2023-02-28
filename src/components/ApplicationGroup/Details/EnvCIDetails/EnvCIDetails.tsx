@@ -11,8 +11,7 @@ import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManage
 import { getCIConfigList } from '../../AppGroup.service'
 
 export default function EnvCIDetails() {
-    const { envId, appId, pipelineId, buildId } = useParams<{
-        appId: string
+    const { envId, pipelineId, buildId } = useParams<{
         pipelineId: string
         buildId: string
         envId: string
@@ -31,8 +30,16 @@ export default function EnvCIDetails() {
             getCIConfigList(envId).then((result) => {
                 setInitResult(result)
                 setCiGroupLoading(false)
+                if (result?.[0].length === 1 && !pipelineId) {
+                    replace(generatePath(path, { envId, pipelineId: result[0][0].id }))
+                }
             })
         } catch (error) {}
+        return () => {
+            setInitResult([])
+            setTriggerHistory(new Map())
+            setHasMoreLoading(false)
+        }
     }, [envId])
 
     const [loading, triggerHistoryResult, , , , dependencyState] = useAsync(
@@ -91,15 +98,11 @@ export default function EnvCIDetails() {
 
     if ((!hasMoreLoading && loading) || ciGroupLoading || (pipelineId && dependencyState[0] !== pipelineId)) {
         return <Progressing pageLoader />
-    } else if (!buildId && triggerHistory.size > 0) {
-        replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], envId, appId, pipelineId }))
-    }
-
-    if (initDataResults?.[0].length === 1 && !pipelineId) {
-        replace(generatePath(path, { envId, appId, pipelineId: initDataResults[0][0].id }))
+    } else if (!buildId && pipelineId && triggerHistory.size > 0) {
+        replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], envId, pipelineId }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (initDataResults?.[0] || []).map((item) => {
-        return { value: `${item.appId}`, label: item.appName, pipelineId: item.id }
+        return { value: `${item.id}`, label: item.appName, pipelineId: item.id }
     })
     const pipelinesMap = mapByKey(initDataResults?.[0], 'id')
     const pipeline = pipelinesMap.get(+pipelineId)

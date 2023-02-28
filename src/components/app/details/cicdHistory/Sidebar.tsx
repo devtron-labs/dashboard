@@ -32,9 +32,12 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
         if (type === HistoryComponentType.CI) {
             setPagination({ offset: 0, size: 20 })
             push(generatePath(path, { appId, pipelineId: selectedFilter.value }))
-        } else if (type === HistoryComponentType.GROUP_CI || type === HistoryComponentType.GROUP_CD){
+        } else if (type === HistoryComponentType.GROUP_CI) {
             setPagination({ offset: 0, size: 20 })
-            push(generatePath(path, { envId, appId: selectedFilter.value, pipelineId: selectedFilter.pipelineId}))
+            push(generatePath(path, { envId, pipelineId: selectedFilter.pipelineId }))
+        } else if (type === HistoryComponentType.GROUP_CD) {
+            setPagination({ offset: 0, size: 20 })
+            push(generatePath(path, { envId, appId: selectedFilter.value, pipelineId: selectedFilter.pipelineId }))
         } else {
             setPagination({ offset: 0, size: 20 })
             push(generatePath(path, { appId, envId: selectedFilter.value, pipelineId: selectedFilter.pipelineId }))
@@ -51,41 +54,40 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
     }
 
     const filterOptionType = () => {
-        if(type === HistoryComponentType.CI){
+        if (type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI) {
             return pipelineId
-        } else if (type === HistoryComponentType.GROUP_CI || type === HistoryComponentType.GROUP_CD){
+        } else if (type === HistoryComponentType.GROUP_CD) {
             return appId
         } else {
             return envId
         }
-    } 
+    }
 
-    const selectedFilter = filterOptions?.find(
-        (filterOption) => filterOption.value === filterOptionType(),
-    )
+    const selectedFilter = filterOptions?.find((filterOption) => filterOption.value === filterOptionType())
 
-    const _filterOptions = filterOptions?.filter((filterOption) => !filterOption.deploymentAppDeleteRequest )
-
+    const _filterOptions = filterOptions?.filter((filterOption) => !filterOption.deploymentAppDeleteRequest)
 
     const selectLabel = () => {
-        if(type === HistoryComponentType.GROUP_CI || type === HistoryComponentType.GROUP_CD){
+        if (type === HistoryComponentType.GROUP_CI || type === HistoryComponentType.GROUP_CD) {
             return 'Application'
-        } else if (type === HistoryComponentType.CI){
+        } else if (type === HistoryComponentType.CI) {
             return 'Pipeline'
         } else {
             return 'Environment'
         }
     }
-    
+
     return (
         <>
             <div className="select-pipeline-wrapper w-100 pl-16 pr-16 dc__overflow-hidden">
-                <label className="form__label">
-                    Select {selectLabel()}
-                </label>
+                <label className="form__label">Select {selectLabel()}</label>
                 <ReactSelect
                     value={selectedFilter}
-                    options={type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI ? filterOptions : _filterOptions}
+                    options={
+                        type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI
+                            ? filterOptions
+                            : _filterOptions
+                    }
                     isSearchable={false}
                     onChange={handleFilterChange}
                     components={{
@@ -139,7 +141,7 @@ const HistorySummaryCard = React.memo(
         const { path } = useRouteMatch()
         const { pathname } = useLocation()
         const currentTab = pathname.split('/').pop()
-        const { triggerId, envId, ...rest } = useParams<{ triggerId: string, envId: string }>()
+        const { triggerId, envId, ...rest } = useParams<{ triggerId: string; envId: string }>()
         const groupCDType: boolean = type === HistoryComponentType.CD || type === HistoryComponentType.GROUP_CD
 
         const getPath = (): string => {
