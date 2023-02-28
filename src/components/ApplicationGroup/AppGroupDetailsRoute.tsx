@@ -173,7 +173,6 @@ export function EnvHeader({ envName, setEnvName, setShowEmpty, showEmpty }: EnvH
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CI_DETAILS}`}
                         className="tab-list__tab-link"
-                        // onClick={handleBuildClick}
                     >
                         Build history
                     </NavLink>
@@ -183,7 +182,6 @@ export function EnvHeader({ envName, setEnvName, setShowEmpty, showEmpty }: EnvH
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CD_DETAILS}`}
                         className="tab-list__tab-link"
-                        // onClick={handleBuildClick}
                     >
                         Deployment history
                     </NavLink>
