@@ -733,7 +733,7 @@ const EnvironmentOverrides = ({ environmentResult, environmentsLoading }: Enviro
         return (
             <div className="w-100" style={{ height: 'calc(100% - 60px)' }}>
                 {environments.map((env) => {
-                    return <EnvOverrideRoute envOverride={env} key={env.environmentName} />
+                    return !env.deploymentAppDeleteRequest && <EnvOverrideRoute envOverride={env} key={env.environmentName} />
                 })}
             </div>
         )

@@ -241,6 +241,8 @@ a:focus {
     hyphens: auto;
 }
 
+//Do not use dc__truncate-text use dc__ellipsis-right
+
 .dc__truncate-text {
     white-space: nowrap;
     overflow: hidden;
@@ -949,28 +951,28 @@ button.anchor {
     z-index: 2;
 
     &.pending {
-        background-size: contain, contain;
         background: url('../assets/icons/ic-clock.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.failed,
     &.error {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/ic-appstatus-failed.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.cancelled,
     &.aborted {
-        background-size: contain, contain;
         background: url('../assets/icons/ic-appstatus-cancelled.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.healthy,
     &.synced,
     &.sync.ok,
     &.succeeded {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/healthy.svg'), $background;
+        background-size: contain, contain;
         &.healthy--node {
             background: url('../assets/icons/appstatus/ic-heart-green.svg'), transparent;
             background-size: contain, contain;
@@ -989,8 +991,8 @@ button.anchor {
 
     &.not-deployed,
     &.not-triggered {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/notdeployed.svg'), $background;
+        background-size: contain, contain;
         &.not-deployed--node {
             background: url('../assets/icons/ic-close.svg'), transparent;
             background-size: contain, contain;
@@ -998,28 +1000,28 @@ button.anchor {
     }
 
     &.suspended {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/suspended.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.degraded {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/degraded.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.progressing,
     &.running,
     &.request_accepted,
     &.starting {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/progressing-rotating.svg'), $background;
+        background-size: contain, contain;
         animation: unset;
     }
 
     &.hibernating,
     &.hibernated {
-        background-size: contain, contain;
         background: url('../assets/icons/ic-hibernate-2.svg'), $background;
+        background-size: contain, contain;
     }
 }
 
@@ -1868,6 +1870,11 @@ button.anchor {
     border-top-right-radius: 4px;
 }
 
+.dc__top-radius-8 {
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+}
+
 .dc__no-top-radius {
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
@@ -2227,14 +2234,16 @@ textarea,
     min-width: 200px;
 }
 
-// width fix content
+.dc__mnw-100 {
+    min-width: 100px;
+}
 
+// width fix content
 .dc__w-fit-content {
     width: fit-content;
 }
 
 // Height in pixels
-
 .dc__height-inherit {
     height: inherit;
 }
@@ -2347,7 +2356,7 @@ textarea,
 
 // Line height
 .lh-1-4 {
-  line-height: 1.4;
+    line-height: 1.4;
 }
 
 .lh-14 {
@@ -2510,6 +2519,10 @@ textarea,
     overflow: auto !important;
 }
 
+.dc__overflow-y-auto {
+    overflow: auto !important;
+}
+
 .dc__overflow-scroll {
     overflow: scroll !important;
 }
@@ -2662,4 +2675,8 @@ textarea::placeholder {
         background-color: var(--Y300) !important;
         font-weight: 600;
     }
+}
+
+.dc__outline-none-imp {
+    outline: none !important;
 }
