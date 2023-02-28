@@ -140,10 +140,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
         } else if (this.state.view === ViewType.ERROR || !this.props.isSuperAdmin) {
             return (
                 <section className="global-configuration__component flex">
-                    <ErrorScreenManager
-                        code={this.props.isSuperAdmin ? this.state.statusCode : 403}
-                        reloadClass="dc__align-reload-center"
-                    />
+                    <ErrorScreenManager code={this.props.isSuperAdmin ? this.state.statusCode : 403} />
                 </section>
             )
         }
