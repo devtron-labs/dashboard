@@ -10,10 +10,12 @@ import {
 import { WebhookListResponse } from '../ciPipeline/Webhook/types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'
-import { Routes, URLS } from '../../config'
+import { ModuleNameMap, Routes, URLS } from '../../config'
 import { get } from '../../services/api'
 import { ResponseType } from '../../services/service.types'
-import { ConfigAppList, EnvApp, EnvDeploymentStatus, WorkflowsResponseType } from './AppGroup.types'
+import { CIConfigListType, ConfigAppList, EnvApp, EnvDeploymentStatus, WorkflowsResponseType } from './AppGroup.types'
+import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 
 export function getEnvWorkflowList(envId: string) {
     return get(`${Routes.ENV_WORKFLOW}/${envId}/${Routes.APP_WF}`)
@@ -65,6 +67,31 @@ export const getWorkflows = (envID: string): Promise<WorkflowsResponseType> => {
             _filteredCIPipelines.set(workflowResult.appId, processWorkflowData.filteredCIPipelines)
         }
         return { workflows: _workflows, filteredCIPipelines: _filteredCIPipelines }
+    })
+}
+
+export const getCIConfigList = (envID: string): Promise<CIConfigListType> => {
+    const pipelineList = []
+    const _appCIPipelineMap: Map<string, any> = new Map()
+    return Promise.all([
+        getEnvWorkflowList(envID),
+        getCIConfig(envID),
+        getModuleInfo(ModuleNameMap.SECURITY),
+        getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
+    ]).then(([workflow, ciConfig, securityInfo, moduleConfig]) => {
+        workflow.result.workflows.forEach((_wf) => {
+            const selectedTree = _wf.tree?.find((list) => list.type === PipelineType.CI_PIPELINE)
+            _appCIPipelineMap.set(_wf.appId, selectedTree)
+        })
+
+        ciConfig.result.forEach((item) => {
+            let ciPipeline = _appCIPipelineMap.get(item.appId)
+            let pipelineData = item.ciPipelines?.find((pipeline) => pipeline.id === ciPipeline?.componentId)
+            if (pipelineData) {
+                pipelineList.push({ ...pipelineData, appName: item.appName, appId: item.appId })
+            }
+        })
+        return { pipelineList, securityInfo, moduleConfig }
     })
 }
 

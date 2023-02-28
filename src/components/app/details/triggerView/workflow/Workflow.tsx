@@ -162,7 +162,6 @@ export class Workflow extends Component<WorkflowProps> {
                     location={this.props.location}
                     match={this.props.match}
                     branch={node.branch}
-                    fromAppGrouping={this.props.fromAppGrouping}
                 />
             )
         }
