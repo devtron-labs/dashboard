@@ -51,7 +51,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     }
 
     handleChange(event, index: number, key: 'name'): void {
-        let { projects, isValid, errorMessage } = { ...this.state }
+        const { projects, isValid, errorMessage } = { ...this.state }
         if (event.target.value && event.target.value.length > 2) {
             isValid[key] = true
             errorMessage[key] = ''
