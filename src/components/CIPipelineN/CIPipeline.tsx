@@ -46,6 +46,7 @@ export default function CIPipeline({
     getWorkflows,
     close,
     deleteWorkflow,
+    isJobView,
 }: CIPipelineType) {
     let { appId, workflowId, ciPipelineId } = useParams<{ appId: string; workflowId: string; ciPipelineId: string }>()
     if (ciPipelineId === '0') {
@@ -63,7 +64,7 @@ export default function CIPipeline({
     const text = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
     const title = ciPipelineId ? 'Edit build pipeline' : 'Create build pipeline'
     const [isAdvanced, setIsAdvanced] = useState<boolean>(
-        activeStageName !== BuildStageVariable.PreBuild && !!ciPipelineId,
+        isJobView || (activeStageName !== BuildStageVariable.PreBuild && !!ciPipelineId),
     )
     const [showFormError, setShowFormError] = useState<boolean>(false)
     const [loadingData, setLoadingData] = useState<boolean>(false)
@@ -160,7 +161,7 @@ export default function CIPipeline({
                     showError(error)
                 })
         } else {
-            getInitData(appId, true)
+            getInitData(appId, true, !isJobView)
                 .then((response) => {
                     setFormData(response.result.form)
                     setPageState(ViewType.FORM)
@@ -399,6 +400,7 @@ export default function CIPipeline({
             false,
             formData.webhookConditionList,
             formData.ciPipelineSourceTypeOptions,
+            isJobView,
         )
             .then((response) => {
                 if (response) {
@@ -767,6 +769,7 @@ export default function CIPipeline({
                                     ciPipeline={ciPipeline}
                                     isSecurityModuleInstalled={isSecurityModuleInstalled}
                                     setDockerConfigOverridden={setDockerConfigOverridden}
+                                    isJobView={isJobView}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

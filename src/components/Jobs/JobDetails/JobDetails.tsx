@@ -19,7 +19,6 @@ import CIDetails from '../../app/details/cIDetails/CIDetails'
 import TriggerView from '../../app/details/triggerView/TriggerView'
 import { getAppMetaInfo } from '../../app/service'
 import { AppMetaInfo } from '../../app/types'
-import { AppSelector } from '../../AppSelector'
 import { BreadCrumb, ErrorBoundary, Progressing, showError, trackByGAEvent, useBreadcrumb } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
@@ -28,17 +27,17 @@ import JobSelector from '../JobSelector/JobSelector'
 
 export default function JobDetails() {
     const { path } = useRouteMatch()
-    const { jobId } = useParams<{ jobId: string }>()
+    const { appId } = useParams<{ appId: string }>()
     const [jobName, setJobName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
 
     useEffect(() => {
         getAppMetaInfoRes()
-    }, [jobId])
+    }, [appId])
 
     const getAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
         try {
-            const { result } = await getAppMetaInfo(Number(jobId))
+            const { result } = await getAppMetaInfo(Number(appId))
             if (result) {
                 setJobName(result.appName)
                 setAppMetaInfo(result)
@@ -60,15 +59,10 @@ export default function JobDetails() {
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                            <CIDetails key={jobId} />
-                        </Route>
-                        <Route
-                            path={`${path}/${URLS.APP_CD_DETAILS}/:envId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
-                        >
-                            <CDDetails key={jobId} />
+                            <CIDetails key={appId} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                            <AppConfig appName={jobName} />
+                            <AppConfig appName={jobName} isJobView={true} />
                         </Route>
                         <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
                     </Switch>
@@ -79,7 +73,7 @@ export default function JobDetails() {
 }
 
 function JobHeader({ jobName }: { jobName: string }) {
-    const { jobId } = useParams<{ jobId: string }>()
+    const { appId } = useParams<{ appId: string }>()
     const match = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -118,8 +112,8 @@ function JobHeader({ jobName }: { jobName: string }) {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                ':jobId(\\d+)': {
-                    component: <JobSelector onChange={handleAppChange} jobId={Number(jobId)} jobName={jobName} />,
+                ':appId(\\d+)': {
+                    component: <JobSelector onChange={handleAppChange} jobId={Number(appId)} jobName={jobName} />,
                     linked: false,
                 },
                 app: {
@@ -128,7 +122,7 @@ function JobHeader({ jobName }: { jobName: string }) {
                 },
             },
         },
-        [jobId, jobName],
+        [appId, jobName],
     )
 
     const renderAppDetailsTabs = () => {

@@ -25,7 +25,7 @@ export function getCIPipelineNameSuggestion(appId: string | number): Promise<any
     return get(URL)
 }
 
-export function getInitData(appId: string | number, includeWebhookData: boolean = false): Promise<any> {
+export function getInitData(appId: string | number, includeWebhookData: boolean = false, preFillName: boolean = true): Promise<any> {
     return Promise.all([
         getCIPipelineNameSuggestion(appId),
         getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true),
@@ -35,7 +35,7 @@ export function getInitData(appId: string | number, includeWebhookData: boolean 
         return {
             result: {
                 form: {
-                    name: pipelineNameRes.result,
+                    name: preFillName ? pipelineNameRes.result : '',
                     args: [{ key: '', value: '' }],
                     materials: pipelineMetaConfig.result.materials,
                     gitHost: pipelineMetaConfig.result.gitHost,
@@ -194,6 +194,7 @@ export function saveCIPipeline(
     isExternalCI,
     webhookConditionList,
     ciPipelineSourceTypeOptions,
+    isJobView?: boolean
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
     const request = {
@@ -201,6 +202,7 @@ export function saveCIPipeline(
         appWorkflowId: workflowId,
         action: ciPipeline.id ? PatchAction.UPDATE_SOURCE : PatchAction.CREATE,
         ciPipeline: ci,
+        isJob: isJobView
     }
     return savePipeline(request).then((response) => {
         const ciPipelineFromRes = response.result.ciPipelines[0]

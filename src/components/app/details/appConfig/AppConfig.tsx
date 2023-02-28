@@ -119,85 +119,106 @@ function getCompletedStep(isUnlocked: AppStageUnlockedType): number {
     }
 }
 
-function getNavItems(isUnlocked: AppStageUnlockedType, appId: string): { navItems } {
+function getNavItems(isUnlocked: AppStageUnlockedType, appId: string, isJobView: boolean): { navItems } {
     const completedSteps = getCompletedStep(isUnlocked)
     const completedPercent = completedSteps * 25
-    let navItems = [
-        {
-            title: 'Git Repository',
-            href: `/app/${appId}/edit/materials`,
-            stage: STAGE_NAME.GIT_MATERIAL,
-            isLocked: !isUnlocked.material,
-            supportDocumentURL: DOCUMENTATION.APP_CREATE_MATERIAL,
-            flowCompletionPercent: completedPercent,
-            currentStep: completedSteps,
-        },
-        {
-            title: 'Build Configuration',
-            href: `/app/${appId}/edit/docker-build-config`,
-            stage: STAGE_NAME.CI_CONFIG,
-            isLocked: !isUnlocked.dockerBuildConfig,
-            supportDocumentURL: DOCUMENTATION.APP_CREATE_CI_CONFIG,
-            flowCompletionPercent: completedPercent,
-            currentStep: completedSteps,
-        },
-        {
-            title: 'Base Deployment Template',
-            href: `/app/${appId}/edit/deployment-template`,
-            stage: STAGE_NAME.DEPLOYMENT_TEMPLATE,
-            isLocked: !isUnlocked.deploymentTemplate,
-            supportDocumentURL: DOCUMENTATION.APP_DEPLOYMENT_TEMPLATE,
-            flowCompletionPercent: completedPercent,
-            currentStep: completedSteps,
-        },
-        {
-            title: 'Workflow Editor',
-            href: `/app/${appId}/edit/workflow`,
-            stage: 'WORKFLOW',
-            isLocked: !isUnlocked.workflowEditor,
-            supportDocumentURL: DOCUMENTATION.APP_CREATE_WORKFLOW,
-            flowCompletionPercent: completedPercent,
-            currentStep: completedSteps,
-        },
-        {
-            title: 'ConfigMaps',
-            href: `/app/${appId}/edit/configmap`,
-            stage: 'CONFIGMAP',
-            isLocked: !isUnlocked.configmap,
-            supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
-            flowCompletionPercent: completedPercent,
-            currentStep: completedSteps,
-        },
-        {
-            title: 'Secrets',
-            href: `/app/${appId}/edit/secrets`,
-            stage: 'SECRETS',
-            isLocked: !isUnlocked.secret,
-            supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
-            flowCompletionPercent: completedPercent,
-            currentStep: completedSteps,
-        },
-        {
-            title: 'External Links',
-            href: `/app/${appId}/edit/external-links`,
-            stage: 'EXTERNAL_LINKS',
-            isLocked: false,
-            supportDocumentURL: DOCUMENTATION.EXTERNAL_LINKS,
-            flowCompletionPercent: completedPercent,
-            currentStep: completedSteps,
-        },
-        {
-            title: 'Environment Override',
-            href: `/app/${appId}/edit/env-override`,
-            stage: 'ENV_OVERRIDE',
-            isLocked: !isUnlocked.envOverride,
-        },
-    ]
+    let navItems = isJobView
+        ? [
+              {
+                  title: 'Git Repository',
+                  href: `/job/${appId}/edit/materials`,
+                  stage: STAGE_NAME.GIT_MATERIAL,
+                  isLocked: !isUnlocked.material,
+                  supportDocumentURL: DOCUMENTATION.APP_CREATE_MATERIAL,
+                  flowCompletionPercent: completedPercent,
+                  currentStep: completedSteps,
+              },
+              {
+                  title: 'Workflow Editor',
+                  href: `/job/${appId}/edit/workflow`,
+                  stage: 'WORKFLOW',
+                  isLocked: !isUnlocked.workflowEditor,
+                  supportDocumentURL: DOCUMENTATION.APP_CREATE_WORKFLOW,
+                  flowCompletionPercent: completedPercent,
+                  currentStep: completedSteps,
+              },
+          ]
+        : [
+              {
+                  title: 'Git Repository',
+                  href: `/app/${appId}/edit/materials`,
+                  stage: STAGE_NAME.GIT_MATERIAL,
+                  isLocked: !isUnlocked.material,
+                  supportDocumentURL: DOCUMENTATION.APP_CREATE_MATERIAL,
+                  flowCompletionPercent: completedPercent,
+                  currentStep: completedSteps,
+              },
+              {
+                  title: 'Build Configuration',
+                  href: `/app/${appId}/edit/docker-build-config`,
+                  stage: STAGE_NAME.CI_CONFIG,
+                  isLocked: !isUnlocked.dockerBuildConfig,
+                  supportDocumentURL: DOCUMENTATION.APP_CREATE_CI_CONFIG,
+                  flowCompletionPercent: completedPercent,
+                  currentStep: completedSteps,
+              },
+              {
+                  title: 'Base Deployment Template',
+                  href: `/app/${appId}/edit/deployment-template`,
+                  stage: STAGE_NAME.DEPLOYMENT_TEMPLATE,
+                  isLocked: !isUnlocked.deploymentTemplate,
+                  supportDocumentURL: DOCUMENTATION.APP_DEPLOYMENT_TEMPLATE,
+                  flowCompletionPercent: completedPercent,
+                  currentStep: completedSteps,
+              },
+              {
+                  title: 'Workflow Editor',
+                  href: `/app/${appId}/edit/workflow`,
+                  stage: 'WORKFLOW',
+                  isLocked: !isUnlocked.workflowEditor,
+                  supportDocumentURL: DOCUMENTATION.APP_CREATE_WORKFLOW,
+                  flowCompletionPercent: completedPercent,
+                  currentStep: completedSteps,
+              },
+              {
+                  title: 'ConfigMaps',
+                  href: `/app/${appId}/edit/configmap`,
+                  stage: 'CONFIGMAP',
+                  isLocked: !isUnlocked.configmap,
+                  supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
+                  flowCompletionPercent: completedPercent,
+                  currentStep: completedSteps,
+              },
+              {
+                  title: 'Secrets',
+                  href: `/app/${appId}/edit/secrets`,
+                  stage: 'SECRETS',
+                  isLocked: !isUnlocked.secret,
+                  supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
+                  flowCompletionPercent: completedPercent,
+                  currentStep: completedSteps,
+              },
+              {
+                  title: 'External Links',
+                  href: `/app/${appId}/edit/external-links`,
+                  stage: 'EXTERNAL_LINKS',
+                  isLocked: false,
+                  supportDocumentURL: DOCUMENTATION.EXTERNAL_LINKS,
+                  flowCompletionPercent: completedPercent,
+                  currentStep: completedSteps,
+              },
+              {
+                  title: 'Environment Override',
+                  href: `/app/${appId}/edit/env-override`,
+                  stage: 'ENV_OVERRIDE',
+                  isLocked: !isUnlocked.envOverride,
+              },
+          ]
 
     return { navItems }
 }
 
-export default function AppConfig({ appName }: AppConfigProps) {
+export default function AppConfig({ appName, isJobView }: AppConfigProps) {
     const { appId } = useParams<{ appId: string }>()
     const match = useRouteMatch()
     const location = useLocation()
@@ -243,7 +264,7 @@ export default function AppConfig({ appName }: AppConfigProps) {
                     .find((stage) => stage.status)
                 let lastConfiguredStageName = lastConfiguredStage.stageName
                 let configs = isUnlocked(lastConfiguredStageName)
-                let { navItems } = getNavItems(configs, appId)
+                let { navItems } = getNavItems(configs, appId, isJobView)
                 let index = navItems.findIndex((item) => item.isLocked)
                 if (index < 0) {
                     index = 4
@@ -310,7 +331,7 @@ export default function AppConfig({ appName }: AppConfigProps) {
                     .reverse()
                     .find((stage) => stage.status)
                 let configs = isUnlocked(lastConfiguredStage.stageName)
-                let { navItems } = getNavItems(configs, appId)
+                let { navItems } = getNavItems(configs, appId, isJobView)
                 let index = navItems.findIndex((item) => item.isLocked)
                 if (index < 0) {
                     index = 4
@@ -426,6 +447,7 @@ export default function AppConfig({ appName }: AppConfigProps) {
                             showCannotDeleteTooltip={showCannotDeleteTooltip}
                             toggleRepoSelectionTippy={toggleRepoSelectionTippy}
                             getRepo={showRepoOnDelete}
+                            isJobView={isJobView}
                         />
                     </div>
                     <div className="app-compose__main">
@@ -444,6 +466,7 @@ export default function AppConfig({ appName }: AppConfigProps) {
                             canShowExternalLinks={_canShowExternalLinks}
                             toggleRepoSelectionTippy={toggleRepoSelectionTippy}
                             setRepoState={setShowRepoOnDelete}
+                            isJobView={isJobView}
                         />
                     </div>
                 </div>
@@ -501,12 +524,13 @@ function Navigation({
     showCannotDeleteTooltip,
     toggleRepoSelectionTippy,
     getRepo,
+    isJobView,
 }: AppConfigNavigationProps) {
     const location = useLocation()
     const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0]
     return (
         <>
-            {!isCDPipeline && <AppConfigurationCheckBox selectedNav={selectedNav} />}
+            {!isJobView && !isCDPipeline && <AppConfigurationCheckBox selectedNav={selectedNav} />}
             {navItems.map((item) => {
                 if (item.stage === 'EXTERNAL_LINKS') {
                     return (
@@ -517,7 +541,11 @@ function Navigation({
                             </div>
                         )
                     )
-                } else if (item.stage !== 'ENV_OVERRIDE' || (item.stage === 'ENV_OVERRIDE' && item.isLocked)) {
+                } else if (
+                    isJobView ||
+                    item.stage !== 'ENV_OVERRIDE' ||
+                    (item.stage === 'ENV_OVERRIDE' && item.isLocked)
+                ) {
                     return (
                         <ConditionalWrap
                             condition={showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG}
@@ -575,58 +603,33 @@ function AppComposeRouter({
     canShowExternalLinks,
     toggleRepoSelectionTippy,
     setRepoState,
+    isJobView,
 }: AppComposeRouterProps) {
     const { path } = useRouteMatch()
 
     return (
         <ErrorBoundary>
             <Suspense fallback={<Progressing pageLoader />}>
-                <Switch>
-                    <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
-                        <>
-                            <MaterialList
-                                respondOnSuccess={respondOnSuccess}
-                                isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
-                                toggleRepoSelectionTippy={toggleRepoSelectionTippy}
-                                setRepo={setRepoState}
-                            />
-                            <NextButton
-                                currentStageName={STAGE_NAME.GIT_MATERIAL}
-                                navItems={navItems}
-                                isDisabled={!isUnlocked.dockerBuildConfig}
-                                isCiPipeline={isCiPipeline}
-                            />
-                        </>
-                    </Route>
-                    {isUnlocked.dockerBuildConfig && (
-                        <Route path={`${path}/${URLS.APP_DOCKER_CONFIG}`}>
-                            <CIConfig
-                                respondOnSuccess={respondOnSuccess}
-                                isCDPipeline={isCDPipeline}
-                                isCiPipeline={isCiPipeline}
-                                navItems={navItems}
-                            />
+                {isJobView ? (
+                    <Switch>
+                        <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
+                            <>
+                                <MaterialList
+                                    respondOnSuccess={respondOnSuccess}
+                                    isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
+                                    toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                                    setRepo={setRepoState}
+                                    isJobView={isJobView}
+                                />
+                                <NextButton
+                                    currentStageName={STAGE_NAME.GIT_MATERIAL}
+                                    navItems={navItems}
+                                    isDisabled={!isUnlocked.dockerBuildConfig}
+                                    isCiPipeline={isCiPipeline}
+                                />
+                            </>
                         </Route>
-                    )}
-                    {isUnlocked.deploymentTemplate && (
-                        <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
-                            <DeploymentConfig
-                                respondOnSuccess={respondOnSuccess}
-                                isUnSet={!isUnlocked.workflowEditor}
-                                navItems={navItems}
-                                isCiPipeline={isCiPipeline}
-                                environments={environments}
-                                setEnvironments={setEnvironments}
-                            />
-                        </Route>
-                    )}
-                    {canShowExternalLinks && (
-                        <Route path={`${path}/${URLS.APP_EXTERNAL_LINKS}`}>
-                            <ExternalLinks isAppConfigView={true} userRole={userRole} />
-                        </Route>
-                    )}
-                    {isUnlocked.workflowEditor && (
-                        <>
+                        {/* {isUnlocked.workflowEditor && ( */}
                             <Route
                                 path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
                                 render={(props) => (
@@ -635,29 +638,91 @@ function AppComposeRouter({
                                         isCDPipeline={isCDPipeline}
                                         respondOnSuccess={respondOnSuccess}
                                         getWorkflows={getWorkflows}
+                                        isJobView={isJobView}
                                     />
                                 )}
                             />
-                            <Route
-                                path={`${path}/${URLS.APP_CM_CONFIG}`}
-                                render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} />}
-                            />
-                            <Route
-                                path={`${path}/${URLS.APP_CS_CONFIG}`}
-                                render={(props) => <Secret respondOnSuccess={respondOnSuccess} />}
-                            />
-                            <Route
-                                path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
-                                render={(props) => (
-                                    <EnvironmentOverride
-                                        environments={environments}
-                                        setEnvironments={setEnvironments}
-                                    />
-                                )}
-                            />
-                        </>
-                    )}
-                </Switch>
+                        {/* )} */}
+                    </Switch>
+                ) : (
+                    <Switch>
+                        <Route path={`${path}/${URLS.APP_GIT_CONFIG}`}>
+                            <>
+                                <MaterialList
+                                    respondOnSuccess={respondOnSuccess}
+                                    isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
+                                    toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                                    setRepo={setRepoState}
+                                />
+                                <NextButton
+                                    currentStageName={STAGE_NAME.GIT_MATERIAL}
+                                    navItems={navItems}
+                                    isDisabled={!isUnlocked.dockerBuildConfig}
+                                    isCiPipeline={isCiPipeline}
+                                />
+                            </>
+                        </Route>
+                        {isUnlocked.dockerBuildConfig && (
+                            <Route path={`${path}/${URLS.APP_DOCKER_CONFIG}`}>
+                                <CIConfig
+                                    respondOnSuccess={respondOnSuccess}
+                                    isCDPipeline={isCDPipeline}
+                                    isCiPipeline={isCiPipeline}
+                                    navItems={navItems}
+                                />
+                            </Route>
+                        )}
+                        {isUnlocked.deploymentTemplate && (
+                            <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
+                                <DeploymentConfig
+                                    respondOnSuccess={respondOnSuccess}
+                                    isUnSet={!isUnlocked.workflowEditor}
+                                    navItems={navItems}
+                                    isCiPipeline={isCiPipeline}
+                                    environments={environments}
+                                    setEnvironments={setEnvironments}
+                                />
+                            </Route>
+                        )}
+                        {canShowExternalLinks && (
+                            <Route path={`${path}/${URLS.APP_EXTERNAL_LINKS}`}>
+                                <ExternalLinks isAppConfigView={true} userRole={userRole} />
+                            </Route>
+                        )}
+                        {isUnlocked.workflowEditor && (
+                            <>
+                                <Route
+                                    path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
+                                    render={(props) => (
+                                        <WorkflowEdit
+                                            configStatus={1}
+                                            isCDPipeline={isCDPipeline}
+                                            respondOnSuccess={respondOnSuccess}
+                                            getWorkflows={getWorkflows}
+                                        />
+                                    )}
+                                />
+                                <Route
+                                    path={`${path}/${URLS.APP_CM_CONFIG}`}
+                                    render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} />}
+                                />
+                                <Route
+                                    path={`${path}/${URLS.APP_CS_CONFIG}`}
+                                    render={(props) => <Secret respondOnSuccess={respondOnSuccess} />}
+                                />
+                                <Route
+                                    path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
+                                    render={(props) => (
+                                        <EnvironmentOverride
+                                            environments={environments}
+                                            setEnvironments={setEnvironments}
+                                        />
+                                    )}
+                                />
+                            </>
+                        )}
+                    </Switch>
+                )}
             </Suspense>
         </ErrorBoundary>
     )
@@ -733,7 +798,11 @@ const EnvironmentOverrides = ({ environmentResult, environmentsLoading }: Enviro
         return (
             <div className="w-100" style={{ height: 'calc(100% - 60px)' }}>
                 {environments.map((env) => {
-                    return !env.deploymentAppDeleteRequest && <EnvOverrideRoute envOverride={env} key={env.environmentName} />
+                    return (
+                        !env.deploymentAppDeleteRequest && (
+                            <EnvOverrideRoute envOverride={env} key={env.environmentName} />
+                        )
+                    )
                 })}
             </div>
         )

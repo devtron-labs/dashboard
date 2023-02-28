@@ -64,9 +64,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     componentWillUnmount() {
         this.removeTakeMeThereClickedItem()
-       if (this.workflowTimer) {
-           clearTimeout(this.workflowTimer)
-       }
+        if (this.workflowTimer) {
+            clearTimeout(this.workflowTimer)
+        }
     }
 
     removeTakeMeThereClickedItem = () => {
@@ -85,7 +85,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             .then((result) => {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
-                let isDeletionInProgress;
+                let isDeletionInProgress
                 for (const workFlow of result.workflows) {
                     for (const node of workFlow.nodes) {
                         if (node.type === WorkflowNodeType.CI) {
@@ -191,9 +191,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     addWebhookCD = (workflowId?: number | string) => {
         this.props.history.push(
-            `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
-              URLS.APP_WORKFLOW_CONFIG
-          }/${workflowId || 0}/${PipelineType.WEBHOOK.toLowerCase()}/0/${URLS.APP_CD_CONFIG}`,
+            `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
+                workflowId || 0
+            }/${PipelineType.WEBHOOK.toLowerCase()}/0/${URLS.APP_CD_CONFIG}`,
         )
     }
 
@@ -207,9 +207,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         const ciURL = isWebhookCD
             ? `${PipelineType.WEBHOOK.toLowerCase()}/0`
             : `${URLS.APP_CI_CONFIG.toLowerCase()}/${ciPipelineId}`
-        const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
-            URLS.APP_WORKFLOW_CONFIG
-        }/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
+        const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}?parentPipelineType=${parentPipelineType}&parentPipelineId=${parentPipelineId}`
         if (this.state.noGitOpsConfiguration) {
             this.setState({
                 showNoGitOpsWarningPopup: true,
@@ -313,31 +311,30 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         )
                     }}
                 />
-                <Route
-                    path={[
-                        URLS.APP_LINKED_CI_CONFIG,
-                        URLS.APP_CI_CONFIG,
-                        PipelineType.WEBHOOK,
-                    ].map(
-                        (pipeline) => `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId?`,
-                    )}
-                    render={({ location, history, match }: { location: any; history: any; match: any }) => {
-                        const cdNode = this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)
-                        const downstreamNodeSize = cdNode?.downstreams?.length ?? 0
-                        return (
-                            <CDPipeline
-                                match={match}
-                                history={history}
-                                location={location}
-                                appName={this.state.appName}
-                                close={this.closePipeline}
-                                downstreamNodeSize={downstreamNodeSize}
-                                getWorkflows={this.getWorkflows}
-                                refreshParentWorkflows={this.props.getWorkflows}
-                            />
-                        )
-                    }}
-                />
+                {!this.props.isJobView && (
+                    <Route
+                        path={[URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG, PipelineType.WEBHOOK].map(
+                            (pipeline) =>
+                                `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId?`,
+                        )}
+                        render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                            const cdNode = this.state.allDeploymentNodeMap.get(match.params.cdPipelineId)
+                            const downstreamNodeSize = cdNode?.downstreams?.length ?? 0
+                            return (
+                                <CDPipeline
+                                    match={match}
+                                    history={history}
+                                    location={location}
+                                    appName={this.state.appName}
+                                    close={this.closePipeline}
+                                    downstreamNodeSize={downstreamNodeSize}
+                                    getWorkflows={this.getWorkflows}
+                                    refreshParentWorkflows={this.props.getWorkflows}
+                                />
+                            )
+                        }}
+                    />
+                )}
                 <Route path={`${this.props.match.path}/ci-pipeline/:ciPipelineId`}>
                     <CIPipeline
                         appName={this.state.appName}
@@ -345,78 +342,96 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         close={this.closePipeline}
                         getWorkflows={this.getWorkflows}
                         deleteWorkflow={this.deleteWorkflow}
+                        isJobView={this.props.isJobView}
                     />
                 </Route>
-                <Route path={`${this.props.match.path}/webhook/:webhookId`}>
-                    <WebhookDetailsModal close={this.closePipeline} />
-                </Route>
-                <Route
-                    path={`${this.props.match.path}/linked-ci/:ciPipelineId`}
-                    render={({ location, history, match }: { location: any; history: any; match: any }) => {
-                        return (
-                            <LinkedCIPipelineView
-                                match={match}
-                                history={history}
-                                location={location}
-                                appName={this.state.appName}
-                                connectCDPipelines={this.getLen()}
-                                close={this.closePipeline}
-                                getWorkflows={this.getWorkflows}
-                                deleteWorkflow={this.deleteWorkflow}
-                            />
-                        )
-                    }}
-                />
-                <Route
-                    path={`${this.props.match.path}/linked-ci`}
-                    render={({ location, history, match }: { location: any; history: any; match: any }) => {
-                        return (
-                            <LinkedCIPipeline
-                                match={match}
-                                history={history}
-                                location={location}
-                                appName={this.state.appName}
-                                connectCDPipelines={0}
-                                close={this.closePipeline}
-                                getWorkflows={this.getWorkflows}
-                            />
-                        )
-                    }}
-                />
+                {!this.props.isJobView && (
+                    <>
+                        <Route path={`${this.props.match.path}/webhook/:webhookId`}>
+                            <WebhookDetailsModal close={this.closePipeline} />
+                        </Route>
+                        <Route
+                            path={`${this.props.match.path}/linked-ci/:ciPipelineId`}
+                            render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                                return (
+                                    <LinkedCIPipelineView
+                                        match={match}
+                                        history={history}
+                                        location={location}
+                                        appName={this.state.appName}
+                                        connectCDPipelines={this.getLen()}
+                                        close={this.closePipeline}
+                                        getWorkflows={this.getWorkflows}
+                                        deleteWorkflow={this.deleteWorkflow}
+                                    />
+                                )
+                            }}
+                        />
+                        <Route
+                            path={`${this.props.match.path}/linked-ci`}
+                            render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                                return (
+                                    <LinkedCIPipeline
+                                        match={match}
+                                        history={history}
+                                        location={location}
+                                        appName={this.state.appName}
+                                        connectCDPipelines={0}
+                                        close={this.closePipeline}
+                                        getWorkflows={this.getWorkflows}
+                                    />
+                                )
+                            }}
+                        />
+                    </>
+                )}
                 <Route path={`${this.props.match.path}/deprecated-warning`}>
-                    <DeprecatedWarningModal closePopup={this.closePipeline}/>
+                    <DeprecatedWarningModal closePopup={this.closePipeline} />
                 </Route>
             </Switch>
         )
     }
 
     renderNewBuildPipelineButton(openAtTop: boolean) {
-      let { top, left } = this.state.cIMenuPosition
-      if (openAtTop) {
-          top = top - 382 + 80
-          left = left - 85
-      } else {
-          top = top + 40
-      }
-      return (
-          <>
-              <button type="button" className="cta dc__no-decor flex mb-20" onClick={this.toggleCIMenu}>
-                  <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
-                  New workflow
-              </button>
-              <PipelineSelect
-                  workflowId={0}
-                  showMenu={this.state.showCIMenu}
-                  addCIPipeline={this.addCIPipeline}
-                  addWebhookCD={this.addWebhookCD}
-                  toggleCIMenu={this.toggleCIMenu}
-                  styles={{
-                      left: `${left}px`,
-                      top: `${top}px`,
-                  }}
-              />
-          </>
-      )
+        let { top, left } = this.state.cIMenuPosition
+        if (openAtTop) {
+            top = top - 382 + 80
+            left = left - 85
+        } else {
+            top = top + 40
+        }
+        return (
+            <>
+                <button type="button" className="cta dc__no-decor flex mb-20" onClick={this.toggleCIMenu}>
+                    <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
+                    New workflow
+                </button>
+                <PipelineSelect
+                    workflowId={0}
+                    showMenu={this.state.showCIMenu}
+                    addCIPipeline={this.addCIPipeline}
+                    addWebhookCD={this.addWebhookCD}
+                    toggleCIMenu={this.toggleCIMenu}
+                    styles={{
+                        left: `${left}px`,
+                        top: `${top}px`,
+                    }}
+                />
+            </>
+        )
+    }
+
+    openCreateModal = () => {
+        this.props.history.push(`${URLS.JOB}/${this.props.match.params.appId}/edit/workflow/0/ci-pipeline/0`)
+    }
+
+    renderNewJobPipelineButton = () => {
+        return (
+            <button type="button" className="cta dc__no-decor flex mb-20" onClick={this.openCreateModal}>
+                <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
+                Job pipeline
+            </button>
+        )
     }
 
     renderEmptyState() {
@@ -435,7 +450,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         Learn about creating workflows
                     </a>
                 </p>
-                {this.renderNewBuildPipelineButton(true)}
+                {this.props.isJobView ? this.renderNewJobPipelineButton() : this.renderNewBuildPipelineButton(true)}
             </div>
         )
     }
@@ -457,7 +472,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         }
     }
 
-    hideWebhookTippy () {
+    hideWebhookTippy() {
         const _wf = this.state.workflows.map((wf) => {
             return { ...wf, showTippy: false }
         })
@@ -561,7 +576,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     </p>
                     {this.renderRouter()}
                     {this.renderHostErrorMessage()}
-                    {this.renderNewBuildPipelineButton(false)}
+                    {this.props.isJobView
+                        ? this.renderNewJobPipelineButton()
+                        : this.renderNewBuildPipelineButton(false)}
                     {this.renderWorkflows()}
                     {this.renderDeleteDialog()}
                     {this.state.showSuccessScreen && (

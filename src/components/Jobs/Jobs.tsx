@@ -19,7 +19,7 @@ export default function Jobs() {
                 <Route path={`${path}/${URLS.APP_LIST}`}>
                     <JobsList isArgoInstalled={isArgoInstalled} />
                 </Route>
-                <Route path={`${path}/:jobId(\\d+)`}>
+                <Route path={`${path}/:appId(\\d+)`}>
                     <JobDetails />
                 </Route>
                 <Redirect to={`${path}/${URLS.APP_LIST}`} />
