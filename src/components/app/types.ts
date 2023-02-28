@@ -104,7 +104,6 @@ export interface AppDetails {
     projectName?: string
     clusterId?: number
     deploymentAppType?: DeploymentAppType
-    Notes?: string
     deploymentAppDeleteRequest: boolean
 }
 
