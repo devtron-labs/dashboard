@@ -36,7 +36,7 @@ export default function EnvCIDetails() {
     }, [envId])
 
     const [loading, triggerHistoryResult, , , , dependencyState] = useAsync(
-        () => getTriggerHistory(+pipelineId, pagination),
+        () => getTriggerHistory(pipelineId, pagination),
         [pipelineId, pagination],
         !!pipelineId,
     )
@@ -80,7 +80,7 @@ export default function EnvCIDetails() {
     async function pollHistory() {
         if (!pipelineId) return
         const [error, result] = await asyncWrap(
-            getTriggerHistory(+pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
+            getTriggerHistory(pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
         if (error) {
             showError(error)
@@ -92,11 +92,11 @@ export default function EnvCIDetails() {
     if ((!hasMoreLoading && loading) || ciGroupLoading || (pipelineId && dependencyState[0] !== pipelineId)) {
         return <Progressing pageLoader />
     } else if (!buildId && triggerHistory.size > 0) {
-        replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], appId, envId, pipelineId }))
+        replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], envId, appId, pipelineId }))
     }
 
     if (initDataResults?.[0].length === 1 && !pipelineId) {
-        replace(generatePath(path, { appId, envId, pipelineId: initDataResults[0].id }))
+        replace(generatePath(path, { envId, appId, pipelineId: initDataResults[0].id }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (initDataResults?.[0] || []).map((item) => {
         return { value: `${item.appId}`, label: item.appName, pipelineId: item.id }
@@ -121,8 +121,8 @@ export default function EnvCIDetails() {
                 <div className="ci-details__body">
                     {!pipelineId ? (
                         <EmptyView
-                            title="No pipeline selected"
-                            subTitle="Please select a pipeline to start seeing CI builds."
+                            title="No application selected"
+                            subTitle="Please select an application to see build history."
                         />
                     ) : (
                         pipeline && (

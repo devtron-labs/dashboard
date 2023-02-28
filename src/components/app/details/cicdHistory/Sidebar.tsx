@@ -32,7 +32,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
         if (type === HistoryComponentType.CI) {
             setPagination({ offset: 0, size: 20 })
             push(generatePath(path, { appId, pipelineId: selectedFilter.value }))
-        } else if (type === HistoryComponentType.GROUP_CI){
+        } else if (type === HistoryComponentType.GROUP_CI || type === HistoryComponentType.GROUP_CD){
             setPagination({ offset: 0, size: 20 })
             push(generatePath(path, { envId, appId: selectedFilter.value, pipelineId: selectedFilter.pipelineId}))
         } else {
@@ -53,7 +53,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
     const filterOptionType = () => {
         if(type === HistoryComponentType.CI){
             return pipelineId
-        } else if (type === HistoryComponentType.GROUP_CI){
+        } else if (type === HistoryComponentType.GROUP_CI || type === HistoryComponentType.GROUP_CD){
             return appId
         } else {
             return envId
@@ -68,7 +68,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
 
 
     const selectLabel = () => {
-        if(type === HistoryComponentType.GROUP_CI){
+        if(type === HistoryComponentType.GROUP_CI || type === HistoryComponentType.GROUP_CD){
             return 'Application'
         } else if (type === HistoryComponentType.CI){
             return 'Pipeline'
@@ -85,7 +85,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
                 </label>
                 <ReactSelect
                     value={selectedFilter}
-                    options={type === HistoryComponentType.CI ? filterOptions : _filterOptions}
+                    options={type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI ? filterOptions : _filterOptions}
                     isSearchable={false}
                     onChange={handleFilterChange}
                     components={{
@@ -140,13 +140,15 @@ const HistorySummaryCard = React.memo(
         const { pathname } = useLocation()
         const currentTab = pathname.split('/').pop()
         const { triggerId, envId, ...rest } = useParams<{ triggerId: string, envId: string }>()
+        const groupCDType: boolean = type === HistoryComponentType.CD || type === HistoryComponentType.GROUP_CD
 
         const getPath = (): string => {
-          const _params = {
-            ...rest,
-            [type === HistoryComponentType.CD ? 'triggerId' : 'buildId']: id,
-        }
-          return `${generatePath(path, _params)}/${currentTab}`
+            const _params = {
+                ...rest,
+                envId,
+                [groupCDType ? 'triggerId' : 'buildId']: id,
+            }
+            return `${generatePath(path, _params)}/${currentTab}`
         }
 
         return (
@@ -181,7 +183,7 @@ const HistorySummaryCard = React.memo(
                         <div className="flex column left dc__ellipsis-right">
                             <div className="cn-9 fs-14">{moment(startedOn).format(Moment12HourFormat)}</div>
                             <div className="flex left cn-7 fs-12">
-                                {type === HistoryComponentType.CD && (
+                                {groupCDType && (
                                     <>
                                         <div className="dc__capitalize">
                                             {['pre', 'post'].includes(stage?.toLowerCase()) ? `${stage}-deploy` : stage}

@@ -38,8 +38,9 @@ export default function EnvCDDetails() {
     const [loadingDeploymentHistory, deploymentHistoryResult, deploymentHistoryError, , , dependencyState] = useAsync(
         () => getTriggerHistory(+appId, +envId, pipelineId, pagination),
         [pagination, appId, envId],
-        !!envId && !!pipelineId,
+        !!pipelineId,
     )
+    
     const { path } = useRouteMatch()
     const { replace } = useHistory()
     useInterval(pollHistory, 30000)
@@ -72,7 +73,7 @@ export default function EnvCDDetails() {
         // polling
         if (!pipelineId || !envId) return
         const [error, result] = await asyncWrap(
-            getTriggerHistory(+appId, +envId, +pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
+            getTriggerHistory(+appId, +envId, pipelineId, { offset: 0, size: pagination.offset + pagination.size }),
         )
         if (error) {
             showError(error)
@@ -104,13 +105,14 @@ export default function EnvCDDetails() {
         !Array.isArray(result[0]?.['value']?.result.pipelines)
     ) {
         return <AppNotConfigured />
-    } else if (!result || (envId && dependencyState[2] !== envId)) {
+    } else if (!result || (appId && dependencyState[1] !== appId)) {
         return null
     }
 
     const pipelines = result[0]['value'].result.pipelines.filter((pipeline) => pipeline.environmentId === +envId)
     const deploymentAppType = pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
-    if (!triggerId && envId && pipelineId && deploymentHistoryResult?.result?.length) {
+
+    if (!triggerId && appId && pipelineId && deploymentHistoryResult?.result?.length) {
         replace(
             generatePath(path, {
                 appId,
@@ -121,6 +123,7 @@ export default function EnvCDDetails() {
         )
     }
     const selectedApp = pipelines.find((envData) => envData.appId === +appId)
+    
     const envOptions: CICDSidebarFilterOptionType[] = pipelines.map((item) => {
         return {
             value: `${item.appId}`,
@@ -129,8 +132,8 @@ export default function EnvCDDetails() {
         }
     })
 
-    if(result[0]['value'].result.length === 1 && !envId){
-      replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
+    if(result[0]['value'].result.length === 1 && !appId){
+      replace(generatePath(path, { envId, appId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
     }
     return (
         <>
@@ -139,7 +142,7 @@ export default function EnvCDDetails() {
                     <div className="ci-details__history">
                         <Sidebar
                             filterOptions={envOptions}
-                            type={HistoryComponentType.GROUP_CI}
+                            type={HistoryComponentType.GROUP_CD}
                             hasMore={hasMore}
                             triggerHistory={triggerHistory}
                             setPagination={setPagination}
@@ -166,13 +169,13 @@ export default function EnvCDDetails() {
                         </Route>
                     ) : !envId ? (
                         <EmptyView
-                            title="No environment selected"
-                            subTitle="Please select an environment to start seeing CD deployments."
+                            title="No application selected"
+                            subTitle="Please select an application to see deployment history."
                         />
                     ) : (
                         <EmptyView
                             title="No deployments"
-                            subTitle={`No deployment history available for the ${selectedApp?.appName} environment.`}
+                            subTitle={`No deployment history available for the ${selectedApp?.appName} application.`}
                         />
                     )}
                     {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
