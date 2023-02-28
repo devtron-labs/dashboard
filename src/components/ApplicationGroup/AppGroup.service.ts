@@ -72,20 +72,20 @@ export const getWorkflows = (envID: string): Promise<WorkflowsResponseType> => {
 
 export const getCIConfigList = (envID: string): Promise<CIConfigListType> => {
     const pipelineList = []
-    const _filteredworkflow: Map<string, any> = new Map()
+    const _appCIPipelineMap: Map<string, any> = new Map()
     return Promise.all([
         getEnvWorkflowList(envID),
         getCIConfig(envID),
         getModuleInfo(ModuleNameMap.SECURITY),
         getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
     ]).then(([workflow, ciConfig, securityInfo, moduleConfig]) => {
-        workflow.result.workflows.forEach((workFlow) => {
-            const selectedTree = workFlow.tree?.find((list) => list.type === PipelineType.CI_PIPELINE)
-            _filteredworkflow.set(workFlow.appId, selectedTree)
+        workflow.result.workflows.forEach((_wf) => {
+            const selectedTree = _wf.tree?.find((list) => list.type === PipelineType.CI_PIPELINE)
+            _appCIPipelineMap.set(_wf.appId, selectedTree)
         })
 
         ciConfig.result.forEach((item) => {
-            let ciPipeline = _filteredworkflow.get(item.appId)
+            let ciPipeline = _appCIPipelineMap.get(item.appId)
             let pipelineData = item.ciPipelines?.find((pipeline) => pipeline.id === ciPipeline?.componentId)
             if (pipelineData) {
                 pipelineList.push({ ...pipelineData, appName: item.appName, appId: item.appId })
