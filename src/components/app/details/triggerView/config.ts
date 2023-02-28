@@ -1,17 +1,17 @@
 import { createContext } from 'react'
-import { TriggerViewContextType } from './types'
+import { DeploymentNodeType, TriggerViewContextType } from './types'
 
 export const TriggerViewContext = createContext<TriggerViewContextType>({
     invalidateCache: false,
     refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => {},
     onClickTriggerCINode: () => {},
-    onClickTriggerCDNode: (nodeType: 'PRECD' | 'CD' | 'POSTCD') => {},
+    onClickTriggerCDNode: (nodeType: DeploymentNodeType, _appId: number) => {},
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => {},
-    onClickCDMaterial: (cdNodeId, nodeType: 'PRECD' | 'CD' | 'POSTCD') => {},
+    onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType) => {},
     onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => {},
     closeCIModal: () => {},
-    selectCommit: (materialId: string, hash: string) => {},
-    selectMaterial: (materialId) => {},
+    selectCommit: (materialId: string, hash: string, ciPipelineId?: string) => {},
+    selectMaterial: (materialId, pipelineId?: number) => {},
     toggleChanges: (materialId: string, hash: string) => {},
     toggleInvalidateCache: () => {},
     getMaterialByCommit: (ciNodeId: number, pipelineName: string, materialId: number, commitHash: string) => {},

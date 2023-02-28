@@ -24,6 +24,7 @@ export interface CINodeProps extends RouteComponentProps<{}> {
     status: string;
     inputMaterialsNew?: any[];
     colorCode?: string;
+    fromAppGrouping: boolean
 }
 
 export class TriggerLinkedCINode extends Component<CINodeProps> {
@@ -33,8 +34,10 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
     }
 
     redirectToCIDetails() {
-        const LINK = this.getCIDetailsURL();
-        this.props.history.push(LINK);
+      if (this.props.fromAppGrouping) {
+          return
+      }
+      this.props.history.push(this.getCIDetailsURL())
     }
 
     renderStatus() {
@@ -45,11 +48,19 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
             return <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
                 {this.props.status}
             </div>
-        else return <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
-            {this.props.status}
-            <span className="mr-5 ml-5">/</span>
-            <Link to={url} className="workflow-node__details-link">Details</Link>
-        </div>
+        else return (
+            <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+                {this.props.status}
+                {!this.props.fromAppGrouping && (
+                    <>
+                        <span className="mr-5 ml-5">/</span>
+                        <Link to={url} className="workflow-node__details-link">
+                            Details
+                        </Link>
+                    </>
+                )}
+            </div>
+        )
     }
 
     renderCardContent() {

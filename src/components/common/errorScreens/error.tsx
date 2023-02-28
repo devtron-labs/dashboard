@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import EmptyState from '../../EmptyState/EmptyState'
 import notAuthorized from '../../../assets/img/ic-not-authorized.svg'
 import Reload from '../../Reload/Reload'
+import ErrorScreenNotFound from './ErrorScreenNotFound'
 
 export class ErrorScreenManager extends Component<{
     code?: number
@@ -21,7 +22,7 @@ export class ErrorScreenManager extends Component<{
                     <ErrorScreenNotAuthorized className={this.props.reloadClass} subtitle={this.props.subtitle} subtitleClass={this.props.subtitleClass} />
                 )
             case 404:
-                return 'Not Found'
+                return <ErrorScreenNotFound />
             case 500:
                 return 'Internal Server Error'
             case 502:

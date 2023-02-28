@@ -180,6 +180,7 @@ export interface AppDetails {
     externalCi?: boolean
     clusterName?: string
     dockerRegistryId?: string
+    deploymentAppDeleteRequest?: boolean
 }
 
 interface MaterialInfo {
@@ -240,6 +241,7 @@ export interface Node {
 
 export interface Health {
     status: string
+    message?: string
 }
 
 export interface NetworkingInfo {
@@ -377,6 +379,8 @@ export interface LogSearchTermType {
 export interface NodeDetailPropsType extends LogSearchTermType {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
+    markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
+    addTab?: (idPrefix: string, kind: string, name: string, url: string, positionFixed?: boolean, iconPath?: string) => boolean
     selectedResource?: SelectedResourceType
 }
 

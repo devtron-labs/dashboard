@@ -157,8 +157,6 @@ export const dataHeaders = {
             <br />
             #key: GCP secret name
             <br />
-            #property: GCP Secrets Manager secret key
-            <br />
             #secretAccessKeySecretRef.name: The secret name which would be used for authentication
             <br />
             #secretAccessKeySecretRef.key: Key name containing SA key
@@ -172,7 +170,7 @@ export const dataHeaders = {
             #Sample Data <br />
             #accessKeyIDSecretRef.name: Name of secret created that would be used for authentication <br />
             #region: The region where Secret is created <br />
-            #secretKey: Name of the secret created <br />
+            #secretKey: Name of the secret created. <br />
             #key: AWS Secrets Manager secret name <br />
             #property: AWS Secrets Manager secret key <br />
         </div>
