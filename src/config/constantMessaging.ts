@@ -80,6 +80,7 @@ export const ERROR_EMPTY_SCREEN = {
     ALL_SET_GO_CONFIGURE: 'Looks like you’re all set. Go ahead and select an image to deploy',
     DEPLOYEMENT_WILL_BE_HERE: 'Once deployed, details for the deployment will be available here',
     GO_TO_DEPLOY: 'Go to deploy',
+    ONLY_FOR_SUPERADMIN:'Information on this page is available only to superadmin users.',
 }
 
 //Confirmation Dialog messgaes

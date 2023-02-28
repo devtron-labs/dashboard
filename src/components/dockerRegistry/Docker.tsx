@@ -78,7 +78,6 @@ export default function Docker({ ...props }) {
         return (
             <div className="error-screen-wrapper flex column h-100">
                 <ErrorScreenNotAuthorized
-                    subtitle="Information on this page is available only to superadmin users."
                     className="dc__align-reload-center"
                 />
             </div>

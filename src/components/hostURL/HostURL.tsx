@@ -142,7 +142,6 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                 <section className="global-configuration__component flex">
                     <ErrorScreenManager
                         code={this.props.isSuperAdmin ? this.state.statusCode : 403}
-                        subtitle="Information on this page is available only to superadmin users."
                         reloadClass="dc__align-reload-center"
                     />
                 </section>

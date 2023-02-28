@@ -3,6 +3,7 @@ import EmptyState from '../../EmptyState/EmptyState'
 import notAuthorized from '../../../assets/img/ic-not-authorized.svg'
 import Reload from '../../Reload/Reload'
 import ErrorScreenNotFound from './ErrorScreenNotFound'
+import { ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
 
 export class ErrorScreenManager extends Component<{
     code?: number
@@ -19,7 +20,10 @@ export class ErrorScreenManager extends Component<{
                 return 'Unauthorized'
             case 403:
                 return (
-                    <ErrorScreenNotAuthorized className={this.props.reloadClass} subtitle={this.props.subtitle} subtitleClass={this.props.subtitleClass} />
+                    <ErrorScreenNotAuthorized
+                        className={this.props.reloadClass}
+                        subtitleClass={this.props.subtitleClass}
+                    />
                 )
             case 404:
                 return <ErrorScreenNotFound />
@@ -44,7 +48,6 @@ export class ErrorScreenManager extends Component<{
 }
 
 export class ErrorScreenNotAuthorized extends Component<{
-    subtitle: React.ReactChild
     subtitleClass?: string
     className?: string
 }> {
@@ -58,9 +61,7 @@ export class ErrorScreenNotAuthorized extends Component<{
                     <h3 className="title">Not authorized</h3>
                 </EmptyState.Title>
                 <EmptyState.Subtitle className={this.props.subtitleClass}>
-                    {this.props.subtitle
-                        ? this.props.subtitle
-                        : "Information on this page is available only to superadmin users."}
+                    {ERROR_EMPTY_SCREEN.ONLY_FOR_SUPERADMIN}
                 </EmptyState.Subtitle>
             </EmptyState>
         )
