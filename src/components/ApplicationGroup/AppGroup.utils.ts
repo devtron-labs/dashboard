@@ -150,7 +150,7 @@ export const appGroupAppSelectorStyle = {
         borderRadius: '4px',
         height: '32px',
         fontSize: '12px',
-        width: '200px',
+        width: '250px',
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
     }),
     singleValue: (base, state) => ({
@@ -164,10 +164,10 @@ export const appGroupAppSelectorStyle = {
     option: (base, state) => ({
         ...base,
         fontWeight: '500',
-        color: 'var(--N900)',
         fontSize: '12px',
-        padding: '5px 10px',
-        backgroundColor: 'none',
+        padding: '5px 8px 5px 0',
+        color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
+        backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N100)' : 'white',
     }),
     valueContainer: (base, state) => ({
         ...base,
@@ -190,4 +190,13 @@ export const appGroupAppSelectorStyle = {
             marginBottom: '4px',
         }
     },
+}
+
+export const getOptionBGClass = (isSelected: boolean, isFocused: boolean): string => {
+    if (isSelected) {
+        return 'bcb-1'
+    } else if (isFocused) {
+        return 'bcn-1'
+    }
+    return 'bcn-0'
 }

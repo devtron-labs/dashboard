@@ -103,6 +103,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     const [bulkTriggerType, setBulkTriggerType] = useState<DeploymentNodeType>(null)
     const [materialType, setMaterialType] = useState(MATERIAL_TYPE.inputMaterialList)
     const [responseList, setResponseList] = useState<ResponseRowType[]>([])
+    const [isSelectAll, setSelectAll] = useState(false)
 
     const getWorkflowsData = async (): Promise<void> => {
         try {
@@ -127,7 +128,6 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             setErrorCode(0)
             setPageViewType(ViewType.FORM)
             getWorkflowStatusData(_workflows)
-            filterWorkflow(_workflows)
             timerRef && clearInterval(timerRef)
             timerRef = setInterval(() => {
                 getWorkflowStatusData(_workflows)
@@ -137,21 +137,6 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             setErrorCode(error['code'])
             setPageViewType(ViewType.ERROR)
         }
-    }
-
-    const filterWorkflow = (workflowsList: WorkflowType[]) => {
-        console.log('filterWorkflow', filteredApps)
-        const _filteredAppMap = new Map<number, string>()
-        filteredApps.forEach((app) => {
-            _filteredAppMap.set(+app.value, app.label)
-        })
-        const _filteredWorkflows: WorkflowType[] = []
-        workflowsList.forEach((wf) => {
-            if (_filteredAppMap.get(wf.appId)) {
-                _filteredWorkflows.push(wf)
-            }
-        })
-        setFilteredWorkflows(_filteredWorkflows)
     }
 
     const getWorkflowStatusData = (workflowsList: WorkflowType[]) => {
@@ -169,7 +154,6 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     }, 10000)
                 }
                 setWorkflows(_processedWorkflowsData.workflows)
-                filterWorkflow(_processedWorkflowsData.workflows)
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
@@ -190,9 +174,19 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
 
     useEffect(() => {
         if (filteredApps.length) {
-            filterWorkflow(workflows)
+            const _filteredAppMap = new Map<number, string>()
+            filteredApps.forEach((app) => {
+                _filteredAppMap.set(+app.value, app.label)
+            })
+            const _filteredWorkflows: WorkflowType[] = []
+            workflows.forEach((wf) => {
+                if (_filteredAppMap.get(wf.appId)) {
+                    _filteredWorkflows.push(wf)
+                }
+            })
+            setFilteredWorkflows(_filteredWorkflows)
         }
-    }, [filteredApps])
+    }, [filteredApps, workflows])
 
     const clearAppList = (): void => {
         setSelectedAppList([])
@@ -201,6 +195,39 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             return wf
         })
         setFilteredWorkflows(_workflows)
+    }
+
+    const handleSelectAll = (): void => {
+        const _selectedAppList = []
+        let _preNodeExist = false,
+            _postNodeExist = false
+        const _workflows = filteredWorkflows.map((wf) => {
+            if (!isSelectAll) {
+                const _currentAppDetail = {
+                    id: wf.appId,
+                    name: wf.name,
+                    preNodeAvailable: false,
+                    postNodeAvailable: false,
+                }
+                for (const node of wf.nodes) {
+                    if (node.environmentId === +envId && node.type === WorkflowNodeType.CD) {
+                        _preNodeExist = _preNodeExist || !!node.preNode
+                        _postNodeExist = _postNodeExist || !!node.postNode
+                        _currentAppDetail.preNodeAvailable = !!node.preNode
+                        _currentAppDetail.postNodeAvailable = !!node.postNode
+                        break
+                    }
+                }
+                _selectedAppList.push(_currentAppDetail)
+            }
+            wf.isSelected = !isSelectAll
+            return wf
+        })
+        setSelectAll(!isSelectAll)
+        setShowPreDeployment(_preNodeExist)
+        setShowPostDeployment(_postNodeExist)
+        setFilteredWorkflows(_workflows)
+        setSelectedAppList(_selectedAppList)
     }
 
     const handleSelectionChange = (e): void => {
@@ -250,6 +277,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         setShowPostDeployment(_postNodeExist)
         setFilteredWorkflows(_workflows)
         setSelectedAppList(_selectedAppList)
+        setSelectAll(_workflows.length === _selectedAppList.length)
     }
 
     const getCommitHistory = (
@@ -1565,6 +1593,18 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     }
     return (
         <div className="svg-wrapper-trigger" style={{ paddingBottom: selectedAppList.length ? '68px' : '16px' }}>
+            <div className="flex left mb-14">
+                <input
+                    type="checkbox"
+                    className="mt-0-imp cursor icon-dim-16"
+                    checked={isSelectAll}
+                    onChange={handleSelectAll}
+                    id="chkSelectAllApps"
+                />
+                <label className="ml-12 cursor fs-13 mb-0-imp lh-20" htmlFor="chkSelectAllApps">
+                    Select all apps
+                </label>
+            </div>
             <TriggerViewContext.Provider
                 value={{
                     invalidateCache: invalidateCache,
