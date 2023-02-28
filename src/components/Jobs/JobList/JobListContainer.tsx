@@ -94,7 +94,7 @@ export default function JobListContainer(props: JobListProps) {
         let qs = queryString.parse(location.search)
         let keys = Object.keys(qs)
         let query = {}
-        keys.map((key) => {
+        keys.forEach((key) => {
             query[key] = qs[key]
         })
         query['offset'] = offset
@@ -107,7 +107,7 @@ export default function JobListContainer(props: JobListProps) {
         let qs = queryString.parse(location.search)
         let keys = Object.keys(qs)
         let query = {}
-        keys.map((key) => {
+        keys.forEach((key) => {
             query[key] = qs[key]
         })
         query['offset'] = 0

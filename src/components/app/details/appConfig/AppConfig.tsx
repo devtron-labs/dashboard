@@ -61,7 +61,7 @@ const WorkflowEdit = lazy(() => import('../../../workflowEditor/workflowEditor')
 const EnvironmentOverride = lazy(() => import('../../../EnvironmentOverride/EnvironmentOverride'))
 
 //stage: last configured stage
-function isUnlocked(stage: string): AppStageUnlockedType {
+function isUnlocked(stage: string, isJobView: boolean): AppStageUnlockedType {
     return {
         material:
             stage === STAGE_NAME.APP ||
@@ -85,6 +85,7 @@ function isUnlocked(stage: string): AppStageUnlockedType {
             stage === STAGE_NAME.CD_PIPELINE ||
             stage === STAGE_NAME.CHART_ENV_CONFIG,
         workflowEditor:
+            (isJobView && stage === STAGE_NAME.GIT_MATERIAL) ||
             stage === STAGE_NAME.CI_PIPELINE ||
             stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
             stage === STAGE_NAME.CD_PIPELINE ||
@@ -107,113 +108,127 @@ function isUnlocked(stage: string): AppStageUnlockedType {
     }
 }
 
-function getCompletedStep(isUnlocked: AppStageUnlockedType): number {
-    if (isUnlocked.workflowEditor) {
-        return 3
-    } else if (isUnlocked.deploymentTemplate) {
-        return 2
-    } else if (isUnlocked.dockerBuildConfig) {
-        return 1
+function getCompletedStep(isUnlocked: AppStageUnlockedType, isJobView: boolean): number {
+    if (isJobView) {
+        if (isUnlocked.workflowEditor) {
+            return 2
+        } else if (isUnlocked.material) {
+            return 1
+        }
     } else {
-        return 0
+        if (isUnlocked.workflowEditor) {
+            return 3
+        } else if (isUnlocked.deploymentTemplate) {
+            return 2
+        } else if (isUnlocked.dockerBuildConfig) {
+            return 1
+        }
     }
+
+    return 0
 }
 
 function getNavItems(isUnlocked: AppStageUnlockedType, appId: string, isJobView: boolean): { navItems } {
-    const completedSteps = getCompletedStep(isUnlocked)
-    const completedPercent = completedSteps * 25
-    let navItems = isJobView
-        ? [
-              {
-                  title: 'Git Repository',
-                  href: `/job/${appId}/edit/materials`,
-                  stage: STAGE_NAME.GIT_MATERIAL,
-                  isLocked: !isUnlocked.material,
-                  supportDocumentURL: DOCUMENTATION.APP_CREATE_MATERIAL,
-                  flowCompletionPercent: completedPercent,
-                  currentStep: completedSteps,
-              },
-              {
-                  title: 'Workflow Editor',
-                  href: `/job/${appId}/edit/workflow`,
-                  stage: 'WORKFLOW',
-                  isLocked: !isUnlocked.workflowEditor,
-                  supportDocumentURL: DOCUMENTATION.APP_CREATE_WORKFLOW,
-                  flowCompletionPercent: completedPercent,
-                  currentStep: completedSteps,
-              },
-          ]
-        : [
-              {
-                  title: 'Git Repository',
-                  href: `/app/${appId}/edit/materials`,
-                  stage: STAGE_NAME.GIT_MATERIAL,
-                  isLocked: !isUnlocked.material,
-                  supportDocumentURL: DOCUMENTATION.APP_CREATE_MATERIAL,
-                  flowCompletionPercent: completedPercent,
-                  currentStep: completedSteps,
-              },
-              {
-                  title: 'Build Configuration',
-                  href: `/app/${appId}/edit/docker-build-config`,
-                  stage: STAGE_NAME.CI_CONFIG,
-                  isLocked: !isUnlocked.dockerBuildConfig,
-                  supportDocumentURL: DOCUMENTATION.APP_CREATE_CI_CONFIG,
-                  flowCompletionPercent: completedPercent,
-                  currentStep: completedSteps,
-              },
-              {
-                  title: 'Base Deployment Template',
-                  href: `/app/${appId}/edit/deployment-template`,
-                  stage: STAGE_NAME.DEPLOYMENT_TEMPLATE,
-                  isLocked: !isUnlocked.deploymentTemplate,
-                  supportDocumentURL: DOCUMENTATION.APP_DEPLOYMENT_TEMPLATE,
-                  flowCompletionPercent: completedPercent,
-                  currentStep: completedSteps,
-              },
-              {
-                  title: 'Workflow Editor',
-                  href: `/app/${appId}/edit/workflow`,
-                  stage: 'WORKFLOW',
-                  isLocked: !isUnlocked.workflowEditor,
-                  supportDocumentURL: DOCUMENTATION.APP_CREATE_WORKFLOW,
-                  flowCompletionPercent: completedPercent,
-                  currentStep: completedSteps,
-              },
-              {
-                  title: 'ConfigMaps',
-                  href: `/app/${appId}/edit/configmap`,
-                  stage: 'CONFIGMAP',
-                  isLocked: !isUnlocked.configmap,
-                  supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
-                  flowCompletionPercent: completedPercent,
-                  currentStep: completedSteps,
-              },
-              {
-                  title: 'Secrets',
-                  href: `/app/${appId}/edit/secrets`,
-                  stage: 'SECRETS',
-                  isLocked: !isUnlocked.secret,
-                  supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
-                  flowCompletionPercent: completedPercent,
-                  currentStep: completedSteps,
-              },
-              {
-                  title: 'External Links',
-                  href: `/app/${appId}/edit/external-links`,
-                  stage: 'EXTERNAL_LINKS',
-                  isLocked: false,
-                  supportDocumentURL: DOCUMENTATION.EXTERNAL_LINKS,
-                  flowCompletionPercent: completedPercent,
-                  currentStep: completedSteps,
-              },
-              {
-                  title: 'Environment Override',
-                  href: `/app/${appId}/edit/env-override`,
-                  stage: 'ENV_OVERRIDE',
-                  isLocked: !isUnlocked.envOverride,
-              },
-          ]
+    const completedSteps = getCompletedStep(isUnlocked, isJobView)
+    let navItems = []
+    if (isJobView) {
+        const completedPercent = completedSteps * 50
+
+        navItems = [
+            {
+                title: 'Source code',
+                href: `/job/${appId}/edit/materials`,
+                stage: STAGE_NAME.GIT_MATERIAL,
+                isLocked: !isUnlocked.material,
+                supportDocumentURL: DOCUMENTATION.APP_CREATE_MATERIAL,
+                flowCompletionPercent: completedPercent,
+                currentStep: completedSteps,
+            },
+            {
+                title: 'Workflow Editor',
+                href: `/job/${appId}/edit/workflow`,
+                stage: 'WORKFLOW',
+                isLocked: !isUnlocked.workflowEditor,
+                supportDocumentURL: DOCUMENTATION.APP_CREATE_WORKFLOW,
+                flowCompletionPercent: completedPercent,
+                currentStep: completedSteps,
+            },
+        ]
+    } else {
+        const completedPercent = completedSteps * 25
+
+        navItems = [
+            {
+                title: 'Git Repository',
+                href: `/app/${appId}/edit/materials`,
+                stage: STAGE_NAME.GIT_MATERIAL,
+                isLocked: !isUnlocked.material,
+                supportDocumentURL: DOCUMENTATION.APP_CREATE_MATERIAL,
+                flowCompletionPercent: completedPercent,
+                currentStep: completedSteps,
+            },
+            {
+                title: 'Build Configuration',
+                href: `/app/${appId}/edit/docker-build-config`,
+                stage: STAGE_NAME.CI_CONFIG,
+                isLocked: !isUnlocked.dockerBuildConfig,
+                supportDocumentURL: DOCUMENTATION.APP_CREATE_CI_CONFIG,
+                flowCompletionPercent: completedPercent,
+                currentStep: completedSteps,
+            },
+            {
+                title: 'Base Deployment Template',
+                href: `/app/${appId}/edit/deployment-template`,
+                stage: STAGE_NAME.DEPLOYMENT_TEMPLATE,
+                isLocked: !isUnlocked.deploymentTemplate,
+                supportDocumentURL: DOCUMENTATION.APP_DEPLOYMENT_TEMPLATE,
+                flowCompletionPercent: completedPercent,
+                currentStep: completedSteps,
+            },
+            {
+                title: 'Workflow Editor',
+                href: `/app/${appId}/edit/workflow`,
+                stage: 'WORKFLOW',
+                isLocked: !isUnlocked.workflowEditor,
+                supportDocumentURL: DOCUMENTATION.APP_CREATE_WORKFLOW,
+                flowCompletionPercent: completedPercent,
+                currentStep: completedSteps,
+            },
+            {
+                title: 'ConfigMaps',
+                href: `/app/${appId}/edit/configmap`,
+                stage: 'CONFIGMAP',
+                isLocked: !isUnlocked.configmap,
+                supportDocumentURL: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
+                flowCompletionPercent: completedPercent,
+                currentStep: completedSteps,
+            },
+            {
+                title: 'Secrets',
+                href: `/app/${appId}/edit/secrets`,
+                stage: 'SECRETS',
+                isLocked: !isUnlocked.secret,
+                supportDocumentURL: DOCUMENTATION.APP_CREATE_SECRET,
+                flowCompletionPercent: completedPercent,
+                currentStep: completedSteps,
+            },
+            {
+                title: 'External Links',
+                href: `/app/${appId}/edit/external-links`,
+                stage: 'EXTERNAL_LINKS',
+                isLocked: false,
+                supportDocumentURL: DOCUMENTATION.EXTERNAL_LINKS,
+                flowCompletionPercent: completedPercent,
+                currentStep: completedSteps,
+            },
+            {
+                title: 'Environment Override',
+                href: `/app/${appId}/edit/env-override`,
+                stage: 'ENV_OVERRIDE',
+                isLocked: !isUnlocked.envOverride,
+            },
+        ]
+    }
 
     return { navItems }
 }
@@ -231,7 +246,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
     const [state, setState] = useState<AppConfigState>({
         view: ViewType.LOADING,
         stattusCode: 0,
-        isUnlocked: isUnlocked(STAGE_NAME.LOADING),
+        isUnlocked: isUnlocked(STAGE_NAME.LOADING, isJobView),
         stageName: STAGE_NAME.LOADING,
         appName: '',
         isCiPipeline: false,
@@ -256,18 +271,18 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
     }, [appName])
 
     useEffect(() => {
-        Promise.all([getAppConfigStatus(+appId), getWorkflowList(appId)])
+        Promise.all([getAppConfigStatus(+appId, isJobView), getWorkflowList(appId)])
             .then(([configStatusRes, workflowRes]) => {
                 let lastConfiguredStage = configStatusRes.result
                     .slice()
                     .reverse()
                     .find((stage) => stage.status)
                 let lastConfiguredStageName = lastConfiguredStage.stageName
-                let configs = isUnlocked(lastConfiguredStageName)
+                let configs = isUnlocked(lastConfiguredStageName, isJobView)
                 let { navItems } = getNavItems(configs, appId, isJobView)
                 let index = navItems.findIndex((item) => item.isLocked)
                 if (index < 0) {
-                    index = 4
+                    index = isJobView ? 2 : 4
                 }
                 let redirectUrl = navItems[index - 1].href
                 let isCiPipeline = isCIPipelineCreated(configStatusRes.result)
@@ -314,8 +329,13 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
         deleteApp(appId)
             .then((response) => {
                 if (response.code === 200) {
-                    toast.success('Application Deleted!!!')
-                    history.push(`${URLS.APP}`)
+                    if (isJobView) {
+                        toast.success('Job Deleted!')
+                        history.push(`${URLS.JOB}/${URLS.APP_LIST}`)
+                    } else {
+                        toast.success('Application Deleted!')
+                        history.push(`${URLS.APP}/${URLS.APP_LIST}`)
+                    }
                 }
             })
             .catch((error) => {
@@ -330,11 +350,11 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                     .slice()
                     .reverse()
                     .find((stage) => stage.status)
-                let configs = isUnlocked(lastConfiguredStage.stageName)
+                let configs = isUnlocked(lastConfiguredStage.stageName, isJobView)
                 let { navItems } = getNavItems(configs, appId, isJobView)
                 let index = navItems.findIndex((item) => item.isLocked)
                 if (index < 0) {
-                    index = 4
+                    index = isJobView ? 2 : 4
                 }
                 let redirectUrl = navItems[index - 1].href
                 let isCiPipeline = isCIPipelineCreated(configStatusRes.result)
@@ -382,9 +402,9 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                 return (
                     <ConfirmationDialog>
                         <ConfirmationDialog.Icon src={warn} />
-                        <ConfirmationDialog.Body title="Cannot Delete application" />
+                        <ConfirmationDialog.Body title={`Cannot Delete ${isJobView ? 'job' : 'application'}`} />
                         <p className="fs-13 cn-7 lh-1-54">
-                            Delete all pipelines and workflows before deleting this application.
+                            Delete all pipelines and workflows before deleting this {isJobView ? 'job' : 'application'}.
                         </p>
                         <ConfirmationDialog.ButtonGroup>
                             <button
@@ -429,20 +449,22 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
     } else {
         const _canShowExternalLinks =
             userRole === UserRoleType.SuperAdmin || userRole === UserRoleType.Admin || userRole === UserRoleType.Manager
+        const hideConfigHelp = isJobView ? state.isCiPipeline : state.isCDPipeline
         return (
             <>
                 <div className={`app-compose ${getAdditionalParentClass()}`}>
                     <div
                         className={`app-compose__nav flex column left top ${
                             showCannotDeleteTooltip ? '' : 'dc__position-rel'
-                        } dc__overflow-scroll ${state.isCDPipeline ? 'hide-app-config-help' : ''} ${
+                        } dc__overflow-scroll ${hideConfigHelp ? 'hide-app-config-help' : ''} ${
                             _canShowExternalLinks ? '' : 'hide-external-links'
-                        }`}
+                        } ${isJobView ? 'job-compose__side-nav' : ''}`}
                     >
                         <Navigation
                             deleteApp={showDeleteConfirmation}
                             navItems={state.navItems}
                             isCDPipeline={state.isCDPipeline}
+                            isCiPipeline={state.isCiPipeline}
                             canShowExternalLinks={_canShowExternalLinks}
                             showCannotDeleteTooltip={showCannotDeleteTooltip}
                             toggleRepoSelectionTippy={toggleRepoSelectionTippy}
@@ -520,6 +542,7 @@ function Navigation({
     navItems,
     deleteApp,
     isCDPipeline,
+    isCiPipeline,
     canShowExternalLinks,
     showCannotDeleteTooltip,
     toggleRepoSelectionTippy,
@@ -530,7 +553,9 @@ function Navigation({
     const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0]
     return (
         <>
-            {!isJobView && !isCDPipeline && <AppConfigurationCheckBox selectedNav={selectedNav} />}
+            {(!isCDPipeline || (isJobView && !isCiPipeline)) && (
+                <AppConfigurationCheckBox selectedNav={selectedNav} isJobView={isJobView} />
+            )}
             {navItems.map((item) => {
                 if (item.stage === 'EXTERNAL_LINKS') {
                     return (
@@ -579,9 +604,10 @@ function Navigation({
                     return <EnvironmentOverrideRouter key={item.title} />
                 }
             })}
+            {isJobView && <div className="h-100" />}
             <div className="cta-delete-app flex w-100 dc__position-sticky pt-2 pb-16 bcn-0">
                 <button type="button" className="flex cta delete mt-8 w-100 h-36" onClick={deleteApp}>
-                    Delete Application
+                    Delete {isJobView ? 'Job' : 'Application'}
                 </button>
             </div>
         </>
@@ -629,7 +655,7 @@ function AppComposeRouter({
                                 />
                             </>
                         </Route>
-                        {/* {isUnlocked.workflowEditor && ( */}
+                        {isUnlocked.workflowEditor && (
                             <Route
                                 path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
                                 render={(props) => (
@@ -642,7 +668,7 @@ function AppComposeRouter({
                                     />
                                 )}
                             />
-                        {/* )} */}
+                        )}
                     </Switch>
                 ) : (
                     <Switch>

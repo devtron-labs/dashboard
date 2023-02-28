@@ -240,8 +240,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         successTitle?: string,
         showWebhookTippy?: boolean,
     ) => {
-        const LINK = `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`
-        this.props.history.push(LINK)
+        const _url = `${this.props.isJobView ? URLS.JOB : URLS.APP}/${this.props.match.params.appId}/${
+            URLS.APP_CONFIG
+        }/${URLS.APP_WORKFLOW_CONFIG}`
+        this.props.history.push(_url)
         if (showSuccessCD) {
             setTimeout(() => {
                 this.setState({
@@ -440,15 +442,20 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 <img src={emptyWorkflow} alt="create-workflow" height="200" />
                 <h1 className="form__title form__title--workflow-editor">Workflows</h1>
                 <p className="form__subtitle form__subtitle--workflow-editor">
-                    Workflows consist of pipelines from build to deployment stages of an application. <br></br>
-                    <a
-                        className="dc__link"
-                        href={DOCUMENTATION.APP_CREATE_WORKFLOW}
-                        target="blank"
-                        rel="noreferrer noopener"
-                    >
-                        Learn about creating workflows
-                    </a>
+                    {this.props.isJobView
+                        ? 'Configure job pipelines to be executed. Pipelines can be configured to be triggered automatically based on code change or time.'
+                        : 'Workflows consist of pipelines from build to deployment stages of an application.'}{' '}
+                    <br></br>
+                    {!this.props.isJobView && (
+                        <a
+                            className="dc__link"
+                            href={DOCUMENTATION.APP_CREATE_WORKFLOW}
+                            target="blank"
+                            rel="noreferrer noopener"
+                        >
+                            Learn about creating workflows
+                        </a>
+                    )}
                 </p>
                 {this.props.isJobView ? this.renderNewJobPipelineButton() : this.renderNewBuildPipelineButton(true)}
             </div>
@@ -502,6 +509,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     addWebhookCD={this.addWebhookCD}
                     showWebhookTippy={wf.showTippy}
                     hideWebhookTippy={this.hideWebhookTippy}
+                    isJobView={this.props.isJobView}
                 />
             )
         })
@@ -564,14 +572,17 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 <div className="workflow-editor">
                     <h1 className="form__title form__title--artifacts">Workflow Editor</h1>
                     <p>
-                        Workflow consist of pipelines from build to deployment stages of an application.&nbsp;
+                        {this.props.isJobView
+                            ? 'Configure job pipelines to be executed. Pipelines can be configured to be triggered automatically based on code change or time.'
+                            : 'Workflow consist of pipelines from build to deployment stages of an application.'}
+                        &nbsp;
                         <a
                             className="dc__link"
                             href={DOCUMENTATION.APP_CREATE_WORKFLOW}
                             target="blank"
                             rel="noreferrer noopener"
                         >
-                            Learn about creating workflows
+                            Learn more
                         </a>
                     </p>
                     {this.renderRouter()}

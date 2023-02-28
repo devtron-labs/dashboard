@@ -183,6 +183,10 @@
     background-image: url('../assets/icons/ic-CD.svg');
 }
 
+.workflow-node__job-icon {
+    background-image: url('../assets/icons/ic-job-node.svg');
+}
+
 .workflow-node__full-width-minus-Icon {
     flex: 1;
     min-width: 0;

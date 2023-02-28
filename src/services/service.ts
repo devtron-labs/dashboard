@@ -11,9 +11,8 @@ import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils';
 import { CdPipeline } from '../components/app/details/triggerView/types';
 
 
-export function getAppConfigStatus(appId: number): Promise<any> {
-    const URL = `${Routes.APP_CONFIG_STATUS}?app-id=${appId}`;
-    return get(URL);
+export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<any> {
+    return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&isJob=true' : ''}`);
 }
 
 export const getSourceConfig = (id: string) => {
@@ -73,10 +72,15 @@ export const getUserTeams = (): Promise<any> => {
     return get(URL);
 }
 
-export function getAppListMin(teamId = null, options?, appName?): Promise<AppListMin> {
+export function getAppListMin(teamId = null, options?: APIOptions, appName?: string, isJobView?: boolean): Promise<AppListMin> {
     let URL = `${Routes.APP_LIST_MIN}`;
     if (teamId) URL = `${URL}?teamId=${teamId}`
     if (appName) URL = `${URL}?appName=${appName}`
+
+    if (isJobView) {
+        URL += '&isJob=true'
+    }
+
     return get(URL, options).then(response => {
         let list = response?.result || []
         list = list.sort((a, b) => {

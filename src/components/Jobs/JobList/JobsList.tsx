@@ -130,7 +130,7 @@ export default function JobsList({ isArgoInstalled }: { isArgoInstalled: boolean
         let qs = queryString.parse(location.search)
         let keys = Object.keys(qs)
         let query = {}
-        keys.map((key) => {
+        keys.forEach((key) => {
             query[key] = qs[key]
         })
         query['offset'] = 0
@@ -153,7 +153,7 @@ export default function JobsList({ isArgoInstalled }: { isArgoInstalled: boolean
         let qs = queryString.parse(location.search)
         let keys = Object.keys(qs)
         let query = {}
-        keys.map((key) => {
+        keys.forEach((key) => {
             query[key] = qs[key]
         })
         query['orderBy'] = key

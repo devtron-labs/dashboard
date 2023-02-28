@@ -83,7 +83,7 @@ export const noOptionsMessage = (inputObj: { inputValue: string }): string => {
     return 'No matching results'
 }
 
-export const appListOptions = (inputValue: string): Promise<[]> =>
+export const appListOptions = (inputValue: string, isJobView?: boolean): Promise<[]> =>
     new Promise((resolve) => {
         if (timeoutId) {
             clearTimeout(timeoutId)
@@ -93,7 +93,7 @@ export const appListOptions = (inputValue: string): Promise<[]> =>
                 resolve([])
                 return
             }
-            getAppListMin(null, null, inputValue)
+            getAppListMin(null, null, inputValue, isJobView)
                 .then((response) => {
                     let appList = []
                     if (response.result) {

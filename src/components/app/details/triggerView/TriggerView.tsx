@@ -879,6 +879,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
                     isCacheAvailable={nd?.storageConfigured}
                     appId={this.props.match.params.appId}
+                    isJobView={this.props.isJobView}
                 />
             )
         }
@@ -939,6 +940,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             history={this.props.history}
                             location={this.props.location}
                             match={this.props.match}
+                            isJobView={this.props.isJobView}
                         />
                     )
                 })}

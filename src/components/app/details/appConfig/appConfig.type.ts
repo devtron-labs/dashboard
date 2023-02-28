@@ -58,6 +58,7 @@ export interface AppConfigNavigationProps {
     navItems: CustomNavItemsType[]
     deleteApp: () => void
     isCDPipeline: boolean
+    isCiPipeline: boolean
     canShowExternalLinks: boolean
     showCannotDeleteTooltip: boolean
     toggleRepoSelectionTippy: () => void

@@ -371,9 +371,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             <Info />
                             <div className="flex column left">
                                 <div>
-                                    <div className="dc__info-title">Important: </div>Do not forget to modify git
-                                    repositories, corresponding branches and container registries to be used for each CI
-                                    Pipeline if required.
+                                    <div className="dc__info-title">Important: </div>
+                                    {this.props.isJobCreateView
+                                        ? 'Do not forget to modify git repositories, corresponding branches and container registries to be used for each CI Pipeline if required.'
+                                        : 'Do not forget to modify git repositories and corresponding branches to be used for each Job Pipeline if required.'}
                                 </div>
                             </div>
                         </div>
@@ -422,7 +423,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         return (
             <div className="w-800 dc__border-top flex right pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0">
                 <button className="cta flex h-36" onClick={this.createApp}>
-                    {this.state.form.appCreationType === AppCreationType.Existing ? 'Clone App' : 'Create App'}
+                    {`${this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}${
+                        this.props.isJobCreateView ? 'Job' : 'App'
+                    }`}
                 </button>
             </div>
         )

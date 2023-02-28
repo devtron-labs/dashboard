@@ -4,7 +4,8 @@ import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-soli
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import { VisibleModal, ButtonWithLoader, Checkbox, showError, Progressing, sortCallback } from '../../../common'
+import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-media.svg'
+import { VisibleModal, ButtonWithLoader, Checkbox, showError, Progressing } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED } from '../../../../config'
@@ -125,8 +126,17 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     isLoading={this.props.isLoading}
                     onClick={this.handleStartBuildAction}
                 >
-                    <Play className="trigger-btn__icon" />
-                    Start Build
+                    {this.props.isJobView ? (
+                        <>
+                            <RunIcon className="trigger-job-btn__icon" />
+                            Run Job
+                        </>
+                    ) : (
+                        <>
+                            <Play className="trigger-btn__icon" />
+                            Start Build
+                        </>
+                    )}
                 </ButtonWithLoader>
             </div>
         )

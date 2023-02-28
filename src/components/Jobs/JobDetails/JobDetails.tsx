@@ -14,7 +14,6 @@ import {
 import { URLS } from '../../../config'
 import AppConfig from '../../app/details/appConfig/AppConfig'
 import AppOverview from '../../app/details/appOverview/AppOverview'
-import CDDetails from '../../app/details/cdDetails/CDDetails'
 import CIDetails from '../../app/details/cIDetails/CIDetails'
 import TriggerView from '../../app/details/triggerView/TriggerView'
 import { getAppMetaInfo } from '../../app/service'
@@ -22,8 +21,8 @@ import { AppMetaInfo } from '../../app/types'
 import { BreadCrumb, ErrorBoundary, Progressing, showError, trackByGAEvent, useBreadcrumb } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
-import './JobDetails.scss'
-import JobSelector from '../JobSelector/JobSelector'
+import '../../app/details/appDetails/appDetails.scss'
+import { AppSelector } from '../../AppSelector'
 
 export default function JobDetails() {
     const { path } = useRouteMatch()
@@ -57,7 +56,9 @@ export default function JobDetails() {
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
                             <AppOverview appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
                         </Route>
-                        <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
+                        <Route path={`${path}/${URLS.APP_TRIGGER}`}>
+                            <TriggerView isJobView={true} />
+                        </Route>
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
                             <CIDetails key={appId} />
                         </Route>
@@ -113,7 +114,14 @@ function JobHeader({ jobName }: { jobName: string }) {
         {
             alias: {
                 ':appId(\\d+)': {
-                    component: <JobSelector onChange={handleAppChange} jobId={Number(appId)} jobName={jobName} />,
+                    component: (
+                        <AppSelector
+                            onChange={handleAppChange}
+                            appId={Number(appId)}
+                            appName={jobName}
+                            isJobView={true}
+                        />
+                    ),
                     linked: false,
                 },
                 app: {
@@ -161,7 +169,7 @@ function JobHeader({ jobName }: { jobName: string }) {
                         Run history
                     </NavLink>
                 </li>
-                <li className="tab-list__tab">
+                <li className="tab-list__tab tab-list__config-tab">
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
@@ -169,7 +177,7 @@ function JobHeader({ jobName }: { jobName: string }) {
                         data-action="Job Configuration Clicked"
                         onClick={handleEventClick}
                     >
-                        <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
+                        <Settings className="tab-list__icon icon-dim-16 mr-4" />
                         Configuration
                     </NavLink>
                 </li>

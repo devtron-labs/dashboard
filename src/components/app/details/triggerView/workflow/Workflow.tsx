@@ -163,6 +163,7 @@ export class Workflow extends Component<WorkflowProps> {
                     match={this.props.match}
                     branch={node.branch}
                     fromAppGrouping={this.props.fromAppGrouping}
+                    isJobView={this.props.isJobView}
                 />
             )
         }

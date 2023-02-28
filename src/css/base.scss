@@ -164,6 +164,19 @@ a:focus {
     text-align: center;
     color: var(--N700);
     margin-right: 16px;
+
+    &.tab-list__config-tab {
+        .tab-list__icon path {
+            fill: var(--N700);
+        }
+
+        &:hover,
+        .tab-list__tab-link.active {
+            .tab-list__icon path {
+                fill: var(--B500);
+            }
+        }
+    }
 }
 
 .tab-list__tab-link {

@@ -1,14 +1,12 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { ErrorScreenManager, Pagination, Progressing, handleUTCTime } from '../../common'
 import { Link } from 'react-router-dom'
 import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as DevtronAppIcon } from '../../../assets/icons/ic-devtron-app.svg'
-import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as PlayMedia } from '../../../assets/icons/ic-play-media.svg'
-import Tippy from '@tippyjs/react'
 import ContentCard from '../../common/ContentCard/ContentCard'
 import { AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config'
 import { CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
@@ -39,27 +37,6 @@ export default function JobListView(props: JobListViewProps) {
         props.closeExpandedRow(event.currentTarget.dataset.key)
     }
 
-    const renderCIPipelinesList = (job) => {
-        const len = job.ciPipelines.length
-        if (len) {
-            const isEnvConfigured = job.defaultPipeline?.name
-            return (
-                <div className="app-list__cell app-list__cell--env">
-                    <p className={`app-list__cell--env-text ${isEnvConfigured ? '' : 'not-configured'}`}>
-                        {isEnvConfigured ? job.defaultPipeline.name : 'Not configured'}
-                    </p>
-                    {len > 1 ? (
-                        <button type="button" className="cell__link fs-13" data-key={job.id} onClick={expandEnv}>
-                            +{len - 1} more
-                        </button>
-                    ) : null}
-                </div>
-            )
-        } else {
-            return <div className="app-list__cell app-list__cell--env"></div>
-        }
-    }
-
     const sortByAppName = (e) => {
         e.preventDefault()
         props.sort('appNameSort')
@@ -77,6 +54,70 @@ export default function JobListView(props: JobListViewProps) {
         } else {
             return 'cursor-not-allowed dc__flip-90'
         }
+    }
+
+    const renderJobPipelines = () => {
+        return props.jobs.map((job) => {
+            const len = job.ciPipelines.length > 1
+            return (
+                <React.Fragment key={job.id}>
+                    {!props.expandedRow[job.id] && (
+                        <Link
+                            to={props.redirectToAppDetails(job)}
+                            className={`app-list__row ${len ? 'dc__hover-icon' : ''}`}
+                        >
+                            <div className="app-list__cell--icon">
+                                <DevtronAppIcon className="icon-dim-24 dc__show-first--icon" />
+                                {len && (
+                                    <Arrow
+                                        className="icon-dim-24 p-2 dc__flip-90 fcn-7 dc__show-second--icon"
+                                        onClick={expandEnv}
+                                        data-key={job.id}
+                                    />
+                                )}
+                            </div>
+                            <div className="app-list__cell app-list__cell--name">
+                                <p className="dc__truncate-text  m-0 value">{job.name}</p>
+                            </div>
+                            <div className="app-list__cell app-list__cell--app_status">
+                                <AppStatus appStatus={job.defaultPipeline.status} isJobCreateView={true} />
+                            </div>
+                            <div className="app-list__cell app-list__cell--cluster">
+                                <p className="dc__truncate-text  m-0">
+                                    {job.defaultPipeline.lastRunAt
+                                        ? handleUTCTime(job.defaultPipeline.lastRunAt, true)
+                                        : '-'}
+                                </p>
+                            </div>
+                            <div className="app-list__cell app-list__cell--namespace">
+                                <p className="dc__truncate-text  m-0">
+                                    {job.defaultPipeline.lastSuccessAt
+                                        ? handleUTCTime(job.defaultPipeline.lastSuccessAt, true)
+                                        : '-'}
+                                </p>
+                            </div>
+                            <div className="app-list__cell app-list__cell--namespace">
+                                <p className="dc__truncate-text  m-0">{job.description ? job.description : '-'}</p>
+                            </div>
+                            <div className="app-list__cell app-list__cell--action">
+                                <button type="button" data-key={job.id} className="button-edit" onClick={handleEditApp}>
+                                    <Edit className="button-edit__icon" />
+                                </button>
+                            </div>
+                        </Link>
+                    )}
+                    {props.expandedRow[job.id] && (
+                        <ExpandedRow
+                            job={job}
+                            close={closeExpandedRow}
+                            redirect={props.redirectToAppDetails}
+                            handleEdit={props.handleEditApp}
+                            isArgoInstalled={props.isArgoInstalled}
+                        />
+                    )}
+                </React.Fragment>
+            )
+        })
     }
 
     const renderAppList = () => {
@@ -112,74 +153,7 @@ export default function JobListView(props: JobListViewProps) {
                         </div>
                         <div className="app-list__cell app-list__cell--action"></div>
                     </div>
-                    {props.jobs.map((job) => {
-                        const len = job.ciPipelines.length > 1
-                        return (
-                            <React.Fragment key={job.id}>
-                                {!props.expandedRow[job.id] && (
-                                    <Link
-                                        to={props.redirectToAppDetails(job)}
-                                        className={`app-list__row ${len ? 'dc__hover-icon' : ''}`}
-                                    >
-                                        <div className="app-list__cell--icon">
-                                            <DevtronAppIcon className="icon-dim-24 dc__show-first--icon" />
-                                            {len && (
-                                                <Arrow
-                                                    className="icon-dim-24 p-2 dc__flip-90 fcn-7 dc__show-second--icon"
-                                                    onClick={expandEnv}
-                                                    data-key={job.id}
-                                                />
-                                            )}
-                                        </div>
-                                        <div className="app-list__cell app-list__cell--name">
-                                            <p className="dc__truncate-text  m-0 value">{job.name}</p>
-                                        </div>
-                                        <div className="app-list__cell app-list__cell--app_status">
-                                            <AppStatus appStatus={job.defaultPipeline.status} isJobCreateView={true} />
-                                        </div>
-                                        <div className="app-list__cell app-list__cell--cluster">
-                                            <p className="dc__truncate-text  m-0">
-                                                {job.defaultPipeline.lastRunAt
-                                                    ? handleUTCTime(job.defaultPipeline.lastRunAt, true)
-                                                    : '-'}
-                                            </p>
-                                        </div>
-                                        <div className="app-list__cell app-list__cell--namespace">
-                                            <p className="dc__truncate-text  m-0">
-                                                {job.defaultPipeline.lastSuccessAt
-                                                    ? handleUTCTime(job.defaultPipeline.lastSuccessAt, true)
-                                                    : '-'}
-                                            </p>
-                                        </div>
-                                        <div className="app-list__cell app-list__cell--namespace">
-                                            <p className="dc__truncate-text  m-0">
-                                                {job.description ? job.description : '-'}
-                                            </p>
-                                        </div>
-                                        <div className="app-list__cell app-list__cell--action">
-                                            <button
-                                                type="button"
-                                                data-key={job.id}
-                                                className="button-edit"
-                                                onClick={handleEditApp}
-                                            >
-                                                <Edit className="button-edit__icon" />
-                                            </button>
-                                        </div>
-                                    </Link>
-                                )}
-                                {props.expandedRow[job.id] && (
-                                    <ExpandedRow
-                                        job={job}
-                                        close={closeExpandedRow}
-                                        redirect={props.redirectToAppDetails}
-                                        handleEdit={props.handleEditApp}
-                                        isArgoInstalled={props.isArgoInstalled}
-                                    />
-                                )}
-                            </React.Fragment>
-                        )
-                    })}
+                    {renderJobPipelines()}
                 </div>
             )
         }

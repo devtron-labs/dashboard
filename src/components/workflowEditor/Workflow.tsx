@@ -53,6 +53,7 @@ export interface WorkflowProps
     cdWorkflowList?: any[]
     showWebhookTippy?: boolean
     hideWebhookTippy?: () => void
+    isJobView?: boolean
 }
 
 interface WorkflowState {
@@ -111,6 +112,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     this.props.id.toString(),
                     true,
                     node.downstreams[0].split('-')[1],
+                    this.props.isJobView
                 ),
             )
         }
@@ -306,6 +308,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 to={this.openCIPipeline(node)}
                 configDiffView={this.props.cdWorkflowList?.length > 0}
                 hideWebhookTippy={this.props.hideWebhookTippy}
+                isJobView={this.props.isJobView}
             />
         )
     }

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { ReactComponent as Expand } from '../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { ExpandedRowProps } from '../Types'
-import { statusColor } from '../../app/config'
 import AppStatus from '../../app/AppStatus'
 import { handleUTCTime } from '../../common'
 import './ExpandedRow.scss'
@@ -14,8 +13,7 @@ export default function ExpandedRow(props: ExpandedRowProps) {
     }
 
     const renderRows = () => {
-        return props.job.ciPipelines.map((ciPipeline) => {
-            console.log(ciPipeline)
+    return props.job.ciPipelines.map((ciPipeline) => {
             return (
                 <Link
                     key={ciPipeline.ciPipelineId}

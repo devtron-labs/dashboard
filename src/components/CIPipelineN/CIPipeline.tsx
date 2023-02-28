@@ -2,7 +2,7 @@ import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ButtonWithLoader, ConditionalWrap, DeleteDialog, Drawer, showError, VisibleModal } from '../common'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
-import { BuildStageVariable, BuildTabText, ModuleNameMap, TriggerType, URLS, ViewType } from '../../config'
+import { BuildStageVariable, BuildTabText, JobPipelineTabText, ModuleNameMap, TriggerType, URLS, ViewType } from '../../config'
 import {
     deleteCIPipeline,
     getGlobalVariable,
@@ -62,7 +62,7 @@ export default function CIPipeline({
     const { path } = useRouteMatch()
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const text = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
-    const title = ciPipelineId ? 'Edit build pipeline' : 'Create build pipeline'
+    const title = `${ciPipelineId ? 'Edit ' : 'Create '}${isJobView ? 'job' : 'build'} pipeline`
     const [isAdvanced, setIsAdvanced] = useState<boolean>(
         isJobView || (activeStageName !== BuildStageVariable.PreBuild && !!ciPipelineId),
     )
@@ -689,7 +689,7 @@ export default function CIPipeline({
                         validateStage(activeStageName, formData)
                     }}
                 >
-                    {BuildTabText[stageName]}
+                    {isJobView ? JobPipelineTabText[stageName] : BuildTabText[stageName]}
                     {!formDataErrorObj[stageName].isValid && <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-3" />}
                 </NavLink>
             </li>
@@ -717,9 +717,18 @@ export default function CIPipeline({
                 </div>
                 {isAdvanced && (
                     <ul className="ml-20 tab-list w-90">
-                        {isAdvanced && getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
-                        {getNavLink(`build`, BuildStageVariable.Build)}
-                        {isAdvanced && getNavLink(`post-build`, BuildStageVariable.PostBuild)}
+                        {isJobView ? (
+                            <>
+                                {getNavLink(`build`, BuildStageVariable.Build)}
+                                {getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
+                            </>
+                        ) : (
+                            <>
+                                {isAdvanced && getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
+                                {getNavLink(`build`, BuildStageVariable.Build)}
+                                {isAdvanced && getNavLink(`post-build`, BuildStageVariable.PostBuild)}
+                            </>
+                        )}
                     </ul>
                 )}
                 <hr className="divider m-0" />
@@ -747,13 +756,13 @@ export default function CIPipeline({
                     <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
                         {isAdvanced && (
                             <div className="sidebar-container">
-                                <Sidebar />
+                                <Sidebar isJobView={isJobView} />
                             </div>
                         )}
                         <Switch>
                             {isAdvanced && (
                                 <Route path={`${path}/pre-build`}>
-                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
+                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} isJobView={isJobView} />
                                 </Route>
                             )}
                             {isAdvanced && (
