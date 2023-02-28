@@ -566,17 +566,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         errorForm.nameSpaceError = this.validationRules.namespace(pipelineConfig.namespace)
         errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)
         this.setState({ errorForm })
-        const isNameEmpty = this.state.pipelineConfig.name === ''
-        const isNamespaceEmpty = !!!this.state.pipelineConfig.namespace
-        const decisionForEmpty=isNameEmpty || isNamespaceEmpty
-        const deploymentDecison=!!(this.state.pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
         let valid =
             !!!this.state.pipelineConfig.environmentId &&
             this.validationRules.name(this.state.pipelineConfig.name).isValid &&
-            isNamespaceEmpty &&
+            !!this.state.pipelineConfig.namespace &&
             !!this.state.pipelineConfig.triggerType &&
-            deploymentDecison
-        if (decisionForEmpty) {
+            !!(this.state.pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
+        if (!this.state.pipelineConfig.name || !this.state.pipelineConfig.namespace) {
             toast.error('Some required fields are missing')
             return
         }
