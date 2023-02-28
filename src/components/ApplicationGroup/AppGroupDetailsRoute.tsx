@@ -97,13 +97,13 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                                 <div>Env detail</div>
                             </Route>
                             <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                                <EnvironmentOverview />
+                                <EnvironmentOverview filteredApps={_filteredApps} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                                 <EnvTriggerView filteredApps={_filteredApps} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_CONFIG}`}>
-                                <EnvConfig />
+                                <EnvConfig filteredApps={_filteredApps} />
                             </Route>
                             <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
                         </Switch>
