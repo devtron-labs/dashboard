@@ -101,7 +101,7 @@ export function EnvHeader({ envName, setEnvName, setShowEmpty, showEmpty }: EnvH
 
     const handleEnvChange = useCallback(
         ({ label, value, appCount }) => {
-            if (envId !== value) {
+            if (+envId !== value) {
                 setEnvName(label)
                 setShowEmpty(!appCount)
                 const tab = currentPathname.current.replace(match.url, '').split('/')[1]
