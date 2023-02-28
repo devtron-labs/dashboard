@@ -9,7 +9,7 @@ import { ReactComponent as BranchMain } from '../../assets/icons/ic-branch-main.
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle.svg'
 import { SourceTypeMap, Moment12HourFormat } from '../../config'
 import { createGitCommitUrl } from '../common/helpers/git'
-import { GitMaterialInfo } from './GitMaterialInfo'
+import { GitMaterialInfoHeader } from './GitMaterialInfo'
 import moment from 'moment'
 
 export default function GitCommitInfoGeneric({
@@ -159,7 +159,7 @@ export default function GitCommitInfoGeneric({
     return (
         <>
             {showMaterialInfo && (_isWebhook || _lowerCaseCommitInfo.commit) && (
-                <GitMaterialInfo
+                <GitMaterialInfoHeader
                     repoUrl={materialUrl}
                     materialType={materialSourceType}
                     materialValue={materialSourceValue}
