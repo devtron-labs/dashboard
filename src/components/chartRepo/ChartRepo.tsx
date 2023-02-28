@@ -41,7 +41,7 @@ export default function ChartRepo() {
             <h2 className="form__title">Chart Repository</h2>
             <p className="form__subtitle">Manage your organization’s chart repositories.
             <span><a rel="noreferrer noopener" target="_blank" className="dc__link" href={DOCUMENTATION.GLOBAL_CONFIG_CHART}> Learn more</a> </span></p>
-            <CollapsedList  id={null} default={true} url={""} name={""} active={true} authMode={"ANONYMOUS"}  key={Math.random().toString(36).substr(2, 5)} reload={reload} />
+            <CollapsedList  id={null} default={true} url={""} name={""} active={true} isEditable={true} authMode={"ANONYMOUS"}  key={Math.random().toString(36).substr(2, 5)} reload={reload} />
             <div className="chartRepo_form__subtitle dc__float-left dc__bold">Repositories({(result && Array.isArray(result.result) ? result.result : []).length})</div>
             <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
                 <div className="chartRepo_form__subtitle dc__float-right">
@@ -61,13 +61,12 @@ export default function ChartRepo() {
     );
 }
 
-function CollapsedList({ id, name, active, url, authMode, accessToken = "", userName = "", password = "", reload, ...props }) {
+function CollapsedList({ id, name, active, url, authMode, isEditable, accessToken = "", userName = "", password = "", reload, ...props }) {
     const [collapsed, toggleCollapse] = useState(true);
     const [enabled, toggleEnabled] = useState(active);
     const [loading, setLoading] = useState(false);
 
     useEffectAfterMount(() => {
-        if (!collapsed) return
         async function update() {
             let payload = {
                 id: id || 0, name, url, authMode, active: enabled,
@@ -89,9 +88,21 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
     }, [enabled])
 
     const setToggleCollapse = () => {
-        toggleCollapse(false)
+        if (!id){
+            toggleCollapse(false)
+        }
     }
 
+    const handleCollapse = (e) => {
+        if (isEditable) {
+            e.stopPropagation()
+            toggleCollapse((t) => !t)
+        } else {
+            toast.info(
+                `Cannot edit chart repo "${name}". Some charts from this repository are being used by helm apps.`,
+            )
+        }
+    }
     return (
         <article className={`collapsed-list dc__clear-both ${id ? 'collapsed-list--chart' : 'collapsed-list--git'} collapsed-list--${id ? 'update' : 'create dashed'}`}>
             <List onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column':''}`}>
@@ -110,7 +121,7 @@ function CollapsedList({ id, name, active, url, authMode, accessToken = "", user
                         </Tippy>
                     }
                 </div>
-                {id && <List.DropDown onClick={e => { e.stopPropagation(); toggleCollapse(t => !t) }} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
+                {id && <List.DropDown onClick={handleCollapse} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
             </List>
             {!collapsed && <ChartForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse, collapsed }} />}
         </article>
