@@ -66,7 +66,6 @@ export function saveUser(request: CreateUser) {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : 30,
     }
     if (window._env_.CONFIGURABLE_TIMEOUT) {
-        console.log(options.timeout)
         return request.id ? put('user', request, options) : post('user', request, options)
     } else {
         return request.id ? put('user', request) : post('user', request)
@@ -79,7 +78,6 @@ export function saveGroup(request: CreateGroup) {
     }
 
     if (window._env_.CONFIGURABLE_TIMEOUT) {
-        console.log(options.timeout)
         return request.id ? put('user/role/group', request, options) : post('user/role/group', request, options)
     } else {
         return request.id ? put('user/role/group', request) : post('user/role/group', request)
