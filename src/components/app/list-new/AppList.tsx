@@ -720,7 +720,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             onChange={onChangeSearchString}
                         />
                         {searchApplied && (
-                            <button className="search__clear-button" type="button" onClick={clearSearch}>
+                            <button className="search__clear-button flex" type="button" onClick={clearSearch}>
                                 <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                             </button>
                         )}
