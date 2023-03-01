@@ -270,6 +270,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         )
     }
 
+    loadAppListOptions = (inputValue: string) => appListOptions(inputValue, this.props.isJobCreateView)
+
     renderBodySection = (): JSX.Element => {
         let errorObject = [
             this.rules.appName(this.state.form.appName),
@@ -346,7 +348,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         <div className="form__row clone-apps dc__inline-block">
                             <span className="form__label dc__required-field">Select an app to clone</span>
                             <AsyncSelect
-                                loadOptions={appListOptions}
+                                loadOptions={this.loadAppListOptions}
                                 noOptionsMessage={noOptionsMessage}
                                 onChange={this.handleCloneAppChange}
                                 styles={this._multiSelectStyles}

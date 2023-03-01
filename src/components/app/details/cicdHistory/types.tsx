@@ -63,6 +63,7 @@ export interface ArtifactType {
     artifact: string
     blobStorageEnabled: boolean
     getArtifactPromise?: () => Promise<any>
+    isJobView?: boolean
 }
 
 export interface CopyTippyWithTextType {

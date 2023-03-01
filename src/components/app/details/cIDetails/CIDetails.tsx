@@ -249,7 +249,7 @@ const Details = ({
                             stage={triggerDetails.stage}
                             artifact={triggerDetails.artifact}
                         />
-                        <ul className="ml-20 tab-list dc__border-bottom mr-20">
+                        <ul className="tab-list dc__border-bottom pl-20 pr-20">
                             <li className="tab-list__tab">
                                 <NavLink replace className="tab-list__tab-link" activeClassName="active" to={`logs`}>
                                     Logs
@@ -275,7 +275,7 @@ const Details = ({
                                     Artifacts
                                 </NavLink>
                             </li>
-                            {isSecurityModuleInstalled && (
+                            {!isJobView && isSecurityModuleInstalled && (
                                 <li className="tab-list__tab">
                                     <NavLink
                                         replace
@@ -307,6 +307,7 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView }: His
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
+    const _getArtifactPromise = () => getArtifact(pipelineId, buildId)
 
     return (
         <div className="trigger-outputs-container">
@@ -334,7 +335,8 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView }: His
                         status={triggerDetails.status}
                         artifact={triggerDetails.artifact}
                         blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                        getArtifactPromise={() => getArtifact(pipelineId, buildId)}
+                        getArtifactPromise={_getArtifactPromise}
+                        isJobView={isJobView}
                     />
                 </Route>
                 {!isJobView && (
