@@ -11,13 +11,12 @@ jobs:
               id: coverage
               with:
                   package-manager: yarn
-                  annotations: all
+                  annotations: failed-tests
                   test-script: yarn test:ci
                   output: report-markdown
             - name: Comment on pull request
               uses: marocchino/sticky-pull-request-comment@v2
               if: always()
               with:
-                  hide_and_recreate: true
-                  hide_classify: "OUTDATED"
+                  recreate: true
                   message: ${{ steps.coverage.outputs.report }}

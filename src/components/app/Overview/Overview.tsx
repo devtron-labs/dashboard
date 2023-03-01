@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
-import { getAppOtherEnvironment, getJobCIPiprline, getTeamList } from '../../../services/service'
-import { handleUTCTime, Progressing, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../common'
+import { getAppOtherEnvironment, getJobCIPipeline, getTeamList } from '../../../services/service'
+import { handleUTCTime, processDeployedTime, Progressing, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../common'
 import { AppDetails, AppOverviewProps, JobPipeline, TagType } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as WorkflowIcon } from '../../../assets/icons/ic-workflow.svg'
@@ -57,7 +57,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
 
     useEffect(() => {
-        getJobCIPiprline(appId)
+        getJobCIPipeline(appId)
             .then((response) => {
                 setJobPipelines(response.result)
                 setIsLoading(false)
@@ -279,14 +279,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         )
     }
 
-    const renderDeployedTime = (_env) => {
-        if (_env.lastDeployed) {
-            return handleUTCTime(_env.lastDeployed, true)
-        } else {
-            return isAgroInstalled ? '' : 'Not deployed'
-        }
-    }
-
     const renderDeploymentComponent = () => {
         if (otherEnvsResult[0].result?.length > 0) {
             return (
@@ -298,6 +290,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     </div>
                     <div className="env-deployments-info-body">
                         {otherEnvsResult[0].result.map((_env) => (
+                         !_env.deploymentAppDeleteRequest &&
                             <div
                                 key={`${_env.environmentName}-${_env.environmentId}`}
                                 className="env-deployments-info-row display-grid dc__align-items-center"
@@ -314,7 +307,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                         }
                                     />
                                 )}
-                                <span className="fs-13 fw-4 cn-7">{renderDeployedTime(_env)}</span>
+                                <span className="fs-13 fw-4 cn-7">
+                                    {processDeployedTime(_env.lastDeployed, isAgroInstalled)}
+                                </span>
                             </div>
                         ))}
                     </div>
@@ -497,3 +492,4 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         </div>
     )
 }
+

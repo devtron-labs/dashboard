@@ -40,8 +40,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
     }
 
     redirectToCIDetails() {
-        const LINK = this.getCIDetailsURL()
-        this.props.history.push(LINK)
+      this.props.history.push(this.getCIDetailsURL())
     }
 
     renderStatus() {
@@ -58,11 +57,13 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
         else
             return (
                 <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
-                    {this.props.status && this.props.status.toLowerCase() === 'cancelled' ? 'ABORTED' : this.props.status}
-                    <span className="mr-5 ml-5">/</span>
-                    <Link to={url} className="workflow-node__details-link">
-                        Details
-                    </Link>
+                    {this.props.status && this.props.status.toLowerCase() === 'cancelled'
+                        ? 'ABORTED'
+                        : this.props.status}
+                        <span className="mr-5 ml-5">/</span>
+                        <Link to={url} className="workflow-node__details-link">
+                            Details
+                        </Link>
                 </div>
             )
     }

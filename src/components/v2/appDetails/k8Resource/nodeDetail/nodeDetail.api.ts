@@ -62,7 +62,7 @@ export const getEvent = (
     }
     const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName && node.kind.toLowerCase() === nodeType)[0]
     return get(
-        `api/${cn.version}/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn.uid}&resourceName=${cn.name}`,
+        `api/v1/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn.uid}&resourceName=${cn.name}`,
     )
 }
 
@@ -92,14 +92,23 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
     const selectedResource = appDetails.resourceTree.nodes.filter(
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0]
-    let requestBody = {
-        appId: getAppId(
-            appDetails.clusterId,
-            appDetails.namespace,
-            appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP
-                ? `${appDetails.appName}-${appDetails.environmentName}`
-                : appDetails.appName,
-        ),
+
+    const getAppName = (): string => {
+        if (appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP) {
+            return `${appDetails.appName}-${appDetails.environmentName}`
+        } else {
+            return appDetails.appName
+        }
+    }
+
+    const appId =
+        appDetails.deploymentAppType == DeploymentAppType.argo_cd
+            ? ''
+            : getAppId(appDetails.clusterId, appDetails.namespace, getAppName())
+
+    const requestBody = {
+        appId: appId,
+        clusterId: appDetails.clusterId,
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
@@ -200,9 +209,7 @@ export const getLogsURL = (
 
 export const getTerminalData = (ad: AppDetails, nodeName: string, terminalType: string) => {
     const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0]
-    const _url = `api/${cn.version}/applications/pod/exec/session/${ad.appId}/${ad.environmentId}/${ad.namespace}/${ad.appName}-${ad.environmentName}/${terminalType}/${ad.appName}`
-
-    console.log('getTerminalData', _url)
+    const _url = `api/v1/applications/pod/exec/session/${ad.appId}/${ad.environmentId}/${ad.namespace}/${ad.appName}-${ad.environmentName}/${terminalType}/${ad.appName}`
     return get(_url)
 }
 
