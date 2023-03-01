@@ -1,26 +1,21 @@
 import React from 'react'
 import { ErrorScreenManager, Pagination, Progressing, handleUTCTime } from '../../common'
-import { Link } from 'react-router-dom'
-import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
-import DeployCICD from '../../../assets/img/guide-onboard.png'
+import { Link, useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as DevtronAppIcon } from '../../../assets/icons/ic-devtron-app.svg'
-import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
-import { ReactComponent as PlayMedia } from '../../../assets/icons/ic-play-media.svg'
-import ContentCard from '../../common/ContentCard/ContentCard'
-import { AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config'
-import { CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
-import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
 import { OrderBy, SortBy } from '../../app/list/types'
-import { APPLIST_EMPTY_STATE_MESSAGING, ClearFiltersLabel } from '../../app/list-new/Constants'
 import AppStatus from '../../app/AppStatus'
-import { Empty } from '../../app/list/emptyView/Empty'
 import { JobListViewProps } from '../Types'
 import { JobListViewType, JOB_LIST_HEADERS } from '../Constants'
 import ExpandedRow from '../ExpandedRow/ExpandedRow'
+import JobsEmptyState from '../JobsEmptyState'
+import { URLS } from '../../../config'
 
 export default function JobListView(props: JobListViewProps) {
+    const history = useHistory()
+    const location = useLocation()
+
     const expandEnv = (event): void => {
         event.stopPropagation()
         event.preventDefault()
@@ -173,34 +168,8 @@ export default function JobListView(props: JobListViewProps) {
         }
     }
 
-    const renderGuidedCards = () => {
-        return (
-            <div className="devtron-app-guided-cards-container">
-                <h2 className="fs-24 fw-6 lh-32 m-0 pt-40 dc__align-center">Create your first application</h2>
-                <div className="devtron-app-guided-cards-wrapper">
-                    <ContentCard
-                        redirectTo={DEVTRON_NODE_DEPLOY_VIDEO}
-                        isExternalRedirect={true}
-                        imgSrc={NodeAppThumbnail}
-                        title={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.title}
-                        linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.WatchVideo.linkText}
-                        LinkIcon={PlayMedia}
-                        linkIconClass="scb-5 mr-8"
-                        linkIconPlacement={CardLinkIconPlacement.BeforeLink}
-                    />
-                    <ContentCard
-                        redirectTo={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
-                        rootClassName="ev-5"
-                        imgSrc={DeployCICD}
-                        title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
-                        linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.createLintText}
-                        LinkIcon={ArrowRight}
-                        linkIconClass="scb-5"
-                        linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
-                    />
-                </div>
-            </div>
-        )
+    const createJobHandler = () => {
+        history.push(`${URLS.JOB}/${URLS.APP_LIST}/${URLS.CREATE_JOB}${location.search}`)
     }
 
     if (props.view === JobListViewType.LOADING) {
@@ -209,16 +178,11 @@ export default function JobListView(props: JobListViewProps) {
                 <Progressing pageLoader />
             </div>
         )
-    } else if (props.view === JobListViewType.EMPTY) {
-        return renderGuidedCards()
-    } else if (props.view === JobListViewType.NO_RESULT) {
+    } else if (props.view === JobListViewType.EMPTY || props.view === JobListViewType.NO_RESULT) {
         return (
-            <Empty
+            <JobsEmptyState
                 view={props.view}
-                title={APPLIST_EMPTY_STATE_MESSAGING.noAppsFound}
-                message={APPLIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText}
-                buttonLabel={ClearFiltersLabel}
-                clickHandler={props.clearAll}
+                clickHandler={props.view === JobListViewType.EMPTY ? createJobHandler : props.clearAll}
             />
         )
     } else if (props.view === JobListViewType.ERROR) {

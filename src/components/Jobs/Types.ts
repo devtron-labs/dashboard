@@ -87,15 +87,15 @@ export interface ExpandedRowProps {
 
 export interface JobListProps {
     payloadParsedFromUrl?: any
-    serverMode?: string
     clearAllFilters: () => void
-    sortApplicationList: (key: string) => void
+    sortJobList: (key: string) => void
     jobListCount: number
     isSuperAdmin: boolean
-    openDevtronAppCreateModel: (event) => void
+    openJobCreateModel: (event) => void
     setJobCount: React.Dispatch<React.SetStateAction<number>>
-    updateDataSyncing: (loading: boolean) => void
     isArgoInstalled: boolean
+    renderMasterFilters: () => JSX.Element
+    renderAppliedFilters: () => JSX.Element
 }
 
 export interface JobListViewProps extends JobListState, RouteComponentProps<{}> {
@@ -109,8 +109,7 @@ export interface JobListViewProps extends JobListState, RouteComponentProps<{}> 
     changePageSize: (size: number) => void
     appListCount: number
     isSuperAdmin: boolean
-    openDevtronAppCreateModel: (e) => void
-    updateDataSyncing: (loading: boolean) => void
+    openJobCreateModel: (e) => void
     toggleExpandAllRow: () => void
     isArgoInstalled: boolean
 }
@@ -119,4 +118,9 @@ export interface JobSelectorType {
     onChange: ({ label, value }) => void
     jobId: number
     jobName: string
+}
+
+export interface JobsEmptyProps  {
+    view: string
+    clickHandler: (e) => void;
 }

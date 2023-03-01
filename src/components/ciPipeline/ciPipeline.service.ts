@@ -225,6 +225,7 @@ export function deleteCIPipeline(
     workflowId: number,
     isExternalCI: boolean,
     webhookConditionList,
+    isJobView?: boolean
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
     const request = {
@@ -232,6 +233,7 @@ export function deleteCIPipeline(
         appWorkflowId: workflowId,
         action: PatchAction.DELETE,
         ciPipeline: ci,
+        isJobView
     }
     return savePipeline(request).then((response) => {
         return parseCIResponse(

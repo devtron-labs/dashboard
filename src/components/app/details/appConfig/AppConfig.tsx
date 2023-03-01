@@ -322,7 +322,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
         })
     }
     function redirectToWorkflowEditor() {
-        return getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR)
+        return getAppComposeURL(appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR, isJobView)
     }
 
     async function deleteAppHandler() {
@@ -344,7 +344,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
     }
 
     function respondOnSuccess() {
-        getAppConfigStatus(+appId)
+        getAppConfigStatus(+appId, isJobView)
             .then((configStatusRes) => {
                 let lastConfiguredStage = configStatusRes.result
                     .slice()

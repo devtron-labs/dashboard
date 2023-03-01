@@ -4,31 +4,41 @@ import { ServerErrors } from '../../../modals/commonTypes'
 import { showError } from '../../common'
 import * as queryString from 'query-string'
 import { URLS } from '../../../config'
-import { getInitialJobListState, jobListModal, jobListReducer } from '../Utils'
+import { getInitialJobListState, jobListModal, jobListReducer, populateQueryString } from '../Utils'
 import { Job, JobListProps, JobListState, JobListStateAction, JobListStateActionTypes } from '../Types'
 import { JobListViewType } from '../Constants'
 import { getJobs } from '../Service'
 import JobListView from './JobListView'
 import '../../app/list/list.css'
 
-export default function JobListContainer(props: JobListProps) {
+export default function JobListContainer({
+    payloadParsedFromUrl,
+    clearAllFilters,
+    sortJobList,
+    jobListCount,
+    isSuperAdmin,
+    openJobCreateModel,
+    setJobCount,
+    isArgoInstalled,
+    renderMasterFilters,
+    renderAppliedFilters,
+}: JobListProps) {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
     const [state, dispatch] = useReducer<Reducer<JobListState, JobListStateAction>>(
         jobListReducer,
-        getInitialJobListState(props.payloadParsedFromUrl),
+        getInitialJobListState(payloadParsedFromUrl),
     )
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     useEffect(() => {
-        getJobsList(props.payloadParsedFromUrl)
-    }, [props.payloadParsedFromUrl])
+        getJobsList(payloadParsedFromUrl)
+    }, [payloadParsedFromUrl])
 
     const getJobsList = async (request): Promise<void> => {
-        props.updateDataSyncing(true)
         const isSearchOrFilterApplied =
-            request.teams?.length || request.jobNameSearch?.length || request.appStatuses?.length
+            request.appNameSearch?.length || request.teams?.length || request.appStatuses?.length
         const updatedState = { ...state }
         updatedState.view = JobListViewType.LOADING
         updatedState.sortRule = {
@@ -52,11 +62,7 @@ export default function JobListContainer(props: JobListProps) {
             .then((response) => {
                 let view = JobListViewType.LIST
                 if (response.result.jobCount === 0) {
-                    if (isSearchOrFilterApplied) {
-                        view = JobListViewType.NO_RESULT
-                    } else {
-                        view = JobListViewType.EMPTY
-                    }
+                    view = isSearchOrFilterApplied ? JobListViewType.NO_RESULT : JobListViewType.EMPTY
                 }
                 const _jobs = jobListModal(response.result?.jobContainers)
                 dispatch({
@@ -72,7 +78,7 @@ export default function JobListContainer(props: JobListProps) {
                     },
                 })
                 abortControllerRef.current = null
-                props.setJobCount(response.result.jobCount)
+                setJobCount(response.result.jobCount)
             })
             .catch((errors: ServerErrors) => {
                 if (errors.code) {
@@ -84,38 +90,21 @@ export default function JobListContainer(props: JobListProps) {
                     })
                 }
             })
-            .finally(() => {
-                props.updateDataSyncing(false)
-            })
     }
 
     const changePage = (pageNo: number): void => {
-        let offset = state.pageSize * (pageNo - 1)
-        let qs = queryString.parse(location.search)
-        let keys = Object.keys(qs)
-        let query = {}
-        keys.forEach((key) => {
-            query[key] = qs[key]
-        })
-        query['offset'] = offset
-        let queryStr = queryString.stringify(query)
-        let url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}?${queryStr}`
-        history.push(url)
+        const query = populateQueryString(location.search)
+        query['offset'] = state.pageSize * (pageNo - 1)
+
+        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
     }
 
     const changePageSize = (size: number): void => {
-        let qs = queryString.parse(location.search)
-        let keys = Object.keys(qs)
-        let query = {}
-        keys.forEach((key) => {
-            query[key] = qs[key]
-        })
+        const query = populateQueryString(location.search)
         query['offset'] = 0
-        query['hOffset'] = 0
         query['pageSize'] = size
-        let queryStr = queryString.stringify(query)
-        let url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}?${queryStr}`
-        history.push(url)
+
+        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
     }
 
     const expandRow = (id: number): void => {
@@ -155,25 +144,32 @@ export default function JobListContainer(props: JobListProps) {
     }
 
     return (
-        <JobListView
-            {...state}
-            match={match}
-            location={location}
-            history={history}
-            expandRow={expandRow}
-            closeExpandedRow={closeExpandedRow}
-            sort={props.sortApplicationList}
-            redirectToAppDetails={redirectToAppDetails}
-            handleEditApp={handleEditApp}
-            clearAll={props.clearAllFilters}
-            changePage={changePage}
-            changePageSize={changePageSize}
-            isSuperAdmin={props.isSuperAdmin}
-            appListCount={props.jobListCount}
-            openDevtronAppCreateModel={props.openDevtronAppCreateModel}
-            updateDataSyncing={props.updateDataSyncing}
-            toggleExpandAllRow={toggleExpandAllRow}
-            isArgoInstalled={props.isArgoInstalled}
-        />
+        <>
+            {state.view !== JobListViewType.EMPTY && (
+                <>
+                    {renderMasterFilters()}
+                    {renderAppliedFilters()}
+                </>
+            )}
+            <JobListView
+                {...state}
+                match={match}
+                location={location}
+                history={history}
+                expandRow={expandRow}
+                closeExpandedRow={closeExpandedRow}
+                sort={sortJobList}
+                redirectToAppDetails={redirectToAppDetails}
+                handleEditApp={handleEditApp}
+                clearAll={clearAllFilters}
+                changePage={changePage}
+                changePageSize={changePageSize}
+                isSuperAdmin={isSuperAdmin}
+                appListCount={jobListCount}
+                openJobCreateModel={openJobCreateModel}
+                toggleExpandAllRow={toggleExpandAllRow}
+                isArgoInstalled={isArgoInstalled}
+            />
+        </>
     )
 }

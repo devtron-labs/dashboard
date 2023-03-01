@@ -1,30 +1,42 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import { SERVER_MODE, URLS } from '../../../config'
-import { ErrorScreenManager, Progressing, showError, stopPropagation, useAsync } from '../../common'
+import { URLS } from '../../../config'
+import {
+    ErrorScreenManager,
+    Filter,
+    FilterOption,
+    Progressing,
+    showError,
+    stopPropagation,
+    useAsync,
+} from '../../common'
 import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
-import { JobListViewType } from '../Constants'
+import { JobListViewType, JobsFilterTypeText, JobsStatusConstants } from '../Constants'
 import JobListContainer from './JobListContainer'
 import * as queryString from 'query-string'
-import './JobsList.scss'
 import { OrderBy } from '../../app/list/types'
-import { onRequestUrlChange } from '../Utils'
-import { AppListViewType } from '../../app/config'
+import { onRequestUrlChange, populateQueryString } from '../Utils'
 import { ServerErrors } from '../../../modals/commonTypes'
-import { buildClusterVsNamespace, getInitData, getNamespaces } from '../../app/list-new/AppListService'
 import { AddNewApp } from '../../app/create/CreateApp'
+import { getAppListDataToExport, getJobsInitData } from '../Service'
+import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
+import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
+import { getUserRole } from '../../userGroups/userGroup.service'
+import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
+import { mainContext } from '../../common/navigation/NavigationRoutes'
+import '../../app/list/list.css'
+import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 
 export default function JobsList({ isArgoInstalled }: { isArgoInstalled: boolean }) {
     const { path } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
+    const { setPageOverflowEnabled } = useContext(mainContext)
     const [dataStateType, setDataStateType] = useState(JobListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
-    const [isDataSyncing, setDataSyncing] = useState(false)
-    const [fetchingNamespaces, setFetchingNamespaces] = useState(false)
-    const [fetchingNamespacesErrored, setFetchingNamespacesErrored] = useState(false)
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
-    const [syncListData, setSyncListData] = useState<boolean>()
+    const [, userRoleResponse] = useAsync(getUserRole, [])
+    const showExportCsvButton = userRoleResponse?.result?.roles?.indexOf('role:super-admin___') !== -1
 
     // search
     const [searchString, setSearchString] = useState(undefined)
@@ -34,71 +46,47 @@ export default function JobsList({ isArgoInstalled }: { isArgoInstalled: boolean
     const [masterFilters, setMasterFilters] = useState({
         appStatus: [],
         projects: [],
-        environments: [],
-        clusters: [],
-        namespaces: [],
     })
     const [jobCount, setJobCount] = useState(0)
     //  const [checkingUserRole, userRoleResponse] = useAsync(getUserRole, [])
 
     useEffect(() => {
         // set search data
-        let searchQuery = location.search
-        let queryParams = queryString.parse(searchQuery)
+        const searchQuery = location.search
+        const queryParams = queryString.parse(searchQuery)
         if (queryParams.search) {
             setSearchString(queryParams.search)
             setSearchApplied(true)
         }
 
-        // set payload parsed from url
-        let payloadParsedFromUrl = onRequestUrlChange(
-            dataStateType,
-            parsedPayloadOnUrlChange,
-            masterFilters,
-            setMasterFilters,
-            _getClusterIdsFromRequestUrl,
-            _fetchAndSetNamespaces,
-            location.search,
-        )
-        setParsedPayloadOnUrlChange(payloadParsedFromUrl)
+        // Payload parsed from url
+        const payloadParsedFromUrl = updatedParsedPayloadOnUrlChange()
 
         // fetch master filters data and some master data
-        getInitData(payloadParsedFromUrl, SERVER_MODE.FULL)
+        getJobsInitData(payloadParsedFromUrl)
             .then((initData) => {
                 setMasterFilters(initData.filters)
-                setDataStateType(AppListViewType.LIST)
+                setDataStateType(JobListViewType.LIST)
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
-                setDataStateType(AppListViewType.ERROR)
+                setDataStateType(JobListViewType.ERROR)
                 setErrorResponseCode(errors.code)
             })
-    }, [syncListData])
+    }, [])
 
-    const _getClusterIdsFromRequestUrl = (parsedPayload: any): string => {
-        let _namespaces = parsedPayload['namespaces'] || []
-        return [...buildClusterVsNamespace(_namespaces.join(',')).keys()].join(',')
+    useEffect(() => {
+        updatedParsedPayloadOnUrlChange()
+    }, [location.search])
+
+    const updatedParsedPayloadOnUrlChange = () => {
+        const payloadParsedFromUrl = onRequestUrlChange(masterFilters, setMasterFilters, location.search)
+        setParsedPayloadOnUrlChange(payloadParsedFromUrl)
+
+        return payloadParsedFromUrl
     }
 
-    const _fetchAndSetNamespaces = (_parsedPayloadOnUrlChange: any, _clusterIdsCsv: string, _masterFilters: any) => {
-        // fetch namespaces
-        setFetchingNamespaces(true)
-        setFetchingNamespacesErrored(false)
-        let _clusterVsNamespaceMap = buildClusterVsNamespace(_parsedPayloadOnUrlChange.namespaces.join(','))
-        getNamespaces(_clusterIdsCsv, _clusterVsNamespaceMap)
-            .then((_namespaces) => {
-                _masterFilters.namespaces = _namespaces
-                setMasterFilters(_masterFilters)
-                setFetchingNamespaces(false)
-                setFetchingNamespacesErrored(false)
-            })
-            .catch((errors: ServerErrors) => {
-                setFetchingNamespaces(false)
-                setFetchingNamespacesErrored(true)
-            })
-    }
-
-    function openDevtronAppCreateModel() {
+    function openJobCreateModel() {
         history.push(`${URLS.JOB}/${URLS.APP_LIST}/${URLS.CREATE_JOB}${location.search}`)
     }
 
@@ -126,18 +114,49 @@ export default function JobsList({ isArgoInstalled }: { isArgoInstalled: boolean
         )
     }
 
-    const removeAllFilters = (): void => {
-        let qs = queryString.parse(location.search)
-        let keys = Object.keys(qs)
-        let query = {}
-        keys.forEach((key) => {
-            query[key] = qs[key]
-        })
+    const applyFilter = (type: string, list: FilterOption[], selectedAppTab: string = undefined): void => {
+        const query = populateQueryString(location.search)
+        const checkedItems = list.filter((item) => item.isChecked)
+        const ids = checkedItems.map((item) => item.key)
+
+        query[type] = ids.toString()
         query['offset'] = 0
-        query['hOffset'] = 0
-        delete query['environment']
+
+        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
+    }
+
+    const handleAppSearchOperation = (_searchString: string): void => {
+        const query = populateQueryString(location.search)
+        if (_searchString) {
+            query['search'] = _searchString
+            query['offset'] = 0
+        } else {
+            delete query['search']
+            delete query['offset']
+        }
+
+        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
+    }
+
+    const removeFilter = (filter, filterType: string): void => {
+        const query = populateQueryString(location.search)
+        query['offset'] = 0
+        query[filterType] = query[filterType]
+            .split(',')
+            .filter((item) => item !== filter.key.toString())
+            .toString()
+
+        if (query[filterType] == '') {
+            delete query[filterType]
+        }
+
+        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
+    }
+
+    const removeAllFilters = (): void => {
+        const query = populateQueryString(location.search)
+        query['offset'] = 0
         delete query['team']
-        delete query['namespace']
         delete query['appStatus']
         delete query['search']
 
@@ -145,26 +164,152 @@ export default function JobsList({ isArgoInstalled }: { isArgoInstalled: boolean
         setSearchApplied(false)
         setSearchString('')
 
-        let queryStr = queryString.stringify(query)
-        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryStr}`)
+        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
     }
 
-    const sortApplicationList = (key: string): void => {
-        let qs = queryString.parse(location.search)
-        let keys = Object.keys(qs)
-        let query = {}
-        keys.forEach((key) => {
-            query[key] = qs[key]
-        })
+    const sortJobList = (key: string): void => {
+        const query = populateQueryString(location.search)
         query['orderBy'] = key
         query['sortOrder'] = query['sortOrder'] == OrderBy.DESC ? OrderBy.ASC : OrderBy.DESC
 
-        let queryStr = queryString.stringify(query)
-        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryStr}`)
+        history.push(`${URLS.JOB}/${URLS.APP_LIST}?${queryString.stringify(query)}`)
     }
 
-    const updateDataSyncing = (loading: boolean): void => {
-        setDataSyncing(loading)
+    const searchApp = (event: React.FormEvent) => {
+        event.preventDefault()
+        setSearchApplied(true)
+        handleAppSearchOperation(searchString)
+    }
+
+    const onChangeSearchString = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        let str = event.target.value || ''
+        str = str.toLowerCase()
+        setSearchString(str)
+    }
+
+    const clearSearch = (): void => {
+        setSearchApplied(false)
+        setSearchString('')
+        handleAppSearchOperation('')
+    }
+
+    const onShowHideFilterContent = (show: boolean): void => {
+        setPageOverflowEnabled(!show)
+    }
+
+    const getJobsDataToExport = async () => getAppListDataToExport(parsedPayloadOnUrlChange, searchString, jobCount)
+
+    function renderMasterFilters() {
+        return (
+            <div className="search-filter-section">
+                <form style={{ display: 'inline' }} onSubmit={searchApp}>
+                    <div className="search">
+                        <Search className="search__icon icon-dim-18" />
+                        <input
+                            type="text"
+                            name="app_search_input"
+                            autoComplete="off"
+                            value={searchString}
+                            placeholder="Search by job name"
+                            className="search__input bcn-1"
+                            onChange={onChangeSearchString}
+                        />
+                        {searchApplied && (
+                            <button className="flex search__clear-button" type="button" onClick={clearSearch}>
+                                <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
+                            </button>
+                        )}
+                    </div>
+                </form>
+                <div className="app-list-filters filters">
+                    {isArgoInstalled && (
+                        <>
+                            <Filter
+                                list={masterFilters.appStatus}
+                                labelKey="label"
+                                buttonText={JobsFilterTypeText.StatusText}
+                                placeholder={JobsFilterTypeText.SearchStatus}
+                                searchable
+                                multi
+                                type={JobsFilterTypeText.APP_STATUS}
+                                applyFilter={applyFilter}
+                                onShowHideFilterContent={onShowHideFilterContent}
+                                isFirstLetterCapitalize={true}
+                            />
+                            <span className="filter-divider" />
+                        </>
+                    )}
+                    <Filter
+                        list={masterFilters.projects}
+                        labelKey="label"
+                        buttonText={JobsFilterTypeText.ProjectText}
+                        placeholder={JobsFilterTypeText.SearchProject}
+                        searchable
+                        multi
+                        type={JobsFilterTypeText.PROJECT}
+                        applyFilter={applyFilter}
+                        onShowHideFilterContent={onShowHideFilterContent}
+                    />
+                    {showExportCsvButton && (
+                        <>
+                            <span className="filter-divider" />
+                            <ExportToCsv
+                                className="ml-10"
+                                apiPromise={getJobsDataToExport}
+                                fileName={FILE_NAMES.Jobs}
+                                disabled={!jobCount}
+                            />
+                        </>
+                    )}
+                </div>
+            </div>
+        )
+    }
+
+    const appliedFilterChip = (key: string) => {
+        let filterType = ''
+        let _filterKey = ''
+        if (key == JobsStatusConstants.PROJECT.pluralLower) {
+            filterType = JobsFilterTypeText.PROJECT
+            _filterKey = JobsStatusConstants.PROJECT.lowerCase
+        } else if (key == JobsStatusConstants.APP_STATUS.noSpaceLower) {
+            filterType = JobsFilterTypeText.APP_STATUS
+            _filterKey = JobsStatusConstants.APP_STATUS.normalText
+        }
+
+        return masterFilters[key].map((filter) => {
+            if (filter.isChecked) {
+                return (
+                    <div key={filter.key} className="saved-filter">
+                        <span className="fw-6 mr-5">{_filterKey}</span>
+                        <span className="saved-filter-divider"></span>
+                        <span className="ml-5">{filter.label}</span>
+                        <button
+                            type="button"
+                            className="saved-filter__close-btn"
+                            onClick={() => removeFilter(filter, filterType)}
+                        >
+                            <i className="fa fa-times-circle" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                )
+            }
+        })
+    }
+    const renderAppliedFilters = () => {
+        const keys = Object.keys(masterFilters)
+        const shouldRenderFilterChips = keys.some((key) => masterFilters[key].some((filter) => filter.isChecked))
+
+        return (
+            shouldRenderFilterChips && (
+                <div className="saved-filters__wrap dc__position-rel">
+                    {keys.map((key) => appliedFilterChip(key))}
+                    <button type="button" className="saved-filters__clear-btn fs-13" onClick={removeAllFilters}>
+                        Clear All Filters
+                    </button>
+                </div>
+            )
+        )
     }
 
     return (
@@ -182,19 +327,18 @@ export default function JobsList({ isArgoInstalled }: { isArgoInstalled: boolean
             {dataStateType === JobListViewType.LIST && (
                 <>
                     <HeaderWithCreateButton headerName="Jobs" />
-                    {/* {renderMasterFilters()}
-                    {renderAppliedFilters()} */}
                     {renderCreateJobRouter()}
                     <JobListContainer
                         payloadParsedFromUrl={parsedPayloadOnUrlChange}
                         clearAllFilters={removeAllFilters}
-                        sortApplicationList={sortApplicationList}
+                        sortJobList={sortJobList}
                         jobListCount={jobCount}
                         isSuperAdmin={true}
-                        openDevtronAppCreateModel={openDevtronAppCreateModel}
+                        openJobCreateModel={openJobCreateModel}
                         setJobCount={setJobCount}
-                        updateDataSyncing={updateDataSyncing}
                         isArgoInstalled={isArgoInstalled}
+                        renderMasterFilters={renderMasterFilters}
+                        renderAppliedFilters={renderAppliedFilters}
                     />
                 </>
             )}

@@ -6,7 +6,6 @@ import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.ser
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import JobDetails from './JobDetails/JobDetails'
 import JobsList from './JobList/JobsList'
-import './Jobs.scss'
 
 export default function Jobs() {
     const { path } = useRouteMatch()

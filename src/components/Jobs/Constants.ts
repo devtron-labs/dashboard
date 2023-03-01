@@ -42,3 +42,32 @@ export const JOB_LIST_HEADERS = {
 }
 
 export const YET_TO_RUN = 'Yet to run'
+export const JOBLIST_EMPTY_STATE_MESSAGING = {
+    createJob: 'Create your first job',
+    createJobInfoText:
+        'Jobs allow manual and automated execution of developer actions. Increase productivity by automating the tedious. Get started by creating your first job.',
+    createJobButtonLabel: 'Create Job',
+    noJobsFound: 'No jobs found',
+    noJobFoundInfoText: `We couldn't find any matching applications.`,
+    noJobsButtonLabel: 'Clear filters',
+}
+
+export const JobsFilterTypeText = {
+    PROJECT: 'team',
+    APP_STATUS: 'appStatus',
+    StatusText: 'Status',
+    SearchStatus: 'Search job status',
+    ProjectText: 'Projects',
+    SearchProject: 'Search Project',
+}
+
+export const JobsStatusConstants = {
+    APP_STATUS: {
+        noSpaceLower: 'appStatus',
+        normalText: 'App status',
+    },
+    PROJECT: {
+        pluralLower: 'projects',
+        lowerCase: 'project',
+    },
+}

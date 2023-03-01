@@ -143,47 +143,32 @@ const handleDeploymentInitiatedStatus = (status: string): string => {
 }
 
 export const onRequestUrlChange = (
-    dataStateType,
-    parsedPayloadOnUrlChange,
     masterFilters,
     setMasterFilters,
-    _getClusterIdsFromRequestUrl,
-    _fetchAndSetNamespaces,
     searchParams,
 ): any => {
     let params = queryString.parse(searchParams)
     let search = params.search || ''
-    let environments = params.environment || ''
     let appStatus = params.appStatus || ''
     let teams = params.team || ''
-    let clustersAndNamespaces = params.namespace || ''
-
-    let _clusterVsNamespaceMap = buildClusterVsNamespace(clustersAndNamespaces)
-    let environmentsArr = environments
-        .toString()
-        .split(',')
-        .map((env) => +env)
-        .filter((item) => item != 0)
-    let teamsArr = teams
+    const teamsArr = teams
         .toString()
         .split(',')
         .filter((team) => team != '')
         .map((team) => Number(team))
-    let appStatusArr = appStatus
+    const appStatusArr = appStatus
         .toString()
         .split(',')
         .filter((status) => status != '')
         .map((status) => status)
 
     // update master filters data (check/uncheck)
-    let filterApplied = {
-        environments: new Set<number>(environmentsArr),
+    const filterApplied = {
         teams: new Set<number>(teamsArr),
         appStatus: new Set<string>(appStatusArr),
-        clusterVsNamespaceMap: _clusterVsNamespaceMap,
     }
 
-    let _masterFilters = { appStatus: [], projects: [], environments: [], clusters: [], namespaces: [] }
+    const _masterFilters = { appStatus: [], projects: [], environments: [], clusters: [], namespaces: [] }
 
     // set projects (check/uncheck)
     _masterFilters.projects = masterFilters.projects.map((project) => {
@@ -195,36 +180,6 @@ export const onRequestUrlChange = (
         }
     })
 
-    // set clusters (check/uncheck)
-    _masterFilters.clusters = masterFilters.clusters.map((cluster) => {
-        return {
-            key: cluster.key,
-            label: cluster.label,
-            isSaved: true,
-            isChecked: filterApplied.clusterVsNamespaceMap.has(cluster.key.toString()),
-        }
-    })
-
-    // set namespace (check/uncheck)
-    _masterFilters.namespaces = masterFilters.namespaces.map((namespace) => {
-        return {
-            key: namespace.key,
-            label: namespace.label,
-            isSaved: true,
-            isChecked:
-                filterApplied.clusterVsNamespaceMap.has(namespace.clusterId.toString()) &&
-                filterApplied.clusterVsNamespaceMap
-                    .get(namespace.clusterId.toString())
-                    .includes(namespace.key.split('_')[1]),
-            toShow:
-                filterApplied.clusterVsNamespaceMap.size == 0 ||
-                filterApplied.clusterVsNamespaceMap.has(namespace.clusterId.toString()),
-            actualName: namespace.actualName,
-            clusterName: namespace.clusterName,
-            clusterId: namespace.clusterId,
-        }
-    })
-
     _masterFilters.appStatus = masterFilters.appStatus.map((status) => {
         return {
             key: status.key,
@@ -233,25 +188,14 @@ export const onRequestUrlChange = (
             isChecked: filterApplied.appStatus.has(status.key),
         }
     })
-
-    // set environments (check/uncheck)
-    _masterFilters.environments = masterFilters.environments.map((env) => {
-        return {
-            key: env.key,
-            label: env.label,
-            isSaved: true,
-            isChecked: filterApplied.environments.has(env.key),
-        }
-    })
     setMasterFilters(_masterFilters)
     ////// update master filters data ends (check/uncheck)
 
-    let sortBy = params.orderBy || SortBy.APP_NAME
-    let sortOrder = params.sortOrder || OrderBy.ASC
+    const sortBy = params.orderBy || SortBy.APP_NAME
+    const sortOrder = params.sortOrder || OrderBy.ASC
     let offset = +params.offset || 0
-    let hOffset = +params.hOffset || 0
     let pageSize: number = +params.pageSize || 20
-    let pageSizes = new Set([20, 40, 50])
+    const pageSizes = new Set([20, 40, 50])
 
     if (!pageSizes.has(pageSize)) {
         //handle invalid pageSize
@@ -261,44 +205,25 @@ export const onRequestUrlChange = (
         //pageSize must be a multiple of offset
         offset = 0
     }
-    if (hOffset % pageSize != 0) {
-        //pageSize must be a multiple of offset
-        hOffset = 0
-    }
 
-    let payload = {
-        environments: environmentsArr,
+    return {
         teams: teamsArr,
-        namespaces: clustersAndNamespaces
-            .toString()
-            .split(',')
-            .filter((item) => item != ''),
         appNameSearch: search,
         appStatuses: appStatusArr,
         sortBy: sortBy,
         sortOrder: sortOrder,
         offset: offset,
-        hOffset: hOffset,
         size: +pageSize,
     }
+}
 
-    // check whether to fetch namespaces from backend if any cluster is selected and not same as old
-    // do it only for non page load, as on pageload getInitData is handling this logic
-    if (dataStateType == AppListViewType.LIST) {
-        let _oldClusterIdsCsv = _getClusterIdsFromRequestUrl(parsedPayloadOnUrlChange)
-        let _newClusterIdsCsv = _getClusterIdsFromRequestUrl(payload)
-        if (_newClusterIdsCsv) {
-            // check if cluster selection is changed
-            if (_oldClusterIdsCsv != _newClusterIdsCsv) {
-                // fetch namespaces
-                _fetchAndSetNamespaces(payload, _newClusterIdsCsv, _masterFilters)
-            }
-        } else {
-            // if all clusters are unselected, then reset namespaces
-            _masterFilters.namespaces = []
-            setMasterFilters(_masterFilters)
-        }
+export const populateQueryString = (searchParams: string): Record<string, any> => {
+    const qs = queryString.parse(searchParams)
+    const keys = Object.keys(qs)
+    const query = {}
+
+    for (const key of keys) {
+        query[key] = qs[key]
     }
-
-    return payload
+    return query
 }

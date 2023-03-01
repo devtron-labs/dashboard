@@ -1,8 +1,13 @@
-import { Routes } from '../../config'
+import moment from 'moment'
+import { Moment12HourFormat, Routes, ZERO_TIME_STRING } from '../../config'
 import { get, post } from '../../services/api'
 import { APIOptions } from '../../services/service.types'
+import { APP_STATUS } from '../app/config'
+import { sortOptionsByLabel } from '../common'
+import { getProjectList } from '../project/service'
+import { JobCIPipeline } from './Types'
 
-export const getJobs = (request, options: APIOptions) => {
+export const getJobs = (request, options?: APIOptions) => {
     return post(Routes.JOB_LIST, request, options)
 }
 
@@ -16,4 +21,116 @@ export const getJobCIPipelines = (jobId: number) => {
 
 export const patchJobCIPipeline = (request) => {
     return post(Routes.JOB_CI_PIPELINE_PATCH, request)
+}
+
+export const getJobsInitData = (payloadParsedFromUrl: Record<string, any>): Promise<any> => {
+    return getProjectList().then((projectsRes) => {
+        const filterApplied = {
+            teams: new Set(payloadParsedFromUrl.teams),
+            appStatus: new Set(payloadParsedFromUrl.appStatuses),
+        }
+        const filters = {
+            projects: [],
+            appStatus: [],
+        }
+
+        // set filter projects starts
+        filters.projects = (
+            projectsRes.result
+                ? projectsRes.result.map((team) => {
+                      return {
+                          key: team.id,
+                          label: team.name.toLocaleLowerCase(),
+                          isSaved: true,
+                          isChecked: filterApplied.teams.has(team.id),
+                      }
+                  })
+                : []
+        ).sort((a, b) => {
+            return sortOptionsByLabel(a, b)
+        })
+
+        // set filter appStatus starts
+        filters.appStatus = Object.entries(APP_STATUS).map(([keys, values]) => {
+            return {
+                key: values,
+                label: keys,
+                isSaved: true,
+                isChecked: filterApplied.appStatus.has(values),
+            }
+        })
+
+        return {
+            projectsRes: projectsRes,
+            filters: filters,
+        }
+    })
+}
+
+export const getAppListDataToExport = (
+    payloadParsedFromUrl: Record<string, any>,
+    searchString: string,
+    jobCount: number,
+) => {
+    return getJobs(
+        typeof payloadParsedFromUrl === 'object'
+            ? {
+                  ...payloadParsedFromUrl,
+                  appStatuses: payloadParsedFromUrl.appStatuses ?? [],
+                  appNameSearch: searchString || '',
+                  sortBy: 'appNameSort',
+                  sortOrder: 'ASC',
+                  size: jobCount,
+              }
+            : {
+                  teams: [],
+                  appStatuses: [],
+                  appNameSearch: '',
+                  sortBy: 'appNameSort',
+                  sortOrder: 'ASC',
+                  offset: 0,
+                  size: jobCount,
+              },
+    ).then(({ result }) => {
+        if (result.jobContainers) {
+            const _jobDataList = []
+            for (const _job of result.jobContainers) {
+                if (_job.ciPipelines?.length > 0) {
+                    for (let _pipeline of _job.ciPipelines as JobCIPipeline[]) {
+                        _jobDataList.push({
+                            jobId: _job.jobId,
+                            jobName: _job.jobName,
+                            description: _job.description || '-',
+                            ciPipelineId: _pipeline.ciPipelineId,
+                            ciPipelineName: _pipeline.ciPipelineName,
+                            status: _pipeline.status || '-',
+                            lastRunAt:
+                                _pipeline.lastRunAt && _pipeline.lastRunAt !== ZERO_TIME_STRING
+                                    ? moment(_pipeline.lastRunAt).format(Moment12HourFormat)
+                                    : '-',
+                            lastSuccessAt:
+                                _pipeline.lastSuccessAt && _pipeline.lastSuccessAt !== ZERO_TIME_STRING
+                                    ? moment(_pipeline.lastSuccessAt).format(Moment12HourFormat)
+                                    : '-',
+                        })
+                    }
+                } else {
+                    _jobDataList.push({
+                        jobId: _job.jobId,
+                        jobName: _job.jobName,
+                        description: _job.description || '-',
+                        ciPipelineId: '-',
+                        ciPipelineName: '-',
+                        status: '-',
+                        lastRunAt: '-',
+                        lastSuccessAt: '-',
+                    })
+                }
+            }
+
+            return _jobDataList
+        }
+
+        return []
+    })
 }
