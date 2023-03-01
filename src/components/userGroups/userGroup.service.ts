@@ -1,6 +1,6 @@
 import { getAppListMin, getTeamListMin, getEnvironmentListMin } from '../../services/service'
 import { get, post, put, trash } from '../../services/api'
-import { ResponseType } from '../../services/service.types'
+import { APIOptions, ResponseType } from '../../services/service.types'
 import { CreateGroup, CreateUser } from './userGroups.types'
 import { Routes } from '../../config'
 
@@ -62,11 +62,37 @@ export function getParsedData(teamList, appList, environmentList) {
 }
 
 export function saveUser(request: CreateUser) {
-    return request.id ? put(`user`, request) : post(`user`, request)
+    const options: APIOptions = {
+        timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : 30,
+    }
+    console.log(window._env_.CONFIGURABLE_TIMEOUT)
+    console.log(options.timeout)
+    return request.id
+        ? window._env_.CONFIGURABLE_TIMEOUT
+            ? put(`user`, request, options)
+            : put(`user`, request)
+        : window._env_.CONFIGURABLE_TIMEOUT
+        ? post(`user`, request, options)
+        : post(`user`, request)
 }
 
 export function saveGroup(request: CreateGroup) {
-    return request.id ? put(`user/role/group`, request) : post(`user/role/group`, request)
+    const options: APIOptions = {
+        timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : 30,
+    }
+    console.log(window._env_.CONFIGURABLE_TIMEOUT)
+    console.log(window._env_.HOTJAR_ENABLED)
+    console.log(options.timeout)
+    console.log(window._env_.SENTRY_ENV)
+    
+    
+    return request.id
+        ? window._env_.CONFIGURABLE_TIMEOUT
+            ? put(`user/role/group`, request, options)
+            : put(`user/role/group`, request)
+        : window._env_.CONFIGURABLE_TIMEOUT
+        ? post(`user/role/group`, request, options)
+        : post(`user/role/group`, request)
 }
 
 export function userModal(user) {
