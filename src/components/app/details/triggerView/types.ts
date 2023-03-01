@@ -81,6 +81,7 @@ export interface CDMaterialType {
         commitLink: string
         tag: string
         webhookData: string
+        branch: string
     }[]
     tab: CDMdalTabType
     scanEnabled: boolean
