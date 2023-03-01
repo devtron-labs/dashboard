@@ -60,7 +60,7 @@ export default function JobDetails() {
                             <TriggerView isJobView={true} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                            <CIDetails key={appId} />
+                            <CIDetails key={appId} isJobView={true} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_CONFIG}`}>
                             <AppConfig appName={jobName} isJobView={true} />

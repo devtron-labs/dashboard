@@ -25,7 +25,7 @@ import LogsRenderer from '../cicdHistory/LogsRenderer'
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
 
-export default function CIDetails() {
+export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     const { appId, pipelineId, buildId } = useParams<{
         appId: string
         pipelineId: string
@@ -155,6 +155,7 @@ export default function CIDetails() {
                                             isBlobStorageConfigured={
                                                 initDataResults[2]?.['value']?.['result']?.enabled || false
                                             }
+                                            isJobView={isJobView}
                                         />
                                     </Route>
                                 ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
@@ -188,6 +189,7 @@ const Details = ({
     triggerHistory,
     isSecurityModuleInstalled,
     isBlobStorageConfigured,
+    isJobView,
 }: BuildDetails) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
@@ -293,12 +295,13 @@ const Details = ({
                 key={triggerDetails.id}
                 triggerDetails={triggerDetails}
                 isBlobStorageConfigured={isBlobStorageConfigured}
+                isJobView={isJobView}
             />
         </>
     )
 }
 
-const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured }: HistoryLogsType) => {
+const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView }: HistoryLogsType) => {
     let { path } = useRouteMatch()
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
@@ -334,13 +337,15 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured }: HistoryLogsTyp
                         getArtifactPromise={() => getArtifact(pipelineId, buildId)}
                     />
                 </Route>
-                <Route path={`${path}/security`}>
-                    <SecurityTab
-                        ciPipelineId={triggerDetails.ciPipelineId}
-                        artifactId={triggerDetails.artifactId}
-                        status={triggerDetails.status}
-                    />
-                </Route>
+                {!isJobView && (
+                    <Route path={`${path}/security`}>
+                        <SecurityTab
+                            ciPipelineId={triggerDetails.ciPipelineId}
+                            artifactId={triggerDetails.artifactId}
+                            status={triggerDetails.status}
+                        />
+                    </Route>
+                )}
                 <Redirect
                     to={triggerDetails.status.toLowerCase() === 'succeeded' ? `${path}/artifacts` : `${path}/logs`}
                 />

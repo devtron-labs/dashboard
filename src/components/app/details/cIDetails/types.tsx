@@ -14,11 +14,13 @@ export interface BuildDetails {
     synchroniseState: (triggerId: number, triggerDetails: History) => void
     isSecurityModuleInstalled: boolean
     isBlobStorageConfigured: boolean
+    isJobView?: boolean
 }
 
 export interface HistoryLogsType {
     triggerDetails: History
     isBlobStorageConfigured?: boolean
+    isJobView?: boolean
 }
 
 export interface SecurityTabType {
