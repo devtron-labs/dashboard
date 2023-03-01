@@ -139,6 +139,45 @@ export default function EnvCIDetails({ filteredApps }: AppGroupDetailDefaultType
     const pipelinesMap = mapByKey(pipelineList, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
 
+    const renderPipelineDetails = (): JSX.Element | null => {
+        if (triggerHistory.size > 0) {
+            return (
+                <Route
+                    path={`${path
+                        .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
+                        .replace(':buildId(\\d+)?', ':buildId(\\d+)')}`}
+                >
+                    <Details
+                        fullScreenView={fullScreenView}
+                        synchroniseState={synchroniseState}
+                        triggerHistory={triggerHistory}
+                        isSecurityModuleInstalled={initDataResults.securityModuleInstalled || false}
+                        isBlobStorageConfigured={initDataResults?.blobStorageConfigured || false}
+                    />
+                </Route>
+            )
+        } else if (pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED') {
+            return (
+                <EmptyView
+                    title="This is a Linked CI Pipeline"
+                    subTitle="This is a Linked CI Pipeline"
+                    link={`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
+                    linkText="View Source Pipeline"
+                />
+            )
+        } else {
+            if (!loading) {
+                return (
+                    <EmptyView
+                        title="Build pipeline not triggered"
+                        subTitle="Pipeline trigger history, details and logs will be available here."
+                    />
+                )
+            }
+        }
+        return null
+    }
+
     return (
         <>
             <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
@@ -160,39 +199,7 @@ export default function EnvCIDetails({ filteredApps }: AppGroupDetailDefaultType
                             subTitle="Please select an application to see build history."
                         />
                     ) : (
-                        pipeline && (
-                            <>
-                                {triggerHistory.size > 0 ? (
-                                    <Route
-                                        path={`${path
-                                            .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
-                                            .replace(':buildId(\\d+)?', ':buildId(\\d+)')}`}
-                                    >
-                                        <Details
-                                            fullScreenView={fullScreenView}
-                                            synchroniseState={synchroniseState}
-                                            triggerHistory={triggerHistory}
-                                            isSecurityModuleInstalled={initDataResults.securityModuleInstalled || false}
-                                            isBlobStorageConfigured={initDataResults?.blobStorageConfigured || false}
-                                        />
-                                    </Route>
-                                ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
-                                    <EmptyView
-                                        title="This is a Linked CI Pipeline"
-                                        subTitle="This is a Linked CI Pipeline"
-                                        link={`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
-                                        linkText="View Source Pipeline"
-                                    />
-                                ) : (
-                                    !loading && (
-                                        <EmptyView
-                                            title="Build pipeline not triggered"
-                                            subTitle="Pipeline trigger history, details and logs will be available here."
-                                        />
-                                    )
-                                )}
-                            </>
-                        )
+                        pipeline && renderPipelineDetails()
                     )}
                     <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
                 </div>

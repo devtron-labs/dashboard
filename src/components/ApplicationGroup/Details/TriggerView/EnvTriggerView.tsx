@@ -244,7 +244,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                         if (!_preNodeExist && app.preNodeAvailable) {
                             _preNodeExist = true
                         }
-                        if (!_postNodeExist && app.preNodeAvailable) {
+                        if (!_postNodeExist && app.postNodeAvailable) {
                             _postNodeExist = true
                         }
                         if (_preNodeExist && _postNodeExist) {

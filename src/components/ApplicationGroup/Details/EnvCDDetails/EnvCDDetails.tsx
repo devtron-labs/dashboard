@@ -29,11 +29,11 @@ export default function EnvCDDetails({ filteredApps }: AppGroupDetailDefaultType
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [pipelineList, setPipelineList] = useState([])
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
-    const [loading, result, error] = useAsync(
+    const [loading, result] = useAsync(
         () => Promise.allSettled([getCDConfig(envId), getModuleConfigured(ModuleNameMap.BLOB_STORAGE)]),
         [envId],
     )
-    const [loadingDeploymentHistory, deploymentHistoryResult, deploymentHistoryError, , , dependencyState] = useAsync(
+    const [loadingDeploymentHistory, deploymentHistoryResult, , , , dependencyState] = useAsync(
         () => getTriggerHistory(+appId, +envId, pipelineId, pagination),
         [pagination, appId, envId],
         !!appId && !!pipelineId,
@@ -152,6 +152,43 @@ export default function EnvCDDetails({ filteredApps }: AppGroupDetailDefaultType
         }
     })
 
+    const renderDetail = (): JSX.Element => {
+        if (triggerHistory.size > 0) {
+            return (
+                <Route
+                    path={`${path
+                        .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
+                        .replace(':appId(\\d+)?', ':appId(\\d+)')}`}
+                >
+                    <TriggerOutput
+                        fullScreenView={fullScreenView}
+                        syncState={syncState}
+                        triggerHistory={triggerHistory}
+                        setFullScreenView={setFullScreenView}
+                        setDeploymentHistoryList={setDeploymentHistoryList}
+                        deploymentHistoryList={deploymentHistoryList}
+                        deploymentAppType={deploymentAppType}
+                        isBlobStorageConfigured={result[1]?.['value']?.result?.enabled || false}
+                    />
+                </Route>
+            )
+        } else if (!appId) {
+            return (
+                <EmptyView
+                    title="No application selected"
+                    subTitle="Please select an application to see deployment history."
+                />
+            )
+        } else {
+            return (
+                <EmptyView
+                    title="No deployments"
+                    subTitle={`No deployment history available for the ${selectedApp?.appName} application.`}
+                />
+            )
+        }
+    }
+
     return (
         <>
             <div className={`ci-details  ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
@@ -167,34 +204,7 @@ export default function EnvCDDetails({ filteredApps }: AppGroupDetailDefaultType
                     </div>
                 )}
                 <div className="ci-details__body">
-                    {triggerHistory.size > 0 ? (
-                        <Route
-                            path={`${path
-                                .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
-                                .replace(':appId(\\d+)?', ':appId(\\d+)')}`}
-                        >
-                            <TriggerOutput
-                                fullScreenView={fullScreenView}
-                                syncState={syncState}
-                                triggerHistory={triggerHistory}
-                                setFullScreenView={setFullScreenView}
-                                setDeploymentHistoryList={setDeploymentHistoryList}
-                                deploymentHistoryList={deploymentHistoryList}
-                                deploymentAppType={deploymentAppType}
-                                isBlobStorageConfigured={result[1]?.['value']?.result?.enabled || false}
-                            />
-                        </Route>
-                    ) : !appId ? (
-                        <EmptyView
-                            title="No application selected"
-                            subTitle="Please select an application to see deployment history."
-                        />
-                    ) : (
-                        <EmptyView
-                            title="No deployments"
-                            subTitle={`No deployment history available for the ${selectedApp?.appName} application.`}
-                        />
-                    )}
+                    {renderDetail()}
                     {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
                 </div>
             </div>
