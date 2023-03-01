@@ -2,9 +2,9 @@ import moment from 'moment'
 import { Moment12HourFormat, Routes, ZERO_TIME_STRING } from '../../config'
 import { get, post } from '../../services/api'
 import { APIOptions } from '../../services/service.types'
-import { APP_STATUS } from '../app/config'
 import { sortOptionsByLabel } from '../common'
 import { getProjectList } from '../project/service'
+import { JOB_STATUS } from './Constants'
 import { JobCIPipeline } from './Types'
 
 export const getJobs = (request, options?: APIOptions) => {
@@ -51,7 +51,7 @@ export const getJobsInitData = (payloadParsedFromUrl: Record<string, any>): Prom
         })
 
         // set filter appStatus starts
-        filters.appStatus = Object.entries(APP_STATUS).map(([keys, values]) => {
+        filters.appStatus = Object.entries(JOB_STATUS).map(([keys, values]) => {
             return {
                 key: values,
                 label: keys,
