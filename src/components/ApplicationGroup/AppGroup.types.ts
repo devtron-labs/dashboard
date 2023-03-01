@@ -1,6 +1,7 @@
 import { MultiValue } from 'react-select'
 import {
     CDMdalTabType,
+    CiPipeline,
     DeploymentNodeType,
     WebhookPayloads,
     WorkflowNodeType,
@@ -221,7 +222,7 @@ export interface AppGroupDetailDefaultType {
   filteredApps: MultiValue<OptionType>
 }
 export interface CIConfigListType {
-    pipelineList: any
-    securityInfo: any
-    moduleConfig: any
+    pipelineList: CiPipeline[]
+    securityModuleInstalled: boolean
+    blobStorageConfigured: boolean
 }

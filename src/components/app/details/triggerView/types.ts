@@ -486,6 +486,9 @@ export interface CiPipeline {
     afterDockerBuildScripts?: Array<CiScript>
     isDockerConfigOverridden?: boolean
     dockerConfigOverride?: DockerConfigOverrideType
+    appName?: string
+    appId?: string
+    componentId?: number
 }
 
 export interface Material {

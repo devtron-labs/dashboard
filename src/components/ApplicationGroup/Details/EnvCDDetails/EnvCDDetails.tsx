@@ -13,9 +13,10 @@ import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../.
 import { DeploymentTemplateList } from '../../../app/details/cdDetails/cd.type'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
 import { Route } from 'react-router-dom'
-import '../../../app/details/appDetails/appDetails.scss';
+import '../../../app/details/appDetails/appDetails.scss'
+import { AppGroupDetailDefaultType } from '../../AppGroup.types'
 
-export default function EnvCDDetails() {
+export default function EnvCDDetails({ filteredApps }: AppGroupDetailDefaultType) {
     const { appId, envId, triggerId, pipelineId } = useParams<{
         appId: string
         envId: string
@@ -26,14 +27,10 @@ export default function EnvCDDetails() {
     const [hasMore, setHasMore] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
-
+    const [pipelineList, setPipelineList] = useState([])
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [loading, result, error] = useAsync(
-        () =>
-            Promise.allSettled([
-                getCDConfig(envId),
-                getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
-            ]),
+        () => Promise.allSettled([getCDConfig(envId), getModuleConfigured(ModuleNameMap.BLOB_STORAGE)]),
         [envId],
     )
     const [loadingDeploymentHistory, deploymentHistoryResult, deploymentHistoryError, , , dependencyState] = useAsync(
@@ -45,6 +42,36 @@ export default function EnvCDDetails() {
     const { replace } = useHistory()
     useInterval(pollHistory, 30000)
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
+
+    useEffect(() => {
+        if (filteredApps.length && result?.[0]?.['value']?.result?.pipelines.length) {
+            const _filteredAppMap = new Map<number, string>()
+            filteredApps.forEach((app) => {
+                _filteredAppMap.set(+app.value, app.label)
+            })
+            const _filteredPipelines = []
+            let nonWebhookCIExist = false
+            let selectedPipelineExist = false
+            result[0]['value'].result.pipelines.forEach((pipeline) => {
+                if (pipeline.environmentId === +envId && _filteredAppMap.get(+pipeline.appId)) {
+                    _filteredPipelines.push(pipeline)
+                    nonWebhookCIExist = true
+                    selectedPipelineExist = selectedPipelineExist || pipeline.id === +pipelineId
+                }
+            })
+            if (!selectedPipelineExist) {
+                replace(
+                    generatePath(path, {
+                        envId,
+                        appId: _filteredPipelines[0].appId,
+                        pipelineId: _filteredPipelines[0].id,
+                    }),
+                )
+            }
+            setPipelineList(_filteredPipelines)
+        }
+    }, [filteredApps, result?.[0]?.['value']?.result?.pipelines])
+
     useEffect(() => {
         // check for more
         if (loading || !deploymentHistoryResult) return
@@ -62,11 +89,11 @@ export default function EnvCDDetails() {
     }, [deploymentHistoryResult, loading])
 
     useEffect(() => {
-      return () => {
-          setTriggerHistory(new Map())
-          setHasMoreLoading(false)
-      }
-  }, [appId])
+        return () => {
+            setTriggerHistory(new Map())
+            setHasMoreLoading(false)
+        }
+    }, [appId])
 
     async function pollHistory() {
         // polling
@@ -99,17 +126,13 @@ export default function EnvCDDetails() {
 
     if ((!hasMoreLoading && loading) || (loadingDeploymentHistory && triggerHistory.size === 0)) {
         return <Progressing pageLoader />
-    } else if (
-        result &&
-        !Array.isArray(result[0]?.['value']?.result?.pipelines)
-    ) {
+    } else if (result && !Array.isArray(result[0]?.['value']?.result?.pipelines)) {
         return <AppNotConfigured />
     } else if (!result || (appId && dependencyState[1] !== appId)) {
         return null
     }
 
-    const pipelines = result[0]?.['value']?.result?.pipelines.filter((pipeline) => pipeline.environmentId === +envId) || []
-    const deploymentAppType = pipelines.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
+    const deploymentAppType = pipelineList.find((pipeline) => pipeline.id === Number(pipelineId))?.deploymentAppType
 
     if (!triggerId && appId && pipelineId && deploymentHistoryResult?.result?.length) {
         replace(
@@ -121,9 +144,9 @@ export default function EnvCDDetails() {
             }),
         )
     }
-    const selectedApp = pipelines.find((envData) => envData.appId === +appId)
+    const selectedApp = pipelineList.find((envData) => envData.appId === +appId)
 
-    const envOptions: CICDSidebarFilterOptionType[] = pipelines.map((item) => {
+    const envOptions: CICDSidebarFilterOptionType[] = pipelineList.map((item) => {
         return {
             value: `${item.appId}`,
             label: item.appName,
@@ -131,9 +154,6 @@ export default function EnvCDDetails() {
         }
     })
 
-    if(envOptions.length === 1 && !appId){
-      replace(generatePath(path, { envId, appId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
-    }
     return (
         <>
             <div className={`ci-details  ${fullScreenView ? 'ci-details--full-screen' : ''}`}>

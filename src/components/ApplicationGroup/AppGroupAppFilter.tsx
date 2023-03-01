@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import ReactSelect, { components, MultiValue } from 'react-select'
 import { ReactComponent as ShowIcon } from '../../assets/icons/ic-visibility-on.svg'
+import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-visibility-on-filter.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { OptionType } from '../app/types'
@@ -19,7 +20,11 @@ const ValueContainer = (props) => {
                 <>
                     {!props.selectProps.menuIsOpen ? (
                         <>
-                            <ShowIcon className="icon-dim-16 mr-4 mw-18" />
+                            {selectedAppsLength > 0 ? (
+                                <ShowIconFilter className="icon-dim-16 mr-4 mw-18" />
+                            ) : (
+                                <ShowIcon className="icon-dim-16 mr-4 mw-18" />
+                            )}
                             <span className="dc__position-abs dc__left-35 cn-9 ml-2">{selectorText}</span>
                         </>
                     ) : (
@@ -47,9 +52,7 @@ const Option = (props) => {
     }
 
     return (
-        <div
-            className={`flex left pl-8 ${getOptionBGClass(props.isSelected, props.isFocused)}`}
-        >
+        <div className={`flex left pl-8 ${getOptionBGClass(props.isSelected, props.isFocused)}`}>
             <components.Option {...props} />
             {props.isSelected && <ShowIcon className="icon-dim-16 scb-5 mr-4 mw-18 cursor" onClick={selectData} />}
         </div>

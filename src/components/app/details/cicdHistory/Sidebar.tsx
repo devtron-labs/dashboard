@@ -63,7 +63,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
         }
     }
 
-    const selectedFilter = filterOptions?.find((filterOption) => filterOption.value === filterOptionType())
+    const selectedFilter = filterOptions?.find((filterOption) => filterOption.value === filterOptionType()) ?? null
 
     const _filterOptions = filterOptions?.filter((filterOption) => !filterOption.deploymentAppDeleteRequest)
 

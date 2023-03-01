@@ -106,12 +106,12 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                                 <EnvTriggerView filteredApps={_filteredApps} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                                <EnvCIDetails />
+                                <EnvCIDetails filteredApps={_filteredApps} />
                             </Route>
                             <Route
                                 path={`${path}/${URLS.APP_CD_DETAILS}/:appId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
                             >
-                                <EnvCDDetails />
+                                <EnvCDDetails filteredApps={_filteredApps} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_CONFIG}`}>
                                 <EnvConfig filteredApps={_filteredApps} />

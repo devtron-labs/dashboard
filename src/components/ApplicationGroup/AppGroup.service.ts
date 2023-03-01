@@ -6,6 +6,7 @@ import {
     NodeAttr,
     PipelineType,
     WorkflowNodeType,
+    CiPipeline,
 } from '../app/details/triggerView/types'
 import { WebhookListResponse } from '../ciPipeline/Webhook/types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
@@ -16,6 +17,7 @@ import { ResponseType } from '../../services/service.types'
 import { CIConfigListType, ConfigAppList, EnvApp, EnvDeploymentStatus, WorkflowsResponseType } from './AppGroup.types'
 import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 export function getEnvWorkflowList(envId: string) {
     return get(`${Routes.ENV_WORKFLOW}/${envId}/${Routes.APP_WF}`)
@@ -72,7 +74,7 @@ export const getWorkflows = (envID: string): Promise<WorkflowsResponseType> => {
 
 export const getCIConfigList = (envID: string): Promise<CIConfigListType> => {
     const pipelineList = []
-    const _appCIPipelineMap: Map<string, any> = new Map()
+    const _appCIPipelineMap: Map<string, CiPipeline> = new Map()
     return Promise.all([
         getEnvWorkflowList(envID),
         getCIConfig(envID),
@@ -91,7 +93,11 @@ export const getCIConfigList = (envID: string): Promise<CIConfigListType> => {
                 pipelineList.push({ ...pipelineData, appName: item.appName, appId: item.appId })
             }
         })
-        return { pipelineList, securityInfo, moduleConfig }
+        return {
+            pipelineList,
+            securityModuleInstalled: securityInfo?.['value']?.['result']?.status === ModuleStatus.INSTALLED,
+            blobStorageConfigured: moduleConfig?.['value']?.['result']?.enabled,
+        }
     })
 }
 
@@ -137,7 +143,7 @@ function getParentNode(nodes: Map<string, NodeAttr>, node: NodeAttr): NodeAttr |
     const type = node.preNode ? WorkflowNodeType.PRE_CD : node.type
 
     if (!!parentNode) {
-        (parentNode.postNode ? parentNode.postNode : parentNode).downstreams = [type + '-' + node.id]
+        ;(parentNode.postNode ? parentNode.postNode : parentNode).downstreams = [type + '-' + node.id]
         parentNode.downstreamNodes = [node]
     }
     return parentNode
@@ -164,14 +170,14 @@ export const getEnvAppList = (params?: {
     offset?: string
     size?: string
 }): Promise<EnvAppType> => {
-    if(params){
+    if (params) {
         const urlParams = Object.entries(params).map(([key, value]) => {
             if (!value) return
             return `${key}=${value}`
         })
         return get(`${Routes.ENVIRONMENT_APPS}?${urlParams.filter((s) => s).join('&')}`)
     }
-    return  get(Routes.ENVIRONMENT_APPS)
+    return get(Routes.ENVIRONMENT_APPS)
 }
 
 export const getDeploymentStatus = (envId: number): Promise<EnvDeploymentStatusType> => {
