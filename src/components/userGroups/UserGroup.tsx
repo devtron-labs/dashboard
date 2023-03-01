@@ -211,7 +211,7 @@ export default function UserGroupRoute() {
         if (!lists) return
         lists.forEach((list) => {
             if (list.status === 'rejected') {
-                showError(list.reason)
+                showError(list.reason,true,true)
             }
         })
     }, [lists])
@@ -242,7 +242,7 @@ export default function UserGroupRoute() {
                 )
             })
         } catch (error) {
-            showError(error,true,true)
+            showError(error)
             setAppsList((appList) => {
                 return missingProjects.reduce((appList, projectId) => {
                     appList.set(projectId, { loading: false, result: [], error })
