@@ -24,6 +24,7 @@ import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../.
 import { AuthenticationType } from '../cluster/cluster.type';
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar';
+import { safeTrim } from '../../util/Util';
 
 export default function GitProvider({ ...props }) {
     const [loading, result, error, reload] = useAsync(getGitProviderList);
@@ -396,7 +397,7 @@ function GitForm({
                 ? { username: customState.username.value, password: customState.password.value }
                 : {}),
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {}),
-            ...(state.auth.value === 'SSH' ? { sshPrivateKey: customState.sshInput.value } : {}),
+            ...(state.auth.value === 'SSH' ? { sshPrivateKey: safeTrim(customState.sshInput.value) } : {}),
         };
 
         const api = id ? updateGitProviderConfig : saveGitProviderConfig;
@@ -532,7 +533,7 @@ function GitForm({
                 <div className="form__row form__row--two-third">
                     <div>
                         <div>
-                            <label className="form__label">Git host*</label>
+                            <label className="form__label dc__required-field">Git host</label>
                             <ReactSelect
                                 name="host"
                                 value={gitHost.value}
@@ -645,7 +646,7 @@ function GitForm({
                 )}
                 {state.auth.value === 'SSH' && (
                     <div className="form__row ">
-                        <div className="form__label">Private SSH key*</div>
+                        <div className="form__label dc__required-field">Private SSH key</div>
                         <textarea
                             placeholder="Enter key text"
                             className="form__input w-100"

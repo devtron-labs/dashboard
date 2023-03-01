@@ -14,7 +14,6 @@ import { toast } from 'react-toastify'
 
 export default function ResourceBrowserActionMenu({
     clusterId,
-    namespace,
     resourceData,
     selectedResource,
     getResourceListData,
@@ -44,7 +43,7 @@ export default function ResourceBrowserActionMenu({
 
             await deleteResource(resourceDeletePayload)
             toast.success('Resource deleted successfully')
-            getResourceListData()
+            getResourceListData(true)
         } catch (err) {
             showError(err)
         } finally {
@@ -59,7 +58,7 @@ export default function ResourceBrowserActionMenu({
     return (
         <>
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex" isKebab={true}>
+                <PopupMenu.Button rootClassName="flex ml-auto" isKebab={true}>
                     <MenuDots className="node-actions-menu-icon icon-dim-16" />
                 </PopupMenu.Button>
                 <PopupMenu.Body rootClassName="dc__border pt-4 pb-4 w-120">

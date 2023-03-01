@@ -1,4 +1,5 @@
 import moment from 'moment-timezone';
+import { ZERO_TIME_STRING } from '../../../config';
 
 export function ISTTimeModal(ts: string, isRelativeTime = false) {
     let timestamp = "";
@@ -7,7 +8,7 @@ export function ISTTimeModal(ts: string, isRelativeTime = false) {
             let date = moment(ts)
             if(isRelativeTime){
                 // check for minimum date (zero date) (Invoking an empty time.Time struct literal will return Go's zero date)
-                if(ts != '0001-01-01T00:00:00Z'){
+                if(ts != ZERO_TIME_STRING){
                     timestamp = date.fromNow();
                 }
             }
@@ -33,4 +34,17 @@ export function handleUTCTime(ts: string, isRelativeTime = false) {
         console.error("Error Parsing Date:", ts);
     }
     return timestamp;
+}
+
+export const formatDurationDiff = (startedOn: string, finishedOn: string) => {
+   const diff : moment.Duration = moment.duration(moment(finishedOn).diff(moment(startedOn)))
+   return `${diff.hours() > 0 ? `${diff.hours()}h ` : ''}${diff.minutes() >0 ? `${diff.minutes()}m ` : ''}${diff.seconds()}s` 
+}
+
+export const processDeployedTime = (lastDeployed, isAgroInstalled) => {
+    if (lastDeployed) {
+        return handleUTCTime(lastDeployed, true)
+    } else {
+        return isAgroInstalled ? '' : 'Not deployed'
+    }
 }

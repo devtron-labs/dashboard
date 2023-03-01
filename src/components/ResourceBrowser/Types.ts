@@ -21,6 +21,7 @@ export interface ResourceListResponse extends ResponseType {
 export interface ApiResourceGroupType {
     gvk: GVKType
     namespaced: boolean
+    isGrouped?: boolean
 }
 
 export interface ApiResourceType {
@@ -32,10 +33,23 @@ export interface APIResourceResponse extends ResponseType {
     result?: ApiResourceType
 }
 
-export interface K8SObjectType {
+export interface K8SObjectBaseType {
     name: string
     isExpanded: boolean
+}
+
+export interface K8SObjectType extends K8SObjectBaseType {
     child: ApiResourceGroupType[]
+}
+
+export interface K8SObjectChildMapType {
+    isGrouped?: boolean
+    isExpanded: boolean
+    data: ApiResourceGroupType[]
+}
+
+export interface K8SObjectMapType extends K8SObjectBaseType {
+    child: Map<string, K8SObjectChildMapType>
 }
 
 export interface ResourceListPayloadType {
@@ -77,7 +91,7 @@ export interface ResourceDetailsPropType extends LogSearchTermType {
 }
 
 export interface ClusterSelectionType {
-    clusterOptions: OptionType[]
+    clusterOptions: ClusterOptionType[]
     onChangeCluster: (selectedCluster: OptionType, fromClusterSelect?: boolean) => void
 }
 
@@ -87,39 +101,57 @@ export interface CreateResourceType {
 }
 
 export interface SidebarType {
-    k8SObjectList: K8SObjectType[]
-    handleGroupHeadingClick: (e) => void
+    k8SObjectMap: Map<string, K8SObjectMapType>
+    handleGroupHeadingClick: (e: any, preventCollapse?: boolean) => void
+    selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
     updateResourceSelectionData: (_selected: ApiResourceGroupType) => void
+    isCreateModalOpen: boolean
 }
 
-export interface K8SResourceListType {
+export interface ResourceFilterOptionsProps {
     selectedResource: ApiResourceGroupType
     resourceList: ResourceDetailType
-    filteredResourceList: Record<string, any>[]
-    setFilteredResourceList: React.Dispatch<React.SetStateAction<Record<string, any>[]>>
-    noResults: boolean
     clusterOptions: OptionType[]
     selectedCluster: OptionType
     onChangeCluster: (selectedCluster: OptionType, fromClusterSelect?: boolean) => void
     namespaceOptions: OptionType[]
     selectedNamespace: OptionType
     setSelectedNamespace: React.Dispatch<React.SetStateAction<OptionType>>
-    resourceListLoader: boolean
-    getResourceListData: () => Promise<void>
-    updateNodeSelectionData: (_selected: Record<string, any>) => void
+    hideSearchInput?: boolean
     searchText: string
     setSearchText: React.Dispatch<React.SetStateAction<string>>
     searchApplied: boolean
     setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
+    handleFilterChanges: (_searchText: string, _resourceList: ResourceDetailType) => void
+    clearSearch: () => void
+    isNamespaceSelectDisabled?: boolean
+    isSearchInputDisabled?: boolean
+    isCreateModalOpen?: boolean
+}
+
+export interface K8SResourceListType extends ResourceFilterOptionsProps {
+    filteredResourceList: Record<string, any>[]
+    noResults: boolean
+    resourceListLoader: boolean
+    getResourceListData: () => Promise<void>
+    updateNodeSelectionData: (_selected: Record<string, any>) => void
+    isCreateModalOpen: boolean
+    addTab: (
+        idPrefix: string,
+        kind: string,
+        name: string,
+        url: string,
+        positionFixed?: boolean,
+        iconPath?: string,
+    ) => boolean
 }
 
 export interface ResourceBrowserActionMenuType {
     clusterId: string
-    namespace: string
     resourceData: Record<string, any>
     selectedResource: ApiResourceGroupType
-    getResourceListData: () => Promise<void>
+    getResourceListData: (retainSearched?: boolean) => Promise<void>
     handleResourceClick: (e: any) => void
 }
 
@@ -132,6 +164,37 @@ export interface ResourceListEmptyStateType {
 }
 
 export interface EventListType {
+    listRef: React.MutableRefObject<HTMLDivElement>
     filteredData: Record<string, any>[]
     handleResourceClick: (e: any) => void
+    paginatedView: boolean
+}
+
+export interface ClusterOptionType extends OptionType {
+    errorInConnecting: string
+}
+
+export interface ConnectingToClusterStateProps extends ResourceFilterOptionsProps {
+    loader: boolean
+    errorMsg: string
+    setErrorMsg: React.Dispatch<React.SetStateAction<string>>
+    setSelectedCluster: React.Dispatch<React.SetStateAction<ClusterOptionType>>
+    showSelectClusterState: boolean
+    setShowSelectClusterState: React.Dispatch<React.SetStateAction<boolean>>
+    handleRetry: (e) => void
+    sideDataAbortController: {
+        prev: AbortController
+        new: AbortController
+    }
+}
+
+export interface K8sObjectOptionType extends OptionType {
+    dataset: {
+        group: string
+        version: string
+        kind: string
+        namespaced: string
+        grouped: string
+    }
+    groupName: string
 }

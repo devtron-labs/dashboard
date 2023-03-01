@@ -1,10 +1,9 @@
 import React from 'react'
 import { useParams } from 'react-router'
 import ReactSelect from 'react-select'
-import { DropdownIndicator, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
+import { DropdownIndicator, EnvFormatOptions, formatHighlightedText, getCommonSelectStyle, GroupHeading, Option } from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { DeleteDialog, Progressing, Select } from '../../../common'
 import {
@@ -16,29 +15,27 @@ import {
     ChartValuesViewActionTypes,
     ChartVersionSelectorType,
     ChartVersionValuesSelectorType,
-    ConnectToHelmChartTippyProps,
     DeleteApplicationButtonProps,
     DeleteChartDialogProps,
     DeploymentAppSelectorType,
     DeploymentAppType,
-    DeploymentAppTypeNameMapping,
     ErrorScreenWithInfoProps,
     UpdateApplicationButtonProps,
     ValueNameInputType,
 } from './ChartValuesView.type'
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
 import EmptyState from '../../../EmptyState/EmptyState'
-import TippyCustomized, { TippyTheme } from '../../../common/TippyCustomized'
 import {
     CONNECT_TO_HELM_CHART_TEXTS,
     DELETE_CHART_APP_DESCRIPTION_LINES,
     DELETE_PRESET_VALUE_DESCRIPTION_LINES,
     UPDATE_APP_BUTTON_TEXTS,
 } from './ChartValuesView.constants'
-import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
+import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { RadioGroup, RadioGroupItem } from '../../../common/formFields/RadioGroup'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
+import { envGroupStyle } from './ChartValuesView.utils'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -51,6 +48,15 @@ export const ChartEnvironmentSelector = ({
     environments,
     invalidaEnvironment,
 }: ChartEnvironmentSelectorType): JSX.Element => {
+
+    const singleOption = (props) => {
+        return <EnvFormatOptions {...props} environmentfieldName="label" />
+    }
+
+    const handleFormatHighlightedText = (opt, { inputValue }) => {
+        return formatHighlightedText(opt, inputValue, 'label')
+    }
+
     return !isDeployChartView ? (
         <div className="chart-values__environment-container mb-12">
             <h2 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7">Environment</h2>
@@ -73,14 +79,16 @@ export const ChartEnvironmentSelector = ({
                 components={{
                     IndicatorSeparator: null,
                     DropdownIndicator,
-                    Option,
+                    SingleValue: singleOption,
+                    GroupHeading,
                 }}
                 classNamePrefix="values-environment-select"
                 placeholder="Select Environment"
                 value={selectedEnvironment}
-                styles={getCommonSelectStyle()}
+                styles={envGroupStyle}
                 onChange={handleEnvironmentSelection}
                 options={environments}
+                formatOptionLabel={handleFormatHighlightedText}
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
         </div>
@@ -99,8 +107,8 @@ export const DeploymentAppSelector = ({
             <div className="flex left">
                 <span className="fs-13 fw-6  cn-9 md-6 ">
                     {commonState.installedConfig.deploymentAppType === DeploymentAppType.Helm
-                        ? DeploymentAppTypeNameMapping.HelmKeyValue
-                        : DeploymentAppTypeNameMapping.GitOpsKeyValue}
+                        ? DeploymentAppTypeNameMapping.Helm
+                        : DeploymentAppTypeNameMapping.GitOps}
                 </span>
                 <span>
                     {commonState.installedConfig.deploymentAppType === DeploymentAppType.GitOps ? (
@@ -134,18 +142,13 @@ export const DeploymentAppSelector = ({
 }
 
 export const ChartProjectSelector = ({
-    isDeployChartView,
     selectedProject,
     handleProjectSelection,
     projects,
     invalidProject,
 }: ChartProjectSelectorType): JSX.Element => {
-    return !isDeployChartView ? (
-        <div className="chart-values__project-container mb-12">
-            <h2 className="chart-values__project-label fs-13 fw-4 lh-20 cn-7">Project</h2>
-            <span className="chart-values__project-name fs-13 fw-6 lh-20 cn-9">{selectedProject.label}</span>
-        </div>
-    ) : (
+    return  (
+
         <label className="form__row form__row--w-100 fw-4">
             <span className="form__label required-field">Project</span>
             <ReactSelect
@@ -162,7 +165,8 @@ export const ChartProjectSelector = ({
             />
             {invalidProject && renderValidationErrorLabel()}
         </label>
-    )
+        )
+
 }
 
 export const ChartVersionSelector = ({
@@ -444,33 +448,5 @@ export const ErrorScreenWithInfo = ({ info }: ErrorScreenWithInfoProps) => {
             </EmptyState.Image>
             <EmptyState.Subtitle>{info}</EmptyState.Subtitle>
         </EmptyState>
-    )
-}
-
-export const ConnectToHelmChartTippy = ({
-    condition,
-    hideConnectToChartTippy,
-    children,
-}: ConnectToHelmChartTippyProps) => {
-    return (
-        <TippyCustomized
-            theme={TippyTheme.black}
-            visible={condition}
-            className="w-300 ml-4 dc__border-radius-8-imp"
-            placement="right"
-            Icon={LinkIcon}
-            iconClass="link-chart-icon"
-            iconSize={32}
-            infoTextHeading={CONNECT_TO_HELM_CHART_TEXTS.InfoTextHeading}
-            infoText={CONNECT_TO_HELM_CHART_TEXTS.InfoText}
-            showCloseButton={true}
-            trigger="manual"
-            interactive={true}
-            arrow={true}
-            animation="shift-toward-subtle"
-            onClose={hideConnectToChartTippy}
-        >
-            <div>{children}</div>
-        </TippyCustomized>
     )
 }

@@ -18,6 +18,7 @@ import {
     CIPipelineDataType,
     CIPipelineType,
     ConditionType,
+    DockerConfigOverrideType,
     FormType,
     PluginDetailType,
     PluginType,
@@ -386,6 +387,7 @@ export default function CIPipeline({
         // Reset allow override flag to false if config matches with global
         if (!ciPipeline.isDockerConfigOverridden && !isDockerConfigOverridden) {
             formData.isDockerConfigOverridden = false
+            formData.dockerConfigOverride = {} as DockerConfigOverrideType
         }
 
         saveCIPipeline(
@@ -491,6 +493,10 @@ export default function CIPipeline({
                             })
                         }
                     }
+                } else {
+                    taskData.pluginRefStepDetail.outputVariables?.forEach((element, index) => {
+                        outputVarMap.set(element.name, true)
+                    })
                 }
 
                 taskErrorobj[currentStepTypeVariable]['conditionDetails'] = []
@@ -523,7 +529,7 @@ export default function CIPipeline({
             _formDataErrorObj.name = validationRules.name(_formData.name)
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
             let valid = _formData.materials.reduce((isValid, mat) => {
-                isValid = isValid && validationRules.sourceValue(mat.regex || mat.value).isValid
+                isValid = isValid && validationRules.sourceValue(mat.regex || mat.value, mat.type !== 'WEBHOOK').isValid
                 return isValid
             }, true)
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid && valid

@@ -9,6 +9,7 @@ export const URLS = {
     CHARTS: '/chart-store',
     CHARTS_DISCOVER: '/chart-store/discover',
     APP: '/app',
+    APPLICATION_GROUP: '/application-group',
     RESOURCE_BROWSER: '/resource-browser',
     EXTERNAL_APPS: 'ea',
     DEVTRON_CHARTS: 'dc',
@@ -79,7 +80,7 @@ export const URLS = {
     CHART: '/chart',
     PRESET_VALUES: '/preset-values',
     DEPLOY_CHART: '/deploy-chart',
-    DETAILS: '/details'
+    DETAILS: '/details',
 }
 
 export enum APP_COMPOSE_STAGE {

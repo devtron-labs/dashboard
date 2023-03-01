@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useCallback, useRef } from 'react'
 import { Route, Switch } from 'react-router-dom'
-import { URLS, AppListConstants, ViewType, SERVER_MODE } from '../../../config'
+import { URLS, AppListConstants, ViewType, SERVER_MODE, Host, ModuleNameMap } from '../../../config'
 import { ErrorBoundary, Progressing, getLoginInfo, AppContext } from '../../common'
 import Navigation from './Navigation'
 import { useRouteMatch, useHistory, useLocation } from 'react-router'
@@ -11,19 +11,20 @@ import { Security } from '../../security/Security'
 import {
     dashboardLoggedIn,
     getAppListMin,
+    getClusterListMinWithoutAuth,
     getLoginData,
     getVersionConfig,
     updateLoginCount,
 } from '../../../services/service'
 import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
-import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
-import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import DeployManageGuide from '../../onboardingGuide/DeployManageGuide'
-import { showError } from '../helpers/Helpers'
+import { ModuleStatus, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { getModuleInfo, getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { showError, useAsync } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
+import { AppListResponse } from '../../app/list-new/AppListService'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -37,6 +38,7 @@ const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
 const ClusterNodeContainer = lazy(() => import('../../ClusterNodes/ClusterNodeContainer'))
 const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
+const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 
 export const mainContext = createContext(null)
 
@@ -59,7 +61,6 @@ export default function NavigationRoutes() {
     const [isSuperAdmin, setSuperAdmin] = useState(false)
     const [appListCount, setAppListCount] = useState(0)
     const [loginLoader, setLoginLoader] = useState(true)
-    const [isDeployManageCardClicked, setDeployManageCardClicked] = useState(false)
     const [showGettingStartedCard, setShowGettingStartedCard] = useState(true)
     const [isGettingStartedClicked, setGettingStartedClicked] = useState(false)
     const [moduleInInstallingState, setModuleInInstallingState] = useState('')
@@ -90,7 +91,7 @@ export default function NavigationRoutes() {
         }
     }
 
-    const processLoginData = (response, superAdmin, appListCount) => {
+    const processLoginData = async (response, superAdmin, appListCount) => {
         const count = response.result?.value ? parseInt(response.result.value) : 0
         setLoginCount(count)
         if (
@@ -107,8 +108,30 @@ export default function NavigationRoutes() {
                 updateLoginCount(updatedPayload)
             }
         }
+
+        // Check for external app count also before redirecting user on GETTING STARTED page
         if (!count && superAdmin && appListCount === 0) {
-            history.push(`/${URLS.GETTING_STARTED}`)
+            try {
+                const { result } = await getClusterListMinWithoutAuth()
+                if (Array.isArray(result) && result.length === 1) {
+                    const _sseConnection = new EventSource(`${Host}/application?clusterIds=${result[0].id}`, {
+                        withCredentials: true,
+                    })
+                    _sseConnection.onmessage = (message) => {
+                        const externalAppData: AppListResponse = JSON.parse(message.data)
+                        if (externalAppData.result?.helmApps?.length <= 1) {
+                            history.push(`/${URLS.GETTING_STARTED}`)
+                        }
+                        _sseConnection.close()
+                    }
+                    _sseConnection.onerror = (err) => {
+                        _sseConnection.close()
+                        history.push(`/${URLS.GETTING_STARTED}`)
+                    }
+                }
+            } catch (e) {
+                history.push(`/${URLS.GETTING_STARTED}`)
+            }
         }
     }
 
@@ -186,6 +209,23 @@ export default function NavigationRoutes() {
         getCurrentServerInfo(null, true)
     }, [])
 
+    useEffect(() => {
+        const persistedTabs = localStorage.getItem('persisted-tabs-data')
+        if (persistedTabs) {
+            try {
+                const parsedTabsData = JSON.parse(persistedTabs)
+                if (
+                    location.pathname !== parsedTabsData.key &&
+                    !location.pathname.startsWith(`${parsedTabsData.key}/`)
+                ) {
+                    localStorage.removeItem('persisted-tabs-data')
+                }
+            } catch (e) {
+                localStorage.removeItem('persisted-tabs-data')
+            }
+        }
+    }, [location.pathname])
+
     const getCurrentServerInfo = async (section?: string, withoutStatus?: boolean) => {
         if (
             currentServerInfo.fetchingServerInfo ||
@@ -214,8 +254,9 @@ export default function NavigationRoutes() {
         }
     }
 
-    const onClickedDeployManageCardClicked = () => {
-        setDeployManageCardClicked(true)
+    const isOnboardingPage = () => {
+        const _pathname = location.pathname.endsWith('/') ? location.pathname.slice(0, -1) : location.pathname
+        return _pathname === `/${URLS.GETTING_STARTED}` || _pathname === `/dashboard/${URLS.GETTING_STARTED}`
     }
 
     if (pageState === ViewType.LOADING || loginLoader) {
@@ -223,6 +264,8 @@ export default function NavigationRoutes() {
     } else if (pageState === ViewType.ERROR) {
         return <Reload />
     } else {
+        const _isOnboardingPage = isOnboardingPage()
+
         return (
             <mainContext.Provider
                 value={{
@@ -243,8 +286,8 @@ export default function NavigationRoutes() {
                     currentServerInfo,
                 }}
             >
-                <main className={`${window.location.href.includes(URLS.GETTING_STARTED) ? 'no-nav' : ''}`}>
-                    {!window.location.href.includes(URLS.GETTING_STARTED) && (
+                <main className={`${_isOnboardingPage ? 'no-nav' : ''}`}>
+                    {!_isOnboardingPage && (
                         <Navigation
                             history={history}
                             match={match}
@@ -254,9 +297,12 @@ export default function NavigationRoutes() {
                             installedModuleMap={installedModuleMap}
                         />
                     )}
-
                     {serverMode && (
-                        <div className={`main ${pageOverflowEnabled ? '' : 'main__overflow-disabled'}`}>
+                        <div
+                            className={`main ${location.pathname.startsWith('/app/list') ? 'bcn-0' : ''} ${
+                                pageOverflowEnabled ? '' : 'main__overflow-disabled'
+                            }`}
+                        >
                             <Suspense fallback={<Progressing pageLoader />}>
                                 <ErrorBoundary>
                                     <Switch>
@@ -270,8 +316,12 @@ export default function NavigationRoutes() {
                                                 />
                                             )}
                                         />
+                                        <Route path={URLS.APPLICATION_GROUP}>
+                                            <AppGroupRoute isSuperAdmin={isSuperAdmin} />
+                                        </Route>
+
                                         <Route
-                                            path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:node?`}
+                                            path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:group?/:node?`}
                                         >
                                             <ResourceBrowserContainer />
                                         </Route>
@@ -301,18 +351,11 @@ export default function NavigationRoutes() {
                                                 getCurrentServerInfo={getCurrentServerInfo}
                                             />
                                         </Route>
-                                        <Route exact path={`/${URLS.GETTING_STARTED}/${URLS.GUIDE}`}>
-                                            <DeployManageGuide
-                                                isGettingStartedClicked={isGettingStartedClicked}
-                                                loginCount={loginCount}
-                                            />
-                                        </Route>
                                         <Route exact path={`/${URLS.GETTING_STARTED}`}>
                                             <OnboardingGuide
                                                 loginCount={loginCount}
                                                 isSuperAdmin={isSuperAdmin}
                                                 serverMode={serverMode}
-                                                onClickedDeployManageCardClicked={onClickedDeployManageCardClicked}
                                                 isGettingStartedClicked={isGettingStartedClicked}
                                             />
                                         </Route>
@@ -377,13 +420,22 @@ export function AppRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterT
 export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRouterType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
+    const [, argoInfoData] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD))
+    const isArgoInstalled: boolean = argoInfoData?.result.status === ModuleStatus.INSTALLED
+
     return (
         <ErrorBoundary>
             <AppContext.Provider value={{ environmentId, setEnvironmentId }}>
                 <Switch>
                     <Route
                         path={`${path}/:appType`}
-                        render={() => <NewAppList isSuperAdmin={isSuperAdmin} appListCount={appListCount} />}
+                        render={() => (
+                            <NewAppList
+                                isSuperAdmin={isSuperAdmin}
+                                isArgoInstalled={isArgoInstalled}
+                                appListCount={appListCount}
+                            />
+                        )}
                     />
                     <Route exact path="">
                         <RedirectToAppList />

@@ -24,9 +24,10 @@ import {
     menuComponent,
     Option as SingleSelectOption,
 } from '../../v2/common/ReactSelect.utils'
-import { ALL_NAMESPACE, K8sListItemCardType, OptionType } from '../userGroups.types'
+import { ALL_NAMESPACE, K8sListItemCardType, K8S_PERMISSION_INFO_MESSAGE, OptionType } from '../userGroups.types'
 import { ReactComponent as Clone } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import CreatableSelect from 'react-select/creatable'
 import {
     k8sPermissionRoles,
@@ -173,6 +174,8 @@ export default function K8sListItemCard({
                     }
                 })
             }
+        } else {
+            _allKindMapping = [{ label: 'All kind', value: '*' }]
         }
 
         setKindMapping((prevMapping) => ({
@@ -421,14 +424,14 @@ export default function K8sListItemCard({
                             styles={resourceMultiSelectstyles}
                         />
                     </div>
-                    {/* {K8S_PERMISSION_INFO_MESSAGE[k8sPermission?.kind?.label] && (
+                    {K8S_PERMISSION_INFO_MESSAGE[k8sPermission?.kind?.label] && (
                         <InfoColourBar
                             message={K8S_PERMISSION_INFO_MESSAGE[k8sPermission.kind.label]}
                             classname="info_bar mb-12"
                             Icon={InfoIcon}
                             iconClass="icon-dim-20"
                         />
-                    )} */}
+                    )}
                     <div className="cn-6 mb-6">Role</div>
                     <div className="mb-16 w-300">
                         <ReactSelect

@@ -3,6 +3,8 @@ import { InstalledAppInfo, ReleaseInfo } from '../../../external-apps/ExternalAp
 import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
+import {Teams} from "../../../../services/service.types";
+import {AppMetaInfo, LabelTagsType} from "../../../app/types";
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',
@@ -22,6 +24,7 @@ export interface ChartValuesViewType {
     chartVersionsDataFromParent?: ChartVersionType[]
     chartValuesFromParent?: ChartValuesType
     selectedVersionFromParent?: number
+    init?: () => void
 }
 
 export interface ChartSelectorType {
@@ -83,7 +86,6 @@ export interface DeploymentAppSelectorType {
 }
 
 export interface ChartProjectSelectorType {
-    isDeployChartView: boolean
     selectedProject: ChartValuesOptionType
     handleProjectSelection: (selected: ChartValuesOptionType) => void
     projects: ChartValuesOptionType[]
@@ -316,11 +318,6 @@ export enum DeploymentAppType {
     GitOps = 'argo_cd',
 }
 
-export enum DeploymentAppTypeNameMapping {
-    HelmKeyValue = 'Helm',
-    GitOpsKeyValue = 'GitOps',
-}
-
 export interface ChartValuesViewAction {
     type: ChartValuesViewActionTypes
     payload: any
@@ -355,12 +352,6 @@ export interface ChaartValuesGUIFormType {
     deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
     dispatch: React.Dispatch<ChartValuesViewAction>
     formValidationError: Record<string, boolean>
-}
-
-export interface ConnectToHelmChartTippyProps {
-    condition: boolean
-    hideConnectToChartTippy: () => void
-    children: React.ReactElement<any>
 }
 
 export interface ActiveReadmeColumnProps {
@@ -414,4 +405,13 @@ export interface UpdateApplicationButtonProps {
 
 export interface ErrorScreenWithInfoProps {
     info: string
+}
+
+export interface ProjectSelectorTypes {
+    appId: string
+    onClose: () => void
+    appMetaInfo: AppMetaInfo
+    installedAppId: number
+    projectList: ChartValuesOptionType[]
+    getAppMetaInfoRes: () => Promise<void>
 }

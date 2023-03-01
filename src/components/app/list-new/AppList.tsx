@@ -10,6 +10,7 @@ import {
     ErrorScreenManager,
     handleUTCTime,
     useAsync,
+    stopPropagation,
 } from '../../common'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ChartIcon } from '../../../assets/icons/ic-charts.svg'
@@ -34,8 +35,9 @@ import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
 import moment from 'moment'
 import { getUserRole } from '../../userGroups/userGroup.service'
+import { APP_LIST_HEADERS, StatusConstants } from './Constants'
 
-export default function AppList({ isSuperAdmin, appListCount }: AppListPropType) {
+export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
     const history = useHistory()
     const params = useParams<{ appType: string }>()
@@ -49,6 +51,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
     const [currentTab, setCurrentTab] = useState(undefined)
     const [showCreateNewAppSelectionModal, setShowCreateNewAppSelectionModal] = useState(false)
+    const [syncListData, setSyncListData] = useState<boolean>()
 
     // API master data
     const [projectListRes, setProjectListRes] = useState({ result: [] })
@@ -60,6 +63,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
 
     // filters
     const [masterFilters, setMasterFilters] = useState({
+        appStatus: [],
         projects: [],
         environments: [],
         clusters: [],
@@ -106,7 +110,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                 setDataStateType(AppListViewType.ERROR)
                 setErrorResponseCode(errors.code)
             })
-    }, [])
+    }, [syncListData])
 
     // update lasy sync time on tab change
 
@@ -166,6 +170,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
         let params = queryString.parse(searchQuery)
         let search = params.search || ''
         let environments = params.environment || ''
+        let appStatus = params.appStatus || ''
         let teams = params.team || ''
         let clustersAndNamespaces = params.namespace || ''
 
@@ -180,15 +185,21 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
             .split(',')
             .filter((team) => team != '')
             .map((team) => Number(team))
+        let appStatusArr = appStatus
+            .toString()
+            .split(',')
+            .filter((status) => status != '')
+            .map((status) => status)
 
-        ////// update master filters data (check/uncheck)
+        // update master filters data (check/uncheck)
         let filterApplied = {
-            environments: new Set(environmentsArr),
-            teams: new Set(teamsArr),
+            environments: new Set<number>(environmentsArr),
+            teams: new Set<number>(teamsArr),
+            appStatus: new Set<string>(appStatusArr),
             clusterVsNamespaceMap: _clusterVsNamespaceMap,
         }
 
-        let _masterFilters = { projects: [], environments: [], clusters: [], namespaces: [] }
+        let _masterFilters = {  appStatus: [], projects: [], environments: [], clusters: [], namespaces: [] }
 
         // set projects (check/uncheck)
         _masterFilters.projects = masterFilters.projects.map((project) => {
@@ -230,6 +241,16 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
             }
         })
 
+        _masterFilters.appStatus = masterFilters.appStatus.map((status) => {
+            return {
+                key: status.key,
+                label: status.label,
+                isSaved: true,
+                isChecked: filterApplied.appStatus.has(status.key),
+            }
+        })
+
+
         // set environments (check/uncheck)
         _masterFilters.environments = masterFilters.environments.map((env) => {
             return {
@@ -270,6 +291,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                 .split(',')
                 .filter((item) => item != ''),
             appNameSearch: search,
+            appStatuses: appStatusArr,
             sortBy: sortBy,
             sortOrder: sortOrder,
             offset: offset,
@@ -539,6 +561,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
         delete query['environment']
         delete query['team']
         delete query['namespace']
+        delete query['appStatus']
         delete query['search']
 
         //delete search string
@@ -599,7 +622,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
     }
 
     const syncNow = (): void => {
-        window.location.reload()
+        setSyncListData(!syncListData)
     }
 
     const setFetchingExternalAppsState = (fetching: boolean): void => {
@@ -618,7 +641,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
         setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)
     }
 
-    const getAppListDataToExport = () => {
+    const getAppListDataToExport = () => { 
         return getAppList(
             typeof parsedPayloadOnUrlChange === 'object'
                 ? {
@@ -751,6 +774,23 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                     </div>
                 </form>
                 <div className="app-list-filters filters">
+                    {isArgoInstalled && (
+                        <>
+                            <Filter
+                                list={masterFilters.appStatus}
+                                labelKey="label"
+                                buttonText={APP_LIST_HEADERS.AppStatus}
+                                placeholder={APP_LIST_HEADERS.SearchAppStatus}
+                                searchable
+                                multi
+                                type={AppListConstants.FilterType.APP_STATUS}
+                                applyFilter={applyFilter}
+                                onShowHideFilterContent={onShowHideFilterContent}
+                                isFirstLetterCapitalize={true}
+                            />
+                            <span className="filter-divider"></span>
+                        </>
+                    )}
                     <Filter
                         list={masterFilters.projects}
                         labelKey="label"
@@ -836,18 +876,21 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                 {keys.map((key) => {
                     let filterType = ''
                     let _filterKey = ''
-                    if (key == 'projects') {
+                    if (key == StatusConstants.PROJECT.pluralLower) {
                         filterType = AppListConstants.FilterType.PROJECT
-                        _filterKey = 'project'
-                    } else if (key == 'clusters') {
+                        _filterKey = StatusConstants.PROJECT.lowerCase
+                    } else if (key == StatusConstants.CLUSTER.pluralLower) {
                         filterType = AppListConstants.FilterType.CLUTSER
-                        _filterKey = 'cluster'
-                    } else if (key == 'namespaces') {
+                        _filterKey = StatusConstants.CLUSTER.lowerCase
+                    } else if (key == StatusConstants.NAMESPACE.pluralLower) {
                         filterType = AppListConstants.FilterType.NAMESPACE
-                        _filterKey = 'namespace'
-                    } else if (key == 'environments') {
+                        _filterKey = StatusConstants.NAMESPACE.lowerCase
+                    } else if (key == StatusConstants.ENVIRONMENT.pluralLower) {
                         filterType = AppListConstants.FilterType.ENVIRONMENT
-                        _filterKey = 'environment'
+                        _filterKey = StatusConstants.ENVIRONMENT.lowerCase
+                    } else if (key == StatusConstants.APP_STATUS.noSpaceLower) {
+                        filterType = AppListConstants.FilterType.APP_STATUS
+                        _filterKey = StatusConstants.APP_STATUS.normalText
                     }
                     return masterFilters[key].map((filter) => {
                         if (filter.isChecked) {
@@ -914,18 +957,6 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                             Helm Apps
                         </a>
                     </li>
-                    {serverMode === SERVER_MODE.EA_ONLY && (
-                        <li className="tab-list__tab">
-                            <NavLink
-                                to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}
-                                className={`tab-list__tab-link ${
-                                    currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? 'active' : ''
-                                }`}
-                            >
-                                Install CI/CD
-                            </NavLink>
-                        </li>
-                    )}
                 </ul>
                 <div className="app-tabs-sync fs-13">
                     {lastDataSyncTimeString &&
@@ -948,11 +979,12 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
         )
     }
 
-    const closeDevtronAppCreateModal = () => {
-        let _prefix =
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
-        let url = `${_prefix}${location.search}`
-        history.push(`${url}`)
+    const closeDevtronAppCreateModal = (e) => {
+      stopPropagation(e)
+      let _prefix =
+          currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
+      let url = `${_prefix}${location.search}`
+      history.push(`${url}`)
     }
 
     function renderAppCreateRouter() {
@@ -1043,6 +1075,7 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                                     openDevtronAppCreateModel={openDevtronAppCreateModel}
                                     setAppCount={setAppCount}
                                     updateDataSyncing={updateDataSyncing}
+                                    isArgoInstalled={isArgoInstalled}
                                 />
                             )}
                         {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
@@ -1068,6 +1101,8 @@ export default function AppList({ isSuperAdmin, appListCount }: AppListPropType)
                                     updateDataSyncing={updateDataSyncing}
                                     setShowPulsatingDotState={setShowPulsatingDotState}
                                     masterFilters={masterFilters}
+                                    syncListData={syncListData}
+                                    isArgoInstalled={isArgoInstalled}
                                 />
                                 {fetchingExternalApps && (
                                     <div className="mt-16">

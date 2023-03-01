@@ -48,7 +48,7 @@
         transition: flex-basis 0.3s;
     }
     .ci-details__body {
-        flex-basis: calc( 100% - 280px);
+        flex-basis: calc(100% - 280px);
         transition: flex-basis 0.3s;
         display: flex;
         flex-direction: column;
@@ -57,6 +57,18 @@
         .trigger-details-container {
             height: 180px;
             transition: height 0.3s;
+            .trigger-details {
+                height: 137px;
+                display: grid;
+                grid-template-columns: 60px 1fr;
+                .trigger-details__summary {
+                    display: grid;
+                    grid-template-rows: 1fr 1fr;
+                    .inprogress-status-color {
+                      color: var(--inprogress-orange);
+                    }
+                }
+            }
         }
         .history-logs {
             height: 100%;
@@ -92,6 +104,19 @@
     overflow: auto;
     height: 100%;
     background: var(--window-bg);
+    .hover-trigger {
+        .tippy-box.default-tt {
+            display: none !important;
+        }
+        &:hover {
+            .tippy-box.default-tt {
+                display: block !important;
+            }
+            .hover-only {
+                display: inline-block;
+            }
+        }
+    }
 }
 
 .trigger-details__start {
@@ -100,9 +125,14 @@
 
 .build-card-popup {
     box-shadow: 0 2px 4px -1px rgba(0, 56, 112, 0.3);
+    .ci-material-detail {
+        display: grid;
+        grid-template-columns: 20px 1fr;
+        column-gap: 8px;
+    }
 }
 
-.ci-details__build-card {
+.ci-details__build-card-container {
     text-decoration: unset;
     padding: 0 16px;
     &:hover {
@@ -111,6 +141,13 @@
     }
     &.active {
         background: var(--B100);
+    }
+    .ci-details__build-card {
+        height: 64px;
+        display: grid;
+        grid-template-columns: 20px 1fr;
+        padding: 12px 0;
+        column-gap: 12px;
     }
     .app-status__icon {
         position: unset;
@@ -161,7 +198,7 @@
     color: #262626;
     font-size: 18px;
     font-weight: 600;
-    letter-spacing: .005em;
+    letter-spacing: 0.005em;
     background-color: rgba(0, 0, 0, 0.02);
     border: solid 1px #ededed;
     padding: 12px 24px;
@@ -187,7 +224,7 @@
     text-transform: lowercase;
     font-weight: 500;
     margin-bottom: 0px;
-    letter-spacing: .005em;
+    letter-spacing: 0.005em;
 }
 
 .info__key {
@@ -338,7 +375,7 @@
     place-items: center center;
 }
 
-.configure-blob-container{
-  position: fixed;
-  bottom: 40px;
+.configure-blob-container {
+    position: fixed;
+    bottom: 40px;
 }

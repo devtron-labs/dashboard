@@ -3,6 +3,10 @@ import { components } from 'react-select'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-outlined.svg'
 import { multiSelectStyles } from '../common'
+import { toast } from 'react-toastify'
+import { SECRET_TOAST_INFO } from './constants'
+import YAML from 'yaml'
+import { EsoData } from '../deploymentConfig/types'
 
 export const CODE_EDITOR_RADIO_STATE = { DATA: 'data', SAMPLE: 'sample' }
 
@@ -153,8 +157,6 @@ export const dataHeaders = {
             <br />
             #key: GCP secret name
             <br />
-            #property: GCP Secrets Manager secret key
-            <br />
             #secretAccessKeySecretRef.name: The secret name which would be used for authentication
             <br />
             #secretAccessKeySecretRef.key: Key name containing SA key
@@ -168,7 +170,7 @@ export const dataHeaders = {
             #Sample Data <br />
             #accessKeyIDSecretRef.name: Name of secret created that would be used for authentication <br />
             #region: The region where Secret is created <br />
-            #secretKey: Name of the secret created <br />
+            #secretKey: Name of the secret created. <br />
             #key: AWS Secrets Manager secret name <br />
             #property: AWS Secrets Manager secret key <br />
         </div>
@@ -288,6 +290,7 @@ export const groupStyle = () => {
         indicatorsContainer: (provided, state) => ({
             ...provided,
         }),
+        option: getCustomOptionSelectionStyle(),
     }
 }
 
@@ -308,4 +311,76 @@ export const hasESO = (externalType): boolean => {
 
 export const hasProperty = (externalType): boolean => {
     return externalType === 'ESO_AWSSecretsManager'
+}
+
+export const secretValidationInfoToast = (isESO,secretStore,secretStoreRef) => {
+    let errorMessage = ''
+    if (isESO) {
+        if (secretStore && secretStoreRef) {
+            errorMessage = SECRET_TOAST_INFO.BOTH_STORE_AVAILABLE
+        } else if (secretStore || secretStoreRef) {
+            errorMessage = SECRET_TOAST_INFO.CHECK_KEY_SECRET_KEY
+        } else {
+            errorMessage = SECRET_TOAST_INFO.BOTH_STORE_UNAVAILABLE
+        }
+    } else {
+        errorMessage = SECRET_TOAST_INFO.CHECK_KEY_NAME
+    }
+    toast.error(errorMessage)
+}
+
+export function handleSecretDataYamlChange(
+    yaml: any,
+    codeEditorRadio: string,
+    isESO: boolean,
+    setEsoYaml: (arg: string) => void,
+    setSecretDataYaml: (arg: string) => void,
+    setSecretData: (arg: any[]) => void,
+    setEsoData: (arg: EsoData[]) => void,
+    setSecretStore: (arg: any) => void,
+    setScretStoreRef: (arg: any) => void,
+    setRefreshInterval: (arg: string) => void
+): void {
+    if (codeEditorRadio !== CODE_EDITOR_RADIO_STATE.DATA) return
+    if (isESO) {
+        setEsoYaml(yaml)
+    } else {
+        setSecretDataYaml(yaml)
+    }
+    try {
+        let json = YAML.parse(yaml)
+        if (!json || !Object.keys(json).length) {
+            setSecretData([])
+            setEsoData([])
+            setSecretStore(null)
+            setScretStoreRef(null)
+            setRefreshInterval(null)
+            return
+        }
+        if (isESO) {
+            setSecretStore(json.secretStore)
+            setScretStoreRef(json.secretStoreRef)
+            setRefreshInterval(json.refreshInterval)
+        }
+        if (!isESO && Array.isArray(json)) {
+            json = json.map((j) => {
+                let temp = {}
+                temp['isBinary'] = j.isBinary
+                if (j.key) {
+                    temp['fileName'] = j.key
+                }
+                if (j.property) {
+                    temp['property'] = j.property
+                }
+                if (j.name) {
+                    temp['name'] = j.name
+                }
+                return temp
+            })
+            setSecretData(json)
+        }
+        if (isESO && Array.isArray(json?.esoData)) {
+            setEsoData(json.esoData)
+        }
+    } catch (error) {}
 }

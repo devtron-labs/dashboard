@@ -126,12 +126,15 @@ export const Routes = {
     APP_CREATE_CONFIG_MAP: 'config/global/cm',
     APP_CREATE_SECRET: 'config/global/cs',
     WORKFLOW: 'app/app-wf',
-
+    APP_WF: 'app-wf',
+    ENV_WORKFLOW: 'env',
+    WORKFLOW_STATUS: 'workflow/status',
     ATTRIBUTES_USER: 'attributes/user',
     APP_WORKFLOW_STATUS: 'app/workflow/status',
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
     APP_META_INFO: 'app/meta/info',
+    HELM_APP_META_INFO: 'app/helm/meta/info',
     CLUSTER_ENV_MAPPING: 'env',
     APP_VERSION: 'version',
     HELM_RELEASE_INFO_API: 'application/release-info',
@@ -177,6 +180,7 @@ export const Routes = {
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
     TELEMETRY_EVENT: 'telemetry/event',
     DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
+    MANUAL_SYNC: 'app/deployment-status/manual-sync',
     MODULE_CONFIGURED: 'module/config',
     SSO: 'sso',
     SSO_LIST: 'sso/list',
@@ -193,10 +197,14 @@ export const Routes = {
     STOP: 'stop',
     POD_MANIFEST: 'pod/manifest',
     POD_EVENTS: 'pod/events',
+    UPDATE_HELM_APP_META_INFO: 'app-store/deployment/application/update/project',
     API_RESOURCE: 'k8s/api-resources',
     K8S_RESOURCE_LIST: 'k8s/resource/list',
     K8S_RESOURCE_CREATE: 'k8s/resources/apply',
-    CLUSTER_LIST_PERMISSION: 'cluster/auth-list'
+    CLUSTER_LIST_PERMISSION: 'cluster/auth-list',
+    ENVIRONMENT_APPS: 'env/app-grouping',
+    ENV_APPLICATIONS: 'applications',
+    ENV_DEPLOYMENT_STATUS: 'deployment/status'
 }
 
 export const ViewType = {
@@ -230,12 +238,14 @@ export const PATTERNS = {
     CONFIG_MAP_AND_SECRET_MULTPLS_KEYS: /^[-._a-zA-Z0-9\,\?\s]*[-._a-zA-Z0-9\s]$/,
     VARIABLE: /^[A-z0-9-_]+$/,
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
-    NAMESPACE: '^[a-z0-9]+([a-z0-9\-\?]*[a-z0-9])?$',
+    NAMESPACE: '^[a-z0-9]+([a-z0-9-?]*[a-z0-9])?$',
     URL: /^(http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/,
     KUBERNETES_KEY: /^((http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}\/?)*[A-Za-z0-9][A-Za-z0-9-._]{0,253}$/,
     KUBERNETES_VALUE: /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/,
     KUBERNETES_KEY_PREFIX: /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/,
     KUBERNETES_KEY_NAME: /^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$/,
+    START_END_ALPHANUMERIC: /^([A-Za-z0-9]).*[A-Za-z0-9]$|^[A-Za-z0-9]{1}$/,
+    ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/ // allow alphanumeric,(.) ,(-),(_)
 }
 
 export const TriggerType = {
@@ -279,7 +289,7 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_GITOPS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/gitops`,
     GLOBAL_CONFIG_GIT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/git-accounts`,
     GLOBAL_CONFIG_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/docker-registries`,
-    GLOBAL_CONFIG_CLUSTER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/cluster-and-environments`,
+    GLOBAL_CONFIG_CLUSTER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/cluster-and-environments#configure-prometheus-enable-applications-metrics`,
     GLOBAL_CONFIG_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/chart-repo`,
     GLOBAL_CONFIG_NOTIFICATION: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/manage-notification`,
     GLOBAL_CONFIG_PROJECT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/projects`,
@@ -291,7 +301,7 @@ export const DOCUMENTATION = {
     PRE_POST_BUILD_STAGE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline/ci-build-pre-post-plugins`,
     CUSTOM_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/custom-charts`,
     CUSTOM_CHART_PRE_REQUISITES: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/custom-charts#prerequisites`,
-    ADMIN_PASSWORD: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/install/install-devtron#devtron-admin-credentials`,
+    ADMIN_PASSWORD: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/install/install-devtron#devtron-admin-credentials`,
     EXTERNAL_LINKS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/external-links`,
     GLOBAL_CONFIG_GIT_ACCESS_LINK: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/gitops#4.-git-access-credential`,
     DEVTRON_UPGRADE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/upgrade`,
@@ -303,6 +313,9 @@ export const DOCUMENTATION = {
     DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/deployment`,
     WEBHOOK_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/authorization/api-tokens`,
     WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline#3.-deploy-image-from-external-service`,
+    APP_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/create-application#tags`,
+    APP_OVERVIEW_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/overview#manage-tags`,
+    K8S_RESOURCES_PERMISSIONS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access#kubernetes-resources-permissions`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -326,6 +339,7 @@ export const AppListConstants = {
         CLUTSER: 'cluster',
         NAMESPACE: 'namespace',
         ENVIRONMENT: 'environment',
+        APP_STATUS: 'appStatus'
     },
 }
 // APP LIST ENDS
@@ -618,6 +632,9 @@ export const TERMINAL_STATUS_MAP = {
     STARTING: 'starting',
     FAILED: 'failed',
     ERROR: 'error',
+    CANCELLED: 'cancelled',
+    UNABLE_TO_FETCH: 'unabletofetch',
+    TIMED_OUT: 'timedout',
 }
 
 export const POD_STATUS = {
@@ -650,6 +667,7 @@ export const MODULE_STATUS_RETRY_COUNT = 3
 export const MODULE_STATUS_POLLING_INTERVAL = 15000
 export const LOGS_RETRY_COUNT = 3
 export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
+export const MANIFEST_STATUS_HEADERS = ['KIND', 'NAME', 'SYNC STATUS', 'MESSAGE']
 
 export const shellTypes = [
     { label: 'sh', value: 'sh' },
@@ -678,6 +696,7 @@ export const MESSAGING_UI = {
     FETCHING_MANIFEST: 'Fetching manifest',
 }
 
+export const ZERO_TIME_STRING = '0001-01-01T00:00:00Z'
 export const CHART_REPO_TYPE = {
     PUBLIC: 'PUBLIC',
     PRIVATE: 'PRIVATE',
@@ -690,6 +709,53 @@ export const CHART_REPO_AUTH_TYPE = {
 }
 
 export const CHART_REPO_LABEL = [
-    { value: 'PUBLIC' , label: 'Public repository' },
-    { value: 'PRIVATE' , label: 'Private repository' },
+    { value: 'PUBLIC', label: 'Public repository' },
+    { value: 'PRIVATE', label: 'Private repository' },
 ]
+
+export enum TIMELINE_STATUS {
+    DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
+    GIT_COMMIT = 'GIT_COMMIT',
+    GIT_COMMIT_FAILED = 'GIT_COMMIT_FAILED',
+    KUBECTL_APPLY = 'KUBECTL_APPLY',
+    KUBECTL_APPLY_STARTED = 'KUBECTL_APPLY_STARTED',
+    KUBECTL_APPLY_SYNCED = 'KUBECTL_APPLY_SYNCED',
+    HEALTHY = 'HEALTHY',
+    APP_HEALTH = 'APP_HEALTH',
+    DEPLOYMENT_FAILED = 'FAILED',
+    FETCH_TIMED_OUT = 'TIMED_OUT',
+    UNABLE_TO_FETCH_STATUS = 'UNABLE_TO_FETCH_STATUS',
+    DEGRADED = 'DEGRADED',
+    DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
+    ABORTED = 'ABORTED',
+}
+
+export const DEPLOYMENT_STATUS = {
+    SUCCEEDED: 'succeeded',
+    HEALTHY: 'healthy',
+    FAILED: 'failed',
+    TIMED_OUT: 'timed_out',
+    UNABLE_TO_FETCH: 'unable_to_fetch',
+    INPROGRESS: 'inprogress',
+    PROGRESSING: 'inprogress',
+    SUPERSEDED: 'superseded',
+}
+
+export const HELM_DEPLOYMENT_STATUS_TEXT = {
+    PROGRESSING: 'Progressing',
+    INPROGRESS: 'In progress'
+}
+
+export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
+export const LAST_SEEN = 'last seen'
+export const GIT_BRANCH_NOT_CONFIGURED = 'Not Configured'
+export const SOURCE_NOT_CONFIGURED = 'Source not configured'
+export const DOCKER_FILE_ERROR_TITLE = 'Unable to locate Dockerfile as source is not configured for this repository'
+export const DOCKER_FILE_ERROR_MESSAGE = 'Unable to locate Dockerfile as source is not configured for this repository'
+export const DEFAULT_GIT_BRANCH_VALUE = '--'
+export const SOURCE_NOT_CONFIGURED_MESSAGE= 'Source is not configured for one or more git repositories. Please configure and try again.'
+
+export enum KEY_VALUE {
+  KEY= 'key',
+  VALUE= 'value'
+}

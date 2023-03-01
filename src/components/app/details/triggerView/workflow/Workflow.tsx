@@ -5,12 +5,33 @@ import { TriggerExternalCINode } from './nodes/TriggerExternalCINode'
 import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
-import { RectangularEdge as Edge } from '../../../../common'
+import { getCIPipelineURL, RectangularEdge as Edge } from '../../../../common'
 import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
+import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
 
 export class Workflow extends Component<WorkflowProps> {
+    goToWorkFlowEditor = (node: NodeAttr) => {
+        if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
+            const ciPipelineURL = getCIPipelineURL(
+                this.props.appId?.toString() ?? this.props.match.params.appId,
+                this.props.id,
+                true,
+                node.downstreams[0].split('-')[1],
+            )
+            if (this.props.fromAppGrouping) {
+                window.open(
+                    window.location.href.replace(this.props.location.pathname, ciPipelineURL),
+                    '_blank',
+                    'noreferrer',
+                )
+            } else {
+                this.props.history.push(ciPipelineURL)
+            }
+        }
+    }
+
     renderNodes() {
         return this.props.nodes.map((node: any) => {
             if (node.type === WorkflowNodeType.GIT) {
@@ -18,8 +39,8 @@ export class Workflow extends Component<WorkflowProps> {
             } else if (node.type === WorkflowNodeType.CI) {
                 return this.renderCINodes(node)
             } else if (node.type === PipelineType.WEBHOOK) {
-              return this.renderWebhookNode(node)
-          } else if (node.type === WorkflowNodeType.PRE_CD || node.type === WorkflowNodeType.POST_CD) {
+                return this.renderWebhookNode(node)
+            } else if (node.type === WorkflowNodeType.PRE_CD || node.type === WorkflowNodeType.POST_CD) {
                 return this.renderPrePostCDNodes(node)
             } else if (node.type === WorkflowNodeType.CD) {
                 return this.renderCDNodes(node)
@@ -46,20 +67,23 @@ export class Workflow extends Component<WorkflowProps> {
                 regex={node.regex}
                 isRegex={node.isRegex}
                 primaryBranchAfterRegex={node.primaryBranchAfterRegex}
+                handleGoToWorkFlowEditor={(e) => {
+                    this.goToWorkFlowEditor(node)
+                }}
             />
         )
     }
     renderWebhookNode(node) {
-      return (
-          <WebhookNode
-              x={node.x}
-              y={node.y}
-              height={node.height}
-              width={node.width}
-              key={`webhook-${node.id}`}
-              id={node.id}
-          />
-      )
+        return (
+            <WebhookNode
+                x={node.x}
+                y={node.y}
+                height={node.height}
+                width={node.width}
+                key={`webhook-${node.id}`}
+                id={node.id}
+            />
+        )
     }
 
     renderCINodes(node: NodeAttr) {
@@ -87,6 +111,7 @@ export class Workflow extends Component<WorkflowProps> {
                     history={this.props.history}
                     location={this.props.location}
                     match={this.props.match}
+                    fromAppGrouping={this.props.fromAppGrouping}
                 />
             )
         } else if (node.isExternalCI) {
@@ -168,6 +193,7 @@ export class Workflow extends Component<WorkflowProps> {
                 parentPipelineId={node.parentPipelineId}
                 parentPipelineType={node.parentPipelineType}
                 parentEnvironmentName={node.parentEnvironmentName}
+                fromAppGrouping={this.props.fromAppGrouping}
             />
         )
     }
@@ -193,6 +219,7 @@ export class Workflow extends Component<WorkflowProps> {
                 history={this.props.history}
                 location={this.props.location}
                 match={this.props.match}
+                fromAppGrouping={this.props.fromAppGrouping}
             />
         )
     }
@@ -230,9 +257,28 @@ export class Workflow extends Component<WorkflowProps> {
             (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
         )
         return (
-            <div className="workflow workflow--trigger mb-20" style={{ minWidth: `${this.props.width}px` }}>
+            <div
+                className={`workflow workflow--trigger mb-20 ${this.props.isSelected ? 'eb-5' : ''}`}
+                style={{ minWidth: `${this.props.width}px` }}
+            >
                 <div className="workflow__header">
-                    <span className="workflow__name">{this.props.name}</span>
+                    {this.props.fromAppGrouping ? (
+                        <>
+                            <input
+                                type="checkbox"
+                                className="mt-0-imp cursor icon-dim-16"
+                                data-app-id={this.props.appId}
+                                checked={this.props.isSelected}
+                                onChange={this.props.handleSelectionChange}
+                                id={`chkValidate-${this.props.appId}`}
+                            />
+                            <label className="ml-12 cursor fs-13 mb-0-imp lh-20" htmlFor={`chkValidate-${this.props.appId}`}>
+                                {this.props.name}
+                            </label>
+                        </>
+                    ) : (
+                        <span className="workflow__name">{this.props.name}</span>
+                    )}
                 </div>
                 {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                 <div className="workflow__body">

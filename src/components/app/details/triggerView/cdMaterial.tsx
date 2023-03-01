@@ -8,7 +8,7 @@ import {
     MATERIAL_TYPE,
     STAGE_TYPE,
 } from './types'
-import { GitTriggers } from '../cIDetails/types'
+import { GitTriggers } from '../cicdHistory/types'
 import close from '../../../../assets/icons/ic-close.svg'
 import arrow from '../../../../assets/icons/misc/arrow-chevron-down-black.svg'
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg'
@@ -16,6 +16,8 @@ import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-ro
 import { ReactComponent as WarningIcon } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
 import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
+import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
+import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import {
@@ -25,6 +27,7 @@ import {
     getRandomColor,
     showError,
     ConditionalWrap,
+    stopPropagation,
 } from '../../../common'
 import { EmptyStateCdMaterial } from './EmptyStateCdMaterial'
 import { CDButtonLabelMap, getCommonConfigSelectStyles } from './config'
@@ -151,23 +154,22 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     }
 
                     return (
-                            (_gitCommit.WebhookData?.Data ||
-                              _gitCommit.Author ||
-                              _gitCommit.Message ||
-                              _gitCommit.Date ||
-                              _gitCommit.Commit
-                          ) && (
-                                <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
-                                    <GitCommitInfoGeneric
-                                        materialUrl={mat.url}
-                                        showMaterialInfo={false}
-                                        commitInfo={_gitCommit}
-                                        materialSourceType={''}
-                                        selectedCommitInfo={''}
-                                        materialSourceValue={''}
-                                    />
-                                </div>
-                            )
+                        (_gitCommit.WebhookData?.Data ||
+                            _gitCommit.Author ||
+                            _gitCommit.Message ||
+                            _gitCommit.Date ||
+                            _gitCommit.Commit) && (
+                            <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
+                                <GitCommitInfoGeneric
+                                    materialUrl={mat.url}
+                                    showMaterialInfo={false}
+                                    commitInfo={_gitCommit}
+                                    materialSourceType={''}
+                                    selectedCommitInfo={''}
+                                    materialSourceValue={''}
+                                />
+                            </div>
+                        )
                     )
                 })}
             </>
@@ -209,45 +211,77 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             )
     }
 
+    renderActiveCD = (mat) => {
+        return (
+            <>
+                {mat.latest && (
+                    <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
+                        <div className="fw-4 fs-11 lh-16 flex">
+                            <World className="icon-dim-16 mr-4 scg-5" />
+                            Active on <span className="fw-6 ml-4">{this.props.envName} </span>
+                        </div>
+                    </span>
+                )}
+                {mat.runningOnParentCd && (
+                    <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
+                        <div className="fw-4 fs-11 lh-16 flex">
+                            <World className="icon-dim-16 mr-4 scg-5" />
+                            Active on <span className="fw-6 ml-4">{this.props.parentEnvironmentName}</span>
+                        </div>
+                    </span>
+                )}
+            </>
+        )
+    }
+
+    renderProgressingCD = (mat) => {
+        return (
+            <span className="bcy-1 br-4 ey-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
+                <div className="fw-4 fs-11 lh-16 flex">
+                    <div className={`dc__app-summary__icon icon-dim-16 mr-6 progressing progressing--node`}></div>
+                    Deploying on <span className="fw-6 ml-4">{this.props.envName} </span>
+                </div>
+            </span>
+        )
+    }
+
+    renderFailedCD = (mat) => {
+        return (
+            <span className="bcr-1 br-4 er-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
+                <div className="fw-4 fs-11 lh-16 flex">
+                    <Failed className="icon-dim-16 mr-4" />
+                    Last deployment failed on <span className="fw-6 ml-4">{this.props.envName} </span>
+                </div>
+            </span>
+        )
+    }
+
     renderSequentialCDCardTitle = (mat) => {
         if (this.props.stageType !== STAGE_TYPE.CD) return
 
-        if (mat.latest && mat.runningOnParentCd) {
+        if (
+            mat.latest ||
+            mat.runningOnParentCd ||
+            mat.artifactStatus === 'Progressing' ||
+            mat.artifactStatus === 'Degraded' ||
+            mat.artifactStatus === 'Failed'
+        ) {
             return (
-                <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
-                    <span className="cn-9 fw-6">Deployed on</span>&nbsp;
-                    <span className="cv-5 fw-6">
-                        {this.props.parentEnvironmentName}
-                        {this.props.parentEnvironmentName ? (
-                            <>
-                                <span className="cn-9 fw-4 dc__italic-font-style">&nbsp;and&nbsp;</span>
-                                {this.props.envName}
-                            </>
-                        ) : (
-                            ''
-                        )}
-                    </span>
-                </div>
-            )
-        } else if (mat.latest) {
-            return (
-                <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
-                    <span className="cn-9 fw-6">Deployed on </span>
-                    <span className="cv-5 fw-6">{this.props.envName} </span>
-                </div>
-            )
-        } else if (mat.runningOnParentCd) {
-            return (
-                <div className="bcv-1 pt-6 pb-6 pl-16 pr-16 br-4">
-                    <span className="cn-9 fw-6">Deployed on </span>
-                    <span className="cv-5 fw-6">{this.props.parentEnvironmentName}</span>
+                <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
+                    {this.renderActiveCD(mat)}
+                    {mat.artifactStatus === 'Progressing' && this.renderProgressingCD(mat)}
+                    {(mat.artifactStatus === 'Degraded' || mat.artifactStatus === 'Failed') && this.renderFailedCD(mat)}
                 </div>
             )
         }
     }
 
     async handleImageSelection(index: number, selectedMaterial: CDMaterialType) {
-        this.props.selectImage(index, this.props.materialType)
+        this.props.selectImage(
+            index,
+            this.props.materialType,
+            this.props.isFromBulkCD ? { id: this.props.pipelineId, type: this.props.stageType } : null,
+        )
 
         if (this.state.isRollbackTrigger && this.state.selectedMaterial?.wfrId !== selectedMaterial.wfrId) {
             const isSpecificTriggerConfig =
@@ -358,100 +392,122 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             this.state.isRollbackTrigger && this.state.showOlderImages ? [this.props.material[0]] : this.props.material
 
         return materialList.map((mat, index) => {
-          let isMaterialInfoAvailable = true
-          for (const materialInfo of mat.materialInfo) {
-              isMaterialInfoAvailable =
-                  isMaterialInfoAvailable &&
-                  !!(
-                      materialInfo.webhookData ||
-                      materialInfo.author ||
-                      materialInfo.message ||
-                      materialInfo.modifiedTime ||
-                      materialInfo.revision
-                  )
-              if (!isMaterialInfoAvailable) break
-          }
-          return (
-              <div
-                  key={`material-history-${index}`}
-                  className={`material-history material-history--cd ${
-                      mat.isSelected ? 'material-history-selected' : ''
-                  }`}
-              >
-                  {this.renderSequentialCDCardTitle(mat)}
-                  <div
-                      className={`material-history__top mh-66 ${
-                          !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
-                      }`}
-                      style={{ cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
-                      onClick={(event) => {
-                          event.stopPropagation()
-                          if (!mat.vulnerable) {
-                              this.handleImageSelection(index, mat)
-                          }
-                      }}
-                  >
-                      {this.renderMaterialInfo(mat)}
-                  </div>
-                  {mat.showSourceInfo && (
-                      <>
-                          {this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer && (
-                              <ul className="tab-list tab-list--vulnerability">
-                                  <li className="tab-list__tab">
-                                      <button
-                                          type="button"
-                                          onClick={(e) => {
-                                              e.stopPropagation()
-                                              this.props.changeTab(index, Number(mat.id), CDModalTab.Changes)
-                                          }}
-                                          className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
-                                              mat.tab === CDModalTab.Changes ? 'active' : ''
-                                          }`}
-                                      >
-                                          Changes
-                                      </button>
-                                  </li>
-                                  <li className="tab-list__tab">
-                                      <button
-                                          type="button"
-                                          onClick={(e) => {
-                                              e.stopPropagation()
-                                              this.props.changeTab(index, Number(mat.id), CDModalTab.Security)
-                                          }}
-                                          className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
-                                              mat.tab === CDModalTab.Security ? 'active' : ''
-                                          }`}
-                                      >
-                                          Security
-                                          {mat.vulnerabilitiesLoading ? '' : ` (${mat.vulnerabilities.length})`}
-                                      </button>
-                                  </li>
-                              </ul>
-                          )}
-                          {mat.tab === CDModalTab.Changes
-                              ? this.renderGitMaterialInfo(mat.materialInfo)
-                              : this.renderVulnerabilities(mat)}
-                      </>
-                  )}
-                  {mat.materialInfo.length > 0 && isMaterialInfoAvailable && (
-                      <button
-                          type="button"
-                          className="material-history__changes-btn"
-                          onClick={(event) => {
-                              event.stopPropagation()
-                              this.props.toggleSourceInfo(index)
-                          }}
-                      >
-                          {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
-                          <img
-                              src={arrow}
-                              alt=""
-                              style={{ transform: `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }}
-                          />
-                      </button>
-                  )}
-              </div>
-          )
+            let isMaterialInfoAvailable = true
+            for (const materialInfo of mat.materialInfo) {
+                isMaterialInfoAvailable =
+                    isMaterialInfoAvailable &&
+                    !!(
+                        materialInfo.webhookData ||
+                        materialInfo.author ||
+                        materialInfo.message ||
+                        materialInfo.modifiedTime ||
+                        materialInfo.revision
+                    )
+                if (!isMaterialInfoAvailable) break
+            }
+            return (
+                <div
+                    key={`material-history-${index}`}
+                    className={`material-history material-history--cd ${
+                        mat.isSelected ? 'material-history-selected' : ''
+                    }`}
+                >
+                    {this.renderSequentialCDCardTitle(mat)}
+                    <div
+                        className={`material-history__top mh-66 ${
+                            !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
+                        }`}
+                        style={{ cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
+                        onClick={(event) => {
+                            event.stopPropagation()
+                            if (!mat.vulnerable) {
+                                this.handleImageSelection(index, mat)
+                            }
+                        }}
+                    >
+                        {this.renderMaterialInfo(mat)}
+                    </div>
+                    {mat.showSourceInfo && (
+                        <>
+                            {this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer && (
+                                <ul className="tab-list tab-list--vulnerability">
+                                    <li className="tab-list__tab">
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                this.props.changeTab(
+                                                    index,
+                                                    Number(mat.id),
+                                                    CDModalTab.Changes,
+                                                    {
+                                                        id: this.props.pipelineId,
+                                                        type: this.props.stageType,
+                                                    },
+                                                    this.props.appId,
+                                                )
+                                            }}
+                                            className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
+                                                mat.tab === CDModalTab.Changes ? 'active' : ''
+                                            }`}
+                                        >
+                                            Changes
+                                        </button>
+                                    </li>
+                                    <li className="tab-list__tab">
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                this.props.changeTab(
+                                                    index,
+                                                    Number(mat.id),
+                                                    CDModalTab.Security,
+                                                    this.props.isFromBulkCD
+                                                        ? { id: this.props.pipelineId, type: this.props.stageType }
+                                                        : null,
+                                                    this.props.appId,
+                                                )
+                                            }}
+                                            className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
+                                                mat.tab === CDModalTab.Security ? 'active' : ''
+                                            }`}
+                                        >
+                                            Security
+                                            {mat.vulnerabilitiesLoading ? '' : ` (${mat.vulnerabilities.length})`}
+                                        </button>
+                                    </li>
+                                </ul>
+                            )}
+                            {mat.tab === CDModalTab.Changes
+                                ? this.renderGitMaterialInfo(mat.materialInfo)
+                                : this.renderVulnerabilities(mat)}
+                        </>
+                    )}
+                    {mat.materialInfo.length > 0 && isMaterialInfoAvailable && (
+                        <button
+                            type="button"
+                            className="material-history__changes-btn"
+                            onClick={(event) => {
+                                event.stopPropagation()
+                                this.props.toggleSourceInfo(
+                                    index,
+                                    this.props.isFromBulkCD
+                                        ? { id: this.props.pipelineId, type: this.props.stageType }
+                                        : null,
+                                )
+                            }}
+                        >
+                            {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
+                            <img
+                                src={arrow}
+                                alt=""
+                                style={{ transform: `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }}
+                            />
+                        </button>
+                    )}
+                </div>
+            )
         })
     }
 
@@ -729,9 +785,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
 
         if (this.state.isRollbackTrigger) {
-            this.props.triggerDeploy(this.props.stageType, this.state.selectedConfigToDeploy?.value, this.getWfrId())
+            this.props.triggerDeploy(
+                this.props.stageType,
+                this.props.appId,
+                this.state.selectedConfigToDeploy?.value,
+                this.getWfrId(),
+            )
         } else {
-            this.props.triggerDeploy(this.props.stageType)
+            this.props.triggerDeploy(this.props.stageType, this.props.appId)
         }
     }
 
@@ -791,6 +852,49 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return true
     }
 
+    renderTriggerBody() {
+        return (
+            <div
+                className={`trigger-modal__body ${
+                    this.state.showConfigDiffView && this.canReviewConfig() ? 'p-0' : ''
+                }`}
+                style={{
+                    height: this.state.showConfigDiffView ? 'calc(100vh - 141px)' : 'calc(100vh - 116px)',
+                }}
+            >
+                {this.state.showConfigDiffView && this.canReviewConfig() ? (
+                    <TriggerViewConfigDiff
+                        currentConfiguration={this.state.recentDeploymentConfig}
+                        baseTemplateConfiguration={this.getBaseTemplateConfiguration()}
+                        selectedConfigToDeploy={this.state.selectedConfigToDeploy}
+                        handleConfigSelection={this.handleConfigSelection}
+                        isConfigAvailable={this.isConfigAvailable}
+                        diffOptions={this.state.diffOptions}
+                    />
+                ) : (
+                    <>
+                        {!this.props.isFromBulkCD && <div className="material-list__title pb-16">
+                            {this.state.isRollbackTrigger ? 'Select from previously deployed images' : 'Select Image'}
+                        </div>}
+                        {this.renderMaterial()}
+                        {this.state.isRollbackTrigger && !this.state.noMoreImages && this.props.material.length !== 1 && (
+                            <button
+                                className="show-older-images-cta cta ghosted flex h-32"
+                                onClick={this.loadOlderImages}
+                            >
+                                {this.state.loadingMore ? (
+                                    <Progressing styles={{ height: '32px' }} />
+                                ) : (
+                                    'Show older images'
+                                )}
+                            </button>
+                        )}
+                    </>
+                )}
+            </div>
+        )
+    }
+
     renderCDModal() {
         return (
             <>
@@ -816,85 +920,48 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <img alt="close" src={close} />
                     </button>
                 </div>
-                <div
-                    className={`trigger-modal__body ${
-                        this.state.showConfigDiffView && this.canReviewConfig() ? 'p-0' : ''
-                    }`}
-                    style={{
-                        height: this.state.showConfigDiffView ? 'calc(100vh - 141px)' : 'calc(100vh - 116px)',
-                    }}
-                >
-                    {this.state.showConfigDiffView && this.canReviewConfig() ? (
-                        <TriggerViewConfigDiff
-                            currentConfiguration={this.state.recentDeploymentConfig}
-                            baseTemplateConfiguration={this.getBaseTemplateConfiguration()}
-                            selectedConfigToDeploy={this.state.selectedConfigToDeploy}
-                            handleConfigSelection={this.handleConfigSelection}
-                            isConfigAvailable={this.isConfigAvailable}
-                            diffOptions={this.state.diffOptions}
-                        />
-                    ) : (
-                        <>
-                            <div className="material-list__title pb-16">
-                                {this.state.isRollbackTrigger
-                                    ? 'Select from previously deployed images'
-                                    : 'Select Image'}
-                            </div>
-                            {this.renderMaterial()}
-                            {this.state.isRollbackTrigger &&
-                                !this.state.noMoreImages &&
-                                this.props.material.length !== 1 && (
-                                    <button
-                                        className="show-older-images-cta cta ghosted flex h-32"
-                                        onClick={this.loadOlderImages}
-                                    >
-                                        {this.state.loadingMore ? (
-                                            <Progressing styles={{ height: '32px' }} />
-                                        ) : (
-                                            'Show older images'
-                                        )}
-                                    </button>
-                                )}
-                        </>
-                    )}
-                </div>
+                {this.renderTriggerBody()}
                 {this.renderTriggerModalCTA()}
             </>
         )
     }
 
-    stopPropagationOnClick(e) {
-        e.stopPropagation()
-    }
-
     render() {
-        return (
-            <VisibleModal
-                className=""
-                parentClassName={this.state.isRollbackTrigger ? 'dc__overflow-hidden' : ''}
-                close={this.props.closeCDModal}
-            >
-                <div
-                    className={`modal-body--cd-material h-100 ${
-                        this.state.isRollbackTrigger ? 'contains-diff-view' : ''
-                    } ${this.props.material.length > 0 ? '' : 'no-material'}`}
-                    onClick={this.stopPropagationOnClick}
+        if (this.props.isFromBulkCD) {
+          return this.props.material.length > 0 ? (
+              this.renderTriggerBody()
+          ) : (
+              <EmptyStateCdMaterial materialType={this.props.materialType} />
+          )
+        } else {
+            return (
+                <VisibleModal
+                    className=""
+                    parentClassName={this.state.isRollbackTrigger ? 'dc__overflow-hidden' : ''}
+                    close={this.props.closeCDModal}
                 >
-                    {this.props.material.length > 0 ? (
-                        this.renderCDModal()
-                    ) : (
-                        <>
-                            <div className="trigger-modal__header">
-                                <h1 className="modal__title">{this.renderCDModalHeader()}</h1>
-                                <button type="button" className="dc__transparent" onClick={this.props.closeCDModal}>
-                                    <img alt="close" src={close} />
-                                </button>
-                            </div>
-                            <EmptyStateCdMaterial materialType={this.props.materialType} />
-                        </>
-                    )}
-                </div>
-            </VisibleModal>
-        )
+                    <div
+                        className={`modal-body--cd-material h-100 ${
+                            this.state.isRollbackTrigger ? 'contains-diff-view' : ''
+                        } ${this.props.material.length > 0 ? '' : 'no-material'}`}
+                        onClick={stopPropagation}
+                    >
+                        {this.props.material.length > 0 ? (
+                            this.renderCDModal()
+                        ) : (
+                            <>
+                                <div className="trigger-modal__header">
+                                    <h1 className="modal__title">{this.renderCDModalHeader()}</h1>
+                                    <button type="button" className="dc__transparent" onClick={this.props.closeCDModal}>
+                                        <img alt="close" src={close} />
+                                    </button>
+                                </div>
+                                <EmptyStateCdMaterial materialType={this.props.materialType} />
+                            </>
+                        )}
+                    </div>
+                </VisibleModal>
+            )
+        }
     }
 }

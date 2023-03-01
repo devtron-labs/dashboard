@@ -69,8 +69,13 @@
 }
 
 .failed,
+.unabletofetch,
 .superseded {
     background-image: url('../assets/icons/appstatus/ic-appstatus-failed.svg');
+}
+
+.timed-out {
+    background-image: url('../assets/icons/ic-timeout-red.svg');
 }
 
 .outofsync,
@@ -127,6 +132,11 @@
 .icon-dim-32 {
     width: 32px;
     height: 32px;
+}
+
+.icon-dim-34 {
+    width: 34px;
+    height: 34px;
 }
 
 .icon-dim-36 {

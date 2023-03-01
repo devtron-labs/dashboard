@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Terminal } from 'xterm';
-import { Scroller } from '../app/details/cIDetails/CIDetails'
 import { get } from '../../services/api';
 import { AppDetails } from '../app/types';
 import SockJS from 'sockjs-client';
@@ -9,10 +8,11 @@ import moment, { duration } from 'moment';
 import { AutoSizer } from 'react-virtualized'
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
-import { SocketConnectionType } from '../app/details/appDetails/AppDetails';
 import { useThrottledEffect } from '../common';
 import ReactGA from 'react-ga4';
 import './terminal.css';
+import { Scroller } from '../app/details/cicdHistory/History.components';
+import { SocketConnectionType } from '../app/details/appDetails/appDetails.type';
 
 interface TerminalViewProps {
     appDetails: AppDetails;
