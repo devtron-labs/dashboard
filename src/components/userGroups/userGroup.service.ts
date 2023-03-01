@@ -65,26 +65,25 @@ export function saveUser(request: CreateUser) {
     const options: APIOptions = {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : 30,
     }
-    return request.id
-        ? window._env_.CONFIGURABLE_TIMEOUT
-            ? put(`user`, request, options)
-            : put(`user`, request)
-        : window._env_.CONFIGURABLE_TIMEOUT
-        ? post(`user`, request, options)
-        : post(`user`, request)
+    if (window._env_.CONFIGURABLE_TIMEOUT) {
+        console.log(options.timeout)
+        return request.id ? put('user', request, options) : post('user', request, options)
+    } else {
+        return request.id ? put('user', request) : post('user', request)
+    }
 }
 
 export function saveGroup(request: CreateGroup) {
     const options: APIOptions = {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : 30,
     }
-    return request.id
-        ? window._env_.CONFIGURABLE_TIMEOUT
-            ? put(`user/role/group`, request, options)
-            : put(`user/role/group`, request)
-        : window._env_.CONFIGURABLE_TIMEOUT
-        ? post(`user/role/group`, request, options)
-        : post(`user/role/group`, request)
+
+    if (window._env_.CONFIGURABLE_TIMEOUT) {
+        console.log(options.timeout)
+        return request.id ? put('user/role/group', request, options) : post('user/role/group', request, options)
+    } else {
+        return request.id ? put('user/role/group', request) : post('user/role/group', request)
+    }
 }
 
 export function userModal(user) {
