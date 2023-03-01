@@ -71,3 +71,11 @@ export const JobsStatusConstants = {
         lowerCase: 'project',
     },
 }
+
+export const JOB_STATUS = {
+    Starting: 'Starting',
+    Running: 'Running',
+    Succeeded: 'Succeeded',
+    Cancelled: 'CANCELLED',
+    Failed: 'Failed',
+}
