@@ -2108,12 +2108,20 @@ textarea,
     min-width: 18px !important;
 }
 
-.w-32 {
-    width: 32px !important;
+.mw-48 {
+  min-width: 48px;
 }
 
-.mw-48 {
-    min-width: 48px;
+.mw-116 {
+    min-width: 116px;
+}
+
+.mw-232 {
+    min-width: 232px;
+}
+
+.w-32 {
+    width: 32px !important;
 }
 
 .min-w-800 {
