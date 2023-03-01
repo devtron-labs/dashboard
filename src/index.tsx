@@ -119,8 +119,7 @@ if (!window || !window._env_) {
         EA_APP_DETAILS_POLLING_INTERVAL: 30000,
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
         HIDE_DEPLOYMENT_GROUPS: true,
-        HIDE_GITOPS_OR_HELM_OPTION: false,
-        CONFIGURABLE_TIMEOUT: "",
+        HIDE_GITOPS_OR_HELM_OPTION: false
     }
 }
 

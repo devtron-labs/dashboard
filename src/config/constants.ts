@@ -204,7 +204,8 @@ export const Routes = {
     CLUSTER_LIST_PERMISSION: 'cluster/auth-list',
     ENVIRONMENT_APPS: 'env/app-grouping',
     ENV_APPLICATIONS: 'applications',
-    ENV_DEPLOYMENT_STATUS: 'deployment/status'
+    ENV_DEPLOYMENT_STATUS: 'deployment/status',
+    USER_ROLE_GROUP_URL: 'user/role/group'
 }
 
 export const ViewType = {
@@ -759,4 +760,3 @@ export enum KEY_VALUE {
   KEY= 'key',
   VALUE= 'value'
 }
-export const USER_ROLE_GROUP_URL = 'user/role/group'

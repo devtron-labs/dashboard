@@ -2,7 +2,7 @@ import { getAppListMin, getTeamListMin, getEnvironmentListMin } from '../../serv
 import { get, post, put, trash } from '../../services/api'
 import { APIOptions, ResponseType } from '../../services/service.types'
 import { CreateGroup, CreateUser } from './userGroups.types'
-import { Routes, USER_ROLE_GROUP_URL } from '../../config'
+import { Routes} from '../../config'
 
 
 export function getData() {
@@ -78,9 +78,9 @@ export function saveGroup(request: CreateGroup) {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : 30,
     }
     if (window._env_.CONFIGURABLE_TIMEOUT) {
-        return request.id ? put(USER_ROLE_GROUP_URL, request, options) : post('user/role/group', request, options)
+        return request.id ? put(Routes.USER_ROLE_GROUP_URL, request, options) : post('user/role/group', request, options)
     } else {
-        return request.id ? put(USER_ROLE_GROUP_URL, request) : post('user/role/group', request)
+        return request.id ? put(Routes.USER_ROLE_GROUP_URL, request) : post('user/role/group', request)
     }
 }
 
