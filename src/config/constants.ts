@@ -126,7 +126,9 @@ export const Routes = {
     APP_CREATE_CONFIG_MAP: 'config/global/cm',
     APP_CREATE_SECRET: 'config/global/cs',
     WORKFLOW: 'app/app-wf',
-
+    APP_WF: 'app-wf',
+    ENV_WORKFLOW: 'env',
+    WORKFLOW_STATUS: 'workflow/status',
     ATTRIBUTES_USER: 'attributes/user',
     APP_WORKFLOW_STATUS: 'app/workflow/status',
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
@@ -200,6 +202,9 @@ export const Routes = {
     K8S_RESOURCE_LIST: 'k8s/resource/list',
     K8S_RESOURCE_CREATE: 'k8s/resources/apply',
     CLUSTER_LIST_PERMISSION: 'cluster/auth-list',
+    ENVIRONMENT_APPS: 'env/app-grouping',
+    ENV_APPLICATIONS: 'applications',
+    ENV_DEPLOYMENT_STATUS: 'deployment/status'
 }
 
 export const ViewType = {
@@ -284,7 +289,7 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_GITOPS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/gitops`,
     GLOBAL_CONFIG_GIT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/git-accounts`,
     GLOBAL_CONFIG_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/docker-registries`,
-    GLOBAL_CONFIG_CLUSTER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/cluster-and-environments`,
+    GLOBAL_CONFIG_CLUSTER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/cluster-and-environments#configure-prometheus-enable-applications-metrics`,
     GLOBAL_CONFIG_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/chart-repo`,
     GLOBAL_CONFIG_NOTIFICATION: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/manage-notification`,
     GLOBAL_CONFIG_PROJECT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/projects`,
@@ -745,6 +750,8 @@ export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
 export const LAST_SEEN = 'last seen'
 export const GIT_BRANCH_NOT_CONFIGURED = 'Not Configured'
 export const SOURCE_NOT_CONFIGURED = 'Source not configured'
+export const DOCKER_FILE_ERROR_TITLE = 'Unable to locate Dockerfile as source is not configured for this repository'
+export const DOCKER_FILE_ERROR_MESSAGE = 'Unable to locate Dockerfile as source is not configured for this repository'
 export const DEFAULT_GIT_BRANCH_VALUE = '--'
 export const SOURCE_NOT_CONFIGURED_MESSAGE= 'Source is not configured for one or more git repositories. Please configure and try again.'
 

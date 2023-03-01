@@ -6,11 +6,13 @@ import NoResults from '../../../../assets/img/empty-noresult@2x.png'
 import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-right.svg'
 import { EmptyStateCIMaterialProps } from './types'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
-import { SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
+import { DOCKER_FILE_ERROR_MESSAGE, SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
 
 export default function EmptyStateCIMaterial({
     isRepoError,
     isBranchError,
+    isDockerFileError,
+    dockerFileErrorMsg,
     repoUrl,
     branchErrorMsg,
     repoErrorMsg,
@@ -42,6 +44,19 @@ export default function EmptyStateCIMaterial({
                 ),
                 cta: null,
             }
+        } else if (isDockerFileError) {
+            return {
+                img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
+                title: <h1 className="dc__empty-title">{dockerFileErrorMsg}</h1>,
+                subtitle: DOCKER_FILE_ERROR_MESSAGE,
+                cta:
+                    repoUrl?.length === 0 ? (
+                        <button className="cta flex" onClick={handleGoToWorkFlowEditor}>
+                            Configure Source
+                            <NextIcon className="icon-dim-16 ml-5 scn-0" />
+                        </button>
+                    ) : null,
+            }
         } else if (isBranchError) {
             return {
                 img: <img src={ErrorImage} alt="no commits found" className="empty-state__img--ci-material" />,
@@ -51,9 +66,7 @@ export default function EmptyStateCIMaterial({
                         {repoUrl}
                     </a>
                 ) : (
-                    <h1 className="dc__empty-title fs-13" style={{ color: 'gray' }}>
-                        {SOURCE_NOT_CONFIGURED_MESSAGE}
-                    </h1>
+                    SOURCE_NOT_CONFIGURED_MESSAGE
                 ),
                 cta:
                     repoUrl?.length === 0 ? (
