@@ -203,7 +203,7 @@ export function TaskDetailComponent() {
                         <div className="fw-6 fs-13 lh-32 cn-7 ">Trigger even if CI fails</div>
                         <input
                             type="checkbox"
-                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                            className="cursor icon-dim-16"
                             checked={formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail}
                             onChange={(e) => handleTriggerIfParentStageFailChange(e)}
                         />
