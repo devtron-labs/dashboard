@@ -95,8 +95,8 @@ export const getCIConfigList = (envID: string): Promise<CIConfigListType> => {
         })
         return {
             pipelineList,
-            securityModuleInstalled: securityInfo?.['value']?.['result']?.status === ModuleStatus.INSTALLED,
-            blobStorageConfigured: moduleConfig?.['value']?.['result']?.enabled,
+            securityModuleInstalled: securityInfo?.result?.status === ModuleStatus.INSTALLED,
+            blobStorageConfigured: moduleConfig?.result?.enabled,
         }
     })
 }
