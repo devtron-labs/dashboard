@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
 import { ButtonWithLoader, showError } from '../../components/common';
+import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import folder from '../../assets/icons/ic-folder.svg';
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
 import DeleteComponent from '../../util/DeleteComponent';
 import { deleteProject } from './service';
 import './project.css'
 import { DeleteComponentsName, DC_PROJECT_CONFIRMATION_MESSAGE } from '../../config/constantMessaging';
+import { ProjectType } from './types';
 
 export interface ProjectProps {
     id: number;
     name: string;
+    projects: ReadonlyArray<ProjectType>
     active: boolean;
     isCollapsed: boolean;
     saveProject: (index) => void;
@@ -25,6 +28,7 @@ export interface ProjectProps {
 export interface ProjectState {
     deleting: boolean;
     confirmation: boolean;
+    validationError: string;
 }
 export class Project extends Component<ProjectProps, ProjectState>  {
 
@@ -32,15 +36,16 @@ export class Project extends Component<ProjectProps, ProjectState>  {
         super(props)
 
         this.state = {
-           deleting: false,
-           confirmation: false,
+            deleting: false,
+            confirmation: false,
+            validationError: ""
         }
-      }
+    }
 
     toggleConfirmation = () => {
         this.setState((prevState)=>{
            return{ confirmation: !prevState.confirmation}
-           })
+        })
     }
 
     setDeleting = () => {
@@ -58,9 +63,30 @@ export class Project extends Component<ProjectProps, ProjectState>  {
     }
 
     saveProjectData = (event) => {
-        if (!this.props.name) return
+        const _projectExists = this.isProjectNameExists()
+        if (!this.props.name) {
+            this.setState({
+                validationError: "This is a required field"
+            })
+            return
+        }
+        else if (_projectExists) {
+            this.setState({
+                validationError: "This Project already exists"
+            })
+            return
+        }
+        else {
+            this.setState({
+                validationError: ""
+            })
+        }
         event.preventDefault()
         this.props.saveProject(this.props.index)
+    }
+
+    isProjectNameExists(): boolean {
+        return this.props.projects.some(({ name }, index) => name === this.props.name && index !== this.props.index)
     }
 
     renderCollapsedView() {
@@ -93,14 +119,6 @@ export class Project extends Component<ProjectProps, ProjectState>  {
         );
     }
 
-    isFormValid() {
-        let allKeys = Object.keys(this.props.isValid);
-        let isValid = allKeys.reduce((valid, key) => {
-            return valid = valid && this.props.isValid[key];
-        }, true);
-        return isValid;
-    }
-
     renderForm() {
         let isValid = this.props.isValid;
         let errorMessage = this.props.errorMessage;
@@ -127,14 +145,13 @@ export class Project extends Component<ProjectProps, ProjectState>  {
                                 this.props.handleChange(event, this.props.index, 'name')
                             }}
                         />
-                        {isValid.name ? null : (
+                        {isValid.name ? null : <span className="form__error">{errorMessage.name}</span>}
+                        {this.state.validationError && isValid.name ? (
                             <span className="form__error">
-                                {errorMessage.name}
-                            </span>
-                        )}
-                        {!this.props.name && isValid.name ? (
-                            <span className="form__error">
-                                This is a required field
+                                <>
+                                    <Error className="form__icon form__icon--error" />
+                                    {this.state.validationError}
+                                </>
                             </span>
                         ) : null}
                     </label>

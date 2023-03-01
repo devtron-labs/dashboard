@@ -98,7 +98,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         })
     }
 
-    renderProjects(project: ProjectType & { isCollapsed: boolean }, index: number) {
+    renderProjects(project: ProjectType , index: number) {
         return <Project saveProject={this.saveProject}
             handleChange={this.handleChange}
             onCancel={(event) => this.discard(index)}
@@ -106,6 +106,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             errorMessage={this.state.errorMessage}
             id={project.id}
             name={project.name}
+            projects={this.state.projects}
             active={project.active}
             isCollapsed={project.isCollapsed}
             index={index}
