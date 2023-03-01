@@ -9,8 +9,6 @@ import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-fil
 import { getLastExecutionByArtifactId } from '../../../../services/service'
 import { ScanDisabledView, ImageNotScannedView, NoVulnerabilityView, CIRunningView } from './cIDetails.util'
 import Reload from '../../../Reload/Reload'
-import docker from '../../../../assets/icons/misc/docker.svg'
-import folder from '../../../../assets/icons/ic-folder.svg'
 import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
@@ -336,6 +334,7 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView }: His
                         artifact={triggerDetails.artifact}
                         blobStorageEnabled={triggerDetails.blobStorageEnabled}
                         getArtifactPromise={_getArtifactPromise}
+                        artifactsUploaded={triggerDetails.artifactsUploaded}
                         isJobView={isJobView}
                     />
                 </Route>

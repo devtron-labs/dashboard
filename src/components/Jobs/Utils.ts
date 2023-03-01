@@ -1,9 +1,7 @@
-import { ViewType } from '../../config'
-import { AppListViewType, DEFAULT_TAG_DATA } from '../app/config'
-import { JobCreationType } from './Constants'
+import { ZERO_TIME_STRING } from '../../config'
+import { AppListViewType } from '../app/config'
 import { JobCIPipeline, JobListState, JobListStateAction, JobListStateActionTypes } from './Types'
 import * as queryString from 'query-string'
-import { buildClusterVsNamespace } from '../app/list-new/AppListService'
 import { OrderBy, SortBy } from '../app/list/types'
 import { handleUTCTime } from '../common'
 import moment from 'moment'
@@ -86,8 +84,14 @@ const pipelineModal = (ciPipelines: JobCIPipeline[]) => {
             return {
                 ciPipelineId: ciPipeline.ciPipelineId || 0,
                 ciPipelineName: ciPipeline.ciPipelineName || '',
-                lastRunAt: ciPipeline.lastRunAt ? handleUTCTime(ciPipeline.lastRunAt, false) : '',
-                lastSuccessAt: ciPipeline.lastSuccessAt ? handleUTCTime(ciPipeline.lastSuccessAt, false) : '',
+                lastRunAt:
+                    ciPipeline.lastRunAt && ciPipeline.lastRunAt !== ZERO_TIME_STRING
+                        ? handleUTCTime(ciPipeline.lastRunAt, true)
+                        : '-',
+                lastSuccessAt:
+                    ciPipeline.lastSuccessAt && ciPipeline.lastSuccessAt !== ZERO_TIME_STRING
+                        ? handleUTCTime(ciPipeline.lastSuccessAt, true)
+                        : '-',
                 status: ciPipeline.status ? handleDeploymentInitiatedStatus(ciPipeline.status) : 'notdeployed',
             }
         }) ?? []
@@ -106,16 +110,22 @@ const getDefaultPipeline = (ciPipelines) => {
         return {
             ciPipelineId: ciPipeline.ciPipelineId || 0,
             ciPipelineName: ciPipeline.ciPipelineName || '',
-            lastRunAt: ciPipeline.lastRunAt ? handleUTCTime(ciPipeline.lastRunAt, false) : '',
-            lastSuccessAt: ciPipeline.lastSuccessAt ? handleUTCTime(ciPipeline.lastSuccessAt, false) : '',
+            lastRunAt:
+                ciPipeline.lastRunAt && ciPipeline.lastRunAt !== ZERO_TIME_STRING
+                    ? handleUTCTime(ciPipeline.lastRunAt, true)
+                    : '-',
+            lastSuccessAt:
+                ciPipeline.lastSuccessAt && ciPipeline.lastSuccessAt !== ZERO_TIME_STRING
+                    ? handleUTCTime(ciPipeline.lastSuccessAt, true)
+                    : '-',
             status: ciPipeline.status ? handleDeploymentInitiatedStatus(ciPipeline.status) : 'notdeployed',
         }
     }
     return {
         ciPipelineId: 0,
-        ciPipelineName: '',
-        lastRunAt: '',
-        lastSuccessAt: '',
+        ciPipelineName: '-',
+        lastRunAt: '-',
+        lastSuccessAt: '-',
         status: 'notdeployed',
     }
 }
@@ -142,11 +152,7 @@ const handleDeploymentInitiatedStatus = (status: string): string => {
     else return status
 }
 
-export const onRequestUrlChange = (
-    masterFilters,
-    setMasterFilters,
-    searchParams,
-): any => {
+export const onRequestUrlChange = (masterFilters, setMasterFilters, searchParams): any => {
     let params = queryString.parse(searchParams)
     let search = params.search || ''
     let appStatus = params.appStatus || ''

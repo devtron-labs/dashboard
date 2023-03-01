@@ -15,7 +15,7 @@ export function getCIPipelineURL(
     workflowId: string,
     isGitNotConfigured: boolean,
     ciPipelineId: string | number = null,
-    isJobView?: boolean,
+    isJobView: boolean,
 ) {
     const prefixURL = isGitNotConfigured ? `/${isJobView ? 'job' : 'app'}/${appId}/edit/workflow/` : ''
     return `${prefixURL}${workflowId}/ci-pipeline${ciPipelineId ? `/${ciPipelineId}` : ''}`

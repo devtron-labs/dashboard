@@ -4,7 +4,6 @@ import { ReactComponent as Expand } from '../../../assets/icons/ic-dropdown-fill
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { ExpandedRowProps } from '../Types'
 import AppStatus from '../../app/AppStatus'
-import { handleUTCTime } from '../../common'
 import './ExpandedRow.scss'
 
 export default function ExpandedRow(props: ExpandedRowProps) {
@@ -13,7 +12,7 @@ export default function ExpandedRow(props: ExpandedRowProps) {
     }
 
     const renderRows = () => {
-    return props.job.ciPipelines.map((ciPipeline) => {
+        return props.job.ciPipelines.map((ciPipeline) => {
             return (
                 <Link
                     key={ciPipeline.ciPipelineId}
@@ -26,18 +25,10 @@ export default function ExpandedRow(props: ExpandedRowProps) {
                         <AppStatus appStatus={ciPipeline.status} />
                     </div>
                     <div className="app-list__cell app-list__cell--time">
-                        {ciPipeline.lastRunAt ? (
-                            <p className="dc__truncate-text m-0">{handleUTCTime(ciPipeline.lastRunAt, true)}</p>
-                        ) : (
-                            '-'
-                        )}
+                        <p className="dc__truncate-text m-0">{ciPipeline.lastRunAt}</p>
                     </div>
                     <div className="app-list__cell app-list__cell--time">
-                        {ciPipeline.lastSuccessAt ? (
-                            <p className="dc__truncate-text  m-0">{handleUTCTime(ciPipeline.lastSuccessAt, true)}</p>
-                        ) : (
-                            '-'
-                        )}
+                        <p className="dc__truncate-text  m-0">{ciPipeline.lastSuccessAt}</p>
                     </div>
                     <div className="app-list__cell app-list__cell--action" />
                 </Link>

@@ -1,5 +1,4 @@
 import { History } from '../cicdHistory/types'
-import { CIMaterial } from '../triggerView/ciMaterial'
 
 export interface CIPipeline {
     name: string

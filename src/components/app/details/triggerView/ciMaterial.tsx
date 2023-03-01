@@ -172,6 +172,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         appId={this.props.appId}
                         fromBulkCITrigger={false}
                         hideSearchHeader={false}
+                        isJobView={this.props.isJobView}
                     />
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(canTrigger)}
                 </>

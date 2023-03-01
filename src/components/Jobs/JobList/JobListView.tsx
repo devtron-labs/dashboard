@@ -1,5 +1,5 @@
 import React from 'react'
-import { ErrorScreenManager, Pagination, Progressing, handleUTCTime } from '../../common'
+import { ErrorScreenManager, Pagination, Progressing } from '../../common'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as DevtronAppIcon } from '../../../assets/icons/ic-devtron-app.svg'
@@ -78,18 +78,10 @@ export default function JobListView(props: JobListViewProps) {
                                 <AppStatus appStatus={job.defaultPipeline.status} isJobCreateView={true} />
                             </div>
                             <div className="app-list__cell app-list__cell--cluster">
-                                <p className="dc__truncate-text  m-0">
-                                    {job.defaultPipeline.lastRunAt
-                                        ? handleUTCTime(job.defaultPipeline.lastRunAt, true)
-                                        : '-'}
-                                </p>
+                                <p className="dc__truncate-text  m-0">{job.defaultPipeline.lastRunAt}</p>
                             </div>
                             <div className="app-list__cell app-list__cell--namespace">
-                                <p className="dc__truncate-text  m-0">
-                                    {job.defaultPipeline.lastSuccessAt
-                                        ? handleUTCTime(job.defaultPipeline.lastSuccessAt, true)
-                                        : '-'}
-                                </p>
+                                <p className="dc__truncate-text  m-0">{job.defaultPipeline.lastSuccessAt}</p>
                             </div>
                             <div className="app-list__cell app-list__cell--namespace">
                                 <p className="dc__truncate-text  m-0">{job.description ? job.description : '-'}</p>
@@ -120,7 +112,7 @@ export default function JobListView(props: JobListViewProps) {
             let icon = props.sortRule.order == OrderBy.ASC ? 'sort-up' : ''
             return (
                 <div className="app-list">
-                    <div className="app-list__header">
+                    <div className="app-list__header dc__border-bottom">
                         <div className="app-list__cell--icon flex left cursor" onClick={toggleAllExpandRow}>
                             <Arrow className={`icon-dim-24 p-2 ${arrowIcon()}`} />
                         </div>

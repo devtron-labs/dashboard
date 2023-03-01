@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { CINode } from './nodes/CINode'
-import { CDNode }  from './nodes/CDNode'
+import { CDNode } from './nodes/CDNode'
 import { StaticNode } from './nodes/StaticNode'
 import {
     RectangularEdge as Edge,
@@ -112,7 +112,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     this.props.id.toString(),
                     true,
                     node.downstreams[0].split('-')[1],
-                    this.props.isJobView
+                    this.props.isJobView,
                 ),
             )
         }
@@ -272,9 +272,19 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         }
         let { appId } = this.props.match.params
         let url = ''
-        if (node.isLinkedCI) url = getLinkedCIPipelineURL(appId, this.props.id.toString(), node.id)
-        else if (node.isExternalCI) url = getExCIPipelineURL(appId, this.props.id.toString(), node.id)
-        else url = getCIPipelineURL(appId, this.props.id.toString(), node.branch === GIT_BRANCH_NOT_CONFIGURED, node.id)
+        if (node.isLinkedCI) {
+            url = getLinkedCIPipelineURL(appId, this.props.id.toString(), node.id)
+        } else if (node.isExternalCI) {
+            url = getExCIPipelineURL(appId, this.props.id.toString(), node.id)
+        } else {
+            url = getCIPipelineURL(
+                appId,
+                this.props.id.toString(),
+                node.branch === GIT_BRANCH_NOT_CONFIGURED,
+                node.id,
+                this.props.isJobView,
+            )
+        }
         return `${this.props.match.url}/${url}`
     }
 

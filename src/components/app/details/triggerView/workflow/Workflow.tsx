@@ -19,6 +19,7 @@ export class Workflow extends Component<WorkflowProps> {
                 this.props.id,
                 true,
                 node.downstreams[0].split('-')[1],
+                this.props.isJobView
             )
             if (this.props.fromAppGrouping) {
                 window.open(
