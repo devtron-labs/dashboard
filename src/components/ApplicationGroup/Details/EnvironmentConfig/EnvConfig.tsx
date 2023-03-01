@@ -20,12 +20,12 @@ export default function EnvConfig({ filteredApps }: AppGroupDetailDefaultType) {
             filteredApps.forEach((app) => {
                 _filteredAppMap.set(+app.value, app.label)
             })
-            const envAppList = appList.result
+            const _envAppList = appList.result
                 .filter((app) => _filteredAppMap.get(app.id))
                 .sort((a, b) => a.name.localeCompare(b.name))
-            setEnvAppList(envAppList)
+            setEnvAppList(_envAppList)
             if (!params.appId) {
-                history.push(`${url}/${envAppList[0].id}`)
+                history.push(`${url}/${_envAppList[0].id}`)
             }
         }
     }, [appList, filteredApps])

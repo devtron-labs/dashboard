@@ -50,12 +50,10 @@ export default function EnvCDDetails({ filteredApps }: AppGroupDetailDefaultType
                 _filteredAppMap.set(+app.value, app.label)
             })
             const _filteredPipelines = []
-            let nonWebhookCIExist = false
             let selectedPipelineExist = false
             result[0]['value'].result.pipelines.forEach((pipeline) => {
                 if (pipeline.environmentId === +envId && _filteredAppMap.get(+pipeline.appId)) {
                     _filteredPipelines.push(pipeline)
-                    nonWebhookCIExist = true
                     selectedPipelineExist = selectedPipelineExist || pipeline.id === +pipelineId
                 }
             })

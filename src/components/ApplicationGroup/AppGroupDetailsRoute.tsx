@@ -1,4 +1,4 @@
-import React, { Suspense, useCallback, useRef, useEffect, useState } from 'react'
+import React, { Suspense, useCallback, useRef, useEffect, useState, useMemo } from 'react'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
 import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, useAsync, sortOptionsByLabel } from '../common'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
@@ -156,6 +156,17 @@ export function EnvHeader({
     const currentPathname = useRef('')
     const [isMenuOpen, setMenuOpen] = useState(false)
 
+    const contextValue = useMemo(
+      () => ({
+          appListOptions,
+          isMenuOpen,
+          setMenuOpen,
+          selectedAppList,
+          setSelectedAppList,
+      }),
+      [appListOptions, isMenuOpen, selectedAppList],
+  )
+
     useEffect(() => {
         currentPathname.current = location.pathname
     }, [location.pathname])
@@ -267,15 +278,7 @@ export function EnvHeader({
             <>
                 <BreadCrumb breadcrumbs={breadcrumbs} />
                 <div className="dc__border-right ml-8 mr-8 h-16" />
-                <AppGroupAppFilterContext.Provider
-                    value={{
-                        appListOptions,
-                        isMenuOpen,
-                        setMenuOpen,
-                        selectedAppList,
-                        setSelectedAppList,
-                    }}
-                >
+                <AppGroupAppFilterContext.Provider value={contextValue}>
                     <AppGroupAppFilter />
                 </AppGroupAppFilterContext.Provider>
             </>
