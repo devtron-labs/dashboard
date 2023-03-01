@@ -237,7 +237,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                     )}
                     <div className="node-row m-0 resource-row">
                         <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 `}>
-                            <div className="flex left dc__align-start w-100">
+                            <div className="flex left">
                                 <div
                                     className="flex left top ml-2"
                                     onClick={() => {
@@ -257,7 +257,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                         <span className="pl-12 pr-12"></span>
                                     )}
                                     <div>
-                                        <div className="resource__title-name flex left">
+                                        <div className="resource__title-name flex left dc__align-start">
                                             <span className="fs-13">{node.name}</span>
                                             <Tippy
                                                 className="default-tt"
@@ -266,12 +266,20 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                                 content={copied ? 'Copied!' : 'Copy to clipboard.'}
                                                 trigger="mouseenter click"
                                             >
-                                                <Clipboard
-                                                    className="icon-dim-12 pointer ml-8 mr-8"
-                                                    onClick={onClickClipboard}
-                                                />
+                                                <span>
+                                                    <Clipboard
+                                                        className="icon-dim-12 pointer ml-8 mr-8 mt-4"
+                                                        onClick={onClickClipboard}
+                                                    />
+                                                </span>
                                             </Tippy>
-                                            <div className="flex left mw-232">
+                                            <div
+                                                className={`flex left ${
+                                                    node.kind.toLowerCase() == NodeType.Pod.toLowerCase()
+                                                        ? 'mw-232'
+                                                        : 'mw-116'
+                                                }`}
+                                            >
                                                 <div
                                                     className={`flex left ${getWidthClassnameForTabs()} ${
                                                         node.kind === NodeType.Containers ? '' : 'node__tabs'
