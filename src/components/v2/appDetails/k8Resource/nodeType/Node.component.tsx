@@ -236,8 +236,8 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
-                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 dc__content-space`}>
-                            <div className="flex dc__align-start">
+                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 `}>
+                            <div className="flex left dc__align-start w-100">
                                 <div
                                     className="flex left top ml-2"
                                     onClick={() => {
@@ -245,15 +245,72 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                     }}
                                 >
                                     {node.childNodes?.length > 0 ? (
-                                        <DropDown
-                                            className={`rotate icon-dim-24 pointer ${_isSelected ? 'fcn-9' : 'fcn-5'} `}
-                                            style={{ ['--rotateBy' as any]: !_isSelected ? '-90deg' : '0deg' }}
-                                        />
+                                        <span>
+                                            <DropDown
+                                                className={`rotate icon-dim-24 pointer ${
+                                                    _isSelected ? 'fcn-9' : 'fcn-5'
+                                                } `}
+                                                style={{ ['--rotateBy' as any]: !_isSelected ? '-90deg' : '0deg' }}
+                                            />
+                                        </span>
                                     ) : (
                                         <span className="pl-12 pr-12"></span>
                                     )}
                                     <div>
-                                        <div>{node.name}</div>
+                                        <div className="resource__title-name flex left">
+                                            <span className="fs-13">{node.name}</span>
+                                            <Tippy
+                                                className="default-tt"
+                                                arrow={false}
+                                                placement="bottom"
+                                                content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                                                trigger="mouseenter click"
+                                            >
+                                                <Clipboard
+                                                    className="icon-dim-12 pointer ml-8 mr-8"
+                                                    onClick={onClickClipboard}
+                                                />
+                                            </Tippy>
+                                            <div className="flex left mw-232">
+                                                <div
+                                                    className={`flex left ${getWidthClassnameForTabs()} ${
+                                                        node.kind === NodeType.Containers ? '' : 'node__tabs'
+                                                    } en-2 bw-1 br-4 dc__w-fit-content`}
+                                                >
+                                                    {getNodeDetailTabs(node.kind).map((kind, index) => {
+                                                        return (
+                                                            <div
+                                                                key={'tab__' + index}
+                                                                data-name={kind}
+                                                                onClick={onClickNodeDetailsTab}
+                                                                className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
+                                                                    node.kind === NodeType.Containers
+                                                                        ? ''
+                                                                        : 'resource-action-tabs__active'
+                                                                }  ${
+                                                                    index === getNodeDetailTabs(node.kind)?.length - 1
+                                                                        ? ''
+                                                                        : 'dc__border-right'
+                                                                } pl-6 pr-6`}
+                                                            >
+                                                                {kind.toLowerCase()}
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {node.kind !== NodeType.Containers && (
+                                                    <>
+                                                        <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                        {node.kind.toLowerCase() == NodeType.Pod.toLowerCase() && (
+                                                            <>
+                                                                <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                                <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                            </>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
                                         <div className="flex left">
                                             <span
                                                 className={`mr-4 app-summary__status-name f-${(
@@ -267,65 +324,13 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                             {node?.health?.message && (
                                                 <>
                                                     <div className="dc__bullet ml-4 mr-4"></div>
-                                                    <span className="dc__truncate-text">
+                                                    <span className="dc__truncate">
                                                         {node.health.message.toLowerCase()}
                                                     </span>
                                                 </>
                                             )}
                                         </div>
                                     </div>
-                                </div>
-
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="bottom"
-                                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                                    trigger="mouseenter click"
-                                >
-                                    <Clipboard
-                                        className="icon-dim-12 pointer ml-8 mr-8 mt-4"
-                                        onClick={onClickClipboard}
-                                    />
-                                </Tippy>
-                                <div className="flex left">
-                                    <div
-                                        className={`flex left ${getWidthClassnameForTabs()} ${
-                                            node.kind === NodeType.Containers ? '' : 'node__tabs'
-                                        } en-2 bw-1 br-4 dc__w-fit-content`}
-                                    >
-                                        {getNodeDetailTabs(node.kind).map((kind, index) => {
-                                            return (
-                                                <div
-                                                    key={'tab__' + index}
-                                                    data-name={kind}
-                                                    onClick={onClickNodeDetailsTab}
-                                                    className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
-                                                        node.kind === NodeType.Containers
-                                                            ? ''
-                                                            : 'resource-action-tabs__active'
-                                                    }  ${
-                                                        index === getNodeDetailTabs(node.kind)?.length - 1
-                                                            ? ''
-                                                            : 'dc__border-right'
-                                                    } pl-6 pr-6`}
-                                                >
-                                                    {kind.toLowerCase()}
-                                                </div>
-                                            )
-                                        })}
-                                    </div>
-                                    {node.kind !== NodeType.Containers && (
-                                        <>
-                                            <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
-                                            {node.kind.toLowerCase() == NodeType.Pod.toLowerCase() && (
-                                                <>
-                                                    <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
-                                                    <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
-                                                </>
-                                            )}
-                                        </>
-                                    )}
                                 </div>
                             </div>
                         </div>
