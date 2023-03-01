@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { ConfigurationType, ViewType } from '../../config'
+import { ConfigurationType, ViewType, BuildStageVariable } from '../../config'
 import { Progressing, RadioGroup, showError } from '../common'
 import {
     ConditionContainerType,
@@ -106,9 +106,16 @@ export function TaskDetailComponent() {
         setFormDataErrorObj(_formErrorObject)
         setFormData(_formData)
     }
+
     const handleDescriptionChange = (e: any): void => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].description = e.target.value
+        setFormData(_formData)
+    }
+
+    const handleTriggerIfParentStageFailChange = (e: any): void => {
+        const _formData = { ...formData }
+        _formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail = !_formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail
         setFormData(_formData)
     }
 
@@ -189,6 +196,19 @@ export function TaskDetailComponent() {
                         placeholder="Enter task description"
                     />
                 </div>
+
+                {
+                    activeStageName == BuildStageVariable.PostBuild &&
+                    <div className="row-container mb-12">
+                        <div className="fw-6 fs-13 lh-32 cn-7 ">Trigger even if CI fails</div>
+                        <input
+                            type="checkbox"
+                            className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                            checked={formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail}
+                            onChange={(e) => handleTriggerIfParentStageFailChange(e)}
+                        />
+                    </div>
+                }
 
                 {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE && (
                     <div className="row-container mb-12">
