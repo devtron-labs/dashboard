@@ -759,3 +759,4 @@ export enum KEY_VALUE {
   KEY= 'key',
   VALUE= 'value'
 }
+export const USER_ROLE_GROUP_URL = 'user/role/group'
