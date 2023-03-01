@@ -18,7 +18,7 @@ export default function GitCommitInfoGeneric({
     commitInfo,
     selectedCommitInfo,
     materialUrl,
-    showMaterialInfo,
+    showMaterialInfoHeader,
     canTriggerBuild = false,
 }) {
     const [showSeeMore, setShowSeeMore] = useState(true)
@@ -158,7 +158,7 @@ export default function GitCommitInfoGeneric({
 
     return (
         <>
-            {showMaterialInfo && (_isWebhook || _lowerCaseCommitInfo.commit) && (
+            {showMaterialInfoHeader && (_isWebhook || _lowerCaseCommitInfo.commit) && (
                 <GitMaterialInfoHeader
                     repoUrl={materialUrl}
                     materialType={materialSourceType}
