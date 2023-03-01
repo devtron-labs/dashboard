@@ -242,7 +242,7 @@ export default function UserGroupRoute() {
                 )
             })
         } catch (error) {
-            showError(error)
+            showError(error,true,true)
             setAppsList((appList) => {
                 return missingProjects.reduce((appList, projectId) => {
                     appList.set(projectId, { loading: false, result: [], error })
