@@ -1,8 +1,9 @@
 import { getAppListMin, getTeamListMin, getEnvironmentListMin } from '../../services/service'
 import { get, post, put, trash } from '../../services/api'
-import { ResponseType } from '../../services/service.types'
+import { APIOptions, ResponseType } from '../../services/service.types'
 import { CreateGroup, CreateUser } from './userGroups.types'
-import { Routes } from '../../config'
+import { Routes} from '../../config'
+
 
 export function getData() {
     return Promise.all([getTeamListMin(), getAppListMin(), getEnvironmentListMin()]).then(
@@ -62,11 +63,25 @@ export function getParsedData(teamList, appList, environmentList) {
 }
 
 export function saveUser(request: CreateUser) {
-    return request.id ? put(`user`, request) : post(`user`, request)
+    const options: APIOptions = {
+        timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : 30,
+    }
+    if (window._env_.CONFIGURABLE_TIMEOUT) {
+        return request.id ? put('user', request, options) : post('user', request, options)
+    } else {
+        return request.id ? put('user', request) : post('user', request)
+    }
 }
 
 export function saveGroup(request: CreateGroup) {
-    return request.id ? put(`user/role/group`, request) : post(`user/role/group`, request)
+    const options: APIOptions = {
+        timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : 30,
+    }
+    if (window._env_.CONFIGURABLE_TIMEOUT) {
+        return request.id ? put(Routes.USER_ROLE_GROUP_URL, request, options) : post('user/role/group', request, options)
+    } else {
+        return request.id ? put(Routes.USER_ROLE_GROUP_URL, request) : post('user/role/group', request)
+    }
 }
 
 export function userModal(user) {
