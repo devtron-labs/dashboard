@@ -132,13 +132,11 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         const renderLoginError = (): JSX.Element => {
             return (
                 <>
-                    <span>
-                        {SSO_LOGGING_INFO.frontText}
-                        <a target="_blank" href={DOCUMENTATION.GLOBAL_CONFIG_AUTH}>
-                            {SSO_LOGGING_INFO.redirectLink}
-                        </a>
-                        {SSO_LOGGING_INFO.tailText}
-                    </span>
+                    {SSO_LOGGING_INFO.frontText}
+                    <a target="_blank" href={DOCUMENTATION.GLOBAL_CONFIG_AUTH}>
+                        {SSO_LOGGING_INFO.redirectLink}
+                    </a>
+                    {SSO_LOGGING_INFO.tailText}
                 </>
             )
         }
