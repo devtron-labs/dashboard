@@ -148,7 +148,10 @@ export interface ClusterListType {
     namespaceList: string[]
 }
 
-export interface SelectGroupType {label: string, options: OptionType[]}
+export interface SelectGroupType {
+    label: string
+    options: OptionType[]
+}
 
 export interface ClusterTerminalType {
     clusterId: number
@@ -241,4 +244,9 @@ export interface ClusterImageList {
     groupId: string
     groupRegex: string
     imageList: ImageList[]
+}
+
+export interface ClusterEventsType {
+    terminalAccessId: number
+    reconnectStart?: () => void
 }

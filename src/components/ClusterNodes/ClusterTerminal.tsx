@@ -31,6 +31,7 @@ import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help-outline.s
 import { ClusterTerminalType } from './types'
 import {
     AUTO_SELECT,
+    clusterImageSelect,
     clusterSelectStyle,
     CLUSTER_STATUS,
     CLUSTER_TERMINAL_MESSAGING,
@@ -557,20 +558,7 @@ export default function ClusterTerminal({
                             defaultValue={selectedImage}
                             value={selectedImage}
                             onChange={onChangeImages}
-                            styles={{
-                                ...clusterSelectStyle,
-                                menu: (base, state) => ({
-                                    ...base,
-                                    zIndex: 9999,
-                                    textAlign: 'left',
-                                    maxWidth: '380px',
-                                    minWidth: '350px',
-                                }),
-                                control: (base, state) => ({
-                                    ...clusterSelectStyle.control(base, state),
-                                    maxWidth: '300px',
-                                }),
-                            }}
+                            styles={clusterImageSelect}
                             components={{
                                 IndicatorSeparator: null,
                                 Option: imageOptionComponent,

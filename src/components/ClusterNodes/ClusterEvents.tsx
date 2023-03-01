@@ -5,15 +5,11 @@ import { EventsTable } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTa
 import { PodEventsType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
 import MessageUI from '../v2/common/message.ui'
 import { getClusterEvents } from './clusterNodes.service'
+import { ClusterEventsType } from './types'
 
-export default function ClusterEvents({
-    terminalAccessId,
-    reconnectStart,
-}: {
-    terminalAccessId: number
-    reconnectStart?: () => void
-}) {
-    const [events, setEvents] = useState<PodEventsType>()
+export default function ClusterEvents({ terminalAccessId, reconnectStart }: ClusterEventsType) {
+    const [events, setEvents] = useState([])
+    const [errorValue, setErrorValue] = useState<PodEventsType>()
     const [loading, setLoading] = useState<boolean>(true)
     const [isResourceMissing, setResourceMissing] = useState(false)
 
@@ -22,8 +18,8 @@ export default function ClusterEvents({
             getClusterEvents(terminalAccessId)
                 .then((response) => {
                     setLoading(false)
-                    const events = response.result
-                    setEvents(events)
+                    setEvents(response.result?.eventsResponse?.events.items)
+                    setErrorValue(response.result)
                 })
                 .catch((error) => {
                     showError(error)
@@ -42,8 +38,8 @@ export default function ClusterEvents({
     ) : (
         <EventsTable
             loading={loading}
-            eventsList={events?.eventsResponse?.events.items}
-            errorValue={events}
+            eventsList={events}
+            errorValue={errorValue}
             reconnect={reconnectStart}
         />
     )

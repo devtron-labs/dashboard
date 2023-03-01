@@ -16,7 +16,7 @@ import { SERVER_MODE } from '../../../../../../../config'
 import { mainContext } from '../../../../../../common/navigation/NavigationRoutes'
 import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
 import './terminal.css'
-import { TERMINAL_TEXT } from './constants'
+import { GA_CONST, termialGAEvents, TERMINAL_STATUS, TERMINAL_TEXT } from './constants'
 
 let socket = undefined
 let terminal = undefined
@@ -202,12 +202,12 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
     const preFetchData = (podState = '', status = '') => {  
         const _terminal = terminal
-        let startingText = 'create'
+        let startingText = TERMINAL_STATUS.CREATE
         if (!_terminal) return
 
         _terminal?.reset()
 
-        if(prevNode.current === 'autoSelectNode'){
+        if(prevNode.current === TERMINAL_STATUS.AUTO_SELECT_NODE){
             _terminal.write('Selecting a node')
             if(currNode.current){
                 _terminal.write(` > ${currNode.current} selected`)
@@ -217,19 +217,19 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             }
         }
 
-        if(prevNode.current !== 'autoSelectNode' || currNode.current){
+        if(prevNode.current !== TERMINAL_STATUS.AUTO_SELECT_NODE || currNode.current){
             if(terminalViewProps.isShellSwitched){
-                startingText = 'shell'
+                startingText = TERMINAL_STATUS.SHELL
             }
     
             if(startingText){
-                if(startingText === 'create'){
+                if(startingText === TERMINAL_STATUS.CREATE){
                     _terminal.write('Creating pod.')
-                } else if(startingText === 'shell'){
+                } else if(startingText === TERMINAL_STATUS.SHELL){
                     _terminal.write(`Switching shell to ${terminalViewProps.shell.value}.`)
                 }
             }
-            if(startingText !== 'shell' && podState){
+            if(startingText !== TERMINAL_STATUS.SHELL && podState){
                 if (podState === CLUSTER_STATUS.RUNNING) {
                     _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
                     _terminal.writeln('')
@@ -238,11 +238,11 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             }
     
             if(status){
-                if (status === 'timedOut') {
+                if (status === TERMINAL_STATUS.TIMEDOUT) {
                     _terminal.write(' \u001b[38;5;196mTimed out\u001b[0m')
-                } else if (status === 'failed'){
+                } else if (status === TERMINAL_STATUS.FAILED){
                     _terminal.write(' \u001b[38;5;196mFailed\u001b[0m')
-                } else if (status === 'Succeded') {
+                } else if (status === TERMINAL_STATUS.SUCCEDED) {
                     _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
                 }
                 _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
@@ -277,29 +277,17 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }, [terminalViewProps.socketConnection, terminalViewProps.terminalId])
 
     useEffect(() => {
-        ReactGA.event({
-            category: 'Terminal',
-            action: `Selected Pod`,
-            label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
-        })
+        ReactGA.event(termialGAEvents(GA_CONST.POD,terminalViewProps))
         reconnect()
     }, [terminalViewProps.nodeName])
 
     useEffect(() => {
-        ReactGA.event({
-            category: 'Terminal',
-            action: `Selected Container`,
-            label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
-        })
+        ReactGA.event(termialGAEvents(GA_CONST.CONTAINER,terminalViewProps))
         reconnect()
     }, [terminalViewProps.containerName])
 
     useEffect(() => {
-        ReactGA.event({
-            category: 'Terminal',
-            action: `Selected Shell`,
-            label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
-        })
+        ReactGA.event(termialGAEvents(GA_CONST.SHELL,terminalViewProps))
         reconnect()
     }, [terminalViewProps.shell])
 

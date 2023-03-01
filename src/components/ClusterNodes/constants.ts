@@ -68,7 +68,14 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
         sortingFieldName: 'errorCount',
     },
     { sortType: 'string', columnIndex: 4, label: 'K8S Version', value: 'k8sVersion', isDefault: true },
-    { sortType: 'string', columnIndex: 5, label: 'Node Group', value: 'nodeGroup', isSortingAllowed: true, isDefault: true },
+    {
+        sortType: 'string',
+        columnIndex: 5,
+        label: 'Node Group',
+        value: 'nodeGroup',
+        isSortingAllowed: true,
+        isDefault: true,
+    },
     {
         sortType: 'number',
         columnIndex: 6,
@@ -211,18 +218,17 @@ export const DRAIN_NODE_MODAL_MESSAGING = {
     },
     DeleteEmptyDirectoryData: {
         heading: 'Delete empty directory data',
-        infoText:
-            'Enabling this field will delete the pods using empty directory data when the node is drained.',
+        infoText: 'Enabling this field will delete the pods using empty directory data when the node is drained.',
     },
     DisableEviction: {
         heading: 'Disable eviction (use with caution)',
-        infoText:
-            `Enabling this field will force drain to use delete, even if eviction is supported. This will bypass checking PodDisruptionBudgets.
+        infoText: `Enabling this field will force drain to use delete, even if eviction is supported. This will bypass checking PodDisruptionBudgets.
             Note: Make sure to use with caution.`,
     },
     ForceDrain: {
         heading: 'Force drain',
-        infoText: 'Enabling this field will force drain a node even if there are pods that do not declare a controller.',
+        infoText:
+            'Enabling this field will force drain a node even if there are pods that do not declare a controller.',
     },
     IgnoreDaemonSets: {
         heading: 'Ignore DaemonSets',
@@ -275,11 +281,12 @@ export const IMAGE_LIST = {
 
 export const CLUSTER_TERMINAL_MESSAGING = {
     CUSTOM_PATH: 'Use custom image: Enter path for publicly available image',
-    SELECT_UTILITY: 'Select image you want to run inside the pod. Images contain utility tools (eg. kubectl, helm,curl,',
+    SELECT_UTILITY:
+        'Select image you want to run inside the pod. Images contain utility tools (eg. kubectl, helm,curl,',
     NETSHOOT: 'netshoot',
     BUSYBOX: 'busybox',
     DEBUG_CLUSTER: ') which can be used to debug clusters and workloads.',
-    PUBLIC_IMAGE: 'You can use publicly available custom images as well.'
+    PUBLIC_IMAGE: 'You can use publicly available custom images as well.',
 }
 
 export const SELECT_TITLE = {
@@ -290,7 +297,29 @@ export const SELECT_TITLE = {
     TERMINAL: 'Terminal',
     POD_EVENTS: 'Pod Events',
     POD_MANIFEST: 'Pod Manifest',
-    SHELL: 'Shell'
+    SHELL: 'Shell',
 }
 
 export const AUTO_SELECT = { label: 'Auto select', value: 'autoSelectNode' }
+
+export const NODE_SEARCH_TEXT = {
+    NAME: 'name',
+    LABEL: 'label',
+    LABELS: 'labels',
+    NODE_GROUP: 'nodeGroup',
+}
+
+export const clusterImageSelect = {
+    ...clusterSelectStyle,
+    menu: (base, state) => ({
+        ...base,
+        zIndex: 9999,
+        textAlign: 'left',
+        maxWidth: '380px',
+        minWidth: '350px',
+    }),
+    control: (base, state) => ({
+        ...clusterSelectStyle.control(base, state),
+        maxWidth: '300px',
+    }),
+}
