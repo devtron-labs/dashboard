@@ -261,7 +261,7 @@ function cdMaterialListModal(
             deployedBy: material.deployedBy,
             wfrId: material.wfrId,
             tab: CDModalTab.Changes,
-            image: material.image.split(':')[1],
+            image: material.image.split(':')[material.image.split(':').length - 1],
             showChanges: false,
             vulnerabilities: [],
             buildTime: material.build_time || '',

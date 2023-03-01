@@ -112,7 +112,7 @@ const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: Finish
                 {artifact && (
                     <div className="dc__app-commit__hash ">
                         <img src={docker} className="commit-hash__icon grayscale" />
-                        {artifact.split(':')[1]}
+                        {artifact.split(':')[artifact.split(':').length - 1]}
                     </div>
                 )}
             </div>
