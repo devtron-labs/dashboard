@@ -143,7 +143,7 @@ function getParentNode(nodes: Map<string, NodeAttr>, node: NodeAttr): NodeAttr |
     const type = node.preNode ? WorkflowNodeType.PRE_CD : node.type
 
     if (!!parentNode) {
-        ;(parentNode.postNode ? parentNode.postNode : parentNode).downstreams = [type + '-' + node.id]
+        (parentNode.postNode ? parentNode.postNode : parentNode).downstreams = [type + '-' + node.id]
         parentNode.downstreamNodes = [node]
     }
     return parentNode
