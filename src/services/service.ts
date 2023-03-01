@@ -154,7 +154,7 @@ export function getAppOtherEnvironment(appId): Promise<AppOtherEnvironment> {
     return get(URL);
 }
 
-export function getJobCIPiprline(jobId){
+export function getJobCIPipeline(jobId){
     return get(`${Routes.JOB_CI_DETAIL}/${jobId}`)
 }
 
