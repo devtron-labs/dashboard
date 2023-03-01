@@ -30,6 +30,7 @@ interface customEnv {
     CENTRAL_API_ENDPOINT?: string
     HIDE_DEPLOYMENT_GROUPS?: boolean
     HIDE_GITOPS_OR_HELM_OPTION ?: boolean
+    CONFIGURABLE_TIMEOUT?: string
 }
 declare global {
     interface Window {
