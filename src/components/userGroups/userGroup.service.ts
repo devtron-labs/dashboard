@@ -65,8 +65,6 @@ export function saveUser(request: CreateUser) {
     const options: APIOptions = {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : 30,
     }
-    console.log(window._env_.CONFIGURABLE_TIMEOUT)
-    console.log(options.timeout)
     return request.id
         ? window._env_.CONFIGURABLE_TIMEOUT
             ? put(`user`, request, options)
@@ -80,12 +78,6 @@ export function saveGroup(request: CreateGroup) {
     const options: APIOptions = {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : 30,
     }
-    console.log(window._env_.CONFIGURABLE_TIMEOUT)
-    console.log(window._env_.HOTJAR_ENABLED)
-    console.log(options.timeout)
-    console.log(window._env_.SENTRY_ENV)
-    
-    
     return request.id
         ? window._env_.CONFIGURABLE_TIMEOUT
             ? put(`user/role/group`, request, options)
