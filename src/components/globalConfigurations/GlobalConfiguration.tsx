@@ -387,7 +387,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 render={(props) => {
                     return (
                         <div className="flexbox">
-                            <ClusterList {...props} serverMode={serverMode} />
+                            <ClusterList {...props} serverMode={serverMode} isSuperAdmin={isSuperAdmin} />
                         </div>
                     )
                 }}
@@ -407,9 +407,10 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 render={(props) => {
                     return (
                         <div className="flexbox">
-                            <Docker {...props} 
-                            handleChecklistUpdate={handleChecklistUpdate}
-                            isSuperAdmin={isSuperAdmin} 
+                            <Docker
+                                {...props}
+                                handleChecklistUpdate={handleChecklistUpdate}
+                                isSuperAdmin={isSuperAdmin}
                             />
                         </div>
                     )
@@ -446,7 +447,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             <Route
                 path={URLS.GLOBAL_CONFIG_NOTIFIER}
                 render={(props) => {
-                    return <Notifier {...props} />
+                    return <Notifier {...props} isSuperAdmin={isSuperAdmin} />
                 }}
             />
             <Route path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>

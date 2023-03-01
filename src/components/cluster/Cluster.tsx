@@ -1,5 +1,5 @@
 import React, { useState, useMemo, Component } from 'react'
-import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle, useAsync } from '../common'
+import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle, useAsync, ErrorScreenNotAuthorized } from '../common'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import {
@@ -42,6 +42,7 @@ import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.s
 import Tippy from '@tippyjs/react'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import TippyHeadless from '@tippyjs/react/headless'
+import { RouteComponentProps } from 'react-router'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -180,8 +181,15 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     render() {
-        if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR) return <Reload className='dc__align-reload-center' />
+        if (!this.props.isSuperAdmin) {
+            return (
+                <div className="error-screen-wrapper flex column h-100">
+                    <ErrorScreenNotAuthorized />
+                </div>
+            )
+        } 
+        else if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
+        else if (this.state.view === ViewType.ERROR) return <Reload className="dc__align-reload-center" />
         else {
             const moduleBasedTitle =
                 'Clusters' + (this.props.serverMode === SERVER_MODE.EA_ONLY ? '' : ' and Environments')
