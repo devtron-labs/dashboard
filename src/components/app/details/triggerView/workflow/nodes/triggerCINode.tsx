@@ -65,14 +65,10 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                     {this.props.status && this.props.status.toLowerCase() === 'cancelled'
                         ? 'ABORTED'
                         : this.props.status}
-                    {!this.props.fromAppGrouping && (
-                        <>
-                            <span className="mr-5 ml-5">/</span>
-                            <Link to={url} className="workflow-node__details-link">
-                                Details
-                            </Link>
-                        </>
-                    )}
+                        <span className="mr-5 ml-5">/</span>
+                        <Link to={url} className="workflow-node__details-link">
+                            Details
+                        </Link>
                 </div>
             )
     }

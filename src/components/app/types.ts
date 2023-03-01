@@ -117,6 +117,7 @@ export interface AppMetaInfo {
     appId: number
     appName: string
     createdBy: string
+    description: string
     createdOn: string
     projectId?: number
     projectName?: string
@@ -442,11 +443,13 @@ export interface LabelTagsType {
 export interface AppOverviewProps {
     appMetaInfo: AppMetaInfo
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
+    isJobOverview?: boolean
 }
 
 export interface AboutAppInfoModalProps {
     isLoading: boolean
     appId: string
+    description: string
     onClose: (e) => void
     appMetaInfo: AppMetaInfo
     currentLabelTags?: TagType[]
@@ -487,4 +490,11 @@ export interface ResizableTagTextAreaProps {
   tabIndex?: number
   refVar?: React.MutableRefObject<HTMLTextAreaElement>
   dependentRef?: React.MutableRefObject<HTMLTextAreaElement>
+}
+
+export interface JobPipeline {
+    ci_pipeline_id: number;
+    ci_pipeline_name: string;
+    started_on: string;
+    status: string;
 }

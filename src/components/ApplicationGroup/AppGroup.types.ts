@@ -211,3 +211,9 @@ export interface EnvHeaderType {
 export interface AppGroupAdminType {
     isSuperAdmin: boolean
 }
+
+export interface CIConfigListType {
+    pipelineList: any
+    securityInfo: any
+    moduleConfig: any
+}

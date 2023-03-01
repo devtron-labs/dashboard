@@ -181,7 +181,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     )
 }
 
-const Details = ({
+export const Details = ({
     fullScreenView,
     synchroniseState,
     triggerHistory,

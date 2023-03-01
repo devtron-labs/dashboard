@@ -1,50 +1,77 @@
 import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
-import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../../config'
-import { getAppOtherEnvironment, getTeamList } from '../../../../services/service'
-import { Progressing, processDeployedTime, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../../common'
-import { AppDetails, AppOverviewProps, TagType } from '../../types'
-import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as TagIcon } from '../../../../assets/icons/ic-tag.svg'
-import { ReactComponent as LinkedIcon } from '../../../../assets/icons/ic-linked.svg'
-import { ReactComponent as RocketIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
-import { ReactComponent as InjectTag } from '../../../../assets/icons/inject-tag.svg'
-import AboutAppInfoModal from '../AboutAppInfoModal'
+import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
+import { getAppOtherEnvironment, getJobCIPipeline, getTeamList } from '../../../services/service'
+import { handleUTCTime, processDeployedTime, Progressing, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../common'
+import { AppDetails, AppOverviewProps, JobPipeline, TagType } from '../types'
+import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
+import { ReactComponent as WorkflowIcon } from '../../../assets/icons/ic-workflow.svg'
+import { ReactComponent as DescriptionIcon } from '../../../assets/icons/ic-note.svg'
+import { ReactComponent as TagIcon } from '../../../assets/icons/ic-tag.svg'
+import { ReactComponent as LinkedIcon } from '../../../assets/icons/ic-linked.svg'
+import { ReactComponent as RocketIcon } from '../../../assets/icons/ic-nav-rocket.svg'
+import { ReactComponent as InjectTag } from '../../../assets/icons/inject-tag.svg'
+import { ReactComponent as SucceededIcon } from '../../../assets/icons/ic-success.svg'
+import { ReactComponent as InProgressIcon } from '../../../assets/icons/ic-progressing.svg'
+import { ReactComponent as FailedIcon } from '../../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as CrossIcon } from '../../../assets/icons/ic-close.svg'
+import AboutAppInfoModal from '../details/AboutAppInfoModal'
 import {
     ExternalLinkIdentifierType,
     ExternalLinksAndToolsType,
     ExternalLinkScopeType,
-} from '../../../externalLinks/ExternalLinks.type'
-import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service'
-import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
-import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
-import './AppOverview.scss'
-import AboutTagEditModal from '../AboutTagEditModal'
+} from '../../externalLinks/ExternalLinks.type'
+import { getExternalLinks, getMonitoringTools } from '../../externalLinks/ExternalLinks.service'
+import { sortByUpdatedOn } from '../../externalLinks/ExternalLinks.utils'
+import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
+import './Overview.scss'
+import AboutTagEditModal from '../details/AboutTagEditModal'
 import Tippy from '@tippyjs/react'
-import AppStatus from '../../AppStatus'
-import { StatusConstants } from '../../list-new/Constants'
-import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
+import AppStatus from '../AppStatus'
+import { StatusConstants } from '../list-new/Constants'
+import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { toast } from 'react-toastify'
+import { createAppLabels } from '../service'
 
-export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverviewProps) {
+export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
     const [isLoading, setIsLoading] = useState(true)
     const [currentLabelTags, setCurrentLabelTags] = useState<TagType[]>([])
     const [fetchingProjects, projectsListRes] = useAsync(() => getTeamList(), [appId])
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
     const [showUpdateTagModal, setShowUpdateTagModal] = useState(false)
+    const [editMode, setEditMode] = useState(false)
+    const [newDescription, setNewDescription] = useState<string>(appMetaInfo?.description)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         fetchingExternalLinks: true,
         externalLinks: [],
         monitoringTools: [],
     })
-    const [otherEnvsLoading, otherEnvsResult] = useAsync(() => Promise.all([getAppOtherEnvironment(appId), getModuleInfo(ModuleNameMap.ARGO_CD)]), [appId])
+    const [otherEnvsLoading, otherEnvsResult] = useAsync(
+        () => Promise.all([getAppOtherEnvironment(appId), getModuleInfo(ModuleNameMap.ARGO_CD)]),
+        [appId],
+    )
     const isAgroInstalled: boolean = otherEnvsResult?.[1].result.status === ModuleStatus.INSTALLED
+    const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
+
+    useEffect(() => {
+        getJobCIPipeline(appId)
+            .then((response) => {
+                setJobPipelines(response.result)
+                setIsLoading(false)
+            })
+            .catch((error) => {
+                console.error(error)
+                setIsLoading(false)
+            })
+    }, [])
 
     useEffect(() => {
         if (appMetaInfo?.appName) {
             setCurrentLabelTags(appMetaInfo.labels)
+            setNewDescription(appMetaInfo?.description)
             setIsLoading(false)
         }
     }, [appMetaInfo])
@@ -102,6 +129,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 fetchingProjects={fetchingProjects}
                 projectsList={projectsListRes?.result}
+                description={appMetaInfo.description}
             />
         )
     }
@@ -115,15 +143,34 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                 onClose={toggleTagsUpdateModal}
                 getAppMetaInfoRes={getAppMetaInfoRes}
                 currentLabelTags={currentLabelTags}
+                description={appMetaInfo.description}
             />
         )
+    }
+
+    const handleSave = async () => {
+        try {
+            const payload = {
+                id: parseInt(appId),
+                description: newDescription,
+            }
+
+            const appLabel = await createAppLabels(payload)
+
+            setNewDescription(appLabel.result.description)
+
+            setEditMode(false)
+        } catch (error) {
+            console.error(error)
+            toast.error('Failed to update job description')
+        }
     }
 
     const renderSideInfoColumn = () => {
         return (
             <div className="pt-16 pb-16 pl-20 pr-20 dc__border-right">
                 <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7">App name</div>
+                    {isJobOverview ? 'Job name' : 'App name'}
                     <div className="fs-13 fw-4 lh-20 cn-9">{appMetaInfo?.appName}</div>
                 </div>
                 <div className="mb-16">
@@ -157,7 +204,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                     </div>
                     <div className="flex fs-12 fw-4 lh-16 cn-7 cursor" onClick={toggleTagsUpdateModal}>
                         <EditIcon className="icon-dim-16 scn-7 mr-4" />
-                        Edit tags
+                        Edit
                     </div>
                 </div>
                 <div className="flex left flex-wrap dc__gap-8">
@@ -233,7 +280,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
     }
 
     const renderDeploymentComponent = () => {
-        if(otherEnvsResult[0].result?.length > 0){
+        if (otherEnvsResult[0].result?.length > 0) {
             return (
                 <div className="env-deployments-info-wrapper w-100">
                     <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
@@ -280,11 +327,156 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                     <RocketIcon className="icon-dim-20 scn-9 mr-8" />
                     Deployments
                 </div>
-                {otherEnvsLoading ? (
-                    <div className="dc__loading-dots" />
-                ) : renderDeploymentComponent()}
+                {otherEnvsLoading ? <div className="dc__loading-dots" /> : renderDeploymentComponent()}
             </div>
         )
+    }
+
+    const renderWorkflowsStatus = () => {
+        const renderWorkflowComponent = () => {
+          if (jobPipelines != null) {
+            return (
+              <div className="env-deployments-info-wrapper w-100">
+                <div className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space">
+                  <div className="m-tb-8">Pipeline name</div>
+                  <div className="flex">
+                    <div className="m-tb-8 mr-16 w-150">Last run status</div>
+                    <div className="w-150 m-tb-8">Last run at</div>
+                  </div>
+                </div>
+                {jobPipelines.map((jobPipeline) => (
+                  <div
+                    key={jobPipeline.ci_pipeline_id}
+                    className="dc__content-space flex dc__border-bottom-n1"
+                  >
+                    <div className="h-20 m-tb-8 ci-pipeline-name-color fs-13">
+                      {jobPipeline.ci_pipeline_name}
+                    </div>
+                    <div className="flex">
+                      <div className="mr-16 w-150 h-20 m-tb-8 fs-13 flex dc__content-start">
+                        {jobPipeline.status === 'Succeeded' && (
+                          <SucceededIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                        )}
+                        {jobPipeline.status === 'Failed' && (
+                          <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                        )}
+                        {jobPipeline.status === 'InProgress' && (
+                          <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                        )}
+                        {jobPipeline.status === 'Starting' && (
+                          <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
+                        )}
+                        {jobPipeline.status !== 'Succeeded' &&
+                          jobPipeline.status !== 'Failed' &&
+                          jobPipeline.status !== 'InProgress' &&
+                          jobPipeline.status !== 'Starting' && (
+                            <>
+                              <CrossIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                              Yet to run
+                            </>
+                          )}
+                        {jobPipeline.status}
+                      </div>
+      
+                      <div className="w-150 h-20 m-tb-8 fs-13">
+                        {jobPipeline.started_on !== '0001-01-01T00:00:00Z'
+                          ? handleUTCTime(jobPipeline.started_on, true)
+                          : '-'}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          }
+          return <div className="fs-13 fw-4 cn-7">No job pipelines are configured</div>
+        }
+        return (
+          <div className="flex column left pt-16 pb-16 pl-20 pr-20">
+            <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
+              <WorkflowIcon className="icon-dim-20 scn-9 mr-8" />
+              Job pipelines
+            </div>
+            {renderWorkflowComponent()}
+          </div>
+        )
+      }
+      
+
+    const handleDescriptionChange = (e) => {
+        setNewDescription(e.target.value)
+    }
+
+    const handleCancel = () => {
+        setNewDescription(newDescription)
+        setEditMode(false)
+    }
+
+    const renderJobDescription = () => {
+        return (
+            <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
+                <div className="flex left dc__content-space mb-12 w-100">
+                    <div className="flex left fs-14 fw-6 lh-20 cn-9">
+                        <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
+                        Description
+                    </div>
+                    {editMode ? (
+                        <div className="flex left ml-auto dc__gap-8">
+                            <button className="btn btn-link p-0 fw-6 cn-7" onClick={handleCancel}>
+                                Cancel
+                            </button>
+                            <button className="btn btn-link p-0 fw-6 cb-5" type="submit" onClick={handleSave}>
+                                Save
+                            </button>
+                        </div>
+                    ) : (
+                        <div
+                            className="flex fs-12 fw-4 lh-16 cn-7 cursor ml-auto"
+                            onClick={() => {
+                                setEditMode(true)
+                            }}
+                        >
+                            <EditIcon className="icon-dim-16 scn-7 mr-4" />
+                            Edit
+                        </div>
+                    )}
+                </div>
+                {editMode ? (
+                    <div className="flex left flex-wrap dc__gap-8 w-100">
+                        <textarea
+                            placeholder="No description"
+                            value={newDescription}
+                            onChange={handleDescriptionChange}
+                            className="flex left flex-wrap dc__gap-8 dc__description-textarea"
+                        />
+                    </div>
+                ) : (
+                    <div className="flex left flex-wrap fs-13 dc__gap-8 w-100">
+                        {newDescription ? newDescription : <span className="cn-7 fs-13">No description</span>}
+                    </div>
+                )}
+            </div>
+        )
+    }
+
+    function renderOverviewContent(isJobOverview) {
+        if (isJobOverview) {
+            return (
+                <div className="app-overview-wrapper dc__overflow-scroll">
+                    {renderJobDescription()}
+                    {renderLabelTags()}
+                    {renderWorkflowsStatus()}
+                </div>
+            )
+        } else {
+            return (
+                <div className="app-overview-wrapper dc__overflow-scroll">
+                    {renderLabelTags()}
+                    {renderAppLevelExternalLinks()}
+                    {renderEnvironmentDeploymentsStatus()}
+                </div>
+            )
+        }
     }
 
     if (!appMetaInfo || fetchingProjects) {
@@ -294,11 +486,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
     return (
         <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
             {renderSideInfoColumn()}
-            <div className="app-overview-wrapper dc__overflow-scroll">
-                {renderLabelTags()}
-                {renderAppLevelExternalLinks()}
-                {renderEnvironmentDeploymentsStatus()}
-            </div>
+            {renderOverviewContent(isJobOverview)}
             {showUpdateAppModal && renderInfoModal()}
             {showUpdateTagModal && renderEditTagsModal()}
         </div>

@@ -53,6 +53,8 @@ export const Routes = {
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/edit',
+    
+    JOB_CI_DETAIL:'job/ci-pipeline/list',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
@@ -209,6 +211,7 @@ export const Routes = {
     JOB_LIST: 'job/list',
     JOB_CI_PIPELINE_LIST: 'job/ci-pipeline/list',
     JOB_CI_PIPELINE_PATCH: 'job//ci-pipeline/patch',
+    USER_ROLE_GROUP_URL: 'user/role/group',
 }
 
 export const ViewType = {

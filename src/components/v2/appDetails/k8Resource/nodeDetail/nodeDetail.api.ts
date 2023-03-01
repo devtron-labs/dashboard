@@ -62,7 +62,7 @@ export const getEvent = (
     }
     const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName && node.kind.toLowerCase() === nodeType)[0]
     return get(
-        `api/${cn.version}/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn.uid}&resourceName=${cn.name}`,
+        `api/v1/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn.uid}&resourceName=${cn.name}`,
     )
 }
 
@@ -209,9 +209,7 @@ export const getLogsURL = (
 
 export const getTerminalData = (ad: AppDetails, nodeName: string, terminalType: string) => {
     const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0]
-    const _url = `api/${cn.version}/applications/pod/exec/session/${ad.appId}/${ad.environmentId}/${ad.namespace}/${ad.appName}-${ad.environmentName}/${terminalType}/${ad.appName}`
-
-    console.log('getTerminalData', _url)
+    const _url = `api/v1/applications/pod/exec/session/${ad.appId}/${ad.environmentId}/${ad.namespace}/${ad.appName}-${ad.environmentName}/${terminalType}/${ad.appName}`
     return get(_url)
 }
 
