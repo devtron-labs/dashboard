@@ -7,7 +7,7 @@ import { HistoryComponentType, History, CICDSidebarFilterOptionType } from '../.
 import { Details } from '../../../app/details/cIDetails/CIDetails'
 import { CiPipeline } from '../../../app/details/triggerView/types'
 import { getTriggerHistory } from '../../../app/service'
-import { asyncWrap, mapByKey, Progressing, showError, useAsync, useInterval } from '../../../common'
+import { asyncWrap, mapByKey, Progressing, showError, sortCallback, useAsync, useInterval } from '../../../common'
 import { getCIConfigList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, CIConfigListType } from '../../AppGroup.types'
 
@@ -61,6 +61,7 @@ export default function EnvCIDetails({ filteredApps }: AppGroupDetailDefaultType
                     selectedPipelineExist = selectedPipelineExist || pipeline.id === +pipelineId
                 }
             })
+            _filteredPipelines.sort((a, b) => sortCallback('appName', a, b))
             if (nonWebhookCIExist) {
                 if (!selectedPipelineExist) {
                     replace(generatePath(path, { envId, pipelineId: _filteredPipelines[0].id }))

@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react'
-import { Progressing, showError, useAsync, useInterval, mapByKey, asyncWrap } from '../../../common'
+import {
+    Progressing,
+    showError,
+    useAsync,
+    useInterval,
+    mapByKey,
+    asyncWrap,
+    sortCallback,
+} from '../../../common'
 import { ModuleNameMap } from '../../../../config'
 import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
 import '../../../app/details/cdDetails/cdDetail.scss'
@@ -57,6 +65,7 @@ export default function EnvCDDetails({ filteredApps }: AppGroupDetailDefaultType
                     selectedPipelineExist = selectedPipelineExist || pipeline.id === +pipelineId
                 }
             })
+            _filteredPipelines.sort((a, b) => sortCallback('appName', a, b))
             if (!selectedPipelineExist) {
                 replace(
                     generatePath(path, {

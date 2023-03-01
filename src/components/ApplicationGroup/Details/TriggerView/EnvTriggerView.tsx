@@ -27,6 +27,7 @@ import {
     triggerCINode,
 } from '../../../app/service'
 import {
+    Checkbox,
     createGitCommitUrl,
     ErrorScreenManager,
     ISTTimeModal,
@@ -104,6 +105,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     const [materialType, setMaterialType] = useState(MATERIAL_TYPE.inputMaterialList)
     const [responseList, setResponseList] = useState<ResponseRowType[]>([])
     const [isSelectAll, setSelectAll] = useState(false)
+    const [selectAllValue, setSelectAllValue] = useState<'CHECKED' | 'INTERMEDIATE'>('CHECKED')
 
     const getWorkflowsData = async (): Promise<void> => {
         try {
@@ -224,6 +226,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             return wf
         })
         setSelectAll(!isSelectAll)
+        setSelectAllValue('CHECKED')
         setShowPreDeployment(_preNodeExist)
         setShowPostDeployment(_postNodeExist)
         setFilteredWorkflows(_workflows)
@@ -277,7 +280,8 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         setShowPostDeployment(_postNodeExist)
         setFilteredWorkflows(_workflows)
         setSelectedAppList(_selectedAppList)
-        setSelectAll(_workflows.length === _selectedAppList.length)
+        setSelectAll(_selectedAppList.length !== 0)
+        setSelectAllValue(_workflows.length === _selectedAppList.length ? 'CHECKED' : 'INTERMEDIATE')
     }
 
     const getCommitHistory = (
@@ -1594,16 +1598,14 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     return (
         <div className="svg-wrapper-trigger" style={{ paddingBottom: selectedAppList.length ? '68px' : '16px' }}>
             <div className="flex left mb-14">
-                <input
-                    type="checkbox"
-                    className="mt-0-imp cursor icon-dim-16"
-                    checked={isSelectAll}
+                <Checkbox
+                    rootClassName="fs-13 fw-6"
+                    isChecked={isSelectAll}
+                    value={selectAllValue}
                     onChange={handleSelectAll}
-                    id="chkSelectAllApps"
-                />
-                <label className="ml-12 cursor fs-13 mb-0-imp lh-20" htmlFor="chkSelectAllApps">
+                >
                     Select all apps
-                </label>
+                </Checkbox>
             </div>
             <TriggerViewContext.Provider
                 value={{

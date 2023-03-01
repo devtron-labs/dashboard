@@ -88,7 +88,6 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
                             ? filterOptions
                             : _filterOptions
                     }
-                    isSearchable={false}
                     onChange={handleFilterChange}
                     components={{
                         IndicatorSeparator: null,
