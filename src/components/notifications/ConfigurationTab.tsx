@@ -544,7 +544,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         else if (this.state.view === ViewType.ERROR) {
             return (
                 <div style={{ height: 'calc(100vh - 172px)' }}>
-                    <ErrorScreenNotAuthorized subtitle="" />
+                    <ErrorScreenNotAuthorized />
                 </div>
             )
         }

@@ -9,6 +9,7 @@ import {
     CustomInput,
     not,
     multiSelectStyles,
+    ErrorScreenNotAuthorized
 } from '../common'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'
@@ -73,7 +74,13 @@ export default function Docker({ ...props }) {
     useEffect(() => {
         _getInit()
     }, [])
-
+    if (!props.isSuperAdmin) {
+        return (
+            <div className="error-screen-wrapper flex column h-100">
+                <ErrorScreenNotAuthorized />
+            </div>
+        )
+    }
     if ((loading && !result) || clusterLoader) return <Progressing pageLoader />
     if (error) {
         showError(error)
