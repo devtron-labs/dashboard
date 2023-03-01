@@ -266,7 +266,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     appId?: number
     isSelected?: boolean
     fromAppGrouping?: boolean
-    handleSelectionChange?: (e)=> void
+    handleSelectionChange?: (_appId: number)=> void
 }
 
 export interface TriggerViewContextType {

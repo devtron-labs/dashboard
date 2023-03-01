@@ -186,6 +186,33 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     _filteredWorkflows.push(wf)
                 }
             })
+            const _selectedAppList = []
+            let _preNodeExist, _postNodeExist
+            _filteredWorkflows.forEach((wf) => {
+                if (wf.isSelected) {
+                    const _currentAppDetail = {
+                        id: wf.appId,
+                        name: wf.name,
+                        preNodeAvailable: false,
+                        postNodeAvailable: false,
+                    }
+                    for (const node of wf.nodes) {
+                        if (node.environmentId === +envId && node.type === WorkflowNodeType.CD) {
+                            _preNodeExist = showPreDeployment || !!node.preNode
+                            _postNodeExist = showPostDeployment || !!node.postNode
+                            _currentAppDetail.preNodeAvailable = !!node.preNode
+                            _currentAppDetail.postNodeAvailable = !!node.postNode
+                            break
+                        }
+                    }
+                    _selectedAppList.push(_currentAppDetail)
+                }
+            })
+            setShowPreDeployment(_preNodeExist)
+            setShowPostDeployment(_postNodeExist)
+            setSelectedAppList(_selectedAppList)
+            setSelectAll(_selectedAppList.length !== 0)
+            setSelectAllValue(_filteredWorkflows.length === _selectedAppList.length ? 'CHECKED' : 'INTERMEDIATE')
             setFilteredWorkflows(_filteredWorkflows)
         }
     }, [filteredApps, workflows])
@@ -233,8 +260,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         setSelectedAppList(_selectedAppList)
     }
 
-    const handleSelectionChange = (e): void => {
-        const _appId = Number(e.currentTarget.dataset.appId)
+    const handleSelectionChange = (_appId: number): void => {
         const _selectedAppList = [...selectedAppList]
         let _preNodeExist, _postNodeExist
         const _workflows = filteredWorkflows.map((wf) => {
@@ -1596,10 +1622,13 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         )
     }
     return (
-        <div className="svg-wrapper-trigger" style={{ paddingBottom: selectedAppList.length ? '68px' : '16px' }}>
+        <div
+            className="svg-wrapper-trigger app-group-trigger-view-container"
+            style={{ paddingBottom: selectedAppList.length ? '68px' : '16px' }}
+        >
             <div className="flex left mb-14">
                 <Checkbox
-                    rootClassName="fs-13 fw-6"
+                    rootClassName="fs-13 app-group-checkbox"
                     isChecked={isSelectAll}
                     value={selectAllValue}
                     onChange={handleSelectAll}

@@ -113,7 +113,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                             >
                                 <EnvCDDetails filteredApps={_filteredApps} />
                             </Route>
-                            <Route path={`${path}/${URLS.APP_CONFIG}`}>
+                            <Route path={`${path}/${URLS.APP_CONFIG}/:appId(\\d+)?`}>
                                 <EnvConfig filteredApps={_filteredApps} />
                             </Route>
                             <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />

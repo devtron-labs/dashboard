@@ -52,9 +52,10 @@ const Option = (props) => {
     }
 
     return (
-        <div className={`flex left pl-8 ${getOptionBGClass(props.isSelected, props.isFocused)}`}>
+        <div className={`flex left pl-8 pr-8 ${getOptionBGClass(props.isSelected, props.isFocused)}`}>
             <components.Option {...props} />
             {props.isSelected && <ShowIcon className="icon-dim-16 scb-5 mr-4 mw-18 cursor" onClick={selectData} />}
+            {props.isFocused && !props.isSelected && <ShowIcon className="icon-dim-16 mr-4 mw-18 cursor" onClick={selectData} />}
         </div>
     )
 }
@@ -74,7 +75,7 @@ const MenuList = (props: any): JSX.Element => {
     }
     return (
         <components.MenuList {...props}>
-            <div className="flex flex-justify dc__position-sticky dc__top-0 dc__window-bg dc__no-top-radius w-100 pt-4 pr-10 pb-4 pl-10">
+            <div className="flex flex-justify dc__position-sticky dc__top-0 dc__window-bg dc__no-top-radius w-100 pt-6 pr-8 pb-6 pl-8">
                 <span className="fs-12 fw-6 cn-9">
                     Working with {selectedAppList?.length > 0 ? selectedAppList.length : appListOptions.length}/
                     {appListOptions?.length} Applications
