@@ -1,33 +1,28 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useRouteMatch, useParams, useHistory } from 'react-router';
-import IndexStore from '../../index.store';
-import Tippy from '@tippyjs/react';
-import { copyToClipboard, getElapsedTime } from '../../../../common';
-import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg';
-import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg';
+import React, { useEffect, useRef, useState } from 'react'
+import { useRouteMatch, useParams, useHistory } from 'react-router'
+import IndexStore from '../../index.store'
+import Tippy from '@tippyjs/react'
+import { copyToClipboard, getElapsedTime } from '../../../../common'
+import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
+import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Check } from '../../../../../assets/icons/ic-check.svg';
-import PodHeaderComponent from './PodHeader.component';
-import { NodeType, Node, iNode, AppType, NodeComponentProps } from '../../appDetails.type';
-import './nodeType.scss';
-import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util';
-import NodeDeleteComponent from './NodeDelete.component';
-import AppDetailsStore from '../../appDetails.store';
-import { toast } from 'react-toastify';
-import { getNodeStatus } from './nodeType.util';
-import { useSharedState } from '../../../utils/useSharedState';
-import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component';
-import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type';
-import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils';
-import { NoPod } from '../../../../app/ResourceTreeNodes';
+import PodHeaderComponent from './PodHeader.component'
+import { NodeType, Node, iNode, NodeComponentProps } from '../../appDetails.type'
+import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
+import NodeDeleteComponent from './NodeDelete.component'
+import AppDetailsStore from '../../appDetails.store'
+import { toast } from 'react-toastify'
+import { getNodeStatus } from './nodeType.util'
+import { useSharedState } from '../../../utils/useSharedState'
+import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
+import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
+import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
+import { NoPod } from '../../../../app/ResourceTreeNodes'
+import './nodeType.scss'
 
-function NodeComponent({
-    handleFocusTabs,
-    externalLinks,
-    monitoringTools,
-    isDevtronApp
-}: NodeComponentProps) {
-    const { url } = useRouteMatch();
-    const history = useHistory();
+function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) {
+    const { url } = useRouteMatch()
+    const history = useHistory()
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0);
@@ -41,35 +36,33 @@ function NodeComponent({
     const [filteredNodes] = useSharedState(
         IndexStore.getAppDetailsFilteredNodes(),
         IndexStore.getAppDetailsNodesFilteredObservable(),
-    );
+    )
     const [podLevelExternalLinks, setPodLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
     const [containerLevelExternalLinks, setContainerLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
-    const isPodAvailable: boolean = params.nodeType === NodeType.Pod.toLowerCase() && isDevtronApp;
+    const isPodAvailable: boolean = params.nodeType === NodeType.Pod.toLowerCase() && isDevtronApp
 
     useEffect(() => {
         if (externalLinks.length > 0) {
             const _podLevelExternalLinks = []
             const _containerLevelExternalLinks = []
 
-            externalLinks.forEach(
-                (link) => {
-                    if (link.url.includes('{podName}') && !link.url.includes('{containerName}')) {
-                        _podLevelExternalLinks.push({
-                            label: link.name,
-                            value: link.url,
-                            icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
-                            description: link.description,
-                        })
-                    } else if (link.url.includes('{containerName}')) {
-                        _containerLevelExternalLinks.push({
-                            label: link.name,
-                            value: link.url,
-                            icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
-                            description: link.description,
-                        })
-                    }
+            externalLinks.forEach((link) => {
+                if (link.url.includes('{podName}') && !link.url.includes('{containerName}')) {
+                    _podLevelExternalLinks.push({
+                        label: link.name,
+                        value: link.url,
+                        icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
+                        description: link.description,
+                    })
+                } else if (link.url.includes('{containerName}')) {
+                    _containerLevelExternalLinks.push({
+                        label: link.name,
+                        value: link.url,
+                        icon: getMonitoringToolIcon(monitoringTools, link.monitoringToolId),
+                        description: link.description,
+                    })
                 }
-            )
+            })
             setPodLevelExternalLinks(_podLevelExternalLinks)
             setContainerLevelExternalLinks(_containerLevelExternalLinks)
         } else {
@@ -89,54 +82,58 @@ function NodeComponent({
 
     useEffect(() => {
         if (params.nodeType) {
-            let tableHeader: string[], _fcw: string;
+            let tableHeader: string[], _fcw: string
 
             switch (params.nodeType) {
                 case NodeType.Pod.toLowerCase():
-                    tableHeader = ['Name', 'Ready', 'Restarts', 'Age', '', ''];
-                    if ( podLevelExternalLinks.length > 0 ) {
-                        tableHeader = ['Name', 'Ready', 'Restarts', 'Age', 'Links', ''];
+                    tableHeader = ['Name', 'Ready', 'Restarts', 'Age', '', '']
+                    if (podLevelExternalLinks.length > 0) {
+                        tableHeader = ['Name', 'Ready', 'Restarts', 'Age', 'Links', '']
                     }
-                    _fcw = 'col-7';
-                    break;
+                    _fcw = 'col-7'
+                    break
                 case NodeType.Service.toLowerCase():
-                    tableHeader = ['Name', 'URL', ''];
-                    _fcw = 'col-6';
-                    break;
+                    tableHeader = ['Name', 'URL', '']
+                    _fcw = 'col-6'
+                    break
                 default:
-                    tableHeader = ['Name','',''];
-                    _fcw = 'col-10';
-                    break;
+                    tableHeader = ['Name', '', '']
+                    _fcw = 'col-10'
+                    break
             }
 
-            setTableHeader(tableHeader);
-            setFirstColWidth(_fcw);
+            setTableHeader(tableHeader)
+            setFirstColWidth(_fcw)
 
-            let [_ignore, _selectedResource] = url.split("group/")
+            let [_ignore, _selectedResource] = url.split('group/')
             let _selectedNodes: Array<iNode>
             if (_selectedResource) {
                 _selectedResource = _selectedResource.replace(/\/$/, '')
-                _selectedNodes =IndexStore.getPodsForRootNode(_selectedResource).sort((a,b) => a.name > b.name? 1: -1)
+                _selectedNodes = IndexStore.getPodsForRootNode(_selectedResource).sort((a, b) =>
+                    a.name > b.name ? 1 : -1,
+                )
             } else {
-                _selectedNodes = IndexStore.getiNodesByKind(params.nodeType).sort((a,b) => a.name > b.name? 1: -1)
+                _selectedNodes = IndexStore.getiNodesByKind(params.nodeType).sort((a, b) => (a.name > b.name ? 1 : -1))
             }
-            let _healthyNodeCount = 0;
+            let _healthyNodeCount = 0
 
             _selectedNodes.forEach((node: Node) => {
                 if (node.health?.status.toLowerCase() === 'healthy') {
-                    _healthyNodeCount++;
+                    _healthyNodeCount++
                 }
-            });
+            })
             let podsType = []
-            if(isPodAvailable){
-                podsType = ( _selectedNodes.filter(el => podMetaData.some((f) =>  f.name === el.name && f.isNew === podType)))
+            if (isPodAvailable) {
+                podsType = _selectedNodes.filter((el) =>
+                    podMetaData.some((f) => f.name === el.name && f.isNew === podType),
+                )
             }
 
-            setSelectedNodes( isPodAvailable ? [...podsType]: [..._selectedNodes]);
+            setSelectedNodes(isPodAvailable ? [...podsType] : [..._selectedNodes])
 
-            setSelectedHealthyNodeCount(_healthyNodeCount);
+            setSelectedHealthyNodeCount(_healthyNodeCount)
         }
-    }, [params.nodeType, podType, url, filteredNodes, podLevelExternalLinks]);
+    }, [params.nodeType, podType, url, filteredNodes, podLevelExternalLinks])
 
     const getPodRestartCount = (node: iNode) => {
         let restartCount = '0'
@@ -167,32 +164,32 @@ function NodeComponent({
         })
 
         setSelectedNodes(updatedNodes)
-    };
+    }
 
     const handleActionTabClick = (node: iNode, _tabName: string, containerName?: string) => {
-        let [_url, _ignore] = url.split("/group/")
+        let [_url, _ignore] = url.split('/group/')
         _url = `${_url.split('/').slice(0, -1).join('/')}/${node.kind.toLowerCase()}/${
             node.name
-        }/${_tabName.toLowerCase()}`;
+        }/${_tabName.toLowerCase()}`
 
         if (containerName) {
-            _url = `${_url}?container=${containerName}`;
+            _url = `${_url}?container=${containerName}`
         }
 
-        const isAdded = AppDetailsStore.addAppDetailsTab(node.kind, node.name, _url);
+        const isAdded = AppDetailsStore.addAppDetailsTab(node.kind, node.name, _url)
 
         if (isAdded) {
-            history.push(_url);
+            history.push(_url)
         } else {
             toast.error(
                 <div>
                     <div>Max 5 tabs allowed</div>
                     <p>Please close an open tab and try again.</p>
                 </div>,
-            );
+            )
         }
-    };
-    
+    }
+
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         let _currentNodeHeader = ''
         const clipBoardInteraction = (nodeName: string): JSX.Element => {
@@ -206,11 +203,11 @@ function NodeComponent({
                     duration={[100, 200]}
                     trigger="mouseenter click"
                 >
-                    <Check className="resource-action-tabs__active icon-dim-12 green-tick ml-8 mr-8" />
+                    <Check className="icon-dim-12 green-tick ml-8 mr-8" />
                 </Tippy>
             ) : (
                 <Clipboard
-                    className="resource-action-tabs__active resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
+                    className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
                     onClick={(e) => {
                         e.stopPropagation()
                         copyToClipboard(nodeName, () => toggleClipBoard(nodeName))
@@ -223,6 +220,34 @@ function NodeComponent({
             const _isSelected = markedNodes.current.get(node.name)
             // Only render node kind header when it's the first node or it's a different kind header
             _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
+
+            const onClickClipboard = (e) => {
+                e.stopPropagation()
+                copyToClipboard(node?.name, () => setCopied(node.name))
+            }
+
+            const onClickNodeDetailsTab = (e) => {
+                const _kind = e.target.dataset.name
+                if (node.kind === NodeType.Containers) {
+                    handleActionTabClick(node['pNode'], _kind, node.name)
+                } else {
+                    handleActionTabClick(node, _kind)
+                }
+                handleFocusTabs()
+            }
+
+            const getWidthClassnameForTabs = (): string => {
+                let _classname = ''
+                if (
+                    node.kind.toLowerCase() === NodeType.Pod.toLowerCase() ||
+                    node.kind.toLowerCase() === NodeType.Containers.toLowerCase()
+                ) {
+                    _classname = 'node__logs'
+                } else {
+                    _classname = 'node__manifest'
+                }
+                return _classname
+            }
 
             return (
                 <React.Fragment key={'grt' + index}>
@@ -238,8 +263,8 @@ function NodeComponent({
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
-                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 cursor dc__content-space`}>
-                            <div className="flex dc__align-start">
+                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 `}>
+                            <div className="flex left">
                                 <div
                                     className="flex left top ml-2"
                                     onClick={() => {
@@ -247,47 +272,88 @@ function NodeComponent({
                                     }}
                                 >
                                     {node.childNodes?.length > 0 ? (
-                                        <DropDown
-                                            className={`rotate icon-dim-24 pointer ${_isSelected ? 'fcn-9' : 'fcn-5'} `}
-                                            style={{ ['--rotateBy' as any]: !_isSelected ? '-90deg' : '0deg' }}
-                                        />
+                                        <span>
+                                            <DropDown
+                                                className={`rotate icon-dim-24 pointer ${
+                                                    _isSelected ? 'fcn-9' : 'fcn-5'
+                                                } `}
+                                                style={{ ['--rotateBy' as any]: !_isSelected ? '-90deg' : '0deg' }}
+                                            />
+                                        </span>
                                     ) : (
                                         <span className="pl-12 pr-12"></span>
                                     )}
                                     <div>
-                                        <div>{node.name}</div>
-                                        <div
-                                            className={` app-summary__status-name f-${(
-                                                node?.status ||
-                                                node?.health?.status ||
-                                                ''
-                                            ).toLowerCase()}`}
-                                        >
-                                            {getNodeStatus(node)}
+                                        <div className="resource__title-name flex left dc__align-start">
+                                            <span className="fs-13">{node.name}</span>
+                                            
+                                            <div
+                                                className={`flex left ${
+                                                    node.kind.toLowerCase() == NodeType.Pod.toLowerCase()
+                                                        ? 'mw-232'
+                                                        : 'mw-116'
+                                                }`}
+                                            >
+                                                {clipBoardInteraction(node.name)}
+                                                <div
+                                                    className={`flex left ${getWidthClassnameForTabs()} ${
+                                                        node.kind === NodeType.Containers ? '' : 'node__tabs'
+                                                    } en-2 bw-1 br-4 dc__w-fit-content`}
+                                                >
+                                                    {getNodeDetailTabs(node.kind).map((kind, index) => {
+                                                        return (
+                                                            <div
+                                                                key={'tab__' + index}
+                                                                data-name={kind}
+                                                                onClick={onClickNodeDetailsTab}
+                                                                className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
+                                                                    node.kind === NodeType.Containers
+                                                                        ? ''
+                                                                        : 'resource-action-tabs__active'
+                                                                }  ${
+                                                                    index === getNodeDetailTabs(node.kind)?.length - 1
+                                                                        ? ''
+                                                                        : 'dc__border-right'
+                                                                } pl-6 pr-6`}
+                                                            >
+                                                                {kind.toLowerCase()}
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {node.kind !== NodeType.Containers && (
+                                                    <>
+                                                        <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                        {node.kind.toLowerCase() == NodeType.Pod.toLowerCase() && (
+                                                            <>
+                                                                <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                                <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                            </>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex left">
+                                            <span
+                                                className={`mr-4 app-summary__status-name f-${(
+                                                    node?.status ||
+                                                    node?.health?.status ||
+                                                    ''
+                                                ).toLowerCase()}`}
+                                            >
+                                                {getNodeStatus(node)}
+                                            </span>
+                                            {node?.health?.message && (
+                                                <>
+                                                    <div className="dc__bullet ml-4 mr-4"></div>
+                                                    <span className="dc__truncate">
+                                                        {node.health.message.toLowerCase()}
+                                                    </span>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
-                                </div>
-
-                                <div>
-                                    {clipBoardInteraction(node.name)}
-                                    {getNodeDetailTabs(node.kind).map((kind, index) => {
-                                        return (
-                                            <a
-                                                key={'tab__' + index}
-                                                onClick={() => {
-                                                    if (node.kind === NodeType.Containers) {
-                                                        handleActionTabClick(node['pNode'], kind, node.name)
-                                                    } else {
-                                                        handleActionTabClick(node, kind)
-                                                    }
-                                                    handleFocusTabs()
-                                                }}
-                                                className="fw-6 cb-5 ml-6 cursor resource-action-tabs__active"
-                                            >
-                                                {kind}
-                                            </a>
-                                        )
-                                    })}
                                 </div>
                             </div>
                         </div>
@@ -352,8 +418,8 @@ function NodeComponent({
                     )}
                 </React.Fragment>
             )
-        });
-    };
+        })
+    }
 
     return (
         <>
@@ -405,4 +471,4 @@ function NodeComponent({
     )
 }
 
-export default NodeComponent;
+export default NodeComponent

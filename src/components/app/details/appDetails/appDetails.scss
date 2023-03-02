@@ -1870,3 +1870,9 @@ table.resource-tree {
 .deployment-status-breakdown {
     height: calc(100vh - 70px);
 }
+
+.env-select{
+  font-weight: 600 !important;
+  color: var(--B500);
+  margin-left: 8px !important;
+}
