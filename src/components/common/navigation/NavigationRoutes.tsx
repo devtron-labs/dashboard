@@ -38,6 +38,7 @@ const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
 const ClusterNodeContainer = lazy(() => import('../../ClusterNodes/ClusterNodeContainer'))
 const ResourceBrowserContainer = lazy(() => import('../../ResourceBrowser/ResourceList/ResourceList'))
+const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 
 export const mainContext = createContext(null)
 
@@ -208,6 +209,23 @@ export default function NavigationRoutes() {
         getCurrentServerInfo(null, true)
     }, [])
 
+    useEffect(() => {
+        const persistedTabs = localStorage.getItem('persisted-tabs-data')
+        if (persistedTabs) {
+            try {
+                const parsedTabsData = JSON.parse(persistedTabs)
+                if (
+                    location.pathname !== parsedTabsData.key &&
+                    !location.pathname.startsWith(`${parsedTabsData.key}/`)
+                ) {
+                    localStorage.removeItem('persisted-tabs-data')
+                }
+            } catch (e) {
+                localStorage.removeItem('persisted-tabs-data')
+            }
+        }
+    }, [location.pathname])
+
     const getCurrentServerInfo = async (section?: string, withoutStatus?: boolean) => {
         if (
             currentServerInfo.fetchingServerInfo ||
@@ -298,6 +316,10 @@ export default function NavigationRoutes() {
                                                 />
                                             )}
                                         />
+                                        <Route path={URLS.APPLICATION_GROUP}>
+                                            <AppGroupRoute isSuperAdmin={isSuperAdmin} />
+                                        </Route>
+
                                         <Route
                                             path={`${URLS.RESOURCE_BROWSER}/:clusterId?/:namespace?/:nodeType?/:group?/:node?`}
                                         >
@@ -407,7 +429,13 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
                 <Switch>
                     <Route
                         path={`${path}/:appType`}
-                        render={() => <NewAppList isSuperAdmin={isSuperAdmin} isArgoInstalled={isArgoInstalled} appListCount={appListCount} />}
+                        render={() => (
+                            <NewAppList
+                                isSuperAdmin={isSuperAdmin}
+                                isArgoInstalled={isArgoInstalled}
+                                appListCount={appListCount}
+                            />
+                        )}
                     />
                     <Route exact path="">
                         <RedirectToAppList />

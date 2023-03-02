@@ -12,7 +12,7 @@ import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
 
 export const getNodeDetailTabs = (nodeType: NodeType) => {
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
-        return [NodeDetailTab.MANIFEST, NodeDetailTab.EVENTS, NodeDetailTab.LOGS, NodeDetailTab.TERMINAL]
+        return [ NodeDetailTab.LOGS, NodeDetailTab.TERMINAL, NodeDetailTab.EVENTS, NodeDetailTab.MANIFEST]
     } else if (nodeType.toLowerCase() === NodeType.Containers.toLowerCase()) {
         return [NodeDetailTab.LOGS]
     } else {
