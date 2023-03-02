@@ -535,14 +535,6 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             <div id="terminal-id" className="terminal-container ml-20">
                 <CopyToast showCopyToast={popupText} />
             </div>
-
-            {isOnline && terminalViewProps.socketConnection === SocketConnectionType.CONNECTED && (
-                <p
-                    className={`connection-status dc__ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 dc__first-letter-capitalize cg-4`}
-                >
-                    {terminalViewProps.socketConnection}
-                </p>
-            )}
         </div>
     )
 }
