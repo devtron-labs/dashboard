@@ -237,6 +237,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let promise = this.state.ssoConfig.id ? updateSSOList(payload) : createSSOList(payload)
         promise
             .then((response) => {
+                response.result.config.config.clientID = ''
+                response.result.config.config.clientSecret = ''
+                this.setConfig(response, this.state.sso.toLowerCase())
                 let ssoConfig = response.result
                 this.setState({
                     view: ViewType.FORM,
@@ -290,6 +293,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         if (!this.state.lastActiveSSO) {
             createSSOList(payload)
                 .then((response) => {
+                    response.result.config.config.clientID = ''
+                    response.result.config.config.clientSecret = ''
+                    this.setConfig(response, this.state.sso.toLowerCase())
                     let ssoConfig = response.result
                     this.setState({
                         view: ViewType.FORM,
@@ -313,6 +319,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             if (this.state.sso === this.state.lastActiveSSO?.name) {
                 updateSSOList(payload)
                     .then((response) => {
+                        response.result.config.config.clientID = ''
+                        response.result.config.config.clientSecret = ''
+                        this.setConfig(response, this.state.sso.toLowerCase())
                         let ssoConfig = response.result
                         this.setState({
                             view: ViewType.FORM,
