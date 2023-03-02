@@ -18,6 +18,7 @@ import PageHeader from '../common/header/PageHeader'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { BodyType } from './globalConfiguration.type'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -342,7 +343,7 @@ function NavItem({ hostURLConfig, serverMode }) {
     )
 }
 
-function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }) {
+function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin } : BodyType) {
     const location = useLocation()
 
     return (
