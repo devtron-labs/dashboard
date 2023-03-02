@@ -13,10 +13,7 @@ import "./chartRepo.scss";
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName, TOAST_INFO } from '../../config/constantMessaging';
 import { ReactComponent as Sync } from '../../assets/icons/ic-sync.svg';
-
-interface ChartRepoType {
-    isSuperAdmin: boolean
-}
+import { ChartRepoType } from './chartRepo.types'
 
 export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
     const [loading, result, error, reload] = useAsync(getChartRepoList)
