@@ -15,6 +15,7 @@ import { ClusterImageList, ImageList } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
+import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -1209,9 +1210,21 @@ export const eventAgeComparator = <T,>(key: string): any => {
     return (a: T, b: T) => k8sStyledAgeToSeconds(a[key]) - k8sStyledAgeToSeconds(b[key])
 }
 
+export const handleOnFocus = (e): void => {
+    if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
+        e.target.value = ''
+    }
+}
+
 export const trackByGAEvent = (category: string, action: string): void => {
     ReactGA.event({
         category: category,
         action: action,
     })
+}
+
+export const handleOnBlur = (e): void => {
+    if (!e.target.value) {
+        e.target.value = DEFAULT_SECRET_PLACEHOLDER
+    }
 }
