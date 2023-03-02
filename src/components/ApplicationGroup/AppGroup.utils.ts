@@ -176,7 +176,7 @@ export const appGroupAppSelectorStyle = {
         display: 'flex',
         height: '30px',
         fontSize: '13px',
-        cursor: state.isDisabled ? 'not-allowed' : 'normal',
+        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
         pointerEvents: 'all',
         width: '100px',
         whiteSpace: 'nowrap',
