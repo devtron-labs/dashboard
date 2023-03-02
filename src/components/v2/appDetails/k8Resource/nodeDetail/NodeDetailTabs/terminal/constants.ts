@@ -18,6 +18,8 @@ export const TERMINAL_STATUS = {
     TIMEDOUT: 'timedOut',
     FAILED: 'failed',
     SUCCEDED: 'Succeded',
+    TERMINATED: 'Terminated',
+    RUNNING: 'Running', 
 }
 
 export const GA_CONST = {

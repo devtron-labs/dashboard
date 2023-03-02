@@ -384,10 +384,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             .then((response: any) => {
                 let sessionId = response.result.userTerminalSessionId
                 let status = response.result.status
-                if(status === 'Running' && !response.result?.isValidShell){
-                    preFetchData(status,'failed')
+                if(status === TERMINAL_STATUS.RUNNING && !response.result?.isValidShell){
+                    preFetchData(status, TERMINAL_STATUS.FAILED)
                     setErrorMessage({message: response.result?.errorReason, reason: ''})
-                } else if (status === 'Terminated'){
+                } else if (status === TERMINAL_STATUS.TERMINATED){
                     setErrorMessage({message: status, reason: response.result?.errorReason })
                 } else if (!sessionId && count) {
                     preFetchData(status)
@@ -396,7 +396,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     }, 5000)
                 } else if (sessionId) {
                     const _nodeName = response.result?.nodeName
-                    if(terminalViewProps.nodeName === 'autoSelectNode'){
+                    if(terminalViewProps.nodeName === TERMINAL_STATUS.AUTO_SELECT_NODE){
                         terminalViewProps.setSelectedNodeName({value: _nodeName,label: _nodeName})
                     }
                     if (socketConnectionRef.current === SocketConnectionType.CONNECTING) {
@@ -405,9 +405,9 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                         preFetchData(status)
                     }
                 } else {
-                    preFetchData(CLUSTER_STATUS.FAILED, 'timedOut')
+                    preFetchData(CLUSTER_STATUS.FAILED, TERMINAL_STATUS.TIMEDOUT)
                     terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTED)
-                    setErrorMessage({message: 'timedOut', reason: ''})
+                    setErrorMessage({message: TERMINAL_STATUS.TIMEDOUT, reason: ''})
                 }
             })
             .catch((err) => {
@@ -484,7 +484,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }
 
     const renderErrorMessageStrip = (errorMessage) => {
-        if (errorMessage.message === 'timedOut') {
+        if (errorMessage.message === TERMINAL_STATUS.TIMEDOUT) {
             return (
                 <div className="pl-20 flex left h-24 pr-20 w-100 bcr-7 cn-0">
                     {TERMINAL_TEXT.CONNECTION_TIMEOUT}&nbsp;
@@ -501,7 +501,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     {TERMINAL_TEXT.CASE_OF_ERROR}
                 </div>
             )
-        } else if (errorMessage.message === 'Terminated') {
+        } else if (errorMessage.message === TERMINAL_STATUS.TERMINATED) {
             return (
                 <div className="pl-20 pr-20 w-100 bcr-7 cn-0">
                     {TERMINAL_TEXT.POD_TERMINATED} {errorMessage.reason}&nbsp;
