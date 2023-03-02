@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { generatePath, Route, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { URLS } from '../../../../config'
+import { APP_GROUP_CI_DETAILS } from '../../../../config/constantMessaging'
 import { EmptyView, LogResizeButton } from '../../../app/details/cicdHistory/History.components'
 import Sidebar from '../../../app/details/cicdHistory/Sidebar'
 import { HistoryComponentType, History, CICDSidebarFilterOptionType } from '../../../app/details/cicdHistory/types'
 import { Details } from '../../../app/details/cIDetails/CIDetails'
+import { CiPipeline } from '../../../app/details/triggerView/types'
 import { getTriggerHistory } from '../../../app/service'
-import { asyncWrap, mapByKey, Progressing, showError, useAsync, useInterval } from '../../../common'
-import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
+import { asyncWrap, mapByKey, Progressing, showError, sortCallback, useAsync, useInterval } from '../../../common'
 import { getCIConfigList } from '../../AppGroup.service'
-import { CIConfigListType } from '../../AppGroup.types'
+import { AppGroupDetailDefaultType, CIConfigListType } from '../../AppGroup.types'
 
-export default function EnvCIDetails() {
+export default function EnvCIDetails({ filteredApps }: AppGroupDetailDefaultType) {
     const { envId, pipelineId, buildId } = useParams<{
         pipelineId: string
         buildId: string
@@ -23,6 +24,7 @@ export default function EnvCIDetails() {
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
     const [initDataResults, setInitResult] = useState<CIConfigListType>()
+    const [pipelineList, setPipelineList] = useState<CiPipeline[]>([])
     const [ciGroupLoading, setCiGroupLoading] = useState(false)
 
     useEffect(() => {
@@ -31,9 +33,6 @@ export default function EnvCIDetails() {
             getCIConfigList(envId).then((result) => {
                 setInitResult(result)
                 setCiGroupLoading(false)
-                if (result?.pipelineList.length === 1 && !pipelineId) {
-                    replace(generatePath(path, { envId, pipelineId: result.pipelineList[0].id }))
-                }
             })
         } catch (error) {
             setInitResult(null)
@@ -46,6 +45,36 @@ export default function EnvCIDetails() {
             setHasMoreLoading(false)
         }
     }, [envId])
+
+    useEffect(() => {
+        if (filteredApps.length && initDataResults?.pipelineList.length) {
+            const _filteredAppMap = new Map<number, string>()
+            filteredApps.forEach((app) => {
+                _filteredAppMap.set(+app.value, app.label)
+            })
+            const _filteredPipelines = []
+            let nonWebhookCIExist = false
+            let selectedPipelineExist = false
+            initDataResults?.pipelineList.forEach((pipeline) => {
+                if (_filteredAppMap.get(+pipeline.appId)) {
+                    _filteredPipelines.push(pipeline)
+                    nonWebhookCIExist = true
+                    selectedPipelineExist = selectedPipelineExist || pipeline.id === +pipelineId
+                }
+            })
+            _filteredPipelines.sort((a, b) => sortCallback('appName', a, b))
+            if (nonWebhookCIExist) {
+                if (!selectedPipelineExist) {
+                    replace(generatePath(path, { envId, pipelineId: _filteredPipelines[0].id }))
+                }
+            } else {
+                replace(generatePath(path, { envId }))
+                setTriggerHistory(new Map())
+                setHasMoreLoading(false)
+            }
+            setPipelineList(_filteredPipelines)
+        }
+    }, [filteredApps, initDataResults?.pipelineList])
 
     const [loading, triggerHistoryResult, , , , dependencyState] = useAsync(
         () => getTriggerHistory(pipelineId, pagination),
@@ -106,11 +135,50 @@ export default function EnvCIDetails() {
     } else if (!buildId && pipelineId && triggerHistory.size > 0) {
         replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], envId, pipelineId }))
     }
-    const pipelineOptions: CICDSidebarFilterOptionType[] = (initDataResults?.pipelineList || []).map((item) => {
+    const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelineList || []).map((item) => {
         return { value: `${item.id}`, label: item.appName, pipelineId: item.id }
     })
-    const pipelinesMap = mapByKey(initDataResults?.pipelineList, 'id')
+    const pipelinesMap = mapByKey(pipelineList, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
+
+    const renderPipelineDetails = (): JSX.Element | null => {
+        if (triggerHistory.size > 0) {
+            return (
+                <Route
+                    path={`${path
+                        .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
+                        .replace(':buildId(\\d+)?', ':buildId(\\d+)')}`}
+                >
+                    <Details
+                        fullScreenView={fullScreenView}
+                        synchroniseState={synchroniseState}
+                        triggerHistory={triggerHistory}
+                        isSecurityModuleInstalled={initDataResults.securityModuleInstalled || false}
+                        isBlobStorageConfigured={initDataResults?.blobStorageConfigured || false}
+                    />
+                </Route>
+            )
+        } else if (pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED') {
+            return (
+                <EmptyView
+                    title={APP_GROUP_CI_DETAILS.linkedCI.title}
+                    subTitle={APP_GROUP_CI_DETAILS.linkedCI.title}
+                    link={`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
+                    linkText={APP_GROUP_CI_DETAILS.linkedCI.linkText}
+                />
+            )
+        } else {
+            if (!loading) {
+                return (
+                    <EmptyView
+                        title={APP_GROUP_CI_DETAILS.noBuild.title}
+                        subTitle={APP_GROUP_CI_DETAILS.noBuild.subTitle}
+                    />
+                )
+            }
+        }
+        return null
+    }
 
     return (
         <>
@@ -133,44 +201,7 @@ export default function EnvCIDetails() {
                             subTitle="Please select an application to see build history."
                         />
                     ) : (
-                        pipeline && (
-                            <>
-                                {triggerHistory.size > 0 ? (
-                                    <Route
-                                        path={`${path
-                                            .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
-                                            .replace(':buildId(\\d+)?', ':buildId(\\d+)')}`}
-                                    >
-                                        <Details
-                                            fullScreenView={fullScreenView}
-                                            synchroniseState={synchroniseState}
-                                            triggerHistory={triggerHistory}
-                                            isSecurityModuleInstalled={
-                                                initDataResults.securityInfo?.['value']?.['result']?.status ===
-                                                    ModuleStatus.INSTALLED || false
-                                            }
-                                            isBlobStorageConfigured={
-                                                initDataResults?.moduleConfig?.['value']?.['result']?.enabled || false
-                                            }
-                                        />
-                                    </Route>
-                                ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
-                                    <EmptyView
-                                        title="This is a Linked CI Pipeline"
-                                        subTitle="This is a Linked CI Pipeline"
-                                        link={`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
-                                        linkText="View Source Pipeline"
-                                    />
-                                ) : (
-                                    !loading && (
-                                        <EmptyView
-                                            title="Build pipeline not triggered"
-                                            subTitle="Pipeline trigger history, details and logs will be available here."
-                                        />
-                                    )
-                                )}
-                            </>
-                        )
+                        pipeline && renderPipelineDetails()
                     )}
                     <LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />
                 </div>
