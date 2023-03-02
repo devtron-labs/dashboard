@@ -71,6 +71,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
 
     useEffect(() => {
         if (envId) {
+            setSelectedAppList([])
             getAppListData()
         }
     }, [envId])
@@ -157,15 +158,15 @@ export function EnvHeader({
     const [isMenuOpen, setMenuOpen] = useState(false)
 
     const contextValue = useMemo(
-      () => ({
-          appListOptions,
-          isMenuOpen,
-          setMenuOpen,
-          selectedAppList,
-          setSelectedAppList,
-      }),
-      [appListOptions, isMenuOpen, selectedAppList],
-  )
+        () => ({
+            appListOptions,
+            isMenuOpen,
+            setMenuOpen,
+            selectedAppList,
+            setSelectedAppList,
+        }),
+        [appListOptions, isMenuOpen, selectedAppList],
+    )
 
     useEffect(() => {
         currentPathname.current = location.pathname
