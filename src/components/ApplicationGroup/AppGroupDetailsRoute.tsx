@@ -49,7 +49,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             setEnvName(environment.environment_name)
             setShowEmpty(!environment.appCount)
         }
-    }, [envList])
+    }, [envList, envId])
 
     const getAppListData = async (): Promise<void> => {
         setAppListLoading(true)
