@@ -33,28 +33,68 @@ export const SPECIFIC_TRIGGER_CONFIG_OPTION = {
     infoText: 'Use configuration deployed with selected image',
 }
 
-export const getDeployConfigOptions = () => {
-    return [
-        {
-            label: 'Select a configuration to deploy',
-            options: [
-                {
-                    label: 'Last saved config',
-                    value: DeploymentWithConfigType.LAST_SAVED_CONFIG,
-                    infoText: 'Use last saved configuration to deploy',
-                },
-                {
-                    label: 'Last deployed config',
-                    value: DeploymentWithConfigType.LATEST_TRIGGER_CONFIG,
-                    infoText: 'Retain currently deployed configuration',
-                },
-                SPECIFIC_TRIGGER_CONFIG_OPTION,
-            ],
-        },
-    ]
+export const LAST_SAVED_CONFIG_OPTION = {
+    label: 'Last saved config',
+    value: DeploymentWithConfigType.LAST_SAVED_CONFIG,
+    infoText: 'Use last saved configuration to deploy',
 }
 
-export const processResolvedPromise = (resp: { status: string; value?: any; reason?: any }) => {
+export const getDeployConfigOptions = (isRollbackTriggerSelected: boolean, isRecentDeployConfigPresent: boolean) => {
+    return isRollbackTriggerSelected
+        ? [
+              {
+                  label: 'Select a configuration to deploy',
+                  options: [
+                      {
+                          label: 'Last saved config',
+                          value: DeploymentWithConfigType.LAST_SAVED_CONFIG,
+                          infoText: 'Use last saved configuration to deploy',
+                      },
+                      {
+                          label: 'Last deployed config',
+                          value: DeploymentWithConfigType.LATEST_TRIGGER_CONFIG,
+                          infoText: 'Retain currently deployed configuration',
+                      },
+                      SPECIFIC_TRIGGER_CONFIG_OPTION,
+                  ],
+              },
+          ]
+        : isRecentDeployConfigPresent
+        ? [
+              {
+                  label: 'Select a configuration to deploy',
+                  options: [
+                      {
+                          label: 'Last saved config',
+                          value: DeploymentWithConfigType.LAST_SAVED_CONFIG,
+                          infoText: 'Use last saved configuration to deploy',
+                      },
+                      {
+                          label: 'Last deployed config',
+                          value: DeploymentWithConfigType.LATEST_TRIGGER_CONFIG,
+                          infoText: 'Retain currently deployed configuration',
+                      },
+                  ],
+              },
+          ]
+        : [
+              {
+                  label: 'Select a configuration to deploy',
+                  options: [
+                      {
+                          label: 'Last saved config',
+                          value: DeploymentWithConfigType.LAST_SAVED_CONFIG,
+                          infoText: 'Use last saved configuration to deploy',
+                      },
+                  ],
+              },
+          ]
+}
+
+export const processResolvedPromise = (
+    resp: { status: string; value?: any; reason?: any },
+    isRecentDeployConfig?: boolean,
+) => {
     if (resp.status === 'fulfilled') {
         return {
             configMap:
@@ -84,7 +124,10 @@ export const processResolvedPromise = (resp: { status: string; value?: any; reas
             wfrId: resp.value?.result?.wfrId,
         }
     }
-
+    //This will handle a corner case, no previous deployment history is present i.e for first time deployment.
+    if (isRecentDeployConfig) {
+        return null
+    }
     showError(resp.reason)
     return null
 }

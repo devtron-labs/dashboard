@@ -1978,6 +1978,9 @@ textarea,
         fill: var(--N900);
     }
 }
+.icon-color-grey {
+    fill: #5A5A5A;
+}
 
 .icon-color-n7 {
     path:nth-child(1) {
@@ -2395,6 +2398,10 @@ textarea,
 }
 
 // Padding in pixels
+.pl-14 {
+    padding-left: 14px !important;
+}
+
 .pl-16 {
     padding-left: 16px !important;
 }

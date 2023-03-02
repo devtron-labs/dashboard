@@ -11,6 +11,8 @@ import { getCommonConfigSelectStyles } from '../config'
 import Tippy from '@tippyjs/react'
 import { ConditionalWrap } from '../../../../common'
 import { TriggerViewConfigDiffProps } from '../types'
+import { ReactComponent as ManifestIcon } from '../../../../../assets/icons/ic-file-code.svg'
+import { ReactComponent as DownArrowFull } from '../../../../../assets/icons/ic-down-arrow-full.svg'
 
 export default function TriggerViewConfigDiff({
     currentConfiguration,
@@ -19,6 +21,8 @@ export default function TriggerViewConfigDiff({
     handleConfigSelection,
     isConfigAvailable,
     diffOptions,
+    isRollbackTriggerSelected,
+    isRecentConfigAvailable,
 }: TriggerViewConfigDiffProps) {
     const [activeSideNavOption, setActiveSideNavOption] = useState(
         DEPLOYMENT_CONFIGURATION_NAV_MAP.DEPLOYMENT_TEMPLATE.key,
@@ -63,7 +67,7 @@ export default function TriggerViewConfigDiff({
                 value={editorValues.value}
                 defaultValue={editorValues.defaultValue}
                 height="calc(100vh - 16px)"
-                diffView={true}
+                diffView={isRecentConfigAvailable}
                 readOnly={true}
                 mode={MODES.YAML}
                 noParsing
@@ -136,21 +140,25 @@ export default function TriggerViewConfigDiff({
                         return (
                             options.length > 0 && (
                                 <Fragment key={`${navOption.key}-${idx}`}>
-                                    <h3 className="cn-7 bcn-1 fs-12 fw-6 lh-20 m-0 pt-6 pb-6 pl-16 pr-16 dc__uppercase">
+                                    <h3 className="cn-7 fs-12 fw-6 lh-20 m-0 pt-6 pb-6 pl-14 pr-18 dc__uppercase">
+                                        <DownArrowFull className="icon-dim-8 ml-6 mr-12 icon-color-grey" />
                                         {navOption.displayName}
                                     </h3>
                                     {options.map((_option) => {
                                         const navKey = `${navOption.key}/${_option}`
                                         return (
-                                            <div
-                                                className={`flex left pointer pt-8 pb-8 pl-16 pr-16 fs-13 lh-20 dc__overflow-hidden ${
-                                                    navKey === activeSideNavOption ? 'fw-6 cb-5 bcb-1' : 'fw-4 cn-9'
-                                                } ${diffOptions?.[_option] ? 'diff-dot' : ''}`}
-                                                data-value={navKey}
-                                                onClick={handleNavOptionSelection}
-                                                key={navKey}
-                                            >
-                                                {_option}
+                                            <div className="pt-4 pb-4 pr-10 ml-23 dc__border-left">
+                                                <div
+                                                    className={`flex left pointer ml-4 mr-4 pt-8 pb-8 pl-12 fs-13 lh-20 dc__overflow-hidden dc__border-radius-8-imp ${
+                                                        navKey === activeSideNavOption ? 'fw-6 cb-5 bcb-1' : 'fw-4 cn-9'
+                                                    } ${diffOptions?.[_option] ? 'diff-dot pr-8' : ''}`}
+                                                    data-value={navKey}
+                                                    onClick={handleNavOptionSelection}
+                                                    key={navKey}
+                                                >
+                                                    <ManifestIcon className="icon-dim-16 mr-8" />
+                                                    {_option}
+                                                </div>
                                             </div>
                                         )
                                     })}
@@ -160,13 +168,14 @@ export default function TriggerViewConfigDiff({
                     } else {
                         return (
                             <div
-                                className={`flex left pointer pt-8 pb-8 pl-16 pr-16 fs-13 lh-20 dc__overflow-hidden ${
+                                className={`flex left pointer ml-6 mr-6 pt-8 pb-8 pl-16 pr-18 fs-13 lh-20 dc__overflow-hidden dc__border-radius-8-imp ${
                                     navOption.key === activeSideNavOption ? 'fw-6 cb-5 bcb-1' : 'fw-4 cn-9'
                                 } ${diffOptions?.[navOption.key] ? 'diff-dot' : ''}`}
                                 data-value={navOption.key}
                                 onClick={handleNavOptionSelection}
                                 key={navOption.key}
                             >
+                                <ManifestIcon className="icon-dim-16 mr-8" />
                                 {navOption.displayName}
                             </div>
                         )
@@ -212,7 +221,11 @@ export default function TriggerViewConfigDiff({
         }
 
         return (
-            <div className="trigger-view-config-diff__values en-2 bw-1 br-4 bcn-0 mb-16 pt-2 pb-2">
+            <div
+                className={`${
+                    isRecentConfigAvailable ? 'trigger-view-config-diff__values' : ''
+                } en-2 bw-1 br-4 bcn-0 mb-16 pt-2 pb-2`}
+            >
                 {configValuesOptions.keys.map((configKey, index) => {
                     const currentValue = configValuesOptions.currentValues?.[configKey]
                     const baseValue = configValuesOptions.baseValues?.[configKey]
@@ -220,12 +233,18 @@ export default function TriggerViewConfigDiff({
                     return (
                         <Fragment key={`deployment-history-diff-view-${index}`}>
                             {currentValue?.value ? (
-                                renderDetailedValue(changeBGColor ? 'code-editor-red-diff' : '', currentValue)
+                                renderDetailedValue(
+                                    changeBGColor && isRecentConfigAvailable ? 'code-editor-red-diff' : '',
+                                    currentValue,
+                                )
                             ) : (
                                 <div />
                             )}
                             {baseValue?.value ? (
-                                renderDetailedValue(changeBGColor ? 'code-editor-green-diff' : '', baseValue)
+                                renderDetailedValue(
+                                    changeBGColor && isRecentConfigAvailable ? 'code-editor-green-diff' : '',
+                                    baseValue,
+                                )
                             ) : (
                                 <div />
                             )}
@@ -286,16 +305,20 @@ export default function TriggerViewConfigDiff({
 
     const renderConfigDiffViewHeader = () => {
         return (
-            <div className="trigger-view-config-diff__tabs dc__border-bottom">
-                <div className="fs-13 fw-6 lh-20 cn-9 bcn-0 m-0 pt-12 pb-12 pl-16 pr-16 dc__border-right">
+            <div className="trigger-view-config-diff__tabs bcn-0 dc__border-bottom">
+                <div className="fs-13 fw-6 lh-20 cn-9 m-0 pt-12 pb-12 pl-16 pr-16 dc__border-right">
                     Deployment Configuration
                 </div>
-                <div className="fs-13 fw-4 lh-20 pt-12 pb-12 pl-16 pr-16 cn-9 bcn-0 dc__border-right">
-                    Last Deployed Configuration
-                </div>
-                <div className="flex left bcn-0">
+                {isRecentConfigAvailable ? (
+                    <div className="fs-13 fw-4 lh-20 pt-12 pb-12 pl-16 pr-16 cn-9 dc__border-right">
+                        Last Deployed Configuration
+                    </div>
+                ) : (
+                    <></>
+                )}
+                <div className="flex left">
                     <ReactSelect
-                        options={getDeployConfigOptions()}
+                        options={getDeployConfigOptions(isRollbackTriggerSelected, isRecentConfigAvailable)}
                         components={{
                             IndicatorSeparator: null,
                             DropdownIndicator,
