@@ -101,6 +101,7 @@ function ManifestComponent({
                     let _manifest
                     if (
                         appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
+                        appDetails.appType === AppType.DEVTRON_APP ||
                         appDetails.deploymentAppType === DeploymentAppType.helm ||
                         isResourceBrowserView
                     ) {

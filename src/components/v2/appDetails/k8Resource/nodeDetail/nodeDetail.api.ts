@@ -21,12 +21,16 @@ export const getManifestResource = (
         return getManifestResourceHelmApps(ad, podName, nodeType, isResourceBrowserView, selectedResource)
     }
     const cn = ad.resourceTree.nodes.filter((node) => node.name === podName && node.kind.toLowerCase() === nodeType)[0]
-
-    return get(
-        `api/v1/applications/${ad.appName}-${ad.environmentName}/resource?version=${cn.version}&namespace=${
-            ad.namespace
-        }&group=${cn.group || ''}&kind=${cn.kind}&resourceName=${cn.name}`,
-    )
+    selectedResource = {
+        group: cn.group,
+        kind: cn.kind,
+        version: cn.version,
+        namespace: ad.namespace,
+        name: cn.name,
+        clusterId: 0,
+        containers: [],
+    }
+    return getManifestResourceHelmApps(ad, podName, nodeType, isResourceBrowserView, selectedResource)
 }
 
 export const getDesiredManifestResource = (appDetails: AppDetails, podName: string, nodeType: string) => {
@@ -61,9 +65,16 @@ export const getEvent = (
         return getEventHelmApps(ad, nodeName, nodeType, isResourceBrowserView, selectedResource)
     }
     const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName && node.kind.toLowerCase() === nodeType)[0]
-    return get(
-        `api/v1/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn.uid}&resourceName=${cn.name}`,
-    )
+    selectedResource = {
+        group: cn.group,
+        kind: cn.kind,
+        version: cn.version,
+        namespace: ad.namespace,
+        name: cn.name,
+        clusterId: 0,
+        containers: [],
+    }
+    return getEventHelmApps(ad, nodeName, nodeType, isResourceBrowserView, selectedResource)
 }
 
 function createResourceRequestBody(selectedResource: SelectedResourceType, updatedManifest?: string) {
