@@ -683,7 +683,7 @@ export default function CIPipeline({
             <li className="tab-list__tab">
                 <NavLink
                     replace
-                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox dc__capitalize"
+                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                     activeClassName="active"
                     to={toLink}
                     onClick={() => {

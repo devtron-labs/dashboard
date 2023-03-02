@@ -292,7 +292,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         type="text"
                         name="app-name"
                         value={this.state.form.appName}
-                        placeholder="e.g. my-first-app"
+                        placeholder={`e.g. my-first-${this.props.isJobCreateView ? 'job' : 'app'}`}
                         autoComplete="off"
                         autoFocus={true}
                         tabIndex={1}
@@ -375,8 +375,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                 <div>
                                     <div className="dc__info-title">Important: </div>
                                     {this.props.isJobCreateView
-                                        ? 'Do not forget to modify git repositories, corresponding branches and container registries to be used for each CI Pipeline if required.'
-                                        : 'Do not forget to modify git repositories and corresponding branches to be used for each Job Pipeline if required.'}
+                                        ? 'Do not forget to modify git repositories and corresponding branches to be used for each Job Pipeline if required.'
+                                        : 'Do not forget to modify git repositories, corresponding branches and container registries to be used for each CI Pipeline if required.'}
                                 </div>
                             </div>
                         </div>

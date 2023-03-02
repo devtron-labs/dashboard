@@ -21,8 +21,8 @@ import { AppMetaInfo } from '../../app/types'
 import { BreadCrumb, ErrorBoundary, Progressing, showError, trackByGAEvent, useBreadcrumb } from '../../common'
 import PageHeader from '../../common/header/PageHeader'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
-import '../../app/details/appDetails/appDetails.scss'
 import { AppSelector } from '../../AppSelector'
+import '../../app/details/appDetails/appDetails.scss'
 
 export default function JobDetails() {
     const { path } = useRouteMatch()
@@ -174,11 +174,11 @@ function JobHeader({ jobName }: { jobName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"
-                        data-action="Job Configuration Clicked"
+                        data-action="Job Configurations Clicked"
                         onClick={handleEventClick}
                     >
                         <Settings className="tab-list__icon icon-dim-16 mr-4" />
-                        Configuration
+                        Configurations
                     </NavLink>
                 </li>
             </ul>

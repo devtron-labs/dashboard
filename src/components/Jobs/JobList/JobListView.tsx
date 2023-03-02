@@ -107,43 +107,45 @@ export default function JobListView(props: JobListViewProps) {
         })
     }
 
-    const renderAppList = () => {
-        if (props.jobs.length) {
-            let icon = props.sortRule.order == OrderBy.ASC ? 'sort-up' : ''
-            return (
-                <div className="app-list">
-                    <div className="app-list__header dc__border-bottom">
-                        <div className="app-list__cell--icon flex left cursor" onClick={toggleAllExpandRow}>
-                            <Arrow className={`icon-dim-24 p-2 ${arrowIcon()}`} />
-                        </div>
-                        <div className="app-list__cell app-list__cell--name">
-                            <button className="app-list__cell-header flex" onClick={sortByAppName}>
-                                {JOB_LIST_HEADERS.Name}
-                                {props.sortRule.key == SortBy.APP_NAME ? (
-                                    <span className={`sort ${icon} ml-4`}></span>
-                                ) : (
-                                    <span className="sort-col"></span>
-                                )}
-                            </button>
-                        </div>
-                        <div className="app-list__cell app-list__cell--app_status">
-                            <span className="app-list__cell-header">{JOB_LIST_HEADERS.LastJobStatus}</span>
-                        </div>
-                        <div className="app-list__cell app-list__cell--cluster">
-                            <span className="app-list__cell-header">{JOB_LIST_HEADERS.LastRunAt}</span>
-                        </div>
-                        <div className="app-list__cell app-list__cell--cluster">
-                            <span className="app-list__cell-header">{JOB_LIST_HEADERS.LastSuccessAt}</span>
-                        </div>
-                        <div className="app-list__cell app-list__cell--cluster">
-                            <span className="app-list__cell-header">{JOB_LIST_HEADERS.Description}</span>
-                        </div>
-                        <div className="app-list__cell app-list__cell--action"></div>
-                    </div>
-                    {renderJobPipelines()}
-                </div>
-            )
+    const renderJobList = () => {
+        if (props.jobs.length <= 0) {
+            return null
         }
+
+        const icon = props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
+        return (
+            <div className="app-list">
+                <div className="app-list__header dc__border-bottom">
+                    <div className="app-list__cell--icon flex left cursor" onClick={toggleAllExpandRow}>
+                        <Arrow className={`icon-dim-24 p-2 ${arrowIcon()}`} />
+                    </div>
+                    <div className="app-list__cell app-list__cell--name">
+                        <button className="app-list__cell-header flex" onClick={sortByAppName}>
+                            {JOB_LIST_HEADERS.Name}
+                            {props.sortRule.key == SortBy.APP_NAME ? (
+                                <span className={`sort ${icon} ml-4`}></span>
+                            ) : (
+                                <span className="sort-col"></span>
+                            )}
+                        </button>
+                    </div>
+                    <div className="app-list__cell app-list__cell--app_status">
+                        <span className="app-list__cell-header">{JOB_LIST_HEADERS.LastJobStatus}</span>
+                    </div>
+                    <div className="app-list__cell app-list__cell--cluster">
+                        <span className="app-list__cell-header">{JOB_LIST_HEADERS.LastRunAt}</span>
+                    </div>
+                    <div className="app-list__cell app-list__cell--cluster">
+                        <span className="app-list__cell-header">{JOB_LIST_HEADERS.LastSuccessAt}</span>
+                    </div>
+                    <div className="app-list__cell app-list__cell--cluster">
+                        <span className="app-list__cell-header">{JOB_LIST_HEADERS.Description}</span>
+                    </div>
+                    <div className="app-list__cell app-list__cell--action"></div>
+                </div>
+                {renderJobPipelines()}
+            </div>
+        )
     }
 
     const renderPagination = () => {
@@ -186,7 +188,7 @@ export default function JobListView(props: JobListViewProps) {
     } else {
         return (
             <>
-                {renderAppList()}
+                {renderJobList()}
                 {renderPagination()}
             </>
         )
