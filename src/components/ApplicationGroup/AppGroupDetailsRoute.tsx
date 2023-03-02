@@ -14,7 +14,7 @@ import EmptyFolder from '../../assets/img/Empty-folder.png'
 import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
 import { getEnvAppList } from './AppGroup.service'
-import { AppGroupAdminType, EnvHeaderType } from './AppGroup.types'
+import { AppGroupAdminType, AppGroupAppFilterContextType, EnvHeaderType } from './AppGroup.types'
 import { getAppList } from '../app/service'
 import { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
@@ -22,13 +22,14 @@ import AppGroupAppFilter from './AppGroupAppFilter'
 import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
 import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
 import '../app/details/app.css'
+import { CONTEXT_NOT_AVAILABLE_ERROR } from '../../config/constantMessaging'
 
-const AppGroupAppFilterContext = React.createContext(null)
+const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
 
 export function useAppGroupAppFilterContext() {
     const context = React.useContext(AppGroupAppFilterContext)
     if (!context) {
-        throw new Error(`cannot be rendered outside the component`)
+        throw new Error(CONTEXT_NOT_AVAILABLE_ERROR)
     }
     return context
 }
@@ -36,7 +37,7 @@ export function useAppGroupAppFilterContext() {
 export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType) {
     const { path } = useRouteMatch()
     const { envId } = useParams<{ envId: string }>()
-    const [envName, setEnvName] = useState('')
+    const [envName, setEnvName] = useState<string>('')
     const [showEmpty, setShowEmpty] = useState<boolean>(false)
     const [appListLoading, setAppListLoading] = useState<boolean>(false)
     const [loading, envList] = useAsync(getEnvAppList, [])
@@ -51,7 +52,14 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         }
     }, [envList, envId])
 
+    useEffect(() => {
+        if (envId) {
+            getAppListData()
+        }
+    }, [envId])
+
     const getAppListData = async (): Promise<void> => {
+        setSelectedAppList([])
         setAppListLoading(true)
         const { result } = await getAppList({ environments: [+envId] })
         if (result.appContainers?.length) {
@@ -68,13 +76,6 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         }
         setAppListLoading(false)
     }
-
-    useEffect(() => {
-        if (envId) {
-            setSelectedAppList([])
-            getAppListData()
-        }
-    }, [envId])
 
     const renderEmpty = () => {
         return (

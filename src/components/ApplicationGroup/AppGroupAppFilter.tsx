@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import ReactSelect, { components, MultiValue } from 'react-select'
+import ReactSelect, { components } from 'react-select'
+import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
+import { appGroupAppSelectorStyle, getOptionBGClass } from './AppGroup.utils'
 import { ReactComponent as ShowIcon } from '../../assets/icons/ic-visibility-on.svg'
 import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-visibility-on-filter.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
-import { OptionType } from '../app/types'
-import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
-import { appGroupAppSelectorStyle, getOptionBGClass } from './AppGroup.utils'
+import { AppGroupAppFilterContextType } from './AppGroup.types'
 
 const ValueContainer = (props) => {
     let selectedAppsLength = props.getValue().length
@@ -55,21 +55,16 @@ const Option = (props) => {
         <div className={`flex left pl-8 pr-8 ${getOptionBGClass(props.isSelected, props.isFocused)}`}>
             <components.Option {...props} />
             {props.isSelected && <ShowIcon className="icon-dim-16 scb-5 mr-4 mw-18 cursor" onClick={selectData} />}
-            {props.isFocused && !props.isSelected && <ShowIcon className="icon-dim-16 mr-4 mw-18 cursor" onClick={selectData} />}
+            {props.isFocused && !props.isSelected && (
+                <ShowIcon className="icon-dim-16 mr-4 mw-18 cursor" onClick={selectData} />
+            )}
         </div>
     )
 }
 
 const MenuList = (props: any): JSX.Element => {
-    const {
-        appListOptions,
-        selectedAppList,
-        setSelectedAppList,
-    }: {
-        appListOptions: OptionType[]
-        selectedAppList: MultiValue<OptionType>
-        setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
-    } = useAppGroupAppFilterContext()
+    const { appListOptions, selectedAppList, setSelectedAppList }: AppGroupAppFilterContextType =
+        useAppGroupAppFilterContext()
     const clearSelection = (): void => {
         setSelectedAppList([])
     }
@@ -95,21 +90,15 @@ export default function AppGroupAppFilter() {
         setSelectedAppList,
         isMenuOpen,
         setMenuOpen,
-    }: {
-        appListOptions: OptionType[]
-        selectedAppList: MultiValue<OptionType>
-        setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
-        isMenuOpen: boolean
-        setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
-    } = useAppGroupAppFilterContext()
+    }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
     const [appFilterInput, setAppFilterInput] = useState('')
 
-    const handleMenuState = (menuOpenState: boolean): void => {
-        setMenuOpen(menuOpenState)
+    const handleOpenFilter = (): void => {
+        setMenuOpen(true)
     }
 
     const handleCloseFilter = (): void => {
-        handleMenuState(false)
+        setMenuOpen(false)
     }
 
     const clearAppFilterInput = () => {
@@ -122,6 +111,12 @@ export default function AppGroupAppFilter() {
         }
     }
 
+    const escHandler = (event: any) => {
+        if (event.keyCode === 27 || event.key === 'Escape') {
+            event.target.blur()
+        }
+    }
+
     return (
         <ReactSelect
             menuIsOpen={isMenuOpen}
@@ -131,7 +126,7 @@ export default function AppGroupAppFilter() {
             isMulti={true}
             closeMenuOnSelect={false}
             hideSelectedOptions={false}
-            onMenuOpen={() => handleMenuState(true)}
+            onMenuOpen={handleOpenFilter}
             onMenuClose={handleCloseFilter}
             blurInputOnSelect={false}
             inputValue={appFilterInput}
@@ -147,6 +142,7 @@ export default function AppGroupAppFilter() {
             }}
             placeholder="Search applications"
             styles={appGroupAppSelectorStyle}
+            onKeyDown={escHandler}
         />
     )
 }

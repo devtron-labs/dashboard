@@ -219,10 +219,18 @@ export interface AppGroupAdminType {
 }
 
 export interface AppGroupDetailDefaultType {
-  filteredApps: MultiValue<OptionType>
+    filteredApps: MultiValue<OptionType>
 }
 export interface CIConfigListType {
     pipelineList: CiPipeline[]
     securityModuleInstalled: boolean
     blobStorageConfigured: boolean
+}
+
+export interface AppGroupAppFilterContextType {
+    appListOptions: OptionType[]
+    selectedAppList: MultiValue<OptionType>
+    setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
+    isMenuOpen: boolean
+    setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
 }

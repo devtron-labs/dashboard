@@ -5,17 +5,13 @@ import { TriggerExternalCINode } from './nodes/TriggerExternalCINode'
 import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
-import { Checkbox, getCIPipelineURL, RectangularEdge as Edge } from '../../../../common'
+import { Checkbox, CHECKBOX_VALUE, getCIPipelineURL, RectangularEdge as Edge } from '../../../../common'
 import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
 
 export class Workflow extends Component<WorkflowProps> {
-    constructor(props) {
-        super(props)
-        this.handleWorkflowSelection = this.handleWorkflowSelection.bind(this)
-    }
     goToWorkFlowEditor = (node: NodeAttr) => {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
             const ciPipelineURL = getCIPipelineURL(
@@ -256,7 +252,7 @@ export class Workflow extends Component<WorkflowProps> {
         })
     }
 
-    handleWorkflowSelection() {
+    handleWorkflowSelection = () => {
         this.props.handleSelectionChange(this.props.appId)
     }
 
@@ -274,7 +270,7 @@ export class Workflow extends Component<WorkflowProps> {
                         <Checkbox
                             rootClassName="fs-13 fw-6 mb-0 app-group-checkbox"
                             isChecked={this.props.isSelected}
-                            value="CHECKED"
+                            value={CHECKBOX_VALUE.CHECKED}
                             onChange={this.handleWorkflowSelection}
                         >
                             {this.props.name}

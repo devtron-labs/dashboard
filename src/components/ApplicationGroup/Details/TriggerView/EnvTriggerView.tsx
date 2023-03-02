@@ -28,6 +28,7 @@ import {
 } from '../../../app/service'
 import {
     Checkbox,
+    CHECKBOX_VALUE,
     createGitCommitUrl,
     ErrorScreenManager,
     ISTTimeModal,
@@ -105,7 +106,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     const [materialType, setMaterialType] = useState(MATERIAL_TYPE.inputMaterialList)
     const [responseList, setResponseList] = useState<ResponseRowType[]>([])
     const [isSelectAll, setSelectAll] = useState(false)
-    const [selectAllValue, setSelectAllValue] = useState<'CHECKED' | 'INTERMEDIATE'>('CHECKED')
+    const [selectAllValue, setSelectAllValue] = useState<CHECKBOX_VALUE>(CHECKBOX_VALUE.CHECKED)
 
     const getWorkflowsData = async (): Promise<void> => {
         try {
@@ -212,7 +213,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             setShowPostDeployment(_postNodeExist)
             setSelectedAppList(_selectedAppList)
             setSelectAll(_selectedAppList.length !== 0)
-            setSelectAllValue(_filteredWorkflows.length === _selectedAppList.length ? 'CHECKED' : 'INTERMEDIATE')
+            setSelectAllValue(_filteredWorkflows.length === _selectedAppList.length ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE)
             _filteredWorkflows.sort((a, b) => sortCallback('name', a, b))
             setFilteredWorkflows(_filteredWorkflows)
         }
@@ -254,7 +255,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             return wf
         })
         setSelectAll(!isSelectAll)
-        setSelectAllValue('CHECKED')
+        setSelectAllValue(CHECKBOX_VALUE.CHECKED)
         setShowPreDeployment(_preNodeExist)
         setShowPostDeployment(_postNodeExist)
         setFilteredWorkflows(_workflows)
@@ -308,7 +309,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         setFilteredWorkflows(_workflows)
         setSelectedAppList(_selectedAppList)
         setSelectAll(_selectedAppList.length !== 0)
-        setSelectAllValue(_workflows.length === _selectedAppList.length ? 'CHECKED' : 'INTERMEDIATE')
+        setSelectAllValue(_workflows.length === _selectedAppList.length ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE)
     }
 
     const getCommitHistory = (

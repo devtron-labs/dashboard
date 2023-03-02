@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { generatePath, Route, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { URLS } from '../../../../config'
+import { APP_GROUP_CI_DETAILS } from '../../../../config/constantMessaging'
 import { EmptyView, LogResizeButton } from '../../../app/details/cicdHistory/History.components'
 import Sidebar from '../../../app/details/cicdHistory/Sidebar'
 import { HistoryComponentType, History, CICDSidebarFilterOptionType } from '../../../app/details/cicdHistory/types'
@@ -160,18 +161,18 @@ export default function EnvCIDetails({ filteredApps }: AppGroupDetailDefaultType
         } else if (pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED') {
             return (
                 <EmptyView
-                    title="This is a Linked CI Pipeline"
-                    subTitle="This is a Linked CI Pipeline"
+                    title={APP_GROUP_CI_DETAILS.linkedCI.title}
+                    subTitle={APP_GROUP_CI_DETAILS.linkedCI.title}
                     link={`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
-                    linkText="View Source Pipeline"
+                    linkText={APP_GROUP_CI_DETAILS.linkedCI.linkText}
                 />
             )
         } else {
             if (!loading) {
                 return (
                     <EmptyView
-                        title="Build pipeline not triggered"
-                        subTitle="Pipeline trigger history, details and logs will be available here."
+                        title={APP_GROUP_CI_DETAILS.noBuild.title}
+                        subTitle={APP_GROUP_CI_DETAILS.noBuild.subTitle}
                     />
                 )
             }

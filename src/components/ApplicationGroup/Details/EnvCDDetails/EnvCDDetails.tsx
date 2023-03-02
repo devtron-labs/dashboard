@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import {
-    Progressing,
-    showError,
-    useAsync,
-    useInterval,
-    mapByKey,
-    asyncWrap,
-    sortCallback,
-} from '../../../common'
+import { Progressing, showError, useAsync, useInterval, mapByKey, asyncWrap, sortCallback } from '../../../common'
 import { ModuleNameMap } from '../../../../config'
 import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
-import '../../../app/details/cdDetails/cdDetail.scss'
 import { TriggerOutput } from '../../../app/details/cdDetails/CDDetails'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
 import { getCDConfig } from '../../AppGroup.service'
@@ -21,8 +12,10 @@ import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../.
 import { DeploymentTemplateList } from '../../../app/details/cdDetails/cd.type'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
 import { Route } from 'react-router-dom'
-import '../../../app/details/appDetails/appDetails.scss'
 import { AppGroupDetailDefaultType } from '../../AppGroup.types'
+import { APP_GROUP_CD_DETAILS } from '../../../../config/constantMessaging'
+import '../../../app/details/appDetails/appDetails.scss'
+import '../../../app/details/cdDetails/cdDetail.scss'
 
 export default function EnvCDDetails({ filteredApps }: AppGroupDetailDefaultType) {
     const { appId, envId, triggerId, pipelineId } = useParams<{
@@ -184,15 +177,15 @@ export default function EnvCDDetails({ filteredApps }: AppGroupDetailDefaultType
         } else if (!appId) {
             return (
                 <EmptyView
-                    title="No application selected"
-                    subTitle="Please select an application to see deployment history."
+                    title={APP_GROUP_CD_DETAILS.noSelectedApp.title}
+                    subTitle={APP_GROUP_CD_DETAILS.noSelectedApp.subTitle}
                 />
             )
         } else {
             return (
                 <EmptyView
-                    title="No deployments"
-                    subTitle={`No deployment history available for the ${selectedApp?.appName} application.`}
+                    title={APP_GROUP_CD_DETAILS.noDeployment.title}
+                    subTitle={APP_GROUP_CD_DETAILS.noDeployment.getSubtitle(selectedApp?.appName)}
                 />
             )
         }
