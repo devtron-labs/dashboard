@@ -213,7 +213,8 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             setSelectedAppList(_selectedAppList)
             setSelectAll(_selectedAppList.length !== 0)
             setSelectAllValue(_filteredWorkflows.length === _selectedAppList.length ? 'CHECKED' : 'INTERMEDIATE')
-            setFilteredWorkflows(_filteredWorkflows.sort((a, b) => sortCallback('name', a, b)))
+            _filteredWorkflows.sort((a, b) => sortCallback('name', a, b))
+            setFilteredWorkflows(_filteredWorkflows)
         }
     }, [filteredApps, workflows])
 

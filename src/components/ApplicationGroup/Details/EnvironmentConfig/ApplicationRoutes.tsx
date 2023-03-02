@@ -4,17 +4,17 @@ import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-
 import { ApplicationRouteType } from '../../AppGroup.types'
 
 export default function ApplicationRoute({ envListData }: ApplicationRouteType) {
-    const { envId, appId } = useParams<{ envId: string; appId: string }>()
+    const { appId } = useParams<{ envId: string; appId: string }>()
     const { url } = useRouteMatch()
     const location = useLocation()
-    const newPath = `/${location.pathname.split('/').splice(1, 4).join('/')}`
+    const basePath = url.replace(`edit/${appId}`, `edit/${envListData.id}`)
     const [collapsed, toggleCollapsed] = useState(+appId === envListData.id)
 
     useEffect(() => {
         if (+appId !== envListData.id) {
             toggleCollapsed(true)
-        } else{
-          toggleCollapsed(false)
+        } else {
+            toggleCollapsed(false)
         }
     }, [location.pathname])
 
@@ -35,22 +35,13 @@ export default function ApplicationRoute({ envListData }: ApplicationRouteType) 
             </div>
             {!collapsed && (
                 <div className="environment-routes pl-8 w-100">
-                    <NavLink
-                        className="env-compose__nav-item cursor"
-                        to={`${url.replace(`edit/${appId}`, `edit/${envListData.id}`)}/deployment-template`}
-                    >
+                    <NavLink className="env-compose__nav-item cursor" to={`${basePath}/deployment-template`}>
                         Deployment template
                     </NavLink>
-                    <NavLink
-                        className="env-compose__nav-item cursor"
-                        to={`${url.replace(`edit/${appId}`, `edit/${envListData.id}`)}/configmap`}
-                    >
+                    <NavLink className="env-compose__nav-item cursor" to={`${basePath}/configmap`}>
                         ConfigMaps
                     </NavLink>
-                    <NavLink
-                        className="env-compose__nav-item cursor"
-                        to={`${url.replace(`edit/${appId}`, `edit/${envListData.id}`)}/secrets`}
-                    >
+                    <NavLink className="env-compose__nav-item cursor" to={`${basePath}/secrets`}>
                         Secrets
                     </NavLink>
                 </div>
