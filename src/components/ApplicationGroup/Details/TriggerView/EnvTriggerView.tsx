@@ -40,7 +40,7 @@ import {
     stopPropagation,
 } from '../../../common'
 import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
-import { TIME_STAMP_ORDER } from '../../../app/details/triggerView/Constants'
+import { CI_MATERIAL_EMPTY_STATE_MESSAGING, TIME_STAMP_ORDER } from '../../../app/details/triggerView/Constants'
 import { toast } from 'react-toastify'
 import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
 import { getLastExecutionByArtifactAppEnv } from '../../../../services/service'
@@ -1266,7 +1266,12 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                 const selectedCIPipeline = filteredCIPipelines.get(_appId).find((_ci) => _ci.id === +_ciNode.id)
                 if (selectedCIPipeline?.ciMaterial) {
                     const invalidInputMaterial = _ciNode.inputMaterialList.find((_mat) => {
-                        return _mat.isBranchError || _mat.isRepoError || _mat.isDockerFileError
+                        return (
+                            _mat.isBranchError ||
+                            _mat.isRepoError ||
+                            _mat.isDockerFileError ||
+                            (_mat.type === SourceTypeMap.WEBHOOK && _mat.history.length === 0)
+                        )
                     })
                     if (invalidInputMaterial) {
                         if (invalidInputMaterial.isRepoError) {
@@ -1275,6 +1280,8 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                             errorMessage = invalidInputMaterial.dockerFileErrorMsg
                         } else if (invalidInputMaterial.isBranchError) {
                             errorMessage = invalidInputMaterial.branchErrorMsg
+                        } else {
+                            errorMessage = CI_MATERIAL_EMPTY_STATE_MESSAGING.NoMaterialFound
                         }
                     }
                 }
