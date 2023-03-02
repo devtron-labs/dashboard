@@ -4,7 +4,7 @@ import { ReactComponent as Progressing } from '../../assets/icons/ic-progressing
 
 function EmptyState({ children, className = '' }) {
     return (
-        <div className={`flex column empty-state ${className}`} style={{ width: '100%', height: '100%' }}>
+        <div className={`flex column empty-state ${className}`} w-100 h-100>
             {children}
         </div>
     )

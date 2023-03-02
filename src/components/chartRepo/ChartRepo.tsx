@@ -11,7 +11,7 @@ import { DOCUMENTATION, PATTERNS } from '../../config';
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm';
 import "./chartRepo.scss";
 import DeleteComponent from '../../util/DeleteComponent';
-import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
+import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName, TOAST_INFO } from '../../config/constantMessaging';
 import { ReactComponent as Sync } from '../../assets/icons/ic-sync.svg';
 
 interface ChartRepoType {
@@ -43,7 +43,7 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
             return
         }
         setFetching(true)
-        toast.success('Re-sync initiated. It may take upto 5 minutes for it to complete.')
+        toast.success(TOAST_INFO.RE_SYNC)
         await reSyncChartRepo()
             .then((response) => {
                 setFetching(false)
@@ -74,7 +74,7 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                         className="dc__link"
                         href={DOCUMENTATION.GLOBAL_CONFIG_CHART}
                     >
-                        Learn more
+                        LEARN_MORE
                     </a>
                 </span>
             </p>
