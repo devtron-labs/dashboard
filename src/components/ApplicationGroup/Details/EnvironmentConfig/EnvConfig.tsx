@@ -27,7 +27,9 @@ export default function EnvConfig({ filteredApps }: AppGroupDetailDefaultType) {
             if (!appId) {
                 history.push(`${url}/${_envAppList[0].id}`)
             } else if (!_filteredAppMap.get(+appId)) {
-                history.push(`${url.replace(`edit/${appId}`, `edit/${_envAppList[0].id}`)}`)
+                const oldUrlSubstring = `/edit/${appId}`
+                const newUrlSubstring = `/edit/${_envAppList[0].id}`
+                history.push(`${url.replace(oldUrlSubstring, newUrlSubstring)}`)
             }
         }
     }, [appList, filteredApps])

@@ -7,7 +7,9 @@ export default function ApplicationRoute({ envListData }: ApplicationRouteType) 
     const { appId } = useParams<{ envId: string; appId: string }>()
     const { url } = useRouteMatch()
     const location = useLocation()
-    const basePath = url.replace(`edit/${appId}`, `edit/${envListData.id}`)
+    const oldUrlSubstring = `/edit/${appId}`
+    const newUrlSubstring = `/edit/${envListData.id}`
+    const basePath = url.replace(oldUrlSubstring, newUrlSubstring)
     const [collapsed, toggleCollapsed] = useState(+appId === envListData.id)
 
     useEffect(() => {
