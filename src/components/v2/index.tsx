@@ -6,9 +6,13 @@ import { DetailsProgressing, ErrorScreenManager, sortOptionsByValue } from '../c
 import ValuesComponent from './values/ChartValues.component';
 import AppHeaderComponent from './headers/AppHeader.component';
 import ChartHeaderComponent from './headers/ChartHeader.component';
-import { getInstalledAppDetail, getInstalledChartDetail } from './appDetails/appDetails.api';
+import {
+    getInstalledAppDetail,
+    getInstalledChartDetail,
+    getInstalledChartNotesDetail,
+} from './appDetails/appDetails.api'
 import AppDetailsComponent from './appDetails/AppDetails.component';
-import { AppType, EnvType } from './appDetails/appDetails.type';
+import { AppType, EnvType} from './appDetails/appDetails.type';
 import IndexStore from './appDetails/index.store';
 import ErrorImage from './assets/icons/ic-404-error.png';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil';
@@ -20,7 +24,7 @@ import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState';
 
 let initTimer = null;
 
-function RouterComponent({ envType }) {
+function RouterComponent({ envType}) {
     const [isLoading, setIsLoading] = useState(true);
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const { path } = useRouteMatch();
@@ -80,11 +84,14 @@ function RouterComponent({ envType }) {
             let response = null;
 
             if (envType === EnvType.CHART) {
-                response = await getInstalledChartDetail(+params.appId, +params.envId);
-                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART);
+                response = await getInstalledChartDetail(+params.appId, +params.envId)
+                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART)
+                if (!response.result.gitOpsNotes) {
+                    response = await getInstalledChartNotesDetail(+params.appId, +params.envId)
+                }
             } else {
-                response = await getInstalledAppDetail(+params.appId, +params.envId);
-                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP);
+                response = await getInstalledAppDetail(+params.appId, +params.envId)
+                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
             }
 
             if (response.result?.clusterId) {
