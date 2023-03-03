@@ -6,8 +6,7 @@ import { copyToClipboard, getElapsedTime } from '../../../../common'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
 import PodHeaderComponent from './PodHeader.component'
-import { NodeType, Node, iNode, AppType, NodeComponentProps } from '../../appDetails.type'
-import './nodeType.scss'
+import { NodeType, Node, iNode, NodeComponentProps } from '../../appDetails.type'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
 import NodeDeleteComponent from './NodeDelete.component'
 import AppDetailsStore from '../../appDetails.store'
@@ -15,10 +14,10 @@ import { toast } from 'react-toastify'
 import { getNodeStatus } from './nodeType.util'
 import { useSharedState } from '../../../utils/useSharedState'
 import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
-import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
+import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
 import { NoPod } from '../../../../app/ResourceTreeNodes'
-import { NodeDetailTab } from '../nodeDetail/nodeDetail.type'
+import './nodeType.scss'
 
 function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) {
     const { url } = useRouteMatch()
@@ -237,8 +236,8 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
-                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 dc__content-space`}>
-                            <div className="flex dc__align-start">
+                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 `}>
+                            <div className="flex left">
                                 <div
                                     className="flex left top ml-2"
                                     onClick={() => {
@@ -246,77 +245,100 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                     }}
                                 >
                                     {node.childNodes?.length > 0 ? (
-                                        <DropDown
-                                            className={`rotate icon-dim-24 pointer ${_isSelected ? 'fcn-9' : 'fcn-5'} `}
-                                            style={{ ['--rotateBy' as any]: !_isSelected ? '-90deg' : '0deg' }}
-                                        />
+                                        <span>
+                                            <DropDown
+                                                className={`rotate icon-dim-24 pointer ${
+                                                    _isSelected ? 'fcn-9' : 'fcn-5'
+                                                } `}
+                                                style={{ ['--rotateBy' as any]: !_isSelected ? '-90deg' : '0deg' }}
+                                            />
+                                        </span>
                                     ) : (
                                         <span className="pl-12 pr-12"></span>
                                     )}
                                     <div>
-                                        <div>{node.name}</div>
-                                        <div
-                                            className={` app-summary__status-name f-${(
-                                                node?.status ||
-                                                node?.health?.status ||
-                                                ''
-                                            ).toLowerCase()}`}
-                                        >
-                                            {getNodeStatus(node)}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="bottom"
-                                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                                    trigger="mouseenter click"
-                                >
-                                    <Clipboard
-                                        className="icon-dim-12 pointer ml-8 mr-8 mt-4"
-                                        onClick={onClickClipboard}
-                                    />
-                                </Tippy>
-                                <div className="flex left">
-                                    <div
-                                        className={`flex left ${getWidthClassnameForTabs()} ${
-                                            node.kind === NodeType.Containers ? '' : 'node__tabs'
-                                        } en-2 bw-1 br-4 dc__w-fit-content`}
-                                    >
-                                        {getNodeDetailTabs(node.kind).map((kind, index) => {
-                                            return (
+                                        <div className="resource__title-name flex left dc__align-start">
+                                            <span className="fs-13">{node.name}</span>
+                                            <Tippy
+                                                className="default-tt"
+                                                arrow={false}
+                                                placement="bottom"
+                                                content={copied ? 'Copied!' : 'Copy to clipboard.'}
+                                                trigger="mouseenter click"
+                                            >
+                                                <span>
+                                                    <Clipboard
+                                                        className="icon-dim-12 pointer ml-8 mr-8 mt-4"
+                                                        onClick={onClickClipboard}
+                                                    />
+                                                </span>
+                                            </Tippy>
+                                            <div
+                                                className={`flex left ${
+                                                    node.kind.toLowerCase() == NodeType.Pod.toLowerCase()
+                                                        ? 'mw-232'
+                                                        : 'mw-116'
+                                                }`}
+                                            >
                                                 <div
-                                                    key={'tab__' + index}
-                                                    data-name={kind}
-                                                    onClick={onClickNodeDetailsTab}
-                                                    className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
-                                                        node.kind === NodeType.Containers
-                                                            ? ''
-                                                            : 'resource-action-tabs__active'
-                                                    }  ${
-                                                        index === getNodeDetailTabs(node.kind)?.length - 1
-                                                            ? ''
-                                                            : 'dc__border-right'
-                                                    } pl-6 pr-6`}
+                                                    className={`flex left ${getWidthClassnameForTabs()} ${
+                                                        node.kind === NodeType.Containers ? '' : 'node__tabs'
+                                                    } en-2 bw-1 br-4 dc__w-fit-content`}
                                                 >
-                                                    {kind.toLowerCase()}
+                                                    {getNodeDetailTabs(node.kind).map((kind, index) => {
+                                                        return (
+                                                            <div
+                                                                key={'tab__' + index}
+                                                                data-name={kind}
+                                                                onClick={onClickNodeDetailsTab}
+                                                                className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
+                                                                    node.kind === NodeType.Containers
+                                                                        ? ''
+                                                                        : 'resource-action-tabs__active'
+                                                                }  ${
+                                                                    index === getNodeDetailTabs(node.kind)?.length - 1
+                                                                        ? ''
+                                                                        : 'dc__border-right'
+                                                                } pl-6 pr-6`}
+                                                            >
+                                                                {kind.toLowerCase()}
+                                                            </div>
+                                                        )
+                                                    })}
                                                 </div>
-                                            )
-                                        })}
-                                    </div>
-                                    {node.kind !== NodeType.Containers && (
-                                        <>
-                                            <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
-                                            {node.kind.toLowerCase() == NodeType.Pod.toLowerCase() && (
+                                                {node.kind !== NodeType.Containers && (
+                                                    <>
+                                                        <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                        {node.kind.toLowerCase() == NodeType.Pod.toLowerCase() && (
+                                                            <>
+                                                                <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                                <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                            </>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex left">
+                                            <span
+                                                className={`mr-4 app-summary__status-name f-${(
+                                                    node?.status ||
+                                                    node?.health?.status ||
+                                                    ''
+                                                ).toLowerCase()}`}
+                                            >
+                                                {getNodeStatus(node)}
+                                            </span>
+                                            {node?.health?.message && (
                                                 <>
-                                                    <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
-                                                    <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                    <div className="dc__bullet ml-4 mr-4"></div>
+                                                    <span className="dc__truncate">
+                                                        {node.health.message.toLowerCase()}
+                                                    </span>
                                                 </>
                                             )}
-                                        </>
-                                    )}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

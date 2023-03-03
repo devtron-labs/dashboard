@@ -119,7 +119,7 @@ export const envListOptions = (inputValue: string): Promise<[]> =>
                 resolve([])
                 return
             }
-            getEnvAppList({envName: inputValue})
+            getEnvAppList({ envName: inputValue })
                 .then((response) => {
                     let appList = []
                     if (response.result) {
@@ -140,3 +140,71 @@ export const envListOptions = (inputValue: string): Promise<[]> =>
                 })
         }, 300)
     })
+
+export const appGroupAppSelectorStyle = {
+    control: (base, state) => ({
+        ...base,
+        border: state.menuIsOpen ? '1px solid var(--B500)' : 'unset',
+        boxShadow: 'none',
+        minHeight: 'auto',
+        borderRadius: '4px',
+        height: '32px',
+        fontSize: '12px',
+        width: '250px',
+        cursor: state.isDisabled ? 'not-allowed' : 'normal',
+    }),
+    singleValue: (base, state) => ({
+        ...base,
+        fontWeight: '500',
+    }),
+    placeholder: (base, state) => ({
+        ...base,
+        fontWeight: '500',
+    }),
+    option: (base, state) => ({
+        ...base,
+        fontWeight: '500',
+        fontSize: '13px',
+        padding: '5px 8px 5px 0',
+        color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
+        backgroundColor: getBGColor(state.isSelected, state.isFocused),
+    }),
+    valueContainer: (base, state) => ({
+        ...base,
+        color: 'var(--N900)',
+        padding: '0px 10px',
+        display: 'flex',
+        height: '30px',
+        fontSize: '13px',
+        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+        pointerEvents: 'all',
+        width: '100px',
+        whiteSpace: 'nowrap',
+    }),
+    menuList: (base) => {
+        return {
+            ...base,
+            paddingTop: '0',
+            paddingBottom: '0',
+            marginBottom: '4px',
+        }
+    },
+}
+
+const getBGColor = (isSelected: boolean, isFocused: boolean): string => {
+    if (isSelected) {
+        return 'var(--B100)'
+    } else if (isFocused) {
+        return 'var(--N50)'
+    }
+    return 'white'
+}
+
+export const getOptionBGClass = (isSelected: boolean, isFocused: boolean): string => {
+    if (isSelected) {
+        return 'bcb-1'
+    } else if (isFocused) {
+        return 'bc-n50'
+    }
+    return 'bcn-0'
+}

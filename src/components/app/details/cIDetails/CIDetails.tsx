@@ -182,7 +182,7 @@ export default function CIDetails() {
     )
 }
 
-const Details = ({
+export const Details = ({
     fullScreenView,
     synchroniseState,
     triggerHistory,

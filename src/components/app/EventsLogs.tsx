@@ -20,12 +20,11 @@ import { ReactComponent as CloseImage } from '../../assets/icons/ic-appstatus-ca
 import { ReactComponent as Question } from '../../assets/icons/ic-question.svg';
 import Tippy from '@tippyjs/react';
 import { TerminalView } from '../terminal';
-import { SocketConnectionType } from './details/appDetails/AppDetails';
 import MonacoEditor from 'react-monaco-editor';
 import { editor } from 'monaco-editor';
 import { AutoSizer } from 'react-virtualized'
 import { getSelectedNodeItems } from './details/appDetails/utils';
-import { defaultProps } from 'recompose';
+import { SocketConnectionType } from './details/appDetails/appDetails.type';
 
 const commandLineParser = require('command-line-parser')
 
