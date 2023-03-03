@@ -1,5 +1,5 @@
-import { AppCheckList } from '../checkList/checklist.type'
-import { ChartCheckList } from '../checkList/checklist.type'
+import { AppCheckList, ChartCheckList } from '../checkList/checklist.type'
+
 interface CheckList {
     isLoading: boolean
     isAppCreated: boolean
