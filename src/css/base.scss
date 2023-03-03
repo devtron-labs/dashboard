@@ -256,10 +256,6 @@ a:focus {
     padding: 2px;
 }
 
-.dc__top-0 {
-    top: 0;
-}
-
 .dc__bottom-0 {
     bottom: 0;
 }
@@ -282,6 +278,10 @@ a:focus {
 
 .dc__right-0 {
     right: 0;
+}
+
+.dc__top-0 {
+    top: 0;
 }
 
 .dc__vertical-align-middle {
@@ -2266,6 +2266,10 @@ textarea,
 
 .h-8 {
     height: 8px;
+}
+
+.h-16 {
+    height: 16px;
 }
 
 .h-18 {
