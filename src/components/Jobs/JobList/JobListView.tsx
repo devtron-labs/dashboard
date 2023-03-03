@@ -2,11 +2,11 @@ import React from 'react'
 import { ErrorScreenManager, Pagination, Progressing } from '../../common'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
-import { ReactComponent as DevtronAppIcon } from '../../../assets/icons/ic-devtron-app.svg'
+import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
 import { OrderBy, SortBy } from '../../app/list/types'
 import AppStatus from '../../app/AppStatus'
-import { JobListViewProps } from '../Types'
+import { Job, JobListViewProps } from '../Types'
 import { JobListViewType, JOB_LIST_HEADERS } from '../Constants'
 import ExpandedRow from '../ExpandedRow/ExpandedRow'
 import JobsEmptyState from '../JobsEmptyState'
@@ -22,10 +22,10 @@ export default function JobListView(props: JobListViewProps) {
         props.expandRow(event.currentTarget.dataset.key)
     }
 
-    const handleEditApp = (event): void => {
+    const handleEditJob = (event): void => {
         event.stopPropagation()
         event.preventDefault()
-        props.handleEditApp(event.currentTarget.dataset.key)
+        props.handleEditJob(event.currentTarget.dataset.key)
     }
 
     const closeExpandedRow = (event): void => {
@@ -51,6 +51,10 @@ export default function JobListView(props: JobListViewProps) {
         }
     }
 
+    const redirectToJobOverview = (job: Job): string => {
+        return `${URLS.JOB}/${job.id}/${URLS.APP_OVERVIEW}`
+    }
+
     const renderJobPipelines = () => {
         return props.jobs.map((job) => {
             const len = job.ciPipelines.length > 1
@@ -58,11 +62,13 @@ export default function JobListView(props: JobListViewProps) {
                 <React.Fragment key={job.id}>
                     {!props.expandedRow[job.id] && (
                         <Link
-                            to={props.redirectToAppDetails(job)}
+                            to={redirectToJobOverview(job)}
                             className={`app-list__row ${len ? 'dc__hover-icon' : ''}`}
                         >
                             <div className="app-list__cell--icon">
-                                <DevtronAppIcon className="icon-dim-24 dc__show-first--icon" />
+                                <div className="icon-dim-24 dc__icon-bg-color br-4 dc__show-first--icon p-4">
+                                    <JobIcon className="icon-dim-16" />
+                                </div>
                                 {len && (
                                     <Arrow
                                         className="icon-dim-24 p-2 dc__flip-90 fcn-7 dc__show-second--icon"
@@ -87,7 +93,7 @@ export default function JobListView(props: JobListViewProps) {
                                 <p className="dc__truncate-text  m-0">{job.description ? job.description : '-'}</p>
                             </div>
                             <div className="app-list__cell app-list__cell--action">
-                                <button type="button" data-key={job.id} className="button-edit" onClick={handleEditApp}>
+                                <button type="button" data-key={job.id} className="button-edit" onClick={handleEditJob}>
                                     <Edit className="button-edit__icon" />
                                 </button>
                             </div>
@@ -97,8 +103,7 @@ export default function JobListView(props: JobListViewProps) {
                         <ExpandedRow
                             job={job}
                             close={closeExpandedRow}
-                            redirect={props.redirectToAppDetails}
-                            handleEdit={props.handleEditApp}
+                            handleEdit={props.handleEditJob}
                             isArgoInstalled={props.isArgoInstalled}
                         />
                     )}

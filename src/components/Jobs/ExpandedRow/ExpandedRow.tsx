@@ -2,13 +2,18 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import { ReactComponent as Expand } from '../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
-import { ExpandedRowProps } from '../Types'
+import { ExpandedRowProps, Job, JobCIPipeline } from '../Types'
 import AppStatus from '../../app/AppStatus'
 import './ExpandedRow.scss'
+import { URLS } from '../../../config'
 
 export default function ExpandedRow(props: ExpandedRowProps) {
-    const handleEditApp = () => {
+    const handleEditJob = () => {
         props.handleEdit(props.job.id)
+    }
+
+    const redirectToJobPipelineDetails = (job: Job, ciPipeline: JobCIPipeline): string => {
+        return `${URLS.JOB}/${job.id}/${URLS.APP_CI_DETAILS}/${ciPipeline.ciPipelineId}`
     }
 
     const renderRows = () => {
@@ -16,7 +21,7 @@ export default function ExpandedRow(props: ExpandedRowProps) {
             return (
                 <Link
                     key={ciPipeline.ciPipelineId}
-                    to={`${props.redirect(props.job)}`}
+                    to={`${redirectToJobPipelineDetails(props.job, ciPipeline)}`}
                     className="app-list__row app-list__row--expanded"
                 >
                     <div className="app-list__cell--icon" />
@@ -47,7 +52,7 @@ export default function ExpandedRow(props: ExpandedRowProps) {
                     <Expand className="icon-dim-24 p-2 mr-16 fcn-7" />
                     <span className="fw-6">{props.job.name}</span>
                 </div>
-                <button type="button" className="button-edit button-edit--white" onClick={handleEditApp}>
+                <button type="button" className="button-edit button-edit--white" onClick={handleEditJob}>
                     <Settings className="button-edit__icon" />
                 </button>
             </div>
