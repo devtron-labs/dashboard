@@ -68,7 +68,7 @@ import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
 import { getSSOConfigList } from '../login/login.service'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import { SSO_NOT_CONFIGURED_STATE_TEXTS } from '../../config/constantMessaging'
+import { SSO_NOT_CONFIGURED_STATE_TEXTS, USER_LOCK_MESSAGE } from '../../config/constantMessaging'
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -640,9 +640,9 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
     function getToolTipContent(user) {
         switch (user) {
             case UserLocked.ADMIN :
-                return 'Admin user cannot be edited'
+                return USER_LOCK_MESSAGE.ADMIN
             case UserLocked.SYSTEM :
-                return 'System user cannot be edited'
+                return USER_LOCK_MESSAGE.SYSTEM
             default:
                 return
         }
