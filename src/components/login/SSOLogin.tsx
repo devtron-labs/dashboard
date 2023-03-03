@@ -504,6 +504,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         {this.getSSOLoginTabsArr().map((item) => {
                             return (
                                 <SSOLoginTab
+                                    key={item.SSOName}
                                     value={item.provider}
                                     SSOName={item.SSOName}
                                     checked={this.state.sso === item.provider}
