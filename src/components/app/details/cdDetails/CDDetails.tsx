@@ -199,7 +199,7 @@ export default function CDDetails() {
     )
 }
 
-const TriggerOutput: React.FC<{
+export const TriggerOutput: React.FC<{
     fullScreenView: boolean
     syncState: (triggerId: number, triggerDetails: History) => void
     triggerHistory: Map<number, History>
