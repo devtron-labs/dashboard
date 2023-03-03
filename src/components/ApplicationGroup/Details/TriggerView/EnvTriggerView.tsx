@@ -138,7 +138,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         }
     }
 
-    const getPoleWorkflowStatus = (_processedWorkflowsData: ProcessWorkFlowStatusType) => {
+    const pollWorkflowStatus = (_processedWorkflowsData: ProcessWorkFlowStatusType) => {
         inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
         inprogressStatusTimer = setTimeout(
             () => {
@@ -156,13 +156,13 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     response?.result?.cdWorkflowStatus ?? [],
                     workflowsList,
                 )
-                getPoleWorkflowStatus(_processedWorkflowsData)
+                pollWorkflowStatus(_processedWorkflowsData)
                 setWorkflows(_processedWorkflowsData.workflows)
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
                 // If ci cd is in progress then call the api after every 10sec
-                getPoleWorkflowStatus({cicdInProgress: true, workflows: workflowsList})
+                pollWorkflowStatus({cicdInProgress: true, workflows: workflowsList})
             })
     }
 
