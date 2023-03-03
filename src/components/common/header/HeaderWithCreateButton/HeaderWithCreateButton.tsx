@@ -26,9 +26,11 @@ export default function HeaderWithCreateButton({ headerName }) {
     }
 
     const openCreateDevtronAppModel = () => {
-        const _urlPrefix = `${URLS.APP}/${URLS.APP_LIST}/${
-            params.appType === AppListConstants.AppType.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM
-        }`
+        const canOpenModalWithDevtronApps = params.appType
+            ? params.appType === AppListConstants.AppType.DEVTRON_APPS
+            : serverMode === SERVER_MODE.FULL
+        const _appType = canOpenModalWithDevtronApps ? AppListConstants.AppType.DEVTRON_APPS : URLS.APP_LIST_HELM
+        const _urlPrefix = `${URLS.APP}/${URLS.APP_LIST}/${_appType}`
         history.push(`${_urlPrefix}/${AppListConstants.CREATE_DEVTRON_APP_URL}${location.search}`)
     }
 

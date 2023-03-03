@@ -48,7 +48,7 @@ export default function JobDetails() {
     }
 
     return (
-        <div className="app-details-page">
+        <div className="job-details-page">
             <JobHeader jobName={jobName} />
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
@@ -88,7 +88,7 @@ function JobHeader({ jobName }: { jobName: string }) {
     }
 
     function handleEventClick(event) {
-        trackByGAEvent('App', event.currentTarget.dataset.action)
+        trackByGAEvent('Job', event.currentTarget.dataset.action)
         onClickTabPreventDefault(event, 'active')
     }
 
@@ -190,11 +190,13 @@ function JobHeader({ jobName }: { jobName: string }) {
     }
 
     return (
-        <PageHeader
-            breadCrumbs={renderBreadcrumbs}
-            isBreadcrumbs={true}
-            showTabs={true}
-            renderHeaderTabs={renderAppDetailsTabs}
-        />
+        <div className="app-header-wrapper">
+            <PageHeader
+                breadCrumbs={renderBreadcrumbs}
+                isBreadcrumbs={true}
+                showTabs={true}
+                renderHeaderTabs={renderAppDetailsTabs}
+            />
+        </div>
     )
 }
