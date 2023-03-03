@@ -35,7 +35,7 @@ function ManifestComponent({
     const history = useHistory()
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON)
     const { url } = useRouteMatch()
-    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
+    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string; group: string }>()
     const [manifest, setManifest] = useState('')
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
@@ -76,7 +76,12 @@ function ManifestComponent({
         setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest)
         setLoading(true)
 
-        if (isResourceBrowserView || appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
+        if (
+            isResourceBrowserView ||
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
+            (appDetails.deploymentAppType === DeploymentAppType.argo_cd &&
+            appDetails.deploymentAppDeleteRequest)
+        ) {
             markActiveTab('Live manifest')
         }
         try {
@@ -124,7 +129,7 @@ function ManifestComponent({
         } catch (err) {
             setLoading(false)
         }
-    }, [params.podName, params.node, params.nodeType])
+    }, [params.podName, params.node, params.nodeType, params.group])
 
     useEffect(() => {
         if (!isDeleted && !isEditmode && activeManifestEditorData !== modifiedManifest) {
@@ -291,7 +296,8 @@ function ManifestComponent({
             {!error && (
                 <>
                     <div className="bcn-0">
-                        {(appDetails.appType === AppType.EXTERNAL_HELM_CHART || isResourceBrowserView) && (
+                        {(appDetails.appType === AppType.EXTERNAL_HELM_CHART || isResourceBrowserView ||  (appDetails.deploymentAppType === DeploymentAppType.argo_cd &&
+            appDetails.deploymentAppDeleteRequest)) && (
                             <div className="flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {
                                     return (!showDesiredAndCompareManifest &&
