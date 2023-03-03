@@ -203,16 +203,20 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                     duration={[100, 200]}
                     trigger="mouseenter click"
                 >
-                    <Check className="icon-dim-12 green-tick ml-8 mr-8" />
+                    <span>
+                        <Check className="icon-dim-12 green-tick ml-8 mr-8" />
+                    </span>
                 </Tippy>
             ) : (
-                <Clipboard
-                    className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
-                    onClick={(e) => {
-                        e.stopPropagation()
-                        copyToClipboard(nodeName, () => toggleClipBoard(nodeName))
-                    }}
-                />
+                    <span>
+                        <Clipboard
+                            className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                copyToClipboard(nodeName, () => toggleClipBoard(nodeName))
+                            }}
+                        />
+                    </span>
             )
         }
         return nodes.map((node, index) => {
