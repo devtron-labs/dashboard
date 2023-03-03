@@ -57,7 +57,7 @@ import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { PipelineType } from '../app/details/triggerView/types'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
 import { groupStyle } from '../secrets/secret.utils'
-import { TOAST_INFO } from '../../config/constantMessaging'
+import { DEPLOY_IMAGE_EXTERNALSOURCE,EDIT_DEPLOYMENT_PIPELINE,CREATE_DEPLOYMENT_PIPELINE,MULTI_REQUIRED_FIELDS_MSG,TOAST_INFO } from '../../config/constantMessaging'
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -448,7 +448,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 getConfigMapAndSecrets(this.props.match.params.appId, this.state.pipelineConfig.environmentId)
                     .then((response) => {
                         this.configMapAndSecrets = response.result
-
                         this.setState({ view: ViewType.FORM, errorForm: errorForm })
                     })
                     .catch((error: ServerErrors) => {
@@ -567,13 +566,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)
         this.setState({ errorForm })
         let valid =
-            !!!this.state.pipelineConfig.environmentId &&
+            !!this.state.pipelineConfig.environmentId &&
             this.validationRules.name(this.state.pipelineConfig.name).isValid &&
             !!this.state.pipelineConfig.namespace &&
             !!this.state.pipelineConfig.triggerType &&
             !!(this.state.pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
         if (!this.state.pipelineConfig.name || !this.state.pipelineConfig.namespace) {
-            toast.error('Some required fields are missing')
+            toast.error(MULTI_REQUIRED_FIELDS_MSG)
             return
         }
         if (!valid) {
@@ -751,10 +750,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     renderHeader() {
         const title =
             this.isWebhookCD && this.props.match.params.workflowId === '0'
-                ? 'Deploy image from external source'
+                ? DEPLOY_IMAGE_EXTERNALSOURCE
                 : this.props.match.params.cdPipelineId
-                ? 'Edit deployment pipeline'
-                : 'Create deployment pipeline'
+                ? EDIT_DEPLOYMENT_PIPELINE
+                : CREATE_DEPLOYMENT_PIPELINE
         return (
             <>
                 <div className="p-20 flex flex-align-center flex-justify">
@@ -1401,8 +1400,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <form
                     className={
                         this.props.match.params.cdPipelineId || this.state.isAdvanced
-                            ? `bcn-0`
-                            : `modal__body modal__body__ci_new_ui br-0 modal__body--p-0 bottom-border-radius`
+                            ? "bcn-0"
+                            : "modal__body modal__body__ci_new_ui br-0 modal__body--p-0 bottom-border-radius"
                     }
                     onSubmit={this.savePipeline}
                 >
@@ -1412,17 +1411,16 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         style={{
                             height:
                                 this.props.match.params.cdPipelineId || this.state.isAdvanced
-                                    ? `calc(100vh - 125px)`
-                                    : `auto`,
-
+                                    ? "calc(100vh - 125px)"
+                                    : "auto",
                             maxHeight:
                                 this.props.match.params.cdPipelineId || this.state.isAdvanced
-                                    ? `auto`
-                                    : `calc(100vh - 164px)`,
-                            overflowY: 'scroll',
+                                    ? "auto"
+                                    : "calc(100vh - 164px)",
+                            overflowY: "scroll",
                         }}
                     >
-                        {this.renderCDPipelineBody()}
+                    {this.renderCDPipelineBody()}
                     </div>
 
                     <div
