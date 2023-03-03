@@ -57,7 +57,13 @@ import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { PipelineType } from '../app/details/triggerView/types'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
 import { groupStyle } from '../secrets/secret.utils'
-import { DEPLOY_IMAGE_EXTERNALSOURCE,EDIT_DEPLOYMENT_PIPELINE,CREATE_DEPLOYMENT_PIPELINE,MULTI_REQUIRED_FIELDS_MSG,TOAST_INFO } from '../../config/constantMessaging'
+import {
+    DEPLOY_IMAGE_EXTERNALSOURCE,
+    EDIT_DEPLOYMENT_PIPELINE,
+    CREATE_DEPLOYMENT_PIPELINE,
+    MULTI_REQUIRED_FIELDS_MSG,
+    TOAST_INFO,
+} from '../../config/constantMessaging'
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -126,7 +132,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 parentPipelineId: +parentPipelineId,
                 parentPipelineType: parentPipelineType,
                 deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppType.Helm,
-                deploymentAppCreated: false
+                deploymentAppCreated: false,
             },
             showPreStage: false,
             showDeploymentStage: true,
@@ -412,14 +418,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         newSelection['jsonStr'] = JSON.stringify(this.allStrategies[value], null, 4)
         newSelection['yamlStr'] = yamlJsParser.stringify(this.allStrategies[value], { indent: 2 })
 
-        let { pipelineConfig } = { ...this.state }
+        const { pipelineConfig } = { ...this.state }
         pipelineConfig.strategies.push(newSelection)
         pipelineConfig.strategies = [newSelection]
         this.setState({ pipelineConfig })
     }
 
     selectEnvironment = (selection: Environment): void => {
-        let { pipelineConfig, errorForm } = { ...this.state }
+        const { pipelineConfig, errorForm } = { ...this.state }
 
         if (selection) {
             let list = this.state.environments.map((item) => {
@@ -511,7 +517,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ pipelineConfig, errorForm })
     }
 
-    handleNamespaceChange = (event, environment) => {
+    handleNamespaceChange = (event, environment): void => {
         const { pipelineConfig } = { ...this.state }
         pipelineConfig.namespace = event.target.value
         this.setState({ pipelineConfig })
@@ -580,7 +586,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             return
         }
 
-        
         this.setState({ loadingData: true })
         let pipeline = {
             appWorkflowId: +this.props.match.params.workflowId,
@@ -676,7 +681,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     deleteCD = (force) => {
-        const isPartialDelete = this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps && this.state.pipelineConfig.deploymentAppCreated && !force
+        const isPartialDelete =
+            this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps &&
+            this.state.pipelineConfig.deploymentAppCreated &&
+            !force
         const payload = {
             action: isPartialDelete ? CD_PATCH_ACTION.DEPLOYMENT_PARTIAL_DELETE : CD_PATCH_ACTION.DELETE,
             appId: parseInt(this.props.match.params.appId),
@@ -1400,8 +1408,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <form
                     className={
                         this.props.match.params.cdPipelineId || this.state.isAdvanced
-                            ? "bcn-0"
-                            : "modal__body modal__body__ci_new_ui br-0 modal__body--p-0 bottom-border-radius"
+                            ? 'bcn-0'
+                            : 'modal__body modal__body__ci_new_ui br-0 modal__body--p-0 bottom-border-radius'
                     }
                     onSubmit={this.savePipeline}
                 >
@@ -1411,16 +1419,16 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         style={{
                             height:
                                 this.props.match.params.cdPipelineId || this.state.isAdvanced
-                                    ? "calc(100vh - 125px)"
-                                    : "auto",
+                                    ? 'calc(100vh - 125px)'
+                                    : 'auto',
                             maxHeight:
                                 this.props.match.params.cdPipelineId || this.state.isAdvanced
-                                    ? "auto"
-                                    : "calc(100vh - 164px)",
-                            overflowY: "scroll",
+                                    ? 'auto'
+                                    : 'calc(100vh - 164px)',
+                            overflowY: 'scroll',
                         }}
                     >
-                    {this.renderCDPipelineBody()}
+                        {this.renderCDPipelineBody()}
                     </div>
 
                     <div
