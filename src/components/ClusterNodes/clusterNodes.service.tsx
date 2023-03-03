@@ -1,6 +1,6 @@
 import { Routes } from '../../config'
 import { get, post, put, trash } from '../../services/api'
-import { ResponseType } from '../../services/service.types'
+import { APIOptions, ResponseType } from '../../services/service.types'
 import {
     ClusterCapacityResponse,
     ClusterListResponse,
@@ -11,6 +11,7 @@ import {
     NodeListResponse,
     UpdateNodeRequestBody,
     EditTaintsRequest,
+    TerminalDataType,
 } from './types'
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
@@ -49,11 +50,11 @@ export const updateNodeManifest = (
     return put(`${Routes.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`, nodeData)
 }
 
-export const clusterTerminalStart = (data, option): Promise<ResponseType> => {
+export const clusterTerminalStart = (data: TerminalDataType, option: APIOptions): Promise<ResponseType> => {
     return post(`${Routes.CLUSTER_TERMINAL}/${Routes.START}`, data, option)
 }
 
-export const clusterTerminalUpdate = (data, option): Promise<ResponseType> => {
+export const clusterTerminalUpdate = (data: TerminalDataType, option: APIOptions): Promise<ResponseType> => {
     return put(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE}`, data, option)
 }
 
@@ -61,7 +62,7 @@ export const clusterTerminalDisconnect = (terminalAccessId): Promise<ResponseTyp
     return post(`${Routes.CLUSTER_TERMINAL}/${Routes.DISCONNECT}?terminalAccessId=${terminalAccessId}`, null)
 }
 
-export const clusterDisconnectAndRetry = (data): Promise<ResponseType> => {
+export const clusterDisconnectAndRetry = (data: TerminalDataType): Promise<ResponseType> => {
     return post(`${Routes.CLUSTER_TERMINAL}/${Routes.DISCONNECT_RETRY}`, data)
 }
 
@@ -69,7 +70,7 @@ export const clusterTerminalStop = (terminalAccessId): Promise<ResponseType> => 
     return put(`${Routes.CLUSTER_TERMINAL}/${Routes.STOP}?terminalAccessId=${terminalAccessId}`, null)
 }
 
-export const clusterTerminalTypeUpdate = (data): Promise<ResponseType> => {
+export const clusterTerminalTypeUpdate = (data: TerminalDataType): Promise<ResponseType> => {
     return put(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE_SHELL}`, data)
 }
 

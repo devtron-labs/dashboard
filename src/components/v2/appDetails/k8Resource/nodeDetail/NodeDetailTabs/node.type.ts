@@ -55,3 +55,8 @@ export const POD_LINKS = {
     POD_MANIFEST: 'Check Pod Manifest',
     POD_EVENTS: 'Check Pod Events',
 }
+
+export interface ErrorMessageType {
+    message: string,
+    reason: string
+}

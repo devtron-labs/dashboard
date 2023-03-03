@@ -323,3 +323,9 @@ export const clusterImageSelect = {
         maxWidth: '300px',
     }),
 }
+
+export const NodeSearchOption = [
+    { value: 1, label: 'name', type: 'main' },
+    { value: 2, label: 'label', type: 'main' },
+    { value: 3, label: 'nodeGroup', type: 'main' },
+]

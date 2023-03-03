@@ -22,7 +22,7 @@ export const TERMINAL_STATUS = {
     RUNNING: 'Running', 
 }
 
-export const GA_CONST = {
+export const TERMINAL_RESOURCE_GA = {
     POD: 'POD',
     CONTAINER: 'CONTAINER',
     SHELL: 'SHELL',
@@ -30,19 +30,19 @@ export const GA_CONST = {
 
 export const termialGAEvents = (actionType, terminalViewProps) => {
     switch (actionType) {
-        case GA_CONST.POD:
+        case TERMINAL_RESOURCE_GA.POD:
             return {
                 category: 'Terminal',
                 action: `Selected Pod`,
                 label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
             }
-        case GA_CONST.CONTAINER:
+        case TERMINAL_RESOURCE_GA.CONTAINER:
             return {
                 category: 'Terminal',
                 action: `Selected Container`,
                 label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
             }
-        case GA_CONST.SHELL:
+        case TERMINAL_RESOURCE_GA.SHELL:
             return {
                 category: 'Terminal',
                 action: `Selected Shell`,

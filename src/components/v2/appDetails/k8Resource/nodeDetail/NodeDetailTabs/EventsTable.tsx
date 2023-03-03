@@ -3,7 +3,7 @@ import React from 'react'
 import { MESSAGING_UI } from '../../../../../../config/constants'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { EventTableType } from './node.type'
-import { TERMINAL_TEXT } from './terminal/constants'
+import { TERMINAL_STATUS, TERMINAL_TEXT } from './terminal/constants'
 
 export function EventsTable({ loading, eventsList, isResourceBrowserView, errorValue, reconnect }: EventTableType) {
     const renderEventsTable = () => {
@@ -20,7 +20,7 @@ export function EventsTable({ loading, eventsList, isResourceBrowserView, errorV
             if (eventsList && eventsList.length > 0) {
                 return (
                     <div className="cn-0 ">
-                        {errorValue.status === 'Terminated' && <div className="pl-20 h-24 flex left pr-20 w-100 bcr-7 cn-0">
+                        {errorValue.status === TERMINAL_STATUS.TERMINATED && <div className="pl-20 h-24 flex left pr-20 w-100 bcr-7 cn-0">
                             {TERMINAL_TEXT.POD_TERMINATED}&nbsp; {errorValue.errorReason}&nbsp;
                             <u className="cursor" onClick={reconnect}>
                                  {TERMINAL_TEXT.INITIATE_CONNECTION}

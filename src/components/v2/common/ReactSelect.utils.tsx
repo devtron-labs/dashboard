@@ -205,7 +205,9 @@ export function GroupHeading(props) {
     if (!data.label) return null
     return (
         <components.GroupHeading {...props}>
-            <div className="flex dc__no-text-transform flex-justify h-100">{hideClusterName ? '' : 'Cluster : '} {data.label}</div>
+            <div className="flex dc__no-text-transform flex-justify h-100">
+                {!hideClusterName ? 'Cluster : ' : ''} {data.label}
+            </div>
         </components.GroupHeading>
     )
 }

@@ -5,7 +5,7 @@ import { FitAddon } from 'xterm-addon-fit'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
-import { ERROR_MESSAGE, POD_LINKS, SocketConnectionType, TerminalViewProps } from '../node.type'
+import { ErrorMessageType, ERROR_MESSAGE, POD_LINKS, SocketConnectionType, TerminalViewProps } from '../node.type'
 import { get } from '../../../../../../../services/api'
 import ReactGA from 'react-ga4'
 import IndexStore from '../../../../index.store'
@@ -16,7 +16,7 @@ import { SERVER_MODE } from '../../../../../../../config'
 import { mainContext } from '../../../../../../common/navigation/NavigationRoutes'
 import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
 import './terminal.css'
-import { GA_CONST, termialGAEvents, TERMINAL_STATUS, TERMINAL_TEXT } from './constants'
+import { TERMINAL_RESOURCE_GA, termialGAEvents, TERMINAL_STATUS, TERMINAL_TEXT } from './constants'
 
 let socket = undefined
 let terminal = undefined
@@ -29,18 +29,18 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [popupText, setPopupText] = useState<boolean>(false)
     const isOnline = useOnline()
-    const [errorMessage, setErrorMessage] = useState({message: '', reason: ''})
+    const [errorMessage, setErrorMessage] = useState<ErrorMessageType>({message: '', reason: ''})
     const socketConnectionRef = useRef<SocketConnectionType>(terminalViewProps.socketConnection)
     const { serverMode } = useContext(mainContext)
     const autoSelectNodeRef = useRef('')
-    const prevNode = useRef('')
-    const currNode = useRef('')
+    const prevNodeRef = useRef('')
+    const currNodeRef = useRef('')
    
     const resizeSocket = () => {
         if (terminal && fitAddon && terminalViewProps.isTerminalTab) {
             const dim = fitAddon.proposeDimensions()
-            if (dim && socket) {
-                socket.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
+            if (dim && socket?.readyState === WebSocket.OPEN) {
+                socket?.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
             }
             fitAddon.fit()
         }
@@ -141,7 +141,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         _socket.onopen = function () {
             if (terminalViewProps.isClusterTerminal) {
-                preFetchData(CLUSTER_STATUS.RUNNING, 'Succeded')
+                preFetchData(CLUSTER_STATUS.RUNNING, TERMINAL_STATUS.SUCCEDED)
             }
             const startData = { Op: 'bind', SessionID: sessionId }
             _socket.send(JSON.stringify(startData))
@@ -207,17 +207,17 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         _terminal?.reset()
 
-        if(prevNode.current === TERMINAL_STATUS.AUTO_SELECT_NODE){
+        if(prevNodeRef.current === TERMINAL_STATUS.AUTO_SELECT_NODE){
             _terminal.write('Selecting a node')
-            if(currNode.current){
-                _terminal.write(` > ${currNode.current} selected`)
+            if(currNodeRef.current){
+                _terminal.write(` > ${currNodeRef.current} selected`)
                 _terminal.writeln('')
             }else {
                 _terminal.write('...')
             }
         }
 
-        if(prevNode.current !== TERMINAL_STATUS.AUTO_SELECT_NODE || currNode.current){
+        if(prevNodeRef.current !== TERMINAL_STATUS.AUTO_SELECT_NODE || currNodeRef.current){
             if(terminalViewProps.isShellSwitched){
                 startingText = TERMINAL_STATUS.SHELL
             }
@@ -270,24 +270,24 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (terminalViewProps.socketConnection === SocketConnectionType.CONNECTING) {
             setErrorMessage({message: '', reason: ''})
             autoSelectNodeRef.current = terminalViewProps.terminalId
-            prevNode.current = terminalViewProps.nodeName
-            currNode.current = ''
+            prevNodeRef.current = terminalViewProps.nodeName
+            currNodeRef.current = ''
             getNewSession()
         }
     }, [terminalViewProps.socketConnection, terminalViewProps.terminalId])
 
     useEffect(() => {
-        ReactGA.event(termialGAEvents(GA_CONST.POD,terminalViewProps))
+        ReactGA.event(termialGAEvents(TERMINAL_RESOURCE_GA.POD,terminalViewProps))
         reconnect()
     }, [terminalViewProps.nodeName])
 
     useEffect(() => {
-        ReactGA.event(termialGAEvents(GA_CONST.CONTAINER,terminalViewProps))
+        ReactGA.event(termialGAEvents(TERMINAL_RESOURCE_GA.CONTAINER,terminalViewProps))
         reconnect()
     }, [terminalViewProps.containerName])
 
     useEffect(() => {
-        ReactGA.event(termialGAEvents(GA_CONST.SHELL,terminalViewProps))
+        ReactGA.event(termialGAEvents(TERMINAL_RESOURCE_GA.SHELL,terminalViewProps))
         reconnect()
     }, [terminalViewProps.shell])
 
@@ -401,7 +401,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     }
                     if (socketConnectionRef.current === SocketConnectionType.CONNECTING) {
                         postInitialize(sessionId)
-                        currNode.current = _nodeName
+                        currNodeRef.current = _nodeName
                         preFetchData(status)
                     }
                 } else {

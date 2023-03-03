@@ -250,3 +250,13 @@ export interface ClusterEventsType {
     terminalAccessId: number
     reconnectStart?: () => void
 }
+
+export interface TerminalDataType {
+    id?: number
+    clusterId: number
+    baseImage: string
+    shellName: string
+    nodeName: string
+    namespace: string
+    terminalAccessId?: number
+}

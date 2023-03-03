@@ -7,6 +7,7 @@ import ReactSelect, { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
 import { ColumnMetadataType, NodeListSearchFliterType } from './types'
 import ColumnSelector from './ColumnSelector'
+import { NodeSearchOption } from './constants'
 
 const ColumnFilterContext = React.createContext(null)
 
@@ -144,7 +145,7 @@ export default function NodeListSearchFliter({
                             />
                         </>
                     ) : (
-                        <span>Search nodes by name or labels</span>
+                        <span>Search nodes by name, labels or node group</span>
                     )}
                 </div>
                 {openFilterPopup && (
@@ -153,11 +154,7 @@ export default function NodeListSearchFliter({
                         {!selectedSearchTextType && (
                             <div className="search-popup w-100 bcn-0 dc__position-abs  br-4 en-2 bw-1">
                                 <div className="search-title pt-4 pb-4 pl-10 pr-10">Search by</div>
-                                {[
-                                    { value: 1, label: 'name', type: 'main' },
-                                    { value: 2, label: 'label', type: 'main' },
-                                    { value: 3, label: 'nodeGroup', type: 'main' },
-                                ].map((o) => {
+                                {NodeSearchOption.map((o) => {
                                     return (
                                         <div
                                             className="pt-8 pb-8 pl-10 pr-10 hover-class pointer"
