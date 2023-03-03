@@ -36,6 +36,7 @@ import {
     CLUSTER_STATUS,
     CLUSTER_TERMINAL_MESSAGING,
     IMAGE_LIST,
+    nodeSelect,
     SELECT_TITLE,
 } from './constants'
 import { OptionType } from '../userGroups/userGroups.types'
@@ -485,29 +486,7 @@ export default function ClusterTerminal({
                                     defaultValue={selectedNodeName}
                                     value={selectedNodeName}
                                     onChange={onChangeNodes}
-                                    styles={{
-                                        ...clusterSelectStyle,
-                                        group: (base) => ({
-                                            ...base,
-                                            paddingTop: 0,
-                                            paddingBottom: 0,
-                                        }),
-                                        menu: (base) => ({
-                                            ...base,
-                                            zIndex: 9999,
-                                            width: '300px',
-                                        }),
-                                        groupHeading: (base) => ({
-                                            ...base,
-                                            fontWeight: 600,
-                                            fontSize: '12px',
-                                            textTransform: 'lowercase',
-                                            height: '28px',
-                                            color: 'var(--N900)',
-                                            backgroundColor: 'var(--N100)',
-                                            marginBottom: 0,
-                                        }),
-                                    }}
+                                    styles={nodeSelect}
                                     components={{
                                         IndicatorSeparator: null,
                                         GroupHeading: groupHeading,

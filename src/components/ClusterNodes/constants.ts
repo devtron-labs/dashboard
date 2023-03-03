@@ -324,8 +324,39 @@ export const clusterImageSelect = {
     }),
 }
 
+export const SEARCH_OPTION_LABEL = {
+    NAME: 'name',
+    LABEL: 'label',
+    NODE_GROUP: 'nodeGroup',
+    NODE_GROUP_TEXT: 'node group',
+}
+
 export const NodeSearchOption = [
-    { value: 1, label: 'name', type: 'main' },
-    { value: 2, label: 'label', type: 'main' },
-    { value: 3, label: 'nodeGroup', type: 'main' },
+    { value: 1, label: SEARCH_OPTION_LABEL.NAME, type: 'main' },
+    { value: 2, label: SEARCH_OPTION_LABEL.LABEL, type: 'main' },
+    { value: 3, label: SEARCH_OPTION_LABEL.NODE_GROUP, type: 'main' },
 ]
+
+export const nodeSelect = {
+    ...clusterSelectStyle,
+    group: (base) => ({
+        ...base,
+        paddingTop: 0,
+        paddingBottom: 0,
+    }),
+    menu: (base) => ({
+        ...base,
+        zIndex: 9999,
+        width: '300px',
+    }),
+    groupHeading: (base) => ({
+        ...base,
+        fontWeight: 600,
+        fontSize: '12px',
+        textTransform: 'lowercase',
+        height: '28px',
+        color: 'var(--N900)',
+        backgroundColor: 'var(--N100)',
+        marginBottom: 0,
+    }),
+}

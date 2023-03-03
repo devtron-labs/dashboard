@@ -7,7 +7,7 @@ import ReactSelect, { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
 import { ColumnMetadataType, NodeListSearchFliterType } from './types'
 import ColumnSelector from './ColumnSelector'
-import { NodeSearchOption } from './constants'
+import { NodeSearchOption, SEARCH_OPTION_LABEL } from './constants'
 
 const ColumnFilterContext = React.createContext(null)
 
@@ -76,7 +76,7 @@ export default function NodeListSearchFliter({
                 if (!currentItem) {
                     continue
                 }
-                if (selectedSearchTextType === 'label') {
+                if (selectedSearchTextType === SEARCH_OPTION_LABEL.LABEL) {
                     const element = currentItem.split('=')
                     const key = element[0] ? element[0].trim() : null
                     if (!key) {
@@ -113,14 +113,14 @@ export default function NodeListSearchFliter({
     }
     const renderTextFilter = (): JSX.Element => {
         let placeholderText = ''
-        if(selectedSearchTextType === 'name'){
+        if (selectedSearchTextType === SEARCH_OPTION_LABEL.NAME) {
             placeholderText = 'Search by node name Eg. ip-172-31-2-152.us-east-2.compute.internal'
-        } else if (selectedSearchTextType === 'label'){
+        } else if (selectedSearchTextType === SEARCH_OPTION_LABEL.LABEL) {
             placeholderText = 'Search by key=value Eg. environment=production, tier=frontend'
         } else {
             placeholderText = 'Search by node group name Eg. mainnode'
         }
-        
+
         return (
             <div className="dc__position-rel" style={{ background: 'var(--N50)' }}>
                 <div
@@ -131,7 +131,10 @@ export default function NodeListSearchFliter({
                     {selectedSearchTextType ? (
                         <>
                             <span className="dc__position-rel bottom-2px">
-                                {selectedSearchTextType === 'nodeGroup' ? 'node group' : selectedSearchTextType}:
+                                {selectedSearchTextType === SEARCH_OPTION_LABEL.NODE_GROUP
+                                    ? SEARCH_OPTION_LABEL.NODE_GROUP_TEXT
+                                    : selectedSearchTextType}
+                                :
                             </span>
                             <input
                                 autoComplete="off"
@@ -163,7 +166,9 @@ export default function NodeListSearchFliter({
                                                 selectFilterType(o)
                                             }}
                                         >
-                                            {o.label === 'nodeGroup' ? 'node group' : o.label}
+                                            {o.label === SEARCH_OPTION_LABEL.NODE_GROUP
+                                                ? SEARCH_OPTION_LABEL.NODE_GROUP_TEXT
+                                                : o.label}
                                         </div>
                                     )
                                 })}
