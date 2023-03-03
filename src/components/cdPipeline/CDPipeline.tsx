@@ -572,12 +572,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)
         this.setState({ errorForm })
         let valid =
-            !!this.state.pipelineConfig.environmentId &&
-            this.validationRules.name(this.state.pipelineConfig.name).isValid &&
-            !!this.state.pipelineConfig.namespace &&
-            !!this.state.pipelineConfig.triggerType &&
-            !!(this.state.pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
-        if (!this.state.pipelineConfig.name || !this.state.pipelineConfig.namespace) {
+            !!pipelineConfig.environmentId &&
+            errorForm.pipelineNameError.isValid &&
+            !!pipelineConfig.namespace &&
+            !!pipelineConfig.triggerType &&
+            !!(pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
+        if (!pipelineConfig.name || !pipelineConfig.namespace) {
             toast.error(MULTI_REQUIRED_FIELDS_MSG)
             return
         }

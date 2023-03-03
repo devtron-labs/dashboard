@@ -1,6 +1,11 @@
-import { PATTERNS } from '../../config';
+import { PATTERNS } from '../../config'
 import { RefVariableType } from './types'
-import { CHARACTER_ERROR_MIN,CHARACTER_ERROR_MAX,REQUIRED_FIELD_MSG,ERROR_MESSAGE_FOR_VALIDATION } from '../../config/constantMessaging';
+import {
+    CHARACTER_ERROR_MIN,
+    CHARACTER_ERROR_MAX,
+    REQUIRED_FIELD_MSG,
+    ERROR_MESSAGE_FOR_VALIDATION,
+} from '../../config/constantMessaging'
 
 export class ValidationRules {
     name = (value: string): { message: string | null; isValid: boolean } => {
