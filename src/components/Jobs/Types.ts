@@ -1,26 +1,5 @@
 import { RouteComponentProps } from 'react-router-dom'
 import { ServerError } from '../../modals/commonTypes'
-import { TagType } from '../app/types'
-
-interface FormType {
-    jobId: number
-    projectId: number
-    jobName: string
-    description: string
-    cloneId: number
-    jobCreationType: string
-}
-
-interface ProjectType {
-    id: number
-    name: string
-}
-
-interface ValidationType {
-    projectId: boolean
-    jobName: boolean
-    cloneJobId: boolean
-}
 
 export enum JobListStateActionTypes {
     view = 'view',
@@ -80,7 +59,6 @@ export interface JobListState {
 export interface ExpandedRowProps {
     job: Job
     handleEdit: (jobId: number) => void
-    redirect: (job: Job) => string
     close: (e: any) => void
     isArgoInstalled: boolean
 }
@@ -102,12 +80,11 @@ export interface JobListViewProps extends JobListState, RouteComponentProps<{}> 
     expandRow: (id: number | null) => void
     closeExpandedRow: (id: number | null) => void
     sort: (key: string) => void
-    handleEditApp: (jobId: number) => void
-    redirectToAppDetails: (job: Job) => string
+    handleEditJob: (jobId: number) => void
     clearAll: () => void
     changePage: (pageNo: number) => void
     changePageSize: (size: number) => void
-    appListCount: number
+    jobListCount: number
     isSuperAdmin: boolean
     openJobCreateModel: (e) => void
     toggleExpandAllRow: () => void

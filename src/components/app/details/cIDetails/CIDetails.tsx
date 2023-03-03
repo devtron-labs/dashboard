@@ -70,11 +70,11 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     }, [triggerHistoryResult])
 
     useEffect(() => {
-      return () => {
-          setTriggerHistory(new Map())
-          setHasMoreLoading(false)
-      }
-  }, [pipelineId])
+        return () => {
+            setTriggerHistory(new Map())
+            setHasMoreLoading(false)
+        }
+    }, [pipelineId])
 
     function synchroniseState(triggerId: number, triggerDetails: History) {
         if (triggerId === triggerDetails.id) {
@@ -105,8 +105,8 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     const pipelines: CIPipeline[] = (initDataResults[0]?.['value']?.['result'] || [])?.filter(
         (pipeline) => pipeline.pipelineType !== 'EXTERNAL',
     ) // external pipelines not visible in dropdown
-    if(pipelines.length ===1 && !pipelineId){
-      replace(generatePath(path, { appId, pipelineId: pipelines[0].id }))
+    if (pipelines.length === 1 && !pipelineId) {
+        replace(generatePath(path, { appId, pipelineId: pipelines[0].id }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelines || []).map((item) => {
         return { value: `${item.id}`, label: item.name, pipelineId: item.id }
@@ -348,7 +348,11 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView }: His
                     </Route>
                 )}
                 <Redirect
-                    to={triggerDetails.status.toLowerCase() === 'succeeded' ? `${path}/artifacts` : `${path}/logs`}
+                    to={
+                        !isJobView && triggerDetails.status.toLowerCase() === 'succeeded'
+                            ? `${path}/artifacts`
+                            : `${path}/logs`
+                    }
                 />
             </Switch>
         </div>

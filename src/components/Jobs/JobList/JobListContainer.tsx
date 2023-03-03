@@ -135,17 +135,13 @@ export default function JobListContainer({
         })
     }
 
-    const handleEditApp = (jobId: number): void => {
+    const handleEditJob = (jobId: number): void => {
         history.push(`/job/${jobId}/edit`)
-    }
-
-    const redirectToAppDetails = (job: Job): string => {
-        return `/job/${job.id}/overview`
     }
 
     return (
         <>
-            {state.view !== JobListViewType.EMPTY && (
+            {state.view !== JobListViewType.EMPTY && state.view !== JobListViewType.ERROR && (
                 <>
                     {renderMasterFilters()}
                     {renderAppliedFilters()}
@@ -159,13 +155,12 @@ export default function JobListContainer({
                 expandRow={expandRow}
                 closeExpandedRow={closeExpandedRow}
                 sort={sortJobList}
-                redirectToAppDetails={redirectToAppDetails}
-                handleEditApp={handleEditApp}
+                handleEditJob={handleEditJob}
                 clearAll={clearAllFilters}
                 changePage={changePage}
                 changePageSize={changePageSize}
                 isSuperAdmin={isSuperAdmin}
-                appListCount={jobListCount}
+                jobListCount={jobListCount}
                 openJobCreateModel={openJobCreateModel}
                 toggleExpandAllRow={toggleExpandAllRow}
                 isArgoInstalled={isArgoInstalled}
