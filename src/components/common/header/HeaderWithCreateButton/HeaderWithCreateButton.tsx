@@ -27,7 +27,7 @@ export default function HeaderWithCreateButton({ headerName }) {
 
     const openCreateDevtronAppModel = () => {
         const _urlPrefix = `${URLS.APP}/${URLS.APP_LIST}/${
-            params.appType === AppListConstants.AppType.DEVTRON_APPS ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM
+            serverMode === SERVER_MODE.FULL ? URLS.APP_LIST_DEVTRON : URLS.APP_LIST_HELM
         }`
         history.push(`${_urlPrefix}/${AppListConstants.CREATE_DEVTRON_APP_URL}${location.search}`)
     }
