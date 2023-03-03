@@ -98,10 +98,11 @@ function ManifestComponent({
                     getDesiredManifestResource(appDetails, params.podName, params.nodeType),
             ])
                 .then((response) => {
-                    let _manifest
+                    let _manifest: string
                     if (
                         appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
                         appDetails.appType === AppType.DEVTRON_APP ||
+                        appDetails.appType === AppType.DEVTRON_HELM_CHART ||
                         appDetails.deploymentAppType === DeploymentAppType.helm ||
                         isResourceBrowserView
                     ) {
