@@ -388,6 +388,7 @@ export default function CIPipeline({
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
 
         // Reset allow override flag to false if config matches with global
+        
         if (!ciPipeline.isDockerConfigOverridden && !isDockerConfigOverridden) {
             formData.isDockerConfigOverridden = false
             formData.dockerConfigOverride = {} as DockerConfigOverrideType
