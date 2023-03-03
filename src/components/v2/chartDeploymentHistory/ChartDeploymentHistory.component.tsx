@@ -314,7 +314,7 @@ function ChartDeploymentHistory({
             return (
                 <div className='flex h-100'>
                     <CDEmptyState
-                        subtitle={ERROR_EMPTY_SCREEN(deploymentTabs[selectedDeploymentTabIndex])}
+                        subtitle={`${deploymentTabs[selectedDeploymentTabIndex]} ${ERROR_EMPTY_SCREEN.TAB_NOT_AVAILABLE_POSTFIX}`}
                     />
                 </div>
             )
