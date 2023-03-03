@@ -26,6 +26,7 @@ import {
     RollbackReleaseRequest,
 } from './chartDeploymentHistory.service'
 import IndexStore from '../appDetails/index.store'
+import { ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
     loading?: boolean
@@ -112,9 +113,6 @@ function ChartDeploymentHistory({
         }
 
         setSelectedDeploymentHistoryIndex(index)
-
-        // Resetting the deployment tab selection, loading & error states on version change.
-        // setSelectedDeploymentTabIndex(0)
     }
 
     async function checkAndFetchDeploymentDetail(
@@ -316,7 +314,7 @@ function ChartDeploymentHistory({
             return (
                 <div className='flex h-100'>
                     <CDEmptyState
-                        subtitle={`${deploymentTabs[selectedDeploymentTabIndex]} is not available for this deployment`}
+                        subtitle={ERROR_EMPTY_SCREEN(deploymentTabs[selectedDeploymentTabIndex])}
                     />
                 </div>
             )

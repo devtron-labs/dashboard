@@ -58,3 +58,5 @@ export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
     linkText: 'Go to SSO login services',
     redirectLink: '/global-config/login-service',
 }
+
+export const ERROR_EMPTY_SCREEN = (selectedDeploymentTab: string):string => `${selectedDeploymentTab} is not available for this deployment`
