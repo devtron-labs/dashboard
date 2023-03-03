@@ -38,7 +38,7 @@ export interface K8SObjectBaseType {
     isExpanded: boolean
 }
 
-export interface K8SObjectType extends K8SObjectBaseType{
+export interface K8SObjectType extends K8SObjectBaseType {
     child: ApiResourceGroupType[]
 }
 
@@ -102,10 +102,11 @@ export interface CreateResourceType {
 
 export interface SidebarType {
     k8SObjectMap: Map<string, K8SObjectMapType>
-    handleGroupHeadingClick: (e) => void
+    handleGroupHeadingClick: (e: any, preventCollapse?: boolean) => void
     selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
     updateResourceSelectionData: (_selected: ApiResourceGroupType) => void
+    isCreateModalOpen: boolean
 }
 
 export interface ResourceFilterOptionsProps {
@@ -126,6 +127,7 @@ export interface ResourceFilterOptionsProps {
     clearSearch: () => void
     isNamespaceSelectDisabled?: boolean
     isSearchInputDisabled?: boolean
+    isCreateModalOpen?: boolean
 }
 
 export interface K8SResourceListType extends ResourceFilterOptionsProps {
@@ -134,14 +136,22 @@ export interface K8SResourceListType extends ResourceFilterOptionsProps {
     resourceListLoader: boolean
     getResourceListData: () => Promise<void>
     updateNodeSelectionData: (_selected: Record<string, any>) => void
+    isCreateModalOpen: boolean
+    addTab: (
+        idPrefix: string,
+        kind: string,
+        name: string,
+        url: string,
+        positionFixed?: boolean,
+        iconPath?: string,
+    ) => boolean
 }
 
 export interface ResourceBrowserActionMenuType {
     clusterId: string
-    namespace: string
     resourceData: Record<string, any>
     selectedResource: ApiResourceGroupType
-    getResourceListData: () => Promise<void>
+    getResourceListData: (retainSearched?: boolean) => Promise<void>
     handleResourceClick: (e: any) => void
 }
 
@@ -176,4 +186,15 @@ export interface ConnectingToClusterStateProps extends ResourceFilterOptionsProp
         prev: AbortController
         new: AbortController
     }
+}
+
+export interface K8sObjectOptionType extends OptionType {
+    dataset: {
+        group: string
+        version: string
+        kind: string
+        namespaced: string
+        grouped: string
+    }
+    groupName: string
 }

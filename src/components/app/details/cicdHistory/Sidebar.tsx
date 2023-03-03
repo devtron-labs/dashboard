@@ -20,16 +20,24 @@ import { statusColor as colorMap } from '../../config'
 import { ReactComponent as Docker } from '../../../../assets/icons/misc/docker.svg'
 import ReactGA from 'react-ga4'
 import DetectBottom from '../../../common/DetectBottom'
-import { FILTER_STYLE } from './Constants'
+import { FILTER_STYLE, HISTORY_LABEL } from './Constants'
 import { triggerStatus } from './History.components'
+
 const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setPagination }: SidebarType) => {
     const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
     const { push } = useHistory()
     const { path } = useRouteMatch()
+
     const handleFilterChange = (selectedFilter: CICDSidebarFilterOptionType): void => {
         if (type === HistoryComponentType.CI) {
             setPagination({ offset: 0, size: 20 })
             push(generatePath(path, { appId, pipelineId: selectedFilter.value }))
+        } else if (type === HistoryComponentType.GROUP_CI) {
+            setPagination({ offset: 0, size: 20 })
+            push(generatePath(path, { envId, pipelineId: selectedFilter.pipelineId }))
+        } else if (type === HistoryComponentType.GROUP_CD) {
+            setPagination({ offset: 0, size: 20 })
+            push(generatePath(path, { envId, appId: selectedFilter.value, pipelineId: selectedFilter.pipelineId }))
         } else {
             setPagination({ offset: 0, size: 20 })
             push(generatePath(path, { appId, envId: selectedFilter.value, pipelineId: selectedFilter.pipelineId }))
@@ -44,19 +52,42 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
         })
         setPagination({ offset: triggerHistory.size, size: 20 })
     }
-    const selectedFilter = filterOptions?.find(
-        (filterOption) => filterOption.value === (type === HistoryComponentType.CI ? pipelineId : envId),
-    )
+
+    const filterOptionType = () => {
+        if (type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI) {
+            return pipelineId
+        } else if (type === HistoryComponentType.GROUP_CD) {
+            return appId
+        } else {
+            return envId
+        }
+    }
+
+    const selectedFilter = filterOptions?.find((filterOption) => filterOption.value === filterOptionType()) ?? null
+
+    const _filterOptions = filterOptions?.filter((filterOption) => !filterOption.deploymentAppDeleteRequest)
+
+    const selectLabel = () => {
+        if (type === HistoryComponentType.GROUP_CI || type === HistoryComponentType.GROUP_CD) {
+            return HISTORY_LABEL.APPLICATION
+        } else if (type === HistoryComponentType.CI) {
+            return HISTORY_LABEL.PIPELINE
+        } else {
+            return HISTORY_LABEL.ENVIRONMENT
+        }
+    }
+
     return (
         <>
             <div className="select-pipeline-wrapper w-100 pl-16 pr-16 dc__overflow-hidden">
-                <label className="form__label">
-                    Select {type === HistoryComponentType.CI ? 'Pipeline' : 'Environment'}
-                </label>
+                <label className="form__label">Select {selectLabel()}</label>
                 <ReactSelect
                     value={selectedFilter}
-                    options={filterOptions}
-                    isSearchable={false}
+                    options={
+                        type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI
+                            ? filterOptions
+                            : _filterOptions
+                    }
                     onChange={handleFilterChange}
                     components={{
                         IndicatorSeparator: null,
@@ -106,17 +137,19 @@ const HistorySummaryCard = React.memo(
         type,
         stage,
     }: HistorySummaryCardType): JSX.Element => {
-        const { path, url } = useRouteMatch()
+        const { path } = useRouteMatch()
         const { pathname } = useLocation()
         const currentTab = pathname.split('/').pop()
-        const { triggerId, ...rest } = useParams<{ triggerId: string }>()
+        const { triggerId, envId, ...rest } = useParams<{ triggerId: string; envId: string }>()
+        const isCDType: boolean = (type === HistoryComponentType.CD || type === HistoryComponentType.GROUP_CD)
 
         const getPath = (): string => {
-            if (type === HistoryComponentType.CD) {
-                return generatePath(path, { ...rest, triggerId: id }) + '/' + currentTab
-            } else {
-                return generatePath(path, { ...rest, buildId: id }) + '/' + currentTab
+            const _params = {
+                ...rest,
+                envId,
+                [isCDType ? 'triggerId' : 'buildId']: id,
             }
+            return `${generatePath(path, _params)}/${currentTab}`
         }
 
         return (
@@ -151,7 +184,7 @@ const HistorySummaryCard = React.memo(
                         <div className="flex column left dc__ellipsis-right">
                             <div className="cn-9 fs-14">{moment(startedOn).format(Moment12HourFormat)}</div>
                             <div className="flex left cn-7 fs-12">
-                                {type === HistoryComponentType.CD && (
+                                {isCDType && (
                                     <>
                                         <div className="dc__capitalize">
                                             {['pre', 'post'].includes(stage?.toLowerCase()) ? `${stage}-deploy` : stage}
