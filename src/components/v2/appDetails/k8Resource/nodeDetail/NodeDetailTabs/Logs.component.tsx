@@ -26,6 +26,7 @@ import { replaceLastOddBackslash } from '../../../../../../util/Util'
 import {
     flatContainers,
     getFirstOrNull,
+    getGroupedContainerOptions,
     getInitialPodContainerSelection,
     getPodContainerOptions,
     getSelectedPodList,
@@ -430,10 +431,8 @@ function LogsComponent({
                                 <div style={{ width: '150px' }}>
                                     <Select
                                         placeholder="Select Containers"
-                                        options={podContainerOptions.containerOptions.map((_container) => ({
-                                            label: _container.name,
-                                            value: _container.name,
-                                        }))}
+                                        classNamePrefix="containers-select"
+                                        options={getGroupedContainerOptions(podContainerOptions.containerOptions)}
                                         value={getFirstOrNull(
                                             podContainerOptions.containerOptions
                                                 .filter((_container) => _container.selected)
@@ -448,6 +447,10 @@ function LogsComponent({
                                         styles={{
                                             ...multiSelectStyles,
                                             menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+                                            menuList: (base) => ({
+                                                ...base,
+                                                paddingTop: 0,
+                                            }),
                                             control: (base, state) => ({
                                                 ...base,
                                                 borderColor: 'transparent',
