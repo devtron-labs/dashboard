@@ -19,8 +19,8 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
     const paramObj = {
         envName: params.get('search'),
         clusterIds: params.get('cluster'),
-        offset: params.get('offset'),
-        size: params.get('pageSize'),
+        offset: params.get('offset') || '0',
+        size: params.get('pageSize') || '20',
     }
     const [paramsData, setParamsData] = useState(paramObj)
     const [loading, appList] = useAsync(() => getEnvAppList(paramsData), [paramsData])
