@@ -4,15 +4,14 @@ import { CHARACTER_ERROR_MIN,CHARACTER_ERROR_MAX,REQUIRED_FIELD_MSG,ERROR_MESSAG
 
 export class ValidationRules {
     name = (value: string): { message: string | null; isValid: boolean } => {
-        let regExp = new RegExp(PATTERNS.APP_NAME)
+        const regExp = new RegExp(PATTERNS.APP_NAME)
         if (value.length === 0) return { isValid: false, message: REQUIRED_FIELD_MSG }
         if (value.length < 2) return { isValid: false, message: CHARACTER_ERROR_MIN }
         if (value.length > 50) return { isValid: false, message: CHARACTER_ERROR_MAX }
         else if (!regExp.test(value))
             return {
                 isValid: false,
-                message:
-                ERROR_MESSAGE_FOR_VALIDATION
+                message: ERROR_MESSAGE_FOR_VALIDATION,
             }
         else return { isValid: true, message: '' }
     }

@@ -378,14 +378,13 @@ export default function CIPipeline({
             !formDataErrorObj.postBuildStage.isValid
         ) {
             setLoadingData(false)
-            let branchNameNotPresent = formData.materials.some((_mat) => !_mat.value)
+            const branchNameNotPresent = formData.materials.some((_mat) => !_mat.value)
             if (formData.name === '' || branchNameNotPresent) {
                 toast.error(MULTI_REQUIRED_FIELDS_MSG)
             }
             return
         }
               
-        
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
 
         // Reset allow override flag to false if config matches with global
