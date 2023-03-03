@@ -25,7 +25,7 @@ import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from './cluster.type'
-import { useHistory, RouteComponentProps } from 'react-router'
+import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, ModuleNameMap, CLUSTER_COMMAND } from '../../config'
 import { getEnvName } from './cluster.util'
