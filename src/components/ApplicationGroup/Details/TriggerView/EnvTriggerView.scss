@@ -10,6 +10,15 @@
     }
 }
 
+.app-group-trigger-view-container {
+    .app-group-checkbox {
+        .form__checkbox-label {
+            margin-left: 16px;
+            font-weight: 600;
+        }
+    }
+}
+
 .bulk-ci-trigger-container {
     .bulk-ci-trigger {
         display: grid;
