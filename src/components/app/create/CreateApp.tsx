@@ -162,15 +162,15 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             teamId: this.state.form.projectId,
             templateId: this.state.form.cloneId,
             labels: labelTags,
-            isJob: this.props.isJobCreateView,
+            isJob: this.props.isJobView,
         }
 
-        if (this.props.isJobCreateView) {
+        if (this.props.isJobView) {
             request['description'] = this.state.form.description
         }
 
         this.setState({ disableForm: true })
-        const createAPI = this.props.isJobCreateView ? createJob : createApp
+        const createAPI = this.props.isJobView ? createJob : createApp
         createAPI(request)
             .then((response) => {
                 if (response.result) {
@@ -193,7 +193,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         () => {
                             toast.success(
                                 `Your ${
-                                    this.props.isJobCreateView ? 'job' : 'application'
+                                    this.props.isJobView ? 'job' : 'application'
                                 } is created. Go ahead and set it up.`,
                             )
                             this.redirectToArtifacts(this.state.form.appId)
@@ -215,7 +215,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     redirectToArtifacts(appId): void {
-        const url = getAppComposeURL(appId, APP_COMPOSE_STAGE.SOURCE_CONFIG, this.props.isJobCreateView)
+        const url = getAppComposeURL(appId, APP_COMPOSE_STAGE.SOURCE_CONFIG, this.props.isJobView)
         this.props.history.push(url)
     }
 
@@ -261,7 +261,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">
-                    Create {this.props.isJobCreateView ? 'job' : 'application'}
+                    Create {this.props.isJobView ? 'job' : 'application'}
                 </h2>
                 <button type="button" className="dc__transparent flex icon-dim-24" onClick={this.props.close}>
                     <Close className="icon-dim-24" />
@@ -270,7 +270,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         )
     }
 
-    loadAppListOptions = (inputValue: string) => appListOptions(inputValue, this.props.isJobCreateView)
+    loadAppListOptions = (inputValue: string) => appListOptions(inputValue, this.props.isJobView)
 
     renderBodySection = (): JSX.Element => {
         let errorObject = [
@@ -283,16 +283,14 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         return (
             <div className="scrollable-content p-20">
                 <div className="form__row">
-                    <span className="form__label dc__required-field">
-                        {this.props.isJobCreateView ? 'Job' : 'App'} Name
-                    </span>
+                    <span className="form__label dc__required-field">{this.props.isJobView ? 'Job' : 'App'} Name</span>
                     <input
                         ref={(node) => (this._inputAppName = node)}
                         className="form__input"
                         type="text"
                         name="app-name"
                         value={this.state.form.appName}
-                        placeholder={`e.g. my-first-${this.props.isJobCreateView ? 'job' : 'app'}`}
+                        placeholder={`e.g. my-first-${this.props.isJobView ? 'job' : 'app'}`}
                         autoComplete="off"
                         autoFocus={true}
                         tabIndex={1}
@@ -307,18 +305,18 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             </>
                         ) : null}
                     </span>
-                    {!this.props.isJobCreateView && (
+                    {!this.props.isJobView && (
                         <span className="form__text-field-info form__text-field-info--create-app">
                             <Info className="form__icon form__icon--info form__icon--create-app" />
                             Apps are NOT env specific and can be used to deploy to multiple environments.
                         </span>
                     )}
-                    {this.props.isJobCreateView && (
+                    {this.props.isJobView && (
                         <>
                             <span className="form__label">Description</span>
                             <textarea
                                 className="form__textarea"
-                                name="app-name"
+                                name="job-description"
                                 value={this.state.form.description}
                                 placeholder="Describe this job"
                                 tabIndex={2}
@@ -339,14 +337,16 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     >
                         <RadioGroupItem value={AppCreationType.Blank}>Create from scratch</RadioGroupItem>
                         <RadioGroupItem value={AppCreationType.Existing}>
-                            Clone existing {this.props.isJobCreateView ? 'job' : 'application'}
+                            Clone existing {this.props.isJobView ? 'job' : 'application'}
                         </RadioGroupItem>
                     </RadioGroup>
                 </div>
                 {this.state.form.appCreationType === AppCreationType.Existing && (
                     <>
                         <div className="form__row clone-apps dc__inline-block">
-                            <span className="form__label dc__required-field">Select an app to clone</span>
+                            <span className="form__label dc__required-field">
+                                Select an {this.props.isJobView ? 'job' : 'app'} to clone
+                            </span>
                             <AsyncSelect
                                 loadOptions={this.loadAppListOptions}
                                 noOptionsMessage={noOptionsMessage}
@@ -357,7 +357,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                     LoadingIndicator: null,
                                     Option,
                                 }}
-                                placeholder="Select app"
+                                placeholder={`Select ${this.props.isJobView ? 'job' : 'app'}`}
                                 tabIndex={3}
                             />
                             <span className="form__error">
@@ -374,7 +374,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             <div className="flex column left">
                                 <div>
                                     <div className="dc__info-title">Important: </div>
-                                    {this.props.isJobCreateView
+                                    {this.props.isJobView
                                         ? 'Do not forget to modify git repositories and corresponding branches to be used for each Job Pipeline if required.'
                                         : 'Do not forget to modify git repositories, corresponding branches and container registries to be used for each CI Pipeline if required.'}
                                 </div>
@@ -426,7 +426,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             <div className="w-800 dc__border-top flex right pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0">
                 <button className="cta flex h-36" onClick={this.createApp}>
                     {`${this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}${
-                        this.props.isJobCreateView ? 'Job' : 'App'
+                        this.props.isJobView ? 'Job' : 'App'
                     }`}
                 </button>
             </div>
