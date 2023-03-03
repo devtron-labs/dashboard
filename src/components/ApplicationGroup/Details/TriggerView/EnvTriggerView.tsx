@@ -125,15 +125,21 @@ export default function EnvTriggerView() {
             setErrorCode(0)
             setPageViewType(ViewType.FORM)
             getWorkflowStatusData(_workflows)
-            timerRef && clearInterval(timerRef)
-            timerRef = setInterval(() => {
-                getWorkflowStatusData(_workflows)
-            }, 30000)
         } catch (error) {
             showError(error)
             setErrorCode(error['code'])
             setPageViewType(ViewType.ERROR)
         }
+    }
+
+    const getWorkflowTimer = (_processedWorkflowsData) => {
+        inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
+        inprogressStatusTimer = setTimeout(
+            () => {
+                getWorkflowStatusData(_processedWorkflowsData.workflows)
+            },
+            _processedWorkflowsData.cicdInProgress ? 10000 : 30000,
+        )
     }
 
     const getWorkflowStatusData = (workflowsList: WorkflowType[]) => {
@@ -144,16 +150,12 @@ export default function EnvTriggerView() {
                     response?.result?.cdWorkflowStatus ?? [],
                     workflowsList,
                 )
-                inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
-                if (_processedWorkflowsData.cicdInProgress) {
-                    inprogressStatusTimer = setTimeout(() => {
-                        getWorkflowStatusData(_processedWorkflowsData.workflows)
-                    }, 10000)
-                }
+                getWorkflowTimer(_processedWorkflowsData)
                 setWorkflows(_processedWorkflowsData.workflows)
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
+                getWorkflowTimer(workflowsList)
             })
     }
 
