@@ -94,7 +94,7 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                         <a
                             rel="noreferrer noopener"
                             target="_blank"
-                            className={`dc__link ${fetching ? '' : 'cursor'}`}
+                            className={`dc__link ${!fetching ? "cursor" : ""}`}
                             onClick={refetchCharts}
                         >
                             <span>
