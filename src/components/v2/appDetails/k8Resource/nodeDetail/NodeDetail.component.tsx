@@ -162,6 +162,8 @@ function NodeDetailComponent({
         selectedResource.containers = resourceContainers
     }
 
+    const handleChanges = () => setHideManagedFields(!hideManagedFields)
+
     return (
         <React.Fragment>
             <div className="pl-20 bcn-0 flex left w-100 pr-20">
@@ -197,7 +199,7 @@ function NodeDetailComponent({
                                 rootClassName="mb-0-imp h-20"
                                 isChecked={hideManagedFields}
                                 value={CHECKBOX_VALUE.CHECKED}
-                                onChange={() => setHideManagedFields(!hideManagedFields)}
+                                onChange={handleChanges}
                             >
                                 <span className="mr-5 cn-9 fs-12">Hide Managed Fields</span>
                             </Checkbox>
