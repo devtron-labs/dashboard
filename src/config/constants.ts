@@ -205,6 +205,7 @@ export const Routes = {
     ENVIRONMENT_APPS: 'env/app-grouping',
     ENV_APPLICATIONS: 'applications',
     ENV_DEPLOYMENT_STATUS: 'deployment/status',
+    USER_ROLE_GROUP_URL: 'user/role/group',
     JOB: 'job',
     JOB_LIST: 'job/list',
     JOB_CI_PIPELINE_LIST: 'job/ci-pipeline/list',
@@ -570,11 +571,6 @@ export const BuildTabText = {
     preBuildStage: 'Pre-build stage',
     buildStage: 'Build stage',
     postBuildStage: 'Post-build stage',
-}
-
-export const JobPipelineTabText = {
-    buildStage: 'Basic configuration',
-    preBuildStage: 'Tasks to be executed',
 }
 
 export const APP_STATUS_CUSTOM_MESSAGES = {

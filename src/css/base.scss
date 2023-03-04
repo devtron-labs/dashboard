@@ -297,6 +297,10 @@ a:focus {
     top: 0;
 }
 
+.dc__left-35 {
+    left: 35px;
+}
+
 .dc__vertical-align-middle {
     vertical-align: middle;
 }
@@ -2117,12 +2121,20 @@ textarea,
     min-width: 18px !important;
 }
 
-.w-32 {
-    width: 32px !important;
+.mw-48 {
+  min-width: 48px;
 }
 
-.mw-48 {
-    min-width: 48px;
+.mw-116 {
+    min-width: 116px;
+}
+
+.mw-232 {
+    min-width: 232px;
+}
+
+.w-32 {
+    width: 32px !important;
 }
 
 .min-w-800 {
@@ -2271,6 +2283,10 @@ textarea,
 
 .h-8 {
     height: 8px;
+}
+
+.h-16 {
+    height: 16px;
 }
 
 .h-18 {
