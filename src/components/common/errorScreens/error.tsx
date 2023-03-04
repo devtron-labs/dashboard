@@ -4,6 +4,7 @@ import notAuthorized from '../../../assets/img/ic-not-authorized.svg'
 import Reload from '../../Reload/Reload'
 import ErrorScreenNotFound from './ErrorScreenNotFound'
 import { ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
+import UserGroupRoute from '../../userGroups/UserGroup'
 
 export class ErrorScreenManager extends Component<{
     code?: number
@@ -19,7 +20,10 @@ export class ErrorScreenManager extends Component<{
             case 401:
                 return 'Unauthorized'
             case 403:
-                return <ErrorScreenNotAuthorized />
+                if (UserGroupRoute  ) {
+                    return <ErrorScreenNoAccess />
+                }
+                return <ErrorScreenNotAuthorized /> 
             case 404:
                 return <ErrorScreenNotFound />
             case 500:
@@ -57,3 +61,20 @@ export class ErrorScreenNotAuthorized extends Component<{}> {
         )
     }
 }
+
+export class ErrorScreenNoAccess extends Component<{}> {
+    render() {
+        return (
+            <EmptyState className="dc__align-reload-center">
+                <EmptyState.Image>
+                    <img src={notAuthorized} alt="Not Authorized" />
+                </EmptyState.Image>
+                <EmptyState.Title>
+                    <h3 className="title">Access Denied</h3>
+                </EmptyState.Title>
+                <EmptyState.Subtitle>Looks like you don't have access to information on this page. Please contact your manager to request access.</EmptyState.Subtitle>
+            </EmptyState>
+        )
+    }
+}
+
