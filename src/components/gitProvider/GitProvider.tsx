@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getGitHostList, getGitProviderList } from '../../services/service';
 import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service';
 import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorScreenManager, handleOnBlur, handleOnFocus } from '../common';
-import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration';
+import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
 import { DOCUMENTATION } from '../../config';
 import { DropdownIndicator } from './gitProvider.util';
