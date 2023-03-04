@@ -101,9 +101,8 @@ function ManifestComponent({
                     let _manifest: string
                     if (
                         appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
-                        appDetails.appType === AppType.DEVTRON_APP ||
-                        appDetails.appType === AppType.DEVTRON_HELM_CHART ||
                         appDetails.deploymentAppType === DeploymentAppType.helm ||
+                        appDetails.deploymentAppType === DeploymentAppType.argo_cd ||
                         isResourceBrowserView
                     ) {
                         _manifest = JSON.stringify(response[0]?.result?.manifest)
