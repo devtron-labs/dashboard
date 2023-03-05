@@ -809,7 +809,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             return
         }
 
-        if (this.state.isRollbackTrigger) {
+        if (this.state.isRollbackTrigger && this.state.isSelectImageTrigger) {
             this.props.triggerDeploy(
                 this.props.stageType,
                 this.props.appId,
@@ -817,12 +817,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 this.getWfrId(),
             )
         } else {
-            this.props.triggerDeploy(
-                this.props.stageType,
-                this.props.appId,
-                this.state.selectedConfigToDeploy?.value,
-                this.getWfrId(),
-            )
+            this.props.triggerDeploy(this.props.stageType, this.props.appId)
         }
     }
 
