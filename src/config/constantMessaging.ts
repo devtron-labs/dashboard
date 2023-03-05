@@ -48,6 +48,12 @@ export const LEARN_MORE = 'Learn more'
 export const REQUIRED_FIELD_MSG = 'This is a required field'
 export const MULTI_REQUIRED_FIELDS_MSG = 'Some required fields are missing'
 export const SOME_ERROR_MSG = 'Some error occurred'
+export const DEPLOY_IMAGE_EXTERNALSOURCE='Deploy image from external source'
+export const EDIT_DEPLOYMENT_PIPELINE='Edit deployment pipeline'
+export const CREATE_DEPLOYMENT_PIPELINE='Create deployment pipeline'
+export const ERROR_MESSAGE_FOR_VALIDATION="Min 2 chars; Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-), (.); Do not use 'spaces'"
+export const CHARACTER_ERROR_MIN='At least 2 characters required'
+export const CHARACTER_ERROR_MAX='Max 50 characters allowed'
 
 export const CI_CONFIGURED_GIT_MATERIAL_ERROR =
     "Unable to trigger build as you're using Dockerfile from $GIT_MATERIAL_ID repo but code source is not configured for the repo."

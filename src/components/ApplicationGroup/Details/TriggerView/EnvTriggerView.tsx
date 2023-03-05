@@ -63,6 +63,7 @@ import {
     AppGroupDetailDefaultType,
     BulkCDDetailType,
     BulkCIDetailType,
+    ProcessWorkFlowStatusType,
     ResponseRowType,
     WorkflowAppSelectionType,
     WorkflowNodeSelectionType,
@@ -70,7 +71,6 @@ import {
 import { handleSourceNotConfigured, processWorkflowStatuses } from '../../AppGroup.utils'
 import Tippy from '@tippyjs/react'
 
-let timerRef
 let inprogressStatusTimer
 export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultType) {
     const { envId } = useParams<{ envId: string }>()
@@ -131,15 +131,21 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             setErrorCode(0)
             setPageViewType(ViewType.FORM)
             getWorkflowStatusData(_workflows)
-            timerRef && clearInterval(timerRef)
-            timerRef = setInterval(() => {
-                getWorkflowStatusData(_workflows)
-            }, 30000)
         } catch (error) {
             showError(error)
             setErrorCode(error['code'])
             setPageViewType(ViewType.ERROR)
         }
+    }
+
+    const pollWorkflowStatus = (_processedWorkflowsData: ProcessWorkFlowStatusType) => {
+        inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
+        inprogressStatusTimer = setTimeout(
+            () => {
+                getWorkflowStatusData(_processedWorkflowsData.workflows)
+            },
+            _processedWorkflowsData.cicdInProgress ? 10000 : 30000,
+        )
     }
 
     const getWorkflowStatusData = (workflowsList: WorkflowType[]) => {
@@ -150,16 +156,13 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     response?.result?.cdWorkflowStatus ?? [],
                     workflowsList,
                 )
-                inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
-                if (_processedWorkflowsData.cicdInProgress) {
-                    inprogressStatusTimer = setTimeout(() => {
-                        getWorkflowStatusData(_processedWorkflowsData.workflows)
-                    }, 10000)
-                }
+                pollWorkflowStatus(_processedWorkflowsData)
                 setWorkflows(_processedWorkflowsData.workflows)
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
+                // If ci cd is in progress then call the api after every 10sec
+                pollWorkflowStatus({cicdInProgress: true, workflows: workflowsList})
             })
     }
 
@@ -170,7 +173,6 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             getWorkflowsData()
         }
         return () => {
-            timerRef && clearInterval(timerRef)
             inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
         }
     }, [envId])
