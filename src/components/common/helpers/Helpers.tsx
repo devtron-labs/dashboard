@@ -1228,3 +1228,7 @@ export const handleOnBlur = (e): void => {
         e.target.value = DEFAULT_SECRET_PLACEHOLDER
     }
 }
+
+export const checkIfDefaultSecret = (pass): string => {
+    return pass === DEFAULT_SECRET_PLACEHOLDER ? '' : pass
+}

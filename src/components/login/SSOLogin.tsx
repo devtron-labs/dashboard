@@ -211,6 +211,25 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         return ssoConfig
     }
 
+    saveSSO(response): void {
+        response.result.config.config.clientID = ''
+        response.result.config.config.clientSecret = ''
+        this.setConfig(response, this.state.sso.toLowerCase())
+        let ssoConfig = response.result
+        this.setState({
+            view: ViewType.FORM,
+            showToggling: false,
+            saveLoading: false,
+            ssoConfig: this.parseResponse(response.result),
+            lastActiveSSO: {
+                id: ssoConfig.id,
+                name: ssoConfig.name,
+                active: ssoConfig.active,
+            },
+        })
+        toast.success('Saved Successful')
+    }
+
     saveNewSSO(): void {
         this.setState({ saveLoading: true })
         let configJSON: any = {}
@@ -237,22 +256,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let promise = this.state.ssoConfig.id ? updateSSOList(payload) : createSSOList(payload)
         promise
             .then((response) => {
-                response.result.config.config.clientID = ''
-                response.result.config.config.clientSecret = ''
-                this.setConfig(response, this.state.sso.toLowerCase())
-                let ssoConfig = response.result
-                this.setState({
-                    view: ViewType.FORM,
-                    showToggling: false,
-                    saveLoading: false,
-                    ssoConfig: this.parseResponse(response.result),
-                    lastActiveSSO: {
-                        id: ssoConfig.id,
-                        name: ssoConfig.name,
-                        active: ssoConfig.active,
-                    },
-                })
-                toast.success('Saved Successful')
+                this.saveSSO(response)
             })
             .catch((error) => {
                 showError(error)
@@ -293,21 +297,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         if (!this.state.lastActiveSSO) {
             createSSOList(payload)
                 .then((response) => {
-                    response.result.config.config.clientID = ''
-                    response.result.config.config.clientSecret = ''
-                    this.setConfig(response, this.state.sso.toLowerCase())
-                    let ssoConfig = response.result
-                    this.setState({
-                        view: ViewType.FORM,
-                        saveLoading: false,
-                        ssoConfig: this.parseResponse(response.result),
-                        lastActiveSSO: {
-                            id: ssoConfig.id,
-                            name: ssoConfig.name,
-                            active: ssoConfig.active,
-                        },
-                    })
-                    toast.success('Saved Successful')
+                    this.saveSSO(response)
                 })
                 .catch((error) => {
                     showError(error)
@@ -319,21 +309,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             if (this.state.sso === this.state.lastActiveSSO?.name) {
                 updateSSOList(payload)
                     .then((response) => {
-                        response.result.config.config.clientID = ''
-                        response.result.config.config.clientSecret = ''
-                        this.setConfig(response, this.state.sso.toLowerCase())
-                        let ssoConfig = response.result
-                        this.setState({
-                            view: ViewType.FORM,
-                            saveLoading: false,
-                            ssoConfig: this.parseResponse(response.result),
-                            lastActiveSSO: {
-                                id: ssoConfig.id,
-                                name: ssoConfig.name,
-                                active: ssoConfig.active,
-                            },
-                        })
-                        toast.success('Saved Successful')
+                        this.saveSSO(response)
                     })
                     .catch((error) => {
                         showError(error)
@@ -459,7 +435,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     renderButtonText(): string {
-       return this.state.ssoConfig.id ? 'Update' : 'Save'
+        return this.state.ssoConfig.id ? 'Update' : 'Save'
     }
 
     getSSOLoginTabsArr() {
