@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ToastBody } from '../common'
+import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ToastBody, Checkbox, CHECKBOX_VALUE } from '../common'
 import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
@@ -7,11 +7,12 @@ import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoCo
 import { getChartRepoList } from '../../services/service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
-import { DOCUMENTATION, PATTERNS } from '../../config';
+import { DOCUMENTATION, PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL } from '../../config';
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm';
 import "./chartRepo.scss";
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
+import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 
 export default function ChartRepo() {
     const [loading, result, error, reload] = useAsync(getChartRepoList)
@@ -67,11 +68,12 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
     const [loading, setLoading] = useState(false);
 
     useEffectAfterMount(() => {
+        if (!collapsed) return
         async function update() {
             let payload = {
                 id: id || 0, name, url, authMode, active: enabled,
-                ...(authMode === 'USERNAME_PASSWORD' ? { username: userName, password } : {}),
-                ...(authMode === 'ACCESS_TOKEN' ? { accessToken } : {})
+                ...(authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD ? { username: userName, password } : {}),
+                ...(authMode === CHART_REPO_AUTH_TYPE.ACCESS_TOKEN ? { accessToken } : {})
             }
             try {
                 setLoading(true);
@@ -134,6 +136,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
     const [validationStatus, setValidationStatus] = useState(VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS)
     const [loading, setLoading] = useState(false);
     const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' } })
+    const [secureWithTls, setSecureWithTls] = useState(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             name: { value: name, error: "" },
@@ -163,15 +166,34 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
     const customHandleChange = e => setCustomState(state => ({ ...state, [e.target.name]: { value: e.target.value, error: "" } }))
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
+    const [chartRepoType, setChartRepoType] = useState<string>(CHART_REPO_TYPE.PUBLIC)
+    
+    if(chartRepoType===CHART_REPO_TYPE.PUBLIC){
+        state.auth.value= CHART_REPO_AUTH_TYPE.ANONYMOUS
+    }else{
+        state.auth.value= CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
+    }
+
 
     const chartRepoPayload = {
         id: id || 0,
         name: state.name.value,
         url: state.url.value,
-        authMode: state.auth.value,
+        authMode: id
+            ? password.length > 0
+                ? CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
+                : CHART_REPO_AUTH_TYPE.ANONYMOUS
+            : chartRepoType === CHART_REPO_TYPE.PUBLIC
+            ? CHART_REPO_AUTH_TYPE.ANONYMOUS
+            : CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD,
         active: true,
-        ...(state.auth.value === 'USERNAME_PASSWORD' ? { username: customState.username.value, password: customState.password.value } : {}),
-        ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {})
+        ...(state.auth.value === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD || authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
+            ? { allow_insecure_connection: !secureWithTls }
+            : {}),
+        ...(state.auth.value === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD || authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
+            ? { username: customState.username.value, password: customState.password.value }
+            : {}),
+        ...(state.auth.value === CHART_REPO_AUTH_TYPE.ACCESS_TOKEN ? { accessToken: customState.accessToken.value } : {}),
     }
 
     const isFormInvalid = () => {
@@ -181,7 +203,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             isValid = false
         }
 
-        if (state.auth.value === 'USERNAME_PASSWORD') {
+        if (state.auth.value === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD) {
             if (!customState.password.value || !customState.username.value) {
                 setCustomState(state => ({ ...state, password: { value: state.password.value, error: 'Required' }, username: { value: state.username.value, error: 'Required' } }))
                 isValid = false
@@ -260,9 +282,41 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
         }
     }
 
+    function toggleIsPublicChartType(e) {
+        setCustomState(state => ({ ...state, password: { value: '', error: '' }, username: { value: '', error: '' } }))
+
+        if (chartRepoType === CHART_REPO_TYPE.PUBLIC) {
+            setChartRepoType(CHART_REPO_TYPE.PRIVATE)
+        } else {
+            setChartRepoType(CHART_REPO_TYPE.PUBLIC)
+        }
+    }
+
+    function toggleSkipTLSVerification(e) {
+        setSecureWithTls(!secureWithTls)
+    }
+    const handleDeleteClick = () => toggleConfirmation(true)
+    const handleCancelClick = (e) => toggleCollapse((t) => !t)
+
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
-            < ValidateForm
+            {!id && (
+                <RadioGroup
+                    className="chartrepo-type__radio-group"
+                    value={chartRepoType}
+                    name={`chartrepo-type_${chartRepoType}`}
+                    onChange={toggleIsPublicChartType}
+                >
+                    {CHART_REPO_LABEL.map(({ label, value }) => (
+                        <RadioGroupItem value={value}>
+                            <span className={`dc__no-text-transform ${chartRepoType === value ? 'fw-6' : 'fw-4'}`}>
+                                {label}
+                            </span>
+                        </RadioGroupItem>
+                    ))}
+                </RadioGroup>
+            )}
+            <ValidateForm
                 id={id}
                 onClickValidate={onClickValidate}
                 validationError={validationError}
@@ -272,33 +326,70 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             />
 
             <div className="form__row form__row--two-third">
-                <CustomInput autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
-                <CustomInput autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
+                <CustomInput
+                    autoComplete="off"
+                    value={state.name.value}
+                    onChange={handleOnChange}
+                    name="name"
+                    error={state.name.error}
+                    label="Name*"
+                />
+                <CustomInput
+                    autoComplete="off"
+                    value={state.url.value}
+                    onChange={handleOnChange}
+                    name="url"
+                    error={state.url.error}
+                    label="URL*"
+                />
+                {(chartRepoType !== CHART_REPO_TYPE.PUBLIC ||
+                    (id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD)) && (
+                    <>
+                        <CustomInput
+                            autoComplete="off"
+                            value={customState.username.value}
+                            onChange={customHandleChange}
+                            name="username"
+                            error={customState.username.error}
+                            label="Username*"
+                            labelClassName="mt-12"
+                        />
+                        <ProtectedInput
+                            value={customState.password.value}
+                            onChange={customHandleChange}
+                            name="password"
+                            error={customState.password.error}
+                            label="Password*"
+                            labelClassName="mt-12"
+                        />
+                        <Checkbox
+                            rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 mt-12"
+                            isChecked={secureWithTls}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={toggleSkipTLSVerification}
+                        >
+                            <div className="ml-1">Secure With TLS</div>
+                        </Checkbox>
+                    </>
+                )}
             </div>
-            {/* <div className="form__label">Authentication type*</div>
-            <div className="form__row form__row--auth-type pl-12 pointer">
-                {[{ label: 'User auth', value: 'USERNAME_PASSWORD' }, { label: 'Password/Auth token', value: "ACCESS_TOKEN" }, { label: 'Anonymous', value: 'ANONYMOUS' },]
-                    .map(({ label: Lable, value }) => <label key={value} className="flex left pointer">
-                        <input type="radio" name="auth" value={value} onChange={handleOnChange} checked={value === state.auth.value} /> {Lable}
-                    </label>)}
-            </div>
-            {state.auth.error && <div className="form__error">{state.auth.error}</div>}
-            {state.auth.value === 'USERNAME_PASSWORD' && <div className="form__row form__row--two-third">
-                <CustomInput value={customState.username.value} onChange={customHandleChange} name="username" error={customState.username.error} label="Username*" />
-                <ProtectedInput value={customState.password.value} onChange={customHandleChange} name="password" error={customState.password.error} label="Password*" />
-            </div>}
-            {state.auth.value === "ACCESS_TOKEN" && <div className="form__row">
-                <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
-            </div>} */}
+
             <div className="form__row form__buttons">
-                   {
-                       id &&
-                       <button className="cta delete dc__m-auto chart_repo__delete-button" type="button" onClick={() => toggleConfirmation(true)}>
-                            {deleting ? <Progressing /> : 'Delete'}
-                        </button>
-                   }
-                <button className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
-                <button className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
+                {id && (
+                    <button
+                        className="cta delete dc__m-auto chart_repo__delete-button"
+                        type="button"
+                        onClick={handleDeleteClick}
+                    >
+                        {deleting ? <Progressing /> : 'Delete'}
+                    </button>
+                )}
+                <button className="cta cancel" type="button" onClick={handleCancelClick}>
+                    Cancel
+                </button>
+                <button className="cta" type="submit" disabled={loading}>
+                    {loading ? <Progressing /> : id ? 'Update' : 'Save'}
+                </button>
             </div>
             {confirmation && (
                 <DeleteComponent
