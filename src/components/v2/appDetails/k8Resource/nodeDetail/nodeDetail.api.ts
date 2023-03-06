@@ -21,12 +21,16 @@ export const getManifestResource = (
         return getManifestResourceHelmApps(ad, podName, nodeType, isResourceBrowserView, selectedResource)
     }
     const cn = ad.resourceTree.nodes.filter((node) => node.name === podName && node.kind.toLowerCase() === nodeType)[0]
-
-    return get(
-        `api/v1/applications/${ad.appName}-${ad.environmentName}/resource?version=${cn.version}&namespace=${
-            ad.namespace
-        }&group=${cn.group || ''}&kind=${cn.kind}&resourceName=${cn.name}`,
-    )
+    selectedResource = {
+        group: cn.group,
+        kind: cn.kind,
+        version: cn.version,
+        namespace: ad.namespace,
+        name: cn.name,
+        clusterId: 0,
+        containers: [],
+    }
+    return getManifestResourceHelmApps(ad, podName, nodeType, isResourceBrowserView, selectedResource)
 }
 
 export const getDesiredManifestResource = (appDetails: AppDetails, podName: string, nodeType: string) => {
@@ -61,9 +65,16 @@ export const getEvent = (
         return getEventHelmApps(ad, nodeName, nodeType, isResourceBrowserView, selectedResource)
     }
     const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName && node.kind.toLowerCase() === nodeType)[0]
-    return get(
-        `api/v1/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn.uid}&resourceName=${cn.name}`,
-    )
+    selectedResource = {
+        group: cn.group,
+        kind: cn.kind,
+        version: cn.version,
+        namespace: ad.namespace,
+        name: cn.name,
+        clusterId: 0,
+        containers: [],
+    }
+    return getEventHelmApps(ad, nodeName, nodeType, isResourceBrowserView, selectedResource)
 }
 
 function createResourceRequestBody(selectedResource: SelectedResourceType, updatedManifest?: string) {
@@ -94,7 +105,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
     )[0]
 
     const getAppName = (): string => {
-        if (appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP) {
+        if ((appDetails.deploymentAppType === DeploymentAppType.helm || appDetails.deploymentAppType === DeploymentAppType.argo_cd) && appDetails.appType === AppType.DEVTRON_APP) {
             return `${appDetails.appName}-${appDetails.environmentName}`
         } else {
             return appDetails.appName
@@ -184,27 +195,22 @@ export const getLogsURL = (
         prefix = `${location.protocol}//${location.host}` // eslint-disable-line
     }
 
-    if (
-        ad.appType === AppType.EXTERNAL_HELM_CHART ||
-        ad.deploymentAppType === DeploymentAppType.helm ||
-        isResourceBrowserView
-    ) {
-        let logsURL = `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}`
+    let logsURL = `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}`
 
-        if (isResourceBrowserView) {
-            logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
-        } else {
-            logsURL += `&appId=${getAppId(
-                ad.clusterId,
-                ad.namespace,
-                ad.deploymentAppType === DeploymentAppType.helm && ad.appType === AppType.DEVTRON_APP
-                    ? `${ad.appName}-${ad.environmentName}`
-                    : ad.appName,
-            )}`
-        }
-        return `${logsURL}&follow=true&tailLines=500`
+    if (isResourceBrowserView) {
+        logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
+    } else if (ad.deploymentAppType === DeploymentAppType.argo_cd){
+        logsURL += `&clusterId=${ad.clusterId}&namespace=${ad.namespace}`
+    } else {
+        logsURL += `&appId=${getAppId(
+            ad.clusterId,
+            ad.namespace,
+            ad.deploymentAppType === DeploymentAppType.helm  && ad.appType === AppType.DEVTRON_APP
+                ? `${ad.appName}-${ad.environmentName}`
+                : ad.appName,
+        )}`
     }
-    return `${prefix}${Host}/api/v1/applications/${ad.appName}-${ad.environmentName}/pods/${nodeName}/logs?container=${container}&follow=true&namespace=${ad.namespace}&tailLines=500`
+    return `${logsURL}&follow=true&tailLines=500`
 }
 
 export const getTerminalData = (ad: AppDetails, nodeName: string, terminalType: string) => {

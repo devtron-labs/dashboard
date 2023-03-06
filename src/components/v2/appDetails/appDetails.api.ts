@@ -21,32 +21,29 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
         nodeDetails.group = ''
     }
 
-    if (appDetails.appType === AppType.EXTERNAL_HELM_CHART || appDetails.deploymentAppType === DeploymentAppType.helm) {
-        const data = {
-            appId: getAppId(
-                appDetails.clusterId,
-                appDetails.namespace,
-                appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP
-                    ? `${appDetails.appName}-${appDetails.environmentName}`
-                    : appDetails.appName,
-            ),
-            k8sRequest: {
-                resourceIdentifier: {
-                    groupVersionKind: {
-                        Group: nodeDetails.group,
-                        Version: nodeDetails.version,
-                        Kind: nodeDetails.kind,
-                    },
-                    namespace: nodeDetails.namespace,
-                    name: nodeDetails.name,
+    const data = {
+        appId: appDetails.deploymentAppType === DeploymentAppType.argo_cd ? '' : getAppId(
+            appDetails.clusterId,
+            appDetails.namespace,
+            appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP
+                ? `${appDetails.appName}-${appDetails.environmentName}`
+                : appDetails.appName,
+        ),
+        k8sRequest: {
+            resourceIdentifier: {
+                groupVersionKind: {
+                    Group: nodeDetails.group,
+                    Version: nodeDetails.version,
+                    Kind: nodeDetails.kind,
                 },
+                namespace: nodeDetails.namespace,
+                name: nodeDetails.name,
             },
-        }
-        return post(Routes.DELETE_RESOURCE, data)
+        },
+        ClusterId:  appDetails.deploymentAppType === DeploymentAppType.argo_cd ? appDetails.clusterId : null
     }
-    return trash(
-        `${Routes.APPLICATIONS}/${appDetails.appName}-${appDetails.environmentName}/resource?name=${nodeDetails.name}&namespace=${nodeDetails.namespace}&resourceName=${nodeDetails.name}&version=${nodeDetails.version}&group=${nodeDetails.group}&kind=${nodeDetails.kind}&force=${forceDelete}&appId=${appDetails.appId}&envId=${envId}`,
-    )
+    return post(Routes.DELETE_RESOURCE, data)
+    
 }
 
 export const getAppOtherEnvironment = (appId) => {
