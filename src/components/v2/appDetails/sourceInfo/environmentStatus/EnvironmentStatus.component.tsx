@@ -14,7 +14,7 @@ import { useRouteMatch, useHistory, useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
-import { showError, useAsync } from '../../../../common'
+import { useAsync } from '../../../../common'
 
 function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
@@ -171,7 +171,6 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
 
                 {appDetails?.deprecated && (
                     <div className="app-status-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
-                        {console.log(`${url.split('/').pop()}`)}
 
                         <div className="cn-9 lh-1-33 flex left">
                             <span>Chart deprecated</span>
