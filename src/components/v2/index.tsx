@@ -81,14 +81,17 @@ function RouterComponent({ envType}) {
 
     const _getAndSetAppDetail = async () => {
         try {
-            let response = null;
-
+            let response = null
+            let notesResponse = null
             if (envType === EnvType.CHART) {
                 response = await getInstalledChartDetail(+params.appId, +params.envId)
-                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART)
-                if (!response.result.gitOpsNotes) {
-                    response = await getInstalledChartNotesDetail(+params.appId, +params.envId)
+                if (response.result.deploymentAppType === 'argo_cd') {
+                    notesResponse = await getInstalledChartNotesDetail(+params.appId, +params.envId)
+                    if (notesResponse) {
+                        response.result.notes = notesResponse.result.gitOpsNotes
+                    }
                 }
+                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART)
             } else {
                 response = await getInstalledAppDetail(+params.appId, +params.envId)
                 IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
