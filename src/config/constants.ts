@@ -324,6 +324,10 @@ export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKi
 
 export const PREVIEW_DEVTRON = 'https://preview.devtron.ai/dashboard'
 
+export const NETSHOOT_LINK = 'https://github.com/nicolaka/netshoot'
+
+export const BUSYBOX_LINK = 'https://busybox.net/'
+
 // APP LIST STARTS
 export const AppListConstants = {
     SAMPLE_NODE_REPO_URL: 'https://github.com/devtron-labs/getting-started-nodejs',
