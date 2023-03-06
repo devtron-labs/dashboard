@@ -15,7 +15,7 @@ import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.s
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import PageHeader from '../../common/header/PageHeader'
 import { AppDetailsProps } from './triggerView/types'
-import Overview from './Overview/Overview'
+import Overview from '../Overview/Overview'
 import { trackByGAEvent } from '../../common/helpers/Helpers'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
