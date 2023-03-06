@@ -2,17 +2,13 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { useRouteMatch, useParams, Redirect,useLocation, useHistory } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
 import { URLS } from '../../config';
-import { DetailsProgressing, ErrorScreenManager, showError, sortOptionsByValue } from '../common';
+import { DetailsProgressing, ErrorScreenManager, sortOptionsByValue } from '../common';
 import ValuesComponent from './values/ChartValues.component';
 import AppHeaderComponent from './headers/AppHeader.component';
 import ChartHeaderComponent from './headers/ChartHeader.component';
-import {
-    getInstalledAppDetail,
-    getInstalledChartDetail,
-    getInstalledChartNotesDetail,
-} from './appDetails/appDetails.api'
+import { getInstalledAppDetail, getInstalledChartDetail } from './appDetails/appDetails.api';
 import AppDetailsComponent from './appDetails/AppDetails.component';
-import { AppType, EnvType} from './appDetails/appDetails.type';
+import { AppType, EnvType } from './appDetails/appDetails.type';
 import IndexStore from './appDetails/index.store';
 import ErrorImage from './assets/icons/ic-404-error.png';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil';
@@ -24,7 +20,7 @@ import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState';
 
 let initTimer = null;
 
-function RouterComponent({ envType}) {
+function RouterComponent({ envType }) {
     const [isLoading, setIsLoading] = useState(true);
     const params = useParams<{ appId: string; envId: string; nodeType: string }>();
     const { path } = useRouteMatch();
@@ -78,29 +74,17 @@ function RouterComponent({ envType}) {
             _init();
         }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL ||30000);
     }
-    let notesFetched = false
+
     const _getAndSetAppDetail = async () => {
         try {
-            let response = null
-            let notesResponse = null
-            if (envType === EnvType.CHART) {
-                response = await getInstalledChartDetail(+params.appId, +params.envId)
-                if (response.result.deploymentAppType === 'argo_cd' && !notesFetched) {
-                    try {
-                        notesResponse = await getInstalledChartNotesDetail(+params.appId, +params.envId)
-                        if (notesResponse.result.gitOpsNotes) {
-                            response.result.notes = notesResponse.result.gitOpsNotes
-                            notesFetched = true
-                        }
-                    } catch (error) {
-                        showError(error)
-                    }
-                }
+            let response = null;
 
-                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART)
+            if (envType === EnvType.CHART) {
+                response = await getInstalledChartDetail(+params.appId, +params.envId);
+                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART);
             } else {
-                response = await getInstalledAppDetail(+params.appId, +params.envId)
-                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
+                response = await getInstalledAppDetail(+params.appId, +params.envId);
+                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP);
             }
 
             if (response.result?.clusterId) {
@@ -134,14 +118,14 @@ function RouterComponent({ envType}) {
                 setIsLoading(false)
             }
 
-            setErrorResponseCode(undefined)
+            setErrorResponseCode(undefined);
         } catch (e: any) {
-            if (e?.code) {
-                setErrorResponseCode(e.code)
+            if(e?.code){
+                setErrorResponseCode(e.code);
             }
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }
+    };
 
     const redirectToHomePage = () => {};
 

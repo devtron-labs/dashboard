@@ -4,7 +4,7 @@ import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { MarkDown } from '../../../../charts/discoverChartDetail/DiscoverChartDetails'
 import './environmentStatus.scss'
 
-function NotesDrawer({ notes, close }: { notes: string; close: () => void }) {
+function NotesDrawer({ notes, close ,gitOpsNotes }: { notes: string; close: () => void ;gitOpsNotes:string }) {
     const appNotesRef = useRef<HTMLDivElement>(null)
 
     const escKeyPressHandler = (evt): void => {
@@ -46,7 +46,7 @@ function NotesDrawer({ notes, close }: { notes: string; close: () => void }) {
                     </div>
                 </div>
                 <div className="app-notes__body">
-                    <MarkDown className="app-notes__markdown fs-13" markdown={notes} breaks={true} />
+                    <MarkDown className="app-notes__markdown fs-13" markdown={notes || gitOpsNotes} breaks={true} />
                 </div>
             </div>
         </Drawer>

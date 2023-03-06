@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState ,useEffect} from 'react'
 import AppStatusDetailModal from './AppStatusDetailModal'
 import './environmentStatus.scss'
 import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
@@ -10,9 +10,11 @@ import { URLS } from '../../../../../config'
 import { AppType } from '../../../appDetails/appDetails.type'
 import { useSharedState } from '../../../utils/useSharedState'
 import { Link } from 'react-router-dom'
-import { useRouteMatch, useHistory } from 'react-router'
+import { useRouteMatch, useHistory ,useParams} from 'react-router'
 import Tippy from '@tippyjs/react'
 import NotesDrawer from './NotesDrawer'
+import { getInstalledChartNotesDetail } from '../../appDetails.api'
+import { showError, useAsync } from '../../../../common'
 
 function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
@@ -23,7 +25,8 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
         status.toLowerCase() === 'hibernated' || status.toLowerCase() === 'partially hibernated'
     const { path, url } = useRouteMatch()
     const history = useHistory()
-
+    const params = useParams<{ appId: string; envId: string; }>();
+    const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
     const onClickUpgrade = () => {
         let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
         history.push(_url)
@@ -138,12 +141,12 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                             {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
                         </div>
                         <div className="flex left">
-                            {appDetails.notes && (
+                            {(appDetails.notes || notesResult?.result?.gitOpsNotes) && (
                                 <div className="details-hover flex cb-5 fw-6 cursor" onClick={() => setShowNotes(true)}>
                                     <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
                                 </div>
                             )}
-                            {appDetails.notes && appDetails.appStoreChartId && (
+                            {(appDetails.notes || notesResult?.result?.gitOpsNotes) && appDetails.appStoreChartId && (
                                 <div className="app-status-card__divider" />
                             )}
                             {appDetails.appStoreChartId && (
@@ -191,6 +194,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                     close={() => {
                         setShowNotes(false)
                     }}
+                    gitOpsNotes={notesResult?.result?.gitOpsNotes}
                 />
             )}
         </div>
