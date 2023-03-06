@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getGitHostList, getGitProviderList } from '../../services/service';
 import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service';
-import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorScreenManager, handleOnBlur, handleOnFocus } from '../common';
+import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorScreenManager, handleOnBlur, handleOnFocus, checkIfDefaultSecret } from '../common';
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
 import { DOCUMENTATION } from '../../config';
@@ -396,16 +396,13 @@ function GitForm({
             ...(state.auth.value === 'USERNAME_PASSWORD'
                 ? {
                       username: customState.username.value,
-                      password: customState.password.value === DEFAULT_SECRET_PLACEHOLDER ? '' : customState.password.value,
+                      password: checkIfDefaultSecret(customState.password.value),
                   }
                 : {}),
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {}),
             ...(state.auth.value === 'SSH'
                 ? {
-                      sshPrivateKey:
-                          safeTrim(customState.sshInput.value) === DEFAULT_SECRET_PLACEHOLDER
-                              ? ''
-                              : safeTrim(customState.sshInput.value),
+                      sshPrivateKey: checkIfDefaultSecret(safeTrim(customState.sshInput.value)),
                   }
                 : {}),
         }

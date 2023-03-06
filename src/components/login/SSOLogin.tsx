@@ -218,7 +218,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let ssoConfig = response.result
         this.setState({
             view: ViewType.FORM,
-            showToggling: false,
             saveLoading: false,
             ssoConfig: this.parseResponse(response.result),
             lastActiveSSO: {
@@ -256,7 +255,11 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let promise = this.state.ssoConfig.id ? updateSSOList(payload) : createSSOList(payload)
         promise
             .then((response) => {
+
                 this.saveSSO(response)
+                this.setState({
+                    showToggling: false,
+                })
             })
             .catch((error) => {
                 showError(error)

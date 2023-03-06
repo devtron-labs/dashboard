@@ -11,6 +11,8 @@ import {
     multiSelectStyles,
     handleOnBlur,
     handleOnFocus,
+    checkIfDefaultSecret,
+    parsePassword,
 } from '../common'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'
@@ -403,14 +405,14 @@ function DockerForm({
             ...(selectedDockerRegistryType.value === 'ecr'
                 ? {
                       awsAccessKeyId: customState.awsAccessKeyId.value,
-                      awsSecretAccessKey: customState.awsSecretAccessKey.value === DEFAULT_SECRET_PLACEHOLDER ? '' : customState.awsSecretAccessKey.value,
+                      awsSecretAccessKey: parsePassword(customState.awsSecretAccessKey.value),
                       awsRegion: awsRegion,
                   }
                 : {}),
             ...(selectedDockerRegistryType.value === 'artifact-registry' || selectedDockerRegistryType.value === 'gcr'
                 ? {
                       username: trimmedUsername,
-                      password: `'${customState.password.value === DEFAULT_SECRET_PLACEHOLDER ? '' : customState.password.value}'`,
+                      password: `'${parsePassword(customState.password.value)}'`,
                   }
                 : {}),
             ...(selectedDockerRegistryType.value === 'docker-hub' ||
@@ -418,13 +420,13 @@ function DockerForm({
             selectedDockerRegistryType.value === 'quay'
                 ? {
                       username: trimmedUsername,
-                      password: customState.password.value === DEFAULT_SECRET_PLACEHOLDER ? '' : customState.password.value,
+                      password: parsePassword(customState.password.value),
                   }
                 : {}),
             ...(selectedDockerRegistryType.value === 'other'
                 ? {
                       username: trimmedUsername,
-                      password: customState.password.value === DEFAULT_SECRET_PLACEHOLDER ? '' : customState.password.value,
+                      password: parsePassword(customState.password.value),
                       connection: state.advanceSelect.value,
                       cert: state.advanceSelect.value !== CERTTYPE.SECURE_WITH_CERT ? '' : state.certInput.value,
                   }

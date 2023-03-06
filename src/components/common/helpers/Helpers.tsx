@@ -1229,6 +1229,6 @@ export const handleOnBlur = (e): void => {
     }
 }
 
-export const checkIfDefaultSecret = (pass): string => {
-    return pass === DEFAULT_SECRET_PLACEHOLDER ? '' : pass
+export const parsePassword = (password:string): string => {
+    return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password
 }
