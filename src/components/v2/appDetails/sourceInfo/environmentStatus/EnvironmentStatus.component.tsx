@@ -144,14 +144,12 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                             {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
                         </div>
                         <div className="flex left">
-                            {(notes) && (
+                            {notes && (
                                 <div className="details-hover flex cb-5 fw-6 cursor" onClick={() => setShowNotes(true)}>
                                     <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
                                 </div>
                             )}
-                            {!!(notes) && !!appDetails.appStoreChartId && (
-                                <div className="app-status-card__divider" />
-                            )}
+                            {!!notes && !!appDetails.appStoreChartId && <div className="app-status-card__divider" />}
                             {appDetails.appStoreChartId && (
                                 <div>
                                     <Link
