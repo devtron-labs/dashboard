@@ -265,6 +265,10 @@ function DockerForm({
     const [certError, setCertInputError] = useState('')
     let _selectedDockerRegistryType = REGISTRY_TYPE_MAP[state.registryType.value || 'ecr']
     const [selectedDockerRegistryType, setSelectedDockerRegistryType] = useState(_selectedDockerRegistryType)
+    let regPass =
+        state.registryType.value === 'gcr' || state.registryType.value === 'artifact-registry'
+            ? password.substring(1, password.length - 1)
+            : password
     const [customState, setCustomState] = useState({
         awsAccessKeyId: { value: awsAccessKeyId, error: '' },
         awsSecretAccessKey: {
@@ -277,9 +281,7 @@ function DockerForm({
             value:
                 id && !password
                     ? DEFAULT_SECRET_PLACEHOLDER
-                    : state.registryType.value === 'gcr' || state.registryType.value === 'artifact-registry'
-                    ? password.substring(1, password.length - 1)
-                    : password,
+                    : regPass,
             error: '',
         },
     })
@@ -505,13 +507,14 @@ function DockerForm({
             selectedDockerRegistryType.value === 'gcr'
         ) {
             const isValidJsonFile = (isValidJson(customState.password.value) || id)
+            let isValidJsonStr = (isValidJsonFile ? '' : 'Invalid JSON')
             if (!customState.username.value || !(customState.password.value || id) || !isValidJsonFile) {
                 setCustomState((st) => ({
                     ...st,
                     username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
                     password: {
                         ...st.password,
-                        error: (id || st.password.value) ? (isValidJsonFile ? '' : 'Invalid JSON') : 'Mandatory',
+                        error: (id || st.password.value) ? isValidJsonStr : 'Mandatory',
                     },
                 }))
                 return

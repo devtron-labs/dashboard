@@ -458,6 +458,10 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         })
     }
 
+    renderButtonText(): string {
+       return this.state.ssoConfig.id ? 'Update' : 'Save'
+    }
+
     getSSOLoginTabsArr() {
         let SSOLoginTabsArr = [
             { provider: SSOProvider.google, SSOName: 'Google' },
@@ -569,7 +573,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             disabled={this.state.saveLoading}
                             className={`cta`}
                         >
-                            {this.state.saveLoading ? <Progressing /> : this.state.ssoConfig.id ? 'Update' : 'Save'}
+                            {this.state.saveLoading ? <Progressing /> : this.renderButtonText()}
                         </button>
                     </div>
                 </div>
