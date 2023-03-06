@@ -87,7 +87,7 @@ function RouterComponent({ envType}) {
                 response = await getInstalledChartDetail(+params.appId, +params.envId)
                 if (response.result.deploymentAppType === 'argo_cd') {
                     notesResponse = await getInstalledChartNotesDetail(+params.appId, +params.envId)
-                    if (notesResponse) {
+                    if (notesResponse.result.gitOpsNotes) {
                         response.result.notes = notesResponse.result.gitOpsNotes
                     }
                 }
