@@ -196,7 +196,7 @@ function NodeDetailComponent({
                     msg=""
                     icon={MsgUIType.LOADING}
                     size={24}
-                    minHeight={isResourceBrowserView ? 'calc(100vh - 124px)' : ''}
+                    minHeight={isResourceBrowserView ? 'calc(100vh - 116px)' : ''}
                 />
             ) : (
                 <Switch>

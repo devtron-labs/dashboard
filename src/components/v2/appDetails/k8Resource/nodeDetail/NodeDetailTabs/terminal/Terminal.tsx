@@ -36,7 +36,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (terminal && fitAddon && terminalViewProps.isTerminalTab) {
             const dim = fitAddon.proposeDimensions()
             if (dim && socket) {
-                socket.send(JSON.stringify({Op: 'resize', Cols: dim.cols, Rows: dim.rows}))
+                socket.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
             }
             fitAddon.fit()
         }
@@ -532,7 +532,16 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         <div className="terminal-view h-100 w-100">
             {renderConnectionStrip()}
 
-            <div id="terminal-id" className="terminal-container ml-20">
+            <div
+                id="terminal-id"
+                className={`terminal-container ml-20 ${
+                    terminalViewProps.isResourceBrowserView &&
+                    isOnline &&
+                    terminalViewProps.socketConnection === SocketConnectionType.CONNECTED
+                        ? 'resource-terminal-connected'
+                        : ''
+                }`}
+            >
                 <CopyToast showCopyToast={popupText} />
             </div>
 
