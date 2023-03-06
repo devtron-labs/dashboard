@@ -265,7 +265,7 @@ function DockerForm({
     const [certError, setCertInputError] = useState('')
     let _selectedDockerRegistryType = REGISTRY_TYPE_MAP[state.registryType.value || 'ecr']
     const [selectedDockerRegistryType, setSelectedDockerRegistryType] = useState(_selectedDockerRegistryType)
-    let regPass =
+    const regPass =
         state.registryType.value === 'gcr' || state.registryType.value === 'artifact-registry'
             ? password.substring(1, password.length - 1)
             : password
@@ -507,7 +507,7 @@ function DockerForm({
             selectedDockerRegistryType.value === 'gcr'
         ) {
             const isValidJsonFile = (isValidJson(customState.password.value) || id)
-            let isValidJsonStr = (isValidJsonFile ? '' : 'Invalid JSON')
+            const isValidJsonStr = (isValidJsonFile ? '' : 'Invalid JSON')
             if (!customState.username.value || !(customState.password.value || id) || !isValidJsonFile) {
                 setCustomState((st) => ({
                     ...st,
