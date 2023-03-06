@@ -47,7 +47,8 @@ export const REQUIRED_FIELD_MSG = 'This is a required field'
 export const MULTI_REQUIRED_FIELDS_MSG = 'Some required fields are missing'
 export const SOME_ERROR_MSG = 'Some error occurred'
 
-export const CI_CONFIGURED_GIT_MATERIAL_ERROR = "Unable to trigger build as you're using Dockerfile from $GIT_MATERIAL_ID repo but code source is not configured for the repo."
+export const CI_CONFIGURED_GIT_MATERIAL_ERROR =
+    "Unable to trigger build as you're using Dockerfile from $GIT_MATERIAL_ID repo but code source is not configured for the repo."
 
 export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
     title: 'No users Added',
@@ -59,7 +60,61 @@ export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
     redirectLink: '/global-config/login-service',
 }
 
+export const ERR_MESSAGE_ARGOCD = 'Deployment pipeline cannot be attached to a pipeline being deleted.'
 export const TOAST_ACCESS_DENIED = {
     TITLE: 'Access denied',
     SUBTITLE: 'You do not have required access to perform this action'
+}
+
+export const DELETE_DEPLOYMENT_PIPELINE = 'Deleting deployment pipeline'
+export const VIEW_DELETION_STATUS= 'View deletion status'
+
+// Empty state messgaes
+
+export const ERROR_EMPTY_SCREEN = {
+    PAGE_NOT_FOUND: 'We could not find this page',
+    PAGE_NOT_EXIST: 'This page doesn’t exist or was removed. We suggest you go back to home',
+    TAKE_BACK_HOME: 'Take me home',
+    APP_NOT_AVAILABLE: 'This application is not available on this environment',
+    DEPLOYMENT_NOT_EXIST : 'Deployment on this environment doesn’t exist or was removed.',
+    SELECT_ANOTHER_ENVIRONMENT: 'Please select another environment',
+    ALL_SET_GO_CONFIGURE: 'Looks like you’re all set. Go ahead and select an image to deploy',
+    DEPLOYEMENT_WILL_BE_HERE: 'Once deployed, details for the deployment will be available here',
+    GO_TO_DEPLOY: 'Go to deploy',
+}
+
+//Confirmation Dialog messgaes
+export const CONFIRMATION_DIALOG_MESSAGING = {
+    DELETION_IN_PROGRESS: 'Deployment pipeline configurations cannot be edited when deletion is in progress.',
+}
+
+// Toast messages
+
+export const TOAST_INFO = {
+  PIPELINE_DELETION_INIT: 'Pipeline Deletion Initiated',
+  DELETION_INITIATED: 'Deletion initiated'
+}
+
+export const APP_DETAILS = {
+  APP_FULLY_NOT_CONFIGURED : 'This application is not fully configured. Complete the configuration, trigger a deployment and come back here.',
+  NEED_HELP: 'Need help?'
+}
+
+// All CTA
+
+export const BUTTON_TEXT = {
+    SAVE: 'Save',
+    DELETE: 'Delete',
+    CANCEL: 'Cancel'
+}
+
+//Deployment App Types
+export enum DeploymentAppTypeNameMapping {
+  Helm = 'Helm',
+  GitOps = 'GitOps',
+}
+export const SSO_LOGGING_INFO = {
+    frontText: "You don't have an account on this workplace. Please contact your manager for ",
+    tailText: ' or login as adminstration.',
+    redirectLink: 'login Permission',
 }
