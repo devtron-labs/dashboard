@@ -84,3 +84,20 @@ export interface ClusterTerminalParamsType {
     selectedNode: OptionType
     selectedShell: OptionType
 }
+
+export interface ClusterFormType {
+                        id: any
+                        cluster_name: any
+                        server_url: any
+                        active: any
+                        config: any
+                        toggleEditMode: any
+                        reload: any
+                        prometheus_url: any
+                        prometheusAuth: any
+                        defaultClusterComponent: any
+                        isGrafanaModuleInstalled: boolean
+                        isTlsConnection: boolean
+                        toggleCheckTlsConnection: () => void 
+                        isDrawer: boolean
+}
