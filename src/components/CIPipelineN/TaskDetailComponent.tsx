@@ -113,7 +113,7 @@ export function TaskDetailComponent() {
         setFormData(_formData)
     }
 
-    const handleTriggerIfParentStageFailChange = (e: any): void => {
+    const handleTriggerIfParentStageFailChange = (): void => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail = !_formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail
         setFormData(_formData)
@@ -198,14 +198,14 @@ export function TaskDetailComponent() {
                 </div>
 
                 {
-                    activeStageName == BuildStageVariable.PostBuild &&
+                    activeStageName === BuildStageVariable.PostBuild &&
                     <div className="row-container mb-12">
                         <div className="fw-6 fs-13 lh-32 cn-7 ">Trigger even if build fails</div>
                         <input
                             type="checkbox"
                             className="cursor icon-dim-16"
                             checked={formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail}
-                            onChange={(e) => handleTriggerIfParentStageFailChange(e)}
+                            onChange={handleTriggerIfParentStageFailChange}
                         />
                     </div>
                 }
