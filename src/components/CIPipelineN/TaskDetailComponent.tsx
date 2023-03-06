@@ -200,7 +200,7 @@ export function TaskDetailComponent() {
                 {
                     activeStageName == BuildStageVariable.PostBuild &&
                     <div className="row-container mb-12">
-                        <div className="fw-6 fs-13 lh-32 cn-7 ">Trigger even if Build fails</div>
+                        <div className="fw-6 fs-13 lh-32 cn-7 ">Trigger even if build fails</div>
                         <input
                             type="checkbox"
                             className="cursor icon-dim-16"
