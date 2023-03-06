@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react'
-import { useRouteMatch, useLocation, NavLink } from 'react-router-dom'
+import { useRouteMatch, useLocation, NavLink, useParams } from 'react-router-dom'
 import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ApplicationRouteType } from '../../AppGroup.types'
 
 export default function ApplicationRoute({ envListData }: ApplicationRouteType) {
+    const { appId } = useParams<{ envId: string; appId: string }>()
     const { url } = useRouteMatch()
     const location = useLocation()
-    const newPath = `/${location.pathname.split('/').splice(1, 4).join('/')}`
-    const link = `${url}/${envListData.id}`
-    const [collapsed, toggleCollapsed] = useState(newPath !== link)
+    const oldUrlSubstring = `/edit/${appId}`
+    const newUrlSubstring = `/edit/${envListData.id}`
+    const basePath = url.replace(oldUrlSubstring, newUrlSubstring)
+    const [collapsed, toggleCollapsed] = useState(+appId === envListData.id)
 
     useEffect(() => {
-        if (newPath !== link && !collapsed) {
+        if (+appId !== envListData.id) {
             toggleCollapsed(true)
+        } else {
+            toggleCollapsed(false)
         }
     }, [location.pathname])
 
@@ -33,13 +37,13 @@ export default function ApplicationRoute({ envListData }: ApplicationRouteType) 
             </div>
             {!collapsed && (
                 <div className="environment-routes pl-8 w-100">
-                    <NavLink className="env-compose__nav-item cursor" to={`${link}/deployment-template`}>
+                    <NavLink className="env-compose__nav-item cursor" to={`${basePath}/deployment-template`}>
                         Deployment template
                     </NavLink>
-                    <NavLink className="env-compose__nav-item cursor" to={`${link}/configmap`}>
+                    <NavLink className="env-compose__nav-item cursor" to={`${basePath}/configmap`}>
                         ConfigMaps
                     </NavLink>
-                    <NavLink className="env-compose__nav-item cursor" to={`${link}/secrets`}>
+                    <NavLink className="env-compose__nav-item cursor" to={`${basePath}/secrets`}>
                         Secrets
                     </NavLink>
                 </div>
