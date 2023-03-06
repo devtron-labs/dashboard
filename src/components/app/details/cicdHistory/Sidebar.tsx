@@ -114,7 +114,7 @@ const HistorySummaryCard = React.memo(
         const { path } = useRouteMatch()
         const { pathname } = useLocation()
         const currentTab = pathname.split('/').pop()
-        const { triggerId, envId, ...rest } = useParams<{ triggerId: string, envId: string }>()
+        const { triggerId, ...rest } = useParams<{ triggerId: string, envId: string }>()
 
         const getPath = (): string => {
           const _params = {
