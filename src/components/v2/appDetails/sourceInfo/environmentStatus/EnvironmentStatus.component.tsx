@@ -32,6 +32,8 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
         history.push(_url)
     }
 
+    const gitOpsNotes = notesResult?.result?.gitOpsNotes;
+    
     const handleShowAppStatusDetail = () => {
         setShowAppStatusDetail(true)
     }
@@ -145,12 +147,12 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                             {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
                         </div>
                         <div className="flex left">
-                            {(appDetails.notes || notesResult?.result?.gitOpsNotes) && (
+                            {(appDetails.notes || gitOpsNotes) && (
                                 <div className="details-hover flex cb-5 fw-6 cursor" onClick={() => setShowNotes(true)}>
                                     <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
                                 </div>
                             )}
-                            {(appDetails.notes || notesResult?.result?.gitOpsNotes) && appDetails.appStoreChartId && (
+                            {(appDetails.notes || gitOpsNotes) && appDetails.appStoreChartId && (
                                 <div className="app-status-card__divider" />
                             )}
                             {appDetails.appStoreChartId && (
@@ -198,7 +200,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                     close={() => {
                         setShowNotes(false)
                     }}
-                    gitOpsNotes={notesResult?.result?.gitOpsNotes}
+                    gitOpsNotes={gitOpsNotes}
                 />
             )}
         </div>
