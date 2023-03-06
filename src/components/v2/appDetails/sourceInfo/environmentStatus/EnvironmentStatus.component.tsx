@@ -42,10 +42,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
         <div>
             <div className="flex left ml-20 mb-16">
                 {status && (
-                    <div
-                        className="app-status-card bcn-0 mr-12 br-8 p-16 cursor" 
-                        onClick={handleShowAppStatusDetail}
-                    >
+                    <div className="app-status-card bcn-0 mr-12 br-8 p-16 cursor" onClick={handleShowAppStatusDetail}>
                         <div className="lh-1-33 cn-9 flex left">
                             <span>Application status</span>
                             <Tippy
@@ -152,7 +149,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                                     <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
                                 </div>
                             )}
-                            {(appDetails.notes || gitOpsNotes) && appDetails.appStoreChartId && (
+                            {!!(appDetails.notes || gitOpsNotes) && !!appDetails.appStoreChartId && (
                                 <div className="app-status-card__divider" />
                             )}
                             {appDetails.appStoreChartId && (
@@ -171,7 +168,6 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
 
                 {appDetails?.deprecated && (
                     <div className="app-status-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
-
                         <div className="cn-9 lh-1-33 flex left">
                             <span>Chart deprecated</span>
                             <Alert className="icon-dim-16 ml-4" />
