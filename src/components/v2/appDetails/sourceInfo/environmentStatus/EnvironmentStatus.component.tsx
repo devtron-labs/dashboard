@@ -1,4 +1,4 @@
-import React, { useState ,useEffect} from 'react'
+import React, { useState } from 'react'
 import AppStatusDetailModal from './AppStatusDetailModal'
 import './environmentStatus.scss'
 import { ReactComponent as Question } from '../../../assets/icons/ic-question.svg'
@@ -25,20 +25,24 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
         status.toLowerCase() === 'hibernated' || status.toLowerCase() === 'partially hibernated'
     const { path, url } = useRouteMatch()
     const history = useHistory()
-    const params = useParams<{ appId: string; envId: string; }>();
+    const params = useParams<{ appId: string; envId: string }>()
     const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
     const onClickUpgrade = () => {
         let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
         history.push(_url)
     }
-    
+
+    const handleShowAppStatusDetail = () => {
+        setShowAppStatusDetail(true)
+    }
+
     return (
         <div>
             <div className="flex left ml-20 mb-16">
                 {status && (
                     <div
-                        className="app-status-card bcn-0 mr-12 br-8 p-16 cursor"
-                        onClick={() => setShowAppStatusDetail(true)}
+                        className="app-status-card bcn-0 mr-12 br-8 p-16 cursor" 
+                        onClick={handleShowAppStatusDetail}
                     >
                         <div className="lh-1-33 cn-9 flex left">
                             <span>Application status</span>

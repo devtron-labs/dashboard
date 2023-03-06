@@ -4,7 +4,7 @@ import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { MarkDown } from '../../../../charts/discoverChartDetail/DiscoverChartDetails'
 import './environmentStatus.scss'
 
-function NotesDrawer({ notes, close ,gitOpsNotes }: { notes: string; close: () => void ;gitOpsNotes:string }) {
+function NotesDrawer({ notes, close, gitOpsNotes }: { notes: string; close: () => void; gitOpsNotes: string }) {
     const appNotesRef = useRef<HTMLDivElement>(null)
 
     const escKeyPressHandler = (evt): void => {
