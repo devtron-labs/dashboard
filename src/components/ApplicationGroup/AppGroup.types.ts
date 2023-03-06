@@ -1,10 +1,13 @@
+import { MultiValue } from 'react-select'
 import {
     CDMdalTabType,
+    CiPipeline,
     DeploymentNodeType,
     WebhookPayloads,
     WorkflowNodeType,
     WorkflowType,
 } from '../app/details/triggerView/types'
+import { OptionType } from '../app/types'
 import { BulkResponseStatus } from './Constants'
 
 interface BulkTriggerAppDetailType {
@@ -206,14 +209,28 @@ export interface EnvHeaderType {
     setEnvName: (label: string) => void
     setShowEmpty: (empty: boolean) => void
     showEmpty: boolean
+    appListOptions: OptionType[]
+    selectedAppList: MultiValue<OptionType>
+    setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
 }
 
 export interface AppGroupAdminType {
     isSuperAdmin: boolean
 }
 
+export interface AppGroupDetailDefaultType {
+    filteredApps: MultiValue<OptionType>
+}
 export interface CIConfigListType {
-    pipelineList: any
-    securityInfo: any
-    moduleConfig: any
+    pipelineList: CiPipeline[]
+    securityModuleInstalled: boolean
+    blobStorageConfigured: boolean
+}
+
+export interface AppGroupAppFilterContextType {
+    appListOptions: OptionType[]
+    selectedAppList: MultiValue<OptionType>
+    setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
+    isMenuOpen: boolean
+    setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
