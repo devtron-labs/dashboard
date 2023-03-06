@@ -5,7 +5,7 @@ import { MarkDown } from '../../../../charts/discoverChartDetail/DiscoverChartDe
 import './environmentStatus.scss'
 import { NotesDrawerType } from './notesDrawer.type'
 
-function NotesDrawer({ notes, close, gitOpsNotes }: NotesDrawerType) {
+function NotesDrawer({ notes, close }: NotesDrawerType) {
     const appNotesRef = useRef<HTMLDivElement>(null)
 
     const escKeyPressHandler = (evt): void => {
@@ -47,7 +47,7 @@ function NotesDrawer({ notes, close, gitOpsNotes }: NotesDrawerType) {
                     </div>
                 </div>
                 <div className="app-notes__body">
-                    <MarkDown className="app-notes__markdown fs-13" markdown={notes || gitOpsNotes} breaks={true} />
+                    <MarkDown className="app-notes__markdown fs-13" markdown={notes} breaks={true} />
                 </div>
             </div>
         </Drawer>
