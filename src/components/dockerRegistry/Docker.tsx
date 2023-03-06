@@ -11,7 +11,6 @@ import {
     multiSelectStyles,
     handleOnBlur,
     handleOnFocus,
-    checkIfDefaultSecret,
     parsePassword,
 } from '../common'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
