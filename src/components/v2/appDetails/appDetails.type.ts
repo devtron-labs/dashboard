@@ -181,7 +181,6 @@ export interface AppDetails {
     clusterName?: string
     dockerRegistryId?: string
     deploymentAppDeleteRequest?: boolean
-    gitOpsNotes?: string
 }
 
 interface MaterialInfo {

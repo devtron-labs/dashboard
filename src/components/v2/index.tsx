@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { useRouteMatch, useParams, Redirect,useLocation, useHistory } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
 import { URLS } from '../../config';
-import { DetailsProgressing, ErrorScreenManager, sortOptionsByValue } from '../common';
+import { DetailsProgressing, ErrorScreenManager, showError, sortOptionsByValue } from '../common';
 import ValuesComponent from './values/ChartValues.component';
 import AppHeaderComponent from './headers/AppHeader.component';
 import ChartHeaderComponent from './headers/ChartHeader.component';
@@ -78,19 +78,25 @@ function RouterComponent({ envType}) {
             _init();
         }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL ||30000);
     }
-
+    let notesFetched = false
     const _getAndSetAppDetail = async () => {
         try {
             let response = null
             let notesResponse = null
             if (envType === EnvType.CHART) {
                 response = await getInstalledChartDetail(+params.appId, +params.envId)
-                if (response.result.deploymentAppType === 'argo_cd') {
-                    notesResponse = await getInstalledChartNotesDetail(+params.appId, +params.envId)
-                    if (notesResponse.result.gitOpsNotes) {
-                        response.result.notes = notesResponse.result.gitOpsNotes
+                if (response.result.deploymentAppType === 'argo_cd' && !notesFetched) {
+                    try {
+                        notesResponse = await getInstalledChartNotesDetail(+params.appId, +params.envId)
+                        if (notesResponse.result.gitOpsNotes) {
+                            response.result.notes = notesResponse.result.gitOpsNotes
+                            notesFetched = true
+                        }
+                    } catch (error) {
+                        showError(error)
                     }
                 }
+
                 IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART)
             } else {
                 response = await getInstalledAppDetail(+params.appId, +params.envId)
@@ -128,14 +134,14 @@ function RouterComponent({ envType}) {
                 setIsLoading(false)
             }
 
-            setErrorResponseCode(undefined);
+            setErrorResponseCode(undefined)
         } catch (e: any) {
-            if(e?.code){
-                setErrorResponseCode(e.code);
+            if (e?.code) {
+                setErrorResponseCode(e.code)
             }
-            setIsLoading(false);
+            setIsLoading(false)
         }
-    };
+    }
 
     const redirectToHomePage = () => {};
 

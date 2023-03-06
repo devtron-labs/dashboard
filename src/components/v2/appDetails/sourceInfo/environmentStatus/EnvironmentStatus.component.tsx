@@ -33,7 +33,10 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
         <div>
             <div className="flex left ml-20 mb-16">
                 {status && (
-                    <div className="app-status-card bcn-0 mr-12 br-8 p-16 cursor" onClick={() => setShowAppStatusDetail(true)}>
+                    <div
+                        className="app-status-card bcn-0 mr-12 br-8 p-16 cursor"
+                        onClick={() => setShowAppStatusDetail(true)}
+                    >
                         <div className="lh-1-33 cn-9 flex left">
                             <span>Application status</span>
                             <Tippy
@@ -133,19 +136,18 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                         <div className=" fw-6 fs-14">
                             {appDetails.appStoreChartName && <span>{appDetails.appStoreChartName}/</span>}
                             {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
-                            
                         </div>
                         <div className="flex left">
-                            {(appDetails.notes || appDetails.gitOpsNotes) && (
+                            {appDetails.notes && (
                                 <div className="details-hover flex cb-5 fw-6 cursor" onClick={() => setShowNotes(true)}>
                                     <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
                                 </div>
                             )}
-                            {(appDetails.notes || appDetails.gitOpsNotes) && appDetails.appStoreChartId && (
+                            {appDetails.notes && appDetails.appStoreChartId && (
                                 <div className="app-status-card__divider" />
                             )}
                             {appDetails.appStoreChartId && (
-                                <div >
+                                <div>
                                     <Link
                                         className="cb-5 fw-6"
                                         to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
@@ -185,7 +187,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
             )}
             {showNotes && (
                 <NotesDrawer
-                    notes={appDetails.notes || appDetails.gitOpsNotes}
+                    notes={appDetails.notes}
                     close={() => {
                         setShowNotes(false)
                     }}
