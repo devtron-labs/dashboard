@@ -67,11 +67,6 @@
 }
 
 .resource-row{
-    .green-tick {
-        path {
-            stroke: var(--G500);
-        }
-    }
     .resource-action-tabs__clipboard {
         &:hover {
             path {

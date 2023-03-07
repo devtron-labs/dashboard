@@ -26,7 +26,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0);
-    const [copied, setCopied] = useState<string>('');
+    const [copiedNodeName, setCopiedNodeName] = useState<string>('');
     const [tableHeader, setTableHeader] = useState([]);
     const [firstColWidth, setFirstColWidth] = useState('');
     const [podType, setPodType] = useState(false);
@@ -72,13 +72,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     }, [externalLinks])
 
     useEffect(() => {
-        if (!copied) return
-        setTimeout(() => setCopied(''), 2000);
-    }, [copied])
-    
-    const toggleClipBoard = (name: string) => {
-        setCopied(name);
-    };
+        if (!copiedNodeName) return
+        setTimeout(() => setCopiedNodeName(''), 2000);
+    }, [copiedNodeName])
 
     useEffect(() => {
         if (params.nodeType) {
@@ -134,6 +130,11 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             setSelectedHealthyNodeCount(_healthyNodeCount)
         }
     }, [params.nodeType, podType, url, filteredNodes, podLevelExternalLinks])
+
+    const toggleClipBoard = (event: React.MouseEvent, nodeName: string) => {
+        event.stopPropagation()
+        copyToClipboard(nodeName, () => setCopiedNodeName(nodeName))
+    }
 
     const getPodRestartCount = (node: iNode) => {
         let restartCount = '0'
@@ -193,7 +194,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         let _currentNodeHeader = ''
         const clipBoardInteraction = (nodeName: string): JSX.Element => {
-            return copied === nodeName ? (
+            return copiedNodeName === nodeName ? (
                 <Tippy
                     className="default-tt"
                     hideOnClick={false}
@@ -204,19 +205,18 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                     trigger="mouseenter click"
                 >
                     <span>
-                        <Check className="icon-dim-12 green-tick ml-8 mr-8" />
+                        <Check className="icon-dim-12 scg-5 ml-8 mr-8" />
                     </span>
                 </Tippy>
             ) : (
-                    <span>
-                        <Clipboard
-                            className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                copyToClipboard(nodeName, () => toggleClipBoard(nodeName))
-                            }}
-                        />
-                    </span>
+                <span>
+                    <Clipboard
+                        className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
+                        onClick={(event) => {
+                            toggleClipBoard(event, nodeName)
+                        }}
+                    />
+                </span>
             )
         }
         return nodes.map((node, index) => {
@@ -224,11 +224,6 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             const _isSelected = markedNodes.current.get(node.name)
             // Only render node kind header when it's the first node or it's a different kind header
             _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
-
-            const onClickClipboard = (e) => {
-                e.stopPropagation()
-                copyToClipboard(node?.name, () => setCopied(node.name))
-            }
 
             const onClickNodeDetailsTab = (e) => {
                 const _kind = e.target.dataset.name
