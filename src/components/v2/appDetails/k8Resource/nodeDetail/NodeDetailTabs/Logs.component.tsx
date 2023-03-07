@@ -158,6 +158,7 @@ function LogsComponent({
             try {
                 workerRef.current.postMessage({ type: 'stop' })
                 workerRef.current.terminate()
+                showStreamErrorRef.current = false
             } catch (err) {}
         }
     }
