@@ -19,7 +19,6 @@ import {
     DeleteChartDialogProps,
     DeploymentAppSelectorType,
     DeploymentAppType,
-    DeploymentAppTypeNameMapping,
     ErrorScreenWithInfoProps,
     UpdateApplicationButtonProps,
     ValueNameInputType,
@@ -32,7 +31,7 @@ import {
     DELETE_PRESET_VALUE_DESCRIPTION_LINES,
     UPDATE_APP_BUTTON_TEXTS,
 } from './ChartValuesView.constants'
-import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
+import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { RadioGroup, RadioGroupItem } from '../../../common/formFields/RadioGroup'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
@@ -108,8 +107,8 @@ export const DeploymentAppSelector = ({
             <div className="flex left">
                 <span className="fs-13 fw-6  cn-9 md-6 ">
                     {commonState.installedConfig.deploymentAppType === DeploymentAppType.Helm
-                        ? DeploymentAppTypeNameMapping.HelmKeyValue
-                        : DeploymentAppTypeNameMapping.GitOpsKeyValue}
+                        ? DeploymentAppTypeNameMapping.Helm
+                        : DeploymentAppTypeNameMapping.GitOps}
                 </span>
                 <span>
                     {commonState.installedConfig.deploymentAppType === DeploymentAppType.GitOps ? (

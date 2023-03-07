@@ -51,7 +51,7 @@ export function EnvSelector({ environments, disabled }) {
                     ENV
                 </div>
             </div>
-            <div style={{ width: '200px' }}>
+            <div className="w-200">
                 <Select options={Array.isArray(environments) ?
                     environments.map(env => ({ label: env.environmentName, value: env.environmentId })) : []}
                     placeholder='Select Environment'
