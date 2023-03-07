@@ -140,9 +140,3 @@ export const APP_GROUP_CI_DETAILS = {
         subTitle: 'Pipeline trigger history, details and logs will be available here.',
     },
 }
-
-// user locked message
-export const USER_LOCK_MESSAGE = {
-    ADMIN: 'Admin user cannot be edited',
-    SYSTEM: 'System user cannot be edited'
-}
