@@ -11,10 +11,10 @@ import { SocketConnectionType } from './node.type'
 import TerminalView from './terminal/Terminal'
 import MessageUI from '../../../../common/message.ui'
 import { Option } from '../../../../common/ReactSelect.utils'
-import { flatContainers, getContainerOptions, getContainerSelectStyles, getShellSelectStyles } from '../nodeDetail.util'
+import { getContainersData, getContainerSelectStyles, getGroupedContainerOptions, getShellSelectStyles } from '../nodeDetail.util'
 import { shellTypes } from '../../../../../../config/constants'
 import { OptionType } from '../../../../../app/types'
-import { TerminalComponentProps } from '../../../appDetails.type'
+import { Options, TerminalComponentProps } from '../../../appDetails.type'
 import './nodeDetailTab.scss'
 
 function TerminalComponent({
@@ -26,8 +26,8 @@ function TerminalComponent({
     const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
     const { url } = useRouteMatch()
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
-    const containers = isResourceBrowserView ? selectedResource.containers : flatContainers(podMetaData).sort()
-    const [selectedContainerName, setSelectedContainerName] = useState(containers?.[0] || '')
+    const containers = (isResourceBrowserView ? selectedResource.containers : getContainersData(podMetaData)) as Options[]
+    const [selectedContainerName, setSelectedContainerName] = useState(containers?.[0]?.name || '')
     const [selectedtTerminalType, setSelectedtTerminalType] = useState(shellTypes[0])
     const [terminalCleared, setTerminalCleared] = useState(false)
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
@@ -107,7 +107,8 @@ function TerminalComponent({
                 <div style={{ minWidth: '145px' }}>
                     <Select
                         placeholder="Select Containers"
-                        options={getContainerOptions(containers)}
+                        classNamePrefix="containers-select"
+                        options={getGroupedContainerOptions(containers)}
                         defaultValue={defaultContainerOption}
                         onChange={handleContainerChange}
                         styles={getContainerSelectStyles()}
