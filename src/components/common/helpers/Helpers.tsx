@@ -11,11 +11,12 @@ import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
 import { toastAccessDenied } from '../ToastBody'
 import { AggregationKeys, OptionType } from '../../app/types'
-import { ClusterImageList, ImageList } from '../../ClusterNodes/types'
+import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
+import { AUTO_SELECT } from '../../ClusterNodes/constants'
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -1161,13 +1162,13 @@ export const processK8SObjects = (
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
 
-export function createClusterEnvGroup<T>(list: T[], propKey: string): { label: string; options: T[] }[] {
+export function createClusterEnvGroup<T>(list: T[], propKey: string, isOptionType?: boolean, optionName?: string): { label: string; options: T[] }[] {
     const objList: Record<string, T[]> = list.reduce((acc, obj) => {
         const key = obj[propKey]
         if (!acc[key]) {
             acc[key] = []
         }
-        acc[key].push(obj)
+        acc[key].push(isOptionType ? {label: obj[optionName], value: obj[optionName]} : obj)
         return acc
     }, {})
 
@@ -1222,6 +1223,28 @@ export const trackByGAEvent = (category: string, action: string): void => {
         action: action,
     })
 }
+
+export const createGroupSelectList = (list, nodeLabel): SelectGroupType[] => {
+    let emptyHeadingCount = 0
+    const objList: Record<string, OptionType[]> = list.reduce((acc, obj) => {
+        if (obj.nodeGroup) {
+            emptyHeadingCount++
+        }
+        const key = obj.nodeGroup || 'Independent nodes'
+        if (!acc[key]) {
+            acc[key] = []
+        }
+        acc[key].push({ label: obj[nodeLabel], value: obj[nodeLabel] })
+        return acc
+    }, {})
+
+    const groupList = Object.entries(objList).map(([key, value]) => ({
+        label: emptyHeadingCount ? key : '',
+        options: value,
+    }))
+
+    return [{ label: '', options: [AUTO_SELECT] }, ...groupList]
+}  
 
 export const handleOnBlur = (e): void => {
     if (!e.target.value) {
