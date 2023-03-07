@@ -11,6 +11,7 @@ import {
     filterImageList,
     showError,
     useBreadcrumb,
+    createGroupSelectList,
 } from '../common'
 import {
     ClusterCapacityType,
@@ -34,7 +35,7 @@ import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import ClusterTerminal from './ClusterTerminal'
-import { COLUMN_METADATA } from './constants'
+import { COLUMN_METADATA, NODE_SEARCH_TEXT } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
@@ -74,7 +75,6 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [nodeListOffset, setNodeListOffset] = useState(0)
     const [showTerminal, setTerminal] = useState<boolean>(false)
-    const nodeList = filteredFlattenNodeList.map((node) => node['name'])
     const clusterName: string = filteredFlattenNodeList[0]?.['clusterName'] || ''
     const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
     const [selectedNode, setSelectedNode] = useState<string>()
@@ -271,10 +271,10 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             if (selectedVersion.value !== defaultVersion.value && element['k8sVersion'] !== selectedVersion.value) {
                 continue
             }
-            if (selectedSearchTextType === 'name' && searchedTextMap.size > 0) {
+            if (selectedSearchTextType === NODE_SEARCH_TEXT.NAME && searchedTextMap.size > 0) {
                 let matchFound = false
                 for (const [key] of searchedTextMap.entries()) {
-                    if (element['name'].indexOf(key) >= 0) {
+                    if (element[NODE_SEARCH_TEXT.NAME].indexOf(key) >= 0) {
                         matchFound = true
                         break
                     }
@@ -282,10 +282,10 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                 if (!matchFound) {
                     continue
                 }
-            } else if (selectedSearchTextType === 'label') {
+            } else if (selectedSearchTextType === NODE_SEARCH_TEXT.LABEL) {
                 let matchedLabelCount = 0
-                for (let i = 0; i < element['labels']?.length; i++) {
-                    const currentLabel = element['labels'][i]
+                for (let i = 0; i < element[NODE_SEARCH_TEXT.LABELS]?.length; i++) {
+                    const currentLabel = element[NODE_SEARCH_TEXT.LABELS][i]
                     const matchedLabel = searchedTextMap.get(currentLabel.key)
                     if (matchedLabel === undefined || (matchedLabel !== null && currentLabel.value !== matchedLabel)) {
                         continue
@@ -295,7 +295,19 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                 if (searchedTextMap.size !== matchedLabelCount) {
                     continue
                 }
+            } else if (selectedSearchTextType === NODE_SEARCH_TEXT.NODE_GROUP) {
+                let matchFound = false
+                for (const [key] of searchedTextMap.entries()) {
+                    if (element[NODE_SEARCH_TEXT.NODE_GROUP].indexOf(key) >= 0) {
+                        matchFound = true
+                        break
+                    }
+                }
+                if (!matchFound) {
+                    continue
+                }
             }
+             
             _flattenNodeList.push(element)
         }
         if (sortByColumn) {
@@ -397,7 +409,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }
 
     const headerTerminalIcon = (): void => {
-        openTerminalComponent(filteredFlattenNodeList[0])
+        openTerminalComponent({name:'autoSelectNode', k8sVersion: 'latest'})
     }
 
     const renderClusterError = (): JSX.Element => {
@@ -790,7 +802,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             {showTerminal && selectedNode && (
                 <ClusterTerminal
                     clusterId={Number(clusterId)}
-                    nodeList={nodeList}
+                    nodeGroups={createGroupSelectList(filteredFlattenNodeList,'name')}
                     closeTerminal={closeTerminal}
                     clusterImageList={nodeImageList}
                     namespaceList={namespaceList[clusterName]}

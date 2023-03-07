@@ -44,6 +44,11 @@ export interface ClusterCapacityType {
     cpu: ResourceDetail
     memory: ResourceDetail
 }
+
+export interface NodeDetailsType {
+    nodeName: string
+    nodeGroup: string
+}
 export interface ClusterDetail {
     id: number
     name: string
@@ -54,7 +59,8 @@ export interface ClusterDetail {
     cpu: ResourceDetail
     memory: ResourceDetail
     serverVersion: string
-    nodeNames: string[]
+    nodeNames?: string[]
+    nodeDetails?: NodeDetailsType[]
 }
 
 export interface NodeRowDetail {
@@ -142,16 +148,22 @@ export interface ClusterListType {
     namespaceList: string[]
 }
 
+export interface SelectGroupType {
+    label: string
+    options: OptionType[]
+}
+
 export interface ClusterTerminalType {
     clusterId: number
     clusterName?: string
-    nodeList: string[]
+    nodeList?: string[]
     closeTerminal?: (skipRedirection?: boolean) => void
     clusterImageList: ImageList[]
     isNodeDetailsPage?: boolean
     namespaceList: string[]
     node?: string
     setSelectedNode?: React.Dispatch<React.SetStateAction<string>>
+    nodeGroups?: SelectGroupType[]
 }
 
 export const TEXT_COLOR_CLASS = {
@@ -232,4 +244,19 @@ export interface ClusterImageList {
     groupId: string
     groupRegex: string
     imageList: ImageList[]
+}
+
+export interface ClusterEventsType {
+    terminalAccessId: number
+    reconnectStart?: () => void
+}
+
+export interface TerminalDataType {
+    id?: number
+    clusterId: number
+    baseImage: string
+    shellName: string
+    nodeName: string
+    namespace: string
+    terminalAccessId?: number
 }

@@ -194,7 +194,7 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
 
     return (
         <div>
-            <PageHeader headerName="Application Groups" />
+            <PageHeader headerName="Application Groups" markAsBeta={true}/>
             <div className="env-list bcn-0">
                 <div className="flex dc__content-space pl-20 pr-20 pt-16 pb-16">
                     {renderSearch()}
