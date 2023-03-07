@@ -10,9 +10,11 @@ import { URLS } from '../../../../../config'
 import { AppType } from '../../../appDetails/appDetails.type'
 import { useSharedState } from '../../../utils/useSharedState'
 import { Link } from 'react-router-dom'
-import { useRouteMatch, useHistory } from 'react-router'
+import { useRouteMatch, useHistory, useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
 import NotesDrawer from './NotesDrawer'
+import { getInstalledChartNotesDetail } from '../../appDetails.api'
+import { useAsync } from '../../../../common'
 
 function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
@@ -23,17 +25,24 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
         status.toLowerCase() === 'hibernated' || status.toLowerCase() === 'partially hibernated'
     const { path, url } = useRouteMatch()
     const history = useHistory()
-
+    const params = useParams<{ appId: string; envId: string }>()
+    const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
     const onClickUpgrade = () => {
         let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
         history.push(_url)
+    }
+
+    const notes = appDetails.notes || notesResult?.result?.gitOpsNotes;
+    
+    const handleShowAppStatusDetail = () => {
+        setShowAppStatusDetail(true)
     }
 
     return (
         <div>
             <div className="flex left ml-20 mb-16">
                 {status && (
-                    <div className="app-status-card bcn-0 mr-12 br-8 p-16 cursor" onClick={() => setShowAppStatusDetail(true)}>
+                    <div className="app-status-card bcn-0 mr-12 br-8 p-16 cursor" onClick={handleShowAppStatusDetail}>
                         <div className="lh-1-33 cn-9 flex left">
                             <span>Application status</span>
                             <Tippy
@@ -135,14 +144,12 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                             {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
                         </div>
                         <div className="flex left">
-                            {appDetails.notes && (
+                            {notes && (
                                 <div className="details-hover flex cb-5 fw-6 cursor" onClick={() => setShowNotes(true)}>
                                     <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
                                 </div>
                             )}
-                            {appDetails.notes && appDetails.appStoreChartId && (
-                                <div className="app-status-card__divider" />
-                            )}
+                            {!!notes && !!appDetails.appStoreChartId && <div className="app-status-card__divider" />}
                             {appDetails.appStoreChartId && (
                                 <div>
                                     <Link
@@ -159,8 +166,6 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
 
                 {appDetails?.deprecated && (
                     <div className="app-status-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
-                        {console.log(`${url.split('/').pop()}`)}
-
                         <div className="cn-9 lh-1-33 flex left">
                             <span>Chart deprecated</span>
                             <Alert className="icon-dim-16 ml-4" />
@@ -184,7 +189,7 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
             )}
             {showNotes && (
                 <NotesDrawer
-                    notes={appDetails.notes}
+                    notes={notes}
                     close={() => {
                         setShowNotes(false)
                     }}
