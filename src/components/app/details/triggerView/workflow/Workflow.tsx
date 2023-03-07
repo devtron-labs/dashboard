@@ -5,7 +5,7 @@ import { TriggerExternalCINode } from './nodes/TriggerExternalCINode'
 import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
-import { getCIPipelineURL, RectangularEdge as Edge } from '../../../../common'
+import { Checkbox, CHECKBOX_VALUE, getCIPipelineURL, RectangularEdge as Edge } from '../../../../common'
 import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
@@ -255,6 +255,10 @@ export class Workflow extends Component<WorkflowProps> {
         })
     }
 
+    handleWorkflowSelection = () => {
+        this.props.handleSelectionChange(this.props.appId)
+    }
+
     render() {
         const isExternalCiWorkflow = this.props.nodes.some(
             (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
@@ -266,19 +270,14 @@ export class Workflow extends Component<WorkflowProps> {
             >
                 <div className="workflow__header">
                     {this.props.fromAppGrouping ? (
-                        <>
-                            <input
-                                type="checkbox"
-                                className="mt-0-imp cursor icon-dim-16"
-                                data-app-id={this.props.appId}
-                                checked={this.props.isSelected}
-                                onChange={this.props.handleSelectionChange}
-                                id={`chkValidate-${this.props.appId}`}
-                            />
-                            <label className="ml-12 cursor fs-13 mb-0-imp lh-20" htmlFor={`chkValidate-${this.props.appId}`}>
-                                {this.props.name}
-                            </label>
-                        </>
+                        <Checkbox
+                            rootClassName="fs-13 fw-6 mb-0 app-group-checkbox"
+                            isChecked={this.props.isSelected}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={this.handleWorkflowSelection}
+                        >
+                            {this.props.name}
+                        </Checkbox>
                     ) : (
                         <span className="workflow__name">{this.props.name}</span>
                     )}

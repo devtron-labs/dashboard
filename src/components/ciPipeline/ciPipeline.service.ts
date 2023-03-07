@@ -370,6 +370,7 @@ function migrateOldData(
                 id: data.id,
                 name: data.name,
                 description: '',
+                triggerIfParentStageFail: false,
                 outputDirectoryPath: [data.outputLocation],
                 index: data.index,
                 stepType: PluginType.INLINE,
