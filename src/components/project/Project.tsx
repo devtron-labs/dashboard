@@ -12,7 +12,6 @@ import { ProjectType } from './types';
 export interface ProjectProps {
     id: number;
     name: string;
-    projects: ReadonlyArray<ProjectType>
     active: boolean;
     isCollapsed: boolean;
     saveProject: (index) => void;
@@ -28,7 +27,6 @@ export interface ProjectProps {
 export interface ProjectState {
     deleting: boolean;
     confirmation: boolean;
-    validationError: string;
 }
 export class Project extends Component<ProjectProps, ProjectState>  {
 
@@ -38,7 +36,6 @@ export class Project extends Component<ProjectProps, ProjectState>  {
         this.state = {
             deleting: false,
             confirmation: false,
-            validationError: ""
         }
     }
 
@@ -63,30 +60,8 @@ export class Project extends Component<ProjectProps, ProjectState>  {
     }
 
     saveProjectData = (event) => {
-        const _projectExists = this.isProjectNameExists()
-        if (!this.props.name) {
-            this.setState({
-                validationError: "This is a required field"
-            })
-            return
-        }
-        else if (_projectExists) {
-            this.setState({
-                validationError: "This Project already exists"
-            })
-            return
-        }
-        else {
-            this.setState({
-                validationError: ""
-            })
-        }
         event.preventDefault()
         this.props.saveProject(this.props.index)
-    }
-
-    isProjectNameExists(): boolean {
-        return this.props.projects.some(({ name }, index) => name === this.props.name && index !== this.props.index)
     }
 
     renderCollapsedView() {
@@ -145,12 +120,11 @@ export class Project extends Component<ProjectProps, ProjectState>  {
                                 this.props.handleChange(event, this.props.index, 'name')
                             }}
                         />
-                        {isValid.name ? null : <span className="form__error">{errorMessage.name}</span>}
-                        {this.state.validationError && isValid.name ? (
+                        {!isValid.name ? (
                             <span className="form__error">
                                 <>
                                     <Error className="form__icon form__icon--error" />
-                                    {this.state.validationError}
+                                    {errorMessage.name}
                                 </>
                             </span>
                         ) : null}

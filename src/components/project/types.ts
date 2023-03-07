@@ -21,5 +21,4 @@ export interface ProjectType {
     name: string;
     active: boolean;
     isCollapsed: boolean;
-    projects?: Array<ProjectType>
 }

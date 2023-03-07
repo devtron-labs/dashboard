@@ -81,9 +81,31 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         this.setState({ projects });
     }
 
+    isProjectNameExists(index : number, projectName: string): boolean {
+        return this.state.projects.some(({ name }, i) => name === projectName && i !== index)
+    }
+
     saveProject(index: number): void {
-        this.setState({ loadingData: true });
+        let { projects, isValid, errorMessage } = { ...this.state };
         let project = this.state.projects[index];
+        const _projectExists = this.isProjectNameExists(index, project.name)
+        if (!project.name) {
+            isValid["name"] = false;
+            errorMessage["name"] = "This is a required field."
+            this.setState({ isValid }); 
+            return
+        }
+        else if (_projectExists) {
+            isValid["name"] = false;
+            errorMessage["name"] = "This Project already exists."
+            this.setState({ isValid });
+            return
+        }
+        else {
+            isValid["name"] = true;
+            errorMessage["name"]= ""
+        }
+        this.setState({ loadingData: true, isValid });
         createProject(project).then((response) => {
             toast.success("Project Created Successfully");
             let { projects } = { ...this.state };
@@ -106,7 +128,6 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             errorMessage={this.state.errorMessage}
             id={project.id}
             name={project.name}
-            projects={this.state.projects}
             active={project.active}
             isCollapsed={project.isCollapsed}
             index={index}
