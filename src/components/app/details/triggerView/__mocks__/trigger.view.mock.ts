@@ -15,7 +15,7 @@ const materialInfo = {
 }
 
 export const cdTriggerResponse = [{
-    id: 651,
+    id: '651',
     deployedTime: 'Wed, 01 Mar 2023, 06:29 PM',
     deployedBy: '',
     wfrId: 0,
@@ -37,4 +37,5 @@ export const cdTriggerResponse = [{
     materialInfo: [
         materialInfo,
     ],
+    lastExecution: undefined
 }]

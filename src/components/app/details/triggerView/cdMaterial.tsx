@@ -488,6 +488,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <button
                             type="button"
                             className="material-history__changes-btn"
+                            data-testid={mat.showSourceInfo ? 'collapse-show-info' : 'collapse-hide-info'}
                             onClick={(event) => {
                                 event.stopPropagation()
                                 this.props.toggleSourceInfo(
