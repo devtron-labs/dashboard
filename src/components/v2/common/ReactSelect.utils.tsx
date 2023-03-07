@@ -201,10 +201,13 @@ export const noMatchingPlatformOptions = (): string => {
 }
 
 export function GroupHeading(props) {
-    if (!props.data.label) return null
+    const {data, hideClusterName} = props
+    if (!data.label) return null
     return (
         <components.GroupHeading {...props}>
-            <div className="flex dc__no-text-transform flex-justify h-100">Cluster : {props.data.label}</div>
+            <div className="flex dc__no-text-transform flex-justify h-100">
+                {!hideClusterName ? 'Cluster : ' : ''} {data.label}
+            </div>
         </components.GroupHeading>
     )
 }

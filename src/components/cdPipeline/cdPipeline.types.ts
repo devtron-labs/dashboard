@@ -47,43 +47,30 @@ export interface Environment {
     clusterName: string
     isClusterCdActive: boolean;
 }
+export interface CommonError {
+    isValid: boolean
+    message: string
+}
 export interface CDPipelineState {
     environments: Environment[];
     view: string;
     code: number;
     loadingData: boolean;
     strategies: DeploymentStrategy[];
-    pipelineConfig: {
-        id: number;
-        environmentId: number;
-        environmentName?: string;
-        ciPipelineId: number;
-        triggerType: string;
-        name: string;
-        preStage: CDStageType & { switch: string };
-        postStage: CDStageType & { switch: string };
-        strategies: SavedDeploymentStrategy[];
-        namespace: string;
-        preStageConfigMapSecretNames: {
-            configMaps: string[];
-            secrets: string[];
-        };
-        postStageConfigMapSecretNames: {
-            configMaps: string[];
-            secrets: string[];
-        };
-        runPreStageInEnv: boolean;
-        runPostStageInEnv: boolean;
-        isClusterCdActive: boolean;
-        parentPipelineId: number;
-        parentPipelineType: string;
-        deploymentAppType: string;
+    pipelineConfig: PipelineConfig & {
+        environmentName?: string
+        deploymentAppType: string
         deploymentAppCreated: boolean
-    };
+    }
     showDeleteModal: boolean;
     shouldDeleteApp: boolean;
     showForceDeleteDialog: boolean;
     showError: boolean;
+    errorForm: {
+        pipelineNameError: CommonError,
+        envNameError: CommonError,
+        nameSpaceError: CommonError
+    }
     showPreStage: boolean;
     showDeploymentStage: boolean;
     showPostStage: boolean;
@@ -93,28 +80,28 @@ export interface CDPipelineState {
 }
 
 export interface PipelineConfig {
-    id: number;
-    environmentId: number;
-    ciPipelineId: number;
-    triggerType: string;
-    name: string;
-    preStage: CDStageType & { switch: string };
-    postStage: CDStageType & { switch: string };
-    strategies: SavedDeploymentStrategy[];
-    namespace: string;
+    id: number
+    environmentId: number
+    ciPipelineId: number
+    triggerType: string
+    name: string
+    preStage: CDStageType & { switch: string }
+    postStage: CDStageType & { switch: string }
+    strategies: SavedDeploymentStrategy[]
+    namespace: string
     preStageConfigMapSecretNames: {
-        configMaps: string[];
-        secrets: string[];
-    };
+        configMaps: string[]
+        secrets: string[]
+    }
     postStageConfigMapSecretNames: {
-        configMaps: string[];
-        secrets: string[];
-    };
-    runPreStageInEnv: boolean;
-    runPostStageInEnv: boolean;
-    isClusterCdActive: boolean;
-    parentPipelineId: number;
-    parentPipelineType: string;
+        configMaps: string[]
+        secrets: string[]
+    }
+    runPreStageInEnv: boolean
+    runPostStageInEnv: boolean
+    isClusterCdActive: boolean
+    parentPipelineId: number
+    parentPipelineType: string
 }
 
 export interface BasicCDPipelineModalProps {
