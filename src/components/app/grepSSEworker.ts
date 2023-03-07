@@ -112,6 +112,9 @@ export default () => {
                     wrappers[index].eventSrc.addEventListener('error', function (ev) {
                         self.postMessage({ result: [], signal: 'close', readyState: wrappers[index].eventSrc.readyState }, null); // eslint-disable-line no-restricted-globals
                     })
+                    wrappers[index].eventSrc.addEventListener('CUSTOM_ERR_STREAM', function (ev) {
+                        self.postMessage({ result: [ev.data], signal: 'CUSTOM_ERR_STREAM', readyState: wrappers[index].eventSrc.readyState }, null); // eslint-disable-line no-restricted-globals
+                    })
                 }
                 break
             case 'stop':
