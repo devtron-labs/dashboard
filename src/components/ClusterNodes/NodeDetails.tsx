@@ -40,6 +40,7 @@ import {
     NodeDetailResponse,
     PodType,
     ResourceDetail,
+    SelectGroupType,
     TEXT_COLOR_CLASS,
     UpdateNodeRequestBody,
 } from './types'
@@ -61,7 +62,8 @@ import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 
 export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
-    const nodeListRef = useRef([nodeName])
+    const selectedNodeName: SelectGroupType = {label: '', options:[{label: nodeName,value: nodeName}]}
+    const nodeListRef = useRef([selectedNodeName])
     const [loader, setLoader] = useState(false)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
@@ -959,7 +961,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         return (
             <ClusterTerminal
                 clusterId={Number(clusterId)}
-                nodeList={nodeListRef.current}
+                nodeGroups={nodeListRef.current}
                 clusterImageList={nodeImageList}
                 isNodeDetailsPage={true}
                 namespaceList={namespaceList[nodeDetail.clusterName]}
