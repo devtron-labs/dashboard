@@ -59,6 +59,7 @@ function LogsComponent({
     const [highlightString, setHighlightString] = useState('')
     const [logsCleared, setLogsCleared] = useState(false)
     const [readyState, setReadyState] = useState(null)
+    const showStreamErrorRef = useRef(false)
     const logsPausedRef = useRef(false)
     const workerRef = useRef(null)
     const appDetails = IndexStore.getAppDetails()
@@ -131,15 +132,24 @@ function LogsComponent({
         return _args ? { _args: _args.join(' '), a: Number(A || a), b: Number(B || b), v } : null
     }
 
+    const updateLogsAndReadyState = (event: any) => {
+        event.data.result.forEach((log: string) => subject.publish(log))
+        if (event.data.readyState) {
+            setReadyState(event.data.readyState)
+        }
+    }
+
     const handleMessage = (event: any) => {
         if (!event || !event.data || !event.data.result || logsPausedRef.current) {
             return
-        }
-
-        event.data.result.forEach((log: string) => subject.publish(log))
-
-        if (event.data.readyState) {
-            setReadyState(event.data.readyState)
+        } else if (event.data.result?.length === 1 && event.data.signal === 'CUSTOM_ERR_STREAM') {
+            if (!showStreamErrorRef.current) {
+                updateLogsAndReadyState(event)
+                showStreamErrorRef.current = true
+            }
+            return
+        } else {
+            updateLogsAndReadyState(event)
         }
     }
 
