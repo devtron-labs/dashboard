@@ -161,16 +161,14 @@
     margin-left: 180px;
 }
 
-@media(min-width: 1440px) {
+@media (min-width: 1440px) {
     .text-input {
         margin-bottom: 32px;
     }
     .login__button {
-        margin-top: 32px
+        margin-top: 32px;
     }
 }
-
-
 
 .login__title {
     padding: 22px 24px;
@@ -185,7 +183,7 @@
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
-    margin-top: 4px ;
+    margin-top: 4px;
     margin-bottom: 24px;
 }
 
@@ -236,7 +234,7 @@
 
 .login__auth-link {
     text-decoration: none !important;
-    color: var(--B500)
+    color: var(--B500);
 }
 
 .sso__warn-title {
@@ -254,12 +252,12 @@
     background-color: var(--B500);
 }
 
-.login__btn{
+.login__btn {
     border: none;
     outline: none;
     background: none;
 }
 
-.login__btn:focus{ 
-    outline:0; 
+.login__btn:focus {
+    outline: 0;
 }
