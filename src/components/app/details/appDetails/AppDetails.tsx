@@ -26,7 +26,7 @@ import {
     useAsync,
     ScanDetailsModal,
 } from '../../../common'
-import { CustomValueContainer, Option } from './../../../v2/common/ReactSelect.utils'
+import { CustomValueContainer, formatHighlightedTextDescription, Option } from './../../../v2/common/ReactSelect.utils'
 import {
     getAppConfigStatus,
     getAppOtherEnvironment,
@@ -612,6 +612,10 @@ export function EnvSelector({
         environments && !environments.deploymentAppDeleteRequest
             ? sortObjectArrayAlphabetically(environments, 'environmentName')
             : environments
+
+    const handleFormatHighlightedText = (opt, { inputValue }) => {
+        return formatHighlightedTextDescription(opt, inputValue, 'label')
+    }
     return (
         <>
             <div style={{ width: 'clamp( 100px, 30%, 100px )', height: '100%', position: 'relative' }}>
@@ -638,6 +642,8 @@ export function EnvSelector({
                             ? sortedEnvironments.map((env) => ({
                                   label: env.environmentName,
                                   value: env.environmentId,
+                                  description: 'Hello',
+                                //   description: env.description,
                               }))
                             : []
                     }
@@ -653,6 +659,7 @@ export function EnvSelector({
                     styles={envSelectorStyle}
                     isDisabled={disabled}
                     isSearchable={false}
+                    formatOptionLabel={handleFormatHighlightedText}
                 />
             </div>
         </>
