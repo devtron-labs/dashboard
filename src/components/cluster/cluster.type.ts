@@ -10,7 +10,7 @@ export const AuthenticationType = {
     IAM: 'IAM'
 }
 
-export const DEFAULT_SECRET_PLACEHOLDER = '********'
+export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
 
 export enum ClusterComponentStatus {
     WF_UNKNOWN = 'WF_UNKNOWN',

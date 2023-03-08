@@ -26,6 +26,7 @@ import { replaceLastOddBackslash } from '../../../../../../util/Util'
 import {
     flatContainers,
     getFirstOrNull,
+    getGroupedContainerOptions,
     getInitialPodContainerSelection,
     getPodContainerOptions,
     getSelectedPodList,
@@ -58,6 +59,7 @@ function LogsComponent({
     const [highlightString, setHighlightString] = useState('')
     const [logsCleared, setLogsCleared] = useState(false)
     const [readyState, setReadyState] = useState(null)
+    const showStreamErrorRef = useRef(false)
     const logsPausedRef = useRef(false)
     const workerRef = useRef(null)
     const appDetails = IndexStore.getAppDetails()
@@ -130,15 +132,24 @@ function LogsComponent({
         return _args ? { _args: _args.join(' '), a: Number(A || a), b: Number(B || b), v } : null
     }
 
+    const updateLogsAndReadyState = (event: any) => {
+        event.data.result.forEach((log: string) => subject.publish(log))
+        if (event.data.readyState) {
+            setReadyState(event.data.readyState)
+        }
+    }
+
     const handleMessage = (event: any) => {
         if (!event || !event.data || !event.data.result || logsPausedRef.current) {
             return
-        }
-
-        event.data.result.forEach((log: string) => subject.publish(log))
-
-        if (event.data.readyState) {
-            setReadyState(event.data.readyState)
+        } else if (event.data.result?.length === 1 && event.data.signal === 'CUSTOM_ERR_STREAM') {
+            if (!showStreamErrorRef.current) {
+                updateLogsAndReadyState(event)
+                showStreamErrorRef.current = true
+            }
+            return
+        } else {
+            updateLogsAndReadyState(event)
         }
     }
 
@@ -147,6 +158,7 @@ function LogsComponent({
             try {
                 workerRef.current.postMessage({ type: 'stop' })
                 workerRef.current.terminate()
+                showStreamErrorRef.current = false
             } catch (err) {}
         }
     }
@@ -430,10 +442,8 @@ function LogsComponent({
                                 <div style={{ width: '150px' }}>
                                     <Select
                                         placeholder="Select Containers"
-                                        options={podContainerOptions.containerOptions.map((_container) => ({
-                                            label: _container.name,
-                                            value: _container.name,
-                                        }))}
+                                        classNamePrefix="containers-select"
+                                        options={getGroupedContainerOptions(podContainerOptions.containerOptions)}
                                         value={getFirstOrNull(
                                             podContainerOptions.containerOptions
                                                 .filter((_container) => _container.selected)
@@ -448,6 +458,10 @@ function LogsComponent({
                                         styles={{
                                             ...multiSelectStyles,
                                             menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+                                            menuList: (base) => ({
+                                                ...base,
+                                                paddingTop: 0,
+                                            }),
                                             control: (base, state) => ({
                                                 ...base,
                                                 borderColor: 'transparent',
