@@ -56,7 +56,7 @@ function ManifestComponent({
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
         if (isDeleted) return
-
+        toggleManagedFields(false)
         const _selectedResource = isResourceBrowserView
             ? selectedResource
             : appDetails.resourceTree.nodes.filter(
@@ -154,20 +154,15 @@ function ManifestComponent({
     }, [params.actionName])
 
     useEffect(() => {
+        setTrimedManifestEditorData(activeManifestEditorData)
         if (activeTab === 'Live manifest') {
             let jsonManifestData = YAML.parse(activeManifestEditorData)
             if (jsonManifestData?.metadata?.managedFields) {
                 toggleManagedFields(true)
                 if (hideManagedFields) {
                     setTrimedManifestEditorData(trimManifestData(jsonManifestData))
-                } else {
-                    setTrimedManifestEditorData(activeManifestEditorData)
                 }
-            } else {
-                setTrimedManifestEditorData(activeManifestEditorData)
             }
-        } else {
-            setTrimedManifestEditorData(activeManifestEditorData)
         }
     }, [activeManifestEditorData, hideManagedFields, activeTab])
 
