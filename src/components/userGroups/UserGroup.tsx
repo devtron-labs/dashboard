@@ -23,6 +23,7 @@ import {
     useEffectAfterMount,
     sortObjectArrayAlphabetically,
     ErrorScreenNotAuthorized,
+    ErrorScreenNoAccess,
 } from '../common'
 import {
     getUserList,
@@ -537,7 +538,7 @@ const UserGroupList: React.FC<{
             </div>
         )
     } else if (error && (error.code === 403 || error.code === 401)) {
-        return <ErrorScreenNotAuthorized />
+        return <ErrorScreenNoAccess />
     } else if (!addHash) {
         return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
     } else if (type =='user' && !isSSOConfigured) {

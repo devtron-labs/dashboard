@@ -20,9 +20,9 @@ export class ErrorScreenManager extends Component<{
             case 401:
                 return 'Unauthorized'
             case 403:
-                // if (UserGroupRoute  ) {
-                //     return <ErrorScreenNoAccess />
-                // }
+                if (UserGroupRoute  ) {
+                    return <ErrorScreenNoAccess />
+                }
                 return <ErrorScreenNotAuthorized /> 
             case 404:
                 return <ErrorScreenNotFound />
@@ -63,19 +63,19 @@ export class ErrorScreenNotAuthorized extends Component<{}> {
     }
 }
 
-// export class ErrorScreenNoAccess extends Component<{}> {
-//     render() {
-//         return (
-//             <EmptyState className="dc__align-reload-center">
-//                 <EmptyState.Image>
-//                     <img src={notAuthorized} alt="Not Authorized" />
-//                 </EmptyState.Image>
-//                 <EmptyState.Title>
-//                     <h3 className="title">Access Denied</h3>
-//                 </EmptyState.Title>
-//                 <EmptyState.Subtitle>Looks like you don't have access to information on this page. Please contact your manager to request access.</EmptyState.Subtitle>
-//             </EmptyState>
-//         )
-//     }
-// }
+export class ErrorScreenNoAccess extends Component<{}> {
+    render() {
+        return (
+            <EmptyState className="dc__align-reload-center">
+                <EmptyState.Image>
+                    <img src={notAuthorized} alt="Not Authorized" />
+                </EmptyState.Image>
+                <EmptyState.Title>
+                    <h3 className="title">Access Denied</h3>
+                </EmptyState.Title>
+                <EmptyState.Subtitle>Looks like you don't have access to information on this page. Please contact your manager to request access.</EmptyState.Subtitle>
+            </EmptyState>
+        )
+    }
+}
 
