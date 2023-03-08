@@ -4,7 +4,6 @@ import notAuthorized from '../../../assets/img/ic-not-authorized.svg'
 import Reload from '../../Reload/Reload'
 import ErrorScreenNotFound from './ErrorScreenNotFound'
 import { ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
-import UserGroupRoute from '../../userGroups/UserGroup'
 
 export class ErrorScreenManager extends Component<{
     code?: number
@@ -53,17 +52,7 @@ export class ErrorScreenNotAuthorized extends Component<{}> {
                 <EmptyState.Title>
                     <h3 className="title">{ERROR_EMPTY_SCREEN.NOT_AUTHORIZED}</h3>
                 </EmptyState.Title>
-                {UserGroupRoute ? (
-                     <EmptyState.Title>
-                     <h3 className="title">Access Denied</h3>
-                    <EmptyState.Subtitle>
-                        Looks like you don't have access to information on this page. Please contact your manager to
-                        request access.
-                    </EmptyState.Subtitle>
-                    </EmptyState.Title>
-                ) : (
-                    <EmptyState.Subtitle>{ERROR_EMPTY_SCREEN.ONLY_FOR_SUPERADMIN}</EmptyState.Subtitle>
-                )}
+                <EmptyState.Subtitle>{ERROR_EMPTY_SCREEN.ONLY_FOR_SUPERADMIN}</EmptyState.Subtitle>
             </EmptyState>
         )
     }
