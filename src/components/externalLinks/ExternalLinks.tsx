@@ -143,7 +143,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                 setLoading(false)
             })
             .catch((e) => {
-                showError(e,true,true)
+                //showError(e,true,true)
                 setErrorStatusCode(e.code)
                 setLoading(false)
             })
