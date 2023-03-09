@@ -228,7 +228,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     closeAddWorkflow = () => {
         this.props.history.push(
-            `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
+            `${this.props.isJobView ? URLS.JOB : URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
+                URLS.APP_WORKFLOW_CONFIG
+            }`,
         )
         this.props.getWorkflows()
     }

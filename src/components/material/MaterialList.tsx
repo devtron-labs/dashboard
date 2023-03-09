@@ -169,7 +169,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             return (
                 <div className="form__app-compose">
                     {this.renderPageHeader()}
-                    {!this.state.materials.length && this.renderSampleApp()}
+                    {!this.props.isJobView && !this.state.materials.length && this.renderSampleApp()}
                     <CreateMaterial
                         key={this.state.materials.length}
                         appId={Number(this.props.match.params.appId)}
@@ -180,6 +180,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         isCheckoutPathValid={this.isCheckoutPathValid}
                         isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
                         reload={this.getGitProviderConfig}
+                        isJobView={this.props.isJobView}
                     />
                     {this.state.materials.map((mat) => {
                         return (
@@ -197,6 +198,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                                 reload={this.getGitProviderConfig}
                                 toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
                                 setRepo={this.props.setRepo}
+                                isJobView={this.props.isJobView}
                             />
                         )
                     })}

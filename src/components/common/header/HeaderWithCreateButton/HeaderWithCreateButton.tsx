@@ -4,7 +4,7 @@ import PageHeader from '../PageHeader'
 import { ReactComponent as DropDown } from '../../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as ChartIcon } from '../../../../assets/icons/ic-charts.svg'
 import { ReactComponent as AddIcon } from '../../../../assets/icons/ic-add.svg'
-import { ReactComponent as JobIcon } from '../../../../assets/icons/ic-clock.svg'
+import { ReactComponent as JobIcon } from '../../../../assets/icons/ic-k8s-job.svg'
 import { AppListConstants, SERVER_MODE, URLS } from '../../../../config'
 import { Modal } from '../../modals/Modal'
 import './HeaderWithCreateButton.scss'
@@ -73,7 +73,7 @@ export default function HeaderWithCreateButton({ headerName }) {
                     </div>
                 </div>
                 <div className="create-modal-child cursor" onClick={openCreateJobModel}>
-                    <JobIcon className="icon-dim-20" />
+                    <JobIcon className="icon-dim-20 scn-7" />
                     <div className="ml-8">
                         <strong>Job</strong>
                         <div>

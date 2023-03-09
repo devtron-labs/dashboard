@@ -13,11 +13,12 @@ import { EmptyView } from './History.components'
 import '../cIDetails/ciDetails.scss'
 import { ArtifactType, CIListItemType, CopyTippyWithTextType } from './types'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
+
 export default function Artifacts({
     status,
     artifact,
     blobStorageEnabled,
-    artifactsUploaded,
+    isArtifactUploaded,
     getArtifactPromise,
     isJobView,
 }: ArtifactType) {
@@ -44,7 +45,7 @@ export default function Artifacts({
 
     if (status.toLowerCase() === TERMINAL_STATUS_MAP.RUNNING) {
         return <CIProgressView />
-    } else if (!artifactsUploaded) {
+    } else if (!isArtifactUploaded) {
         return (
             <EmptyView
                 title="No files found"

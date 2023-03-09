@@ -27,7 +27,7 @@ export interface History {
     triggeredByEmail: string
     stage?: DeploymentStageType
     blobStorageEnabled?: boolean
-    artifactsUploaded?: boolean
+    isArtifactUploaded?: boolean
 }
 
 export interface CiMaterial {
@@ -63,7 +63,7 @@ export interface ArtifactType {
     status: string
     artifact: string
     blobStorageEnabled: boolean
-    artifactsUploaded?: boolean
+    isArtifactUploaded?: boolean
     getArtifactPromise?: () => Promise<any>
     isJobView?: boolean
 }

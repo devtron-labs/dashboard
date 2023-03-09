@@ -334,7 +334,7 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView }: His
                         artifact={triggerDetails.artifact}
                         blobStorageEnabled={triggerDetails.blobStorageEnabled}
                         getArtifactPromise={_getArtifactPromise}
-                        artifactsUploaded={triggerDetails.artifactsUploaded}
+                        isArtifactUploaded={triggerDetails.isArtifactUploaded}
                         isJobView={isJobView}
                     />
                 </Route>
