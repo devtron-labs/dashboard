@@ -11,6 +11,7 @@ export class ErrorScreenManager extends Component<{
     subtitle?: React.ReactChild
     subtitleClass?: string
     reloadClass?: string
+    msg?: string
 }> {
     getMessage() {
         switch (this.props.code) {
@@ -19,7 +20,7 @@ export class ErrorScreenManager extends Component<{
             case 401:
                 return 'Unauthorized'
             case 403:
-                return <ErrorScreenNotAuthorized /> 
+                return <ErrorScreenNotAuthorized msg={this.props.msg} /> 
             case 404:
                 return <ErrorScreenNotFound />
             case 500:
@@ -42,7 +43,7 @@ export class ErrorScreenManager extends Component<{
     }
 }
 
-export class ErrorScreenNotAuthorized extends Component<{}> {
+export class ErrorScreenNotAuthorized extends Component<{msg?:string,title?:string}> {
     render() {
         return (
             <EmptyState className="dc__align-reload-center">
@@ -50,9 +51,9 @@ export class ErrorScreenNotAuthorized extends Component<{}> {
                     <img src={notAuthorized} alt="Not Authorized" />
                 </EmptyState.Image>
                 <EmptyState.Title>
-                    <h3 className="title">{ERROR_EMPTY_SCREEN.NOT_AUTHORIZED}</h3>
+                    <h3 className="title">{this.props.title?this.props.title:ERROR_EMPTY_SCREEN.NOT_AUTHORIZED}</h3>
                 </EmptyState.Title>
-                <EmptyState.Subtitle>{ERROR_EMPTY_SCREEN.ONLY_FOR_SUPERADMIN}</EmptyState.Subtitle>
+                <EmptyState.Subtitle>{this.props.msg?this.props.msg:ERROR_EMPTY_SCREEN.ONLY_FOR_SUPERADMIN}</EmptyState.Subtitle>
             </EmptyState>
         )
     }

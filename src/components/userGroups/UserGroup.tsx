@@ -537,7 +537,8 @@ const UserGroupList: React.FC<{
             </div>
         )
     } else if (error && (error.code === 403 || error.code === 401)) {
-        return <ErrorScreenNotAuthorized  />
+        return <ErrorScreenNotAuthorized msg={`Looks like you don't have access to information on this page. Please contact your manager to request access.`}
+        title={`Access Denied`} />
     } else if (!addHash) {
         return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
     } else if (type =='user' && !isSSOConfigured) {
