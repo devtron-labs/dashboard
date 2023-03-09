@@ -317,6 +317,7 @@ export const DOCUMENTATION = {
     APP_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/create-application#tags`,
     APP_OVERVIEW_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/overview#manage-tags`,
     K8S_RESOURCES_PERMISSIONS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access#kubernetes-resources-permissions`,
+    APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
