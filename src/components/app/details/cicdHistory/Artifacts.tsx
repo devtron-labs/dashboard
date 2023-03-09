@@ -47,7 +47,7 @@ export default function Artifacts({ status, artifact, blobStorageEnabled, getArt
                     <div className="flex column left hover-trigger">
                         <div className="cn-9 fs-14 flex left">
                             <CopyTippyWithText
-                                copyText={artifact?.split(':')[artifact?.split(':').length - 1]}
+                                copyText={artifact.split(':')[artifact?.split(':').length - 1]}
                                 copied={copied}
                                 setCopied={setCopied}
                             />
