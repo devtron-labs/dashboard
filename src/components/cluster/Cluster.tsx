@@ -83,7 +83,9 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     componentDidMount() {
-        this.initialise()
+        if (this.props.isSuperAdmin) {
+            this.initialise()
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -181,11 +183,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
 
     render() {
         if (!this.props.isSuperAdmin) {
-            return (
-                <div className="error-screen-wrapper flex column h-100">
-                    <ErrorScreenNotAuthorized />
-                </div>
-            )
+            return <ErrorScreenNotAuthorized />
         } 
         else if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view === ViewType.ERROR) return <Reload className="dc__align-reload-center" />

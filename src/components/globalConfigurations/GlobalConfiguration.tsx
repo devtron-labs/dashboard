@@ -57,11 +57,11 @@ export default function GlobalConfiguration(props) {
     }, [location.pathname])
 
     function getHostURLConfig() {
-        getHostURLConfiguration()
-            .then((response) => {
+        if (props.isSuperAdmin) {
+            getHostURLConfiguration().then((response) => {
                 setIsHostURLConfig(response.result)
             })
-            .catch((error) => {})
+        }
     }
 
     function handleChecklistUpdate(itemName: string): void {

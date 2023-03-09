@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ErrorScreenManager, Progressing, showError } from '../../components/common';
+import { ErrorScreenManager, ErrorScreenNotAuthorized, Progressing, showError } from '../../components/common';
 import { DOCUMENTATION, ViewType } from '../../config';
 import { createProject, getProjectList } from './service';
 import { toast } from 'react-toastify';
@@ -47,7 +47,9 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     }
 
     componentDidMount() {
-        this.getProjectList()
+        if (this.props.isSuperAdmin) {
+            this.getProjectList()
+        }
     }
 
     handleChange(event, index: number, key: 'name'): void {
@@ -151,13 +153,12 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     }
 
     render() {
+        if (!this.props.isSuperAdmin) {
+            return <ErrorScreenNotAuthorized />
+        }
         if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR || !this.props.isSuperAdmin) {
-            return (
-                <ErrorScreenManager
-                    code={this.props.isSuperAdmin ? this.state.code : 403}
-                />
-            )
+        else if (this.state.view === ViewType.ERROR) {
+            return <ErrorScreenManager code={this.state.code} />
         } else {
             return (
                 <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">

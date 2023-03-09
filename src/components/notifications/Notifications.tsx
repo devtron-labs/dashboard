@@ -54,11 +54,7 @@ export default class Notifications extends Component<NotificationsProps, {}> {
 
     render() {
         if (!this.props.isSuperAdmin) {
-            return (
-                <div className="error-screen-wrapper flex column h-100">
-                    <ErrorScreenNotAuthorized />
-                </div>
-            )
+            return <ErrorScreenNotAuthorized />
         } else {
             return this.renderNotificationHeader()
         }

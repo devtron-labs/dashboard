@@ -3,7 +3,7 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { HostURLConfigState, HostURLConfigProps } from './hosturl.type';
-import { ErrorScreenManager, Progressing, showError } from '../common'
+import { ErrorScreenManager, ErrorScreenNotAuthorized, Progressing, showError } from '../common'
 import { ViewType } from '../../config';
 import { toast } from 'react-toastify';
 import { getAppCheckList, getHostURLConfiguration } from '../../services/service';
@@ -30,6 +30,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     }
 
     componentDidMount() {
+        if(this.props.isSuperAdmin){
         getHostURLConfiguration()
             .then((response) => {
                 let form = response.result || {
@@ -68,6 +69,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                 showError(error)
                 this.setState({ view: ViewType.ERROR, statusCode: error.code })
             })
+        }
     }
 
     handleChange(event): void {
@@ -135,12 +137,15 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     }
 
     render() {
+        if (!this.props.isSuperAdmin) {
+            return <ErrorScreenNotAuthorized />
+        }
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
-        } else if (this.state.view === ViewType.ERROR || !this.props.isSuperAdmin) {
+        } else if (this.state.view === ViewType.ERROR) {
             return (
                 <section className="global-configuration__component flex">
-                    <ErrorScreenManager code={this.props.isSuperAdmin ? this.state.statusCode : 403} />
+                    <ErrorScreenManager code={this.state.statusCode} />
                 </section>
             )
         }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getGitHostList, getGitProviderList } from '../../services/service';
 import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service';
-import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorScreenManager, handleOnBlur, handleOnFocus, parsePassword } from '../common';
+import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorScreenManager, handleOnBlur, handleOnFocus, parsePassword, ErrorScreenNotAuthorized } from '../common';
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
 import { DOCUMENTATION } from '../../config';
@@ -27,7 +27,10 @@ import InfoColourBar from '../common/infocolourBar/InfoColourbar';
 import { safeTrim } from '../../util/Util';
 
 export default function GitProvider({ ...props }) {
-    const [loading, result, error, reload] = useAsync(getGitProviderList);
+   
+    const [loading, result, error, reload] = useAsync(
+        props.isSuperAdmin ? getGitProviderList : () => Promise.resolve(null),
+    )
     const [providerList, setProviderList] = useState([]);
     const [hostListOption, setHostListOption] = useState([]);
     const [isPageLoading, setIsPageLoading] = useState(true);
@@ -85,14 +88,18 @@ export default function GitProvider({ ...props }) {
     }
 
     useEffect(() => {
-        getInitData();
-    }, []);
-
+        if (props.isSuperAdmin) {
+            getInitData()
+        }
+    }, [])
+    if (!props.isSuperAdmin) {
+        return <ErrorScreenNotAuthorized />
+    }
     if (isPageLoading) {
         return <Progressing pageLoader />;
     }
-    if (isErrorLoading || !props.isSuperAdmin) {
-        return <ErrorScreenManager code={!props.isSuperAdmin ? 403 : error?.code} />
+    if (isErrorLoading) {
+        return <ErrorScreenManager code={error?.code} />
     }
 
     let allProviders = [

@@ -47,9 +47,11 @@ enum CERTTYPE {
 
 
 export default function Docker({ ...props }) {
-    const [loading, result, error, reload] = useAsync(getDockerRegistryList)
-    const [clusterOption, setClusterOptions] = useState([])
-    const [clusterLoader, setClusterLoader] = useState(false)
+        const [loading, result, error, reload] = useAsync(
+            props.isSuperAdmin ? getDockerRegistryList : () => Promise.resolve(null),
+        )
+        const [clusterOption, setClusterOptions] = useState([])
+        const [clusterLoader, setClusterLoader] = useState(false)
 
     const _getInit = async () => {
         setClusterLoader(true)
@@ -74,15 +76,14 @@ export default function Docker({ ...props }) {
             })
     }
 
-    useEffect(() => {
-        _getInit()
-    }, [])
+useEffect(() => {
+  if (props.isSuperAdmin) {
+    _getInit();
+  }
+}, []);
+
     if (!props.isSuperAdmin) {
-        return (
-            <div className="error-screen-wrapper flex column h-100">
-                <ErrorScreenNotAuthorized />
-            </div>
-        )
+        return <ErrorScreenNotAuthorized />
     }
     if ((loading && !result) || clusterLoader) return <Progressing pageLoader />
     if (error) {

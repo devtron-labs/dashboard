@@ -16,8 +16,9 @@ import { ReactComponent as Sync } from '../../assets/icons/ic-sync.svg';
 import { ChartRepoType } from './chartRepo.types'
 
 export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
-    const [loading, result, error, reload] = useAsync(getChartRepoList)
+    const [loading, result, error, reload] = useAsync(isSuperAdmin ? getChartRepoList : () => Promise.resolve(null))
     const [fetching, setFetching] = useState(false)
+
     if (loading && !result) return <Progressing pageLoader />
     if (error) {
         showError(error)
@@ -52,43 +53,38 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
     }
 
     if (!isSuperAdmin) {
+        return <ErrorScreenNotAuthorized />
+    } else {
         return (
-            <div className="error-screen-wrapper flex column h-100">
-                <ErrorScreenNotAuthorized  />
-            </div>
-        )
-    } 
- else {
-    return (
-        <section className="global-configuration__component">
-            <h2 className="form__title">Chart Repository</h2>
-            <p className="form__subtitle">
-                Manage your organization’s chart repositories.
-                <span>
-                    <a
-                        rel="noreferrer noopener"
-                        target="_blank"
-                        className="dc__link"
-                        href={DOCUMENTATION.GLOBAL_CONFIG_CHART}
-                    >
-                        LEARN_MORE
-                    </a>
-                </span>
-            </p>
-            <CollapsedList
-                id={null}
-                default={true}
-                url={''}
-                name={''}
-                active={true}
-                authMode={'ANONYMOUS'}
-                key={getRandomInt().toString()}
-                reload={reload}
-                isEditable={true}
-            />
-            <div className="chartRepo_form__subtitle dc__float-left dc__bold">
-                Repositories({(result && Array.isArray(result.result) ? result.result : []).length})
-</div>
+            <section className="global-configuration__component">
+                <h2 className="form__title">Chart Repository</h2>
+                <p className="form__subtitle">
+                    Manage your organization’s chart repositories.
+                    <span>
+                        <a
+                            rel="noreferrer noopener"
+                            target="_blank"
+                            className="dc__link"
+                            href={DOCUMENTATION.GLOBAL_CONFIG_CHART}
+                        >
+                            LEARN_MORE
+                        </a>
+                    </span>
+                </p>
+                <CollapsedList
+                    id={null}
+                    default={true}
+                    url={''}
+                    name={''}
+                    active={true}
+                    authMode={'ANONYMOUS'}
+                    key={getRandomInt().toString()}
+                    reload={reload}
+                    isEditable={true}
+                />
+                <div className="chartRepo_form__subtitle dc__float-left dc__bold">
+                    Repositories({(result && Array.isArray(result.result) ? result.result : []).length})
+                </div>
                 <Tippy className="default-tt" arrow={false} placement="top" content="Refetch chart from repositories">
                     <div className="chartRepo_form__subtitle dc__float-right">
                         <a
