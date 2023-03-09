@@ -2,7 +2,15 @@ import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ButtonWithLoader, ConditionalWrap, DeleteDialog, Drawer, showError, VisibleModal } from '../common'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
-import { BuildStageVariable, BuildTabText, JobPipelineTabText, ModuleNameMap, TriggerType, URLS, ViewType } from '../../config'
+import {
+    BuildStageVariable,
+    BuildTabText,
+    JobPipelineTabText,
+    ModuleNameMap,
+    TriggerType,
+    URLS,
+    ViewType,
+} from '../../config'
 import {
     deleteCIPipeline,
     getGlobalVariable,
@@ -247,7 +255,7 @@ export default function CIPipeline({
             Number(workflowId),
             false,
             formData.webhookConditionList,
-            isJobView
+            isJobView,
         )
             .then((response) => {
                 if (response) {
@@ -374,6 +382,7 @@ export default function CIPipeline({
             toast.error('Scanning is mandatory, please enable scanning')
             return
         }
+
         if (
             !formDataErrorObj.buildStage.isValid ||
             !formDataErrorObj.preBuildStage.isValid ||
@@ -386,11 +395,10 @@ export default function CIPipeline({
             }
             return
         }
-              
+
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
 
         // Reset allow override flag to false if config matches with global
-        
         if (!ciPipeline.isDockerConfigOverridden && !isDockerConfigOverridden) {
             formData.isDockerConfigOverridden = false
             formData.dockerConfigOverride = {} as DockerConfigOverrideType
@@ -531,9 +539,8 @@ export default function CIPipeline({
     }
 
     const validateStage = (stageName: string, _formData: FormType): void => {
-        const _formDataErrorObj = { ...formDataErrorObj }
+        const _formDataErrorObj = { ...formDataErrorObj, name: validationRules.name(_formData.name) } // validating name always as it's a mandatory field
         if (stageName === BuildStageVariable.Build) {
-            _formDataErrorObj.name = validationRules.name(_formData.name)
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
             let valid = _formData.materials.reduce((isValid, mat) => {
                 isValid = isValid && validationRules.sourceValue(mat.regex || mat.value, mat.type !== 'WEBHOOK').isValid
@@ -767,7 +774,11 @@ export default function CIPipeline({
                         <Switch>
                             {isAdvanced && (
                                 <Route path={`${path}/pre-build`}>
-                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} isJobView={isJobView} />
+                                    <PreBuild
+                                        presetPlugins={presetPlugins}
+                                        sharedPlugins={sharedPlugins}
+                                        isJobView={isJobView}
+                                    />
                                 </Route>
                             )}
                             {isAdvanced && (
