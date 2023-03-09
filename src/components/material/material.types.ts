@@ -77,6 +77,7 @@ export interface MaterialViewProps {
     preventRepoDelete?: boolean
     toggleRepoSelectionTippy?: () => void
     setRepo?: React.Dispatch<React.SetStateAction<string>>
+    isJobView?: boolean
 }
 
 export interface MaterialViewState {

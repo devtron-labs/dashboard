@@ -102,7 +102,7 @@ export default function JobsList({ isArgoInstalled }: { isArgoInstalled: boolean
                     path={`${path}/${URLS.CREATE_JOB}`}
                     render={(props) => (
                         <AddNewApp
-                            isJobCreateView={true}
+                            isJobView={true}
                             close={closeJobCreateModal}
                             history={props.history}
                             location={props.location}

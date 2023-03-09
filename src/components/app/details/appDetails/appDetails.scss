@@ -7,6 +7,31 @@
     height: 100%;
 }
 
+.job-details-page {
+    .job-header-wrapper {
+        .tab-list__tab {
+            font-size: 13px;
+
+            .tab-list__tab-link {
+                padding: 0 0 8px 0;
+
+                &.active {
+                    .tab-list__icon path {
+                        fill: var(--B500);
+                    }
+                }
+
+                &:hover path,
+                &.focus {
+                    color: var(--B500);
+                    text-decoration: none;
+                    fill: var(--B500);
+                }
+            }
+        }
+    }
+}
+
 .dc__page-header {
     position: sticky;
     top: 0;

@@ -81,7 +81,7 @@ export default function JobListView(props: JobListViewProps) {
                                 <p className="dc__truncate-text  m-0 value">{job.name}</p>
                             </div>
                             <div className="app-list__cell app-list__cell--app_status">
-                                <AppStatus appStatus={job.defaultPipeline.status} isJobCreateView={true} />
+                                <AppStatus appStatus={job.defaultPipeline.status} isJobView={true} />
                             </div>
                             <div className="app-list__cell app-list__cell--cluster">
                                 <p className="dc__truncate-text  m-0">{job.defaultPipeline.lastRunAt}</p>

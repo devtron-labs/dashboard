@@ -194,7 +194,7 @@ function JobHeader({ jobName }: { jobName: string }) {
     }
 
     return (
-        <div className="app-header-wrapper">
+        <div className="job-header-wrapper">
             <PageHeader
                 breadCrumbs={renderBreadcrumbs}
                 isBreadcrumbs={true}

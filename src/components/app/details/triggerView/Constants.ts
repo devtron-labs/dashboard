@@ -14,19 +14,23 @@ export const IGNORE_CACHE_INFO = {
     FirstTrigger: {
         title: 'First pipeline run may take longer than usual',
         infoText: 'Future runs will have shorter build time if caching is enabled.',
+        jobInfoText: 'Future runs will have shorter run time if caching is enabled.',
     },
     BlobStorageNotConfigured: {
         title: 'Cache not available as storage is not setup',
         infoText: 'Want to reduce build time?',
+        jobInfoText: 'Want to reduce run time?',
         configure: 'Configure blob storage',
     },
     CacheNotAvailable: {
         title: 'Cache will be generated for this pipeline run',
         infoText: 'Cache will be used in future runs to reduce build time.',
+        jobInfoText: 'Cache will be used in future runs to reduce run time.',
     },
     IgnoreCache: {
         title: 'Ignore Cache',
         infoText: 'Ignoring cache will lead to longer build time.',
+        jobInfoText: 'Ignoring cache will lead to longer run time.',
     },
 }
 export const BRANCH_REGEX_MODAL_MESSAGING = {

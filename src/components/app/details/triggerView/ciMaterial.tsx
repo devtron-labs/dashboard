@@ -58,7 +58,11 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     <Info className="icon-dim-20 mr-8" />
                     <div>
                         <div className="fw-6 fs-13">{IGNORE_CACHE_INFO.FirstTrigger.title}</div>
-                        <div className="fw-4 fs-12">{IGNORE_CACHE_INFO.FirstTrigger.infoText}</div>
+                        <div className="fw-4 fs-12">
+                            {this.props.isJobView
+                                ? IGNORE_CACHE_INFO.FirstTrigger.jobInfoText
+                                : IGNORE_CACHE_INFO.FirstTrigger.infoText}
+                        </div>
                     </div>
                 </div>
             )
@@ -69,7 +73,11 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     <div>
                         <div className="fw-6 fs-13">{IGNORE_CACHE_INFO.BlobStorageNotConfigured.title}</div>
                         <div className="fw-4 fs-12 flexbox">
-                            <span>{IGNORE_CACHE_INFO.BlobStorageNotConfigured.infoText}</span>
+                            <span>
+                                {this.props.isJobView
+                                    ? IGNORE_CACHE_INFO.BlobStorageNotConfigured.jobInfoText
+                                    : IGNORE_CACHE_INFO.BlobStorageNotConfigured.infoText}
+                            </span>
                             <a
                                 className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
                                 href={DOCUMENTATION.BLOB_STORAGE}
@@ -88,7 +96,11 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     <Info className="icon-dim-20 mr-8" />
                     <div>
                         <div className="fw-6 fs-13">{IGNORE_CACHE_INFO.CacheNotAvailable.title}</div>
-                        <div className="fw-4 fs-12">{IGNORE_CACHE_INFO.CacheNotAvailable.infoText}</div>
+                        <div className="fw-4 fs-12">
+                            {this.props.isJobView
+                                ? IGNORE_CACHE_INFO.CacheNotAvailable.jobInfoText
+                                : IGNORE_CACHE_INFO.CacheNotAvailable.infoText}
+                        </div>
                     </div>
                 </div>
             )
@@ -103,7 +115,11 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 >
                     <div className="mr-5">
                         <div className="fs-13 fw-6">{IGNORE_CACHE_INFO.IgnoreCache.title}</div>
-                        <div className="fs-12 fw-4">{IGNORE_CACHE_INFO.IgnoreCache.infoText}</div>
+                        <div className="fs-12 fw-4">
+                            {this.props.isJobView
+                                ? IGNORE_CACHE_INFO.IgnoreCache.jobInfoText
+                                : IGNORE_CACHE_INFO.IgnoreCache.infoText}
+                        </div>
                     </div>
                 </Checkbox>
             )
