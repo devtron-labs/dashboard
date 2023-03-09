@@ -75,12 +75,20 @@ function NodeDetailComponent({
             const _resourceContainers = []
             if (result?.manifest?.spec) {
                 if (Array.isArray(result.manifest.spec.containers)) {
-                    _resourceContainers.push(...result.manifest.spec.containers.map((_container) => _container.name))
+                    _resourceContainers.push(
+                        ...result.manifest.spec.containers.map((_container) => ({
+                            name: _container.name,
+                            isInitContainer: false,
+                        })),
+                    )
                 }
 
                 if (Array.isArray(result.manifest.spec.initContainers)) {
                     _resourceContainers.push(
-                        ...result.manifest.spec.initContainers.map((_container) => _container.name),
+                        ...result.manifest.spec.initContainers.map((_container) => ({
+                            name: _container.name,
+                            isInitContainer: true,
+                        })),
                     )
                 }
             }
@@ -108,7 +116,12 @@ function NodeDetailComponent({
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
         const isTabFound = isResourceBrowserView
-            ? markTabActiveByIdentifier(selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP, params.node, params.nodeType, _url)
+            ? markTabActiveByIdentifier(
+                  selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP,
+                  params.node,
+                  params.nodeType,
+                  _url,
+              )
             : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
 
         if (!isTabFound) {
@@ -129,11 +142,7 @@ function NodeDetailComponent({
                         _urlToCreate,
                     )
                 } else {
-                    AppDetailsStore.addAppDetailsTab(
-                        params.nodeType,
-                        params.podName,
-                        _urlToCreate,
-                    )
+                    AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
                 }
                 setSelectedTabName(_tabName)
             }, 500)
