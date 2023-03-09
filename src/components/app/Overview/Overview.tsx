@@ -362,22 +362,38 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                     {jobPipeline.status === 'Failed' && (
                                         <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
                                     )}
+                                    {jobPipeline.status === 'Error' && (
+                                        <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                                    )}
                                     {jobPipeline.status === 'InProgress' && (
                                         <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
                                     )}
                                     {jobPipeline.status === 'Starting' && (
                                         <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
                                     )}
+                                    {jobPipeline.status === 'Running' && (
+                                        <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
+                                    )}
+                                    {jobPipeline.status === 'CANCELLED' && (
+                                        <div className="dc__app-summary__icon icon-dim-16 mr-6 cancelled" />
+                                    )}
                                     {jobPipeline.status !== 'Succeeded' &&
                                         jobPipeline.status !== 'Failed' &&
                                         jobPipeline.status !== 'InProgress' &&
+                                        jobPipeline.status !== 'Running' &&
+                                        jobPipeline.status !== 'Error' &&
+                                        jobPipeline.status !== 'CANCELLED' &&
                                         jobPipeline.status !== 'Starting' && (
                                             <>
                                                 <CrossIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
                                                 Yet to run
                                             </>
                                         )}
-                                    {jobPipeline.status}
+                                    {jobPipeline.status === 'CANCELLED' ? (
+                                        <div>Cancelled</div>
+                                    ) : (
+                                        <div>{jobPipeline.status}</div>
+                                    )}
                                 </div>
 
                                 <div className="w-150 h-20 m-tb-8 fs-13">
