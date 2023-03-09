@@ -102,7 +102,7 @@ export const getK8SObjectMapAfterGroupHeadingClick = (
     if (splittedKey.length > 1) {
         const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0]).child.get(splittedKey[1])
         if (preventCollapse && _selectedK8SObjectObj.isExpanded) {
-            return
+            return _k8SObjectMap
         }
 
         _selectedK8SObjectObj.isExpanded = !_selectedK8SObjectObj.isExpanded
@@ -112,7 +112,7 @@ export const getK8SObjectMapAfterGroupHeadingClick = (
     } else {
         const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0])
         if (preventCollapse && _selectedK8SObjectObj.isExpanded) {
-            return
+            return _k8SObjectMap
         }
 
         _selectedK8SObjectObj.isExpanded = !_selectedK8SObjectObj.isExpanded
