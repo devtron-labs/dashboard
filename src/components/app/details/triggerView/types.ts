@@ -267,7 +267,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     appId?: number
     isSelected?: boolean
     fromAppGrouping?: boolean
-    handleSelectionChange?: (e)=> void
+    handleSelectionChange?: (_appId: number)=> void
     isJobView?: boolean
 }
 
@@ -490,6 +490,9 @@ export interface CiPipeline {
     afterDockerBuildScripts?: Array<CiScript>
     isDockerConfigOverridden?: boolean
     dockerConfigOverride?: DockerConfigOverrideType
+    appName?: string
+    appId?: string
+    componentId?: number
 }
 
 export interface Material {
