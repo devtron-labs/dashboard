@@ -19,6 +19,7 @@ import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
 import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
+import { COPIED_MESSAGE } from '../../../../../config/constantMessaging'
 
 function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) {
     const { url } = useRouteMatch()
@@ -193,14 +194,14 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         let _currentNodeHeader = ''
-        const clipBoardInteraction = (nodeName: string): JSX.Element => {
+        const renderClipboardInteraction = (nodeName: string): JSX.Element => {
             return copiedNodeName === nodeName ? (
                 <Tippy
                     className="default-tt"
                     hideOnClick={false}
                     arrow={false}
                     placement="bottom"
-                    content="Copied!"
+                    content={COPIED_MESSAGE}
                     duration={[100, 200]}
                     trigger="mouseenter click"
                 >
@@ -293,7 +294,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                                         : 'mw-116'
                                                 }`}
                                             >
-                                                {clipBoardInteraction(node.name)}
+                                                {renderClipboardInteraction(node.name)}
                                                 <div
                                                     className={`flex left ${getWidthClassnameForTabs()} ${
                                                         node.kind === NodeType.Containers ? '' : 'node__tabs'
@@ -360,7 +361,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         {params.nodeType === NodeType.Service.toLowerCase() && (
                             <div className={'col-5 pt-9 pb-9 flex left'}>
                                 { nodeName }
-                                {clipBoardInteraction(nodeName)}
+                                {renderClipboardInteraction(nodeName)}
                             </div>
                         )}
 
