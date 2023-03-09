@@ -32,7 +32,6 @@ import AppStatus from '../AppStatus'
 import { StatusConstants } from '../list-new/Constants'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
-import { toast } from 'react-toastify'
 import { createAppLabels } from '../service'
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverview }: AppOverviewProps) {
@@ -160,10 +159,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             setNewDescription(appLabel.result.description)
 
             setEditMode(false)
-        } catch (error) {
-            console.error(error)
-            toast.error('Failed to update job description')
-        }
+        } catch (error) {}
     }
 
     const renderSideInfoColumn = () => {
@@ -289,29 +285,34 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                         <span>Last deployed</span>
                     </div>
                     <div className="env-deployments-info-body">
-                        {otherEnvsResult[0].result.map((_env) => (
-                         !_env.deploymentAppDeleteRequest &&
-                            <div
-                                key={`${_env.environmentName}-${_env.environmentId}`}
-                                className="env-deployments-info-row display-grid dc__align-items-center"
-                            >
-                                <Link to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`} className="fs-13">
-                                    {_env.environmentName}
-                                </Link>
-                                {isAgroInstalled && (
-                                    <AppStatus
-                                        appStatus={
-                                            _env.lastDeployed
-                                                ? _env.appStatus
-                                                : StatusConstants.NOT_DEPLOYED.noSpaceLower
-                                        }
-                                    />
-                                )}
-                                <span className="fs-13 fw-4 cn-7">
-                                    {processDeployedTime(_env.lastDeployed, isAgroInstalled)}
-                                </span>
-                            </div>
-                        ))}
+                        {otherEnvsResult[0].result.map(
+                            (_env) =>
+                                !_env.deploymentAppDeleteRequest && (
+                                    <div
+                                        key={`${_env.environmentName}-${_env.environmentId}`}
+                                        className="env-deployments-info-row display-grid dc__align-items-center"
+                                    >
+                                        <Link
+                                            to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`}
+                                            className="fs-13"
+                                        >
+                                            {_env.environmentName}
+                                        </Link>
+                                        {isAgroInstalled && (
+                                            <AppStatus
+                                                appStatus={
+                                                    _env.lastDeployed
+                                                        ? _env.appStatus
+                                                        : StatusConstants.NOT_DEPLOYED.noSpaceLower
+                                                }
+                                            />
+                                        )}
+                                        <span className="fs-13 fw-4 cn-7">
+                                            {processDeployedTime(_env.lastDeployed, isAgroInstalled)}
+                                        </span>
+                                    </div>
+                                ),
+                        )}
                     </div>
                 </div>
             )
@@ -332,76 +333,94 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         )
     }
 
-    const renderWorkflowsStatus = () => {
-        const renderWorkflowComponent = () => {
-          if (jobPipelines != null) {
+    const renderWorkflowComponent = () => {
+        if (jobPipelines != null) {
             return (
-              <div className="env-deployments-info-wrapper w-100">
-                <div className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space">
-                  <div className="m-tb-8">Pipeline name</div>
-                  <div className="flex">
-                    <div className="m-tb-8 mr-16 w-150">Last run status</div>
-                    <div className="w-150 m-tb-8">Last run at</div>
-                  </div>
+                <div className="env-deployments-info-wrapper w-100">
+                    <div className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space">
+                        <div className="m-tb-8">Pipeline name</div>
+                        <div className="flex">
+                            <div className="m-tb-8 mr-16 w-150">Last run status</div>
+                            <div className="w-150 m-tb-8">Last run at</div>
+                        </div>
+                    </div>
+                    {jobPipelines.map((jobPipeline) => (
+                        <div key={jobPipeline.ci_pipeline_id} className="dc__content-space flex dc__border-bottom-n1">
+                            <div className="h-20 m-tb-8 cb-5 fs-13">
+                                <Link
+                                    to={`${URLS.APP}/${appId}/ci-details/${jobPipeline.ci_pipeline_id}/`}
+                                    className="fs-13"
+                                >
+                                    {jobPipeline.ci_pipeline_name}
+                                </Link>
+                            </div>
+                            <div className="flex">
+                                <div className="mr-16 w-150 h-20 m-tb-8 fs-13 flex dc__content-start">
+                                    {jobPipeline.status === 'Succeeded' && (
+                                        <SucceededIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                                    )}
+                                    {jobPipeline.status === 'Failed' && (
+                                        <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                                    )}
+                                    {jobPipeline.status === 'Error' && (
+                                        <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                                    )}
+                                    {jobPipeline.status === 'InProgress' && (
+                                        <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                                    )}
+                                    {jobPipeline.status === 'Starting' && (
+                                        <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
+                                    )}
+                                    {jobPipeline.status === 'Running' && (
+                                        <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
+                                    )}
+                                    {jobPipeline.status === 'CANCELLED' && (
+                                        <div className="dc__app-summary__icon icon-dim-16 mr-6 cancelled" />
+                                    )}
+                                    {jobPipeline.status !== 'Succeeded' &&
+                                        jobPipeline.status !== 'Failed' &&
+                                        jobPipeline.status !== 'InProgress' &&
+                                        jobPipeline.status !== 'Running' &&
+                                        jobPipeline.status !== 'Error' &&
+                                        jobPipeline.status !== 'CANCELLED' &&
+                                        jobPipeline.status !== 'Starting' && (
+                                            <>
+                                                <CrossIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                                                Yet to run
+                                            </>
+                                        )}
+                                    {jobPipeline.status === 'CANCELLED' ? (
+                                        <div>Cancelled</div>
+                                    ) : (
+                                        <div>{jobPipeline.status}</div>
+                                    )}
+                                </div>
+
+                                <div className="w-150 h-20 m-tb-8 fs-13">
+                                    {jobPipeline.started_on !== '0001-01-01T00:00:00Z'
+                                        ? handleUTCTime(jobPipeline.started_on, true)
+                                        : '-'}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-                {jobPipelines.map((jobPipeline) => (
-                  <div
-                    key={jobPipeline.ci_pipeline_id}
-                    className="dc__content-space flex dc__border-bottom-n1"
-                  >
-                    <div className="h-20 m-tb-8 ci-pipeline-name-color fs-13">
-                      {jobPipeline.ci_pipeline_name}
-                    </div>
-                    <div className="flex">
-                      <div className="mr-16 w-150 h-20 m-tb-8 fs-13 flex dc__content-start">
-                        {jobPipeline.status === 'Succeeded' && (
-                          <SucceededIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
-                        )}
-                        {jobPipeline.status === 'Failed' && (
-                          <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
-                        )}
-                        {jobPipeline.status === 'InProgress' && (
-                          <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
-                        )}
-                        {jobPipeline.status === 'Starting' && (
-                          <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
-                        )}
-                        {jobPipeline.status !== 'Succeeded' &&
-                          jobPipeline.status !== 'Failed' &&
-                          jobPipeline.status !== 'InProgress' &&
-                          jobPipeline.status !== 'Starting' && (
-                            <>
-                              <CrossIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
-                              Yet to run
-                            </>
-                          )}
-                        {jobPipeline.status}
-                      </div>
-      
-                      <div className="w-150 h-20 m-tb-8 fs-13">
-                        {jobPipeline.started_on !== '0001-01-01T00:00:00Z'
-                          ? handleUTCTime(jobPipeline.started_on, true)
-                          : '-'}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
             )
-          }
-          return <div className="fs-13 fw-4 cn-7">No job pipelines are configured</div>
         }
+        return <div className="fs-13 fw-4 cn-7">No job pipelines are configured</div>
+    }
+
+    const renderWorkflowsStatus = () => {
         return (
-          <div className="flex column left pt-16 pb-16 pl-20 pr-20">
-            <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
-              <WorkflowIcon className="icon-dim-20 scn-9 mr-8" />
-              Job pipelines
+            <div className="flex column left pt-16 pb-16 pl-20 pr-20">
+                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
+                    <WorkflowIcon className="icon-dim-20 scn-9 mr-8" />
+                    Job pipelines
+                </div>
+                {renderWorkflowComponent()}
             </div>
-            {renderWorkflowComponent()}
-          </div>
         )
-      }
-      
+    }
 
     const handleDescriptionChange = (e) => {
         setNewDescription(e.target.value)
