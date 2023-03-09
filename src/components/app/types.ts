@@ -454,6 +454,7 @@ export interface AboutAppInfoModalProps {
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
     fetchingProjects?: boolean
     projectsList?: Teams[]
+    isJobOverview?: boolean
 }
 
 export interface DeleteComponentProps {
