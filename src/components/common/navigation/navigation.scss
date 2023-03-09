@@ -330,3 +330,19 @@
 .expandable-active-nav {
     padding: 0px 0 0 12px;
 }
+
+.help__enterprise{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 4px 8px;
+    gap: 12px;
+
+    width: 210px;
+    height: 28px;
+
+/* window-bg */
+
+background: #F2F4F7;
+
+}

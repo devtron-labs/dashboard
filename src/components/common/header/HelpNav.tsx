@@ -7,6 +7,8 @@ import { InstallationType } from '../../v2/devtronStackManager/DevtronStackManag
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Discord } from '../../../assets/icons/ic-discord-fill.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
+import { ReactComponent as EditFile } from '../../../assets/icons/ic-edit-file.svg'
+import { ReactComponent as Files } from '../../../assets/icons/ic-files.svg'
 import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
 import { ReactComponent as GettingStartedIcon } from '../../../assets/icons/ic-onboarding.svg'
 import { ReactComponent as Feedback } from '../../../assets/icons/ic-feedback.svg'
@@ -34,21 +36,20 @@ function HelpNav({
             showSeparator: true,
         },
         {
-            name: 'Chat with support',
-            link: 'https://discord.devtron.ai/',
-            icon: Chat,
-            showSeparator: !isEnterprise,
-        },
-        {
             name: 'Join discord community',
             link: 'https://discord.devtron.ai/',
             icon: Discord,
             showSeparator: true,
         },
         {
-            name: 'Raise an issue/request',
-            link: 'https://github.com/devtron-labs/devtron/issues/new/choose',
-            icon: Edit,
+            name: 'Open New Ticket',
+            link: 'https://enterprise.devtron.ai/portal/en/myarea',
+            icon: EditFile,
+        },
+        {
+            name: 'View All Tickets',
+            link: 'https://enterprise.devtron.ai/portal/en/newticket',
+            icon: Files,
         },
     ]
 
@@ -95,7 +96,7 @@ function HelpNav({
                     <GettingStartedIcon />
                     <div className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
                 </NavLink>
-                {HelpOptions.map((option) => {
+                {HelpOptions.map((option,index) => {
                     return (
                         <Fragment key={option.name}>
                             <a
@@ -111,6 +112,7 @@ function HelpNav({
                                 <option.icon />
                                 <div className="help-card__option-name ml-12 cn-9 fs-14">{option.name}</div>
                             </a>
+                            {index===1 && <div className = "help__enterprise">Enterprise Support</div>}
                             {option.showSeparator && <div className="help-card__option-separator" />}
                         </Fragment>
                     )
