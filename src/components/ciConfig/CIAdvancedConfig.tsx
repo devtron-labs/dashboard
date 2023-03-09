@@ -88,7 +88,7 @@ export default function CIAdvancedConfig({
                     </TippyCustomized>
                 </div>
                 {!updateNotAllowed && (
-                    <div className="add-parameter fs-14 mb-8 cb-5 cursor" onClick={addArg}>
+                    <div className="add-parameter fs-14 mb-8 cb-5 cursor dc__w-fit-content" onClick={addArg}>
                         <span className="fa fa-plus mr-8"></span>Add{isDockerArgsSection ? ' parameter' : ' argument'}
                     </div>
                 )}
