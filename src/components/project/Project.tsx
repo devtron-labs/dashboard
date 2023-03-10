@@ -7,14 +7,13 @@ import DeleteComponent from '../../util/DeleteComponent';
 import { deleteProject } from './service';
 import './project.css'
 import { DeleteComponentsName, DC_PROJECT_CONFIRMATION_MESSAGE } from '../../config/constantMessaging';
-import { ProjectType } from './types';
 
 export interface ProjectProps {
     id: number;
     name: string;
     active: boolean;
     isCollapsed: boolean;
-    saveProject: (index) => void;
+    saveProject: (index: number, key: 'name') => void;
     onCancel: (index) => void;
     handleChange: (Event, index: number, key: 'name') => void;
     loadingData: boolean;
@@ -59,9 +58,13 @@ export class Project extends Component<ProjectProps, ProjectState>  {
         }
     }
 
-    saveProjectData = (event) => {
+    handleActionChange = (event: React.ChangeEvent) => {
+        this.props.handleChange(event, this.props.index, 'name')
+    }
+
+    saveProjectData = (event: React.MouseEvent) => {
         event.preventDefault()
-        this.props.saveProject(this.props.index)
+        this.props.saveProject(this.props.index, 'name')
     }
 
     renderCollapsedView() {
@@ -72,9 +75,7 @@ export class Project extends Component<ProjectProps, ProjectState>  {
                 <button
                     type="button"
                     className="project__row__trash dc__transparent dc__align-right"
-                    onClick={() => {
-                        this.toggleConfirmation();
-                    }}
+                    onClick={this.toggleConfirmation}
                 >
                     <Trash className="scn-5 icon-dim-20" />
                 </button>
@@ -111,9 +112,7 @@ export class Project extends Component<ProjectProps, ProjectState>  {
                             placeholder="e.g. My Project"
                             className="form__input"
                             autoFocus
-                            onChange={(event) => {
-                                this.props.handleChange(event, this.props.index, 'name')
-                            }}
+                            onChange={this.handleActionChange}
                         />
                         {!isValid.name ? (
                             <span className="form__error">
