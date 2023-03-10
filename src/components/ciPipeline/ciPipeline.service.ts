@@ -3,8 +3,7 @@ import { get, post } from '../../services/api'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { MaterialType, Githost, PatchAction, ScriptType, PluginType, BuildStageType, RefVariableType } from './types'
-import { safeTrim } from '../../util/Util';
-
+import { safeTrim } from '../../util/Util'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -25,7 +24,11 @@ export function getCIPipelineNameSuggestion(appId: string | number): Promise<any
     return get(URL)
 }
 
-export function getInitData(appId: string | number, includeWebhookData: boolean = false, preFillName: boolean = true): Promise<any> {
+export function getInitData(
+    appId: string | number,
+    includeWebhookData: boolean = false,
+    preFillName: boolean = true,
+): Promise<any> {
     return Promise.all([
         getCIPipelineNameSuggestion(appId),
         getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true),
@@ -194,7 +197,6 @@ export function saveCIPipeline(
     isExternalCI,
     webhookConditionList,
     ciPipelineSourceTypeOptions,
-    isJobView?: boolean
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
     const request = {
@@ -202,7 +204,6 @@ export function saveCIPipeline(
         appWorkflowId: workflowId,
         action: ciPipeline.id ? PatchAction.UPDATE_SOURCE : PatchAction.CREATE,
         ciPipeline: ci,
-        isJob: isJobView
     }
     return savePipeline(request).then((response) => {
         const ciPipelineFromRes = response.result.ciPipelines[0]
@@ -225,7 +226,6 @@ export function deleteCIPipeline(
     workflowId: number,
     isExternalCI: boolean,
     webhookConditionList,
-    isJobView?: boolean
 ) {
     const ci = createCIPatchRequest(ciPipeline, formData, isExternalCI, webhookConditionList)
     const request = {
@@ -233,7 +233,6 @@ export function deleteCIPipeline(
         appWorkflowId: workflowId,
         action: PatchAction.DELETE,
         ciPipeline: ci,
-        isJobView
     }
     return savePipeline(request).then((response) => {
         return parseCIResponse(

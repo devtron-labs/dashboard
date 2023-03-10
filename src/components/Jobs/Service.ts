@@ -19,10 +19,6 @@ export const getJobCIPipelines = (jobId: number) => {
     return get(`${Routes.JOB_CI_PIPELINE_LIST}/${jobId}`)
 }
 
-export const patchJobCIPipeline = (request) => {
-    return post(Routes.JOB_CI_PIPELINE_PATCH, request)
-}
-
 export const getJobsInitData = (payloadParsedFromUrl: Record<string, any>): Promise<any> => {
     return getProjectList().then((projectsRes) => {
         const filterApplied = {
