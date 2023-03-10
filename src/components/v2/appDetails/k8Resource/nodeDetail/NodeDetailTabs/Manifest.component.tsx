@@ -394,7 +394,7 @@ function ManifestComponent({
                                 cleanData={activeTab === 'Compare'}
                                 diffView={activeTab === 'Compare'}
                                 theme="vs-dark--dt"
-                                height={isResourceBrowserView ? 'calc(100vh - 110px)' : '100vh'}
+                                height={isResourceBrowserView ? 'calc(100vh - 116px)' : '100vh'}
                                 value={trimedManifestEditorData}
                                 mode={MODES.YAML}
                                 readOnly={activeTab !== 'Live manifest' || !isEditmode}
@@ -405,7 +405,7 @@ function ManifestComponent({
                                         msg={loadingMsg}
                                         icon={MsgUIType.LOADING}
                                         size={24}
-                                        minHeight={isResourceBrowserView ? 'calc(100vh - 124px)' : ''}
+                                        minHeight={isResourceBrowserView ? 'calc(100vh - 116px)' : ''}
                                     />
                                 }
                                 focus={isEditmode}
