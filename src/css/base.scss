@@ -2109,7 +2109,7 @@ textarea,
 }
 
 .mw-48 {
-  min-width: 48px;
+    min-width: 48px;
 }
 
 .mw-116 {
@@ -2695,4 +2695,8 @@ textarea::placeholder {
 
 .dc__outline-none-imp {
     outline: none !important;
+}
+
+.dc__list-style-disc {
+    list-style-type: disc;
 }

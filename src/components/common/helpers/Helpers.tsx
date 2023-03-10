@@ -15,6 +15,7 @@ import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
+import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
 const commandLineParser = require('command-line-parser')
 
@@ -1210,6 +1211,12 @@ export const eventAgeComparator = <T,>(key: string): any => {
     return (a: T, b: T) => k8sStyledAgeToSeconds(a[key]) - k8sStyledAgeToSeconds(b[key])
 }
 
+export const handleOnFocus = (e): void => {
+    if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
+        e.target.value = ''
+    }
+}
+
 export const trackByGAEvent = (category: string, action: string): void => {
     ReactGA.event({
         category: category,
@@ -1238,3 +1245,13 @@ export const createGroupSelectList = (list, nodeLabel): SelectGroupType[] => {
 
     return [{ label: '', options: [AUTO_SELECT] }, ...groupList]
 }  
+
+export const handleOnBlur = (e): void => {
+    if (!e.target.value) {
+        e.target.value = DEFAULT_SECRET_PLACEHOLDER
+    }
+}
+
+export const parsePassword = (password:string): string => {
+    return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password
+}
