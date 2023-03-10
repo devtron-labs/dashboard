@@ -620,7 +620,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         [id, type],
         !collapsed,
     )
-    const isAdminOrSystemUser = email_id === UserLocked.ADMIN || email_id === UserLocked.SYSTEM
+    const isAdminOrSystemUser = email_id === UserLocked.ADMIN.toLowerCase() || email_id === UserLocked.SYSTEM.toLowerCase()
 
     useEffect(() => {
         if (!dataError) return
@@ -639,10 +639,10 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
 
     function getToolTipContent(user: string): string {
         let userLockMessage: string
-        if (user === UserLocked.ADMIN) {
-            userLockMessage = UserLocked.ADMIN.charAt(0).toUpperCase() + UserLocked.ADMIN.slice(1)
-        } else if (user === UserLocked.SYSTEM) {
-            userLockMessage = UserLocked.SYSTEM.charAt(0).toUpperCase() + UserLocked.SYSTEM.slice(1)
+        if (user === UserLocked.ADMIN.toLowerCase()) {
+            userLockMessage = UserLocked.ADMIN
+        } else if (user === UserLocked.SYSTEM.toLowerCase()) {
+            userLockMessage = UserLocked.SYSTEM
         }
         if (userLockMessage) {
             return userLockMessage + ' user cannot be edited'

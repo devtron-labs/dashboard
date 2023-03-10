@@ -21,8 +21,8 @@ export enum ActionTypes {
 }
 
 export enum UserLocked {
-    SYSTEM = 'system',
-    ADMIN = 'admin',
+    SYSTEM = 'System',
+    ADMIN = 'Admin',
 }
 
 export const ACTION_LABEL = {
