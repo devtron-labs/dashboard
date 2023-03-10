@@ -111,8 +111,6 @@ function isUnlocked(stage: string): AppStageUnlockedType {
 function getCompletedStep(isUnlocked: AppStageUnlockedType, isJobView: boolean): number {
     if (isJobView) {
         if (isUnlocked.workflowEditor) {
-            return 2
-        } else if (isUnlocked.material) {
             return 1
         }
     } else {
@@ -140,7 +138,7 @@ function getNavItems(isUnlocked: AppStageUnlockedType, appId: string, isJobView:
                 href: `/job/${appId}/edit/materials`,
                 stage: STAGE_NAME.GIT_MATERIAL,
                 isLocked: !isUnlocked.material,
-                supportDocumentURL: DOCUMENTATION.APP_CREATE_MATERIAL,
+                supportDocumentURL: DOCUMENTATION.JOB_SOURCE_CODE,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
             },
@@ -149,7 +147,7 @@ function getNavItems(isUnlocked: AppStageUnlockedType, appId: string, isJobView:
                 href: `/job/${appId}/edit/workflow`,
                 stage: 'WORKFLOW',
                 isLocked: !isUnlocked.workflowEditor,
-                supportDocumentURL: DOCUMENTATION.APP_CREATE_WORKFLOW,
+                supportDocumentURL: DOCUMENTATION.JOB_WORKFLOW_EDITOR,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
             },
@@ -477,22 +475,21 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
             <>
                 <div className={`app-compose ${getAdditionalParentClass()}`}>
                     <div
-                        className={`app-compose__nav flex column left top ${
+                        className={`app-compose__nav ${isJobView ? 'job-compose__side-nav' : ''} flex column left top ${
                             showCannotDeleteTooltip ? '' : 'dc__position-rel'
                         } dc__overflow-scroll ${hideConfigHelp ? 'hide-app-config-help' : ''} ${
                             _canShowExternalLinks ? '' : 'hide-external-links'
-                        } ${isJobView ? 'job-compose__side-nav' : ''}`}
+                        }`}
                     >
                         <Navigation
                             deleteApp={showDeleteConfirmation}
                             navItems={state.navItems}
-                            isCDPipeline={state.isCDPipeline}
-                            isCiPipeline={state.isCiPipeline}
                             canShowExternalLinks={_canShowExternalLinks}
                             showCannotDeleteTooltip={showCannotDeleteTooltip}
                             toggleRepoSelectionTippy={toggleRepoSelectionTippy}
                             getRepo={showRepoOnDelete}
                             isJobView={isJobView}
+                            hideConfigHelp={hideConfigHelp}
                         />
                     </div>
                     <div className="app-compose__main">
@@ -564,22 +561,19 @@ function renderNavItem(item: CustomNavItemsType) {
 function Navigation({
     navItems,
     deleteApp,
-    isCDPipeline,
-    isCiPipeline,
     canShowExternalLinks,
     showCannotDeleteTooltip,
     toggleRepoSelectionTippy,
     getRepo,
     isJobView,
+    hideConfigHelp,
 }: AppConfigNavigationProps) {
     const location = useLocation()
     const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0]
 
     return (
         <>
-            {!isJobView && !isCDPipeline && (
-                <AppConfigurationCheckBox selectedNav={selectedNav} isJobView={isJobView} />
-            )}
+            {!hideConfigHelp && <AppConfigurationCheckBox selectedNav={selectedNav} isJobView={isJobView} />}
             {navItems.map((item) => {
                 if (item.stage === 'EXTERNAL_LINKS') {
                     return (

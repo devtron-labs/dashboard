@@ -12,7 +12,7 @@ import { CdPipeline } from '../components/app/details/triggerView/types';
 
 
 export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<any> {
-    return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&isJob=true' : ''}`);
+    return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`);
 }
 
 export const getSourceConfig = (id: string) => {
@@ -78,7 +78,8 @@ export function getAppListMin(teamId = null, options?: APIOptions, appName?: str
     if (appName) URL = `${URL}?appName=${appName}`
 
     if (isJobView) {
-        URL += '&isJob=true'
+// revisit
+        URL += '&appType=2'
     }
 
     return get(URL, options).then(response => {

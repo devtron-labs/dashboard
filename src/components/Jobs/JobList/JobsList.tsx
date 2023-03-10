@@ -309,7 +309,7 @@ export default function JobsList() {
     }
 
     return (
-        <div>
+        <div className="jobs-view-container">
             {dataStateType === JobListViewType.LOADING && (
                 <div className="dc__loading-wrapper">
                     <Progressing pageLoader />

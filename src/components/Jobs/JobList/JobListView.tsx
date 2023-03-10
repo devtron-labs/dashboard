@@ -77,20 +77,20 @@ export default function JobListView(props: JobListViewProps) {
                                     />
                                 )}
                             </div>
-                            <div className="app-list__cell app-list__cell--name">
-                                <p className="dc__truncate-text  m-0 value">{job.name}</p>
+                            <div className="app-list__cell">
+                                <p className="dc__truncate-text m-0 value">{job.name}</p>
                             </div>
-                            <div className="app-list__cell app-list__cell--app_status">
+                            <div className="app-list__cell">
                                 <AppStatus appStatus={job.defaultPipeline.status} isJobView={true} />
                             </div>
-                            <div className="app-list__cell app-list__cell--cluster">
-                                <p className="dc__truncate-text  m-0">{job.defaultPipeline.lastRunAt}</p>
+                            <div className="app-list__cell">
+                                <p className="dc__truncate-text m-0">{job.defaultPipeline.lastRunAt}</p>
                             </div>
-                            <div className="app-list__cell app-list__cell--namespace">
-                                <p className="dc__truncate-text  m-0">{job.defaultPipeline.lastSuccessAt}</p>
+                            <div className="app-list__cell">
+                                <p className="dc__truncate-text m-0">{job.defaultPipeline.lastSuccessAt}</p>
                             </div>
-                            <div className="app-list__cell app-list__cell--namespace">
-                                <p className="dc__truncate-text  m-0">{job.description ? job.description : '-'}</p>
+                            <div className="app-list__cell">
+                                <p className="dc__truncate-text m-0">{job.description ? job.description : '-'}</p>
                             </div>
                             <div className="app-list__cell app-list__cell--action">
                                 <button type="button" data-key={job.id} className="button-edit" onClick={handleEditJob}>
@@ -119,7 +119,7 @@ export default function JobListView(props: JobListViewProps) {
                     <div className="app-list__cell--icon flex left cursor" onClick={toggleAllExpandRow}>
                         <Arrow className={`icon-dim-24 p-2 ${arrowIcon()}`} />
                     </div>
-                    <div className="app-list__cell app-list__cell--name">
+                    <div className="app-list__cell">
                         <button className="app-list__cell-header flex" onClick={sortByAppName}>
                             {JOB_LIST_HEADERS.Name}
                             {props.sortRule.key == SortBy.APP_NAME ? (
@@ -129,19 +129,19 @@ export default function JobListView(props: JobListViewProps) {
                             )}
                         </button>
                     </div>
-                    <div className="app-list__cell app-list__cell--app_status">
+                    <div className="app-list__cell">
                         <span className="app-list__cell-header">{JOB_LIST_HEADERS.LastJobStatus}</span>
                     </div>
-                    <div className="app-list__cell app-list__cell--cluster">
+                    <div className="app-list__cell">
                         <span className="app-list__cell-header">{JOB_LIST_HEADERS.LastRunAt}</span>
                     </div>
-                    <div className="app-list__cell app-list__cell--cluster">
+                    <div className="app-list__cell">
                         <span className="app-list__cell-header">{JOB_LIST_HEADERS.LastSuccessAt}</span>
                     </div>
-                    <div className="app-list__cell app-list__cell--cluster">
+                    <div className="app-list__cell">
                         <span className="app-list__cell-header">{JOB_LIST_HEADERS.Description}</span>
                     </div>
-                    <div className="app-list__cell app-list__cell--action"></div>
+                    <div className="app-list__cell app-list__cell--action" />
                 </div>
                 {renderJobPipelines()}
             </div>
