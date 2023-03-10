@@ -28,19 +28,25 @@ function HelpNav({
     const isEnterprise = currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
     const FEEDBACK_FORM_ID = `UheGN3KJ#source=${window.location.hostname}`
 
-    const HelpOptions: HelpOptionType[] = [
+    const CommonHelpOptions: HelpOptionType[] = [
         {
             name: 'View documentation',
             link: DOCUMENTATION.HOME_PAGE,
             icon: File,
             showSeparator: true,
         },
+        
         {
             name: 'Join discord community',
             link: 'https://discord.devtron.ai/',
             icon: Discord,
-            showSeparator: true,
+            showSeparator: isEnterprise,
         },
+        
+    ]
+
+    const EnterpriseHelpOptions: HelpOptionType[] = [
+        
         {
             name: 'Open New Ticket',
             link: 'https://enterprise.devtron.ai/portal/en/myarea',
@@ -51,6 +57,23 @@ function HelpNav({
             link: 'https://enterprise.devtron.ai/portal/en/newticket',
             icon: Files,
         },
+        
+    ]
+
+    const NotEnterpriseHelpOptions: HelpOptionType[] = [
+        
+        {
+            name: 'Chat with support',
+            link: 'https://discord.devtron.ai/',
+            icon: Chat,
+            showSeparator: isEnterprise,
+        },
+        
+        {
+            name: 'Raise an issue/request',
+            link: 'https://github.com/devtron-labs/devtron/issues/new/choose',
+            icon: Edit,
+        }
     ]
 
     const onClickGettingStarted = (): void => {
@@ -96,7 +119,7 @@ function HelpNav({
                     <GettingStartedIcon />
                     <div className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
                 </NavLink>
-                {HelpOptions.map((option,index) => {
+                {isEnterprise && CommonHelpOptions.concat(EnterpriseHelpOptions).map((option,index) => {
                     return (
                         <Fragment key={option.name}>
                             <a
@@ -113,6 +136,26 @@ function HelpNav({
                                 <div className="help-card__option-name ml-12 cn-9 fs-14">{option.name}</div>
                             </a>
                             {index===1 && <div className = "help__enterprise">Enterprise Support</div>}
+                            {option.showSeparator && <div className="help-card__option-separator" />}
+                        </Fragment>
+                    )
+                })}
+                {!isEnterprise && CommonHelpOptions.concat(NotEnterpriseHelpOptions).map((option,index) => {
+                    return (
+                        <Fragment key={option.name}>
+                            <a
+                                key={option.name}
+                                className="dc__no-decor help-card__option help-card__link flex left cn-9"
+                                href={option.link}
+                                target="_blank"
+                                rel="noreferrer noopener"
+                                onClick={() => {
+                                    onClickHelpOptions(option)
+                                }}
+                            >
+                                <option.icon />
+                                <div className="help-card__option-name ml-12 cn-9 fs-14">{option.name}</div>
+                            </a>
                             {option.showSeparator && <div className="help-card__option-separator" />}
                         </Fragment>
                     )
