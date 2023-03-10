@@ -28,7 +28,7 @@ import { safeTrim } from '../../util/Util';
 
 export default function GitProvider({ ...props }) {
    
-    const [loading, result, error, reload] = useAsync(getGitProviderList, [], props.isSuperAdmin)
+    const [, , error] = useAsync(getGitProviderList, [], props.isSuperAdmin)
     const [providerList, setProviderList] = useState([]);
     const [hostListOption, setHostListOption] = useState([]);
     const [isPageLoading, setIsPageLoading] = useState(true);
