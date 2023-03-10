@@ -284,6 +284,10 @@ a:focus {
     top: 0;
 }
 
+.dc__left-35 {
+    left: 35px;
+}
+
 .dc__vertical-align-middle {
     vertical-align: middle;
 }
@@ -2105,7 +2109,7 @@ textarea,
 }
 
 .mw-48 {
-  min-width: 48px;
+    min-width: 48px;
 }
 
 .mw-116 {
@@ -2266,6 +2270,10 @@ textarea,
 
 .h-8 {
     height: 8px;
+}
+
+.h-16 {
+    height: 16px;
 }
 
 .h-18 {
@@ -2687,4 +2695,8 @@ textarea::placeholder {
 
 .dc__outline-none-imp {
     outline: none !important;
+}
+
+.dc__list-style-disc {
+    list-style-type: disc;
 }
