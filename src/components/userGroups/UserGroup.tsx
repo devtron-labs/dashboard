@@ -67,7 +67,7 @@ import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
 import { getSSOConfigList } from '../login/login.service'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import { SSO_NOT_CONFIGURED_STATE_TEXTS } from '../../config/constantMessaging'
+import { ERROR_EMPTY_SCREEN, SSO_NOT_CONFIGURED_STATE_TEXTS } from '../../config/constantMessaging'
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -537,7 +537,7 @@ const UserGroupList: React.FC<{
             </div>
         )
     } else if (error && (error.code === 403 || error.code === 401)) {
-        return <ErrorScreenNotAuthorized subtitle={`Looks like you don't have access to information on this page. Please contact your manager to request access.`}
+        return <ErrorScreenNotAuthorized subtitle={ERROR_EMPTY_SCREEN.USER_GROUP}
         title={`Access Denied`} />
     } else if (!addHash) {
         return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
