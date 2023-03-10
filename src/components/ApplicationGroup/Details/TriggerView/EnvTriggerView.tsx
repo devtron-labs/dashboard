@@ -901,6 +901,7 @@ export default function EnvTriggerView() {
     const onShowBulkCDModal = (e) => {
         setCDLoading(true)
         setBulkTriggerType(e.currentTarget.dataset.triggerType)
+        setMaterialType(MATERIAL_TYPE.inputMaterialList)
         setTimeout(() => {
             setShowBulkCDModal(true)
         }, 100)
