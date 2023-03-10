@@ -3,7 +3,15 @@ import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getAppOtherEnvironment, getJobCIPipeline, getTeamList } from '../../../services/service'
-import { handleUTCTime, processDeployedTime, Progressing, showError, sortOptionsByValue, stopPropagation, useAsync } from '../../common'
+import {
+    handleUTCTime,
+    processDeployedTime,
+    Progressing,
+    showError,
+    sortOptionsByValue,
+    stopPropagation,
+    useAsync,
+} from '../../common'
 import { AppDetails, AppOverviewProps, JobPipeline, TagType } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as WorkflowIcon } from '../../../assets/icons/ic-workflow.svg'
@@ -207,7 +215,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 <div className="flex left flex-wrap dc__gap-8">
                     {currentLabelTags.length > 0 ? (
                         currentLabelTags.map((tag) => (
-                            <div className="flex">
+                            <div className="flex" key={tag.key}>
                                 <div
                                     className={`flex bc-n50 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
                                         !tag.value ? ' br-4' : ' dc__left-radius-4'
@@ -334,81 +342,74 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         )
     }
 
+    const getStatusIcon = (status: string): JSX.Element => {
+        switch (status) {
+            case 'Succeeded':
+                return <SucceededIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+            case 'Failed':
+            case 'Error':
+                return <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+            case 'InProgress':
+                return <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+            case 'Starting':
+                return <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
+            case 'Running':
+                return <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
+            case 'CANCELLED':
+                return <div className="dc__app-summary__icon icon-dim-16 mr-6 cancelled" />
+            default:
+                return (
+                    <>
+                        <CrossIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                        Yet to run
+                    </>
+                )
+        }
+    }
+
     const renderWorkflowComponent = () => {
-        if (jobPipelines != null) {
-            return (
-                <div className="env-deployments-info-wrapper w-100">
-                    <div className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space">
-                        <div className="m-tb-8">Pipeline name</div>
+        if (!Array.isArray(jobPipelines) || !jobPipelines.length) {
+            return <div className="fs-13 fw-4 cn-7">No job pipelines are configured</div>
+        }
+
+        return (
+            <div className="env-deployments-info-wrapper w-100">
+                <div className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space">
+                    <div className="m-tb-8">Pipeline name</div>
+                    <div className="flex">
+                        <div className="m-tb-8 mr-16 w-150">Last run status</div>
+                        <div className="w-150 m-tb-8">Last run at</div>
+                    </div>
+                </div>
+                {jobPipelines.map((jobPipeline) => (
+                    <div key={jobPipeline.ci_pipeline_id} className="dc__content-space flex dc__border-bottom-n1">
+                        <div className="h-20 m-tb-8 cb-5 fs-13">
+                            <Link
+                                to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ci_pipeline_id}/`}
+                                className="fs-13"
+                            >
+                                {jobPipeline.ci_pipeline_name}
+                            </Link>
+                        </div>
                         <div className="flex">
-                            <div className="m-tb-8 mr-16 w-150">Last run status</div>
-                            <div className="w-150 m-tb-8">Last run at</div>
+                            <div className="mr-16 w-150 h-20 m-tb-8 fs-13 flex dc__content-start">
+                                {getStatusIcon(jobPipeline.status)}
+                                {jobPipeline.status === 'CANCELLED' ? (
+                                    <div>Cancelled</div>
+                                ) : (
+                                    <div>{jobPipeline.status}</div>
+                                )}
+                            </div>
+                            <div className="w-150 h-20 m-tb-8 fs-13">
+                                {jobPipeline.started_on !== '0001-01-01T00:00:00Z'
+                                    ? handleUTCTime(jobPipeline.started_on, true)
+                                    : '-'}
+                            </div>
                         </div>
                     </div>
-                    {jobPipelines.map((jobPipeline) => (
-                        <div key={jobPipeline.ci_pipeline_id} className="dc__content-space flex dc__border-bottom-n1">
-                            <div className="h-20 m-tb-8 cb-5 fs-13">
-                                <Link
-                                    to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ci_pipeline_id}/`}
-                                    className="fs-13"
-                                >
-                                    {jobPipeline.ci_pipeline_name}
-                                </Link>
-                            </div>
-                            <div className="flex">
-                                <div className="mr-16 w-150 h-20 m-tb-8 fs-13 flex dc__content-start">
-                                    {jobPipeline.status === 'Succeeded' && (
-                                        <SucceededIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
-                                    )}
-                                    {jobPipeline.status === 'Failed' && (
-                                        <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
-                                    )}
-                                    {jobPipeline.status === 'Error' && (
-                                        <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
-                                    )}
-                                    {jobPipeline.status === 'InProgress' && (
-                                        <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
-                                    )}
-                                    {jobPipeline.status === 'Starting' && (
-                                        <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
-                                    )}
-                                    {jobPipeline.status === 'Running' && (
-                                        <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
-                                    )}
-                                    {jobPipeline.status === 'CANCELLED' && (
-                                        <div className="dc__app-summary__icon icon-dim-16 mr-6 cancelled" />
-                                    )}
-                                    {jobPipeline.status !== 'Succeeded' &&
-                                        jobPipeline.status !== 'Failed' &&
-                                        jobPipeline.status !== 'InProgress' &&
-                                        jobPipeline.status !== 'Running' &&
-                                        jobPipeline.status !== 'Error' &&
-                                        jobPipeline.status !== 'CANCELLED' &&
-                                        jobPipeline.status !== 'Starting' && (
-                                            <>
-                                                <CrossIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
-                                                Yet to run
-                                            </>
-                                        )}
-                                    {jobPipeline.status === 'CANCELLED' ? (
-                                        <div>Cancelled</div>
-                                    ) : (
-                                        <div>{jobPipeline.status}</div>
-                                    )}
-                                </div>
-
-                                <div className="w-150 h-20 m-tb-8 fs-13">
-                                    {jobPipeline.started_on !== '0001-01-01T00:00:00Z'
-                                        ? handleUTCTime(jobPipeline.started_on, true)
-                                        : '-'}
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )
-        }
-        return <div className="fs-13 fw-4 cn-7">No job pipelines are configured</div>
+                ))}
+            </div>
+        )
     }
 
     const renderWorkflowsStatus = () => {
@@ -428,8 +429,12 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     }
 
     const handleCancel = () => {
-        setNewDescription(newDescription)
+        setNewDescription(appMetaInfo?.description) // reset to previously saved value
         setEditMode(false)
+    }
+
+    const switchToEditMode = () => {
+        setEditMode(true)
     }
 
     const renderJobDescription = () => {
@@ -450,12 +455,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             </button>
                         </div>
                     ) : (
-                        <div
-                            className="flex fs-12 fw-4 lh-16 cn-7 cursor ml-auto"
-                            onClick={() => {
-                                setEditMode(true)
-                            }}
-                        >
+                        <div className="flex fs-12 fw-4 lh-16 cn-7 cursor ml-auto" onClick={switchToEditMode}>
                             <EditIcon className="icon-dim-16 scn-7 mr-4" />
                             Edit
                         </div>
@@ -512,4 +512,3 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         </div>
     )
 }
-
