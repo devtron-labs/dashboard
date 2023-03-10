@@ -7,6 +7,7 @@ import { Project } from './Project';
 import { ProjectListState, ProjectType, ProjectListProps } from './types';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import './project.css';
+import { PROJECT_EXIST_MSG, REQUIRED_FIELD_MSG } from '../../config/constantMessaging';
 
 export default class ProjectList extends Component<ProjectListProps, ProjectListState>  {
 
@@ -91,13 +92,13 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         const _projectExists = this.isProjectNameExists(index, project.name)
         if (!project.name) {
             isValid["name"] = false;
-            errorMessage["name"] = "This is a required field."
+            errorMessage["name"] = REQUIRED_FIELD_MSG
             this.setState({ isValid }); 
             return
         }
         else if (_projectExists) {
             isValid["name"] = false;
-            errorMessage["name"] = "This Project already exists."
+            errorMessage["name"] = PROJECT_EXIST_MSG
             this.setState({ isValid });
             return
         }
