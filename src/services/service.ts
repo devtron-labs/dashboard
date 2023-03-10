@@ -72,28 +72,37 @@ export const getUserTeams = (): Promise<any> => {
     return get(URL);
 }
 
-export function getAppListMin(teamId = null, options?: APIOptions, appName?: string, isJobView?: boolean): Promise<AppListMin> {
-    let URL = `${Routes.APP_LIST_MIN}`;
-    if (teamId) URL = `${URL}?teamId=${teamId}`
-    if (appName) URL = `${URL}?appName=${appName}`
-
-    if (isJobView) {
-// revisit
-        URL += '&appType=2'
+export function getAppListMin(
+    teamId = null,
+    options?: APIOptions,
+    appName?: string,
+    isJobView?: boolean,
+): Promise<AppListMin> {
+    const queryString = new URLSearchParams()
+    if (teamId) {
+        queryString.set('teamId', teamId)
     }
 
-    return get(URL, options).then(response => {
+    if (appName) {
+        queryString.set('appName', appName)
+    }
+
+    if (isJobView) {
+        queryString.set('appType', '2')
+    }
+
+    return get(`${Routes.APP_LIST_MIN}?${queryString.toString()}`, options).then((response) => {
         let list = response?.result || []
         list = list.sort((a, b) => {
-            return sortCallback('name', a, b);
-        });
+            return sortCallback('name', a, b)
+        })
 
         return {
             ...response,
             code: response.code,
             result: list,
-        };
-    });
+        }
+    })
 }
 
 export function getProjectFilteredApps(
