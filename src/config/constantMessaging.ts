@@ -91,7 +91,7 @@ export const ERROR_EMPTY_SCREEN = {
     GO_TO_DEPLOY: 'Go to deploy',
     ONLY_FOR_SUPERADMIN: 'Information on this page is available only to superadmin users.',
     NOT_AUTHORIZED: 'Not authorized',
-    USER_GROUP:
+    REQUIRED_MANAGER_ACCESS:
         'Looks like you don’t have access to information on this page. Please contact your manager to request access.',
 }
 
