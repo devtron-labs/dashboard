@@ -240,12 +240,7 @@ export function getRollbackMaterialList(cdMaterialId, offset: number, size: numb
 }
 
 export function extractImage(image: string): string {
-    let extractedImage = ''
-    if (image) {
-        const imageElements = image.split(':')
-        extractedImage = imageElements[imageElements.length - 1]
-    }
-    return extractedImage
+    return image? image.split(':').pop() : ''
 }
 
 function cdMaterialListModal(
