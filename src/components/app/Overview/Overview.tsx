@@ -348,7 +348,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                         <div key={jobPipeline.ci_pipeline_id} className="dc__content-space flex dc__border-bottom-n1">
                             <div className="h-20 m-tb-8 cb-5 fs-13">
                                 <Link
-                                    to={`${URLS.APP}/${appId}/ci-details/${jobPipeline.ci_pipeline_id}/`}
+                                    to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ci_pipeline_id}/`}
                                     className="fs-13"
                                 >
                                     {jobPipeline.ci_pipeline_name}
