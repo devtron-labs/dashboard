@@ -183,7 +183,9 @@ function NodeDetailComponent({
         selectedResource.containers = resourceContainers
     }
 
-    const handleChanges = () => setHideManagedFields(!hideManagedFields)
+    const handleChanges = () => {
+        setHideManagedFields(!hideManagedFields)
+    }
 
     return (
         <React.Fragment>
