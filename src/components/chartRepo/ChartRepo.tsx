@@ -16,7 +16,7 @@ import { ReactComponent as Sync } from '../../assets/icons/ic-sync.svg';
 import { ChartRepoType } from './chartRepo.types'
 
 export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
-    const [loading, result, error, reload] = useAsync(isSuperAdmin ? getChartRepoList : () => Promise.resolve(null))
+    const [loading, result, error, reload] = useAsync(getChartRepoList, [], isSuperAdmin)
     const [fetching, setFetching] = useState(false)
 
     if (loading && !result) return <Progressing pageLoader />

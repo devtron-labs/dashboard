@@ -47,9 +47,7 @@ enum CERTTYPE {
 
 
 export default function Docker({ ...props }) {
-        const [loading, result, error, reload] = useAsync(
-            props.isSuperAdmin ? getDockerRegistryList : () => Promise.resolve(null),
-        )
+        const [loading, result, error, reload] = useAsync(getDockerRegistryList, [], props.isSuperAdmin)
         const [clusterOption, setClusterOptions] = useState([])
         const [clusterLoader, setClusterLoader] = useState(false)
 
@@ -94,7 +92,7 @@ useEffect(() => {
         return <Reload />
     }
 
-    let dockerRegistryList = result.result || []
+    let dockerRegistryList = result?.result || []
     dockerRegistryList = dockerRegistryList.sort((a, b) => sortCallback('id', a, b))
     dockerRegistryList = [{ id: null }].concat(dockerRegistryList)
     return (
