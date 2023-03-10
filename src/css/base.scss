@@ -2493,6 +2493,11 @@ textarea,
     margin-bottom: 20px;
 }
 
+.m-tb-8 {
+    margin-top: 8px !important;
+    margin-bottom: 8px !important;
+}
+
 .m-lr-0 {
     margin-left: 0px !important;
     margin-right: 0px !important;
@@ -2704,6 +2709,17 @@ textarea::placeholder {
         background-color: var(--Y300) !important;
         font-weight: 600;
     }
+}
+
+.dc__description-textarea {
+    width: 100% !important;
+    min-height: 100px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 20px;
+    color: #333;
 }
 
 .dc__outline-none-imp {
