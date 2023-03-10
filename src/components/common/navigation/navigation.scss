@@ -283,8 +283,10 @@
     }
 
     .help-card__update-option {
-        height: 56px;
-        padding: 8px 10px;
+        height: 44px;
+        padding-left: 14px;
+        padding-top: 1.5px;
+        top: 190px;
         background-color: var(--N100);
     }
 }
