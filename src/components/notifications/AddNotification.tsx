@@ -3,14 +3,13 @@ import { RouteComponentProps } from 'react-router'
 import { SESConfigModal } from './SESConfigModal'
 import { SlackConfigModal } from './SlackConfigModal'
 import {
-    Checkbox,
     Select,
     validateEmail,
     ErrorBoundary,
     ClearIndicator,
     MultiValueRemove,
 } from '../common'
-import { showError, Progressing, getTeamListMin } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, getTeamListMin, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg'

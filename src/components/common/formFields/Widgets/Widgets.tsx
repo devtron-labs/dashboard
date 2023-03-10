@@ -4,7 +4,7 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../../v2/common/ReactSelect.utils'
-import { Checkbox } from '../Checkbox'
+import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../../helpers/Helpers'
 import {
     CheckboxWithTippyProps,
@@ -306,7 +306,7 @@ export const StyledProgressBar = ({ resetProgress, updateProgressValue }: Styled
     const [progressValue, setProgressValue] = useState(0)
     let progressTimer = null
 
-    useEffect(() => {        
+    useEffect(() => {
         progressTimer = setInterval(() => {
             setProgressValue((prevValue) => {
                 const _currentValue = prevValue + 1

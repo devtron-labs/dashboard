@@ -5,12 +5,10 @@ import {
     Info,
     ToastBody,
     CustomInput,
-    Checkbox,
-    CHECKBOX_VALUE,
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
 } from '../common'
-import { showError, Progressing, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, DeleteDialog, Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { useParams } from 'react-router'
 import { updateSecret, deleteSecret, getSecretKeys } from '../secrets/service'

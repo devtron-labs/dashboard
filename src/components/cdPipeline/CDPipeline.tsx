@@ -7,8 +7,6 @@ import {
     isEmpty,
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
-    Checkbox,
-    CHECKBOX_VALUE,
     sortObjectArrayAlphabetically
 } from '../common'
 import { toast } from 'react-toastify'
@@ -21,7 +19,9 @@ import {
     Drawer,
     DeleteDialog,
     ForceDeleteDialog,
-    ServerErrors
+    ServerErrors,
+    Checkbox,
+    CHECKBOX_VALUE
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,

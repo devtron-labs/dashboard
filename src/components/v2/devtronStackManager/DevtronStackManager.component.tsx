@@ -27,10 +27,14 @@ import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
 import {
+    showError,
+    Progressing,
+    ConditionalWrap,
+    VisibleModal,
+    ToastBody,
     Checkbox,
     CHECKBOX_VALUE,
-} from '../../common'
-import { showError, Progressing, ConditionalWrap, VisibleModal, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
+} from '@devtron-labs/devtron-fe-common-lib'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
 import { DOCUMENTATION, ModuleNameMap, URLS } from '../../../config'
