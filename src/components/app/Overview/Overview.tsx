@@ -129,6 +129,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 fetchingProjects={fetchingProjects}
                 projectsList={projectsListRes?.result}
                 description={appMetaInfo.description}
+                isJobOverview={isJobOverview}
             />
         )
     }
