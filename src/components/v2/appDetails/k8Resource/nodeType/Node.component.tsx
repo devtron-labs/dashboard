@@ -5,7 +5,7 @@ import Tippy from '@tippyjs/react'
 import { copyToClipboard, getElapsedTime } from '../../../../common'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
-import { ReactComponent as Check } from '../../../../../assets/icons/ic-check.svg';
+import { ReactComponent as Check } from '../../../../../assets/icons/ic-check.svg'
 import PodHeaderComponent from './PodHeader.component'
 import { NodeType, Node, iNode, NodeComponentProps } from '../../appDetails.type'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
@@ -25,15 +25,15 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     const { url } = useRouteMatch()
     const history = useHistory()
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
-    const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>();
-    const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0);
-    const [copiedNodeName, setCopiedNodeName] = useState<string>('');
-    const [tableHeader, setTableHeader] = useState([]);
-    const [firstColWidth, setFirstColWidth] = useState('');
-    const [podType, setPodType] = useState(false);
-    const appDetails = IndexStore.getAppDetails();
-    const params = useParams<{ nodeType: NodeType, resourceName: string }>();
-    const podMetaData = IndexStore.getPodMetaData();
+    const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
+    const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0)
+    const [copiedNodeName, setCopiedNodeName] = useState<string>('')
+    const [tableHeader, setTableHeader] = useState([])
+    const [firstColWidth, setFirstColWidth] = useState('')
+    const [podType, setPodType] = useState(false)
+    const appDetails = IndexStore.getAppDetails()
+    const params = useParams<{ nodeType: NodeType; resourceName: string }>()
+    const podMetaData = IndexStore.getPodMetaData()
     const [filteredNodes] = useSharedState(
         IndexStore.getAppDetailsFilteredNodes(),
         IndexStore.getAppDetailsNodesFilteredObservable(),
@@ -74,7 +74,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
 
     useEffect(() => {
         if (!copiedNodeName) return
-        setTimeout(() => setCopiedNodeName(''), 2000);
+        setTimeout(() => setCopiedNodeName(''), 2000)
     }, [copiedNodeName])
 
     useEffect(() => {
