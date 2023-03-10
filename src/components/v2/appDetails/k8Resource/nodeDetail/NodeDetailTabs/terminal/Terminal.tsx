@@ -593,18 +593,18 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     return (
         <div className="terminal-view h-100 w-100">
             {renderConnectionStrip()}
-
-            <div id="terminal-id" className="terminal-container ml-20">
+            <div
+                id="terminal-id"
+                className={`terminal-container ml-20 ${
+                    terminalViewProps.isResourceBrowserView &&
+                    isOnline &&
+                    terminalViewProps.socketConnection === SocketConnectionType.CONNECTED
+                        ? 'resource-terminal-connected'
+                        : ''
+                }`}
+            >
                 <CopyToast showCopyToast={popupText} />
             </div>
-
-            {isOnline && terminalViewProps.socketConnection === SocketConnectionType.CONNECTED && (
-                <p
-                    className={`connection-status dc__ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 dc__first-letter-capitalize cg-4`}
-                >
-                    {terminalViewProps.socketConnection}
-                </p>
-            )}
         </div>
     )
 }
