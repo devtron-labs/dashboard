@@ -210,7 +210,6 @@ export const Routes = {
     JOB: 'job',
     JOB_LIST: 'job/list',
     JOB_CI_PIPELINE_LIST: 'job/ci-pipeline/list',
-    JOB_CI_PIPELINE_PATCH: 'job//ci-pipeline/patch',
     USER_ROLE_GROUP_URL: 'user/role/group',
 }
 

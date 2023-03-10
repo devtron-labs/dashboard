@@ -255,7 +255,6 @@ export default function CIPipeline({
             Number(workflowId),
             false,
             formData.webhookConditionList,
-            isJobView,
         )
             .then((response) => {
                 if (response) {
@@ -413,7 +412,6 @@ export default function CIPipeline({
             false,
             formData.webhookConditionList,
             formData.ciPipelineSourceTypeOptions,
-            isJobView,
         )
             .then((response) => {
                 if (response) {
