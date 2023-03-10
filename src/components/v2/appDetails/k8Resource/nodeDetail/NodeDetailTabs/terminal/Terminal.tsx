@@ -5,7 +5,7 @@ import { FitAddon } from 'xterm-addon-fit'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
-import { ERROR_MESSAGE, POD_LINKS, SocketConnectionType, TerminalViewProps } from '../node.type'
+import { ErrorMessageType, ERROR_MESSAGE, POD_LINKS, SocketConnectionType, TerminalViewProps } from '../node.type'
 import { get } from '../../../../../../../services/api'
 import ReactGA from 'react-ga4'
 import IndexStore from '../../../../index.store'
@@ -16,6 +16,7 @@ import { SERVER_MODE } from '../../../../../../../config'
 import { mainContext } from '../../../../../../common/navigation/NavigationRoutes'
 import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
 import './terminal.css'
+import { TERMINAL_RESOURCE_GA, termialGAEvents, TERMINAL_STATUS, TERMINAL_TEXT } from './constants'
 
 let socket = undefined
 let terminal = undefined
@@ -28,20 +29,22 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [popupText, setPopupText] = useState<boolean>(false)
     const isOnline = useOnline()
-    const [errorMessage, setErrorMessage] = useState<string>('')
+    const [errorMessage, setErrorMessage] = useState<ErrorMessageType>({message: '', reason: ''})
     const socketConnectionRef = useRef<SocketConnectionType>(terminalViewProps.socketConnection)
     const { serverMode } = useContext(mainContext)
-
+    const autoSelectNodeRef = useRef('')
+    const prevNodeRef = useRef('')
+    const currNodeRef = useRef('')
+   
     const resizeSocket = () => {
         if (terminal && fitAddon && terminalViewProps.isTerminalTab) {
             const dim = fitAddon.proposeDimensions()
-            if (dim && socket) {
-                socket.send(JSON.stringify({Op: 'resize', Cols: dim.cols, Rows: dim.rows}))
+            if (dim && socket?.readyState === WebSocket.OPEN) {
+                socket?.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
             }
             fitAddon.fit()
         }
     }
-
     useEffect(() => {
         if (!popupText) return
         setTimeout(() => setPopupText(false), 2000)
@@ -50,7 +53,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     useEffect(() => {
         resizeSocket()
     }, [terminalViewProps.isFullScreen])
-
+    
     const appDetails = IndexStore.getAppDetails()
 
     const createNewTerminal = () => {
@@ -138,7 +141,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         _socket.onopen = function () {
             if (terminalViewProps.isClusterTerminal) {
-                preFetchData(CLUSTER_STATUS.RUNNING, true)
+                preFetchData(CLUSTER_STATUS.RUNNING, TERMINAL_STATUS.SUCCEDED)
             }
             const startData = { Op: 'bind', SessionID: sessionId }
             _socket.send(JSON.stringify(startData))
@@ -197,42 +200,64 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         }
     }
 
-    const preFetchData = (status = '', firstMessageReceived = false) => {
+    const preFetchData = (podState = '', status = '') => {  
         const _terminal = terminal
-
+        let startingText = TERMINAL_STATUS.CREATE
         if (!_terminal) return
 
         _terminal?.reset()
 
-        _terminal.write('Creating pod.')
-        if (status === CLUSTER_STATUS.RUNNING) {
-            _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
-            _terminal.writeln('')
-            _terminal.write('Connecting to pod terminal.')
-        } else if (status === CLUSTER_STATUS.FAILED) {
-            _terminal.write(' \u001b[38;5;196mFailed\u001b[0m')
-            _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
-            _terminal.write(' | ')
-            _terminal.write('\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m')
-        } else {
-            _terminal.write('..')
+        if(prevNodeRef.current === TERMINAL_STATUS.AUTO_SELECT_NODE){
+            _terminal.write('Selecting a node')
+            if(currNodeRef.current){
+                _terminal.write(` > ${currNodeRef.current} selected`)
+                _terminal.writeln('')
+            }else {
+                _terminal.write('...')
+            }
         }
 
-        if (firstMessageReceived) {
-            _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
-            _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
-            _terminal.write(' | ')
-            _terminal.write('\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m')
-            _terminal.writeln('')
-        } else if (status === 'Running') {
-            _terminal.write('..')
+        if(prevNodeRef.current !== TERMINAL_STATUS.AUTO_SELECT_NODE || currNodeRef.current){
+            if(terminalViewProps.isShellSwitched){
+                startingText = TERMINAL_STATUS.SHELL
+            }
+    
+            if(startingText){
+                if(startingText === TERMINAL_STATUS.CREATE){
+                    _terminal.write('Creating pod.')
+                } else if(startingText === TERMINAL_STATUS.SHELL){
+                    _terminal.write(`Switching shell to ${terminalViewProps.shell.value}.`)
+                }
+            }
+            if(startingText !== TERMINAL_STATUS.SHELL && podState){
+                if (podState === CLUSTER_STATUS.RUNNING) {
+                    _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
+                    _terminal.writeln('')
+                    _terminal.write('Connecting to pod terminal.')
+                }
+            }
+    
+            if(status){
+                if (status === TERMINAL_STATUS.TIMEDOUT) {
+                    _terminal.write(' \u001b[38;5;196mTimed out\u001b[0m')
+                } else if (status === TERMINAL_STATUS.FAILED){
+                    _terminal.write(' \u001b[38;5;196mFailed\u001b[0m')
+                } else if (status === TERMINAL_STATUS.SUCCEDED) {
+                    _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
+                }
+                _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
+                _terminal.write(' | ')
+                _terminal.write('\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m')
+                _terminal.writeln('')
+            } else {
+                _terminal.write('..')
+            }
         }
     }
 
     useEffect(() => {
         // Maintaining value in ref for setTimeout context
         socketConnectionRef.current = terminalViewProps.socketConnection
-
         if (terminalViewProps.socketConnection === SocketConnectionType.DISCONNECTING) {
             if (clusterTimeOut) {
                 clearTimeout(clusterTimeOut)
@@ -243,37 +268,26 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             }
         }
         if (terminalViewProps.socketConnection === SocketConnectionType.CONNECTING) {
+            setErrorMessage({message: '', reason: ''})
+            autoSelectNodeRef.current = terminalViewProps.terminalId
+            prevNodeRef.current = terminalViewProps.nodeName
+            currNodeRef.current = ''
             getNewSession()
         }
     }, [terminalViewProps.socketConnection, terminalViewProps.terminalId])
 
     useEffect(() => {
-        ReactGA.event({
-            category: 'Terminal',
-            action: `Selected Pod`,
-            label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
-        })
-
+        ReactGA.event(termialGAEvents(TERMINAL_RESOURCE_GA.POD,terminalViewProps))
         reconnect()
     }, [terminalViewProps.nodeName])
 
     useEffect(() => {
-        ReactGA.event({
-            category: 'Terminal',
-            action: `Selected Container`,
-            label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
-        })
-
+        ReactGA.event(termialGAEvents(TERMINAL_RESOURCE_GA.CONTAINER,terminalViewProps))
         reconnect()
     }, [terminalViewProps.containerName])
 
     useEffect(() => {
-        ReactGA.event({
-            category: 'Terminal',
-            action: `Selected Shell`,
-            label: `${terminalViewProps.nodeName}/${terminalViewProps.containerName}/${terminalViewProps.shell.value}`,
-        })
-
+        ReactGA.event(termialGAEvents(TERMINAL_RESOURCE_GA.SHELL,terminalViewProps))
         reconnect()
     }, [terminalViewProps.shell])
 
@@ -351,6 +365,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }, [terminalViewProps.isTerminalCleared])
 
     const getClusterData = (url, count) => {
+        if(autoSelectNodeRef.current !== terminalViewProps.terminalId) return
         if (
             clusterTimeOut &&
             (socketConnectionRef.current === SocketConnectionType.DISCONNECTED ||
@@ -369,18 +384,30 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             .then((response: any) => {
                 let sessionId = response.result.userTerminalSessionId
                 let status = response.result.status
-                if (!sessionId && count) {
+                if(status === TERMINAL_STATUS.RUNNING && !response.result?.isValidShell){
+                    preFetchData(status, TERMINAL_STATUS.FAILED)
+                    setErrorMessage({message: response.result?.errorReason, reason: ''})
+                } else if (status === TERMINAL_STATUS.TERMINATED){
+                    setErrorMessage({message: status, reason: response.result?.errorReason })
+                } else if (!sessionId && count) {
                     preFetchData(status)
                     clusterTimeOut = setTimeout(() => {
                         getClusterData(url, count - 1)
                     }, 5000)
                 } else if (sessionId) {
+                    const _nodeName = response.result?.nodeName
+                    if(terminalViewProps.nodeName === TERMINAL_STATUS.AUTO_SELECT_NODE){
+                        terminalViewProps.setSelectedNodeName({value: _nodeName,label: _nodeName})
+                    }
                     if (socketConnectionRef.current === SocketConnectionType.CONNECTING) {
                         postInitialize(sessionId)
+                        currNodeRef.current = _nodeName
                         preFetchData(status)
                     }
                 } else {
-                    preFetchData(CLUSTER_STATUS.FAILED, false)
+                    preFetchData(CLUSTER_STATUS.FAILED, TERMINAL_STATUS.TIMEDOUT)
+                    terminalViewProps.setSocketConnection(SocketConnectionType.DISCONNECTED)
+                    setErrorMessage({message: TERMINAL_STATUS.TIMEDOUT, reason: ''})
                 }
             })
             .catch((err) => {
@@ -413,7 +440,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (terminalViewProps.isClusterTerminal) {
             if (!terminalViewProps.terminalId) return
             terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING)
-            getClusterData(`user/terminal/get?terminalAccessId=${terminalViewProps.terminalId}`, 7)
+            getClusterData(`user/terminal/get?namespace=${terminalViewProps.selectedNamespace}&shellName=${terminalViewProps.shell.value}&terminalAccessId=${terminalViewProps.terminalId}`, 7)
         } else {
             if (
                 !terminalViewProps.nodeName ||
@@ -441,7 +468,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     if (err instanceof ServerErrors && Array.isArray(err.errors)) {
                         const _invalidNameErr = err.errors[0].userMessage
                         if (_invalidNameErr.includes('Unauthorized')) {
-                            setErrorMessage(ERROR_MESSAGE.UNAUTHORIZED)
+                            setErrorMessage({message: ERROR_MESSAGE.UNAUTHORIZED, reason: ''})
                         }
                     }
                 })
@@ -454,6 +481,41 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         setIsReconnection(true)
     }
 
+    const switchTOPodEventTab = () => {
+        terminalViewProps.setTerminalTab(1)
+    }
+
+    const renderErrorMessageStrip = (errorMessage) => {
+        if (errorMessage.message === TERMINAL_STATUS.TIMEDOUT) {
+            return (
+                <div className="pl-20 flex left h-24 pr-20 w-100 bcr-7 cn-0">
+                    {TERMINAL_TEXT.CONNECTION_TIMEOUT}&nbsp;
+                    <u className="cursor" onClick={switchTOPodEventTab}>
+                        {TERMINAL_TEXT.CHECK_POD_EVENTS}
+                    </u>&nbsp;
+                    {TERMINAL_TEXT.FOR_ERRORS}&nbsp;
+                    <u
+                        className="cursor"
+                        onClick={onClickResume}
+                    >
+                        {TERMINAL_TEXT.RETRY_CONNECTION}
+                    </u>&nbsp;
+                    {TERMINAL_TEXT.CASE_OF_ERROR}
+                </div>
+            )
+        } else if (errorMessage.message === TERMINAL_STATUS.TERMINATED) {
+            return (
+                <div className="pl-20 pr-20 w-100 bcr-7 cn-0">
+                    {TERMINAL_TEXT.POD_TERMINATED} {errorMessage.reason}&nbsp;
+                    <u className="cursor" onClick={terminalViewProps.reconnectTerminal}>
+                        {TERMINAL_TEXT.INITIATE_CONNECTION}
+                    </u>
+                </div>
+            )
+        }
+        return <div className="pl-20 pr-20 w-100 bcr-7 cn-0">{errorMessage.message} </div>
+    }
+
     const clusterSocketConnecting: boolean =
         terminalViewProps.isClusterTerminal && terminalViewProps.socketConnection === SocketConnectionType.CONNECTING
 
@@ -461,7 +523,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (!isOnline) {
             return (
                 <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0">
-                    You’re offline. Please check your internet connection.
+                    {TERMINAL_TEXT.OFFLINE_CHECK_CONNECTION}
                 </div>
             )
         } else if (terminalViewProps.isClusterTerminal && !terminalViewProps.isPodConnected) {
@@ -469,21 +531,21 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         } else if (terminalViewProps.isFetchRetry) {
             return (
                 <div className="bcr-7 pl-20 cn-0">
-                    Concurrent connection limit reached.&nbsp;
+                    {TERMINAL_TEXT.CONCURRENT_LIMIT_REACH}&nbsp;
                     <button
                         type="button"
                         onClick={terminalViewProps.disconnectRetry}
                         className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
                     >
-                        Terminate all and retry
+                        {TERMINAL_TEXT.TERMINATE_RETRY}
                     </button>
                 </div>
             )
         } else {
             return (
-                <div className="terminal-strip dc__first-letter-capitalize">
-                    {errorMessage && errorMessage.length > 0 ? (
-                        <div className="pl-20 pr-20 w-100 bcr-7 cn-0">{errorMessage} </div>
+                <div className="terminal-strip">
+                    {errorMessage.message && errorMessage.message.length > 0 ? (
+                        renderErrorMessageStrip(errorMessage)
                     ) : (
                         <div
                             className={`dc__first-letter-capitalize ${
@@ -533,18 +595,18 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     return (
         <div className="terminal-view h-100 w-100">
             {renderConnectionStrip()}
-
-            <div id="terminal-id" className="terminal-container ml-20">
+            <div
+                id="terminal-id"
+                className={`terminal-container ml-20 ${
+                    terminalViewProps.isResourceBrowserView &&
+                    isOnline &&
+                    terminalViewProps.socketConnection === SocketConnectionType.CONNECTED
+                        ? 'resource-terminal-connected'
+                        : ''
+                }`}
+            >
                 <CopyToast showCopyToast={popupText} />
             </div>
-
-            {isOnline && terminalViewProps.socketConnection === SocketConnectionType.CONNECTED && (
-                <p
-                    className={`connection-status dc__ff-monospace pt-2 pl-20 fs-13 pb-2 m-0 dc__first-letter-capitalize cg-4`}
-                >
-                    {terminalViewProps.socketConnection}
-                </p>
-            )}
         </div>
     )
 }
