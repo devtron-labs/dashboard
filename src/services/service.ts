@@ -154,6 +154,10 @@ export function getAppOtherEnvironment(appId): Promise<AppOtherEnvironment> {
     return get(URL);
 }
 
+export function getJobCIPipeline(jobId){
+    return get(`${Routes.JOB_CI_DETAIL}/${jobId}`)
+}
+
 export function getEnvironmentConfigs(appId, envId) {
     return get(`${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}`);
 }
