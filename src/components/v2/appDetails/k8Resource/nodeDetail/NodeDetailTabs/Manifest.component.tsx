@@ -23,6 +23,7 @@ import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
     EA_MANIFEST_SECRET_INFO_TEXT,
 } from '../../../../../../config/constantMessaging'
+import { MANIFEST_KEY_FIELDS } from '../../../../../../config/constants'
 import { MODES } from '../../../../../../config'
 
 function ManifestComponent({
@@ -169,8 +170,8 @@ function ManifestComponent({
     //For External
     const trimManifestData = (jsonManifestData: object): string => {
         const _trimedManifestData = JSON.stringify(jsonManifestData, (key, value) => {
-            if (key === 'metadata') {
-                value['managedFields'] = undefined
+            if (key === MANIFEST_KEY_FIELDS.METADATA) {
+                value[MANIFEST_KEY_FIELDS.MANAGED_FIELDS] = undefined
             }
             return value
         })
