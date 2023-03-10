@@ -60,7 +60,6 @@ export interface ExpandedRowProps {
     job: Job
     handleEdit: (jobId: number) => void
     close: (e: any) => void
-    isArgoInstalled: boolean
 }
 
 export interface JobListProps {
@@ -71,7 +70,6 @@ export interface JobListProps {
     isSuperAdmin: boolean
     openJobCreateModel: (event) => void
     setJobCount: React.Dispatch<React.SetStateAction<number>>
-    isArgoInstalled: boolean
     renderMasterFilters: () => JSX.Element
     renderAppliedFilters: () => JSX.Element
 }
@@ -88,7 +86,6 @@ export interface JobListViewProps extends JobListState, RouteComponentProps<{}> 
     isSuperAdmin: boolean
     openJobCreateModel: (e) => void
     toggleExpandAllRow: () => void
-    isArgoInstalled: boolean
 }
 
 export interface JobSelectorType {
@@ -97,7 +94,7 @@ export interface JobSelectorType {
     jobName: string
 }
 
-export interface JobsEmptyProps  {
+export interface JobsEmptyProps {
     view: string
-    clickHandler: (e) => void;
+    clickHandler: (e) => void
 }

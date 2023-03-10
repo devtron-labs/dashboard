@@ -19,7 +19,6 @@ export default function JobListContainer({
     isSuperAdmin,
     openJobCreateModel,
     setJobCount,
-    isArgoInstalled,
     renderMasterFilters,
     renderAppliedFilters,
 }: JobListProps) {
@@ -163,7 +162,6 @@ export default function JobListContainer({
                 jobListCount={jobListCount}
                 openJobCreateModel={openJobCreateModel}
                 toggleExpandAllRow={toggleExpandAllRow}
-                isArgoInstalled={isArgoInstalled}
             />
         </>
     )

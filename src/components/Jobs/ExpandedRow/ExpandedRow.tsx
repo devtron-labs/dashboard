@@ -35,7 +35,6 @@ export default function ExpandedRow(props: ExpandedRowProps) {
                     <div className="app-list__cell app-list__cell--time">
                         <p className="dc__truncate-text  m-0">{ciPipeline.lastSuccessAt}</p>
                     </div>
-                    <div className="app-list__cell app-list__cell--action" />
                 </Link>
             )
         })

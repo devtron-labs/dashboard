@@ -162,10 +162,10 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             teamId: this.state.form.projectId,
             templateId: this.state.form.cloneId,
             labels: labelTags,
-            isJob: this.props.isJobView,
         }
 
         if (this.props.isJobView) {
+            request['appType'] = 2 // type 2 is for job type
             request['description'] = this.state.form.description
         }
 

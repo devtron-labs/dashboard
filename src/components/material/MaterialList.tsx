@@ -119,7 +119,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         rel="noreferrer noopener"
                         target="_blank"
                         className="dc__link"
-                        href={DOCUMENTATION.GLOBAL_CONFIG_GIT}
+                        href={this.props.isJobView ? DOCUMENTATION.JOB_SOURCE_CODE : DOCUMENTATION.GLOBAL_CONFIG_GIT}
                     >
                         Learn more
                     </a>
