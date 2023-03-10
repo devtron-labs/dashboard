@@ -79,7 +79,6 @@ export const DELETE_DEPLOYMENT_PIPELINE = 'Deleting deployment pipeline'
 export const VIEW_DELETION_STATUS = 'View deletion status'
 
 // Empty state messgaes
-
 export const ERROR_EMPTY_SCREEN = {
     PAGE_NOT_FOUND: 'We could not find this page',
     PAGE_NOT_EXIST: 'This page doesn’t exist or was removed. We suggest you go back to home',
@@ -90,6 +89,7 @@ export const ERROR_EMPTY_SCREEN = {
     ALL_SET_GO_CONFIGURE: 'Looks like you’re all set. Go ahead and select an image to deploy',
     DEPLOYEMENT_WILL_BE_HERE: 'Once deployed, details for the deployment will be available here',
     GO_TO_DEPLOY: 'Go to deploy',
+    TAB_NOT_AVAILABLE_POSTFIX: 'is not available for this deployment'
 }
 
 //Confirmation Dialog messgaes
