@@ -5,6 +5,7 @@ export interface MaterialListProps extends RouteComponentProps<{ appId: string }
     isWorkflowEditorUnlocked: boolean
     toggleRepoSelectionTippy: () => void
     setRepo: React.Dispatch<React.SetStateAction<string>>
+    isJobView?: boolean
 }
 
 export interface GitMaterialType {

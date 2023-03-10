@@ -23,6 +23,7 @@ import ReactGA from 'react-ga4'
 import './navigation.scss'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
 import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
+import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 
@@ -36,6 +37,14 @@ const NavigationList = [
         isAvailableInEA: true,
     },
     {
+        title: 'Jobs',
+        type: 'link',
+        iconClass: 'nav-short-jobs',
+        icon: JobsIcon,
+        href: URLS.JOB,
+        isAvailableInEA: false,
+    },
+    {
         title: 'Application Groups',
         type: 'link',
         iconClass: 'nav-short-env',
@@ -43,23 +52,6 @@ const NavigationList = [
         href: URLS.APPLICATION_GROUP,
         isAvailableInEA: false,
         markAsBeta: true,
-    },
-    {
-        title: 'Resource Browser',
-        type: 'link',
-        iconClass: 'nav-short-apps',
-        icon: CubeIcon,
-        href: URLS.RESOURCE_BROWSER,
-        isAvailableInEA: true,
-        markAsBeta: false,
-    },
-    {
-        title: 'Chart Store',
-        type: 'link',
-        iconClass: 'nav-short-helm',
-        icon: ChartStoreIcon,
-        href: URLS.CHARTS,
-        isAvailableInEA: true,
     },
     {
         title: 'Deployment Groups',
@@ -71,12 +63,13 @@ const NavigationList = [
         forceHideEnvKey: 'HIDE_DEPLOYMENT_GROUPS',
     },
     {
-        title: 'Security',
+        title: 'Resource Browser',
         type: 'link',
-        href: URLS.SECURITY,
-        iconClass: 'nav-security',
-        icon: SecurityIcon,
-        moduleName: ModuleNameMap.SECURITY,
+        iconClass: 'nav-short-resource-browser',
+        icon: CubeIcon,
+        href: URLS.RESOURCE_BROWSER,
+        isAvailableInEA: true,
+        markAsBeta: false,
     },
     {
         title: 'Clusters',
@@ -85,6 +78,22 @@ const NavigationList = [
         iconClass: 'nav-short-clusters',
         icon: ClusterIcon,
         isAvailableInEA: true,
+    },
+    {
+        title: 'Chart Store',
+        type: 'link',
+        iconClass: 'nav-short-helm',
+        icon: ChartStoreIcon,
+        href: URLS.CHARTS,
+        isAvailableInEA: true,
+    },
+    {
+        title: 'Security',
+        type: 'link',
+        href: URLS.SECURITY,
+        iconClass: 'nav-security',
+        icon: SecurityIcon,
+        moduleName: ModuleNameMap.SECURITY,
     },
     {
         title: 'Bulk Edit',

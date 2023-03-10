@@ -5,7 +5,11 @@ import { TaskList } from './TaskList'
 import { ciPipelineContext } from './CIPipeline'
 import { FormType } from '../ciPipeline/types'
 
-export function Sidebar() {
+export function Sidebar({
+    isJobView
+}: { 
+    isJobView?: boolean
+}) {
     const {
         formData,
         setFormData,
@@ -30,7 +34,9 @@ export function Sidebar() {
     }
 
     useEffect(() => {
-        if (activeStageName === BuildStageVariable.Build) {
+        if (isJobView) {
+            setHelpData({ helpText: 'Docs: Configure job', docLink: DOCUMENTATION.BUILD_STAGE })
+        } else if (activeStageName === BuildStageVariable.Build) {
             setHelpData({ helpText: 'Docs: Configure build stage', docLink: DOCUMENTATION.BUILD_STAGE })
         } else if (activeStageName === BuildStageVariable.PostBuild) {
             setHelpData({ helpText: 'Docs: Configure post-build tasks', docLink: DOCUMENTATION.PRE_POST_BUILD_STAGE })
@@ -53,7 +59,7 @@ export function Sidebar() {
             )}
             {activeStageName === BuildStageVariable.Build && (
                 <div className="sidebar-action-container sidebar-action-container-border pr-20">
-                    <div className="dc__uppercase fw-6 fs-12 cn-6 mb-12">Trigger BUILD PIPELINE</div>
+                    <div className="dc__uppercase fw-6 fs-12 cn-6 mb-12">Trigger {isJobView ? 'JOB' : 'BUILD'} PIPELINE</div>
                     <div>
                         <RadioGroup
                             className="no-border"

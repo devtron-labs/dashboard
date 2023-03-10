@@ -23,9 +23,11 @@ import { ciPipelineContext } from './CIPipeline'
 export function PreBuild({
     presetPlugins,
     sharedPlugins,
+    isJobView,
 }: {
     presetPlugins: PluginDetailType[]
     sharedPlugins: PluginDetailType[]
+    isJobView?: boolean
 }) {
     const {
         formData,
@@ -152,12 +154,20 @@ export function PreBuild({
             return (
                 <CDEmptyState
                     imgSource={activeStageName === BuildStageVariable.PreBuild ? EmptyPreBuild : EmptyPostBuild}
-                    title={`No ${
-                        activeStageName === BuildStageVariable.PreBuild ? 'pre-build' : 'post-build'
-                    } tasks configured`}
-                    subtitle={`Here, you can configure tasks to be executed ${
-                        activeStageName === BuildStageVariable.PreBuild ? 'before' : 'after'
-                    } the container image is built.`}
+                    title={
+                        isJobView
+                            ? 'No tasks configured'
+                            : `No ${
+                                  activeStageName === BuildStageVariable.PreBuild ? 'pre-build' : 'post-build'
+                              } tasks configured`
+                    }
+                    subtitle={
+                        isJobView
+                            ? 'Configure tasks to be executed by this job.'
+                            : `Here, you can configure tasks to be executed ${
+                                  activeStageName === BuildStageVariable.PreBuild ? 'before' : 'after'
+                              } the container image is built.`
+                    }
                     actionHandler={addNewTask}
                     actionButtonText="Add task"
                     ActionButtonIcon={Add}

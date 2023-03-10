@@ -97,7 +97,13 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 }
                 if (wf) break;
             }
-            let url = getCIPipelineURL(this.state.ciPipeline.parentAppId.toString(), wf.appWorkflowId, false, parentCiPipelineId);
+            let url = getCIPipelineURL(
+                this.state.ciPipeline.parentAppId.toString(),
+                wf.appWorkflowId,
+                false,
+                parentCiPipelineId,
+                false,
+            )
             this.setState({ sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${url}` });
         }
     }

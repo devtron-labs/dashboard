@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import { getGitProviderListAuth, getSourceConfig } from '../../services/service';
-import { ErrorScreenManager, Progressing, showError, sortCallback } from '../common';
-import { AppConfigStatus, ViewType, DOCUMENTATION, AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config';
-import { withRouter } from 'react-router';
-import { CreateMaterial } from './CreateMaterial';
-import { UpdateMaterial } from './UpdateMaterial';
-import { MaterialListProps, MaterialListState } from './material.types';
-import { ReactComponent as GitHub } from '../../assets/icons/ic-sample-app.svg';
+import React, { Component } from 'react'
+import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
+import { ErrorScreenManager, Progressing, showError, sortCallback } from '../common'
+import { AppConfigStatus, ViewType, DOCUMENTATION, AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
+import { withRouter } from 'react-router'
+import { CreateMaterial } from './CreateMaterial'
+import { UpdateMaterial } from './UpdateMaterial'
+import { MaterialListProps, MaterialListState } from './material.types'
+import { ReactComponent as GitHub } from '../../assets/icons/ic-sample-app.svg'
 import { ReactComponent as PlayMedia } from '../../assets/icons/ic-play-media.svg'
 import { ReactComponent as Folder } from '../../assets/icons/ic-folder-filled.svg'
-import './material.css';
+import './material.css'
 
 class MaterialList extends Component<MaterialListProps, MaterialListState> {
     constructor(props) {
@@ -110,9 +110,11 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     renderPageHeader() {
         return (
             <>
-                <h2 className="form__title form__title--artifacts">Git Repositories</h2>
+                <h2 className="form__title form__title--artifacts">
+                    {this.props.isJobView ? 'Source code' : 'Git Repositories'}
+                </h2>
                 <p className="form__subtitle form__subtitle--artifacts">
-                    Manage source code repositories for this application.&nbsp;
+                    Manage source code repositories for this {this.props.isJobView ? 'job' : 'application'}.&nbsp;
                     <a
                         rel="noreferrer noopener"
                         target="_blank"
