@@ -239,9 +239,13 @@ export function getRollbackMaterialList(cdMaterialId, offset: number, size: numb
     })
 }
 
-export function extractImage(image : string) : string {
-    var Newimage = image.split(':')[image.split(':').length - 1] 
-    return Newimage
+export function extractImage(image: string): string {
+    let extractedImage = ''
+    if (image) {
+        const imageElements = image.split(':')
+        extractedImage = imageElements[imageElements.length - 1]
+    }
+    return extractedImage
 }
 
 function cdMaterialListModal(
