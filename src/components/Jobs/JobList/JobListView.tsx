@@ -100,12 +100,7 @@ export default function JobListView(props: JobListViewProps) {
                         </Link>
                     )}
                     {props.expandedRow[job.id] && (
-                        <ExpandedRow
-                            job={job}
-                            close={closeExpandedRow}
-                            handleEdit={props.handleEditJob}
-                            isArgoInstalled={props.isArgoInstalled}
-                        />
+                        <ExpandedRow job={job} close={closeExpandedRow} handleEdit={props.handleEditJob} />
                     )}
                 </React.Fragment>
             )
