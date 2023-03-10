@@ -729,7 +729,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                     ) : null}
                     {externalType !== 'KubernetesSecret' && (
                         <div className="flex left mb-16">
-                            <b className="mr-5 dc__bold">Data*</b>
+                            <b className="mr-5 dc__bold dc__required-field">Data</b>
                             {!isESO && (
                                 <RadioGroup
                                     className="gui-yaml-switch"

@@ -247,6 +247,8 @@ interface ResizableTextareaProps {
     maxHeight?: number
     value?: string
     onChange?: (e) => void
+    onBlur?: (e) => void
+    onFocus?: (e) => void
     className?: string
     placeholder?: string
     lineHeight?: number
@@ -260,6 +262,8 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
     maxHeight,
     value,
     onChange = null,
+    onBlur = null,
+    onFocus = null,
     className = '',
     placeholder = 'Enter your text here..',
     lineHeight = 14,
@@ -278,6 +282,14 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
         e.persist()
         setText(e.target.value)
         if (typeof onChange === 'function') onChange(e)
+    }
+
+    function handleBlur(e) {
+        if (typeof onBlur === 'function') onBlur(e)
+    }
+
+    function handleFocus(e) {
+        if (typeof onFocus === 'function') onFocus(e)
     }
 
     useThrottledEffect(
@@ -303,6 +315,8 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
             placeholder={placeholder}
             className={`dc__resizable-textarea ${className}`}
             onChange={handleChange}
+            onBlur={handleBlur}
+            onFocus={handleFocus}
             style={{ lineHeight: `${lineHeight}px`, padding: `${padding}px` }}
             spellCheck={false}
             disabled={disabled}

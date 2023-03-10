@@ -8,7 +8,7 @@ import { ReactComponent as Branch } from '../../assets/icons/misc/branch.svg'
 import { ReactComponent as Deploy } from '../../assets/icons/ic-deploy.svg'
 import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import { CDMaterial } from '../app/details/triggerView/cdMaterial'
-import { CDMaterialType } from '../app/details/triggerView/types'
+import { CDMaterialType, DeploymentNodeType } from '../app/details/triggerView/types'
 import noGroups from '../../assets/img/ic-feature-deploymentgroups@3x.png'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
@@ -140,7 +140,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
         this.setState({ materials })
     }
 
-    closeCDModal() {
+    closeCDModal(e) {
         this.setState({ showCDModal: false })
     }
 
@@ -273,7 +273,7 @@ export default class DeploymentGroupList extends Component<BulkActionListProps, 
                     material={this.state.materials}
                     isLoading={this.state.isLoading}
                     envName={this.state.envName}
-                    stageType="CD"
+                    stageType={DeploymentNodeType.CD}
                     materialType="none"
                     triggerDeploy={this.triggerDeploy}
                     toggleSourceInfo={this.toggleSourceInfo}

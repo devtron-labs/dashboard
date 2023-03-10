@@ -282,7 +282,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                     {this.renderCIPipelinesDropdown(null)}
                     {this.state.form.parentCIPipelineId ? (
                         <label className="form__row">
-                            <span className="form__label">Name*</span>
+                            <span className="form__label dc__required-field">Name</span>
                             <input
                                 className="form__input"
                                 placeholder="Enter pipeline name"

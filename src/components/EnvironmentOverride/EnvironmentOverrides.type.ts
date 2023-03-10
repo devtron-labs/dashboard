@@ -1,6 +1,7 @@
 import React from 'react'
 import { DOCUMENTATION, URLS } from '../../config'
 import { AppEnvironment } from '../../services/service.types'
+import { ConfigAppList } from '../ApplicationGroup/AppGroup.types'
 
 export enum ComponentStates {
     loading = 'loading',
@@ -32,6 +33,7 @@ export const SECTION_HEADING_INFO: Record<string, SectionHeadingType> = {
 
 export interface EnvironmentOverrideComponentProps {
     environments: AppEnvironment[]
+    appList?: ConfigAppList[]
     setEnvironments: React.Dispatch<React.SetStateAction<AppEnvironment[]>>
 }
 

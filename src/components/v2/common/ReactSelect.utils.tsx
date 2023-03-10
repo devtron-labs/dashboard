@@ -4,6 +4,7 @@ import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import { noop } from '../../common'
 import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { Environment } from '../../cdPipeline/cdPipeline.types'
 
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
     return (base, state) => ({
@@ -107,7 +108,7 @@ export function Option(props) {
 
     return showTippy ? (
         <Tippy
-            className={tippyClass || "default-white"}
+            className={tippyClass || 'default-white'}
             arrow={false}
             placement={placement || 'right'}
             content={tippyContent || data.label}
@@ -165,9 +166,7 @@ export const noMatchingOptions = () => 'No matching results'
 export const formatOptionLabel = (option): JSX.Element => {
     return (
         <div className="flex left column">
-            <span className="w-100 dc__ellipsis-right">
-                {option.label}
-            </span>
+            <span className="w-100 dc__ellipsis-right">{option.label}</span>
             {option.infoText && <small className="cn-6">{option.infoText}</small>}
         </div>
     )
@@ -178,16 +177,16 @@ export const CustomValueContainer = (props): JSX.Element => {
         <components.ValueContainer {...props}>
             {(!props.selectProps.menuIsOpen || !props.selectProps.inputValue) &&
                 (props.selectProps.value?.label ? (
-                    <span className="dc__position-abs cn-9 ml-2">{props.selectProps.value.label}</span>
+                    <span className={`dc__position-abs cn-9 ml-4 ${props.valClassName ?? ''}`}>{props.selectProps.value.label}</span>
                 ) : (
-                    <span className="dc__position-abs cn-5 ml-2">{props.selectProps.placeholder}</span>
+                    <span className="dc__position-abs cn-5 ml-8">{props.selectProps.placeholder}</span>
                 ))}
             {React.cloneElement(props.children[1])}
         </components.ValueContainer>
     )
 }
 
-export const menuComponent = (props,text) => {
+export const menuComponent = (props, text) => {
     return (
         <components.MenuList {...props}>
             <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
@@ -203,11 +202,12 @@ export const noMatchingPlatformOptions = (): string => {
 }
 
 export function GroupHeading(props) {
-    if (!props.data.label) return null
+    const {data, hideClusterName} = props
+    if (!data.label) return null
     return (
         <components.GroupHeading {...props}>
-            <div className="flex dc__uppercase flex-justify h-100">
-                {`Cluster : ${props.data.label}`}
+            <div className="flex dc__no-text-transform flex-justify h-100">
+                {!hideClusterName ? 'Cluster : ' : ''} {data.label}
             </div>
         </components.GroupHeading>
     )
@@ -215,13 +215,28 @@ export function GroupHeading(props) {
 
 export function EnvFormatOptions(props) {
     const { data, environmentfieldName } = props
-    props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    return <components.SingleValue {...props}>{data[environmentfieldName]}</components.SingleValue>
+}
+
+export function formatHighlightedText(option: Environment, inputValue: string, environmentfieldName: string) {
+    const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
+    const regex = new RegExp(inputValue, 'gi')
     return (
-        <components.Option {...props}>
-            <div className="flex left column">
-            <span className="w-100 dc__ellipsis-right">{data[environmentfieldName]}</span>
-            {data.clusterName && data.namespace && <small className="cn-6">{data.clusterName}/{data.namespace}</small>}
+        <div className="flex left column dc__highlight-text">
+            <span
+                className="w-100 dc__ellipsis-right"
+                dangerouslySetInnerHTML={{
+                    __html: option[environmentfieldName].replace(regex, highLightText),
+                }}
+            />
+            {option.clusterName && option.namespace && (
+                <small
+                    className="cn-6"
+                    dangerouslySetInnerHTML={{
+                        __html: (option.clusterName + '/' + option.namespace).replace(regex, highLightText),
+                    }}
+                ></small>
+            )}
         </div>
-        </components.Option>
     )
 }

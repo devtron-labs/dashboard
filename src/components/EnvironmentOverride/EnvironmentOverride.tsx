@@ -18,7 +18,11 @@ import {
 import { ReactComponent as Arrow } from '../../assets/icons/ic-arrow-left.svg'
 import { getAppOtherEnvironment } from '../../services/service'
 
-export default function EnvironmentOverride({ environments, setEnvironments }: EnvironmentOverrideComponentProps) {
+export default function EnvironmentOverride({
+    appList,
+    environments,
+    setEnvironments,
+}: EnvironmentOverrideComponentProps) {
     const params = useParams<{ appId: string; envId: string }>()
     const [viewState, setViewState] = useState<ComponentStates>(null)
     const { path } = useRouteMatch()
@@ -33,6 +37,7 @@ export default function EnvironmentOverride({ environments, setEnvironments }: E
     )
 
     const environmentsMap = mapByKey(environments || [], 'environmentId')
+    const appMap = mapByKey(appList || [], 'id')
 
     useEffect(() => {
         if (params.envId) setEnvironmentId(+params.envId)
@@ -68,13 +73,7 @@ export default function EnvironmentOverride({ environments, setEnvironments }: E
     }, [viewState])
 
     useEffect(() => {
-        if (
-            !environmentsLoading &&
-            location.pathname.includes(
-                `${URLS.APP_ENV_OVERRIDE_CONFIG}/${params.envId}/${URLS.APP_DEPLOYMENT_CONFIG}`,
-            ) &&
-            environmentResult?.result
-        ) {
+        if (!environmentsLoading && environmentResult?.result) {
             setEnvironments(environmentResult.result)
         }
     }, [environmentsLoading, environmentResult])
@@ -93,20 +92,24 @@ export default function EnvironmentOverride({ environments, setEnvironments }: E
         )
     }
 
+    const formTitle = () => {
+        return appMap.has(+params.appId) || environmentsMap.has(+params.envId) ? (
+            <>
+                {appList ? appMap.get(+params.appId).name : environmentsMap.get(+params.envId).environmentName}
+                <Arrow className="icon-dim-20 fcn-6 rotateBy-180 mr-4 ml-4" />
+            </>
+        ) : (
+            ''
+        )
+    }
+
     return (
         <ErrorBoundary>
             <div className={headingData ? 'environment-override mb-24' : 'deployment-template-override h-100'}>
-                {environmentsMap.size > 0 && headingData && (
+                {headingData && (
                     <>
                         <h1 className="form__title form__title--artifacts flex left">
-                            {environmentsMap.has(+params.envId) ? (
-                                <>
-                                    {environmentsMap.get(+params.envId).environmentName}
-                                    <Arrow className="icon-dim-20 fcn-6 rotateBy-180 mr-4 ml-4" />
-                                </>
-                            ) : (
-                                ''
-                            )}
+                            {formTitle()}
                             {headingData.title}
                         </h1>
                         <div className="form__subtitle">

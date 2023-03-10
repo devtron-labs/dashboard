@@ -445,7 +445,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         return (
             <div>
                 <div className="mt-16">
-                    <div className="mb-8">Token name*</div>
+                    <div className="mb-8 dc__required-field">Token name</div>
                     <input
                         type="text"
                         className="form__input"

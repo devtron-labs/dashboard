@@ -23,6 +23,7 @@ export interface ChartValuesViewType {
     chartVersionsDataFromParent?: ChartVersionType[]
     chartValuesFromParent?: ChartValuesType
     selectedVersionFromParent?: number
+    init?: () => void
 }
 
 export interface ChartSelectorType {
@@ -314,11 +315,6 @@ export enum ChartValuesViewActionTypes {
 export enum DeploymentAppType {
     Helm = 'helm',
     GitOps = 'argo_cd',
-}
-
-export enum DeploymentAppTypeNameMapping {
-    HelmKeyValue = 'Helm',
-    GitOpsKeyValue = 'GitOps',
 }
 
 export interface ChartValuesViewAction {

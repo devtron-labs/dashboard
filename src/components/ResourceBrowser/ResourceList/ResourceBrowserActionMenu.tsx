@@ -14,7 +14,6 @@ import { toast } from 'react-toastify'
 
 export default function ResourceBrowserActionMenu({
     clusterId,
-    namespace,
     resourceData,
     selectedResource,
     getResourceListData,
@@ -44,7 +43,7 @@ export default function ResourceBrowserActionMenu({
 
             await deleteResource(resourceDeletePayload)
             toast.success('Resource deleted successfully')
-            getResourceListData()
+            getResourceListData(true)
         } catch (err) {
             showError(err)
         } finally {

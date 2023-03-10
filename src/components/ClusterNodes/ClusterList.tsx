@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterList } from './clusterNodes.service'
-import { handleUTCTime, filterImageList } from '../common'
+import { handleUTCTime, filterImageList, createGroupSelectList } from '../common'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterDetail, ClusterListResponse, ClusterListType } from './types'
 import PageHeader from '../common/header/PageHeader'
@@ -19,6 +19,8 @@ import ClusterTerminal from './ClusterTerminal'
 
 export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()
+    const location = useLocation()
+    const history = useHistory()
     const [loader, setLoader] = useState(false)
     const [noResults, setNoResults] = useState(false)
     const [searchText, setSearchText] = useState('')
@@ -54,6 +56,12 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     }, [])
 
     useEffect(() => {
+        if (filteredClusterList && imageList && namespaceList) {
+            handleUrlChange(filteredClusterList)
+        }
+    }, [filteredClusterList, imageList, namespaceList])
+
+    useEffect(() => {
         const _lastDataSyncTime = Date()
         setLastDataSyncTimeString('Last refreshed ' + handleUTCTime(_lastDataSyncTime, true))
         const interval = setInterval(() => {
@@ -63,6 +71,16 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
             clearInterval(interval)
         }
     }, [lastDataSync])
+
+    const handleUrlChange = (sortedResult) => {
+        const queryParams = new URLSearchParams(location.search)
+        const selectedCluster = sortedResult.find(
+            (item) => item.id == queryParams.get('clusterId') && item.nodeCount > 0,
+        )
+        if (selectedCluster) {
+            openTerminal(selectedCluster)
+        }
+    }
 
     const handleFilterChanges = (_searchText: string): void => {
         const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText) >= 0)
@@ -120,12 +138,24 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
 
     const openTerminal = (clusterData): void => {
         setTerminalCluster(clusterData)
-        setNodeImageList(filterImageList(imageList,clusterData.serverVersion))
+        setNodeImageList(filterImageList(imageList, clusterData.serverVersion))
         setShowTerminal(true)
     }
 
-    const closeTerminal = (): void => {
+    const openTerminalComponent = (clusterData): void => {
+        const queryParams = new URLSearchParams(location.search)
+        queryParams.set('clusterId', clusterData.id)
+        history.push({
+            search: queryParams.toString(),
+        })
+        openTerminal(clusterData)
+    }
+
+    const closeTerminal = (skipRedirection: boolean): void => {
         setShowTerminal(false)
+        if (!skipRedirection) {
+            history.push(match.url)
+        }
     }
 
     const renderClusterRow = (clusterData: ClusterDetail): JSX.Element => {
@@ -136,7 +166,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                     clusterData.nodeCount && isSuperAdmin ? 'dc__visible-hover--parent' : ''
                 }`}
             >
-                <div className="cb-5 dc__ellipsis-right">
+                <div className="cb-5 dc__ellipsis-right flex left">
                     <NavLink
                         to={`${match.url}/${clusterData.id}`}
                         onClick={(e) => {
@@ -145,6 +175,10 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                     >
                         {clusterData.name}
                     </NavLink>
+                    <TerminalIcon
+                        className="cursor icon-dim-16 dc__visible-hover--child ml-8"
+                        onClick={() => openTerminalComponent(clusterData)}
+                    />
                 </div>
                 <div>
                     {clusterData.errorInNodeListing ? (
@@ -177,7 +211,6 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                 </div>
                 <div>{clusterData.cpu?.capacity}</div>
                 <div>{clusterData.memory?.capacity}</div>
-                <TerminalIcon className="cursor dc__visible-hover--child" onClick={() => openTerminal(clusterData)} />
             </div>
         )
     }
@@ -195,7 +228,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                     <div className="fs-13">
                         {lastDataSyncTimeString && (
                             <span>
-                                {lastDataSyncTimeString}{' '}
+                                {lastDataSyncTimeString}
                                 <button className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getData}>
                                     Refresh
                                 </button>
@@ -208,7 +241,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                 ) : (
                     <div
                         className="dc__overflow-scroll"
-                        style={{ height: `calc(${showTerminalModal ? '50vh' : '100vh'} - 125px)` }}
+                        style={{ height: `calc(${showTerminalModal ? '50vh - 125px)' : '100vh - 116px)'}` }}
                     >
                         <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
                             <div>Cluster</div>
@@ -227,7 +260,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                 <ClusterTerminal
                     clusterId={terminalclusterData.id}
                     clusterName={terminalclusterData.name}
-                    nodeList={terminalclusterData.nodeNames}
+                    nodeGroups={createGroupSelectList(terminalclusterData?.nodeDetails,'nodeName')}
                     closeTerminal={closeTerminal}
                     clusterImageList={nodeImageList}
                     namespaceList={namespaceList[terminalclusterData.name]}

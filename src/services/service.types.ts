@@ -69,6 +69,7 @@ export interface AppEnvironment {
     chartRefId?: number
     lastDeployed?: string
     appStatus?: string
+    deploymentAppDeleteRequest?: boolean
 }
 
 export interface AppOtherEnvironment extends ResponseType {

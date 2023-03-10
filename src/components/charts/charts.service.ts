@@ -33,12 +33,12 @@ export function updateChart(request) {
     return put(Routes.UPDATE_APP_API, request)
 }
 
-export function deleteInstalledChart(installedAppId, force?: boolean) {
+export function deleteInstalledChart(installedAppId: string | number, isGitops?: boolean, force?: boolean) {
     let URL
     if (force) {
-        URL = `app-store/deployment/application/delete/${installedAppId}?force=${force}`
+        URL = `app-store/deployment/application/delete/${installedAppId}?force=${force}&partialDelete=false`
     } else {
-        URL = `app-store/deployment/application/delete/${installedAppId}`
+        URL = `app-store/deployment/application/delete/${installedAppId}?partialDelete=${isGitops ? 'true' : 'false'}`
     }
     return trash(URL)
 }

@@ -56,3 +56,9 @@ export interface StyledProgressBarProps {
     resetProgress?: boolean
     updateProgressValue?: (currentValue: number) => void
 }
+
+export interface ShortcutKeyBadgeProps {
+    rootClassName?: string
+    shortcutKey: string
+    onClick?: (e?: any) => void
+}

@@ -62,6 +62,7 @@ export interface AppDetails {
     projectName?: string
     clusterId?: number
     deploymentAppType?: DeploymentAppType
+    deploymentAppDeleteRequest: boolean
 }
 
 export interface LabelTag {
@@ -426,4 +427,5 @@ export interface DeleteComponentProps {
 
 export interface AppStatusType {
     appStatus: string
+    isDeploymentStatus?: boolean
 }

@@ -196,6 +196,7 @@ export interface StepType {
     outputDirectoryPath: string[]
     inlineStepDetail?: InlineStepDetailType
     pluginRefStepDetail?: PluginRefStepDetailType
+    triggerIfParentStageFail: boolean
 }
 
 export interface BuildStageType {

@@ -25,7 +25,7 @@ import {
     ScanVulnerabilitiesTable,
     getRandomColor
 } from '../../../common'
-import { showError, Progressing, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ConditionalWrap, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { EmptyStateCdMaterial } from './EmptyStateCdMaterial'
 import { CDButtonLabelMap, getCommonConfigSelectStyles } from './config'
 import {
@@ -256,7 +256,13 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     renderSequentialCDCardTitle = (mat) => {
         if (this.props.stageType !== STAGE_TYPE.CD) return
 
-        if (mat.latest || mat.runningOnParentCd || mat.artifactStatus === 'Progressing' || mat.artifactStatus === 'Degraded' || mat.artifactStatus === 'Failed') {
+        if (
+            mat.latest ||
+            mat.runningOnParentCd ||
+            mat.artifactStatus === 'Progressing' ||
+            mat.artifactStatus === 'Degraded' ||
+            mat.artifactStatus === 'Failed'
+        ) {
             return (
                 <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
                     {this.renderActiveCD(mat)}
@@ -268,7 +274,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     async handleImageSelection(index: number, selectedMaterial: CDMaterialType) {
-        this.props.selectImage(index, this.props.materialType)
+        this.props.selectImage(
+            index,
+            this.props.materialType,
+            this.props.isFromBulkCD ? { id: this.props.pipelineId, type: this.props.stageType } : null,
+        )
 
         if (this.state.isRollbackTrigger && this.state.selectedMaterial?.wfrId !== selectedMaterial.wfrId) {
             const isSpecificTriggerConfig =
@@ -423,7 +433,16 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                             type="button"
                                             onClick={(e) => {
                                                 e.stopPropagation()
-                                                this.props.changeTab(index, Number(mat.id), CDModalTab.Changes)
+                                                this.props.changeTab(
+                                                    index,
+                                                    Number(mat.id),
+                                                    CDModalTab.Changes,
+                                                    {
+                                                        id: this.props.pipelineId,
+                                                        type: this.props.stageType,
+                                                    },
+                                                    this.props.appId,
+                                                )
                                             }}
                                             className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
                                                 mat.tab === CDModalTab.Changes ? 'active' : ''
@@ -437,7 +456,15 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                             type="button"
                                             onClick={(e) => {
                                                 e.stopPropagation()
-                                                this.props.changeTab(index, Number(mat.id), CDModalTab.Security)
+                                                this.props.changeTab(
+                                                    index,
+                                                    Number(mat.id),
+                                                    CDModalTab.Security,
+                                                    this.props.isFromBulkCD
+                                                        ? { id: this.props.pipelineId, type: this.props.stageType }
+                                                        : null,
+                                                    this.props.appId,
+                                                )
                                             }}
                                             className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
                                                 mat.tab === CDModalTab.Security ? 'active' : ''
@@ -460,7 +487,12 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             className="material-history__changes-btn"
                             onClick={(event) => {
                                 event.stopPropagation()
-                                this.props.toggleSourceInfo(index)
+                                this.props.toggleSourceInfo(
+                                    index,
+                                    this.props.isFromBulkCD
+                                        ? { id: this.props.pipelineId, type: this.props.stageType }
+                                        : null,
+                                )
                             }}
                         >
                             {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
@@ -750,9 +782,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
 
         if (this.state.isRollbackTrigger) {
-            this.props.triggerDeploy(this.props.stageType, this.state.selectedConfigToDeploy?.value, this.getWfrId())
+            this.props.triggerDeploy(
+                this.props.stageType,
+                this.props.appId,
+                this.state.selectedConfigToDeploy?.value,
+                this.getWfrId(),
+            )
         } else {
-            this.props.triggerDeploy(this.props.stageType)
+            this.props.triggerDeploy(this.props.stageType, this.props.appId)
         }
     }
 
@@ -812,6 +849,49 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return true
     }
 
+    renderTriggerBody() {
+        return (
+            <div
+                className={`trigger-modal__body ${
+                    this.state.showConfigDiffView && this.canReviewConfig() ? 'p-0' : ''
+                }`}
+                style={{
+                    height: this.state.showConfigDiffView ? 'calc(100vh - 141px)' : 'calc(100vh - 116px)',
+                }}
+            >
+                {this.state.showConfigDiffView && this.canReviewConfig() ? (
+                    <TriggerViewConfigDiff
+                        currentConfiguration={this.state.recentDeploymentConfig}
+                        baseTemplateConfiguration={this.getBaseTemplateConfiguration()}
+                        selectedConfigToDeploy={this.state.selectedConfigToDeploy}
+                        handleConfigSelection={this.handleConfigSelection}
+                        isConfigAvailable={this.isConfigAvailable}
+                        diffOptions={this.state.diffOptions}
+                    />
+                ) : (
+                    <>
+                        {!this.props.isFromBulkCD && <div className="material-list__title pb-16">
+                            {this.state.isRollbackTrigger ? 'Select from previously deployed images' : 'Select Image'}
+                        </div>}
+                        {this.renderMaterial()}
+                        {this.state.isRollbackTrigger && !this.state.noMoreImages && this.props.material.length !== 1 && (
+                            <button
+                                className="show-older-images-cta cta ghosted flex h-32"
+                                onClick={this.loadOlderImages}
+                            >
+                                {this.state.loadingMore ? (
+                                    <Progressing styles={{ height: '32px' }} />
+                                ) : (
+                                    'Show older images'
+                                )}
+                            </button>
+                        )}
+                    </>
+                )}
+            </div>
+        )
+    }
+
     renderCDModal() {
         return (
             <>
@@ -837,85 +917,48 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <img alt="close" src={close} />
                     </button>
                 </div>
-                <div
-                    className={`trigger-modal__body ${
-                        this.state.showConfigDiffView && this.canReviewConfig() ? 'p-0' : ''
-                    }`}
-                    style={{
-                        height: this.state.showConfigDiffView ? 'calc(100vh - 141px)' : 'calc(100vh - 116px)',
-                    }}
-                >
-                    {this.state.showConfigDiffView && this.canReviewConfig() ? (
-                        <TriggerViewConfigDiff
-                            currentConfiguration={this.state.recentDeploymentConfig}
-                            baseTemplateConfiguration={this.getBaseTemplateConfiguration()}
-                            selectedConfigToDeploy={this.state.selectedConfigToDeploy}
-                            handleConfigSelection={this.handleConfigSelection}
-                            isConfigAvailable={this.isConfigAvailable}
-                            diffOptions={this.state.diffOptions}
-                        />
-                    ) : (
-                        <>
-                            <div className="material-list__title pb-16">
-                                {this.state.isRollbackTrigger
-                                    ? 'Select from previously deployed images'
-                                    : 'Select Image'}
-                            </div>
-                            {this.renderMaterial()}
-                            {this.state.isRollbackTrigger &&
-                                !this.state.noMoreImages &&
-                                this.props.material.length !== 1 && (
-                                    <button
-                                        className="show-older-images-cta cta ghosted flex h-32"
-                                        onClick={this.loadOlderImages}
-                                    >
-                                        {this.state.loadingMore ? (
-                                            <Progressing styles={{ height: '32px' }} />
-                                        ) : (
-                                            'Show older images'
-                                        )}
-                                    </button>
-                                )}
-                        </>
-                    )}
-                </div>
+                {this.renderTriggerBody()}
                 {this.renderTriggerModalCTA()}
             </>
         )
     }
 
-    stopPropagationOnClick(e) {
-        e.stopPropagation()
-    }
-
     render() {
-        return (
-            <VisibleModal
-                className=""
-                parentClassName={this.state.isRollbackTrigger ? 'dc__overflow-hidden' : ''}
-                close={this.props.closeCDModal}
-            >
-                <div
-                    className={`modal-body--cd-material h-100 ${
-                        this.state.isRollbackTrigger ? 'contains-diff-view' : ''
-                    } ${this.props.material.length > 0 ? '' : 'no-material'}`}
-                    onClick={this.stopPropagationOnClick}
+        if (this.props.isFromBulkCD) {
+          return this.props.material.length > 0 ? (
+              this.renderTriggerBody()
+          ) : (
+              <EmptyStateCdMaterial materialType={this.props.materialType} />
+          )
+        } else {
+            return (
+                <VisibleModal
+                    className=""
+                    parentClassName={this.state.isRollbackTrigger ? 'dc__overflow-hidden' : ''}
+                    close={this.props.closeCDModal}
                 >
-                    {this.props.material.length > 0 ? (
-                        this.renderCDModal()
-                    ) : (
-                        <>
-                            <div className="trigger-modal__header">
-                                <h1 className="modal__title">{this.renderCDModalHeader()}</h1>
-                                <button type="button" className="dc__transparent" onClick={this.props.closeCDModal}>
-                                    <img alt="close" src={close} />
-                                </button>
-                            </div>
-                            <EmptyStateCdMaterial materialType={this.props.materialType} />
-                        </>
-                    )}
-                </div>
-            </VisibleModal>
-        )
+                    <div
+                        className={`modal-body--cd-material h-100 ${
+                            this.state.isRollbackTrigger ? 'contains-diff-view' : ''
+                        } ${this.props.material.length > 0 ? '' : 'no-material'}`}
+                        onClick={stopPropagation}
+                    >
+                        {this.props.material.length > 0 ? (
+                            this.renderCDModal()
+                        ) : (
+                            <>
+                                <div className="trigger-modal__header">
+                                    <h1 className="modal__title">{this.renderCDModalHeader()}</h1>
+                                    <button type="button" className="dc__transparent" onClick={this.props.closeCDModal}>
+                                        <img alt="close" src={close} />
+                                    </button>
+                                </div>
+                                <EmptyStateCdMaterial materialType={this.props.materialType} />
+                            </>
+                        )}
+                    </div>
+                </VisibleModal>
+            )
+        }
     }
 }

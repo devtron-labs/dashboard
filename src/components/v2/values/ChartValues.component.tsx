@@ -6,7 +6,11 @@ import IndexStore from '../appDetails/index.store'
 import ChartValuesView from './chartValuesDiff/ChartValuesView'
 // TODO: appDetails from useSharedState
 
-function ValuesComponent({ appId }: { appId: string }) {
+export interface ValueComponentTypes {
+   appId: string, init: () => void
+}
+
+function ValuesComponent({ appId, init }: ValueComponentTypes) {
     const [installedConfig, setInstalledConfig] = useState(null)
     const appDetails = IndexStore.getAppDetails()
 
@@ -16,7 +20,6 @@ function ValuesComponent({ appId }: { appId: string }) {
                 setInstalledConfig(res.result)
             })
             .catch((err) => {
-                console.log(err)
                 if (Array.isArray(err.errors)) {
                     err.errors.map(({ userMessage }, idx) => toast.error(userMessage))
                 }
@@ -29,7 +32,7 @@ function ValuesComponent({ appId }: { appId: string }) {
             {!installedConfig ? (
                 <DetailsProgressing loadingText="Please wait…" size={24} />
             ) : (
-                <ChartValuesView appId={appId} installedConfigFromParent={installedConfig} appDetails={appDetails} />
+                <ChartValuesView appId={appId} installedConfigFromParent={installedConfig} appDetails={appDetails} init={init} />
             )}
         </div>
     )

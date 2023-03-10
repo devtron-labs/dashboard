@@ -620,7 +620,7 @@ export const Name: React.FC<{ nodeDetails: any, describeNode: (nodeName: string,
                     </span>
                 )}
                 {nodeDetails.kind.toLowerCase() === 'pod' ?
-                    <span data-testid={`${nodeDetails.name}-logs`}
+                    <span data-testid={`${nodeDetails.name}-terminal`}
                         className="hover-only fw-6 anchor pointer ml-6"
                         onClick={(e) => showManifest(NodeDetailTabs.TERMINAL)}>
                         TERMINAL
@@ -703,7 +703,7 @@ export const GenericRow: React.FC<{ appName: string; environmentName: string; no
                         return <Name key={column} nodeDetails={nodeDetails} describeNode={describeNode} addExtraSpace={nodeDetails.kind === Nodes.Containers && containerLevelExternalLinks.length > 0} />;
                     } else if (column === 'external-links') {
                         return (
-                            <td>
+                            <td key={column}>
                                 {nodeDetails.kind === Nodes.Pod && podLevelExternalLinks.length > 0 && (
                                     <NodeLevelExternalLinks
                                         appDetails={appDetails}

@@ -4,7 +4,7 @@ import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
 import { History } from './details/cicdHistory/types'
 import { AppDetails, CreateAppLabelsRequest } from './types'
-import { CDMdalTabType, DeploymentWithConfigType } from './details/triggerView/types'
+import { CDMdalTabType, DeploymentNodeType, DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
 
 let stageMap = {
@@ -214,7 +214,7 @@ export const getCIMaterialList = (params) => {
     })
 }
 
-export function getCDMaterialList(cdMaterialId, stageType: 'PRECD' | 'CD' | 'POSTCD') {
+export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType) {
     let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${stageMap[stageType]}`
     return get(URL).then((response) => {
         return cdMaterialListModal(
@@ -319,12 +319,11 @@ export const triggerCINode = (request) => {
     return post(URL, request)
 }
 
-// stageType: 'PRECD' | 'CD' | 'POSTCD'
 export const triggerCDNode = (
     pipelineId: any,
     ciArtifactId: any,
     appId: string,
-    stageType: string,
+    stageType: DeploymentNodeType,
     deploymentWithConfig?: string,
     wfrId?: number,
 ) => {

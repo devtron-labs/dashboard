@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { getGitHostList, getGitProviderList } from '../../services/service';
 import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service';
-import { useForm, useEffectAfterMount, useAsync } from '../common';
+import { useForm, useEffectAfterMount, useAsync, handleOnBlur, handleOnFocus, parsePassword } from '../common';
 import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
-import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration';
+import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
 import { DOCUMENTATION } from '../../config';
 import { DropdownIndicator } from './gitProvider.util';
@@ -22,7 +22,7 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 import { ServerError } from '@devtron-labs/devtron-fe-common-lib';
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
-import { AuthenticationType } from '../cluster/cluster.type';
+import { AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type';
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar';
 import { safeTrim } from '../../util/Util';
@@ -360,12 +360,12 @@ function GitForm({
 
     const [loading, setLoading] = useState(false);
     const [customState, setCustomState] = useState({
-        password: { value: password, error: '' },
+        password: { value: !password && id ? DEFAULT_SECRET_PLACEHOLDER : password, error: '' },
         username: { value: userName, error: '' },
         accessToken: { value: accessToken, error: '' },
         hostName: { value: gitHost.value, error: '' },
-        sshInput: { value: sshPrivateKey, error: '' },
-    });
+        sshInput: { value: !sshPrivateKey && id ? DEFAULT_SECRET_PLACEHOLDER : sshPrivateKey, error: '' },
+    })
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
 
@@ -395,11 +395,18 @@ function GitForm({
             authMode: state.auth.value,
             active,
             ...(state.auth.value === 'USERNAME_PASSWORD'
-                ? { username: customState.username.value, password: customState.password.value }
+                ? {
+                      username: customState.username.value,
+                      password: parsePassword(customState.password.value),
+                  }
                 : {}),
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {}),
-            ...(state.auth.value === 'SSH' ? { sshPrivateKey: safeTrim(customState.sshInput.value) } : {}),
-        };
+            ...(state.auth.value === 'SSH'
+                ? {
+                      sshPrivateKey: parsePassword(safeTrim(customState.sshInput.value)),
+                  }
+                : {}),
+        }
 
         const api = id ? updateGitProviderConfig : saveGitProviderConfig;
         try {
@@ -416,10 +423,10 @@ function GitForm({
 
     async function onValidation() {
         if (state.auth.value === 'USERNAME_PASSWORD') {
-            if (!customState.password.value || !customState.username.value) {
+            if ((!id && !customState.password.value) || !customState.username.value) {
                 setCustomState((state) => ({
                     ...state,
-                    password: { value: state.password.value, error: 'This is a required field' },
+                    password: { value: state.password.value, error: !id ? 'This is a required field' : '' },
                     username: { value: state.username.value, error: 'Required' },
                 }));
                 return;
@@ -433,8 +440,11 @@ function GitForm({
                 return;
             }
         } else if (state.auth.value === 'SSH') {
-            if (!customState.sshInput.value) {
-                setCustomState((state) => ({ ...state, sshInput: { value: '', error: 'This is a required field' } }));
+            if (!id && !customState.sshInput.value) {
+                setCustomState((state) => ({
+                    ...state,
+                    sshInput: { value: '', error: 'This is a required field' },
+                }))
                 return;
             }
         }
@@ -534,7 +544,7 @@ function GitForm({
                 <div className="form__row form__row--two-third">
                     <div>
                         <div>
-                            <label className="form__label">Git host*</label>
+                            <label className="form__label dc__required-field">Git host</label>
                             <ReactSelect
                                 name="host"
                                 value={gitHost.value}
@@ -631,9 +641,11 @@ function GitForm({
                             label="Username*"
                         />
                         <div>
-                            <ProtectedInput
+                            <CustomInput
                                 value={customState.password.value}
                                 onChange={customHandleChange}
+                                onBlur={id&&handleOnBlur}
+                                onFocus={handleOnFocus}
                                 name="password"
                                 error={customState.password.error}
                                 label="Password/Auth token*"
@@ -647,12 +659,14 @@ function GitForm({
                 )}
                 {state.auth.value === 'SSH' && (
                     <div className="form__row ">
-                        <div className="form__label">Private SSH key*</div>
+                        <div className="form__label dc__required-field">Private SSH key</div>
                         <textarea
                             placeholder="Enter key text"
                             className="form__input w-100"
                             style={{ height: '100px', backgroundColor: '#f7fafc' }}
                             onChange={customHandleChange}
+                            onBlur={id&&handleOnBlur}
+                            onFocus={handleOnFocus}
                             name="sshInput"
                             value={customState.sshInput.value}
                         />

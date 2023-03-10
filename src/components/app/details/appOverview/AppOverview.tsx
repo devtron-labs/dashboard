@@ -3,7 +3,7 @@ import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../../config'
 import { getAppOtherEnvironment, getTeamList } from '../../../../services/service'
-import { handleUTCTime, sortOptionsByValue, useAsync } from '../../../common'
+import { processDeployedTime, sortOptionsByValue, useAsync } from '../../../common'
 import { showError, Progressing, TagType, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails, AppOverviewProps } from '../../types'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
@@ -233,14 +233,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         )
     }
 
-    const renderDeployedTime = (_env) => {
-        if (_env.lastDeployed) {
-            return handleUTCTime(_env.lastDeployed, true)
-        } else {
-            return isAgroInstalled ? '' : 'Not deployed'
-        }
-    }
-
     const renderDeploymentComponent = () => {
         if(otherEnvsResult[0].result?.length > 0){
             return (
@@ -252,6 +244,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                     </div>
                     <div className="env-deployments-info-body">
                         {otherEnvsResult[0].result.map((_env) => (
+                         !_env.deploymentAppDeleteRequest &&
                             <div
                                 key={`${_env.environmentName}-${_env.environmentId}`}
                                 className="env-deployments-info-row display-grid dc__align-items-center"
@@ -269,7 +262,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                                     />
                                 )}
                                 <span className="fs-13 fw-4 cn-7">
-                                    {renderDeployedTime(_env)}
+                                    {processDeployedTime(_env.lastDeployed, isAgroInstalled)}
                                 </span>
                             </div>
                         ))}
@@ -312,3 +305,4 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         </div>
     )
 }
+

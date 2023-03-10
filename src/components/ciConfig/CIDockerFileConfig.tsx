@@ -267,8 +267,8 @@ export default function CIDockerFileConfig({
                     {formState.repository.error && <label className="form__error">{formState.repository.error}</label>}
                 </div>
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                    <label htmlFor="" className="form__label">
-                        Dockerfile Path (Relative)*
+                    <label htmlFor="" className="form__label dc__required-field">
+                        Dockerfile Path (Relative)
                     </label>
                     {configOverrideView && !allowOverride ? (
                         <span className="fs-14 fw-4 lh-20 cn-9">

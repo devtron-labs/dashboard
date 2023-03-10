@@ -85,9 +85,12 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
         })
     }
 
-    addRecipient(selectedProviders): void {
+    addRecipient = (selectedProviders): void => {
         let state = { ...this.state }
         state.selectedRecipient = selectedProviders || []
+        state.recipientWithoutEmailAgent = selectedProviders.some(
+            (item) => item.data.dest === 'ses' || item.data.dest === 'smtp',
+        )
         state.selectedRecipient = state.selectedRecipient.map((p) => {
             if (p.__isNew__) return { ...p, data: { dest: '', configId: 0, recipient: p.value } }
             return p
@@ -173,7 +176,11 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                 <div className="modal__body modal__body--w-600 modal__body--p-0 dc__no-top-radius mt-0">
                     <div className="modal__header m-24">
                         <h1 className="modal__title">Modify Recipients</h1>
-                        <button type="button" className="dc__transparent" onClick={this.props.closeModifyRecipientsModal}>
+                        <button
+                            type="button"
+                            className="dc__transparent"
+                            onClick={this.props.closeModifyRecipientsModal}
+                        >
                             <Close className="icon-dim-24" />
                         </button>
                     </div>
@@ -201,8 +208,8 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                         <div className="form__input form__input--textarea">
                             {this.state.savedRecipients.map((p) => {
                                 return (
-                                    <div className="dc__devtron-tag mr-5">
-                                        {p.dest === 'ses' || p.dest === '' ? (
+                                    <div className="dc__devtron-tag mr-5 mb-5">
+                                        {p.dest === 'ses' || p.dest === 'smtp' ? (
                                             <Email className="icon-dim-20 mr-5" />
                                         ) : null}
                                         {p.dest === 'slack' ? <Slack className="icon-dim-20 mr-5" /> : null}
@@ -210,7 +217,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                                         <button
                                             type="button"
                                             className="dc__transparent"
-                                            onClick={(event) => {
+                                            onClick={() => {
                                                 this.removeRecipient(p)
                                             }}
                                         >
@@ -232,7 +239,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                             autoFocus
                             options={this.props.channelList}
                             value={this.state.selectedRecipient}
-                            onChange={(selected) => this.addRecipient(selected)}
+                            onChange={this.addRecipient}
                             tabIndex={2}
                             className="basic-multi-select"
                             classNamePrefix="select"

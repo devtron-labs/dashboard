@@ -1,11 +1,13 @@
 import { Routes } from '../../../config/constants'
 import { get, post, trash } from '@devtron-labs/devtron-fe-common-lib'
-import { AppDetails } from '../../app/types'
 import { AppType, DeploymentAppType } from './appDetails.type'
 import { getAppId } from '../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
 export const getInstalledChartDetail = (_appId: number, _envId: number) => {
     return get(`app-store/installed-app/detail?installed-app-id=${_appId}&env-id=${_envId}`)
+}
+export const getInstalledChartNotesDetail = (_appId: number, _envId: number) => {
+    return get(`app-store/installed-app/notes?installed-app-id=${_appId}&env-id=${_envId}`)
 }
 
 export const getInstalledAppDetail = (_appId: number, _envId: number) => {

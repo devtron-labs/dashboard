@@ -1,5 +1,6 @@
 import { RouteComponentProps } from "react-router-dom";
 import { SERVER_MODE_TYPE } from "../../config";
+import { OptionType } from "../app/types";
 
 export const POLLING_INTERVAL = 30000;
 
@@ -8,6 +9,8 @@ export const AuthenticationType = {
     ANONYMOUS: "ANONYMOUS",
     IAM: 'IAM'
 }
+
+export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
 
 export enum ClusterComponentStatus {
     WF_UNKNOWN = 'WF_UNKNOWN',
@@ -73,4 +76,11 @@ export interface ClusterStepModal {
     subTitle: string
     command: string
     clusterName: string
+}
+
+export interface ClusterTerminalParamsType {
+    selectedImage: OptionType
+    selectedNamespace: OptionType
+    selectedNode: OptionType
+    selectedShell: OptionType
 }

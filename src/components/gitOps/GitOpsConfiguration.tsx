@@ -8,11 +8,10 @@ import {
     GitOpsOrganisationIdType,
     GitProvider,
 } from './gitops.type'
-import { ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg'
-import { CustomInput } from '../common'
+import { CustomInput, handleOnBlur, handleOnFocus } from '../common'
 import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import Check from '../../assets/icons/ic-outline-check.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
@@ -32,6 +31,7 @@ import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.sv
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { GITOPS_FQDN_MESSAGE, GITOPS_HTTP_MESSAGE } from '../../config/constantMessaging'
 import { GitHost, ShortGitHosts, GitLink, DefaultGitOpsConfig, DefaultShortGitOps, LinkAndLabelSpec } from './constants'
+import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type'
 
 const GitProviderTabIcons: React.FC<{ gitops: string }> = ({ gitops }) => {
     switch (gitops) {
@@ -158,7 +158,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                     view: ViewType.FORM,
                     lastActiveGitOp: form,
                     providerTab: form.provider,
-                    form: form,
+                    form: {
+                        ...form,
+                        token: form.id && form.token === '' ? DEFAULT_SECRET_PLACEHOLDER : form.token,
+                    },
                     isError: DefaultShortGitOps,
                     isFormEdited: false,
                 })
@@ -183,7 +186,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
         this.setState({
             providerTab: form.provider,
-            form: form,
+            form: {
+                ...form,
+                token: form.id && form.token === '' ? DEFAULT_SECRET_PLACEHOLDER : form.token,
+            },
             isError: DefaultShortGitOps,
             isFormEdited: false,
             validationStatus: VALIDATION_STATUS.DRY_RUN,
@@ -199,7 +205,10 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             },
             isError: {
                 ...this.state.isError,
-                [key]: event.target.value.length === 0 ? 'This is a required field' : '',
+                [key]:
+                    (key === 'token' && this.state.form.id) || event.target.value.length !== 0
+                        ? ''
+                        : 'This is a required field',
             },
             isFormEdited: false,
             //After entering any text,if GitOpsFieldKeyType is of type host then the url validation error must dissapear
@@ -215,7 +224,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         return {
             host: this.requiredFieldCheck(form.host),
             username: this.requiredFieldCheck(form.username),
-            token: this.requiredFieldCheck(form.token),
+            token: this.state.form.id ? '' : this.requiredFieldCheck(form.token),
             gitHubOrgId: this.requiredFieldCheck(form.gitHubOrgId),
             gitLabGroupId: this.requiredFieldCheck(form.gitLabGroupId),
             azureProjectName: this.requiredFieldCheck(form.azureProjectName),
@@ -284,14 +293,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         const payload = {
             id: this.state.form.id,
             provider: this.state.form.provider,
-            username: this.state.form.username,
-            host: this.state.form.host,
-            token: this.state.form.token,
-            gitLabGroupId: this.state.form.gitLabGroupId,
-            gitHubOrgId: this.state.form.gitHubOrgId,
-            azureProjectName: this.state.form.azureProjectName,
-            bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId,
-            bitBucketProjectKey: this.state.form.bitBucketProjectKey,
+            username: this.state.form.username.replace(/\s/g, ''),
+            host: this.state.form.host.replace(/\s/g, ''),
+            token: this.state.form.token.replace(/\s/g, ''),
+            gitLabGroupId: this.state.form.gitLabGroupId.replace(/\s/g, ''),
+            gitHubOrgId: this.state.form.gitHubOrgId.replace(/\s/g, ''),
+            azureProjectName: this.state.form.azureProjectName.replace(/\s/g, ''),
+            bitBucketWorkspaceId: this.state.form.bitBucketWorkspaceId.replace(/\s/g, ''),
+            bitBucketProjectKey: this.state.form.bitBucketProjectKey.replace(/\s/g, ''),
             active: true,
         }
         return payload
@@ -558,7 +567,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             </div>
                             {suggestedURL && (
                                 <>
-                                    {' '}
                                     Please Use:
                                     <button
                                         type="button"
@@ -641,12 +649,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             />
                         </div>
                         <div>
-                            <ProtectedInput
+                            <CustomInput
                                 value={this.state.form.token}
                                 onChange={(event) => this.handleChange(event, 'token')}
                                 name="Enter token"
                                 tabIndex={4}
                                 error={this.state.isError.token}
+                                onBlur={this.state.form.id&&handleOnBlur}
+                                onFocus={handleOnFocus}
                                 label={
                                     <>
                                         {this.state.providerTab === GitProvider.AZURE_DEVOPS
@@ -662,6 +672,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                     </>
                                 }
                                 labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13"
+                                autoComplete="off"
                             />
                         </div>
                     </div>

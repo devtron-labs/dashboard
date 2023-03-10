@@ -35,7 +35,7 @@ function ManifestComponent({
     const history = useHistory()
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON)
     const { url } = useRouteMatch()
-    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
+    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string; group: string }>()
     const [manifest, setManifest] = useState('')
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
@@ -76,7 +76,12 @@ function ManifestComponent({
         setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest)
         setLoading(true)
 
-        if (isResourceBrowserView || appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
+        if (
+            isResourceBrowserView ||
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
+            (appDetails.deploymentAppType === DeploymentAppType.argo_cd &&
+            appDetails.deploymentAppDeleteRequest)
+        ) {
             markActiveTab('Live manifest')
         }
         try {
@@ -124,7 +129,7 @@ function ManifestComponent({
         } catch (err) {
             setLoading(false)
         }
-    }, [params.podName, params.node, params.nodeType])
+    }, [params.podName, params.node, params.nodeType, params.group])
 
     useEffect(() => {
         if (!isDeleted && !isEditmode && activeManifestEditorData !== modifiedManifest) {
@@ -133,12 +138,12 @@ function ManifestComponent({
     }, [isEditmode])
 
     //For External
-
     const handleEditorValueChange = (codeEditorData: string) => {
         if (activeTab === 'Live manifest' && isEditmode) {
             setModifiedManifest(codeEditorData)
         }
     }
+
     const handleEditLiveManifest = () => {
         setIsEditmode(true)
         markActiveTab('Live manifest')
@@ -157,8 +162,7 @@ function ManifestComponent({
         }
         if (!manifestString) {
             setLoading(false)
-        }
-        manifestString &&
+        } else {
             updateManifestResourceHelmApps(
                 appDetails,
                 params.podName,
@@ -172,7 +176,9 @@ function ManifestComponent({
                     const _manifest = JSON.stringify(response?.result?.manifest)
                     if (_manifest) {
                         setManifest(_manifest)
-                        setErrorText(``)
+                        setActiveManifestEditorData(_manifest)
+                        setModifiedManifest(_manifest)
+                        setErrorText('')
                     }
                     setLoading(false)
                 })
@@ -199,6 +205,7 @@ function ManifestComponent({
                         showError(err)
                     }
                 })
+        }
     }
 
     const recreateResource = () => {
@@ -289,7 +296,8 @@ function ManifestComponent({
             {!error && (
                 <>
                     <div className="bcn-0">
-                        {(appDetails.appType === AppType.EXTERNAL_HELM_CHART || isResourceBrowserView) && (
+                        {(appDetails.appType === AppType.EXTERNAL_HELM_CHART || isResourceBrowserView ||  (appDetails.deploymentAppType === DeploymentAppType.argo_cd &&
+            appDetails.deploymentAppDeleteRequest)) && (
                             <div className="flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {
                                     return (!showDesiredAndCompareManifest &&
@@ -350,7 +358,7 @@ function ManifestComponent({
                                 cleanData={activeTab === 'Compare'}
                                 diffView={activeTab === 'Compare'}
                                 theme="vs-dark--dt"
-                                height={isResourceBrowserView ? 'calc(100vh - 110px)' : '100vh'}
+                                height={isResourceBrowserView ? 'calc(100vh - 116px)' : '100vh'}
                                 value={activeManifestEditorData}
                                 mode={MODES.YAML}
                                 readOnly={activeTab !== 'Live manifest' || !isEditmode}
@@ -361,7 +369,7 @@ function ManifestComponent({
                                         msg={loadingMsg}
                                         icon={MsgUIType.LOADING}
                                         size={24}
-                                        minHeight={isResourceBrowserView ? 'calc(100vh - 124px)' : ''}
+                                        minHeight={isResourceBrowserView ? 'calc(100vh - 116px)' : ''}
                                     />
                                 }
                                 focus={isEditmode}

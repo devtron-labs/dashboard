@@ -5,7 +5,7 @@ import { TriggerExternalCINode } from './nodes/TriggerExternalCINode'
 import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
-import { getCIPipelineURL, RectangularEdge as Edge } from '../../../../common'
+import { Checkbox, CHECKBOX_VALUE, getCIPipelineURL, RectangularEdge as Edge } from '../../../../common'
 import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
@@ -14,9 +14,21 @@ import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
 export class Workflow extends Component<WorkflowProps> {
     goToWorkFlowEditor = (node: NodeAttr) => {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
-            this.props.history.push(
-                getCIPipelineURL(this.props.match.params.appId, this.props.id, true, node.downstreams[0].split('-')[1]),
+            const ciPipelineURL = getCIPipelineURL(
+                this.props.appId?.toString() ?? this.props.match.params.appId,
+                this.props.id,
+                true,
+                node.downstreams[0].split('-')[1],
             )
+            if (this.props.fromAppGrouping) {
+                window.open(
+                    window.location.href.replace(this.props.location.pathname, ciPipelineURL),
+                    '_blank',
+                    'noreferrer',
+                )
+            } else {
+                this.props.history.push(ciPipelineURL)
+            }
         }
     }
 
@@ -99,6 +111,7 @@ export class Workflow extends Component<WorkflowProps> {
                     history={this.props.history}
                     location={this.props.location}
                     match={this.props.match}
+                    fromAppGrouping={this.props.fromAppGrouping}
                 />
             )
         } else if (node.isExternalCI) {
@@ -180,6 +193,7 @@ export class Workflow extends Component<WorkflowProps> {
                 parentPipelineId={node.parentPipelineId}
                 parentPipelineType={node.parentPipelineType}
                 parentEnvironmentName={node.parentEnvironmentName}
+                fromAppGrouping={this.props.fromAppGrouping}
             />
         )
     }
@@ -205,6 +219,7 @@ export class Workflow extends Component<WorkflowProps> {
                 history={this.props.history}
                 location={this.props.location}
                 match={this.props.match}
+                fromAppGrouping={this.props.fromAppGrouping}
             />
         )
     }
@@ -237,14 +252,32 @@ export class Workflow extends Component<WorkflowProps> {
         })
     }
 
+    handleWorkflowSelection = () => {
+        this.props.handleSelectionChange(this.props.appId)
+    }
+
     render() {
         const isExternalCiWorkflow = this.props.nodes.some(
             (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
         )
         return (
-            <div className="workflow workflow--trigger mb-20" style={{ minWidth: `${this.props.width}px` }}>
+            <div
+                className={`workflow workflow--trigger mb-20 ${this.props.isSelected ? 'eb-5' : ''}`}
+                style={{ minWidth: `${this.props.width}px` }}
+            >
                 <div className="workflow__header">
-                    <span className="workflow__name">{this.props.name}</span>
+                    {this.props.fromAppGrouping ? (
+                        <Checkbox
+                            rootClassName="fs-13 fw-6 mb-0 app-group-checkbox"
+                            isChecked={this.props.isSelected}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={this.handleWorkflowSelection}
+                        >
+                            {this.props.name}
+                        </Checkbox>
+                    ) : (
+                        <span className="workflow__name">{this.props.name}</span>
+                    )}
                 </div>
                 {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                 <div className="workflow__body">

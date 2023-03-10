@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { NavLink, useRouteMatch, useParams, useHistory } from 'react-router-dom'
+import { NavLink, useLocation, useRouteMatch, useParams, useHistory } from 'react-router-dom'
 import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
 import {
     handleUTCTime,
@@ -29,12 +29,16 @@ import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import ClusterTerminal from './ClusterTerminal'
-import { COLUMN_METADATA } from './constants'
+import { COLUMN_METADATA, NODE_SEARCH_TEXT } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import './clusterNodes.scss'
+import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
+import { ReactComponent as CloudIcon } from '../../assets/icons/ic-cloud.svg'
+import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwise.svg'
 
 export default function NodeList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()
+    const location = useLocation()
     const history = useHistory()
     const [loader, setLoader] = useState(false)
     const [searchText, setSearchText] = useState('')
@@ -65,7 +69,6 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const [fixedNodeNameColumn, setFixedNodeNameColumn] = useState(false)
     const [nodeListOffset, setNodeListOffset] = useState(0)
     const [showTerminal, setTerminal] = useState<boolean>(false)
-    const nodeList = filteredFlattenNodeList.map((node) => node['name'])
     const clusterName: string = filteredFlattenNodeList[0]?.['clusterName'] || ''
     const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
     const [selectedNode, setSelectedNode] = useState<string>()
@@ -86,6 +89,12 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             setFixedNodeNameColumn(windowWidth < clientWidth || windowWidth < appliedColumnDerivedWidth)
         }
     }, [appliedColumns])
+
+    useEffect(() => {
+        if (filteredFlattenNodeList && imageList && namespaceList) {
+            handleUrlChange(filteredFlattenNodeList)
+        }
+    }, [filteredFlattenNodeList, imageList, namespaceList])
 
     useEffect(() => {
         let appliedColumnsFromLocalStorage
@@ -241,6 +250,14 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         }
     }, [lastDataSync])
 
+    const handleUrlChange = (sortedResult) => {
+        const queryParams = new URLSearchParams(location.search)
+        const selectedNode = sortedResult.find((item) => item.name === queryParams.get('node'))
+        if (selectedNode) {
+            openTerminal(selectedNode)
+        }
+    }
+
     const handleFilterChanges = (): void => {
         let _flattenNodeList = []
         for (let index = 0; index < flattenNodeList.length; index++) {
@@ -248,10 +265,10 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             if (selectedVersion.value !== defaultVersion.value && element['k8sVersion'] !== selectedVersion.value) {
                 continue
             }
-            if (selectedSearchTextType === 'name' && searchedTextMap.size > 0) {
+            if (selectedSearchTextType === NODE_SEARCH_TEXT.NAME && searchedTextMap.size > 0) {
                 let matchFound = false
                 for (const [key] of searchedTextMap.entries()) {
-                    if (element['name'].indexOf(key) >= 0) {
+                    if (element[NODE_SEARCH_TEXT.NAME].indexOf(key) >= 0) {
                         matchFound = true
                         break
                     }
@@ -259,10 +276,10 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                 if (!matchFound) {
                     continue
                 }
-            } else if (selectedSearchTextType === 'label') {
+            } else if (selectedSearchTextType === NODE_SEARCH_TEXT.LABEL) {
                 let matchedLabelCount = 0
-                for (let i = 0; i < element['labels']?.length; i++) {
-                    const currentLabel = element['labels'][i]
+                for (let i = 0; i < element[NODE_SEARCH_TEXT.LABELS]?.length; i++) {
+                    const currentLabel = element[NODE_SEARCH_TEXT.LABELS][i]
                     const matchedLabel = searchedTextMap.get(currentLabel.key)
                     if (matchedLabel === undefined || (matchedLabel !== null && currentLabel.value !== matchedLabel)) {
                         continue
@@ -272,7 +289,19 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                 if (searchedTextMap.size !== matchedLabelCount) {
                     continue
                 }
+            } else if (selectedSearchTextType === NODE_SEARCH_TEXT.NODE_GROUP) {
+                let matchFound = false
+                for (const [key] of searchedTextMap.entries()) {
+                    if (element[NODE_SEARCH_TEXT.NODE_GROUP].indexOf(key) >= 0) {
+                        matchFound = true
+                        break
+                    }
+                }
+                if (!matchFound) {
+                    continue
+                }
             }
+
             _flattenNodeList.push(element)
         }
         if (sortByColumn) {
@@ -373,6 +402,10 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         }
     }
 
+    const headerTerminalIcon = (): void => {
+        openTerminalComponent({name:'autoSelectNode', k8sVersion: 'latest'})
+    }
+
     const renderClusterError = (): JSX.Element => {
         if (clusterErrorList.length === 0) return
         return (
@@ -443,16 +476,33 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const renderClusterSummary = (): JSX.Element => {
         return (
             <>
-                <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
-                    <div className="fw-6 fs-14 cn-9">Resource allocation and usage</div>
-                    <div className="fs-13">
+                <div className="flex dc__content-space pt-16 pb-16 pl-20 pr-20 mt-16 mb-16 ml-20 mr-20 bcn-0 br-4 en-2 bw-1">
+                    <div className="flex fw-6 fs-13">
+                        <div className="fw-6 fs-14 cn-9 h-20 flex cg-5">
+                            <CloudIcon className="icon-dim-16 mr-4" />
+                            <span className="h-20 flex">Connected</span>
+                        </div>
+                        {isSuperAdmin && (
+                            <>
+                                <span className="dc__divider ml-12 h-16"></span>
+                                <div className="flex left cursor pl-12 pr-12 cb-5" onClick={headerTerminalIcon}>
+                                    <TerminalIcon className="icon-dim-16 mr-4 fcb-5" />
+                                    <span className="h-20">Terminal</span>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                    <div className="fs-13 h-20">
                         {lastDataSyncTimeString && (
-                            <span>
+                            <div className="flex h-20">
                                 {lastDataSyncTimeString}
-                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getNodeListData}>
-                                    Refresh
+                                <button
+                                    className="btn flex btn-link p-0 fw-6 cb-5 ml-5 fs-13"
+                                    onClick={getNodeListData}
+                                >
+                                    <SyncIcon className="icon-dim-16" />
                                 </button>
-                            </span>
+                            </div>
                         )}
                     </div>
                 </div>
@@ -564,6 +614,54 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         )
     }
 
+    const renderConditionalWrap = (column, nodeData) => {
+        if (column.value === 'status' && nodeData['unschedulable']) {
+            return (
+                <span className="flex left">
+                    <span>{nodeData[column.value]}</span>
+                    <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4"></span>
+                    <span className="cr-5"> SchedulingDisabled</span>
+                </span>
+            )
+        } else {
+            if (column.value === 'k8sVersion') {
+                return (
+                    <Tippy className="default-tt" arrow={false} placement="top" content={nodeData[column.value]}>
+                        <span className="dc__inline-block dc__ellipsis-right mw-85px ">{nodeData[column.value]}</span>
+                    </Tippy>
+                )
+            } else {
+                return nodeData[column.value]
+            }
+        }
+    }
+
+    const renderNodeRow = (column, nodeData) => {
+        if (column.value === 'errorCount') {
+            return (
+                nodeData['errorCount'] > 0 && (
+                    <>
+                        <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
+                        <span className="cr-5">{nodeData['errorCount'] || '-'}</span>
+                    </>
+                )
+            )
+        } else if (column.sortType === 'boolean') {
+            return nodeData[column.value] + ''
+        } else if (nodeData[column.value] !== undefined) {
+            return (
+                <ConditionalWrap
+                    condition={column.value.indexOf('.usagePercentage') > 0}
+                    wrap={(children) => renderPercentageTippy(nodeData, column, children)}
+                >
+                    {renderConditionalWrap(column, nodeData)}
+                </ConditionalWrap>
+            )
+        } else {
+            return '-'
+        }
+    }
+
     const renderNodeList = (nodeData: Object): JSX.Element => {
         return (
             <div
@@ -587,7 +685,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                 </div>
                                 <NodeActionsMenu
                                     nodeData={nodeData as NodeDetail}
-                                    openTerminal={openTerminal}
+                                    openTerminal={openTerminalComponent}
                                     getNodeListData={getNodeListData}
                                     isSuperAdmin={isSuperAdmin}
                                 />
@@ -595,39 +693,13 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                         </div>
                     ) : (
                         <div
-                            className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 ${
+                            className={`dc__inline-block dc__ellipsis-right list-title mr-16 pt-12 pb-12 ${
                                 column.value === 'status'
                                     ? `w-180 ${TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'}`
                                     : 'w-100-px'
                             }`}
                         >
-                            {column.value === 'errorCount' ? (
-                                nodeData['errorCount'] > 0 && (
-                                    <>
-                                        <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
-                                        <span className="cr-5">{nodeData['errorCount'] || '-'}</span>{' '}
-                                    </>
-                                )
-                            ) : column.sortType === 'boolean' ? (
-                                nodeData[column.value] + ''
-                            ) : nodeData[column.value] !== undefined ? (
-                                <ConditionalWrap
-                                    condition={column.value.indexOf('.usagePercentage') > 0}
-                                    wrap={(children) => renderPercentageTippy(nodeData, column, children)}
-                                >
-                                    {column.value === 'status' && nodeData['unschedulable'] ? (
-                                        <span className="flex left">
-                                            <span>{nodeData[column.value]}</span>
-                                            <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4"></span>
-                                            <span className="cr-5"> SchedulingDisabled</span>
-                                        </span>
-                                    ) : (
-                                        nodeData[column.value]
-                                    )}
-                                </ConditionalWrap>
-                            ) : (
-                                '-'
-                            )}
+                            {renderNodeRow(column, nodeData)}
                         </div>
                     )
                 })}
@@ -653,23 +725,32 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         return <Progressing pageLoader />
     }
 
-    const openTerminal = (clusterData): void => {
+    const openTerminalComponent = (nodeData) => {
+        const queryParams = new URLSearchParams(location.search)
+        queryParams.set('node', nodeData.name)
+        history.push({
+            search: queryParams.toString(),
+        })
+        openTerminal(nodeData)
+    }
+
+    function openTerminal(clusterData): void {
         setSelectedNode(clusterData.name)
         setNodeImageList(filterImageList(imageList, clusterData.k8sVersion))
         setTerminal(true)
     }
 
-    const closeTerminal = (): void => {
+    const closeTerminal = (skipRedirection: boolean): void => {
         setTerminal(false)
+        if (!skipRedirection) {
+            history.push(match.url)
+        }
     }
 
     return (
         <div>
             <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs={true} />
-            <div
-                className="node-list dc__overflow-scroll"
-                style={{ height: `calc(${showTerminal ? '50vh' : '100vh'} - 61px)` }}
-            >
+            <div className={`node-list dc__overflow-scroll ${showTerminal ? 'show-terminal' : ''}`}>
                 {renderClusterSummary()}
                 <div
                     className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${
@@ -715,7 +796,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             {showTerminal && selectedNode && (
                 <ClusterTerminal
                     clusterId={Number(clusterId)}
-                    nodeList={nodeList}
+                    nodeGroups={createGroupSelectList(filteredFlattenNodeList,'name')}
                     closeTerminal={closeTerminal}
                     clusterImageList={nodeImageList}
                     namespaceList={namespaceList[clusterName]}

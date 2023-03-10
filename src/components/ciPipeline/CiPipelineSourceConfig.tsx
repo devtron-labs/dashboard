@@ -118,7 +118,7 @@ export function CiPipelineSourceConfig({
     }, [])
 
     return (
-        <div className={showTooltip ? 'branch-name' : ''}>
+        <div className={`flex left ${showTooltip ? 'branch-name' : ''}`}>
             {loading && showIcons && <span className="dc__loading-dots">loading</span>}
             {!loading && (
                 <>
@@ -131,9 +131,9 @@ export function CiPipelineSourceConfig({
                     )}
                     {showTooltip && (
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={sourceValueAdv}>
-                            <div>
+                            <div className="flex" style={{ maxWidth: !baseText?'calc(100% - 15px)': 'auto' }}>
                                 {!baseText && (
-                                    <div className="flex left">
+                                    <>
                                         <div
                                             className={`dc__ellipsis-right ${
                                                 sourceValue === GIT_BRANCH_NOT_CONFIGURED ? 'cr-5' : ''
@@ -142,9 +142,11 @@ export function CiPipelineSourceConfig({
                                             {sourceValueBase}
                                         </div>
                                         {sourceValue !== DEFAULT_GIT_BRANCH_VALUE && (
-                                            <Info className="icon-dim-12 fcn-5 ml-4" />
+                                            <div className="mt-2">
+                                                <Info className="icon-dim-12 fcn-5 ml-4" />
+                                            </div>
                                         )}
-                                    </div>
+                                    </>
                                 )}
                                 {baseText && (
                                     <span className="cursor" style={{ borderBottom: '1px solid #3b444c' }}>

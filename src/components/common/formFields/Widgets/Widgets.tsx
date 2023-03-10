@@ -8,6 +8,7 @@ import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../../helpers/Helpers'
 import {
     CheckboxWithTippyProps,
+    ShortcutKeyBadgeProps,
     SliderPropsType,
     StyledFieldPropsType,
     StyledInputPropsType,
@@ -330,4 +331,17 @@ export const StyledProgressBar = ({ resetProgress, updateProgressValue }: Styled
     }, [resetProgress])
 
     return <progress className="styled-progress-bar" value={progressValue} max={100} />
+}
+
+export const ShortcutKeyBadge = ({ rootClassName, shortcutKey, onClick }: ShortcutKeyBadgeProps) => {
+    return (
+        <div
+            className={`shortcut-key-badge dc__position-abs flex fs-12 fw-4 lh-20 icon-dim-20 bcn-0 cn-7 dc__border br-2 ${
+                rootClassName ?? ''
+            }`}
+            onClick={onClick}
+        >
+            {shortcutKey}
+        </div>
+    )
 }

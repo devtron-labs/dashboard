@@ -1,5 +1,5 @@
 import { Routes } from '../../config'
-import { get, post, put, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, put, ResponseType, trash, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterCapacityResponse,
     ClusterListResponse,
@@ -10,6 +10,7 @@ import {
     NodeListResponse,
     UpdateNodeRequestBody,
     EditTaintsRequest,
+    TerminalDataType,
 } from './types'
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
@@ -48,19 +49,19 @@ export const updateNodeManifest = (
     return put(`${Routes.NODE_CAPACITY}?clusterId=${clusterId}&name=${nodeName}`, nodeData)
 }
 
-export const clusterTerminalStart = (data): Promise<ResponseType> => {
-    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.START}`, data)
+export const clusterTerminalStart = (data: TerminalDataType, option: APIOptions): Promise<ResponseType> => {
+    return post(`${Routes.CLUSTER_TERMINAL}/${Routes.START}`, data, option)
 }
 
-export const clusterTerminalUpdate = (data): Promise<ResponseType> => {
-    return put(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE}`, data)
+export const clusterTerminalUpdate = (data: TerminalDataType, option: APIOptions): Promise<ResponseType> => {
+    return put(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE}`, data, option)
 }
 
 export const clusterTerminalDisconnect = (terminalAccessId): Promise<ResponseType> => {
     return post(`${Routes.CLUSTER_TERMINAL}/${Routes.DISCONNECT}?terminalAccessId=${terminalAccessId}`, null)
 }
 
-export const clusterDisconnectAndRetry = (data): Promise<ResponseType> => {
+export const clusterDisconnectAndRetry = (data: TerminalDataType): Promise<ResponseType> => {
     return post(`${Routes.CLUSTER_TERMINAL}/${Routes.DISCONNECT_RETRY}`, data)
 }
 
@@ -68,7 +69,7 @@ export const clusterTerminalStop = (terminalAccessId): Promise<ResponseType> => 
     return put(`${Routes.CLUSTER_TERMINAL}/${Routes.STOP}?terminalAccessId=${terminalAccessId}`, null)
 }
 
-export const clusterTerminalTypeUpdate = (data): Promise<ResponseType> => {
+export const clusterTerminalTypeUpdate = (data: TerminalDataType): Promise<ResponseType> => {
     return put(`${Routes.CLUSTER_TERMINAL}/${Routes.UPDATE_SHELL}`, data)
 }
 
