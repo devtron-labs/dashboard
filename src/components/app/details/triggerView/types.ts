@@ -229,6 +229,7 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     parentPipelineType?: string
     parentEnvironmentName?: string
     fromAppGrouping: boolean
+    // description: string
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {

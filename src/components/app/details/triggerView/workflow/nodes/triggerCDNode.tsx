@@ -73,14 +73,16 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                     <span className="workflow-node__text-light">
                                         Deploy: {this.props.deploymentStrategy}
                                     </span>
-                                    <Tippy
+                                    {/* <Tippy
                                         className="default-tt"
                                         arrow={true}
                                         placement="bottom"
-                                        content={this.props.environmentName}
+                                       // content={this.props.environmentName}
+                                       content={<p>Hello</p>}
                                     >
                                         <span className="dc__ellipsis-right">{this.props.environmentName}</span>
-                                    </Tippy>
+                                    </Tippy> */}
+                                    
                                 </div>
                                 <div className="workflow-node__icon-common ml-8 workflow-node__CD-icon" />
                             </div>

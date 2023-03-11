@@ -642,8 +642,7 @@ export function EnvSelector({
                             ? sortedEnvironments.map((env) => ({
                                   label: env.environmentName,
                                   value: env.environmentId,
-                                  description: 'Hello',
-                                //   description: env.description,
+                                  description: env.description,
                               }))
                             : []
                     }
