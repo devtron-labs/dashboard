@@ -31,54 +31,63 @@ describe('cd trigger view service tests', () => {
         container = null
     })
 
-    // it('nested cd material without crashing', () => {
-    //     render(
-    //         <CDMaterial
-    //         appId={302}
-    //         pipelineId={297}
-    //         stageType={DeploymentNodeType.CD}
-    //         material={cdTriggerResponse}
-    //         materialType={'inputMaterialList'}
-    //         envName={'devtron-demo'}
-    //         isLoading={false}
-    //         triggerDeploy={undefined}
-    //         onClickRollbackMaterial={undefined}
-    //         closeCDModal={() => false}
-    //         selectImage={undefined}
-    //         toggleSourceInfo={undefined}
-    //         parentPipelineId= '297'
-    //         parentPipelineType={'CI_PIPELINE"'}
-    //         parentEnvironmentName={undefined}
-    //         />, container
-    //     )
-    // })
+    it('nested cd material without crashing', () => {
+        const mockCallback = jest.fn()
+        const { getByText, container} = render(
+            <CDMaterial
+                appId={302}
+                pipelineId={297}
+                stageType={DeploymentNodeType.CD}
+                material={cdTriggerResponse}
+                materialType={'inputMaterialList'}
+                envName={'devtron-demo'}
+                isLoading={false}
+                triggerDeploy={undefined}
+                onClickRollbackMaterial={undefined}
+                closeCDModal={() => false}
+                selectImage={undefined}
+                toggleSourceInfo={undefined}
+                parentPipelineId="297"
+                parentPipelineType={'CI_PIPELINE"'}
+                parentEnvironmentName={undefined}
+            />,
+            { wrapper: BrowserRouter, },
+        )
+        expect(container).toBeInTheDocument()
+    })
 
     it('clicking on workflows uncollpases', async () => {
-        // const { getByTestId } = render(
-        //     <CDMaterial
-        //         appId={302}
-        //         pipelineId={297}
-        //         stageType={DeploymentNodeType.CD}
-        //         material={cdTriggerResponse}
-        //         materialType={'inputMaterialList'}
-        //         envName={'devtron-demo'}
-        //         isLoading={false}
-        //         triggerDeploy={undefined}
-        //         onClickRollbackMaterial={undefined}
-        //         closeCDModal={() => false}
-        //         selectImage={undefined}
-        //         toggleSourceInfo={undefined}
-        //         parentPipelineId="297"
-        //         parentPipelineType={'CI_PIPELINE"'}
-        //         parentEnvironmentName={undefined}
-        //     />,
-        //     {
-        //         wrapper: BrowserRouter,
-        //     },
-        // )
+        const { container, getByTestId } = render(
+            <CDMaterial
+                appId={45}
+                pipelineId={16}
+                stageType={DeploymentNodeType.CD}
+                material={[]}
+                materialType='inputMaterialList'
+                envName='devtron-demo'
+                isLoading={false}
+                triggerDeploy={jest.fn()}
+                onClickRollbackMaterial={jest.fn()}
+                closeCDModal={jest.fn()}
+                selectImage={jest.fn()}
+                toggleSourceInfo={jest.fn()}
+                parentPipelineId="2"
+                parentPipelineType='CI_PIPELINE'
+                parentEnvironmentName={undefined}
+            />,
+            {
+                wrapper: BrowserRouter,
+            },
+        )
+        // expect(container.querySelector('.modal-body--cd-material')).toBeTruthy()
+        // fireEvent.click(getByTestId('collapse-show-info'))
 
-    //     const element = fireEvent.click(getByTestId('collapse-show-info'))
-    //     console.log(element)
-    //     expect(screen.getByTestId('')).toBeInTheDocument()
+        //Click on Show Source Info
+        // expect(screen.getByText('Show Source Info')).toBeInTheDocument()
+
+        // expect(container.querySelector('.material-history')).toBeInTheDocument()
+        // expect(container.querySelector('.material-history__top')).toBeInTheDocument()
+        // expect(container.querySelector('.material-history__info')).toBeInTheDocument()
+        // const element = fireEvent.click(getByTestId('collapse-show-info'))
     })
 })
