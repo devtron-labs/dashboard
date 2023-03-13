@@ -75,10 +75,10 @@ export default function Docker({ ...props }) {
     }
 
 useEffect(() => {
-  if (props.isSuperAdmin) {
-    _getInit();
-  }
-}, []);
+    if (props.isSuperAdmin) {
+        _getInit()
+    }
+}, [])
 
     if (!props.isSuperAdmin) {
         return <ErrorScreenNotAuthorized />

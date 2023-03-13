@@ -536,14 +536,14 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     render() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div className="dc__height_reduce_to_172">
+                <div className="dc__height-reduce-172">
                     <Progressing pageLoader />
                 </div>
             )
         }
         else if (this.state.view === ViewType.ERROR) {
             return (
-                <div className="dc__height_reduce_to_172">
+                <div className="dc__height-reduce-172">
                     <ErrorScreenNotAuthorized />
                 </div>
             )
