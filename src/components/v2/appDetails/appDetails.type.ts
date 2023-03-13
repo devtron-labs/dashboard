@@ -180,6 +180,7 @@ export interface AppDetails {
     externalCi?: boolean
     clusterName?: string
     dockerRegistryId?: string
+    deploymentAppDeleteRequest?: boolean
 }
 
 interface MaterialInfo {
@@ -240,6 +241,7 @@ export interface Node {
 
 export interface Health {
     status: string
+    message?: string
 }
 
 export interface NetworkingInfo {
@@ -398,8 +400,12 @@ export interface NodeTreeTabListProps extends LogSearchTermType {
     tabRef?: MutableRefObject<HTMLDivElement>
 }
 
-export interface Options {
+export interface OptionsBase {
     name: string;
+    isInitContainer?: boolean
+}
+
+export interface Options extends OptionsBase {
     selected: boolean;
 }
 export interface PodContainerOptions {
@@ -440,7 +446,7 @@ export interface SelectedResourceType {
     kind: string
     namespace: string
     name: string
-    containers: string[]
+    containers: OptionsBase[]
 }
 
 export interface ResourceInfoActionPropsType {

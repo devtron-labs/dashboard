@@ -241,6 +241,8 @@ a:focus {
     hyphens: auto;
 }
 
+//Do not use dc__truncate-text use dc__ellipsis-right
+
 .dc__truncate-text {
     white-space: nowrap;
     overflow: hidden;
@@ -280,6 +282,10 @@ a:focus {
 
 .dc__top-0 {
     top: 0;
+}
+
+.dc__left-35 {
+    left: 35px;
 }
 
 .dc__vertical-align-middle {
@@ -1868,6 +1874,11 @@ button.anchor {
     border-top-right-radius: 4px;
 }
 
+.dc__top-radius-8 {
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+}
+
 .dc__no-top-radius {
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
@@ -2097,12 +2108,20 @@ textarea,
     min-width: 18px !important;
 }
 
-.w-32 {
-    width: 32px !important;
-}
-
 .mw-48 {
     min-width: 48px;
+}
+
+.mw-116 {
+    min-width: 116px;
+}
+
+.mw-232 {
+    min-width: 232px;
+}
+
+.w-32 {
+    width: 32px !important;
 }
 
 .min-w-800 {
@@ -2253,6 +2272,10 @@ textarea,
     height: 8px;
 }
 
+.h-16 {
+    height: 16px;
+}
+
 .h-18 {
     height: 18px;
 }
@@ -2349,7 +2372,7 @@ textarea,
 
 // Line height
 .lh-1-4 {
-  line-height: 1.4;
+    line-height: 1.4;
 }
 
 .lh-14 {
@@ -2672,4 +2695,8 @@ textarea::placeholder {
 
 .dc__outline-none-imp {
     outline: none !important;
+}
+
+.dc__list-style-disc {
+    list-style-type: disc;
 }

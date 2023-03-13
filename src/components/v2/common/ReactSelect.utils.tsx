@@ -176,9 +176,9 @@ export const CustomValueContainer = (props): JSX.Element => {
         <components.ValueContainer {...props}>
             {(!props.selectProps.menuIsOpen || !props.selectProps.inputValue) &&
                 (props.selectProps.value?.label ? (
-                    <span className="dc__position-abs cn-9 ml-2">{props.selectProps.value.label}</span>
+                    <span className={`dc__position-abs cn-9 ml-4 ${props.valClassName ?? ''}`}>{props.selectProps.value.label}</span>
                 ) : (
-                    <span className="dc__position-abs cn-5 ml-2">{props.selectProps.placeholder}</span>
+                    <span className="dc__position-abs cn-5 ml-8">{props.selectProps.placeholder}</span>
                 ))}
             {React.cloneElement(props.children[1])}
         </components.ValueContainer>
@@ -201,10 +201,13 @@ export const noMatchingPlatformOptions = (): string => {
 }
 
 export function GroupHeading(props) {
-    if (!props.data.label) return null
+    const {data, hideClusterName} = props
+    if (!data.label) return null
     return (
         <components.GroupHeading {...props}>
-            <div className="flex dc__no-text-transform flex-justify h-100">Cluster : {props.data.label}</div>
+            <div className="flex dc__no-text-transform flex-justify h-100">
+                {!hideClusterName ? 'Cluster : ' : ''} {data.label}
+            </div>
         </components.GroupHeading>
     )
 }

@@ -192,6 +192,7 @@ export interface NodeAttr {
     regex?: string
     primaryBranchAfterRegex?: string
     storageConfigured?: boolean
+    deploymentAppDeleteRequest?: boolean
 }
 
 export interface DownStreams {
@@ -265,7 +266,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     appId?: number
     isSelected?: boolean
     fromAppGrouping?: boolean
-    handleSelectionChange?: (e)=> void
+    handleSelectionChange?: (_appId: number)=> void
 }
 
 export interface TriggerViewContextType {
@@ -485,6 +486,9 @@ export interface CiPipeline {
     afterDockerBuildScripts?: Array<CiScript>
     isDockerConfigOverridden?: boolean
     dockerConfigOverride?: DockerConfigOverrideType
+    appName?: string
+    appId?: string
+    componentId?: number
 }
 
 export interface Material {
@@ -548,6 +552,8 @@ export interface CdPipeline {
     isClusterCdActive?: boolean
     parentPipelineId?: number
     parentPipelineType?: string
+    deploymentAppDeleteRequest?: boolean
+    deploymentAppCreated?: boolean
 }
 
 export interface CdPipelineResult {

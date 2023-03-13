@@ -5,9 +5,9 @@ import Tippy from '@tippyjs/react'
 import { copyToClipboard, getElapsedTime } from '../../../../common'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
+import { ReactComponent as Check } from '../../../../../assets/icons/ic-check.svg'
 import PodHeaderComponent from './PodHeader.component'
-import { NodeType, Node, iNode, AppType, NodeComponentProps } from '../../appDetails.type'
-import './nodeType.scss'
+import { NodeType, Node, iNode, NodeComponentProps } from '../../appDetails.type'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
 import NodeDeleteComponent from './NodeDelete.component'
 import AppDetailsStore from '../../appDetails.store'
@@ -15,10 +15,11 @@ import { toast } from 'react-toastify'
 import { getNodeStatus } from './nodeType.util'
 import { useSharedState } from '../../../utils/useSharedState'
 import { NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
-import { ExternalLink, OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
+import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
 import { NoPod } from '../../../../app/ResourceTreeNodes'
-import { NodeDetailTab } from '../nodeDetail/nodeDetail.type'
+import './nodeType.scss'
+import { COPIED_MESSAGE } from '../../../../../config/constantMessaging'
 
 function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) {
     const { url } = useRouteMatch()
@@ -26,7 +27,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0)
-    const [copied, setCopied] = useState(false)
+    const [copiedNodeName, setCopiedNodeName] = useState<string>('')
     const [tableHeader, setTableHeader] = useState([])
     const [firstColWidth, setFirstColWidth] = useState('')
     const [podType, setPodType] = useState(false)
@@ -72,9 +73,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     }, [externalLinks])
 
     useEffect(() => {
-        if (!copied) return
-        setTimeout(() => setCopied(false), 2000)
-    }, [copied])
+        if (!copiedNodeName) return
+        setTimeout(() => setCopiedNodeName(''), 2000)
+    }, [copiedNodeName])
 
     useEffect(() => {
         if (params.nodeType) {
@@ -130,6 +131,11 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             setSelectedHealthyNodeCount(_healthyNodeCount)
         }
     }, [params.nodeType, podType, url, filteredNodes, podLevelExternalLinks])
+
+    const toggleClipBoard = (event: React.MouseEvent, nodeName: string) => {
+        event.stopPropagation()
+        copyToClipboard(nodeName, () => setCopiedNodeName(nodeName))
+    }
 
     const getPodRestartCount = (node: iNode) => {
         let restartCount = '0'
@@ -188,17 +194,37 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         let _currentNodeHeader = ''
+        const renderClipboardInteraction = (nodeName: string): JSX.Element => {
+            return copiedNodeName === nodeName ? (
+                <Tippy
+                    className="default-tt"
+                    hideOnClick={false}
+                    arrow={false}
+                    placement="bottom"
+                    content={COPIED_MESSAGE}
+                    duration={[100, 200]}
+                    trigger="mouseenter click"
+                >
+                    <span>
+                        <Check className="icon-dim-12 scg-5 ml-8 mr-8" />
+                    </span>
+                </Tippy>
+            ) : (
+                <span>
+                    <Clipboard
+                        className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
+                        onClick={(event) => {
+                            toggleClipBoard(event, nodeName)
+                        }}
+                    />
+                </span>
+            )
+        }
         return nodes.map((node, index) => {
             const nodeName = `${node.name}.${node.namespace} : { portnumber }`
             const _isSelected = markedNodes.current.get(node.name)
-
             // Only render node kind header when it's the first node or it's a different kind header
             _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
-
-            const onClickClipboard = (e) => {
-                e.stopPropagation()
-                copyToClipboard(node?.name, () => setCopied(true))
-            }
 
             const onClickNodeDetailsTab = (e) => {
                 const _kind = e.target.dataset.name
@@ -237,8 +263,8 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
-                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 dc__content-space`}>
-                            <div className="flex dc__align-start">
+                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 `}>
+                            <div className="flex left">
                                 <div
                                     className="flex left top ml-2"
                                     onClick={() => {
@@ -246,99 +272,96 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                     }}
                                 >
                                     {node.childNodes?.length > 0 ? (
-                                        <DropDown
-                                            className={`rotate icon-dim-24 pointer ${_isSelected ? 'fcn-9' : 'fcn-5'} `}
-                                            style={{ ['--rotateBy' as any]: !_isSelected ? '-90deg' : '0deg' }}
-                                        />
+                                        <span>
+                                            <DropDown
+                                                className={`rotate icon-dim-24 pointer ${
+                                                    _isSelected ? 'fcn-9' : 'fcn-5'
+                                                } `}
+                                                style={{ ['--rotateBy' as any]: !_isSelected ? '-90deg' : '0deg' }}
+                                            />
+                                        </span>
                                     ) : (
                                         <span className="pl-12 pr-12"></span>
                                     )}
                                     <div>
-                                        <div>{node.name}</div>
-                                        <div
-                                            className={` app-summary__status-name f-${(
-                                                node?.status ||
-                                                node?.health?.status ||
-                                                ''
-                                            ).toLowerCase()}`}
-                                        >
-                                            {getNodeStatus(node)}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="bottom"
-                                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                                    trigger="mouseenter click"
-                                >
-                                    <Clipboard
-                                        className="icon-dim-12 pointer ml-8 mr-8 mt-4"
-                                        onClick={onClickClipboard}
-                                    />
-                                </Tippy>
-                                <div className="flex left">
-                                    <div
-                                        className={`flex left ${getWidthClassnameForTabs()} ${
-                                            node.kind === NodeType.Containers ? '' : 'node__tabs'
-                                        } en-2 bw-1 br-4 dc__w-fit-content`}
-                                    >
-                                        {getNodeDetailTabs(node.kind).map((kind, index) => {
-                                            return (
+                                        <div className="resource__title-name flex left dc__align-start">
+                                            <span className="fs-13">{node.name}</span>
+                                            
+                                            <div
+                                                className={`flex left ${
+                                                    node.kind.toLowerCase() == NodeType.Pod.toLowerCase()
+                                                        ? 'mw-232'
+                                                        : 'mw-116'
+                                                }`}
+                                            >
+                                                {renderClipboardInteraction(node.name)}
                                                 <div
-                                                    key={'tab__' + index}
-                                                    data-name={kind}
-                                                    onClick={onClickNodeDetailsTab}
-                                                    className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
-                                                        node.kind === NodeType.Containers
-                                                            ? ''
-                                                            : 'resource-action-tabs__active'
-                                                    }  ${
-                                                        index === getNodeDetailTabs(node.kind)?.length - 1
-                                                            ? ''
-                                                            : 'dc__border-right'
-                                                    } pl-6 pr-6`}
+                                                    className={`flex left ${getWidthClassnameForTabs()} ${
+                                                        node.kind === NodeType.Containers ? '' : 'node__tabs'
+                                                    } en-2 bw-1 br-4 dc__w-fit-content`}
                                                 >
-                                                    {kind.toLowerCase()}
+                                                    {getNodeDetailTabs(node.kind).map((kind, index) => {
+                                                        return (
+                                                            <div
+                                                                key={'tab__' + index}
+                                                                data-name={kind}
+                                                                onClick={onClickNodeDetailsTab}
+                                                                className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
+                                                                    node.kind === NodeType.Containers
+                                                                        ? ''
+                                                                        : 'resource-action-tabs__active'
+                                                                }  ${
+                                                                    index === getNodeDetailTabs(node.kind)?.length - 1
+                                                                        ? ''
+                                                                        : 'dc__border-right'
+                                                                } pl-6 pr-6`}
+                                                            >
+                                                                {kind.toLowerCase()}
+                                                            </div>
+                                                        )
+                                                    })}
                                                 </div>
-                                            )
-                                        })}
-                                    </div>
-                                    {node.kind !== NodeType.Containers && (
-                                        <>
-                                            <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
-                                            {node.kind.toLowerCase() == NodeType.Pod.toLowerCase() && (
+                                                {node.kind !== NodeType.Containers && (
+                                                    <>
+                                                        <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                        {node.kind.toLowerCase() == NodeType.Pod.toLowerCase() && (
+                                                            <>
+                                                                <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                                <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                            </>
+                                                        )}
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex left">
+                                            <span
+                                                className={`mr-4 app-summary__status-name f-${(
+                                                    node?.status ||
+                                                    node?.health?.status ||
+                                                    ''
+                                                ).toLowerCase()}`}
+                                            >
+                                                {getNodeStatus(node)}
+                                            </span>
+                                            {node?.health?.message && (
                                                 <>
-                                                    <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
-                                                    <div className="bw-1 en-2 dc__right-radius-4 node-empty dc__no-left-border" />
+                                                    <div className="dc__bullet ml-4 mr-4"></div>
+                                                    <span className="dc__truncate">
+                                                        {node.health.message.toLowerCase()}
+                                                    </span>
                                                 </>
                                             )}
-                                        </>
-                                    )}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         {params.nodeType === NodeType.Service.toLowerCase() && (
                             <div className={'col-5 pt-9 pb-9 flex left'}>
-                                {nodeName}
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="bottom"
-                                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                                    trigger="mouseenter click"
-                                >
-                                    <Clipboard
-                                        className="resource-action-tabs__active pl-4 icon-dim-16 pointer"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            copyToClipboard(nodeName, () => setCopied(true))
-                                        }}
-                                    />
-                                </Tippy>
+                                { nodeName }
+                                {renderClipboardInteraction(nodeName)}
                             </div>
                         )}
 

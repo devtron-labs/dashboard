@@ -511,12 +511,15 @@ export function CustomInput({
     value,
     error,
     onChange,
+    onBlur=(e)=>{},
+    onFocus=(e)=>{},
     label,
     type = 'text',
     disabled = false,
     autoComplete = 'off',
     labelClassName = '',
     placeholder = '',
+    tabIndex=1
 }) {
     return (
         <div className="flex column left top">
@@ -530,9 +533,12 @@ export function CustomInput({
                     e.persist()
                     onChange(e)
                 }}
+                onBlur={onBlur}
+                onFocus={onFocus}
                 placeholder={placeholder}
                 value={value}
                 disabled={disabled}
+                tabIndex={tabIndex}
             />
             {handleError(error).map((err) => (
                 <div className="form__error">
@@ -580,6 +586,7 @@ export function ProtectedInput({
                     }}
                     value={value}
                     disabled={disabled}
+                    
                 />
                 <ShowHide
                     className="protected-input__toggle"
