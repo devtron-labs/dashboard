@@ -170,14 +170,19 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             editor.getModel().updateOptions({ tabSize: 2 });
         }
 
+        if (editor) {
+            if (typeof editor.onDidFocusEditorWidget === 'function' && typeof onFocus === 'function') {
+                editor.onDidFocusEditorWidget(onFocus)
+            }
+
+            if (typeof editor.onDidBlurEditorWidget === 'function' && typeof onBlur === 'function') {
+                editor.onDidBlurEditorWidget(onBlur)
+            }
+        }
+
         editorRef.current = editor
         monacoRef.current = monaco
-        editor.onDidFocusEditorWidget(() => {
-            onFocus && onFocus()
-        })
-        editor.onDidBlurEditorWidget(() => {
-            onBlur && onBlur()
-        })
+        
     }
 
     useEffect(() => {
