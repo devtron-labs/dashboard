@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { sortObjectArrayAlphabetically, multiSelectStyles } from '../../common'
+import { sortObjectArrayAlphabetically, multiSelectStyles, importComponentFromFELibrary } from '../../common'
 import {
     ServerErrors,
     showError,
@@ -27,7 +27,7 @@ import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
 import Reload from '../../Reload/Reload'
 import './createApp.scss'
-
+const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
     _inputAppName: HTMLInputElement
@@ -375,7 +375,13 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         ) : null}
                     </span>
                 </div>
-                <TagLabelSelect isCreateApp={true} labelTags={this.state.tags} setLabelTags={this.setTags} tabIndex={5} />
+                <TagsContainer
+                    isCreateApp={true}
+                    labelTags={this.state.tags}
+                    setLabelTags={this.setTags}
+                    tabIndex={5}
+                    selectedProjectId={this.state.form.projectId}
+                />
             </div>
         )
     }

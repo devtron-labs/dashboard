@@ -1,14 +1,24 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
-import { showError, Progressing, Drawer, TagLabelSelect, TagType, DEFAULT_TAG_DATA } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    Drawer,
+    TagLabelSelect,
+    TagType,
+    DEFAULT_TAG_DATA,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { AboutAppInfoModalProps } from '../types'
 import { createAppLabels } from '../service'
 import { toast } from 'react-toastify'
+import { importComponentFromFELibrary } from '../../common'
 
+const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 export default function AboutTagEditModal({
     isLoading,
     appId,
     onClose,
+    appMetaInfo,
     currentLabelTags,
     getAppMetaInfoRes,
 }: AboutAppInfoModalProps) {
@@ -85,7 +95,11 @@ export default function AboutTagEditModal({
         return (
             <>
                 <div className="cn-7 p-20 dc__overflow-scroll" style={{ height: 'calc(100vh - 122px)' }}>
-                    <TagLabelSelect labelTags={labelTags} setLabelTags={setLabelTags} />
+                    <TagsContainer
+                        labelTags={labelTags}
+                        setLabelTags={setLabelTags}
+                        selectedProjectId={appMetaInfo.projectId}
+                    />
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">
                     <button
