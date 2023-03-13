@@ -46,6 +46,8 @@ import {
     CollapsedUserOrGroupProps,
     CreateGroup,
     CreateUser,
+    DefaultUserKey,
+    DefaultUserValue,
 } from './userGroups.types'
 import { ACCESS_TYPE_MAP, DOCUMENTATION, HELM_APP_UNASSIGNED_PROJECT, Routes, SERVER_MODE } from '../../config'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -67,7 +69,7 @@ import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
 import { getSSOConfigList } from '../login/login.service'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import { ERROR_EMPTY_SCREEN, SSO_NOT_CONFIGURED_STATE_TEXTS, TOAST_ACCESS_DENIED } from '../../config/constantMessaging'
+import { ERROR_EMPTY_SCREEN, SSO_NOT_CONFIGURED_STATE_TEXTS, TOAST_ACCESS_DENIED, USER_NOT_EDITABLE } from '../../config/constantMessaging'
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -624,7 +626,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         [id, type],
         !collapsed,
     )
-    const isAdminOrSystemUser = email_id === 'admin' || email_id === 'system'
+    const isAdminOrSystemUser = email_id === DefaultUserKey.ADMIN || email_id === DefaultUserKey.SYSTEM
 
     useEffect(() => {
         if (!dataError) return
@@ -641,6 +643,17 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         updateCallback(index, data)
     }
 
+    function getToolTipContent(user: string): string {
+        let userName: string
+        if (user === DefaultUserKey.ADMIN || user === DefaultUserKey.SYSTEM) {
+            userName = DefaultUserValue[user]
+        }
+        if (userName) {
+            return `${userName} ${USER_NOT_EDITABLE}`
+        }
+        return ''
+    }
+    
     const onClickUserDropdownHandler = () => {
         if (isAdminOrSystemUser) {
             noop()
@@ -671,7 +684,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                                 className="default-tt"
                                 arrow={false}
                                 placement="top"
-                                content={`${email_id === 'admin' ? 'Admin' : 'System'} user cannot be edited`}
+                                content={getToolTipContent(email_id)}
                             >
                                 <div className="flex">{children}</div>
                             </Tippy>
