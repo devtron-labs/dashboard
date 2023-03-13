@@ -76,6 +76,7 @@ export const TOAST_ACCESS_DENIED = {
 }
 
 export const DELETE_DEPLOYMENT_PIPELINE = 'Deleting deployment pipeline'
+export const DELETE_DEPLOYMENT = 'Deleting deployment'
 export const VIEW_DELETION_STATUS = 'View deletion status'
 
 // Empty state messgaes
@@ -148,6 +149,6 @@ export const APP_GROUP_CI_DETAILS = {
     },
 }
 
-export const DEPLOYMENT_HISTORT_TABS = {
+export const DEPLOYMENT_HISTORY_TABS = {
   SOURCE : 0,
 }
