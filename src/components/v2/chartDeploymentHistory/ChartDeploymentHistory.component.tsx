@@ -108,8 +108,7 @@ function ChartDeploymentHistory({
 
     const getDeploymentData = (_selectedDeploymentTabIndex: number, _selectedDeploymentHistoryIndex: number) => {
         if (_selectedDeploymentTabIndex === 1 || _selectedDeploymentTabIndex === 2) {
-            const version = deploymentHistoryArr[_selectedDeploymentHistoryIndex].version
-            checkAndFetchDeploymentDetail(version)
+            checkAndFetchDeploymentDetail(deploymentHistoryArr[_selectedDeploymentHistoryIndex].version)
         }
     }
 
@@ -117,7 +116,7 @@ function ChartDeploymentHistory({
         if (selectedDeploymentHistoryIndex == index) {
             return
         }
-        // This will call whenever we change the deplyment from sidebar
+        // This will call whenever we change the deployment from sidebar
         getDeploymentData(selectedDeploymentTabIndex, index)
         setSelectedDeploymentHistoryIndex(index)
     }
