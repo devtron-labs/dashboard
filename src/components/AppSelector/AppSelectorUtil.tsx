@@ -93,7 +93,7 @@ export const appListOptions = (inputValue: string, isJobView?: boolean): Promise
                 resolve([])
                 return
             }
-            getAppListMin(null, null, inputValue, isJobView ?? false)
+            getAppListMin(null, null, inputValue, isJobView === null ? false : isJobView)
                 .then((response) => {
                     let appList = []
                     if (response.result) {

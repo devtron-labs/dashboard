@@ -23,6 +23,9 @@ import './ciPipeline.css'
 import { appListOptions, noOptionsMessage } from '../AppSelector/AppSelectorUtil'
 import AsyncSelect from 'react-select/async'
 
+
+const loadAppListOptions = (inputValue: string) => appListOptions(inputValue, false)
+
 export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedCIPipelineState> {
     validationRules
     urlRef
@@ -265,7 +268,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                     <div className="typeahead form__row">
                         <span className="form__label">Filter By Application</span>
                         <AsyncSelect
-                            loadOptions={appListOptions}
+                            loadOptions={loadAppListOptions}
                             noOptionsMessage={noOptionsMessage}
                             onChange={this.selectApp}
                             styles={this._multiSelectStyles}
