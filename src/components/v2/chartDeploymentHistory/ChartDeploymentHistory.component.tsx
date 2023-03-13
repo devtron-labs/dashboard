@@ -107,11 +107,18 @@ function ChartDeploymentHistory({
             })
     }, [])
 
+    const getDeploymentData = (_selectedDeploymentTabIndex: number, _selectedDeploymentHistoryIndex: number) => {
+        if (_selectedDeploymentTabIndex === 1 || _selectedDeploymentTabIndex === 2) {
+            const version = deploymentHistoryArr[_selectedDeploymentHistoryIndex].version
+            checkAndFetchDeploymentDetail(version)
+        }
+    }
+
     function changeDeployment(index: number) {
         if (selectedDeploymentHistoryIndex == index) {
             return
         }
-
+        getDeploymentData(selectedDeploymentTabIndex, index)
         setSelectedDeploymentHistoryIndex(index)
     }
 
@@ -140,14 +147,10 @@ function ChartDeploymentHistory({
     }
 
     function changeDeploymentTab(index: number) {
-        if (selectedDeploymentTabIndex === index) {
-            return
-        }
-
-        if (index === 1 || index === 2) {
-            const version = deploymentHistoryArr[selectedDeploymentHistoryIndex].version
-            checkAndFetchDeploymentDetail(version)
-        }
+      if (selectedDeploymentHistoryIndex == index) {
+        return
+    }
+        getDeploymentData(index, selectedDeploymentHistoryIndex)
 
         setSelectedDeploymentTabIndex(index)
     }
