@@ -140,7 +140,7 @@ export default function TriggerViewConfigDiff({
                         return (
                             options.length > 0 && (
                                 <Fragment key={`${navOption.key}-${idx}`}>
-                                    <h3 className="cn-7 fs-12 fw-6 lh-20 m-0 pt-6 pb-6 pl-14 pr-18 dc__uppercase">
+                                    <h3 className="cn-7 fs-12 fw-6 lh-20 m-0 pt-6 pb-6 pl-14-imp pr-18 dc__uppercase">
                                         <DownArrowFull className="icon-dim-8 ml-6 mr-12 icon-color-grey" />
                                         {navOption.displayName}
                                     </h3>
@@ -309,12 +309,10 @@ export default function TriggerViewConfigDiff({
                 <div className="fs-13 fw-6 lh-20 cn-9 m-0 pt-12 pb-12 pl-16 pr-16 dc__border-right">
                     Deployment Configuration
                 </div>
-                {isRecentConfigAvailable ? (
+                {isRecentConfigAvailable && (
                     <div className="fs-13 fw-4 lh-20 pt-12 pb-12 pl-16 pr-16 cn-9 dc__border-right">
                         Last Deployed Configuration
                     </div>
-                ) : (
-                    <></>
                 )}
                 <div className="flex left">
                     <ReactSelect

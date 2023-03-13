@@ -28,6 +28,7 @@ import {
     showError,
     ConditionalWrap,
     stopPropagation,
+    noop,
 } from '../../../common'
 import { EmptyStateCdMaterial } from './EmptyStateCdMaterial'
 import { CDButtonLabelMap, getCommonConfigSelectStyles } from './config'
@@ -113,7 +114,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         Promise.allSettled([
             getRecentDeploymentConfig(appId, pipelineId),
             getLatestDeploymentConfig(appId, pipelineId),
-            this.state.isRollbackTrigger ? getSpecificDeploymentConfig(appId, pipelineId, this.getWfrId()) : () => {},
+            this.state.isRollbackTrigger ? getSpecificDeploymentConfig(appId, pipelineId, this.getWfrId()) : noop,
         ]).then(
             ([recentDeploymentConfigRes, latestDeploymentConfigRes, specificDeploymentConfigRes]: {
                 status: string
@@ -619,6 +620,38 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             : this.state.diffFound
             ? 'cn-0 bcr-5'
             : 'cn-0 bcg-5'
+        let checkingdiff: JSX.Element, configNotAvailable: JSX.Element, noDiff: JSX.Element, diffFound: JSX.Element
+        if (this.state.checkingDiff) {
+            checkingdiff = (
+                <>
+                    Checking diff&nbsp;
+                    <Progressing
+                        size={16}
+                        styles={{
+                            width: 'auto',
+                        }}
+                    />
+                </>
+            )
+        } else {
+            if (!_canReviewConfig) {
+                configNotAvailable = this.state.recentDeploymentConfig && (
+                    <>
+                        <WarningIcon className="no-config-found-icon icon-dim-16" />
+                        &nbsp; Config Not Available
+                    </>
+                )
+            } else if (this.state.diffFound) {
+                diffFound = (
+                    <>
+                        <WarningIcon className="config-diff-found-icon icon-dim-16" />
+                        &nbsp; <span className="config-diff-status">Config Diff</span>
+                    </>
+                )
+            } else {
+                noDiff = <span className="config-diff-status">No Config Diff</span>
+            }
+        }
         return (
             <div
                 className={`trigger-modal__config-diff-status flex pl-16 pr-16 dc__right-radius-4 ${
@@ -630,31 +663,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <div
                         className={`flex pt-3 pb-3 pl-12 pr-12 dc__border-radius-24 fs-12 fw-6 lh-20 ${statusColorClasses}`}
                     >
-                        {this.state.checkingDiff ? (
-                            <>
-                                Checking diff&nbsp;
-                                <Progressing
-                                    size={16}
-                                    styles={{
-                                        width: 'auto',
-                                    }}
-                                />
-                            </>
-                        ) : !_canReviewConfig ? (
-                            this.state.recentDeploymentConfig && (
-                                <>
-                                    <WarningIcon className="no-config-found-icon icon-dim-16" />
-                                    &nbsp; Config Not Available
-                                </>
-                            )
-                        ) : this.state.diffFound ? (
-                            <>
-                                <WarningIcon className="config-diff-found-icon icon-dim-16" />
-                                &nbsp; <span className="config-diff-status">Config Diff</span>
-                            </>
-                        ) : (
-                            <span className="config-diff-status">No Config Diff</span>
-                        )}
+                        {checkingdiff}
+                        {configNotAvailable}
+                        {diffFound}
+                        {noDiff}
                     </div>
                 )}
                 {((!this.state.checkingDiff && _canReviewConfig) ||

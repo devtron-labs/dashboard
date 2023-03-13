@@ -40,55 +40,35 @@ export const LAST_SAVED_CONFIG_OPTION = {
 }
 
 export const getDeployConfigOptions = (isRollbackTriggerSelected: boolean, isRecentDeployConfigPresent: boolean) => {
-    return isRollbackTriggerSelected
-        ? [
-              {
-                  label: 'Select a configuration to deploy',
-                  options: [
-                      {
-                          label: 'Last saved config',
-                          value: DeploymentWithConfigType.LAST_SAVED_CONFIG,
-                          infoText: 'Use last saved configuration to deploy',
-                      },
-                      {
-                          label: 'Last deployed config',
-                          value: DeploymentWithConfigType.LATEST_TRIGGER_CONFIG,
-                          infoText: 'Retain currently deployed configuration',
-                      },
-                      SPECIFIC_TRIGGER_CONFIG_OPTION,
-                  ],
-              },
-          ]
-        : isRecentDeployConfigPresent
-        ? [
-              {
-                  label: 'Select a configuration to deploy',
-                  options: [
-                      {
-                          label: 'Last saved config',
-                          value: DeploymentWithConfigType.LAST_SAVED_CONFIG,
-                          infoText: 'Use last saved configuration to deploy',
-                      },
-                      {
-                          label: 'Last deployed config',
-                          value: DeploymentWithConfigType.LATEST_TRIGGER_CONFIG,
-                          infoText: 'Retain currently deployed configuration',
-                      },
-                  ],
-              },
-          ]
-        : [
-              {
-                  label: 'Select a configuration to deploy',
-                  options: [
-                      {
-                          label: 'Last saved config',
-                          value: DeploymentWithConfigType.LAST_SAVED_CONFIG,
-                          infoText: 'Use last saved configuration to deploy',
-                      },
-                  ],
-              },
-          ]
+    let configOptionsList = [
+        {
+            label: 'Select a configuration to deploy',
+            options: [
+                {
+                    label: 'Last saved config',
+                    value: DeploymentWithConfigType.LAST_SAVED_CONFIG,
+                    infoText: 'Use last saved configuration to deploy',
+                },
+            ],
+        },
+    ]
+    if (isRollbackTriggerSelected) {
+        configOptionsList[0].options.push(
+            {
+                label: 'Last deployed config',
+                value: DeploymentWithConfigType.LATEST_TRIGGER_CONFIG,
+                infoText: 'Retain currently deployed configuration',
+            },
+            SPECIFIC_TRIGGER_CONFIG_OPTION,
+        )
+    } else if (isRecentDeployConfigPresent) {
+        configOptionsList[0].options.push({
+            label: 'Last deployed config',
+            value: DeploymentWithConfigType.LATEST_TRIGGER_CONFIG,
+            infoText: 'Retain currently deployed configuration',
+        })
+    }
+    return configOptionsList
 }
 
 export const processResolvedPromise = (
@@ -125,10 +105,10 @@ export const processResolvedPromise = (
         }
     }
     //This will handle a corner case, no previous deployment history is present i.e for first time deployment.
-    if (isRecentDeployConfig) {
-        return null
+    if (!isRecentDeployConfig) {
+        showError(resp.reason)
     }
-    showError(resp.reason)
+
     return null
 }
 
