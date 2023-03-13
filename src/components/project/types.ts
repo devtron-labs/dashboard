@@ -1,7 +1,7 @@
 import { RouteComponentProps } from "react-router-dom";
 
 export interface ProjectListProps extends RouteComponentProps<{}>{
-    
+    isSuperAdmin: boolean;
 }
 export interface ProjectListState {
     code: number;
