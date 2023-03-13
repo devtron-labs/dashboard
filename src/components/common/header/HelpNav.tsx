@@ -40,7 +40,7 @@ function HelpNav({
             name: 'Join discord community',
             link: 'https://discord.devtron.ai/',
             icon: Discord,
-            showSeparator: isEnterprise,
+            showSeparator: !isEnterprise,
         },
         
     ]
@@ -66,7 +66,7 @@ function HelpNav({
             name: 'Chat with support',
             link: 'https://discord.devtron.ai/',
             icon: Chat,
-            showSeparator: !isEnterprise,
+            showSeparator: true,
         },
         
         {
@@ -119,7 +119,7 @@ function HelpNav({
                     <GettingStartedIcon />
                     <div className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
                 </NavLink>
-                {isEnterprise && CommonHelpOptions.concat(EnterpriseHelpOptions).map((option,index) => {
+                {!isEnterprise && CommonHelpOptions.concat(EnterpriseHelpOptions).map((option,index) => {
                     return (
                         <Fragment key={option.name}>
                             <a
@@ -140,8 +140,8 @@ function HelpNav({
                         </Fragment>
                     )
                 })}
-                {isEnterprise && renderHelpFeedback()}
-                {!isEnterprise && CommonHelpOptions.concat(NotEnterpriseHelpOptions).map((option,index) => {
+                {!isEnterprise && renderHelpFeedback()}
+                {isEnterprise && CommonHelpOptions.concat(NotEnterpriseHelpOptions).map((option,index) => {
                     return (
                         <Fragment key={option.name}>
                             <a
@@ -162,12 +162,12 @@ function HelpNav({
                     )
                 })}
 
-                {serverInfo?.installationType === InstallationType.OSS_HELM && (
+                {serverInfo?.installationType === InstallationType.ENTERPRISE && (
                     <div className="help-card__update-option fs-11 fw-6 mt-4">
                         {fetchingServerInfo ? (
                             <span className="dc__loading-dots">Checking current version</span>
                         ) : (
-                            <span>Devtron {serverInfo?.currentVersion || ''}</span>
+                            <span>Version {serverInfo?.currentVersion || ''}</span>
                         )}
                         <br />
                         <NavLink to={URLS.STACK_MANAGER_ABOUT}>Check for Updates</NavLink>
