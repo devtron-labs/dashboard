@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { CINode } from './nodes/CINode'
-import { CDNode } from './nodes/CDNode'
+import { CDNode }  from './nodes/CDNode'
 import { StaticNode } from './nodes/StaticNode'
 import {
     RectangularEdge as Edge,
@@ -336,6 +336,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 to={this.openCDPipeline(node, isWebhookCD)}
                 cdNamesList={cdNamesList}
                 hideWebhookTippy={this.props.hideWebhookTippy}
+                deploymentAppDeleteRequest={node.deploymentAppDeleteRequest}
+                match={this.props.match}
             />
         )
     }
@@ -423,7 +425,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                                     className="dc__align-right dc__transparent"
                                     onClick={this.toggleShowDeleteDialog}
                                 >
-                                    <img src={trash} alt="delete" />
+                                    <img src={trash} alt="delete" className="h-20" />
                                 </button>
                             </>
                         )}

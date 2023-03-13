@@ -18,18 +18,28 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps>{
     }
 
     redirectToCDDetails(e) {
-        const LINK = this.getCDDetailsURL();
-        this.props.history.push(LINK);
+      if (this.props.fromAppGrouping) {
+          return
+      }
+      this.props.history.push(this.getCDDetailsURL())
     }
 
     renderStatus(isClickable: boolean, status: string,) {
         const url = this.getCDDetailsURL();
         if (isClickable) {
-            return <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
-                <span>{this.props.status}</span>
-                <span className="mr-5 ml-5">/</span>
-                <Link to={url} className="workflow-node__details-link">Details</Link>
-            </div>
+            return (
+                <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+                    <span>{this.props.status}</span>
+                    {!this.props.fromAppGrouping && (
+                        <>
+                            <span className="mr-5 ml-5">/</span>
+                            <Link to={url} className="workflow-node__details-link">
+                                Details
+                            </Link>
+                        </>
+                    )}
+                </div>
+            )
         }
         else return <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
             <span>{this.props.status}</span>

@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { useRouteMatch, useParams, Redirect,useLocation, useHistory } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
 import { URLS } from '../../config';
-import { DetailsProgressing, showError, ErrorScreenManager, sortOptionsByValue } from '../common';
+import { DetailsProgressing, ErrorScreenManager, sortOptionsByValue } from '../common';
 import ValuesComponent from './values/ChartValues.component';
 import AppHeaderComponent from './headers/AppHeader.component';
 import ChartHeaderComponent from './headers/ChartHeader.component';
@@ -16,7 +16,7 @@ import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHist
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type';
 import { getExternalLinks, getMonitoringTools } from '../externalLinks/ExternalLinks.service';
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils';
-import ChartValuesView from './values/chartValuesDiff/ChartValuesView';
+import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState';
 
 let initTimer = null;
 
@@ -120,7 +120,6 @@ function RouterComponent({ envType }) {
 
             setErrorResponseCode(undefined);
         } catch (e: any) {
-            showError(e);
             if(e?.code){
                 setErrorResponseCode(e.code);
             }
@@ -145,15 +144,33 @@ function RouterComponent({ envType }) {
         );
     };
 
-    return (
-        <React.Fragment>
-            {isLoading && <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />}
-
-            {!isLoading && errorResponseCode && (
+    const renderErrorScreen = () => {
+        if (errorResponseCode === 404) {
+            return (
+                <div className="h-100">
+                    {EnvType.APPLICATION === envType ? (
+                        <AppHeaderComponent />
+                    ) : (
+                        <ChartHeaderComponent errorResponseCode={errorResponseCode} />
+                    )}
+                    <AppDetailsEmptyState envType = { EnvType.CHART}/>
+                </div>
+            )
+        } else if (errorResponseCode) {
+            return (
                 <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
-            )}
+            )
+        } else {
+            return null
+        }
+    }
+
+    return (
+        <React.Fragment>
+            {isLoading && <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />}
+          {renderErrorScreen()}
 
             {!isLoading && !errorResponseCode && (
                 <>
@@ -165,10 +182,11 @@ function RouterComponent({ envType }) {
                                     externalLinks={externalLinksAndTools.externalLinks}
                                     monitoringTools={externalLinksAndTools.monitoringTools}
                                     isExternalApp={false}
+                                    _init={_init}
                                 />
                             </Route>
                             <Route path={`${path}/${URLS.APP_VALUES}`}>
-                                <ValuesComponent appId={params.appId} />
+                                <ValuesComponent appId={params.appId} init={_init} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
                                 <ChartDeploymentHistory appId={params.appId} isExternal={false} />

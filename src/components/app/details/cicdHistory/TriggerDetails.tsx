@@ -24,7 +24,7 @@ import {
     WorkerStatusType,
 } from '../cicdHistory/types'
 import { Link } from 'react-router-dom'
-import { cancelCiTrigger, cancelPrePostCdTrigger } from '../../service'
+import { cancelCiTrigger, cancelPrePostCdTrigger, extractImage } from '../../service'
 
 const TriggerDetailsStatusIcon = React.memo(({ status }: TriggerDetailsStatusIconType): JSX.Element => {
     return (
@@ -92,7 +92,7 @@ export const TriggerDetails = React.memo(
 
 const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: FinishedType): JSX.Element => {
     return (
-        <div className="flex column left">
+        <div className="flex column left dc__min-width-fit-content">
             <div className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`}>
                 {status && status.toLowerCase() === 'cancelled' ? 'ABORTED' : status}
             </div>            
@@ -112,7 +112,7 @@ const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: Finish
                 {artifact && (
                     <div className="dc__app-commit__hash ">
                         <img src={docker} className="commit-hash__icon grayscale" />
-                        {artifact.split(':')[1]}
+                        {extractImage(artifact)}
                     </div>
                 )}
             </div>
@@ -189,7 +189,7 @@ const ProgressingStatus = React.memo(
         return (
             <>
                 <div className="flex left">
-                    <div>
+                    <div className="dc__min-width-fit-content">
                         <div className={`${status} fs-14 fw-6 flex left inprogress-status-color`}>
                             In progress
                         </div>

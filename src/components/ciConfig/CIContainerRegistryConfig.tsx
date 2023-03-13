@@ -127,8 +127,8 @@ export default function CIContainerRegistryConfig({
             <h3 className="fs-14 fw-6 lh-20 m-0 pb-16">Store container image at</h3>
             <div className="mb-4 form-row__docker">
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                    <label htmlFor="" className="form__label">
-                        Container Registry*
+                    <label htmlFor="" className="form__label dc__required-field">
+                        Container Registry
                     </label>
                     {configOverrideView && !allowOverride ? (
                         <div className="flex left">
@@ -182,7 +182,7 @@ export default function CIContainerRegistryConfig({
                                     : repository_name.value
                             }
                             onChange={handleOnChangeConfig}
-                            autoFocus
+                            autoFocus={!configOverrideView}
                             autoComplete={'off'}
                             disabled={configOverrideView && !allowOverride}
                         />

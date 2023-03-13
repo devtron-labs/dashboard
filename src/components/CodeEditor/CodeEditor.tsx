@@ -43,6 +43,8 @@ interface CodeEditorInterface {
     lineDecorationsWidth?: number;
     responseType?: string;
     onChange?: (string) => void;
+    onBlur?: () => void;
+    onFocus?: () => void;
     children?: any;
     defaultValue?: string;
     mode?: 'json' | 'yaml' | 'shell' | 'dockerfile';
@@ -111,7 +113,7 @@ interface CodeEditorState {
     code: string;
     noParsing: boolean;
 }
-const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernetes = true, cleanData = false}) {
+const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernetes = true, cleanData = false, onBlur, onFocus}) {
     if (cleanData) {
         value = cleanKubeManifest(value);
         defaultValue = cleanKubeManifest(defaultValue);
@@ -157,7 +159,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             'editor.background': '#0B0F22',
         }
     });
-
+    
     function editorDidMount(editor, monaco) {
         if (
             mode === 'yaml' &&
@@ -168,8 +170,19 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             editor.getModel().updateOptions({ tabSize: 2 });
         }
 
+        if (editor) {
+            if (typeof editor.onDidFocusEditorWidget === 'function' && typeof onFocus === 'function') {
+                editor.onDidFocusEditorWidget(onFocus)
+            }
+
+            if (typeof editor.onDidBlurEditorWidget === 'function' && typeof onBlur === 'function') {
+                editor.onDidBlurEditorWidget(onBlur)
+            }
+        }
+
         editorRef.current = editor
         monacoRef.current = monaco
+        
     }
 
     useEffect(() => {
