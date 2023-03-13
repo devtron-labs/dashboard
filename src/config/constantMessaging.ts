@@ -79,6 +79,7 @@ export const TOAST_ACCESS_DENIED = {
 export const DELETE_DEPLOYMENT_PIPELINE = 'Deleting deployment pipeline'
 export const DELETE_DEPLOYMENT = 'Deleting deployment'
 export const VIEW_DELETION_STATUS = 'View deletion status'
+export const USER_NOT_EDITABLE = 'user cannot be edited'
 
 // Empty state messgaes
 export const ERROR_EMPTY_SCREEN = {
