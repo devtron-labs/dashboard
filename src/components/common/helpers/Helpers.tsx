@@ -17,6 +17,7 @@ import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
+import { ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -189,7 +190,10 @@ export function getRandomColor(email: string): string {
 export function showError(serverError, showToastOnUnknownError = true, hideAccessError = false) {
     if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
         serverError.errors.map(({ userMessage, internalMessage }) => {
-            if (serverError.code === 403 && userMessage === 'unauthorized') {
+            if (
+                serverError.code === 403 &&
+                (userMessage === ERROR_EMPTY_SCREEN.UNAUTHORIZED || userMessage === ERROR_EMPTY_SCREEN.FORBIDDEN)
+            ) {
                 if (!hideAccessError) {
                     toastAccessDenied()
                 }

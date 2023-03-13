@@ -69,7 +69,7 @@ import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
 import { getSSOConfigList } from '../login/login.service'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import { SSO_NOT_CONFIGURED_STATE_TEXTS, USER_NOT_EDITABLE } from '../../config/constantMessaging'
+import { ERROR_EMPTY_SCREEN, SSO_NOT_CONFIGURED_STATE_TEXTS, TOAST_ACCESS_DENIED, USER_NOT_EDITABLE } from '../../config/constantMessaging'
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -213,7 +213,7 @@ export default function UserGroupRoute() {
         if (!lists) return
         lists.forEach((list) => {
             if (list.status === 'rejected') {
-                showError(list.reason)
+                showError(list.reason, true, true)
             }
         })
     }, [lists])
@@ -539,10 +539,15 @@ const UserGroupList: React.FC<{
             </div>
         )
     } else if (error && (error.code === 403 || error.code === 401)) {
-        return <ErrorScreenNotAuthorized subtitle="" />
+        return (
+            <ErrorScreenNotAuthorized
+                subtitle={ERROR_EMPTY_SCREEN.REQUIRED_MANAGER_ACCESS}
+                title={TOAST_ACCESS_DENIED.TITLE}
+            />
+        )
     } else if (!addHash) {
         return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
-    } else if (type =='user' && !isSSOConfigured) {
+    } else if (type == 'user' && !isSSOConfigured) {
         return <SSONotConfiguredState />
     } else {
         const filteredAndSorted = result.filter(
