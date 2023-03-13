@@ -46,7 +46,8 @@ import {
     CollapsedUserOrGroupProps,
     CreateGroup,
     CreateUser,
-    UserLocked,
+    DefaultUserKey,
+    DefaultUserValue,
 } from './userGroups.types'
 import { ACCESS_TYPE_MAP, DOCUMENTATION, HELM_APP_UNASSIGNED_PROJECT, Routes, SERVER_MODE } from '../../config'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -68,7 +69,7 @@ import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
 import { getSSOConfigList } from '../login/login.service'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import { SSO_NOT_CONFIGURED_STATE_TEXTS } from '../../config/constantMessaging'
+import { SSO_NOT_CONFIGURED_STATE_TEXTS, USER_NOT_EDITABLE } from '../../config/constantMessaging'
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -620,7 +621,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         [id, type],
         !collapsed,
     )
-    const isAdminOrSystemUser = email_id === UserLocked.ADMIN.toLowerCase() || email_id === UserLocked.SYSTEM.toLowerCase()
+    const isAdminOrSystemUser = email_id === DefaultUserKey.ADMIN || email_id === DefaultUserKey.SYSTEM
 
     useEffect(() => {
         if (!dataError) return
@@ -638,14 +639,12 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
     }
 
     function getToolTipContent(user: string): string {
-        let userLockMessage: string
-        if (user === UserLocked.ADMIN.toLowerCase()) {
-            userLockMessage = UserLocked.ADMIN
-        } else if (user === UserLocked.SYSTEM.toLowerCase()) {
-            userLockMessage = UserLocked.SYSTEM
+        let userName: string
+        if (user === DefaultUserKey.ADMIN || user === DefaultUserKey.SYSTEM) {
+            userName = DefaultUserValue[user]
         }
-        if (userLockMessage) {
-            return userLockMessage + ' user cannot be edited'
+        if (userName) {
+            return `${userName} ${USER_NOT_EDITABLE}`
         }
         return ''
     }

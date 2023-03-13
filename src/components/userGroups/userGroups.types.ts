@@ -20,9 +20,14 @@ export enum ActionTypes {
     EDIT = 'edit',
 }
 
-export enum UserLocked {
-    SYSTEM = 'System',
-    ADMIN = 'Admin',
+export enum DefaultUserKey {
+    SYSTEM = 'system',
+    ADMIN = 'admin',
+}
+
+export const DefaultUserValue = {
+    system: 'System',
+    admin: 'Admin',
 }
 
 export const ACTION_LABEL = {
