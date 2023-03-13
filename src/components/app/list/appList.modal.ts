@@ -61,7 +61,7 @@ const environmentModal = (env) => {
 }
 
 const getDefaultEnvironment = (envList): Environment => {
-    let env = envList.find((env) => env.default) || getLastDeployedEnv(envList) || envList[0]
+    let env = envList[0] || envList.find((env) => env.default) || getLastDeployedEnv(envList)
     let status = env.status
     if (env.status.toLowerCase() === 'deployment initiated') {
         status = 'Progressing'

@@ -34,7 +34,7 @@ export class AppListView extends Component<AppListViewProps> {
         this.props.handleEditApp(event.currentTarget.dataset.key)
     }
 
-    closeExpandedRow = (event): void => { 
+    closeExpandedRow = (event): void => {
         this.props.closeExpandedRow(event.currentTarget.dataset.key)
     }
 
@@ -61,6 +61,10 @@ export class AppListView extends Component<AppListViewProps> {
         e.preventDefault()
         this.props.sort('appNameSort')
     }
+    sortByDeployedTime = (e) => {
+        e.preventDefault()
+        this.props.sort('lastDeployedSort')
+    }
 
     toggleAllExpandRow = () => {
         if (this.props.isAllExpandable) {
@@ -69,9 +73,9 @@ export class AppListView extends Component<AppListViewProps> {
     }
 
     arrowIcon = (): string => {
-        if(this.props.isAllExpandable){
+        if (this.props.isAllExpandable) {
             return this.props.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-90'
-        }else {
+        } else {
             return 'cursor-not-allowed dc__flip-90'
         }
     }
@@ -118,7 +122,14 @@ export class AppListView extends Component<AppListViewProps> {
                             <span className="app-list__cell-header">{APP_LIST_HEADERS.Namespace}</span>
                         </div>
                         <div className="app-list__cell app-list__cell--time">
-                            <span className="app-list__cell-header">{APP_LIST_HEADERS.LastDeployedAt}</span>
+                            <button className="app-list__cell-header flex" onClick={this.sortByDeployedTime}>
+                                {APP_LIST_HEADERS.LastDeployedAt}
+                                {this.props.sortRule.key == SortBy.LAST_DEPLOYED ? (
+                                    <span className={`sort ${icon} ml-4`}></span>
+                                ) : (
+                                    <span className="sort-col"></span>
+                                )}
+                            </button>
                         </div>
                         <div className="app-list__cell app-list__cell--action"></div>
                     </div>
