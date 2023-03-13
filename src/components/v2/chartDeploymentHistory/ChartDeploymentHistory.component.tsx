@@ -54,12 +54,11 @@ function ChartDeploymentHistory({
     const [rollbackDialogTitle, setRollbackDialogTitle] = useState('Rollback')
     const [showRollbackConfirmation, setShowRollbackConfirmation] = useState(false)
     const [deploying, setDeploying] = useState(false)
-    const [showDockerInfo,setShowDockerInfo] = useState(false)
+    const [showDockerInfo, setShowDockerInfo] = useState(false)
     const history = useHistory()
     const { url } = useRouteMatch()
 
     const deploymentTabs: string[] = ['Source', 'values.yaml', 'Helm generated manifest']
-
 
     // component load
     useEffect(() => {
@@ -118,6 +117,7 @@ function ChartDeploymentHistory({
         if (selectedDeploymentHistoryIndex == index) {
             return
         }
+        // This will call whenever we change the deplyment from sidebar
         getDeploymentData(selectedDeploymentTabIndex, index)
         setSelectedDeploymentHistoryIndex(index)
     }
@@ -147,9 +147,10 @@ function ChartDeploymentHistory({
     }
 
     function changeDeploymentTab(index: number) {
-      if (selectedDeploymentHistoryIndex == index) {
-        return
-    }
+        if (selectedDeploymentHistoryIndex == index) {
+            return
+        }
+        // This will call whenever we change the tabs internally
         getDeploymentData(index, selectedDeploymentHistoryIndex)
 
         setSelectedDeploymentTabIndex(index)
@@ -315,7 +316,7 @@ function ChartDeploymentHistory({
                 (selectedDeploymentTabIndex === 2 && !selectedDeploymentManifestDetail.manifest))
         ) {
             return (
-                <div className='flex h-100'>
+                <div className="flex h-100">
                     <CDEmptyState
                         subtitle={`${deploymentTabs[selectedDeploymentTabIndex]} ${ERROR_EMPTY_SCREEN.TAB_NOT_AVAILABLE_POSTFIX}`}
                     />
@@ -473,9 +474,9 @@ function ChartDeploymentHistory({
                             </button>
                         </Tippy>
                     )}
-                    {showDockerInfo &&
-                            <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
-                    }
+                    {showDockerInfo && (
+                        <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
+                    )}
                 </div>
             </div>
         )
