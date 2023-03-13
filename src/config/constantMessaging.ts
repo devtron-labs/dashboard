@@ -146,3 +146,7 @@ export const APP_GROUP_CI_DETAILS = {
         subTitle: 'Pipeline trigger history, details and logs will be available here.',
     },
 }
+
+export const DEPLOYMENT_HISTORT_TABS = {
+  SOURCE : 0,
+}

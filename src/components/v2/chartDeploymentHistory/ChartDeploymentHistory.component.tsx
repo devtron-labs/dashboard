@@ -26,7 +26,7 @@ import {
     RollbackReleaseRequest,
 } from './chartDeploymentHistory.service'
 import IndexStore from '../appDetails/index.store'
-import { ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
+import { DEPLOYMENT_HISTORT_TABS, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
     loading?: boolean
@@ -107,16 +107,23 @@ function ChartDeploymentHistory({
     }, [])
 
     const getDeploymentData = (_selectedDeploymentTabIndex: number, _selectedDeploymentHistoryIndex: number) => {
-        if (_selectedDeploymentTabIndex === 1 || _selectedDeploymentTabIndex === 2) {
+        if (_selectedDeploymentTabIndex !== DEPLOYMENT_HISTORT_TABS.SOURCE) { // Checking if the tab in not source
             checkAndFetchDeploymentDetail(deploymentHistoryArr[_selectedDeploymentHistoryIndex].version)
         }
     }
 
-    function changeDeployment(index: number) {
+    function onClickDeploymentTabs(index: number) {  // This will call whenever we change the tabs internally eg, source,value etc
+        if (selectedDeploymentTabIndex == index) {
+            return
+        }
+        getDeploymentData(index, selectedDeploymentHistoryIndex)
+        setSelectedDeploymentTabIndex(index)
+    }
+
+    function onClickDeploymentHistorySidebar(index: number) {   // This will call whenever we change the deployment from sidebar
         if (selectedDeploymentHistoryIndex == index) {
             return
         }
-        // This will call whenever we change the deployment from sidebar
         getDeploymentData(selectedDeploymentTabIndex, index)
         setSelectedDeploymentHistoryIndex(index)
     }
@@ -143,16 +150,6 @@ function ChartDeploymentHistory({
         } catch (err) {
             _onDeploymentManifestResponse(version, _selectedDeploymentManifestDetail, null, err)
         }
-    }
-
-    function changeDeploymentTab(index: number) {
-        if (selectedDeploymentHistoryIndex == index) {
-            return
-        }
-        // This will call whenever we change the tabs internally
-        getDeploymentData(index, selectedDeploymentHistoryIndex)
-
-        setSelectedDeploymentTabIndex(index)
     }
 
     const _onFetchingDeploymentManifest = (
@@ -201,7 +198,7 @@ function ChartDeploymentHistory({
                     return (
                         <React.Fragment key={deployment.version}>
                             <div
-                                onClick={() => changeDeployment(index)}
+                                onClick={() => onClickDeploymentHistorySidebar(index)}
                                 className={`w-100 ci-details__build-card ${
                                     selectedDeploymentHistoryIndex == index ? 'active' : ''
                                 }`}
@@ -266,7 +263,7 @@ function ChartDeploymentHistory({
             <ul className="tab-list deployment-tab-list dc__border-bottom mr-20">
                 {deploymentTabs.map((tab, index) => {
                     return (
-                        <li onClick={() => changeDeploymentTab(index)} key={index} className="tab-list__tab">
+                        <li onClick={() => onClickDeploymentTabs(index)} key={index} className="tab-list__tab">
                             <div
                                 className={`tab-list__tab-link ${selectedDeploymentTabIndex == index ? 'active' : ''}`}
                             >
