@@ -27,7 +27,7 @@ import { OptionType } from '../app/types'
 import { containerImageSelectStyles } from './ciPipeline.utils'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
-import { CopyToClipboardText } from '../app/list/TriggerUrl'
+import { CopyToClipboardTextWithTippy } from '../app/list/TriggerUrl'
 import { ValueContainer } from '../security/security.util'
 
 export function TaskTypeDetailComponent() {
@@ -256,7 +256,7 @@ export function TaskTypeDetailComponent() {
                             onKeyDown={handleKeyDown}
                         />
                         {selectedContainerImage?.label && (
-                            <CopyToClipboardText
+                            <CopyToClipboardTextWithTippy
                                 text={selectedContainerImage.label}
                                 rootClassName="flex icon-dim-32 dc__position-abs dc__top-0 dc__right-20"
                                 placement="bottom"

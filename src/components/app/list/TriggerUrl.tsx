@@ -115,7 +115,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                                 </span>
                                                             </Tippy>
                                                             <span className="icon-dim-16">
-                                                                <CopyToClipboardText
+                                                                <CopyToClipboardTextWithTippy
                                                                     iconClass="pointer dc__visible-hover--child icon-dim-16"
                                                                     text={url}
                                                                 />
@@ -137,7 +137,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                     </span>
                                                 </Tippy>
                                                 <span className="icon-dim-16 pt-2">
-                                                    <CopyToClipboardText
+                                                    <CopyToClipboardTextWithTippy
                                                         iconClass="pointer dc__visible-hover--child icon-dim-16"
                                                         text={value.pointsTo}
                                                     />
@@ -156,7 +156,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
     )
 }
 
-export function CopyToClipboardText({
+export function CopyToClipboardTextWithTippy({
     text,
     rootClassName,
     iconClass,
