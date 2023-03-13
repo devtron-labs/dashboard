@@ -90,7 +90,13 @@ export const ERROR_EMPTY_SCREEN = {
     ALL_SET_GO_CONFIGURE: 'Looks like you’re all set. Go ahead and select an image to deploy',
     DEPLOYEMENT_WILL_BE_HERE: 'Once deployed, details for the deployment will be available here',
     GO_TO_DEPLOY: 'Go to deploy',
-    TAB_NOT_AVAILABLE_POSTFIX: 'is not available for this deployment'
+    TAB_NOT_AVAILABLE_POSTFIX: 'is not available for this deployment',
+    ONLY_FOR_SUPERADMIN: 'Information on this page is available only to superadmin users.',
+    NOT_AUTHORIZED: 'Not authorized',
+    UNAUTHORIZED:'unauthorized',
+    FORBIDDEN:'forbidden',
+    REQUIRED_MANAGER_ACCESS:
+        'Looks like you don’t have access to information on this page. Please contact your manager to request access.',
 }
 
 //Confirmation Dialog messgaes
@@ -101,8 +107,9 @@ export const CONFIRMATION_DIALOG_MESSAGING = {
 // Toast messages
 
 export const TOAST_INFO = {
-    PIPELINE_DELETION_INIT: 'Pipeline Deletion Initiated',
-    DELETION_INITIATED: 'Deletion initiated',
+  PIPELINE_DELETION_INIT: 'Pipeline Deletion Initiated',
+  DELETION_INITIATED: 'Deletion initiated',
+  RE_SYNC: 'Re-sync initiated. It may take upto 5 minutes for it to complete.'
 }
 
 export const APP_DETAILS = {
