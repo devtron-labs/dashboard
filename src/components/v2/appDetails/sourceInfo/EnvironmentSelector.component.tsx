@@ -54,16 +54,6 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
         }
     }, [appDetails.environmentId]);
 
-    useEffect(() => {
-        if (appDetails.resourceTree?.nodes) {
-            setCanScaleWorkloads(
-                appDetails.resourceTree.nodes.some(
-                    (node) => node.canBeHibernated && node.health?.status?.toLowerCase() !== 'missing',
-                ),
-            )
-        }
-    }, [appDetails])
-
     const handleEnvironmentChange = (envId: number) => {
         history.push(`${url}/${envId}`);
     };
@@ -223,27 +213,12 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                     Urls
                 </button>
                 {!showWorkloadsModal && (
-                    <>
-                        {canScaleWorkloads ? (
-                            <button
-                                className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
-                                onClick={() => setWorkloadsModal(true)}
-                            >
-                                <ScaleObjects className="mr-4" /> Scale workloads
-                            </button>
-                        ) : (
-                            <Tippy
-                                placement="top"
-                                arrow={false}
-                                className="default-tt"
-                                content={'No scalable workloads available'}
-                            >
-                                <button className="scale-workload__btn flex left cta pb-6 pt-6 pl-12 pr-12 not-allowed">
-                                    <ScaleObjects className="scale-workload-icon mr-4" /> Scale workloads
-                                </button>
-                            </Tippy>
-                        )}
-                    </>
+                    <button
+                        className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
+                        onClick={() => setWorkloadsModal(true)}
+                    >
+                        <ScaleObjects className="mr-4" /> Scale workloads
+                    </button>
                 )}
                 {!(
                     deployedAppDetail &&
