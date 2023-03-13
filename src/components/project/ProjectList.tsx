@@ -7,6 +7,7 @@ import { Project } from './Project';
 import { ProjectListState, ProjectType, ProjectListProps } from './types';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import './project.css';
+import { PROJECT_EXIST_MSG, REQUIRED_FIELD_MSG } from '../../config/constantMessaging';
 
 export default class ProjectList extends Component<ProjectListProps, ProjectListState> {
     constructor(props) {
@@ -83,23 +84,41 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         this.setState({ projects })
     }
 
-    saveProject(index: number): void {
-        this.setState({ loadingData: true })
-        let project = this.state.projects[index]
-        createProject(project)
-            .then((response) => {
-                toast.success('Project Created Successfully')
-                let { projects } = { ...this.state }
-                projects[index] = {
-                    ...response.result,
-                    isCollapsed: true,
-                }
-                this.setState({ code: response.code, projects, loadingData: false })
-            })
-            .catch((errors) => {
-                showError(errors)
-                this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
-            })
+    isProjectNameExists(index : number, projectName: string): boolean {
+        return this.state.projects.some(({ name }, i) => name === projectName && i !== index)
+    }
+
+    saveProject(index: number, key: 'name'): void {
+        let { projects, isValid, errorMessage } = { ...this.state };
+        let project = this.state.projects[index];
+        if (!project.name) {
+            isValid[key] = false;
+            errorMessage[key] = REQUIRED_FIELD_MSG
+            this.setState({ isValid }); 
+            return
+        }
+        else if (this.isProjectNameExists(index, project.name)) {
+            isValid[key] = false;
+            errorMessage[key] = PROJECT_EXIST_MSG
+            this.setState({ isValid });
+            return
+        }
+        else {
+            isValid[key] = true;
+            errorMessage[key]= ""
+        }
+        this.setState({ loadingData: true, isValid });
+        createProject(project).then((response) => {
+            toast.success("Project Created Successfully");
+            projects[index] = {
+                ...response.result,
+                isCollapsed: true
+            }
+            this.setState({ code: response.code, projects, loadingData: false });
+        }).catch((errors) => {
+            showError(errors);
+            this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
+        })
     }
 
     renderProjects(project: ProjectType & { isCollapsed: boolean }, index: number) {

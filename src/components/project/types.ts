@@ -7,7 +7,7 @@ export interface ProjectListState {
     code: number;
     loadingData: boolean;
     view: string;
-    projects: Array<ProjectType & { isCollapsed: boolean }>;
+    projects: Array<ProjectType>;
     isValid: {
         name: boolean;
     },
@@ -20,4 +20,5 @@ export interface ProjectType {
     id: number;
     name: string;
     active: boolean;
+    isCollapsed: boolean;
 }
