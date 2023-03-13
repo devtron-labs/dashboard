@@ -12,7 +12,7 @@ import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/Validate
 import "./chartRepo.scss";
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName, TOAST_INFO } from '../../config/constantMessaging';
-import { ReactComponent as Sync } from '../../assets/icons/ic-sync.svg';
+import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwise.svg'
 import { ChartRepoType } from './chartRepo.types'
 
 export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
@@ -94,7 +94,7 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                             onClick={refetchCharts}
                         >
                             <span>
-                                <Sync />
+                                <SyncIcon />
                             </span>
                             <span>Refetch Charts</span>
                         </a>
