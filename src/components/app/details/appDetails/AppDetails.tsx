@@ -26,7 +26,7 @@ import {
     useAsync,
     ScanDetailsModal,
 } from '../../../common'
-import { CustomValueContainer, formatHighlightedTextDescription, Option } from './../../../v2/common/ReactSelect.utils'
+import { CustomValueContainer, formatHighlightedText, Option } from './../../../v2/common/ReactSelect.utils'
 import {
     getAppConfigStatus,
     getAppOtherEnvironment,
@@ -614,7 +614,7 @@ export function EnvSelector({
             : environments
 
     const handleFormatHighlightedText = (opt, { inputValue }) => {
-        return formatHighlightedTextDescription(opt, inputValue, 'label')
+        return formatHighlightedText(opt, inputValue, 'label')
     }
     return (
         <>
