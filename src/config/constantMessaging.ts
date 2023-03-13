@@ -76,6 +76,7 @@ export const TOAST_ACCESS_DENIED = {
 }
 
 export const DELETE_DEPLOYMENT_PIPELINE = 'Deleting deployment pipeline'
+export const DELETE_DEPLOYMENT = 'Deleting deployment'
 export const VIEW_DELETION_STATUS = 'View deletion status'
 
 // Empty state messgaes
@@ -153,4 +154,8 @@ export const APP_GROUP_CI_DETAILS = {
         title: 'Build pipeline not triggered',
         subTitle: 'Pipeline trigger history, details and logs will be available here.',
     },
+}
+
+export const DEPLOYMENT_HISTORY_TABS = {
+  SOURCE : 0,
 }
