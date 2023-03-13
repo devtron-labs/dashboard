@@ -209,6 +209,23 @@ export function TaskTypeDetailComponent() {
         }
     }
 
+    const ValueContainer = (props) => {
+        const value = props.selectProps?.value?.value
+        return (
+            <components.ValueContainer {...props}>
+                <>
+                    {!props.selectProps.menuIsOpen &&
+                        (value ? (
+                            <div className="cn-7 fs-12 flex left">{value}</div>
+                        ) : (
+                            <span className="cn-5">Select or enter image</span>
+                        ))}
+                    {React.cloneElement(props.children[1])}
+                </>
+            </components.ValueContainer>
+        )
+    }
+
     const MenuList = (props) => {
         return (
             <components.MenuList {...props}>
@@ -231,7 +248,7 @@ export function TaskTypeDetailComponent() {
                         contentDescription={TaskFieldDescription.CONTAINERIMAGEPATH}
                     />
 
-                    <div className="dc__position-rel" style={{ width: '80% !important' }}>
+                    <div className="dc__position-rel">
                         <CreatableSelect
                             tabIndex={1}
                             value={selectedContainerImage}

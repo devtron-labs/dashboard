@@ -233,23 +233,6 @@ export function LatencySelect(props) {
     />
 }
 
-export const ValueContainer = (props) => {
-    const value = props.selectProps?.value?.value
-    return (
-        <components.ValueContainer {...props}>
-            <>
-                {!props.selectProps.menuIsOpen &&
-                    (value ? (
-                        <div className="cn-7 fs-12 flex left">{value}</div>
-                    ) : (
-                        <span className="cn-5">Select or enter image</span>
-                    ))}
-                {React.cloneElement(props.children[1])}
-            </>
-        </components.ValueContainer>
-    )
-}
-
 export function getCalendarValue(startDateStr: string, endDateStr: string): string {
     let str: string = `${startDateStr} - ${endDateStr}`;
     if (endDateStr === 'now' && startDateStr.includes('now')) {
