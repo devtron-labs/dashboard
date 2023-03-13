@@ -209,8 +209,6 @@ export function TaskTypeDetailComponent() {
         }
     }
 
-    
-
     const MenuList = (props) => {
         return (
             <components.MenuList {...props}>
