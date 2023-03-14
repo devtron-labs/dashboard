@@ -54,16 +54,6 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
         }
     }, [appDetails.environmentId]);
 
-    useEffect(() => {
-        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART && appDetails.resourceTree?.nodes) {
-            setCanScaleWorkloads(
-                appDetails.resourceTree.nodes.some(
-                    (node) => node.canBeHibernated && node.health?.status?.toLowerCase() !== 'missing',
-                ),
-            )
-        }
-    }, [appDetails])
-
     const handleEnvironmentChange = (envId: number) => {
         history.push(`${url}/${envId}`);
     };
@@ -146,7 +136,6 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                     </div>
 
                     <div className="fw-6 fs-14 cb-5">
-                        {/* <div>{appDetails.environmentName}</div> */}
                         <div style={{ minWidth: '200px' }}>
                             {environments && environments.length > 0 && (
                                 <Select
@@ -222,28 +211,13 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                     <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
                     Urls
                 </button>
-                {appDetails.appType === AppType.EXTERNAL_HELM_CHART && !showWorkloadsModal && (
-                    <>
-                        {canScaleWorkloads ? (
-                            <button
-                                className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
-                                onClick={() => setWorkloadsModal(true)}
-                            >
-                                <ScaleObjects className="mr-4" /> Scale workloads
-                            </button>
-                        ) : (
-                            <Tippy
-                                placement="top"
-                                arrow={false}
-                                className="default-tt"
-                                content={'No scalable workloads available'}
-                            >
-                                <button className="scale-workload__btn flex left cta pb-6 pt-6 pl-12 pr-12 not-allowed">
-                                    <ScaleObjects className="scale-workload-icon mr-4" /> Scale workloads
-                                </button>
-                            </Tippy>
-                        )}
-                    </>
+                {!showWorkloadsModal && (
+                    <button
+                        className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
+                        onClick={() => setWorkloadsModal(true)}
+                    >
+                        <ScaleObjects className="mr-4" /> Scale workloads
+                    </button>
                 )}
                 {!(
                     deployedAppDetail &&

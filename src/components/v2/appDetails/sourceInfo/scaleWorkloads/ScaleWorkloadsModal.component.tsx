@@ -15,6 +15,8 @@ import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import './scaleWorkloadsModal.scss'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
+import { AppType } from '../../appDetails.type'
+import { getInstalledChartDetailWithResourceTree } from '../../appDetails.api'
 
 export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWorkloadsModalProps) {
     const [nameSelection, setNameSelection] = useState<Record<string, WorkloadCheckType>>({
@@ -34,6 +36,12 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const [fetchingLatestDetails, setFetchingLatestDetails] = useState(false)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const scaleWorkloadTabs = ['Active workloads', 'Scaled down workloads']
+    const [fetchingDetails,setfetchingDetails] = useState(true)
+    const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
+
+    useEffect(()=> {
+        _getAndSetAppDetail();
+    },[])
 
     useEffect(() => {
         if (fetchingLatestDetails) {
@@ -72,6 +80,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                             _workloadsToRestore,
                         )
                     }
+                    setCanScaleWorkloads(true)
                 }
             })
 
@@ -79,6 +88,18 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
             setWorkloadsToRestore(_workloadsToRestore)
         }
     }, [appDetails])
+
+    const _getAndSetAppDetail = async () => {
+        try {
+            let response = null;
+            response = await getInstalledChartDetailWithResourceTree(+appDetails.appId, +appDetails.environmentId);
+            IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART);
+            setfetchingDetails(false)
+        } catch(e) {
+            showError(e);
+            setfetchingDetails(false)
+        }
+    }
 
     const checkAndUpdateCurrentWorkload = (
         workloadTarget: ScaleWorkloadsType,
@@ -234,6 +255,9 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
         try {
             setScalingInProgress(true)
+            if(appDetails.appType != AppType.EXTERNAL_HELM_CHART){
+                appId = appDetails.clusterId + '|' + appDetails.namespace + '|' + appDetails.appName
+            }
             const workloadUpdate = isHibernateReq ? hibernateApp : unhibernateApp
             const _workloadsList = isHibernateReq ? workloadsToScaleDown : workloadsToRestore
             const _setWorkloadsList = isHibernateReq ? setWorkloadsToScaleDown : setWorkloadsToRestore
@@ -266,6 +290,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                 _setWorkloadsList(_workloadsList)
                 history.push(`${history.location.pathname}?refetchData=true`)
             }
+            await _getAndSetAppDetail()
         } catch (e) {
             showError(e)
         } finally {
@@ -286,23 +311,34 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         const isWorkloadPresent = _workloadsList && _workloadsList.size > 0
         const isAnySelected =
             _workloadsList && Array.from(_workloadsList.values()).some((workload) => workload.isChecked)
-
+        let loadingText = `${
+            isActiveWorkloadsTab ? 'Scaling down' : 'Restoring'
+        } workloads. Please wait...`
+        if(fetchingDetails) {
+            loadingText = 'Looking for scalable workloads'
+        }
+        let msg = `${
+            isActiveWorkloadsTab
+                ? 'No active workloads available'
+                : 'No scaled down workloads available'
+        }`
+        if(!canScaleWorkloads) {
+            msg = 'No scalable workloads found'
+        }
         return (
             <div className="scale-worklists-container">
-                {fetchingLatestDetails ? (
+                {(fetchingLatestDetails || fetchingDetails || scalingInProgress) ? (
                     <div
                         className="flex"
                         style={{
-                            height: '234px',
+                            height: fetchingDetails? '275px' : '234px',
                             flexDirection: 'column',
                         }}
                     >
                         <DetailsProgressing
                             pageLoader
                             fullHeight={true}
-                            loadingText={`${
-                                isActiveWorkloadsTab ? 'Scaling down' : 'Restoring'
-                            } workloads. Please wait...`}
+                            loadingText={loadingText}
                         />
                     </div>
                 ) : (
@@ -360,11 +396,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                         ) : (
                             <MessageUI
                                 icon={MsgUIType.INFO}
-                                msg={`${
-                                    isActiveWorkloadsTab
-                                        ? 'No active workloads available'
-                                        : 'No scaled down workloads available'
-                                }`}
+                                msg={msg}
                                 size={20}
                                 theme="white"
                                 iconClassName="no-readme-icon"
@@ -374,7 +406,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                     flexDirection: 'column',
                                     justifyContent: 'center',
                                     minHeight: '0',
-                                    height: '234px',
+                                    height: !canScaleWorkloads ? '275px' : '234px',
                                     paddingTop: 0,
                                 }}
                             />
@@ -415,7 +447,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         <VisibleModal className="scale-workload-modal">
             <div className={`modal__body br-4`}>
                 {renderScaleModalHeader()}
-                {renderScaleWorkloadTabs()}
+                {!fetchingDetails && canScaleWorkloads && renderScaleWorkloadTabs()}
                 {renderScaleWorkloadsList(selectedDeploymentTabIndex === 0)}
             </div>
         </VisibleModal>
