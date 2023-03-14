@@ -282,7 +282,7 @@ export default function ResourceList() {
 
                 const parentNode = _k8SObjectList[0]
                 const childNode = parentNode.child.find((_ch) => _ch.gvk.Kind === Nodes.Pod) ?? parentNode.child[0]
-                let isResourceGroupPresent = false
+                let isResourceGroupPresent = true
                 let groupedChild = null
                 if (nodeType) {
                     for (const _parentNode of _k8SObjectList) {
@@ -293,7 +293,6 @@ export default function ResourceList() {
                                     SIDEBAR_KEYS.eventGVK.Group.toLowerCase() === group ||
                                     K8S_EMPTY_GROUP === group)
                             ) {
-                                isResourceGroupPresent = true
                                 groupedChild = _childNode
                                 break
                             }
@@ -316,6 +315,8 @@ export default function ResourceList() {
                         namespaced: childNode.namespaced,
                         gvk: childNode.gvk,
                     }
+                // {console.log(defaultSelected)}
+                {console.log(childNode)}
                 setK8SObjectMap(getGroupedK8sObjectMap(_k8SObjectList))
                 setSelectedResource(defaultSelected)
                 updateResourceSelectionData(defaultSelected, true)
