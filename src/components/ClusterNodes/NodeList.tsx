@@ -124,14 +124,14 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             } else {
                 try {
                     appliedColumnsFromLocalStorage = JSON.parse(localStorage.appliedColumns)
-                    for (const _updatedLocalMetaData of appliedColumnsFromLocalStorage) {
+                    for (const _updatedLocalMetaData of appliedColumnsFromLocalStorage as ColumnMetadataType[]) {
                         if (_updatedLocalMetaData.isSortingAllowed && !_updatedLocalMetaData.sortingFieldName) {
                             _updatedLocalMetaData.sortingFieldName = sortableColumnMap.get(_updatedLocalMetaData.value).sortingFieldName //updating column meta data when sortingFieldName is missing
                             isMissingColumn = true
                         }
-                        if (isMissingColumn) {
-                            localStorage.appliedColumns = JSON.stringify(appliedColumnsFromLocalStorage)
-                        }
+                    }
+                    if (isMissingColumn) {
+                      localStorage.appliedColumns = JSON.stringify(appliedColumnsFromLocalStorage)
                     }
                 } catch (error) {}
             }
