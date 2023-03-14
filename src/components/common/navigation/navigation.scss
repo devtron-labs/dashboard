@@ -334,17 +334,12 @@
 }
 
 .help__enterprise{
-    display: flex;
+    
     flex-direction: row;
-    align-items: center;
-    padding: 4px 8px;
-    gap: 12px;
 
     font-weight: 600;
 
     width: 220px;
-    height: 28px;
-
     /* window-bg */
 
     background: #F2F4F7; 

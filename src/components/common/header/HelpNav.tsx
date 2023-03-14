@@ -124,7 +124,7 @@ function HelpNav({
                             <option.icon />
                             <div className="help-card__option-name ml-12 cn-9 fs-14">{option.name}</div>
                         </a>
-                        {isEnterprise && index===1 && <div className = "help__enterprise">Enterprise Support</div>}
+                        {isEnterprise && index===1 && <div className = "help__enterprise pl-8 pb-4-imp pt-4-imp dc__gap-12 flexbox dc__align-items-center h-28">Enterprise Support</div>}
                         {option.showSeparator && <div className="help-card__option-separator" />}
                     </Fragment>
                 )
