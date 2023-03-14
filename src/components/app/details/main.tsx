@@ -16,7 +16,7 @@ import { EnvType } from '../../v2/appDetails/appDetails.type'
 import PageHeader from '../../common/header/PageHeader'
 import { AppDetailsProps } from './triggerView/types'
 import AppOverview from './appOverview/AppOverview'
-import { trackByGAEvent } from '../../common/helpers/Helpers'
+import { importComponentFromFELibrary, noop, trackByGAEvent } from '../../common/helpers/Helpers'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -26,6 +26,8 @@ const IndexComponent = lazy(() => import('../../v2/index'))
 
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
 const TestRunList = lazy(() => import('./testViewer/TestRunList'))
+
+const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
 export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const { path } = useRouteMatch()
@@ -52,7 +54,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
 
     return (
         <div className="app-details-page">
-            {!isV2 && <AppHeader appName={appName} />}
+            {!isV2 && <AppHeader appName={appName} appMetaInfo={appMetaInfo} />}
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
@@ -98,7 +100,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     )
 }
 
-export function AppHeader({ appName }: { appName: string }) {
+export function AppHeader({ appName, appMetaInfo }: { appName: string; appMetaInfo: AppMetaInfo }) {
     const { appId } = useParams<{ appId }>()
     const match = useRouteMatch()
     const history = useHistory()
@@ -112,11 +114,10 @@ export function AppHeader({ appName }: { appName: string }) {
         }
     }
 
-    function handleEventClick(event){
+    function handleEventClick(event) {
         trackByGAEvent('App', event.currentTarget.dataset.action)
         onClickTabPreventDefault(event, 'active')
     }
-      
 
     useEffect(() => {
         currentPathname.current = location.pathname
@@ -159,11 +160,19 @@ export function AppHeader({ appName }: { appName: string }) {
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_OVERVIEW}`}
-                        className="tab-list__tab-link"
+                        className="tab-list__tab-link flex"
                         data-action="Overview Clicked"
                         onClick={handleEventClick}
                     >
                         Overview
+                        {MandatoryTagWarning && (
+                            <MandatoryTagWarning
+                                labelTags={appMetaInfo?.labels}
+                                handleAddTag={noop}
+                                selectedProjectId={appMetaInfo?.projectId}
+                                showOnlyIcon={true}
+                            />
+                        )}
                     </NavLink>
                 </li>
                 <li className="tab-list__tab dc__ellipsis-right">

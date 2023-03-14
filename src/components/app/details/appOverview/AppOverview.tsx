@@ -3,14 +3,13 @@ import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../../config'
 import { getAppOtherEnvironment, getTeamList } from '../../../../services/service'
-import { processDeployedTime, sortOptionsByValue, useAsync } from '../../../common'
+import { importComponentFromFELibrary, processDeployedTime, sortOptionsByValue, useAsync } from '../../../common'
 import { showError, Progressing, TagType, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails, AppOverviewProps } from '../../types'
 import { ReactComponent as EditIcon } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as TagIcon } from '../../../../assets/icons/ic-tag.svg'
 import { ReactComponent as LinkedIcon } from '../../../../assets/icons/ic-linked.svg'
 import { ReactComponent as RocketIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
-import { ReactComponent as InjectTag } from '../../../../assets/icons/inject-tag.svg'
 import AboutAppInfoModal from '../AboutAppInfoModal'
 import {
     ExternalLinkIdentifierType,
@@ -20,13 +19,14 @@ import {
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service'
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
-import './AppOverview.scss'
 import AboutTagEditModal from '../AboutTagEditModal'
-import Tippy from '@tippyjs/react'
 import AppStatus from '../../AppStatus'
 import { StatusConstants } from '../../list-new/Constants'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
+import TagChips from './TagChips'
+import './AppOverview.scss'
+const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 
 export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverviewProps) {
     const { appId } = useParams<{ appId: string }>()
@@ -40,7 +40,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         externalLinks: [],
         monitoringTools: [],
     })
-    const [otherEnvsLoading, otherEnvsResult] = useAsync(() => Promise.all([getAppOtherEnvironment(appId), getModuleInfo(ModuleNameMap.ARGO_CD)]), [appId])
+    const [otherEnvsLoading, otherEnvsResult] = useAsync(
+        () => Promise.all([getAppOtherEnvironment(appId), getModuleInfo(ModuleNameMap.ARGO_CD)]),
+        [appId],
+    )
     const isAgroInstalled: boolean = otherEnvsResult?.[1].result.status === ModuleStatus.INSTALLED
 
     useEffect(() => {
@@ -150,7 +153,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
 
     const renderLabelTags = () => {
         return (
-            <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
+            <div className="pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
                 <div className="flex left dc__content-space mb-12 w-100">
                     <div className="flex left fs-14 fw-6 lh-20 cn-9">
                         <TagIcon className="tags-icon icon-dim-20 mr-8" />
@@ -161,47 +164,14 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                         Edit tags
                     </div>
                 </div>
-                <div className="flex left flex-wrap dc__gap-8">
-                    {currentLabelTags.length > 0 ? (
-                        currentLabelTags.map((tag) => (
-                            <div className="flex">
-                                <div
-                                    className={`flex bc-n50 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
-                                        !tag.value ? ' br-4' : ' dc__left-radius-4'
-                                    }`}
-                                >
-                                    {tag.propagate && <InjectTag className="icon-dim-16 mt-2 mr-4" />}
-                                    <Tippy
-                                        className="default-tt dc__word-break-all"
-                                        arrow={false}
-                                        placement="bottom"
-                                        content={tag.key}
-                                        trigger="mouseenter"
-                                        interactive={true}
-                                    >
-                                        <div className="dc__mxw-400 dc__ellipsis-right">{tag.key}</div>
-                                    </Tippy>
-                                </div>
-                                {tag.value && (
-                                    <Tippy
-                                        className="default-tt dc__word-break-all"
-                                        arrow={false}
-                                        placement="bottom"
-                                        content={tag.value}
-                                        trigger="mouseenter"
-                                        interactive={true}
-                                    >
-                                        <div className="bcn-0 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 dc__right-radius-4 dc__no-left-border dc__mxw-400 dc__ellipsis-right">
-                                            {tag.value}
-                                        </div>
-                                    </Tippy>
-                                )}
-                            </div>
-                        ))
-                    ) : (
-                        <span className="fs-13 fw-4 cn-7">No tags added.</span>
-                    )}
-                </div>
+                <TagChips labelTags={currentLabelTags} />
+                {MandatoryTagWarning && (
+                    <MandatoryTagWarning
+                        labelTags={currentLabelTags}
+                        handleAddTag={toggleTagsUpdateModal}
+                        selectedProjectId={appMetaInfo.projectId}
+                    />
+                )}
             </div>
         )
     }
@@ -234,7 +204,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
     }
 
     const renderDeploymentComponent = () => {
-        if(otherEnvsResult[0].result?.length > 0){
+        if (otherEnvsResult[0].result?.length > 0) {
             return (
                 <div className="env-deployments-info-wrapper w-100">
                     <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
@@ -243,29 +213,34 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                         <span>Last deployed</span>
                     </div>
                     <div className="env-deployments-info-body">
-                        {otherEnvsResult[0].result.map((_env) => (
-                         !_env.deploymentAppDeleteRequest &&
-                            <div
-                                key={`${_env.environmentName}-${_env.environmentId}`}
-                                className="env-deployments-info-row display-grid dc__align-items-center"
-                            >
-                                <Link to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`} className="fs-13">
-                                    {_env.environmentName}
-                                </Link>
-                                {isAgroInstalled && (
-                                    <AppStatus
-                                        appStatus={
-                                            _env.lastDeployed
-                                                ? _env.appStatus
-                                                : StatusConstants.NOT_DEPLOYED.noSpaceLower
-                                        }
-                                    />
-                                )}
-                                <span className="fs-13 fw-4 cn-7">
-                                    {processDeployedTime(_env.lastDeployed, isAgroInstalled)}
-                                </span>
-                            </div>
-                        ))}
+                        {otherEnvsResult[0].result.map(
+                            (_env) =>
+                                !_env.deploymentAppDeleteRequest && (
+                                    <div
+                                        key={`${_env.environmentName}-${_env.environmentId}`}
+                                        className="env-deployments-info-row display-grid dc__align-items-center"
+                                    >
+                                        <Link
+                                            to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`}
+                                            className="fs-13"
+                                        >
+                                            {_env.environmentName}
+                                        </Link>
+                                        {isAgroInstalled && (
+                                            <AppStatus
+                                                appStatus={
+                                                    _env.lastDeployed
+                                                        ? _env.appStatus
+                                                        : StatusConstants.NOT_DEPLOYED.noSpaceLower
+                                                }
+                                            />
+                                        )}
+                                        <span className="fs-13 fw-4 cn-7">
+                                            {processDeployedTime(_env.lastDeployed, isAgroInstalled)}
+                                        </span>
+                                    </div>
+                                ),
+                        )}
                     </div>
                 </div>
             )
@@ -281,9 +256,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
                     <RocketIcon className="icon-dim-20 scn-9 mr-8" />
                     Deployments
                 </div>
-                {otherEnvsLoading ? (
-                    <div className="dc__loading-dots" />
-                ) : renderDeploymentComponent()}
+                {otherEnvsLoading ? <div className="dc__loading-dots" /> : renderDeploymentComponent()}
             </div>
         )
     }
@@ -305,4 +278,3 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes }: AppOverv
         </div>
     )
 }
-

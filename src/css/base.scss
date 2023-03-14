@@ -1988,6 +1988,20 @@ textarea,
     fill: var(--Y700);
 }
 
+.warning-icon-y7-imp {
+    path {
+        &:nth-child(1) {
+            fill: var(--N0) !important;
+        }
+        &:nth-child(2) {
+            fill: var(--Y700) !important;
+        }
+        &:nth-child(3) {
+            fill: var(--N0) !important;
+        }
+    }
+}
+
 .icon-color-n9 {
     path:nth-child(2) {
         fill: var(--N900);
