@@ -26,6 +26,7 @@ import {
     RollbackReleaseRequest,
 } from './chartDeploymentHistory.service'
 import IndexStore from '../appDetails/index.store'
+import { DEPLOYMENT_HISTORY_TABS, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
     loading?: boolean
@@ -53,12 +54,11 @@ function ChartDeploymentHistory({
     const [rollbackDialogTitle, setRollbackDialogTitle] = useState('Rollback')
     const [showRollbackConfirmation, setShowRollbackConfirmation] = useState(false)
     const [deploying, setDeploying] = useState(false)
-    const [showDockerInfo,setShowDockerInfo] = useState(false)
+    const [showDockerInfo, setShowDockerInfo] = useState(false)
     const history = useHistory()
     const { url } = useRouteMatch()
 
     const deploymentTabs: string[] = ['Source', 'values.yaml', 'Helm generated manifest']
-
 
     // component load
     useEffect(() => {
@@ -106,15 +106,26 @@ function ChartDeploymentHistory({
             })
     }, [])
 
-    function changeDeployment(index: number) {
+    const getDeploymentData = (_selectedDeploymentTabIndex: number, _selectedDeploymentHistoryIndex: number) => {
+        if (_selectedDeploymentTabIndex !== DEPLOYMENT_HISTORY_TABS.SOURCE) { // Checking if the tab in not source, then fetching api for all except source tab
+            checkAndFetchDeploymentDetail(deploymentHistoryArr[_selectedDeploymentHistoryIndex].version)
+        }
+    }
+
+    function onClickDeploymentTabs(index: number) {  // This will call whenever we change the tabs internally eg, source,value etc
+        if (selectedDeploymentTabIndex == index) {
+            return
+        }
+        getDeploymentData(index, selectedDeploymentHistoryIndex)
+        setSelectedDeploymentTabIndex(index)
+    }
+
+    function onClickDeploymentHistorySidebar(index: number) {   // This will call whenever we change the deployment from sidebar
         if (selectedDeploymentHistoryIndex == index) {
             return
         }
-
+        getDeploymentData(selectedDeploymentTabIndex, index)
         setSelectedDeploymentHistoryIndex(index)
-
-        // Resetting the deployment tab selection, loading & error states on version change.
-        setSelectedDeploymentTabIndex(0)
     }
 
     async function checkAndFetchDeploymentDetail(
@@ -139,19 +150,6 @@ function ChartDeploymentHistory({
         } catch (err) {
             _onDeploymentManifestResponse(version, _selectedDeploymentManifestDetail, null, err)
         }
-    }
-
-    function changeDeploymentTab(index: number) {
-        if (selectedDeploymentTabIndex === index) {
-            return
-        }
-
-        if (index === 1 || index === 2) {
-            const version = deploymentHistoryArr[selectedDeploymentHistoryIndex].version
-            checkAndFetchDeploymentDetail(version)
-        }
-
-        setSelectedDeploymentTabIndex(index)
     }
 
     const _onFetchingDeploymentManifest = (
@@ -200,7 +198,7 @@ function ChartDeploymentHistory({
                     return (
                         <React.Fragment key={deployment.version}>
                             <div
-                                onClick={() => changeDeployment(index)}
+                                onClick={() => onClickDeploymentHistorySidebar(index)}
                                 className={`w-100 ci-details__build-card ${
                                     selectedDeploymentHistoryIndex == index ? 'active' : ''
                                 }`}
@@ -265,7 +263,7 @@ function ChartDeploymentHistory({
             <ul className="tab-list deployment-tab-list dc__border-bottom mr-20">
                 {deploymentTabs.map((tab, index) => {
                     return (
-                        <li onClick={() => changeDeploymentTab(index)} key={index} className="tab-list__tab">
+                        <li onClick={() => onClickDeploymentTabs(index)} key={index} className="tab-list__tab">
                             <div
                                 className={`tab-list__tab-link ${selectedDeploymentTabIndex == index ? 'active' : ''}`}
                             >
@@ -314,9 +312,11 @@ function ChartDeploymentHistory({
                 (selectedDeploymentTabIndex === 2 && !selectedDeploymentManifestDetail.manifest))
         ) {
             return (
-                <CDEmptyState
-                    subtitle={`${deploymentTabs[selectedDeploymentTabIndex]} is not available for this deployment`}
-                />
+                <div className="flex h-100">
+                    <CDEmptyState
+                        subtitle={`${deploymentTabs[selectedDeploymentTabIndex]} ${ERROR_EMPTY_SCREEN.TAB_NOT_AVAILABLE_POSTFIX}`}
+                    />
+                </div>
             )
         } else if (!selectedDeploymentManifestDetail.loading && selectedDeploymentManifestDetail.error) {
             return (
@@ -470,9 +470,9 @@ function ChartDeploymentHistory({
                             </button>
                         </Tippy>
                     )}
-                    {showDockerInfo &&
-                            <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
-                    }
+                    {showDockerInfo && (
+                        <DockerListModal dockerList={deployment.dockerImages} closeTab={closeDockerInfoTab} />
+                    )}
                 </div>
             </div>
         )

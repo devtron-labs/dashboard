@@ -22,11 +22,13 @@ import { deleteInstalledChart } from '../../../charts/charts.service';
 import { toast } from 'react-toastify';
 import { ReactComponent as Dots} from '../../assets/icons/ic-menu-dot.svg'
 import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component';
-import { checkIfDevtronOperatorHelmRelease, URLS } from '../../../../config';
+import { checkIfDevtronOperatorHelmRelease } from '../../../../config';
+import { ReactComponent as BinWithDots} from '../../../../assets/icons/ic-delete-dots.svg'
+import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging';
 
-function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean}) {
+function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: boolean; _init?: () => void}) {
     const params = useParams<{ appId: string; envId?: string }>();
-    const { url, path } = useRouteMatch();
+    const { url } = useRouteMatch();
     const history = useHistory();
     const [showWorkloadsModal, setWorkloadsModal] = useState(false);
     const [environments, setEnvironments] = useState<Array<AppEnvironment>>();
@@ -34,6 +36,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
     const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
     const [urlInfo, showUrlInfo] = useState<boolean>(false)
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
+    const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
 
     useEffect(() => {
         if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
@@ -88,7 +91,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
         if (isExternalApp) {
             return deleteApplicationRelease(params.appId)
         } else {
-            return deleteInstalledChart(params.appId)
+            return deleteInstalledChart(params.appId, isGitops)
         }
     }
 
@@ -96,12 +99,13 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
         setShowDeleteConfirmation(!showDeleteConfirmation)
     }
 
+
     async function deleteResourceAction() {
         try {
             await getDeleteApplicationApi()
             setShowDeleteConfirmation(false)
             toast.success('Deletion initiated successfully.')
-            history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`)
+            _init()
         } catch (error) {
             showError(error)
         }
@@ -112,7 +116,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
     return (
         <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
             <div>
-                <div className="flexbox">
+                <div className="flex left">
                     <div style={{ width: 'clamp( 100px, 30%, 200px )', height: '100%', position: 'relative' }}>
                         <svg
                             viewBox="0 0 200 40"
@@ -136,7 +140,6 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                     </div>
 
                     <div className="fw-6 fs-14 cb-5">
-                        {/* <div>{appDetails.environmentName}</div> */}
                         <div style={{ minWidth: '200px' }}>
                             {environments && environments.length > 0 && (
                                 <Select
@@ -194,24 +197,32 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                             className="default-tt"
                             arrow={false}
                             placement="top"
-                            content={`Deployed using ${
-                                appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? `GitOps` : `Helm`
-                            }`}
+                            content={`Deployed using ${isGitops ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm}`}
                         >
-                            {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (
-                                <ArgoCD className="icon-dim-32 ml-16" />
+                            {isGitops ? (
+                                <ArgoCD className="icon-dim-32 ml-16 mr-8" />
                             ) : (
                                 <Helm className="icon-dim-32 ml-16" />
                             )}
                         </Tippy>
                     )}
+                    {appDetails?.deploymentAppDeleteRequest && (
+                        <>
+                            <BinWithDots className='icon-dim-16 mr-8 ml-12'/>
+                            <span className="cr-5 fw-6">{DELETE_DEPLOYMENT_PIPELINE}</span>
+                            <span className="dc__loading-dots cr-5" />
+                        </>
+                    )}
                 </div>
             </div>
+
             <div className="flex">
-                <button className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2" onClick={showInfoUrl}>
-                    <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
-                    Urls
-                </button>
+                {!appDetails.deploymentAppDeleteRequest && (
+                    <button className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2" onClick={showInfoUrl}>
+                        <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
+                        Urls
+                    </button>
+                )}
                 {!showWorkloadsModal && (
                     <button
                         className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
@@ -220,6 +231,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                         <ScaleObjects className="mr-4" /> Scale workloads
                     </button>
                 )}
+
                 {!(
                     deployedAppDetail &&
                     checkIfDevtronOperatorHelmRelease(deployedAppDetail[2], deployedAppDetail[1], deployedAppDetail[0])
@@ -244,6 +256,7 @@ function EnvironmentSelectorComponent({isExternalApp}: {isExternalApp: boolean})
                     </div>
                 )}
             </div>
+
             {urlInfo && (
                 <TriggerUrlModal
                     installedAppId={params.appId}

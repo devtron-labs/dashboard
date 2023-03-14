@@ -204,7 +204,8 @@ export const Routes = {
     CLUSTER_LIST_PERMISSION: 'cluster/auth-list',
     ENVIRONMENT_APPS: 'env/app-grouping',
     ENV_APPLICATIONS: 'applications',
-    ENV_DEPLOYMENT_STATUS: 'deployment/status'
+    ENV_DEPLOYMENT_STATUS: 'deployment/status',
+    USER_ROLE_GROUP_URL: 'user/role/group'
 }
 
 export const ViewType = {
@@ -316,11 +317,16 @@ export const DOCUMENTATION = {
     APP_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/create-application#tags`,
     APP_OVERVIEW_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/overview#manage-tags`,
     K8S_RESOURCES_PERMISSIONS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access#kubernetes-resources-permissions`,
+    APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
 
 export const PREVIEW_DEVTRON = 'https://preview.devtron.ai/dashboard'
+
+export const NETSHOOT_LINK = 'https://github.com/nicolaka/netshoot'
+
+export const BUSYBOX_LINK = 'https://busybox.net/'
 
 // APP LIST STARTS
 export const AppListConstants = {

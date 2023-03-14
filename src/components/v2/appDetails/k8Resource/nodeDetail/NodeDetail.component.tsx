@@ -17,10 +17,13 @@ import { showError } from '../../../../common'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
 import './nodeDetail.css'
+import { K8S_EMPTY_GROUP } from '../../../../ResourceBrowser/Constants'
 
 function NodeDetailComponent({
     loadingResources,
     isResourceBrowserView,
+    markTabActiveByIdentifier,
+    addTab,
     selectedResource,
     logSearchTerms,
     setLogSearchTerms,
@@ -72,11 +75,21 @@ function NodeDetailComponent({
             const _resourceContainers = []
             if (result?.manifest?.spec) {
                 if (Array.isArray(result.manifest.spec.containers)) {
-                    _resourceContainers.push(...result.manifest.spec.containers.map((_container) => _container.name))
+                    _resourceContainers.push(
+                        ...result.manifest.spec.containers.map((_container) => ({
+                            name: _container.name,
+                            isInitContainer: false,
+                        })),
+                    )
                 }
 
                 if (Array.isArray(result.manifest.spec.initContainers)) {
-                    _resourceContainers.push(...result.manifest.spec.initContainers.map((_container) => _container.name))
+                    _resourceContainers.push(
+                        ...result.manifest.spec.initContainers.map((_container) => ({
+                            name: _container.name,
+                            isInitContainer: true,
+                        })),
+                    )
                 }
             }
             setResourceContainers(_resourceContainers)
@@ -102,11 +115,14 @@ function NodeDetailComponent({
     }
 
     const handleSelectedTab = (_tabName: string, _url: string) => {
-        const isTabFound = AppDetailsStore.markAppDetailsTabActiveByIdentifier(
-            isResourceBrowserView ? params.node : params.podName,
-            params.nodeType,
-            _url,
-        )
+        const isTabFound = isResourceBrowserView
+            ? markTabActiveByIdentifier(
+                  selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP,
+                  params.node,
+                  params.nodeType,
+                  _url,
+              )
+            : AppDetailsStore.markAppDetailsTabActiveByIdentifier(params.podName, params.nodeType, _url)
 
         if (!isTabFound) {
             setTimeout(() => {
@@ -118,11 +134,16 @@ function NodeDetailComponent({
                     _urlToCreate = _urlToCreate + '?container=' + query.get('container')
                 }
 
-                AppDetailsStore.addAppDetailsTab(
-                    params.nodeType,
-                    isResourceBrowserView ? params.node : params.podName,
-                    _urlToCreate,
-                )
+                if (isResourceBrowserView) {
+                    addTab(
+                        selectedResource?.group?.toLowerCase() || K8S_EMPTY_GROUP,
+                        params.nodeType,
+                        params.node,
+                        _urlToCreate,
+                    )
+                } else {
+                    AppDetailsStore.addAppDetailsTab(params.nodeType, params.podName, _urlToCreate)
+                }
                 setSelectedTabName(_tabName)
             }, 500)
         } else if (selectedTabName !== _tabName) {
@@ -184,7 +205,7 @@ function NodeDetailComponent({
                     msg=""
                     icon={MsgUIType.LOADING}
                     size={24}
-                    minHeight={isResourceBrowserView ? 'calc(100vh - 124px)' : ''}
+                    minHeight={isResourceBrowserView ? 'calc(100vh - 116px)' : ''}
                 />
             ) : (
                 <Switch>
