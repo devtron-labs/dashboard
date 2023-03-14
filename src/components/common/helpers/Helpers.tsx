@@ -1137,13 +1137,20 @@ export const processK8SObjects = (
         if (!currentData) {
             _k8SObjectMap.set(groupParent, {
                 name: groupParent,
-                isExpanded: element.gvk.Kind.toLowerCase() === selectedResourceKind,
+                isExpanded:
+                    element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
+                    element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
+                    element.gvk.Kind.toLowerCase() === selectedResourceKind,
                 child: [{ namespaced: element.namespaced, gvk: element.gvk }],
             })
         } else {
             currentData.child = [...currentData.child, { namespaced: element.namespaced, gvk: element.gvk }]
+
             if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
-                currentData.isExpanded = element.gvk.Kind.toLowerCase() === selectedResourceKind
+                currentData.isExpanded =
+                    element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
+                    element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
+                    element.gvk.Kind.toLowerCase() === selectedResourceKind
             }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind) {
@@ -1214,7 +1221,7 @@ export const highlightSearchedText = (searchText: string, matchString: string): 
     if (!searchText) {
         return matchString
     }
-    
+
     const regex = new RegExp(searchText, 'gi')
     return matchString.replace(regex, highlightText)
 }
