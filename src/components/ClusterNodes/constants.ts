@@ -75,6 +75,7 @@ export const COLUMN_METADATA: ColumnMetadataType[] = [
         value: 'nodeGroup',
         isSortingAllowed: true,
         isDefault: true,
+        sortingFieldName: 'nodeGroup',
     },
     {
         sortType: 'number',
