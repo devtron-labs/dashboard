@@ -28,7 +28,7 @@ import { containerImageSelectStyles } from './ciPipeline.utils'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { CopyToClipboardTextWithTippy } from '../app/list/TriggerUrl'
-import { ValueContainer } from '../security/security.util'
+import { ValueContainerImage as ValueContainer } from '../app/details/appDetails/utils'
 
 export function TaskTypeDetailComponent() {
     const {
@@ -209,23 +209,6 @@ export function TaskTypeDetailComponent() {
         }
     }
 
-    const ValueContainer = (props) => {
-        const value = props.selectProps?.value?.value
-        return (
-            <components.ValueContainer {...props}>
-                <>
-                    {!props.selectProps.menuIsOpen &&
-                        (value ? (
-                            <div className="cn-7 fs-12 flex left">{value}</div>
-                        ) : (
-                            <span className="cn-5">Select or enter image</span>
-                        ))}
-                    {React.cloneElement(props.children[1])}
-                </>
-            </components.ValueContainer>
-        )
-    }
-
     const MenuList = (props) => {
         return (
             <components.MenuList {...props}>
@@ -261,7 +244,7 @@ export function TaskTypeDetailComponent() {
                                 MenuList,
                                 Option,
                                 IndicatorSeparator: null,
-                                ValueContainer,
+                                ValueContainer
                             }}
                             noOptionsMessage={(): string => {
                                 return 'No matching options'
