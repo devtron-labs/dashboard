@@ -166,7 +166,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 })
             })
             .catch((error) => {
-                showError(error)
+                showError(error,true,true)
                 this.setState({ view: ViewType.ERROR, statusCode: error.code })
             })
     }
