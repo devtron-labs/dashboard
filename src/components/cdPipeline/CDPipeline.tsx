@@ -21,7 +21,8 @@ import {
     ForceDeleteDialog,
     ServerErrors,
     Checkbox,
-    CHECKBOX_VALUE
+    CHECKBOX_VALUE,
+    InfoColourBar
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,
@@ -55,7 +56,6 @@ import './cdPipeline.css'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionalWrap, createClusterEnvGroup } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { PipelineType } from '../app/details/triggerView/types'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
 import { groupStyle } from '../secrets/secret.utils'

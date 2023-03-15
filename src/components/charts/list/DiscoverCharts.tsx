@@ -3,7 +3,7 @@ import {
     Select,
     mapByKey,
 } from '../../common'
-import { showError, Progressing, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ConditionalWrap, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink } from 'react-router-dom'
 import { useHistory, useLocation, useRouteMatch } from 'react-router'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
@@ -35,7 +35,6 @@ import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.s
 import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWarning'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
-import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import DetectBottom from '../../common/DetectBottom'
 
 //TODO: move to service

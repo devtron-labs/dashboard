@@ -1,6 +1,13 @@
 import React, { useState } from 'react'
-import { showError, Progressing, Drawer, TippyCustomized, TippyTheme, stopPropagation  } from '@devtron-labs/devtron-fe-common-lib'
-import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
+import {
+    showError,
+    Progressing,
+    Drawer,
+    TippyCustomized,
+    TippyTheme,
+    stopPropagation,
+    InfoColourBar,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'

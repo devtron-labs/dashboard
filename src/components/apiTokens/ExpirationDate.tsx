@@ -6,8 +6,8 @@ import { multiSelectStyles, SingleDatePickerComponent } from '../common'
 import { DropdownIndicator } from '../security/security.util'
 import { getOptions, getDateInMilliseconds } from './authorization.utils'
 import { Option } from '../v2/common/ReactSelect.utils'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
+import { InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 
 function ExpirationDate({ selectedExpirationDate, onChangeSelectFormData, handleDatesChange, customDate }) {
     return (

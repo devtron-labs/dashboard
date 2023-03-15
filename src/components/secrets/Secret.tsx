@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Component } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
     RadioGroup,
     not,
@@ -8,7 +8,14 @@ import {
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
 } from '../common'
-import { showError, Progressing, DeleteDialog, Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    DeleteDialog,
+    Checkbox,
+    CHECKBOX_VALUE,
+    InfoColourBar,
+} from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { useParams } from 'react-router'
 import { updateSecret, deleteSecret, getSecretKeys } from '../secrets/service'
@@ -32,9 +39,23 @@ import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
-import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE, secretValidationInfoToast, handleSecretDataYamlChange } from './secret.utils'
+import {
+    dataHeaders,
+    getTypeGroups,
+    GroupHeading,
+    groupStyle,
+    sampleJSONs,
+    SecretOptions,
+    hasHashiOrAWS,
+    hasESO,
+    CODE_EDITOR_RADIO_STATE,
+    DATA_HEADER_MAP,
+    CODE_EDITOR_RADIO_STATE_VALUE,
+    VIEW_MODE,
+    secretValidationInfoToast,
+    handleSecretDataYamlChange,
+} from './secret.utils'
 import { EsoData, SecretFormProps } from '../deploymentConfig/types'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { NavLink } from 'react-router-dom'
 
 const Secret = ({ respondOnSuccess, ...props }) => {
@@ -113,12 +134,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
             <h1 className="form__title form__title--artifacts">Secrets</h1>
             <p className="form__subtitle form__subtitle--artifacts">
                 A Secret is an object that contains sensitive data such as passwords, OAuth tokens, and SSH keys.
-                <a
-                    className="dc__link"
-                    rel="noreferer noopener"
-                    href={DOCUMENTATION.APP_CREATE_SECRET}
-                    target="blank"
-                >
+                <a className="dc__link" rel="noreferer noopener" href={DOCUMENTATION.APP_CREATE_SECRET} target="blank">
                     {' '}
                     Learn more about Secrets
                 </a>
@@ -169,7 +185,7 @@ export function CollapsedSecretForm({
     externalType = '',
     filePermission = '',
     subPath = false,
-    esoSecretData= null,
+    esoSecretData = null,
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -299,7 +315,9 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         }
         return temp
     })
-    const isEsoSecretData = (props.esoSecretData?.secretStore || props.esoSecretData?.secretStoreRef) && props.esoSecretData?.esoData.length > 0
+    const isEsoSecretData =
+        (props.esoSecretData?.secretStore || props.esoSecretData?.secretStoreRef) &&
+        props.esoSecretData?.esoData.length > 0
     const [esoSecretData, setEsoData] = useState<EsoData[]>(props?.esoSecretData?.esoData)
     const [secretStore, setSecretStore] = useState(props.esoSecretData?.secretStore)
     const [secretData, setSecretData] = useState(tempSecretData)
@@ -475,7 +493,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 isValid = esoSecretData?.reduce((isValid, s) => {
                     isValid = isValid && !!s?.secretKey && !!s.key
                     return isValid
-                }, ((!secretStore != !secretStoreRef)) && !!esoSecretData?.length)
+                }, !secretStore != !secretStoreRef && !!esoSecretData?.length)
             } else {
                 isValid = secretData.reduce((isValid, s) => {
                     isValid = isValid && !!s.fileName && !!s.name
@@ -484,7 +502,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             }
 
             if (!isValid) {
-                secretValidationInfoToast(isESO,secretStore,secretStoreRef)
+                secretValidationInfoToast(isESO, secretStore, secretStoreRef)
                 return
             }
         }
@@ -681,12 +699,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     External Secrets Operator
                 </NavLink>
                 &nbsp;should be installed in the target cluster.&nbsp;
-                <a
-                    className="dc__link"
-                    href={DOCUMENTATION.EXTERNAL_SECRET}
-                    rel="noreferrer noopener"
-                    target="_blank"
-                >
+                <a className="dc__link" href={DOCUMENTATION.EXTERNAL_SECRET} rel="noreferrer noopener" target="_blank">
                     Learn more
                 </a>
             </div>

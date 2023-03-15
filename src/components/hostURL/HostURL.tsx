@@ -8,14 +8,14 @@ import {
     Progressing,
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
+    InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config';
 import { toast } from 'react-toastify';
-import { getAppCheckList, getHostURLConfiguration } from '../../services/service';
+import { getHostURLConfiguration } from '../../services/service';
 import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg';
 import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
 import './hosturl.css';
-import InfoColourBar from '../common/infocolourBar/InfoColourbar';
 export default class HostURLConfiguration extends Component<HostURLConfigProps, HostURLConfigState> {
 
     constructor(props) {

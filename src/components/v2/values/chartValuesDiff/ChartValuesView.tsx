@@ -2,7 +2,13 @@ import React, { useState, useEffect, useContext, useReducer } from 'react'
 import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { RadioGroup, useJsonYaml } from '../../../common'
-import { showError, Progressing, ErrorScreenManager, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    ConditionalWrap,
+    InfoColourBar,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     getReleaseInfo,
     ReleaseInfoResponse,
@@ -81,7 +87,6 @@ import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfigure
 import { AppMetaInfo } from '../../../app/types'
 import { getHelmAppMetaInfo } from '../../../app/service'
 import ProjectUpdateModal from './ProjectUpdateModal'
-import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 import ChartValuesEditor from './ChartValuesEditor'
 import { ChartRepoSelector } from './ChartRepoSelector'
 import { MULTI_REQUIRED_FIELDS_MSG, SOME_ERROR_MSG, TOAST_INFO } from '../../../../config/constantMessaging'

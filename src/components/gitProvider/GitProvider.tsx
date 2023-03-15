@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getGitHostList, getGitProviderList } from '../../services/service';
 import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service';
 import { useForm, useEffectAfterMount, useAsync, handleOnBlur, handleOnFocus, parsePassword } from '../common';
-import { showError, Progressing, ErrorScreenManager, ErrorScreenNotAuthorized } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, ErrorScreenNotAuthorized, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
 import { DOCUMENTATION } from '../../config';
@@ -19,12 +19,10 @@ import { ReactComponent as Git } from '../../assets/icons/git/git.svg';
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
-import { ServerError } from '@devtron-labs/devtron-fe-common-lib';
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
 import { AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type';
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar';
 import { safeTrim } from '../../util/Util';
 
 export default function GitProvider({ ...props }) {

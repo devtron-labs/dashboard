@@ -23,6 +23,7 @@ import {
     ConfirmationDialog,
     TippyCustomized,
     TippyTheme,
+    InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppConfigStatus, getAppOtherEnvironment, getWorkflowList } from '../../../../services/service'
 import { deleteApp } from './appConfig.service'
@@ -36,7 +37,6 @@ import { toast } from 'react-toastify'
 import './appConfig.scss'
 import { DOCUMENTATION } from '../../../../config'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
-import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 import {
     AppComposeRouterProps,
     AppConfigNavigationProps,

@@ -10,7 +10,7 @@ import {
     sortObjectArrayAlphabetically,
     sortOptionsByLabel,
 } from '../../common'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getClusterList,
     getResourceGroupList,
@@ -36,7 +36,6 @@ import {
     multiSelectAllState,
     resourceMultiSelectstyles,
 } from './K8sPermissions.utils'
-import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import Tippy from '@tippyjs/react'
 import { resourceKindOptionLabel } from './K8sPermission.component'
 

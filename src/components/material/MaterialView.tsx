@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import ReactSelect, { components } from 'react-select'
 import { multiSelectStyles } from '../common'
-import { Progressing, ConditionalWrap, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, ConditionalWrap, Checkbox, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { MaterialViewProps, MaterialViewState } from './material.types'
 import { NavLink } from 'react-router-dom'
 import { URLS } from '../../config'
@@ -25,7 +25,6 @@ import {
 } from '../../config/constantMessaging'
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import { AuthenticationType } from '../cluster/cluster.type'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
     constructor(props) {

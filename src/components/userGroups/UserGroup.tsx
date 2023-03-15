@@ -26,6 +26,7 @@ import {
     ConditionalWrap,
     ErrorScreenNotAuthorized,
     get,
+    InfoColourBar
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getUserList,
@@ -70,7 +71,6 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
 import { getSSOConfigList } from '../login/login.service'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ERROR_EMPTY_SCREEN, SSO_NOT_CONFIGURED_STATE_TEXTS, TOAST_ACCESS_DENIED, USER_NOT_EDITABLE } from '../../config/constantMessaging'
 
 interface UserGroup {
