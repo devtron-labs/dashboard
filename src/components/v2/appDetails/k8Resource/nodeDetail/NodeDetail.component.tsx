@@ -214,7 +214,7 @@ function NodeDetailComponent({
                             </div>
                         )
                     })}
-                {isManagedFields ? (
+                {isManagedFields && (
                     <>
                         <div className="ml-12 mr-5 tab-cell-border"></div>
                         <div className="pt-6 pb-6 pl-8 pr-8 top">
@@ -228,7 +228,7 @@ function NodeDetailComponent({
                             </Checkbox>
                         </div>
                     </>
-                ) : null}
+                )}
             </div>
             {fetchingResource || (isResourceBrowserView && (loadingResources || !selectedResource)) ? (
                 <MessageUI
