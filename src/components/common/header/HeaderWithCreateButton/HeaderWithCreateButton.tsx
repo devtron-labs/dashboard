@@ -85,7 +85,7 @@ export default function HeaderWithCreateButton({ headerName }) {
         )
     }
     return (
-        <div className="create-button-container dc__position-sticky dc__top-0 bcn-0 dc__zi5">
+        <div className="create-button-container dc__position-sticky dc__top-0 bcn-0 dc__zi-4">
             <PageHeader headerName={headerName} renderActionButtons={renderActionButtons} />
             {showCreateSelectionModal && renderCreateSelectionModal()}
         </div>
