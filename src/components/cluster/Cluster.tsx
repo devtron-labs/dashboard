@@ -1,6 +1,6 @@
 import React, { useState, useMemo, Component } from 'react'
 import { Pencil, useForm, CustomPassword, Toggle, useAsync } from '../common'
-import { showError, Progressing, VisibleModal, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, VisibleModal, sortCallback, ErrorScreenNotAuthorized } from '@devtron-labs/devtron-fe-common-lib'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import {
@@ -84,7 +84,9 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     componentDidMount() {
-        this.initialise()
+        if (this.props.isSuperAdmin) {
+            this.initialise()
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -181,8 +183,11 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     render() {
-        if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR) return <Reload className='dc__align-reload-center' />
+        if (!this.props.isSuperAdmin) {
+            return <ErrorScreenNotAuthorized />
+        }
+        else if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
+        else if (this.state.view === ViewType.ERROR) return <Reload className="dc__align-reload-center" />
         else {
             const moduleBasedTitle =
                 'Clusters' + (this.props.serverMode === SERVER_MODE.EA_ONLY ? '' : ' and Environments')

@@ -7,13 +7,14 @@ import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
-import { AggregationKeys, OptionType } from '../../app/types'
+import { OptionType } from '../../app/types'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
+
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -1205,7 +1206,7 @@ export const createGroupSelectList = (list, nodeLabel): SelectGroupType[] => {
     }))
 
     return [{ label: '', options: [AUTO_SELECT] }, ...groupList]
-}  
+}
 
 export const handleOnBlur = (e): void => {
     if (!e.target.value) {

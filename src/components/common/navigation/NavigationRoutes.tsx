@@ -333,7 +333,7 @@ export default function NavigationRoutes() {
                                         />
                                         <Route
                                             path={URLS.GLOBAL_CONFIG}
-                                            render={(props) => <GlobalConfig {...props} />}
+                                            render={(props) => <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />}
                                         />
                                         <Route path={URLS.CLUSTER_LIST}>
                                             <ClusterNodeContainer />

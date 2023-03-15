@@ -97,19 +97,45 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         }
     }, [filteredFlattenNodeList, imageList, namespaceList])
 
-    useEffect(() => {
+    const getUpdatedAppliedColumn = () => {
+        let isMissingColumn = false // intialized this to check if sortingFieldName is missing
         let appliedColumnsFromLocalStorage
-        const _defaultColumns = COLUMN_METADATA.filter((columnData) => columnData.isDefault)
+        const sortableColumnMap = new Map<string, ColumnMetadataType>([])
+        const _defaultColumns = []
+
+        for (const metaData of COLUMN_METADATA) {
+            if (metaData.isDefault) {
+                _defaultColumns.push(metaData)
+            }
+
+            if (metaData.isSortingAllowed) {
+                sortableColumnMap.set(metaData.value, metaData)
+            }
+        }
+
         if (typeof Storage !== 'undefined') {
             if (!localStorage.appliedColumns) {
-                localStorage.appliedColumns = JSON.stringify(_defaultColumns)
+                localStorage.appliedColumns = JSON.stringify(_defaultColumns) // in case of no appliedColumns add COLUMN_METADATA as it is in the storage
             } else {
                 try {
                     appliedColumnsFromLocalStorage = JSON.parse(localStorage.appliedColumns)
+                    for (const _updatedLocalMetaData of appliedColumnsFromLocalStorage as ColumnMetadataType[]) {
+                        if (_updatedLocalMetaData.isSortingAllowed && !_updatedLocalMetaData.sortingFieldName) {
+                            _updatedLocalMetaData.sortingFieldName = sortableColumnMap.get(_updatedLocalMetaData.value).sortingFieldName //updating column meta data when sortingFieldName is missing
+                            isMissingColumn = true
+                        }
+                    }
+                    if (isMissingColumn) {
+                      localStorage.appliedColumns = JSON.stringify(appliedColumnsFromLocalStorage)
+                    }
                 } catch (error) {}
             }
         }
         setAppliedColumns(appliedColumnsFromLocalStorage || _defaultColumns)
+    }
+
+    useEffect(() => {
+        getUpdatedAppliedColumn()
     }, [])
 
     const flattenObject = (ob: Object): Object => {
@@ -325,10 +351,14 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }
 
     const alphabeticalComparatorMethod = (a, b) => {
-        return (sortOrder === OrderBy.ASC && sortByColumn.sortingFieldName !== 'createdAt') ||
+        if (
+            (sortOrder === OrderBy.ASC && sortByColumn.sortingFieldName !== 'createdAt') ||
             (sortOrder === OrderBy.DESC && sortByColumn.sortingFieldName === 'createdAt')
-            ? a[sortByColumn.sortingFieldName].localeCompare(b[sortByColumn.sortingFieldName])
-            : b[sortByColumn.sortingFieldName].localeCompare(a[sortByColumn.sortingFieldName])
+        ) {
+            return a[sortByColumn.sortingFieldName].localeCompare(b[sortByColumn.sortingFieldName])
+        } else {
+            return b[sortByColumn.sortingFieldName].localeCompare(a[sortByColumn.sortingFieldName])
+        }
     }
 
     const clearFilter = (): void => {
@@ -404,7 +434,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }
 
     const headerTerminalIcon = (): void => {
-        openTerminalComponent({name:'autoSelectNode', k8sVersion: 'latest'})
+        openTerminalComponent({ name: 'autoSelectNode', k8sVersion: 'latest' })
     }
 
     const renderClusterError = (): JSX.Element => {
@@ -797,7 +827,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             {showTerminal && selectedNode && (
                 <ClusterTerminal
                     clusterId={Number(clusterId)}
-                    nodeGroups={createGroupSelectList(filteredFlattenNodeList,'name')}
+                    nodeGroups={createGroupSelectList(filteredFlattenNodeList, 'name')}
                     closeTerminal={closeTerminal}
                     clusterImageList={nodeImageList}
                     namespaceList={namespaceList[clusterName]}

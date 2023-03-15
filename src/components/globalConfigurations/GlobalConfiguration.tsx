@@ -17,6 +17,7 @@ import PageHeader from '../common/header/PageHeader'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { BodyType } from './globalConfiguration.type'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -56,11 +57,11 @@ export default function GlobalConfiguration(props) {
     }, [location.pathname])
 
     function getHostURLConfig() {
-        getHostURLConfiguration()
-            .then((response) => {
+        if (props.isSuperAdmin) {
+            getHostURLConfiguration().then((response) => {
                 setIsHostURLConfig(response.result)
             })
-            .catch((error) => {})
+        }
     }
 
     function handleChecklistUpdate(itemName: string): void {
@@ -119,6 +120,7 @@ export default function GlobalConfiguration(props) {
                     <Suspense fallback={<Progressing pageLoader />}>
                         <ErrorBoundary>
                             <Body
+                                isSuperAdmin={props.isSuperAdmin}
                                 getHostURLConfig={getHostURLConfig}
                                 checkList={checkList}
                                 serverMode={serverMode}
@@ -355,7 +357,7 @@ function NavItem({ hostURLConfig, serverMode }) {
     )
 }
 
-function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }) {
+function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin } : BodyType) {
     const location = useLocation()
 
     return (
@@ -367,6 +369,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                         <div className="flexbox">
                             <HostURLConfiguration
                                 {...props}
+                                isSuperAdmin={isSuperAdmin}
                                 refreshGlobalConfig={getHostURLConfig}
                                 handleChecklistUpdate={handleChecklistUpdate}
                             />
@@ -389,7 +392,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                 render={(props) => {
                     return (
                         <div className="flexbox">
-                            <Project {...props} />
+                            <Project {...props} isSuperAdmin={isSuperAdmin} />
                         </div>
                     )
                 }}
@@ -399,7 +402,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                 render={(props) => {
                     return (
                         <div className="flexbox">
-                            <ClusterList {...props} serverMode={serverMode} />
+                            <ClusterList {...props} serverMode={serverMode} isSuperAdmin={isSuperAdmin} />
                         </div>
                     )
                 }}
@@ -409,7 +412,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                 render={(props) => {
                     return (
                         <div className="flexbox">
-                            <GitProvider {...props} />
+                            <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
                         </div>
                     )
                 }}
@@ -419,7 +422,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
                 render={(props) => {
                     return (
                         <div className="flexbox">
-                            <Docker {...props} handleChecklistUpdate={handleChecklistUpdate} />
+                            <Docker
+                                {...props}
+                                handleChecklistUpdate={handleChecklistUpdate}
+                                isSuperAdmin={isSuperAdmin}
+                            />
                         </div>
                     )
                 }}
@@ -428,7 +435,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
             <Route
                 path={URLS.GLOBAL_CONFIG_CHART}
                 render={(props) => {
-                    return <ChartRepo />
+                    return <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />
                 }}
             />
             <Route path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
@@ -455,7 +462,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate }
             <Route
                 path={URLS.GLOBAL_CONFIG_NOTIFIER}
                 render={(props) => {
-                    return <Notifier {...props} />
+                    return <Notifier {...props} isSuperAdmin={isSuperAdmin} />
                 }}
             />
             <Route path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>

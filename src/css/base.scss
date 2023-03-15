@@ -2387,6 +2387,10 @@ textarea,
 .h-100 {
     height: 100%;
 }
+.dc__height-reduce-172{
+    height: 'calc(100vh - 172px)'
+}
+
 
 // Line height
 .lh-1-4 {

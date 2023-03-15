@@ -13,6 +13,7 @@ import { EmptyView } from './History.components'
 import '../cIDetails/ciDetails.scss'
 import { ArtifactType, CIListItemType, CopyTippyWithTextType } from './types'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
+import { extractImage } from '../../service'
 export default function Artifacts({ status, artifact, blobStorageEnabled, getArtifactPromise }: ArtifactType) {
     const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
     const [copied, setCopied] = useState(false)
@@ -48,7 +49,7 @@ export default function Artifacts({ status, artifact, blobStorageEnabled, getArt
                     <div className="flex column left hover-trigger">
                         <div className="cn-9 fs-14 flex left">
                             <CopyTippyWithText
-                                copyText={artifact?.split(':')[1]}
+                                copyText={extractImage(artifact)}
                                 copied={copied}
                                 setCopied={setCopied}
                             />

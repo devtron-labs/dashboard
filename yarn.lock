@@ -1293,10 +1293,10 @@
   resolved "https://registry.npmjs.org/@csstools/normalize.css/-/normalize.css-9.0.1.tgz"
   integrity sha512-6It2EVfGskxZCQhuykrfnALg7oVeiI6KclWSmGDqB0AiInVrTGB9Jp9i4/Ad21u9Jde/voVQz6eFX/eSg/UsPA==
 
-"@devtron-labs/devtron-fe-common-lib@0.0.6-beta-21":
-  version "0.0.6-beta-21"
-  resolved "https://npm.pkg.github.com/download/@devtron-labs/devtron-fe-common-lib/0.0.6-beta-21/f6c437a630cd23fea8f98344c9f098dc5edd7e79#f6c437a630cd23fea8f98344c9f098dc5edd7e79"
-  integrity sha512-aSPGvJa5A50C5kGjv0oY9htAuA3hte2Nb+e8PlUbfkZmHkJstYMQ4xdpL8n/t6Clx4ugNrb0X9lwiW6z1q9+Ug==
+"@devtron-labs/devtron-fe-common-lib@0.0.7":
+  version "0.0.7"
+  resolved "https://npm.pkg.github.com/download/@devtron-labs/devtron-fe-common-lib/0.0.7/d16b3d8bfcef78fdc87ea4a315b3d3a0369c5b1b#d16b3d8bfcef78fdc87ea4a315b3d3a0369c5b1b"
+  integrity sha512-6Tg0YKh4oxzhjcoaAd9cFfi+5nVpuMn0+nMzbShN1kszE39Q0M2J1rvh7zkmaZXQgnp4OpMiL+wwNDao0bq9iA==
   dependencies:
     sass "^1.56.2"
     tslib "^2.4.1"
@@ -4125,9 +4125,9 @@ caniuse-api@^3.0.0:
     lodash.uniq "^4.5.0"
 
 caniuse-lite@^1.0.0, caniuse-lite@^1.0.30000981, caniuse-lite@^1.0.30000989, caniuse-lite@^1.0.30001109, caniuse-lite@^1.0.30001317:
-  version "1.0.30001325"
-  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001325.tgz"
-  integrity sha512-sB1bZHjseSjDtijV1Hb7PB2Zd58Kyx+n/9EotvZ4Qcz2K3d0lWB8dB4nb8wN/TsOGFq3UuAm0zQZNQ4SoR7TrQ==
+  version "1.0.30001465"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001465.tgz"
+  integrity sha512-HvjgL3MYAJjceTDCcjRnQGjwUz/5qec9n7JPOzUursUoOTIsYCSDOb1l7RsnZE8mjbxG78zVRCKfrBXyvChBag==
 
 capture-exit@^2.0.0:
   version "2.0.0"

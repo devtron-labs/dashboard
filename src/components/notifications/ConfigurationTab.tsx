@@ -535,15 +535,15 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
     render() {
         if (this.state.view === ViewType.LOADING) {
             return (
-                <div style={{ height: 'calc(100vh - 172px)' }}>
+                <div className="dc__height-reduce-172">
                     <Progressing pageLoader />
                 </div>
             )
         }
         else if (this.state.view === ViewType.ERROR) {
             return (
-                <div style={{ height: 'calc(100vh - 172px)' }}>
-                    <ErrorScreenNotAuthorized subtitle="" />
+                <div className="dc__height-reduce-172">
+                    <ErrorScreenNotAuthorized />
                 </div>
             )
         }
