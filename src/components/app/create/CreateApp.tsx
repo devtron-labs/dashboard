@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { sortObjectArrayAlphabetically, multiSelectStyles, importComponentFromFELibrary } from '../../common'
+import { sortObjectArrayAlphabetically, importComponentFromFELibrary } from '../../common'
 import {
     ServerErrors,
     showError,
@@ -9,6 +9,7 @@ import {
     TagLabelSelect,
     getTeamListMin,
     DEFAULT_TAG_DATA,
+    multiSelectStyles,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { AddNewAppProps, AddNewAppState } from '../types'
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config'

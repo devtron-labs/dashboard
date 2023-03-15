@@ -1,4 +1,4 @@
-import { multiSelectStyles } from '../../../common'
+import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 
 export const FILTER_STYLE = {
     ...multiSelectStyles,

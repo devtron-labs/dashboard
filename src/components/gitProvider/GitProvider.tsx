@@ -9,6 +9,7 @@ import {
     ErrorScreenNotAuthorized,
     InfoColourBar,
     VisibleModal,
+    multiSelectStyles,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
@@ -17,7 +18,6 @@ import { DropdownIndicator } from './gitProvider.util';
 import { Option } from '../v2/common/ReactSelect.utils';
 import Tippy from '@tippyjs/react';
 import ReactSelect, { components } from 'react-select';
-import { multiSelectStyles } from '../common';
 import './gitProvider.css';
 import { GitHostConfigModal } from './AddGitHostConfigModal';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';

@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import {
-    useForm,
-    useAsync,
-    CustomInput,
-    not,
-    multiSelectStyles,
-    handleOnBlur,
-    handleOnFocus,
-    parsePassword,
-} from '../common'
+import { useForm, useAsync, CustomInput, not, handleOnBlur, handleOnFocus, parsePassword } from '../common'
 import {
     showError,
     Progressing,
@@ -16,6 +7,7 @@ import {
     TippyTheme,
     sortCallback,
     ErrorScreenNotAuthorized,
+    multiSelectStyles,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'

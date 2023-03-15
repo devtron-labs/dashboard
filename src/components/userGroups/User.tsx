@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useContext } from 'react';
+import { mapByKey, validateEmail, deepEqual } from '../common'
 import {
-    mapByKey,
-    validateEmail,
+    showError,
+    Progressing,
+    DeleteDialog,
     Option,
     ClearIndicator,
     MultiValueRemove,
     multiSelectStyles,
     MultiValueChipContainer,
-    deepEqual,
-} from '../common';
-import { showError, Progressing, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+} from '@devtron-labs/devtron-fe-common-lib'
 import { saveUser, deleteUser } from './userGroup.service';
 import Creatable from 'react-select/creatable';
 import Select from 'react-select';

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
-import { multiSelectStyles } from '../../../common';
-import { showError, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, PopupMenu, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css';
 import IndexStore from '../index.store';
 import { AppEnvironment } from './environment.type';

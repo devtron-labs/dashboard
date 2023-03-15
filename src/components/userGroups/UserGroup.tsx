@@ -11,10 +11,6 @@ import {
     noop,
     removeItemsFromArray,
     getRandomString,
-    Option,
-    MultiValueContainer,
-    MultiValueRemove,
-    multiSelectStyles,
     sortBySelected,
     mapByKey,
     useEffectAfterMount,
@@ -27,7 +23,11 @@ import {
     ErrorScreenNotAuthorized,
     get,
     InfoColourBar,
-    EmptyState
+    EmptyState,
+    Option,
+    MultiValueContainer,
+    MultiValueRemove,
+    multiSelectStyles,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getUserList,

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ReactSelect from 'react-select';
 import { Option } from '../v2/common/ReactSelect.utils';
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg';
-import { multiSelectStyles } from '../common'
+import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 
 export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, selectorCondition, onSelectorChange, onSelectorValueChange, deleteWebhookCondition, canEditSelectorCondition}) {
     return (

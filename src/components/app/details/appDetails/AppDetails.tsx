@@ -1,5 +1,12 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react'
-import { showError, Progressing, ConfirmationDialog, Host, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    ConfirmationDialog,
+    Host,
+    stopPropagation,
+    multiSelectStyles,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime } from '../../service'
 import {
     URLS,
@@ -19,7 +26,6 @@ import {
     useEventSource,
     FragmentHOC,
     useSearchString,
-    multiSelectStyles,
     useAsync,
     ScanDetailsModal,
 } from '../../../common'

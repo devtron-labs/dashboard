@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import {
-    ClearIndicator,
-    convertToOptionsList,
-    Option,
-    MultiValueRemove,
     processK8SObjects,
-    MultiValueChipContainer,
+    convertToOptionsList,
     sortObjectArrayAlphabetically,
     sortOptionsByLabel,
 } from '../../common'
-import { showError, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    InfoColourBar,
+    ClearIndicator,
+    Option,
+    MultiValueRemove,
+    MultiValueChipContainer,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     getClusterList,
     getResourceGroupList,
