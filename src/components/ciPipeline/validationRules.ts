@@ -1,21 +1,29 @@
 import { PATTERNS } from '../../config'
 import { RefVariableType } from './types'
+import {
+    CHARACTER_ERROR_MIN,
+    CHARACTER_ERROR_MAX,
+    REQUIRED_FIELD_MSG,
+    ERROR_MESSAGE_FOR_VALIDATION,
+} from '../../config/constantMessaging'
 
 export class ValidationRules {
     name = (value: string): { message: string | null; isValid: boolean } => {
-        const re = new RegExp('^[a-z][a-z0-9-.]+[a-z0-9]$')
-        if (value && value.length < 1) {
-            return { message: 'This is required', isValid: false }
-        } else if (!re.test(value)) {
-            return { message: `Min of 3 characters; Start with lowercase; Use (a-z), (0-9), (-), (.)`, isValid: false }
-        } else {
-            return { message: null, isValid: true }
-        }
+        const regExp = new RegExp(PATTERNS.APP_NAME)
+        if (value.length === 0) return { isValid: false, message: REQUIRED_FIELD_MSG }
+        if (value.length < 2) return { isValid: false, message: CHARACTER_ERROR_MIN }
+        if (value.length > 50) return { isValid: false, message: CHARACTER_ERROR_MAX }
+        else if (!regExp.test(value))
+            return {
+                isValid: false,
+                message: ERROR_MESSAGE_FOR_VALIDATION,
+            }
+        else return { isValid: true, message: '' }
     }
 
     requiredField = (value: string): { message: string | null; isValid: boolean } => {
         if (!value) {
-            return { message: 'This is required', isValid: false }
+            return { message: REQUIRED_FIELD_MSG, isValid: false }
         } else {
             return { message: null, isValid: true }
         }

@@ -117,7 +117,7 @@ export const KindSearchClearIndicator = (props) => {
                 {props.selectProps.inputValue && (
                     <ClearIcon className="clear-kind-search-icon icon-dim-16" onClick={props.selectProps.onBlur} />
                 )}
-                {!props.isFocused && <ShortcutKeyBadge shortcutKey="K" rootClassName="kind-search-shortcut-key" />}
+                {!props.isFocused && <ShortcutKeyBadge shortcutKey="k" rootClassName="kind-search-shortcut-key" />}
             </div>
         </components.ClearIndicator>
     )

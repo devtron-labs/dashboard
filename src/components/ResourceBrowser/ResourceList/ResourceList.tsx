@@ -351,11 +351,20 @@ export default function ResourceList() {
         }
     }
 
-    const handleFilterChanges = (_searchText: string, _resourceList: ResourceDetailType): void => {
+    const handleFilterChanges = (
+        _searchText: string,
+        _resourceList: ResourceDetailType,
+        hideLoader?: boolean,
+    ): void => {
         if (!searchWorkerRef.current) {
             searchWorkerRef.current = new WebWorker(searchWorker)
             searchWorkerRef.current.onmessage = (e) => {
                 setFilteredResourceList(e.data)
+
+                // Hide loader after search retention
+                if (hideLoader) {
+                    setResourceListLoader(false)
+                }
             }
         }
 
@@ -405,12 +414,12 @@ export default function ResourceList() {
             setResourceList(result)
 
             if (retainSearched) {
-                handleFilterChanges(searchText, result)
+                handleFilterChanges(searchText, result, true)
             } else {
                 setFilteredResourceList(result.data)
+                setResourceListLoader(false)
             }
             setNoResults(result.data.length === 0)
-            setResourceListLoader(false)
             setShowErrorState(false)
         } catch (err) {
             if (!resourceListAbortController.signal.aborted) {
