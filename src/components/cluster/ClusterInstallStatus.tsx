@@ -1,6 +1,37 @@
 import React, { Component } from 'react'
 import { ClusterInstallStatusProps } from './cluster.type';
-import { ReactComponent as NotDeployed } from '../../assets/icons/ic-info-filled.svg';
+import { ReactComponent as NotDeployed } from '../../assets/icons/ic-info-filled.svg'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help-purple.svg'
+import TippyCustomized from '../common/TippyCustomized'
+
+enum TippyTheme {
+    black = 'black',
+    white = 'white',
+}
+
+const handleQuestion = () => {
+    return (
+        <TippyCustomized
+            theme={TippyTheme.white}
+            className="w-300"
+            placement="bottom"
+            Icon={QuestionFilled}
+            heading={'Devtron Agents'}
+            infoText="Devtron agent enables components of Devtron to communicate to your Kubernetes cluster."
+            showCloseButton={true}
+            trigger="click"
+            interactive = {true}
+            //documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
+            //documentationLinkText="View Documentation"
+        >
+            <div className="icon-dim-16 fcn-9 mt-23 ml-5 cursor">
+                <Question/>    
+            </div>
+            
+        </TippyCustomized>
+    )
+}
 
 export class ClusterInstallStatus extends Component<ClusterInstallStatusProps, {}>{
 
@@ -9,7 +40,10 @@ export class ClusterInstallStatus extends Component<ClusterInstallStatusProps, {
         if (this.props.agentInstallationStage === 0) {
             return <div className={`${classes} cluster-create-status--not-triggered`}>
                 <NotDeployed className="icon-dim-20" />
+                
                 <p className="cluster-create-status__title mb-0">Devtron agent is not installed{this.props.envName && ` on env: ${this.props.envName}`}.</p>
+                {handleQuestion()}
+                
                 <button type="button" className="cluster-create-status__button" onClick={this.props.onClick}>Install</button>
             </div>
         }
