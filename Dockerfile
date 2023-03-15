@@ -3,6 +3,7 @@ FROM node:16 AS builder
 WORKDIR /app
 COPY package.json .
 COPY yarn.lock .
+COPY .npmrc .
 RUN yarn install --network-timeout 600000
 
 COPY src/ src
