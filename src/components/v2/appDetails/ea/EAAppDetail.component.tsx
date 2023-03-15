@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import {useLocation, useHistory} from 'react-router';
 import { sortOptionsByValue,  } from '../../../common';
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
-import { getAppDetail, HelmAppDetailResponse, HelmAppDetailAndInstalledAppInfo } from '../../../external-apps/ExternalAppService';
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib';
+import { showError, Progressing, ErrorScreenManager, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    getAppDetail,
+    HelmAppDetailResponse,
+    HelmAppDetailAndInstalledAppInfo,
+} from '../../../external-apps/ExternalAppService'
 import IndexStore from '../index.store';
 import { AppDetails, AppType } from "../appDetails.type";
 import AppDetailsComponent from '../AppDetails.component';

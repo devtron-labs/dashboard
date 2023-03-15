@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { getInitDataWithCIPipeline, deleteCIPipeline } from './ciPipeline.service';
 import { TriggerType, ViewType, URLS } from '../../config';
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib';
 import { CIPipelineProps, CIPipelineState } from './types';
 import { getCIPipelineURL } from '../common';
 import {
@@ -10,6 +9,7 @@ import {
     ConditionalWrap,
     VisibleModal,
     DeleteDialog,
+    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { toast } from 'react-toastify';

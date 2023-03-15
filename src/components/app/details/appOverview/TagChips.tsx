@@ -7,7 +7,7 @@ export default function TagChips({ labelTags }) {
         <div className="flex left flex-wrap dc__gap-8">
             {labelTags.length > 0 ? (
                 labelTags.map((tag) => (
-                    <div className="flex">
+                    <div key={tag.id} className="flex">
                         <div
                             className={`flex bc-n50 cn-9 fw-4 fs-12 en-2 bw-1 pr-6 pl-6 pb-2 pt-2 ${
                                 !tag.value ? ' br-4' : ' dc__left-radius-4'

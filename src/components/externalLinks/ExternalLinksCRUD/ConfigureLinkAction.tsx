@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import ReactSelect from 'react-select'
-import { Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-help-outline.svg'
@@ -14,7 +14,6 @@ import {
 import { ToolSelectStyles } from '../ExternalLinks.utils'
 import { customOptionWithIcon, customValueContainerWithIcon, ToolsMenuList } from '../ExternalLinks.component'
 import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup'
-import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import IdentifierSelector from './IdentifierSelector'
 
 export default function ConfigureLinkAction({

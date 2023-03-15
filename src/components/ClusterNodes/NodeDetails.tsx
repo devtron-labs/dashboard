@@ -12,6 +12,7 @@ import {
     BreadCrumb,
     useBreadcrumb,
     toastAccessDenied,
+    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -52,7 +53,6 @@ import { MODES } from '../../config'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
 import './clusterNodes.scss'
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterTerminal from './ClusterTerminal'
 import EditTaintsModal from './NodeActions/EditTaintsModal'

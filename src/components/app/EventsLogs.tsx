@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react'
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import React, { useEffect, useState, useRef } from 'react'
+import { showError, Progressing, get, Host } from '@devtron-labs/devtron-fe-common-lib'
 import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
 import { Spinner } from 'patternfly-react';
 import LogViewer from '../LogViewer/LogViewer'
 import { NoPod } from './ResourceTreeNodes'
-import { get, Host } from '@devtron-labs/devtron-fe-common-lib'
 import { getNodeStatus } from './service'
 import { Routes } from "../../config";
 import { toast } from 'react-toastify';

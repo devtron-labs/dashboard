@@ -1,6 +1,6 @@
 import React, { lazy, useState, useEffect, Suspense, useContext } from 'react'
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
-import { useHistory, useLocation, useRouteMatch, useParams } from 'react-router'
+import { useHistory, useLocation } from 'react-router'
 import { URLS } from '../../config'
 import { Toggle, ErrorBoundary, importComponentFromFELibrary } from '../common'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
@@ -610,7 +610,7 @@ export function ProtectedInput({
                     }}
                     value={value}
                     disabled={disabled}
-                    
+
                 />
                 <ShowHide
                     className="protected-input__toggle"

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, Fragment } from 'react'
 import { useLocation, useHistory, useParams } from 'react-router'
-import { Link, Switch, Route, NavLink } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 import {
     Filter,
     FilterOption,
@@ -8,14 +8,13 @@ import {
     handleUTCTime,
     useAsync,
 } from '../../common'
-import { showError, Progressing, ErrorScreenManager, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, stopPropagation, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as ChartIcon } from '../../../assets/icons/ic-charts.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
-import { ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import { AppListViewType } from '../config'
-import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, ModuleNameMap, Moment12HourFormat } from '../../../config'
+import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, Moment12HourFormat } from '../../../config'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
