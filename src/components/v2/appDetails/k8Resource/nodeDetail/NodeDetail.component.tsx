@@ -13,7 +13,7 @@ import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
-import { showError } from '../../../../common'
+import { Checkbox, CHECKBOX_VALUE, showError } from '../../../../common'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
 import './nodeDetail.css'
@@ -38,11 +38,22 @@ function NodeDetailComponent({
     const [selectedTabName, setSelectedTabName] = useState('')
     const [resourceContainers, setResourceContainers] = useState([])
     const [isResourceDeleted, setResourceDeleted] = useState(false)
+    const [isManagedFields, setManagedFields] = useState(false)
+    const [hideManagedFields, setHideManagedFields] = useState(false)
     const [fetchingResource, setFetchingResource] = useState(
         isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
     )
     const { path, url } = useRouteMatch()
+    const toggleManagedFields = (managedFieldsExist: boolean) => {
+        if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
+            setManagedFields(true)
+        } else {
+            setManagedFields(false)
+        }
+    }
 
+    useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
+    
     useEffect(() => {
         if (params.nodeType) {
             const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
@@ -172,9 +183,13 @@ function NodeDetailComponent({
         selectedResource.containers = resourceContainers
     }
 
+    const handleChanges = ():void => {
+        setHideManagedFields(!hideManagedFields)
+    }
+
     return (
         <React.Fragment>
-            <div className="pl-20 bcn-0 flex left top w-100 pr-20">
+            <div className="pl-20 bcn-0 flex left w-100 pr-20">
                 {tabs &&
                     tabs.length > 0 &&
                     tabs.map((tab: string, index: number) => {
@@ -185,7 +200,7 @@ function NodeDetailComponent({
                                     tab.toLowerCase() === selectedTabName.toLowerCase()
                                         ? 'default-tab-row cb-5'
                                         : 'cn-7'
-                                } pt-6 pb-6 cursor pl-8 pr-8`}
+                                } pt-6 pb-6 cursor pl-8 pr-8 top`}
                             >
                                 <NavLink to={`${url}/${tab.toLowerCase()}`} className=" dc__no-decor flex left">
                                     <span
@@ -199,6 +214,21 @@ function NodeDetailComponent({
                             </div>
                         )
                     })}
+                {isManagedFields && (
+                    <>
+                        <div className="ml-12 mr-5 tab-cell-border"></div>
+                        <div className="pt-6 pb-6 pl-8 pr-8 top">
+                            <Checkbox
+                                rootClassName="mb-0-imp h-20"
+                                isChecked={hideManagedFields}
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={handleChanges}
+                            >
+                                <span className="mr-5 cn-9 fs-12">Hide Managed Fields</span>
+                            </Checkbox>
+                        </div>
+                    </>
+                )}
             </div>
             {fetchingResource || (isResourceBrowserView && (loadingResources || !selectedResource)) ? (
                 <MessageUI
@@ -213,6 +243,8 @@ function NodeDetailComponent({
                         <ManifestComponent
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
+                            toggleManagedFields={toggleManagedFields}
+                            hideManagedFields={hideManagedFields}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
                         />
