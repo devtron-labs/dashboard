@@ -5,6 +5,7 @@ import {
     CDMaterialState,
     CDMaterialType,
     DeploymentWithConfigType,
+    MaterialInfo,
     MATERIAL_TYPE,
     STAGE_TYPE,
 } from './types'
@@ -136,10 +137,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         } catch (error) {}
     }
 
-    renderGitMaterialInfo(matInfo) {
+    renderGitMaterialInfo(matInfo: MaterialInfo[]) {
         return (
             <>
-                {matInfo.map((mat) => {
+                {matInfo.map((mat: MaterialInfo) => {
                     let _gitCommit: GitTriggers = {
                         Commit: mat.revision,
                         Author: mat.author,
