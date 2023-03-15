@@ -23,8 +23,7 @@ import {
     onImageLoadError,
 } from './ExternalLinks.utils'
 import { UserRoleType } from '../userGroups/userGroups.types'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import { TippyCustomized, TippyTheme } from  '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme, InfoColourBar } from  '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../common'
 import './externalLinks.component.scss'
 

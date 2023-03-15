@@ -3,7 +3,7 @@ import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { DEPLOYMENT, DOCUMENTATION, MODES, ROLLOUT_DEPLOYMENT } from '../../config'
 import { RadioGroup, Toggle, versionComparator } from '../common'
-import { Checkbox, CHECKBOX_VALUE, showError, Progressing, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, showError, Progressing, ConditionalWrap, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { DropdownIndicator, Option } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Arrows } from '../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file-text.svg'
@@ -40,7 +40,6 @@ import {
     README_TIPPY_CONTENT,
 } from './constants'
 import { SortingOrder } from '../app/types'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { validateBasicView } from './DeploymentConfig.utils'
 import ChartSelectorDropdown from './ChartSelectorDropdown'
 

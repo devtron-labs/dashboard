@@ -124,7 +124,7 @@ export default function ProjectUpdateModal({
                     <div className="fs-12 fw-4 lh-20 mb-2">Project</div>
                     {renderProjectSelect()}
                     {selectedProject && appMetaInfo && selectedProject.label !== appMetaInfo.projectName && (
-                        <InfoColourbar
+                        <InfoColourBar
                             classname="warn cn-9 lh-20 pt-8 pr-12"
                             Icon={Error}
                             message={projectChangeMessage()}
