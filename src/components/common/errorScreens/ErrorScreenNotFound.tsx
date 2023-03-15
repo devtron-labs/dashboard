@@ -1,9 +1,9 @@
 import React from 'react'
-import EmptyState from '../../EmptyState/EmptyState'
 import notFound from '../../../assets/img/ic-empty-error@2x.png'
 import { useHistory } from 'react-router'
 import { ERROR_EMPTY_SCREEN} from '../../../config/constantMessaging'
 import { URLS } from '../../../config'
+import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
 function ErrorScreenNotFound() {
   const history = useHistory()

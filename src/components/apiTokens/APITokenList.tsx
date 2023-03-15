@@ -10,7 +10,7 @@ import { isTokenExpired } from './authorization.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import './apiToken.scss'
-import EmptyState from '../EmptyState/EmptyState'
+import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
 function NoMatchingResults() {
     return (

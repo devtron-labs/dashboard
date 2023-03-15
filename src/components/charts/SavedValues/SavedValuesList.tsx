@@ -16,9 +16,9 @@ import {
     BreadCrumb,
     useBreadcrumb,
     DeleteDialog,
+    EmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { SavedValueType } from './types'
-import EmptyState from '../../EmptyState/EmptyState'
 import {
     deleteChartValues,
     getChartValuesTemplateList,

@@ -1,19 +1,32 @@
 import React, { Component } from 'react'
 import { getDeploymentMetrics } from './deploymentMetrics.service';
 import { DatePicker } from '../../../common';
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../../../config';
 import { generatePath } from 'react-router';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts'
 import { DeploymentTable } from './DeploymentTable';
 import { getAppOtherEnvironment } from '../../../../services/service';
 import { DeploymentTableModal } from './DeploymentTableModal';
 import { BenchmarkModal } from './BenchmarkModal';
 import moment from 'moment';
-import { DropdownIndicator, styles, BenchmarkLine, frequencyXAxisLabel, leadTimeXAxisLabel, recoveryTimeLabel, ReferenceLineLegend, renderCategoryTag, FrequencyTooltip, RecoveryTimeTooltip, LeadTimeTooltip, EliteCategoryMessage, FailureLegendEmptyState } from './deploymentMetrics.util';
+import {
+    DropdownIndicator,
+    styles,
+    BenchmarkLine,
+    frequencyXAxisLabel,
+    leadTimeXAxisLabel,
+    recoveryTimeLabel,
+    ReferenceLineLegend,
+    renderCategoryTag,
+    FrequencyTooltip,
+    RecoveryTimeTooltip,
+    LeadTimeTooltip,
+    EliteCategoryMessage,
+    FailureLegendEmptyState,
+} from './deploymentMetrics.util'
 import ReactSelect from 'react-select';
 import { Option } from '../../../v2/common/ReactSelect.utils';
-import EmptyState from '../../../EmptyState/EmptyState'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png';
 import SelectEnvImage from '../../../../assets/img/ic-empty-dep-metrics@2x.png';
 import Tippy from '@tippyjs/react';

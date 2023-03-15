@@ -13,7 +13,6 @@ import {
     StackManagerNavLinkType,
     StackManagerPageHeaderType,
 } from './DevtronStackManager.type'
-import EmptyState from '../../EmptyState/EmptyState'
 import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
 import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
@@ -34,6 +33,7 @@ import {
     ToastBody,
     Checkbox,
     CHECKBOX_VALUE,
+    EmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'

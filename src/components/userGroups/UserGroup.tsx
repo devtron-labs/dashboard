@@ -26,7 +26,8 @@ import {
     ConditionalWrap,
     ErrorScreenNotAuthorized,
     get,
-    InfoColourBar
+    InfoColourBar,
+    EmptyState
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getUserList,
@@ -60,7 +61,6 @@ import Select, { components } from 'react-select'
 import UserForm from './User'
 import GroupForm from './Group'
 import Tippy from '@tippyjs/react'
-import EmptyState from '../EmptyState/EmptyState'
 import EmptyImage from '../../assets/img/empty-applist@2x.png'
 import EmptySearch from '../../assets/img/empty-noresult@2x.png'
 import './UserGroup.scss'

@@ -1,11 +1,23 @@
 import React, { Component } from 'react';
-import EmptyState from '../EmptyState/EmptyState';
 import EmptyImage from '../../assets/img/ic-empty-notifications.png';
 import Tippy from '@tippyjs/react';
 import Reload from '../Reload/Reload';
 import { Pagination } from '../common';
-import { showError, Progressing, DeleteDialog, toastAccessDenied, PopupMenu, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
-import { getNotificationConfigurations, deleteNotifications, updateNotificationEvents, getChannelsAndEmailsFilteredByEmail } from './notifications.service';
+import {
+    showError,
+    Progressing,
+    DeleteDialog,
+    toastAccessDenied,
+    PopupMenu,
+    Checkbox,
+    EmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
+import {
+    getNotificationConfigurations,
+    deleteNotifications,
+    updateNotificationEvents,
+    getChannelsAndEmailsFilteredByEmail,
+} from './notifications.service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg';
 import { ReactComponent as Bell } from '../../assets/icons/ic-bell.svg';

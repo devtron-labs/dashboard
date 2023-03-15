@@ -8,9 +8,8 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getChartList } from './customChart.service'
 import { sortObjectArrayAlphabetically } from '../common'
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDetailType, ChartListResponse } from './types'
-import EmptyState from '../EmptyState/EmptyState'
 import Tippy from '@tippyjs/react'
 
 export default function CustomChartList() {

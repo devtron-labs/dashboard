@@ -3,9 +3,8 @@ import { Link } from 'react-router-dom'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg';
 import { ReactComponent as DownArrow } from '../../assets/icons/ic-chevron-down.svg';
 import { not } from '../common'
-import { DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteDialog, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
-import EmptyState from '../EmptyState/EmptyState';
 import NoDeploymentImg from '../../assets/img/app-not-configured.png';
 import { InstalledChartGroup, InstalledChart } from './charts.types';
 import { URLS } from '../../config';
