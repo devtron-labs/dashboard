@@ -1301,13 +1301,6 @@
     sass "^1.56.2"
     tslib "^2.4.1"
 
-"@devtron-labs/devtron-fe-lib@0.0.7-beta-2":
-  version "0.0.7-beta-2"
-  resolved "https://npm.pkg.github.com/download/@devtron-labs/devtron-fe-lib/0.0.7-beta-2/694e3a1a0672d0e095e4d51289796b60de50ed41#694e3a1a0672d0e095e4d51289796b60de50ed41"
-  integrity sha512-a3AUR9dj+jo65dLw1ryr1uAXfXb7MDOnvl/ItQca3yi4C8FXxAJwvfrwHGPnmOnCeOk0wKsfz74Jou8Kjo8Ieg==
-  dependencies:
-    sass "^1.56.2"
-
 "@emotion/babel-plugin@^11.7.1":
   version "11.7.2"
   resolved "https://registry.npmjs.org/@emotion/babel-plugin/-/babel-plugin-11.7.2.tgz"
