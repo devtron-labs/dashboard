@@ -207,7 +207,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                         <TagIcon className="tags-icon icon-dim-20 mr-8" />
                         Tags
                     </div>
-                    <div className="flex fs-12 fw-4 lh-16 cn-7 cursor" onClick={toggleTagsUpdateModal}>
+                    <div className="flex fs-14 fw-4 lh-16 cn-7 cursor" onClick={toggleTagsUpdateModal}>
                         <EditIcon className="icon-dim-16 scn-7 mr-4" />
                         Edit
                     </div>
@@ -345,22 +345,22 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const getStatusIcon = (status: string): JSX.Element => {
         switch (status) {
             case 'Succeeded':
-                return <SucceededIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                return <SucceededIcon className="dc__app-summary__icon icon-dim-16 mr-6"/>
             case 'Failed':
             case 'Error':
-                return <FailedIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                return <FailedIcon className="dc__app-summary__icon icon-dim-16 mr-6"/>
             case 'InProgress':
-                return <InProgressIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                return <InProgressIcon className="dc__app-summary__icon icon-dim-16 mr-6"/>
             case 'Starting':
-                return <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
+                return <div className="dc__app-summary__icon icon-dim-16 mr-6 progressing" />
             case 'Running':
-                return <div className="dc__app-summary__icon icon-dim-20 mr-8 progressing" />
+                return <div className="dc__app-summary__icon icon-dim-16 mr-6 progressing" />
             case 'CANCELLED':
                 return <div className="dc__app-summary__icon icon-dim-16 mr-6 cancelled" />
             default:
                 return (
                     <>
-                        <CrossIcon className="dc__app-summary__icon icon-dim-20 mr-8" />
+                        <CrossIcon className="dc__app-summary__icon icon-dim-16 mr-6" />
                         Yet to run
                     </>
                 )
@@ -382,7 +382,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     </div>
                 </div>
                 {jobPipelines.map((jobPipeline) => (
-                    <div key={jobPipeline.ci_pipeline_id} className="dc__content-space flex dc__border-bottom-n1">
+                    <div key={jobPipeline.ci_pipeline_id} className="dc__content-space flex">
                         <div className="h-20 m-tb-8 cb-5 fs-13">
                             <Link
                                 to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ci_pipeline_id}/`}
@@ -392,7 +392,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             </Link>
                         </div>
                         <div className="flex">
-                            <div className="mr-16 w-150 h-20 m-tb-8 fs-13 flex dc__content-start">
+                            <div className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start">
                                 {getStatusIcon(jobPipeline.status)}
                                 {jobPipeline.status === 'CANCELLED' ? (
                                     <div>Cancelled</div>
@@ -447,15 +447,15 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     </div>
                     {editMode ? (
                         <div className="flex left ml-auto dc__gap-8">
-                            <button className="btn btn-link p-0 fw-6 cn-7" onClick={handleCancel}>
+                            <button className="btn btn-link p-0 fs-14 fw-6 cn-7" onClick={handleCancel}>
                                 Cancel
                             </button>
-                            <button className="btn btn-link p-0 fw-6 cb-5" type="submit" onClick={handleSave}>
+                            <button className="btn btn-link p-0 fs-14 fw-6 cb-5" type="submit" onClick={handleSave}>
                                 Save
                             </button>
                         </div>
                     ) : (
-                        <div className="flex fs-12 fw-4 lh-16 cn-7 cursor ml-auto" onClick={switchToEditMode}>
+                        <div className="flex fs-14 fw-4 lh-16 cn-7 cursor ml-auto" onClick={switchToEditMode}>
                             <EditIcon className="icon-dim-16 scn-7 mr-4" />
                             Edit
                         </div>
