@@ -56,6 +56,7 @@ export class CINode extends Component<CINodeProps> {
                                 arrow={true}
                                 placement="bottom"
                                 content={this.props.linkedCount}
+                                
                             >
                                 <span className="link-count">
                                     <img src={link} className="icon-dim-12 mr-5" alt="" />
@@ -73,7 +74,8 @@ export class CINode extends Component<CINodeProps> {
                                     className="default-tt"
                                     arrow={true}
                                     placement="bottom"
-                                    content={this.props.title}
+                                    // content={this.props.title}
+                                    content={<p>Hello dev</p>}
                                 >
                                     <div className="dc__ellipsis-left">{this.props.title}</div>
                                 </Tippy>

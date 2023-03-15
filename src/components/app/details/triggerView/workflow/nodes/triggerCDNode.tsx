@@ -7,6 +7,7 @@ import Tippy from '@tippyjs/react';
 import { Link } from 'react-router-dom';
 import { TriggerViewContext } from '../../config';
 import { triggerStatus } from '../../../cicdHistory/History.components';
+import TippyCustomized, { TippyTheme } from '../../../../../common/TippyCustomized';
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     constructor(props) {
@@ -73,16 +74,28 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                     <span className="workflow-node__text-light">
                                         Deploy: {this.props.deploymentStrategy}
                                     </span>
-                                    {/* <Tippy
-                                        className="default-tt"
-                                        arrow={true}
-                                        placement="bottom"
-                                       // content={this.props.environmentName}
-                                       content={<p>Hello</p>}
-                                    >
-                                        <span className="dc__ellipsis-right">{this.props.environmentName}</span>
-                                    </Tippy> */}
-                                    
+                                    {
+                                        <TippyCustomized
+                                            theme={TippyTheme.black}
+                                            className=""
+                                            placement="bottom"
+                                            heading={this.props.environmentName}
+                                            infoText={'This is env description'}
+                                            //infoText={this.props.description}
+                                            interactive={false}
+                                        >
+                                            <span className="dc__ellipsis-right ">{this.props.environmentName}</span>
+                                        </TippyCustomized>
+                                        // <Tippy
+                                        //     className="default-tt"
+                                        //     arrow={true}
+                                        //     placement="bottom"
+                                        //     content={this.props.environmentName}
+                                        //     //content={<p>Hello</p>}
+                                        // >
+                                        //     <span className="dc__ellipsis-right">{this.props.environmentName}</span>
+                                        // </Tippy>
+                                    }
                                 </div>
                                 <div className="workflow-node__icon-common ml-8 workflow-node__CD-icon" />
                             </div>

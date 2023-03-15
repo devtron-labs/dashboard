@@ -8,6 +8,8 @@ import {BUTTON_TEXT, CONFIRMATION_DIALOG_MESSAGING, ERR_MESSAGE_ARGOCD, VIEW_DEL
 import { ConfirmationDialog } from '../../common'
 import warningIconSrc from '../../../assets/icons/info-filled.svg'
 import { URLS } from '../../../config'
+import { TippyTheme }from '../../common/TippyCustomized'
+import TippyCustomized from '../../common/TippyCustomized'
 
 export class CDNode extends Component<CDNodeProps, CDNodeState> {
     constructor(props) {
@@ -32,7 +34,8 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
             <div className="workflow-node dc__overflow-scroll">
                 <div className="workflow-node__title flex">
                     <div className="workflow-node__full-width-minus-Icon">
-                        <span className="workflow-node__text-light">Deploy</span>
+                        <span className="workflow-node__text-light">Test</span>
+
                         <div className="flex left column fs-12 fw-6 lh-18 pt-6 pb-6">
                             {this.props.cdNamesList.map((_cdName) => (
                                 <span className="dc__ellipsis-right">{_cdName}</span>
@@ -112,9 +115,32 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                         </div>
                                     ) : (
                                         this.props.title
+                                        //'hi'
                                     )}
                                 </span>
-                                <span className="dc__ellipsis-right">{this.props.environmentName}</span>
+                                {/* <span className="dc__ellipsis-right">{this.props.environmentName}</span> */}
+                                <TippyCustomized
+                                            theme={TippyTheme.black}
+                                            className="default-tt"
+                                            placement="bottom"
+                                            heading={this.props.environmentName}
+                                            infoText={this.props.description}
+                                            //infoText={'This is env description'}
+                                            // trigger="mouseenter"  //mouseenter focus click
+                                            interactive={false}
+                                        >
+                                            <span className="dc__ellipsis-right">{this.props.environmentName}</span>
+                                        </TippyCustomized>
+                                {/* { <Tippy
+                                        className="default-tt"
+                                        arrow={true}
+                                        placement="bottom"
+                                       content={this.props.environmentName}
+                                       //content={<p>Hello</p>}
+
+                                    >
+                                        <span className="dc__ellipsis-right">{this.props.environmentName}</span>
+                                    </Tippy> }  */}
                             </div>
                             <div className="workflow-node__icon-common workflow-node__CD-icon"></div>
                         </div>

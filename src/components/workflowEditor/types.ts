@@ -81,6 +81,7 @@ export interface CDNodeProps{
     deploymentAppDeleteRequest: boolean
     deploymentAppCreated?: boolean
     match: RouteComponentProps['match']
+    description: string
 }
 
 export interface WebhookNodeProps {

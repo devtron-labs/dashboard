@@ -1,5 +1,20 @@
-import React, { useState, useMemo, Component } from 'react'
-import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle, useAsync } from '../common'
+import React, { useState, useMemo, Component, useRef } from 'react'
+import {
+    showError,
+    Pencil,
+    useForm,
+    Progressing,
+    CustomPassword,
+    VisibleModal,
+    sortCallback,
+    Toggle,
+    useAsync,
+    Drawer,
+    Checkbox,
+    DevtronSwitch as Switch,
+    DevtronSwitchItem as SwitchItem,
+    ButtonWithLoader,
+} from '../common'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import {
@@ -27,7 +42,16 @@ import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from './cluster.type'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
-import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, ModuleNameMap, CLUSTER_COMMAND } from '../../config'
+import {
+    DOCUMENTATION,
+    SERVER_MODE,
+    ViewType,
+    URLS,
+    ModuleNameMap,
+    CLUSTER_COMMAND,
+    AppCreationType,
+    MODES,
+} from '../../config'
 import { getEnvName } from './cluster.util'
 import Reload from '../Reload/Reload'
 import DeleteComponent from '../../util/DeleteComponent'
