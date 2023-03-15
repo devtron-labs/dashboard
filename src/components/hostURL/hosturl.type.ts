@@ -10,6 +10,7 @@ export interface HostURLConfigState {
 }
 
 export interface HostURLConfigProps extends RouteComponentProps<{}> {
+    isSuperAdmin: boolean;
     refreshGlobalConfig: () => void;
     handleChecklistUpdate: (hostUrl) => void;
 }

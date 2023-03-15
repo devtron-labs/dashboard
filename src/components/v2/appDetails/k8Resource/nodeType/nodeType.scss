@@ -67,6 +67,13 @@
 }
 
 .resource-row{
+    .resource-action-tabs__clipboard {
+        &:hover {
+            path {
+                stroke: var(--B500);
+            }
+        }
+    }
       .node__tabs{
         transition: width 0.3s;
         overflow: hidden;
