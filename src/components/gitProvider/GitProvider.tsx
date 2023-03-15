@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { getGitHostList, getGitProviderList } from '../../services/service';
-import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service';
-import { useForm, useEffectAfterMount, useAsync, handleOnBlur, handleOnFocus, parsePassword } from '../common';
-import { showError, Progressing, ErrorScreenManager, ErrorScreenNotAuthorized, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service'
+import { useForm, useEffectAfterMount, useAsync, handleOnBlur, handleOnFocus, parsePassword } from '../common'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    ErrorScreenNotAuthorized,
+    InfoColourBar,
+    VisibleModal,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
 import { DOCUMENTATION } from '../../config';
@@ -10,7 +17,7 @@ import { DropdownIndicator } from './gitProvider.util';
 import { Option } from '../v2/common/ReactSelect.utils';
 import Tippy from '@tippyjs/react';
 import ReactSelect, { components } from 'react-select';
-import { multiSelectStyles, VisibleModal } from '../common';
+import { multiSelectStyles } from '../common';
 import './gitProvider.css';
 import { GitHostConfigModal } from './AddGitHostConfigModal';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
