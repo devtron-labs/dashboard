@@ -1,15 +1,24 @@
 import React, { Component } from 'react';
 import ReactSelect from 'react-select';
 import { styles, portalStyles, DropdownIndicator } from './security.util';
-import { VulnerabilityUIMetaData, GetVulnerabilityPolicyResponse, FetchPolicyQueryParams, SeverityPolicy, CvePolicy, VulnerabilityAction, Severity, ResourceLevel, VulnerabilityPolicy } from './security.types';
+import {
+    VulnerabilityUIMetaData,
+    GetVulnerabilityPolicyResponse,
+    FetchPolicyQueryParams,
+    SeverityPolicy,
+    CvePolicy,
+    VulnerabilityAction,
+    Severity,
+    ResourceLevel,
+    VulnerabilityPolicy,
+} from './security.types'
 import { AddCveModal } from './AddCveModal';
 import { ReactComponent as Arrow } from '../../assets/icons/ic-chevron-down.svg';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { getVulnerabilities, savePolicy, updatePolicy } from './security.service';
-import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
-import Reload from '../Reload/Reload';
 import { NavLink } from 'react-router-dom';
 
 export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVulnerabilityPolicyResponse & { showWhitelistModal: boolean, view: string; }> {

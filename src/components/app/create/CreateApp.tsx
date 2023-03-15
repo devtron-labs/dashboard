@@ -10,6 +10,7 @@ import {
     getTeamListMin,
     DEFAULT_TAG_DATA,
     multiSelectStyles,
+    Reload,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { AddNewAppProps, AddNewAppState } from '../types'
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config'
@@ -26,7 +27,6 @@ import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup'
 import { appListOptions, noOptionsMessage } from '../../AppSelector/AppSelectorUtil'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
-import Reload from '../../Reload/Reload'
 import './createApp.scss'
 const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {

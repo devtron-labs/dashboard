@@ -8,6 +8,7 @@ import {
     sortCallback,
     ErrorScreenNotAuthorized,
     multiSelectStyles,
+    Reload,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'
@@ -30,7 +31,6 @@ import { AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from '../cluster/clust
 import ManageRegistry from './ManageRegistry'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { CredentialType, CustomCredential } from './dockerType'
-import Reload from '../Reload/Reload'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 
 enum CERTTYPE {

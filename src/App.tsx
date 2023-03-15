@@ -18,11 +18,10 @@ import {
     ToastBody3 as UpdateToast,
     ErrorBoundary,
 } from './components/common'
-import { showError, Progressing, BreadcrumbStore } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, BreadcrumbStore, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import * as serviceWorker from './serviceWorker'
 import Hotjar from './components/Hotjar/Hotjar'
 import { validateToken } from './services/service'
-import Reload from './components/Reload/Reload'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))

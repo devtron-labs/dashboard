@@ -3,11 +3,10 @@ import React, { Component } from 'react';
 import { RouteComponentProps, NavLink } from 'react-router-dom';
 import { SecurityPolicyEdit } from './SecurityPolicyEdit';
 import { getAppListMin } from '../../services/service';
-import { showError, Progressing, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, sortCallback, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config';
 import { SecurityPolicyAppState } from './security.types';
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg';
-import Reload from '../Reload/Reload';
 
 export class SecurityPolicyApp extends Component<RouteComponentProps<{ appId: string; }>, SecurityPolicyAppState> {
 

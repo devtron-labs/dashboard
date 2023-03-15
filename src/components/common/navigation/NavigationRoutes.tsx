@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, useEffect, useState, createContext, useContext, useRef } from 'react'
 import { Route, Switch } from 'react-router-dom'
-import { showError, Progressing, Host } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Host, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, AppListConstants, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
 import { ErrorBoundary, getLoginInfo, AppContext } from '../../common'
 import Navigation from './Navigation'
@@ -17,7 +17,6 @@ import {
     getVersionConfig,
     updateLoginCount,
 } from '../../../services/service'
-import Reload from '../../Reload/Reload'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import { ModuleStatus, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo, getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'

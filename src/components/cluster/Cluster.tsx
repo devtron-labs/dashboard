@@ -6,6 +6,7 @@ import {
     VisibleModal,
     sortCallback,
     ErrorScreenNotAuthorized,
+    Reload
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
@@ -36,7 +37,6 @@ import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, ModuleNameMap, CLUSTER_COMMAND } from '../../config'
 import { getEnvName } from './cluster.util'
-import Reload from '../Reload/Reload'
 import DeleteComponent from '../../util/DeleteComponent'
 import {
     DC_CLUSTER_CONFIRMATION_MESSAGE,

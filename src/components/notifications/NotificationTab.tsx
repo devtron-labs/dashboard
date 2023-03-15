@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import EmptyImage from '../../assets/img/ic-empty-notifications.png';
 import Tippy from '@tippyjs/react';
-import Reload from '../Reload/Reload';
 import { Pagination } from '../common';
 import {
     showError,
@@ -11,6 +10,7 @@ import {
     PopupMenu,
     Checkbox,
     EmptyState,
+    Reload,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getNotificationConfigurations,

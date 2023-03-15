@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ButtonWithLoader, copyToClipboard } from '../../common'
-import { showError, Progressing, Drawer, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Drawer, InfoColourBar, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
@@ -32,7 +32,6 @@ import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from '
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import CodeEditor from '../../CodeEditor/CodeEditor'
-import Reload from '../../Reload/Reload'
 
 export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const { appId, webhookId } = useParams<{
