@@ -40,8 +40,16 @@ export function CiPipelineSourceConfig({
 
     const updateSourceValue = () => {
         if (_isWebhook) {
-            setSourceValueBase('')
-            setSourceValueAdv('')
+            let _sourceValueObj = JSON.parse(sourceValue)
+            let _eventId = _sourceValueObj.eventId
+            let _condition = _sourceValueObj.condition
+
+            getWebhookEventsForEventId(_eventId).then((_res) => {
+                let _webhookEvent = _res.result
+                setSourceValueBase(_webhookEvent.name)
+                setSourceValueAdv(_buildHoverHtmlForWebhook(_webhookEvent.name, _condition, _webhookEvent.selectors))
+                setLoading(false)
+            })
         } else {
             setSourceValueBase(sourceValue)
             setSourceValueAdv(sourceValue)
@@ -131,7 +139,7 @@ export function CiPipelineSourceConfig({
                     )}
                     {showTooltip && (
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={sourceValueAdv}>
-                            <div className="flex" style={{ maxWidth: !baseText?'calc(100% - 15px)': 'auto' }}>
+                            <div className="flex" style={{ maxWidth: !baseText ? 'calc(100% - 15px)' : 'auto' }}>
                                 {!baseText && (
                                     <>
                                         <div
