@@ -141,7 +141,7 @@ function ManifestComponent({
         }
         if (isEditmode) {
             toggleManagedFields(false)
-            let jsonManifestData = YAML.parse(activeManifestEditorData)
+            const jsonManifestData = YAML.parse(activeManifestEditorData)
             if (jsonManifestData?.metadata?.managedFields) {
                 setTrimedManifestEditorData(trimManifestData(jsonManifestData))
             }
@@ -171,7 +171,7 @@ function ManifestComponent({
     const trimManifestData = (jsonManifestData: object): string => {
         const _trimedManifestData = JSON.stringify(jsonManifestData, (key, value) => {
             if (key === MANIFEST_KEY_FIELDS.METADATA) {
-                value[MANIFEST_KEY_FIELDS.MANAGED_FIELDS] = undefined
+                value[MANIFEST_KEY_FIELDS.MANAGED_FIELDS] = null
             }
             return value
         })

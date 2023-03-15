@@ -183,7 +183,7 @@ function NodeDetailComponent({
         selectedResource.containers = resourceContainers
     }
 
-    const handleChanges = () => {
+    const handleChanges = ():void => {
         setHideManagedFields(!hideManagedFields)
     }
 
