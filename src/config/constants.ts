@@ -761,6 +761,11 @@ export const DOCKER_FILE_ERROR_MESSAGE = 'Unable to locate Dockerfile as source 
 export const DEFAULT_GIT_BRANCH_VALUE = '--'
 export const SOURCE_NOT_CONFIGURED_MESSAGE= 'Source is not configured for one or more git repositories. Please configure and try again.'
 
+export enum MANIFEST_KEY_FIELDS {
+    METADATA= 'metadata',
+    MANAGED_FIELDS= 'managedFields'
+}
+
 export enum KEY_VALUE {
   KEY= 'key',
   VALUE= 'value'
