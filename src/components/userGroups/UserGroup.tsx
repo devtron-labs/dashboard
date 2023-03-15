@@ -20,7 +20,13 @@ import {
     useEffectAfterMount,
     sortObjectArrayAlphabetically,
 } from '../common'
-import { showError, Progressing, ConditionalWrap, ErrorScreenNotAuthorized, get } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    ConditionalWrap,
+    ErrorScreenNotAuthorized,
+    get,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     getUserList,
     getGroupList,
@@ -649,7 +655,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         }
         return ''
     }
-    
+
     const onClickUserDropdownHandler = () => {
         if (isAdminOrSystemUser) {
             noop()

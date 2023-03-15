@@ -8,9 +8,15 @@ import {
     handleOnBlur,
     handleOnFocus,
     parsePassword,
-    ErrorScreenNotAuthorized,
 } from '../common'
-import { showError, Progressing, TippyCustomized, TippyTheme, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    TippyCustomized,
+    TippyTheme,
+    sortCallback,
+    ErrorScreenNotAuthorized,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'
@@ -341,7 +347,7 @@ function DockerForm({
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
     }
 
-    
+
 
     const handleRegistryTypeChange = (selectedRegistry) => {
         setSelectedDockerRegistryType(selectedRegistry)

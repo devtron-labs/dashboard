@@ -81,6 +81,7 @@ export default function AboutAppInfoModal({
         const payload = {
             id: parseInt(appId),
             teamId: selectedProject.value,
+            labels: appMetaInfo.labels,
         }
 
         try {
