@@ -1666,6 +1666,10 @@ button.anchor {
     align-items: flex-start !important;
 }
 
+.dc__align-end {
+    align-items: flex-end !important;
+}
+
 .dc__align-items-center {
     align-items: center !important;
 }
@@ -2424,6 +2428,7 @@ textarea,
 }
 
 // Padding in pixels
+
 .pl-16 {
     padding-left: 16px !important;
 }

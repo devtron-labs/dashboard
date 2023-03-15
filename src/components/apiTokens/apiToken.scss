@@ -1,18 +1,14 @@
 .api-token-container {
-    max-width: 1024px;
-    min-width: 960px;
-    margin: 0 auto;
-    height: 100%;
 
     .api-token__list {
-        height: calc(100vh - 194px);
+        height: 100%;
         overflow: hidden;
         min-height: 500px;
     }
 
     .api-list-row {
         display: grid;
-        grid-template-columns: 24px minmax(278px, 346px) 120px 130px 190px minmax(80px, 90px);
+        grid-template-columns: 24px minmax(278px, 346px) 120px 130px auto minmax(80px, 90px);
         grid-column-gap: 16px;
 
         .api-key-expired-icon {
