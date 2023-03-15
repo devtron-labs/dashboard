@@ -24,7 +24,7 @@ import {
     WorkerStatusType,
 } from '../cicdHistory/types'
 import { Link } from 'react-router-dom'
-import { cancelCiTrigger, cancelPrePostCdTrigger } from '../../service'
+import { cancelCiTrigger, cancelPrePostCdTrigger, extractImage } from '../../service'
 
 const TriggerDetailsStatusIcon = React.memo(({ status }: TriggerDetailsStatusIconType): JSX.Element => {
     return (
@@ -112,7 +112,7 @@ const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: Finish
                 {artifact && (
                     <div className="dc__app-commit__hash ">
                         <img src={docker} className="commit-hash__icon grayscale" />
-                        {artifact.split(':')[1]}
+                        {extractImage(artifact)}
                     </div>
                 )}
             </div>

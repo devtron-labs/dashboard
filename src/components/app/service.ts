@@ -239,6 +239,10 @@ export function getRollbackMaterialList(cdMaterialId, offset: number, size: numb
     })
 }
 
+export function extractImage(image: string): string {
+    return image? image.split(':').pop() : ''
+}
+
 function cdMaterialListModal(
     artifacts: any[],
     markFirstSelected: boolean,
@@ -261,7 +265,7 @@ function cdMaterialListModal(
             deployedBy: material.deployedBy,
             wfrId: material.wfrId,
             tab: CDModalTab.Changes,
-            image: material.image.split(':')[1],
+            image: extractImage(material.image),
             showChanges: false,
             vulnerabilities: [],
             buildTime: material.build_time || '',
