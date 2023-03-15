@@ -28,8 +28,8 @@ export const Routes = {
     EXTERNAL_CI_CONFIG: 'app/external-ci',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
     SPECIFIC_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all',
-    RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all/latest',
-    LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/all/latest',
+    RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/latest/deployed',
+    LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/latest/saved',
     WORKFLOW_EDITOR: 'edit/workflow',
 
     CD_MATERIAL_GET: 'app/cd-pipeline',
@@ -760,11 +760,6 @@ export const DOCKER_FILE_ERROR_TITLE = 'Unable to locate Dockerfile as source is
 export const DOCKER_FILE_ERROR_MESSAGE = 'Unable to locate Dockerfile as source is not configured for this repository'
 export const DEFAULT_GIT_BRANCH_VALUE = '--'
 export const SOURCE_NOT_CONFIGURED_MESSAGE= 'Source is not configured for one or more git repositories. Please configure and try again.'
-
-export enum MANIFEST_KEY_FIELDS {
-    METADATA= 'metadata',
-    MANAGED_FIELDS= 'managedFields'
-}
 
 export enum KEY_VALUE {
   KEY= 'key',
