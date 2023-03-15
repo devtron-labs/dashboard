@@ -1295,7 +1295,7 @@
 
 "@devtron-labs/devtron-fe-common-lib@0.0.7-beta-1":
   version "0.0.7-beta-1"
-  resolved "https://npm.pkg.github.com/download/@devtron-labs/devtron-fe-common-lib/0.0.7-beta-1/0336c67233405571f5c4019953b2a4330ab4d24b#0336c67233405571f5c4019953b2a4330ab4d24b"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.7-beta-1.tgz#0336c67233405571f5c4019953b2a4330ab4d24b"
   integrity sha512-jT/DyaZ0oxStWinyG6Tllw19U5MQVWUafpO86+58Ig+UAjXQiKJ7hD7LEwWDwZLQwzAbPkp2Xj4QKvIH8pO7cQ==
   dependencies:
     sass "^1.56.2"
