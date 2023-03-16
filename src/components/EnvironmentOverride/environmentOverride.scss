@@ -85,6 +85,7 @@
 section.secret-overrides,
 section.config-map-overrides {
     display: grid;
+    padding-bottom: 20px;
     grid-template-columns: 1fr;
 }
 

@@ -24,6 +24,7 @@ export interface ChartValuesViewType {
     chartVersionsDataFromParent?: ChartVersionType[]
     chartValuesFromParent?: ChartValuesType
     selectedVersionFromParent?: number
+    init?: () => void
 }
 
 export interface ChartSelectorType {
@@ -317,11 +318,6 @@ export enum DeploymentAppType {
     GitOps = 'argo_cd',
 }
 
-export enum DeploymentAppTypeNameMapping {
-    HelmKeyValue = 'Helm',
-    GitOpsKeyValue = 'GitOps',
-}
-
 export interface ChartValuesViewAction {
     type: ChartValuesViewActionTypes
     payload: any
@@ -356,12 +352,6 @@ export interface ChaartValuesGUIFormType {
     deployOrUpdateApplication: (forceUpdate?: boolean) => Promise<void>
     dispatch: React.Dispatch<ChartValuesViewAction>
     formValidationError: Record<string, boolean>
-}
-
-export interface ConnectToHelmChartTippyProps {
-    condition: boolean
-    hideConnectToChartTippy: () => void
-    children: React.ReactElement<any>
 }
 
 export interface ActiveReadmeColumnProps {

@@ -1,6 +1,6 @@
-import { GroupBase, StylesConfig } from "react-select"
-import { OptionType } from "../../../app/types"
-import { CheckboxProps } from "../Checkbox"
+import { GroupBase, StylesConfig } from 'react-select'
+import { OptionType } from '../../../app/types'
+import { CheckboxProps } from '../Checkbox'
 
 interface WidgetPropsType {
     title: string
@@ -50,4 +50,15 @@ export interface StyledSelectPropsType extends WidgetPropsType {
     options: OptionType[]
     classNamePrefix?: string
     styleOverrides?: StylesConfig<any, false, GroupBase<any>>
+}
+
+export interface StyledProgressBarProps {
+    resetProgress?: boolean
+    updateProgressValue?: (currentValue: number) => void
+}
+
+export interface ShortcutKeyBadgeProps {
+    rootClassName?: string
+    shortcutKey: string
+    onClick?: (e?: any) => void
 }

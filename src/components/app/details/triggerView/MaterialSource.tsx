@@ -1,107 +1,108 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { CIMaterialType } from '../triggerView/MaterialHistory'
 import { ReactComponent as Refresh } from '../../../../assets/icons/ic-restore.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { SourceTypeMap } from '../../../../config'
 import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
+import { MaterialSourceProps } from './types'
 
-interface MaterialSourceProps {
-    material: CIMaterialType[]
-    selectMaterial: (materialId: string) => void
-    refreshMaterial?: {
-        pipelineId: number
-        title: string
-        refresh: (pipelineId: number, title: string, gitMaterialId: number) => void
+export default function MaterialSource({
+    material,
+    refreshMaterial,
+    selectMaterial,
+    ciPipelineId,
+}: MaterialSourceProps) {
+    const renderErrorMessage = (mat: CIMaterialType): string => {
+        if (mat.isRepoError) {
+            return mat.repoErrorMsg
+        } else if (mat.isDockerFileError) {
+            return mat.dockerFileErrorMsg
+        } else if (mat.isBranchError) {
+            return mat.branchErrorMsg
+        } else {
+            return ''
+        }
     }
-}
-export class MaterialSource extends Component<MaterialSourceProps> {
-    renderMaterialUpdateInfo(material) {
-        if (material.isMaterialLoading) {
+    const renderMaterialUpdateInfo = (mat: CIMaterialType) => {
+        if (mat.isMaterialLoading) {
             return (
-                <div className="material-last-update">
-                    <div className="material-last-update__fetching">Fetching Repo...</div>
+                <div className="flex fs-10">
+                    <div className="material-last-update__fetching dc__loading-dots">Fetching</div>
                 </div>
             )
-        } else if (material.isBranchError || material.isRepoError) {
+        } else if (mat.isBranchError || mat.isRepoError || mat.isDockerFileError) {
             return (
-                <div className="material-last-update">
+                <div className="flex fs-10">
                     <Error className="form__icon--error icon-dim-14 mr-5" />
-                    <div className="material__error dc__ellipsis-right">
-                        {material.isRepoError
-                            ? material.repoErrorMsg
-                            : material.isBranchError
-                            ? material.branchErrorMsg
-                            : ''}
-                    </div>
+                    <div className="material__error dc__ellipsis-right">{renderErrorMessage(mat)}</div>
                 </div>
             )
         } else {
             return (
-                <div className="material-last-update">
-                    {material.lastFetchTime ? 'Last Updated' : ''}
-                    <span className="fw-6 ml-5"> {material.lastFetchTime}</span>
+                <div className="flex fs-10">
+                    {mat.lastFetchTime ? 'Updated' : ''}
+                    <span className="fw-6 ml-5"> {mat.lastFetchTime}</span>
                 </div>
             )
         }
     }
 
-    renderRefreshButton(material) {
+    const handleRefreshAction = (e) => {
+        e.stopPropagation()
+        refreshMaterial.refresh(refreshMaterial.pipelineId, refreshMaterial.title, Number(e.currentTarget.dataset.id))
+    }
+
+    const renderRefreshButton = (mat: CIMaterialType) => {
         return (
             <button
                 type="button"
                 className="material-refresh"
-                disabled={material.isMaterialLoading}
-                onClick={(event) => {
-                    event.stopPropagation()
-                    this.props.refreshMaterial.refresh(
-                        this.props.refreshMaterial.pipelineId,
-                        this.props.refreshMaterial.title,
-                        material.gitMaterialId,
-                    )
-                }}
+                disabled={mat.isMaterialLoading}
+                data-id={mat.gitMaterialId}
+                onClick={handleRefreshAction}
             >
-                <Refresh className={material.isMaterialLoading ? 'icon-dim-16 rotate' : 'icon-dim-16'} />
+                <Refresh className={mat.isMaterialLoading ? 'icon-dim-16 rotate' : 'icon-dim-16'} />
             </button>
         )
     }
 
-    render() {
-        return (
-            <>
-                {this.props.material.map((material, index) => {
-                    let selectedClass = material.isSelected ? 'material-selected' : ''
-                    return (
-                        <div
-                            key={index}
-                            className={`material-list__item ${selectedClass}`}
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                this.props.selectMaterial(material.id.toString())
-                            }}
-                        >
-                            <div className="material-info">
-                                <div className="material-info__name flex-1">/{material.gitMaterialName}</div>
-                                <div className="icon-dim-22 git"></div>
-                            </div>
-                            <div className="branch-name ">
-                                <CiPipelineSourceConfig
-                                    sourceType={material.type}
-                                    sourceValue={material.value}
-                                    showTooltip={true}
-                                    regex={material.regex}
-                                    primaryBranchAfterRegex={material.value}
-                                />
-                            </div>
-                            {this.props.refreshMaterial ? (
-                                <div className="material-info">
-                                    {this.renderMaterialUpdateInfo(material)}
-                                    {material.type != SourceTypeMap.WEBHOOK && this.renderRefreshButton(material)}
-                                </div>
-                            ) : null}
-                        </div>
-                    )
-                })}
-            </>
-        )
+    const handleSelectMaterialAction = (e) => {
+        e.stopPropagation()
+        selectMaterial(e.currentTarget.dataset.id, ciPipelineId)
     }
+
+    return (
+        <>
+            {material.map((mat, index) => {
+                return (
+                    <div
+                        key={index}
+                        data-id={mat.id}
+                        className={`material-list__item ${mat.isSelected ? 'material-selected' : ''}`}
+                        onClick={handleSelectMaterialAction}
+                    >
+                        <div className="material-info">
+                            <div className="material-info__name flex-1 dc__ellipsis-right">/{mat.gitMaterialName}</div>
+                            <div className="icon-dim-22 git"></div>
+                        </div>
+                        <div className="branch-name">
+                            <CiPipelineSourceConfig
+                                sourceType={mat.type}
+                                sourceValue={mat.value}
+                                showTooltip={true}
+                                regex={mat.regex}
+                                primaryBranchAfterRegex={mat.value}
+                            />
+                        </div>
+                        {refreshMaterial ? (
+                            <div className="material-info mt-10">
+                                {renderMaterialUpdateInfo(mat)}
+                                {mat.type != SourceTypeMap.WEBHOOK && renderRefreshButton(mat)}
+                            </div>
+                        ) : null}
+                    </div>
+                )
+            })}
+        </>
+    )
 }

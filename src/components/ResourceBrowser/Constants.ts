@@ -1,7 +1,7 @@
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 
-export const CLUSTER_SELECT_STYLE = {
+export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
     menu: (base) => ({
         ...base,
@@ -10,26 +10,70 @@ export const CLUSTER_SELECT_STYLE = {
     }),
     control: (base, state) => ({
         ...base,
-        backgroundColor: 'transparent',
-        cursor: 'pointer',
         height: '28px',
-        minHeight: '30px',
+        minHeight: '32px',
+        borderColor: 'none',
+        boxShadow: 'none',
+        border: state.isFocused && !state.isDisabled ? '1px solid var(--B500)' : '1px solid #d6dbdf',
+        backgroundColor: state.isDisabled ? 'var(--N100)' : 'var(--N50)',
+        pointerEvents: 'auto',
+        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
     }),
-    singleValue: (base, state) => ({
+    singleValue: (base) => ({
         ...base,
         color: 'var(--N900)',
         direction: 'rtl',
         textAlign: 'left',
         marginLeft: '2px',
     }),
-    indicatorsContainer: (base, state) => ({
+    indicatorsContainer: (base) => ({
         ...base,
-        height: '30px',
+        height: '32px',
     }),
-    valueContainer: (base, state) => ({
+    valueContainer: (base) => ({
         ...base,
-        height: '30px',
+        display: 'flex',
+        height: '32px',
         padding: '0 6px',
+    }),
+    input: (base) => ({
+        ...base,
+        paddingLeft: '24px',
+    }),
+}
+
+export const KIND_SEARCH_COMMON_STYLES = {
+    ...FILTER_SELECT_COMMON_STYLES,
+    control: (base, state) => ({
+        ...FILTER_SELECT_COMMON_STYLES.control(base, state),
+        border: state.isFocused ? '1px solid var(--B500)' : 'none',
+        backgroundColor: state.isFocused ? 'var(--N50)' : 'var(--N000)',
+        cursor: 'text',
+    }),
+    input: (base) => ({
+        ...base,
+        paddingLeft: '24px',
+        maxWidth: '135px',
+    }),
+    valueContainer: (base) => ({
+        ...FILTER_SELECT_COMMON_STYLES.valueContainer(base),
+        height: 'inherit',
+    }),
+    indicatorsContainer: (base) => ({
+        ...base,
+        height: '0px',
+    }),
+    option: (base, state) => ({
+        ...base,
+        backgroundColor: state.isFocused ? 'var(--N50)' : 'var(--N000)',
+        color: 'var(--N900)',
+        textOverflow: 'ellipsis',
+        fontWeight: '500',
+        overflow: 'hidden',
+        textAlign: 'left',
+        whiteSpace: 'nowrap',
+        cursor: 'pointer',
+        fontSize: '13px',
     }),
 }
 
@@ -41,7 +85,14 @@ export const RESOURCE_ACTION_MENU = {
     delete: 'Delete',
 }
 
+export const K8S_EMPTY_GROUP = 'k8sEmptyGroup'
 export const ALL_NAMESPACE_OPTION = { value: 'all', label: 'All namespaces' }
+export const NAMESPACE_NOT_APPLICABLE_OPTION = {
+    label: 'Namespace: Not applicable',
+    value: 'not-applicable',
+}
+export const NAMESPACE_NOT_APPLICABLE_TEXT = 'Namespace is not applicable for this resource kind'
+export const CLUSTER_NOT_REACHABLE = 'Cluster is not reachable'
 
 export const ORDERED_AGGREGATORS: AggregationKeysType[] = [
     AggregationKeys.Workloads,
@@ -117,4 +168,44 @@ export const SIDEBAR_KEYS = {
         Version: '',
         Kind: 'Namespace',
     },
+}
+
+export const MARK_AS_STALE_DATA_CUT_OFF_MINS = 13
+export const STALE_DATA_WARNING_TEXT = 'The resource data might be stale. You can sync to get the latest data.'
+export const ERROR_SCREEN_SUBTITLE =
+    'You don’t have permission for any Kubernetes resources. You can request permission from a super admin user.'
+export const ERROR_SCREEN_LEARN_MORE = 'Learn about Kubernetes resource permissions.'
+
+export const RESOURCE_LIST_ERROR_STATE = {
+    title: 'Some error occured',
+    subTitle: (label: string): string => `Kubernetes resources for the cluster ‘${label}’ could not be fetched`,
+    actionButtonText: 'Change cluster',
+}
+
+export const RESOURCE_LIST_EMPTY_STATE = {
+    title: 'No matching results',
+    subTitle: (kind: string): string => `We could not find any matching ${kind || 'resource'}.`,
+}
+
+export const RESOURCE_EMPTY_PAGE_STATE = {
+    title: (kind: string) => `No ${kind || 'resource'} found`,
+    subTitle: (kind: string, namespaced: boolean) =>
+        `We could not find any ${kind || 'resource'}. Try selecting a different cluster${
+            namespaced ? ' or namespace.' : '.'
+        }`,
+}
+
+export const RESOURCE_PAGE_SIZE_OPTIONS = [
+    { value: 100, selected: true },
+    { value: 150, selected: false },
+    { value: 200, selected: false },
+]
+
+export const TRYING_TO_CONNECT = 'Trying to connect to the Kubernetes cluster and fetch resources.'
+export const TAKING_LONGER_TO_CONNECT =
+    'Is taking longer than usual to connect to the cluster. If cluster is reachable it may take up to 30 seconds.'
+export const SELECTE_CLUSTER_STATE_MESSAGING = {
+    heading: 'Select a cluster to view Kubernetes resources',
+    infoText: 'All Kubernetes resources in the selected cluster will be shown here',
+    altText: 'No Cluster Selected',
 }

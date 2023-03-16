@@ -29,6 +29,14 @@
     .search {
         margin-bottom: 16px !important;
     }
+    .empty-state {
+        .info-bar-container {
+            svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+    }
 }
 
 .auth-page__body-users__list-container {
@@ -95,7 +103,7 @@
             fill: #999;
         }
     }
-
+    
     .add-svg {
         path {
             fill: #06c;
@@ -186,7 +194,6 @@
 
 .tab-list__tab-link {
     padding: 6px 0;
-<<<<<<< HEAD
 }
 
 .kubernetes-header {

@@ -224,8 +224,8 @@ function CreateAPIToken({
                 <div className="p-20">
                     <div>
                         <label className="form__row w-400">
-                            <span className="form__label">
-                                Name <span className="cr-5">*</span>
+                            <span className="form__label dc__required-field">
+                                Name
                             </span>
                             <input
                                 tabIndex={1}

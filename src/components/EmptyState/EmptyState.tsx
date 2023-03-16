@@ -2,9 +2,9 @@ import React from 'react'
 import './emptyState.scss';
 import { ReactComponent as Progressing } from '../../assets/icons/ic-progressing.svg';
 
-function EmptyState({ children }) {
+function EmptyState({ children, className = '' }) {
     return (
-        <div className="flex column empty-state" style={{ width: '100%', height: '100%' }}>
+        <div className={`flex column empty-state ${className}`} w-100 h-100>
             {children}
         </div>
     )
@@ -18,8 +18,8 @@ function Title({ children }) {
     return children
 }
 
-function Subtitle({ children, className }:{children: any, className?: string}) {
-    return <p className={`subtitle ${className}`}>{children}</p>
+function Subtitle({ children, className }: { children: any; className?: string }) {
+    return <p className={`subtitle ${className || ''}`}>{children}</p>
 }
 
 function Button({ children }) {

@@ -97,7 +97,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 }
                 if (wf) break;
             }
-            let url = getCIPipelineURL(this.state.ciPipeline.parentAppId.toString(), wf.appWorkflowId, parentCiPipelineId);
+            let url = getCIPipelineURL(this.state.ciPipeline.parentAppId.toString(), wf.appWorkflowId, false, parentCiPipelineId);
             this.setState({ sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${url}` });
         }
     }
@@ -156,7 +156,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
 
     renderTriggerType() {
         return <div className="form__row">
-            <label className="form__label form__label--sentence">When do you want the pipeline to execute?*</label>
+            <label className="form__label form__label--sentence dc__required-field">When do you want the pipeline to execute?</label>
             <RadioGroup value={this.state.form.triggerType} name="trigger-type" onChange={() => { }} disabled={true}>
                 <RadioGroupItem value={TriggerType.Auto}> Automatic  </RadioGroupItem>
                 <RadioGroupItem value={TriggerType.Manual}>  Manual  </RadioGroupItem>
@@ -221,7 +221,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         else {
             return <>
                 <label className="form__row">
-                    <span className="form__label">Pipeline Name*</span>
+                    <span className="form__label dc__required-field">Pipeline Name</span>
                     <input className="form__input" disabled={!!this.state.ciPipeline.id} placeholder="Name" type="text"
                         value={name} />
                 </label>

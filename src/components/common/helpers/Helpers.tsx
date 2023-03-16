@@ -7,13 +7,17 @@ import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
 import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
+import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
 import { toastAccessDenied } from '../ToastBody'
 import { AggregationKeys, OptionType } from '../../app/types'
-import { ClusterImageList, ImageList } from '../../ClusterNodes/types'
+import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
-import { EVENT_LIST, SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
+import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
+import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
+import { AUTO_SELECT } from '../../ClusterNodes/constants'
+import { ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -186,7 +190,10 @@ export function getRandomColor(email: string): string {
 export function showError(serverError, showToastOnUnknownError = true, hideAccessError = false) {
     if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
         serverError.errors.map(({ userMessage, internalMessage }) => {
-            if (serverError.code === 403 && userMessage === 'unauthorized') {
+            if (
+                serverError.code === 403 &&
+                (userMessage === ERROR_EMPTY_SCREEN.UNAUTHORIZED || userMessage === ERROR_EMPTY_SCREEN.FORBIDDEN)
+            ) {
                 if (!hideAccessError) {
                     toastAccessDenied()
                 }
@@ -898,14 +905,16 @@ export function getRandomString() {
 }
 
 export function sortBySelected(selectedArray: any[], availableArray: any[], matchKey: string) {
-
     const selectedArrayMap = mapByKey(selectedArray, matchKey)
 
-    const actualSelectedArray = availableArray.filter(item => selectedArrayMap.has(item[matchKey]))
+    const actualSelectedArray = availableArray.filter((item) => selectedArrayMap.has(item[matchKey]))
 
-    const unselectedAvailableArray = availableArray.filter(item => !selectedArrayMap.has(item[matchKey]))
+    const unselectedAvailableArray = availableArray.filter((item) => !selectedArrayMap.has(item[matchKey]))
 
-    return [...sortObjectArrayAlphabetically(actualSelectedArray, matchKey), ...sortObjectArrayAlphabetically(unselectedAvailableArray, matchKey)]
+    return [
+        ...sortObjectArrayAlphabetically(actualSelectedArray, matchKey),
+        ...sortObjectArrayAlphabetically(unselectedAvailableArray, matchKey),
+    ]
 }
 
 export function sortObjectArrayAlphabetically(arr: Object[], compareKey: string) {
@@ -1024,6 +1033,18 @@ export const stopPropagation = (event): void => {
     event.stopPropagation()
 }
 
+export const preventBodyScroll = (lock: boolean): void => {
+    if (lock) {
+        document.body.style.overflowY = 'hidden'
+        document.body.style.height = '100vh'
+        document.documentElement.style.overflow = 'initial'
+    } else {
+        document.body.style.overflowY = null
+        document.body.style.height = null
+        document.documentElement.style.overflow = null
+    }
+}
+
 // Creates object of arrays containing items grouped by item value of provided key
 export const createGroupedItemsByKey = (arr: any[], key: string) => {
     return arr.reduce((prevObj, currentObj) => {
@@ -1049,12 +1070,23 @@ export const filterImageList = (imageList: ClusterImageList[], serverVersion: st
     return nodeImageList?.imageList || []
 }
 
-export const convertToOptionsList = (arr: any[], customLabel?: string, customValue?: string): OptionType[] => {
+export const convertToOptionsList = (
+    arr: any[],
+    customLabel?: string,
+    customValue?: string,
+    customFieldKey?: string,
+): OptionType[] => {
     return arr.map((ele) => {
-        return {
+        const _option = {
             label: customLabel ? ele[customLabel] : ele,
             value: customValue ? ele[customValue] : ele,
         }
+
+        if (customFieldKey) {
+            _option[customFieldKey] = ele[customFieldKey] ?? ''
+        }
+
+        return _option
     })
 }
 
@@ -1103,9 +1135,8 @@ export const processK8SObjects = (
         const element = k8sObjects[index]
         const groupParent = disableGroupFilter
             ? element.gvk.Group
-            : element.gvk.Group.endsWith('.k8s.io')
-            ? AggregationKeys['Other Resources']
-            : getAggregator(element.gvk.Kind)
+            : getAggregator(element.gvk.Kind, element.gvk.Group.endsWith('.k8s.io'))
+
         if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
             _selectedResource = { namespaced: element.namespaced, gvk: element.gvk }
         }
@@ -1133,4 +1164,98 @@ export const processK8SObjects = (
         _k8sObject.child.sort((a, b) => a['gvk']['Kind'].localeCompare(b['gvk']['Kind']))
     }
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
+}
+
+export function createClusterEnvGroup<T>(list: T[], propKey: string, isOptionType?: boolean, optionName?: string): { label: string; options: T[] }[] {
+    const objList: Record<string, T[]> = list.reduce((acc, obj) => {
+        const key = obj[propKey]
+        if (!acc[key]) {
+            acc[key] = []
+        }
+        acc[key].push(isOptionType ? {label: obj[optionName], value: obj[optionName]} : obj)
+        return acc
+    }, {})
+
+    return Object.entries(objList).map(([key, value]) => ({
+        label: key,
+        options: value,
+    }))
+}
+
+export const k8sStyledAgeToSeconds = (duration: string): number => {
+    let totalTimeInSec: number = 0
+    if (!duration) {
+        return totalTimeInSec
+    }
+    //Parses time(format:- ex. 4h20m) in second
+    const matchesNumber = duration.match(/\d+/g)
+    const matchesChar = duration.match(/[dhms]/g)
+    for (let i = 0; i < matchesNumber.length; i++) {
+        let _unit = matchesChar[i]
+        let _unitVal = +matchesNumber[i]
+        switch (_unit) {
+            case 'd':
+                totalTimeInSec += _unitVal * 24 * 60 * 60
+                break
+            case 'h':
+                totalTimeInSec += _unitVal * 60 * 60
+                break
+            case 'm':
+                totalTimeInSec += _unitVal * 60
+                break
+            default:
+                totalTimeInSec += _unitVal
+                break
+        }
+    }
+    return totalTimeInSec
+}
+
+export const eventAgeComparator = <T,>(key: string): any => {
+    return (a: T, b: T) => k8sStyledAgeToSeconds(a[key]) - k8sStyledAgeToSeconds(b[key])
+}
+
+export const handleOnFocus = (e): void => {
+    if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
+        e.target.value = ''
+    }
+}
+
+export const trackByGAEvent = (category: string, action: string): void => {
+    ReactGA.event({
+        category: category,
+        action: action,
+    })
+}
+
+export const createGroupSelectList = (list, nodeLabel): SelectGroupType[] => {
+    let emptyHeadingCount = 0
+    const objList: Record<string, OptionType[]> = list.reduce((acc, obj) => {
+        if (obj.nodeGroup) {
+            emptyHeadingCount++
+        }
+        const key = obj.nodeGroup || 'Independent nodes'
+        if (!acc[key]) {
+            acc[key] = []
+        }
+        acc[key].push({ label: obj[nodeLabel], value: obj[nodeLabel] })
+        return acc
+    }, {})
+
+    const groupList = Object.entries(objList).map(([key, value]) => ({
+        label: emptyHeadingCount ? key : '',
+        options: value,
+    }))
+
+    return [{ label: '', options: [AUTO_SELECT] }, ...groupList]
+}  
+
+export const handleOnBlur = (e): void => {
+    if (!e.target.value) {
+        e.target.value = DEFAULT_SECRET_PLACEHOLDER
+    }
+}
+
+export const parsePassword = (password:string): string => {
+    return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password
 }

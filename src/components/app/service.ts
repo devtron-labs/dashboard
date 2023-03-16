@@ -4,9 +4,9 @@ import { ResponseType } from '../../services/service.types'
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal, sortCallback } from '../common'
 import moment from 'moment-timezone'
 import { ServerErrors } from '../../modals/commonTypes'
-import { History } from './details/cIDetails/types'
+import { History } from './details/cicdHistory/types'
 import { AppDetails, CreateAppLabelsRequest } from './types'
-import { CDMdalTabType, DeploymentWithConfigType } from './details/triggerView/types'
+import { CDMdalTabType, DeploymentNodeType, DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
 
 let stageMap = {
@@ -171,45 +171,43 @@ const gitTriggersModal = (triggers, materials) => {
 }
 
 export const getCIMaterialList = (params) => {
-    let URL = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`
-    return get(URL).then((response) => {
-        let materials = response?.result
-            ? response?.result?.map((material, index) => {
-                  return {
-                      ...material,
-                      isSelected: index == 0,
-                      gitURL: material.gitMaterialUrl || '',
-                      lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
-                      isMaterialLoading: false,
-                      history: material.history
-                          ? material.history.map((history, indx) => {
-                                return {
-                                    commitURL: material.gitMaterialUrl
-                                        ? createGitCommitUrl(material.gitMaterialUrl, history.Commit)
-                                        : '',
-                                    changes: history.Changes || [],
-                                    author: history.Author,
-                                    message: history.Message,
-                                    date: history.Date ? moment(history.Date).format(Moment12HourFormat) : '',
-                                    commit: history?.Commit,
-                                    isSelected: indx == 0,
-                                    showChanges: false,
-                                    webhookData: history.WebhookData
-                                        ? {
-                                              id: history.WebhookData.id,
-                                              eventActionType: history.WebhookData.eventActionType,
-                                              data: history.WebhookData.data,
-                                          }
-                                        : null,
-                                }
-                            })
-                          : [],
-                  }
-              })
+    return get(`${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`).then((response) => {
+        const materials = Array.isArray(response?.result)
+            ? response.result
+                  .sort((a, b) => sortCallback('id', a, b))
+                  .map((material, index) => {
+                      return {
+                          ...material,
+                          isSelected: index == 0,
+                          gitURL: material.gitMaterialUrl || '',
+                          lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
+                          isMaterialLoading: false,
+                          history: material.history
+                              ? material.history.map((history, indx) => {
+                                    return {
+                                        commitURL: material.gitMaterialUrl
+                                            ? createGitCommitUrl(material.gitMaterialUrl, history.Commit)
+                                            : '',
+                                        changes: history.Changes || [],
+                                        author: history.Author,
+                                        message: history.Message,
+                                        date: history.Date ? moment(history.Date).format(Moment12HourFormat) : '',
+                                        commit: history?.Commit,
+                                        isSelected: indx == 0,
+                                        showChanges: false,
+                                        webhookData: history.WebhookData
+                                            ? {
+                                                  id: history.WebhookData.id,
+                                                  eventActionType: history.WebhookData.eventActionType,
+                                                  data: history.WebhookData.data,
+                                              }
+                                            : null,
+                                    }
+                                })
+                              : [],
+                      }
+                  })
             : []
-        materials.sort((a, b) => {
-            sortCallback('id', a, b)
-        })
         return {
             code: response.code,
             status: response.status,
@@ -218,7 +216,7 @@ export const getCIMaterialList = (params) => {
     })
 }
 
-export function getCDMaterialList(cdMaterialId, stageType: 'PRECD' | 'CD' | 'POSTCD') {
+export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType) {
     let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${stageMap[stageType]}`
     return get(URL).then((response) => {
         return cdMaterialListModal(
@@ -239,6 +237,10 @@ export function getRollbackMaterialList(cdMaterialId, offset: number, size: numb
             result: cdMaterialListModal(response?.result.ci_artifacts, offset === 1 ? true : false),
         }
     })
+}
+
+export function extractImage(image: string): string {
+    return image? image.split(':').pop() : ''
 }
 
 function cdMaterialListModal(
@@ -263,7 +265,7 @@ function cdMaterialListModal(
             deployedBy: material.deployedBy,
             wfrId: material.wfrId,
             tab: CDModalTab.Changes,
-            image: material.image.split(':')[1],
+            image: extractImage(material.image),
             showChanges: false,
             vulnerabilities: [],
             buildTime: material.build_time || '',
@@ -323,12 +325,11 @@ export const triggerCINode = (request) => {
     return post(URL, request)
 }
 
-// stageType: 'PRECD' | 'CD' | 'POSTCD'
 export const triggerCDNode = (
     pipelineId: any,
     ciArtifactId: any,
     appId: string,
-    stageType: string,
+    stageType: DeploymentNodeType,
     deploymentWithConfig?: string,
     wfrId?: number,
 ) => {

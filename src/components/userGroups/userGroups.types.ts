@@ -20,6 +20,16 @@ export enum ActionTypes {
     EDIT = 'edit',
 }
 
+export enum DefaultUserKey {
+    SYSTEM = 'system',
+    ADMIN = 'admin',
+}
+
+export const DefaultUserValue = {
+    system: 'System',
+    admin: 'Admin',
+}
+
 export const ACTION_LABEL = {
     [ActionTypes.ADMIN]: 'Admin',
     [ActionTypes.VIEW]: 'View',

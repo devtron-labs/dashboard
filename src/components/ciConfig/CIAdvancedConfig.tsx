@@ -36,14 +36,15 @@ export default function CIAdvancedConfig({
     }
 
     const handleArgsChange = (e): void => {
-        if (updateNotAllowed || !e.target) {
+        const _target = e.currentTarget
+        if (updateNotAllowed || !_target) {
             return
         }
 
-        const isKey = e.target.name === 'arg-key',
-            id = e.target.dataset.id,
-            k = isKey ? e.target.value : e.target.dataset.value,
-            v = isKey ? e.target.dataset.value : e.target.value
+        const isKey = _target.name === 'arg-key',
+            id = _target.dataset.id,
+            k = isKey ? _target.value : _target.dataset.value,
+            v = isKey ? _target.dataset.value : _target.value
 
         setArgs((arr) => {
             arr[id] = { k: k, v: v, keyError: '', valueError: '' }
@@ -57,7 +58,7 @@ export default function CIAdvancedConfig({
         }
 
         const argsTemp = [...args]
-        argsTemp.splice(e.target.dataset.id, 1)
+        argsTemp.splice(e.currentTarget.dataset.id, 1)
         setArgs(argsTemp)
     }
 
@@ -87,7 +88,7 @@ export default function CIAdvancedConfig({
                     </TippyCustomized>
                 </div>
                 {!updateNotAllowed && (
-                    <div className="add-parameter fs-14 mb-8 cb-5 cursor" onClick={addArg}>
+                    <div className="add-parameter fs-14 mb-8 cb-5 cursor dc__w-fit-content" onClick={addArg}>
                         <span className="fa fa-plus mr-8"></span>Add{isDockerArgsSection ? ' parameter' : ' argument'}
                     </div>
                 )}

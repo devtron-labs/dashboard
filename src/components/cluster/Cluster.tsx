@@ -1,5 +1,5 @@
 import React, { useState, useMemo, Component } from 'react'
-import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle, useAsync } from '../common'
+import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle, useAsync, ErrorScreenNotAuthorized } from '../common'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import {
@@ -24,7 +24,7 @@ import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
-import { POLLING_INTERVAL, ClusterListProps, AuthenticationType } from './cluster.type'
+import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from './cluster.type'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, ModuleNameMap, CLUSTER_COMMAND } from '../../config'
@@ -83,7 +83,9 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     componentDidMount() {
-        this.initialise()
+        if (this.props.isSuperAdmin) {
+            this.initialise()
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -180,8 +182,11 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     render() {
-        if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR) return <Reload className='dc__align-reload-center' />
+        if (!this.props.isSuperAdmin) {
+            return <ErrorScreenNotAuthorized />
+        } 
+        else if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
+        else if (this.state.view === ViewType.ERROR) return <Reload className="dc__align-reload-center" />
         else {
             const moduleBasedTitle =
                 'Clusters' + (this.props.serverMode === SERVER_MODE.EA_ONLY ? '' : ' and Environments')
@@ -250,7 +255,7 @@ function Cluster({
         try {
             const { result } = await getCluster(clusterId)
             setPrometheusAuth(result.prometheusAuth)
-            setConfig(result.config)
+            setConfig({ ...result.config, ...(clusterId != 1 ? { bearer_token: DEFAULT_SECRET_PLACEHOLDER } : null) })
             toggleEditMode((t) => !t)
         } catch (err) {
             showError(err)
@@ -402,7 +407,6 @@ function Cluster({
                     cluster_name={cluster_name}
                     {...environment}
                     handleClose={handleClose}
-                    isNamespaceMandatory={Array.isArray(environments) && environments.length > 0}
                 />
             )}
         </>
@@ -488,7 +492,7 @@ function ClusterForm({
                 required: false,
                 validator: { error: 'TLS Certificate is required', regex: /^(?!\s*$).+/ },
             },
-            token: isDefaultCluster()
+            token: isDefaultCluster() || id
                 ? {}
                 : {
                       required: true,
@@ -502,11 +506,26 @@ function ClusterForm({
         onValidation,
     )
 
+    const handleOnFocus = (e): void => {
+        if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
+            e.target.value = ''
+        }
+    }
+
+    const handleOnBlur = (e): void => {
+        if (id && id != 1 && !e.target.value) {
+            e.target.value = DEFAULT_SECRET_PLACEHOLDER
+        }
+    }
+
     const getClusterPayload = () => {
         return {
             id,
             cluster_name: state.cluster_name.value,
-            config: { bearer_token: state.token.value },
+            config: {
+                bearer_token:
+                    state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value : '',
+            },
             active,
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
             prometheusAuth: {
@@ -608,7 +627,7 @@ function ClusterForm({
                             placement="bottom"
                             trigger="click"
                             interactive={true}
-                            render={() => 
+                            render={() =>
                                 <ClusterInfoStepsModal
                                     subTitle={cluster.title}
                                     command={cluster.command}
@@ -677,6 +696,8 @@ function ClusterForm({
                         name="token"
                         value={config && config.bearer_token ? config.bearer_token : ''}
                         onChange={handleOnChange}
+                        onBlur={handleOnBlur}
+                        onFocus={handleOnFocus}
                         placeholder="Enter bearer token"
                     />
                 </div>
@@ -816,12 +837,9 @@ function Environment({
     handleClose,
     prometheus_endpoint,
     isProduction,
-    isNamespaceMandatory = true,
     reload,
 }) {
     const [loading, setLoading] = useState(false)
-    const [ignore, setIngore] = useState(false)
-    const [ignoreError, setIngoreError] = useState('')
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             environment_name: { value: environment_name, error: '' },
@@ -839,7 +857,7 @@ function Environment({
                 ],
             },
             namespace: {
-                required: isNamespaceMandatory,
+                required: true,
                 validators: [
                     { error: 'Namespace is required', regex: /^.*$/ },
                     { error: "Use only lowercase alphanumeric characters or '-'", regex: /^[a-z0-9-]+$/ },
@@ -869,10 +887,6 @@ function Environment({
         }
     }
     async function onValidation() {
-        if (!state.namespace.value && !ignore) {
-            setIngoreError('Enter a namespace or select ignore namespace')
-            return
-        }
         let payload = getEnvironmentPayload()
 
         const api = id ? updateEnvironment : saveEnvironment
@@ -915,33 +929,14 @@ function Environment({
                 </div>
                 <div className="form__row form__row--namespace">
                     <CustomInput
-                        disabled={!!namespace || ignore}
+                        disabled={!!namespace}
                         name="namespace"
                         value={state.namespace.value}
                         error={state.namespace.error}
                         onChange={handleOnChange}
-                        label={`Enter Namespace ${isNamespaceMandatory ? '*' : ''}`}
+                        label="Enter Namespace*"
                     />
                 </div>
-                {!isNamespaceMandatory && (
-                    <>
-                        <div className="form__row form__row--ignore-namespace">
-                            <input
-                                type="checkbox"
-                                onChange={(e) => {
-                                    setIngore((t) => !t)
-                                    setIngoreError('')
-                                }}
-                                checked={ignore}
-                            />
-                            <div className="form__label dc__bold">Ignore namespace</div>
-                        </div>
-                        <div className="form__row form__row--warn">
-                            If left empty, you won't be able to add more environments to this cluster
-                        </div>
-                        {ignoreError && <div className="form__row form__error">{ignoreError}</div>}
-                    </>
-                )}
                 <div className="form__row">
                     <div className="form__label">Environment type*</div>
                     <div className="environment-type pointer">

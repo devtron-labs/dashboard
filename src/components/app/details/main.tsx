@@ -16,6 +16,7 @@ import { EnvType } from '../../v2/appDetails/appDetails.type'
 import PageHeader from '../../common/header/PageHeader'
 import { AppDetailsProps } from './triggerView/types'
 import AppOverview from './appOverview/AppOverview'
+import { trackByGAEvent } from '../../common/helpers/Helpers'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -70,7 +71,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                             <AppOverview appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
-                        <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?`}>
+                        <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
                             <CIDetails key={appId} />
                         </Route>
                         <Route
@@ -103,6 +104,19 @@ export function AppHeader({ appName }: { appName: string }) {
     const history = useHistory()
     const location = useLocation()
     const currentPathname = useRef('')
+
+    function onClickTabPreventDefault(event: React.MouseEvent<Element, MouseEvent>, className: string) {
+        const linkDisabled = (event.target as Element)?.classList.contains(className)
+        if (linkDisabled) {
+            event.preventDefault()
+        }
+    }
+
+    function handleEventClick(event){
+        trackByGAEvent('App', event.currentTarget.dataset.action)
+        onClickTabPreventDefault(event, 'active')
+    }
+      
 
     useEffect(() => {
         currentPathname.current = location.pathname
@@ -146,12 +160,8 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_OVERVIEW}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Overview Clicked',
-                            })
-                        }}
+                        data-action="Overview Clicked"
+                        onClick={handleEventClick}
                     >
                         Overview
                     </NavLink>
@@ -161,12 +171,8 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DETAILS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'App Details Clicked',
-                            })
-                        }}
+                        data-action="App Details Clicked"
+                        onClick={handleEventClick}
                     >
                         App Details
                     </NavLink>
@@ -176,12 +182,8 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_TRIGGER}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Build & Deploy Clicked',
-                            })
-                        }}
+                        data-action="Build & Deploy Clicked"
+                        onClick={handleEventClick}
                     >
                         Build & Deploy
                     </NavLink>
@@ -191,12 +193,8 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CI_DETAILS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Build History Clicked',
-                            })
-                        }}
+                        data-action="Build History Clicked"
+                        onClick={handleEventClick}
                     >
                         Build History
                     </NavLink>
@@ -206,12 +204,8 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CD_DETAILS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Deployment History Clicked',
-                            })
-                        }}
+                        data-action="Deployment History Clicked"
+                        onClick={handleEventClick}
                     >
                         Deployment History
                     </NavLink>
@@ -221,28 +215,19 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Deployment Metrics Clicked',
-                            })
-                        }}
+                        data-action="Deployment Metrics Clicked"
+                        onClick={handleEventClick}
                     >
                         Deployment Metrics
                     </NavLink>
                 </li>
-
                 <li className="tab-list__tab">
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'App Configuration Clicked',
-                            })
-                        }}
+                        data-action="App Configuration Clicked"
+                        onClick={handleEventClick}
                     >
                         <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
                         App Configuration

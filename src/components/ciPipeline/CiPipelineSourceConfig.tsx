@@ -2,7 +2,7 @@ import React, { useState, useEffect, ReactNode } from 'react'
 import branchIcon from '../../assets/icons/misc/branch.svg'
 import webhookIcon from '../../assets/icons/misc/webhook.svg'
 import Tippy from '@tippyjs/react'
-import { SourceTypeMap } from '../../config'
+import { SourceTypeMap, GIT_BRANCH_NOT_CONFIGURED, DEFAULT_GIT_BRANCH_VALUE } from '../../config'
 import { getWebhookEventsForEventId } from '../../services/service'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 import regexIcon from '../../assets/icons/misc/regex.svg'
@@ -118,7 +118,7 @@ export function CiPipelineSourceConfig({
     }, [])
 
     return (
-        <div className={showTooltip ? 'branch-name' : ''}>
+        <div className={`flex left ${showTooltip ? 'branch-name' : ''}`}>
             {loading && showIcons && <span className="dc__loading-dots">loading</span>}
             {!loading && (
                 <>
@@ -131,12 +131,22 @@ export function CiPipelineSourceConfig({
                     )}
                     {showTooltip && (
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={sourceValueAdv}>
-                            <div>
+                            <div className="flex" style={{ maxWidth: !baseText?'calc(100% - 15px)': 'auto' }}>
                                 {!baseText && (
-                                    <div className="flex left">
-                                        <div className="dc__ellipsis-right">{sourceValueBase}</div>
-                                        <Info className="icon-dim-12 fcn-5 ml-4" />
-                                    </div>
+                                    <>
+                                        <div
+                                            className={`dc__ellipsis-right ${
+                                                sourceValue === GIT_BRANCH_NOT_CONFIGURED ? 'cr-5' : ''
+                                            }`}
+                                        >
+                                            {sourceValueBase}
+                                        </div>
+                                        {sourceValue !== DEFAULT_GIT_BRANCH_VALUE && (
+                                            <div className="mt-2">
+                                                <Info className="icon-dim-12 fcn-5 ml-4" />
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                                 {baseText && (
                                     <span className="cursor" style={{ borderBottom: '1px solid #3b444c' }}>

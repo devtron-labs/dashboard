@@ -8,9 +8,11 @@ import { Checkbox } from '../Checkbox'
 import { ConditionalWrap } from '../../helpers/Helpers'
 import {
     CheckboxWithTippyProps,
+    ShortcutKeyBadgeProps,
     SliderPropsType,
     StyledFieldPropsType,
     StyledInputPropsType,
+    StyledProgressBarProps,
     StyledSelectPropsType,
 } from './Widgets.type'
 import './Widgets.scss'
@@ -298,5 +300,48 @@ export const StyledSelect = (props: StyledSelectPropsType) => {
                 styles={getCommonSelectStyle(props.styleOverrides)}
             />
         </StyledField>
+    )
+}
+
+export const StyledProgressBar = ({ resetProgress, updateProgressValue }: StyledProgressBarProps) => {
+    const [progressValue, setProgressValue] = useState(0)
+    let progressTimer = null
+
+    useEffect(() => {
+        progressTimer = setInterval(() => {
+            setProgressValue((prevValue) => {
+                const _currentValue = prevValue + 1
+                if (_currentValue === 100) {
+                    clearInterval(progressTimer)
+                }
+
+                if (updateProgressValue) {
+                    updateProgressValue(_currentValue)
+                }
+                return _currentValue
+            })
+        }, 300)
+
+        return (): void => {
+            setProgressValue(0)
+            if (progressTimer) {
+                clearInterval(progressTimer)
+            }
+        }
+    }, [resetProgress])
+
+    return <progress className="styled-progress-bar" value={progressValue} max={100} />
+}
+
+export const ShortcutKeyBadge = ({ rootClassName, shortcutKey, onClick }: ShortcutKeyBadgeProps) => {
+    return (
+        <div
+            className={`shortcut-key-badge dc__position-abs flex fs-12 lh-20 icon-dim-20 bcn-0 cn-7 fw-6 dc__border br-2 ${
+                rootClassName ?? ''
+            }`}
+            onClick={onClick}
+        >
+            {shortcutKey}
+        </div>
     )
 }
