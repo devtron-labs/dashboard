@@ -13,9 +13,10 @@ import Tippy from '@tippyjs/react'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { EmptyView } from './History.components'
 import '../cIDetails/ciDetails.scss'
-import { ArtifactType, CIListItemType, CopyTippyWithTextType } from './types'
+import { ArtifactType } from './types'
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { ARTIFACTS_EMPTY_STATE_TEXTS } from './Constants'
+import { extractImage } from '../../service'
 
 export default function Artifacts({
     status,
@@ -90,16 +91,11 @@ export default function Artifacts({
                 {!isJobView && (
                     <CIListItem type="artifact">
                         <div className="flex column left hover-trigger">
-                            <div className="cn-9 fs-14 flex left">
-                                <CopyTippyWithText
-                                    copyText={artifact?.split(':')[1]}
-                                    copied={copied}
-                                    setCopied={setCopied}
-                                />
-                            </div>
-                            <div className="cn-7 fs-12 flex left">
-                                <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
-                            </div>
+                            <CopyTippyWithText
+                                copyText={extractImage(artifact)}
+                                copied={copied}
+                                setCopied={setCopied}
+                            />
                         </div>
                     </CIListItem>
                 )}

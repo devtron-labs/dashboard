@@ -71,17 +71,22 @@ export interface CDMaterialState {
     selectedMaterial: CDMaterialType
 }
 
+export interface MaterialInfo {
+  revision: string
+  modifiedTime: string | Date
+  author: string
+  message: string
+  commitLink: string
+  tag: string
+  webhookData: string
+  branch: string
+  url?: string
+  type?: string
+}
+
 export interface CDMaterialType {
     id: string
-    materialInfo: {
-        revision: string
-        modifiedTime: string
-        author: string
-        message: string
-        commitLink: string
-        tag: string
-        webhookData: string
-    }[]
+    materialInfo: MaterialInfo[]
     tab: CDMdalTabType
     scanEnabled: boolean
     scanned: boolean

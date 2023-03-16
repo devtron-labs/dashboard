@@ -26,6 +26,8 @@ import { OptionType } from '../app/types'
 import { containerImageSelectStyles } from './ciPipeline.utils'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
+import { CopyToClipboardTextWithTippy } from '../app/list/TriggerUrl'
+import { ValueContainerImage as ValueContainer } from '../app/details/appDetails/utils'
 
 export function TaskTypeDetailComponent() {
     const {
@@ -206,21 +208,20 @@ export function TaskTypeDetailComponent() {
         }
     }
 
-    const ValueContainer = (props) => {
-        let value = props.getValue()[0]?.label
+    const menuList = (props) => {
         return (
-            <components.ValueContainer {...props}>
-                <>
-                    {!props.selectProps.menuIsOpen &&
-                        (value ? `${value}` : <span className="cn-5">Select or enter image</span>)}
-                    {React.cloneElement(props.children[1])}
-                </>
-            </components.ValueContainer>
+            <components.MenuList {...props}>
+                <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
+                    Type to enter a custom value. Press Enter to accept.
+                </div>
+                {props.children}
+            </components.MenuList>
         )
     }
 
     const renderContainerScript = () => {
         const errorObj = formDataErrorObj[activeStageName].steps[selectedTaskIndex].inlineStepDetail
+
         return (
             <>
                 <div className="row-container mb-12">
@@ -228,7 +229,8 @@ export function TaskTypeDetailComponent() {
                         taskField={TaskFieldLabel.CONTAINERIMAGEPATH}
                         contentDescription={TaskFieldDescription.CONTAINERIMAGEPATH}
                     />
-                    <div style={{ width: '80% !important' }}>
+
+                    <div className="dc__position-rel">
                         <CreatableSelect
                             tabIndex={1}
                             value={selectedContainerImage}
@@ -238,19 +240,10 @@ export function TaskTypeDetailComponent() {
                             styles={containerImageSelectStyles}
                             classNamePrefix="select"
                             components={{
-                                MenuList: (props) => {
-                                    return (
-                                        <components.MenuList {...props}>
-                                            <div className="cn-5 pl-12 pt-4 pb-4 dc__italic-font-style">
-                                                Type to enter a custom value. Press Enter to accept.
-                                            </div>
-                                            {props.children}
-                                        </components.MenuList>
-                                    )
-                                },
+                                MenuList: menuList,
                                 Option,
                                 IndicatorSeparator: null,
-                                ValueContainer,
+                                ValueContainer
                             }}
                             noOptionsMessage={(): string => {
                                 return 'No matching options'
@@ -259,7 +252,13 @@ export function TaskTypeDetailComponent() {
                             isValidNewOption={() => false}
                             onKeyDown={handleKeyDown}
                         />
-
+                        {selectedContainerImage?.label && (
+                            <CopyToClipboardTextWithTippy
+                                text={selectedContainerImage.label}
+                                rootClassName="flex icon-dim-32 dc__position-abs dc__top-0 dc__right-20"
+                                placement="bottom"
+                            />
+                        )}
                         {errorObj?.containerImagePath && !errorObj.containerImagePath.isValid && (
                             <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">
                                 <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
@@ -343,7 +342,7 @@ export function TaskTypeDetailComponent() {
                         onChange={(e) => handleCommandArgs(e, TaskFieldLabel.COMMAND)}
                         value={
                             formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap?.[0][
-                                TaskFieldLabel.COMMAND
+                            TaskFieldLabel.COMMAND
                             ]
                         }
                     />
@@ -359,7 +358,7 @@ export function TaskTypeDetailComponent() {
                         onChange={(e) => handleCommandArgs(e, TaskFieldLabel.ARGS)}
                         value={
                             formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.commandArgsMap?.[0][
-                                TaskFieldLabel.ARGS
+                            TaskFieldLabel.ARGS
                             ]
                         }
                     />
