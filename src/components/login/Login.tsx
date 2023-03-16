@@ -16,7 +16,7 @@ import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclama
 import { SSO_LOGGING_INFO } from '../../config/constantMessaging'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
-    isQueryParam = ''
+    isQueryParam = false
     constructor(props) {
         super(props)
         this.state = {
@@ -32,8 +32,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         this.autoFillLogin = this.autoFillLogin.bind(this)
         this.login = this.login.bind(this)
         this.isFormNotValid = this.isFormNotValid.bind(this)
-        
-      
     }
        componentDidMount() {
         let queryString = new URLSearchParams(this.props.location.search)
@@ -47,9 +45,8 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         //becomes false but queryParam != "/" will be true and queryParam is also not null hence redirecting users to the
         //login page with Please login again toast appearing.
         if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != '/')) {
-            // toast.error('Please login again or got to help')
-            this.isQueryParam = queryParam
-
+            // toast.error('Please login again or go to help')
+            this.isQueryParam = true
         }
         if (queryParam && queryParam.includes('login')) {
             queryParam = '/app'
@@ -166,7 +163,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             </a>
                         )
                     })}
-                {this.isQueryParam && (getCookie(TOKEN_COOKIE_NAME)) && (
+                { this.isQueryParam && (
                     <InfoColourBar
                         classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp mt-20 mb-20 w-300"
                         message={renderLoginError()}
