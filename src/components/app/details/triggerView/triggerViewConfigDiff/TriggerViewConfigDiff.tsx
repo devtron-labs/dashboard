@@ -42,8 +42,8 @@ export default function TriggerViewConfigDiff({
                 YAML.stringify(JSON.parse(currentConfiguration[activeSideNavOption].codeEditorValue.value))) ||
             '',
     })
-    const [configMapOptionCollapsed, setConfigMapOptionCollapsed ] = useState<boolean>(false)
-    const [secretOptionCollapsed, setSecretOptionCollapsed ] = useState<boolean>(false)
+    const [configMapOptionCollapsed, setConfigMapOptionCollapsed] = useState<boolean>(false)
+    const [secretOptionCollapsed, setSecretOptionCollapsed] = useState<boolean>(false)
 
     useEffect(() => {
         handleConfigToDeploySelection()
@@ -113,10 +113,10 @@ export default function TriggerViewConfigDiff({
         }
     }
 
-    const handleCollapsableNavOptionSelection= (navOptionKey: string)=>{
-        if(navOptionKey==="configMap"){
+    const handleCollapsableNavOptionSelection = (navOptionKey: string) => {
+        if (navOptionKey === 'configMap') {
             setConfigMapOptionCollapsed(!configMapOptionCollapsed)
-        }else{
+        } else {
             setSecretOptionCollapsed(!secretOptionCollapsed)
         }
     }
@@ -209,7 +209,11 @@ export default function TriggerViewConfigDiff({
                                 onClick={handleNavOptionSelection}
                                 key={navOption.key}
                             >
-                                <ManifestIcon className={`icon-dim-16 mr-8 ${navOption.key === activeSideNavOption ? 'scb-5':''}`}/>
+                                <ManifestIcon
+                                    className={`icon-dim-16 mr-8 ${
+                                        navOption.key === activeSideNavOption ? 'scb-5' : ''
+                                    }`}
+                                />
                                 {navOption.displayName}
                             </div>
                         )
