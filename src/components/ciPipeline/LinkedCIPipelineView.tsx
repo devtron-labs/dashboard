@@ -10,8 +10,9 @@ import {
     VisibleModal,
     DeleteDialog,
     ServerErrors,
+    RadioGroup,
+    RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import { Info } from '../common';

@@ -9,14 +9,13 @@ import {
     TaskFieldDescription,
     TaskFieldLabel,
 } from '../ciPipeline/types'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import OutputDirectoryPath from './OutputDirectoryPath'
 import MultiplePort from './MultiplsPort'
 import { ciPipelineContext } from './CIPipeline'
 import Tippy from '@tippyjs/react'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import MountFromHost from './MountFromHost'
-import { Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import CustomScript from './CustomScript'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import CreatableSelect from 'react-select/creatable'

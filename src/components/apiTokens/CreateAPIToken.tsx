@@ -21,12 +21,11 @@ import {
 } from '../userGroups/userGroups.types'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import GroupPermission from './GroupPermission'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
-import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, showError, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 
 function CreateAPIToken({
     setShowGenerateModal,

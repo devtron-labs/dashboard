@@ -6,9 +6,10 @@ import {
     VisibleModal,
     sortCallback,
     ErrorScreenNotAuthorized,
-    Reload
+    Reload,
+    RadioGroup,
+    RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import {
     getClusterList,

@@ -10,7 +10,7 @@ import { useParams } from 'react-router'
 import moment from 'moment'
 import { MomentDateFormat } from '../../config'
 import { copyToClipboard } from '../common'
-import { showError, Progressing, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, InfoColourBar, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import { deleteGeneratedAPIToken, updateGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -23,7 +23,6 @@ import {
     EntityTypes,
     OptionType,
 } from '../userGroups/userGroups.types'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { getUserId, saveUser } from '../userGroups/userGroup.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import DeleteAPITokenModal from './DeleteAPITokenModal'

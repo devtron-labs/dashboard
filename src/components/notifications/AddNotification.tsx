@@ -10,6 +10,8 @@ import {
     Checkbox,
     ClearIndicator,
     MultiValueRemove,
+    RadioGroup,
+    RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -28,7 +30,6 @@ import CreatableSelect from 'react-select/creatable'
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
 import './notifications.scss'
 import { getAppListMin, getEnvironmentListMin } from '../../services/service'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { SMTPConfigModal } from './SMTPConfigModal'
 import { EMAIL_AGENT } from './types'
 

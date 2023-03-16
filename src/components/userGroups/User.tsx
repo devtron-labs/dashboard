@@ -9,6 +9,8 @@ import {
     MultiValueRemove,
     multiSelectStyles,
     MultiValueChipContainer,
+    RadioGroup,
+    RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { saveUser, deleteUser } from './userGroup.service';
 import Creatable from 'react-select/creatable';
@@ -28,7 +30,6 @@ import AppPermissions from './AppPermissions';
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
 import { mainContext } from '../common/navigation/NavigationRoutes';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { PermissionType } from '../apiTokens/authorization.utils';
 import { excludeKeyAndClusterValue } from './K8sObjectPermissions/K8sPermissions.utils';
 

@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import {
     Select,
     ButtonWithLoader,
@@ -22,7 +21,9 @@ import {
     ServerErrors,
     Checkbox,
     CHECKBOX_VALUE,
-    InfoColourBar
+    InfoColourBar,
+    RadioGroup,
+    RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,

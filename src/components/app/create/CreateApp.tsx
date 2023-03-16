@@ -11,6 +11,8 @@ import {
     DEFAULT_TAG_DATA,
     multiSelectStyles,
     Reload,
+    RadioGroup,
+    RadioGroupItem,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { AddNewAppProps, AddNewAppState } from '../types'
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config'
@@ -23,7 +25,6 @@ import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import ReactSelect from 'react-select'
 import AsyncSelect from 'react-select/async'
-import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup'
 import { appListOptions, noOptionsMessage } from '../../AppSelector/AppSelectorUtil'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
