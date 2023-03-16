@@ -16,7 +16,7 @@ import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclama
 import { SSO_LOGGING_INFO } from '../../config/constantMessaging'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
-    isQueryParam = ''
+
     constructor(props) {
         super(props)
         this.state = {
@@ -27,13 +27,15 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 username: 'admin',
                 password: '',
             },
+            isQueryParam: false
+
         }
         this.handleChange = this.handleChange.bind(this)
         this.autoFillLogin = this.autoFillLogin.bind(this)
         this.login = this.login.bind(this)
         this.isFormNotValid = this.isFormNotValid.bind(this)
     }
-       componentDidMount() {
+    componentDidMount() {
         let queryString = new URLSearchParams(this.props.location.search)
         let queryParam = queryString.get('continue')
 
@@ -44,9 +46,10 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         //2. Also if the cookie is deleted/changed after some time from the database at backend then getCookie(TOKEN_COOKIE_NAME)
         //becomes false but queryParam != "/" will be true and queryParam is also not null hence redirecting users to the
         //login page with Please login again toast appearing.
+
         if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != '/')) {
             // toast.error('Please login again or go to help')
-            this.isQueryParam = queryParam
+            this.setState({isQueryParam: true})
         }
         if (queryParam && queryParam.includes('login')) {
             queryParam = '/app'
@@ -128,21 +131,34 @@ export default class Login extends Component<LoginProps, LoginFormState> {
             })
     }
 
+    renderLoginError = (): JSX.Element => {
+        return (
+            <>
+                {SSO_LOGGING_INFO.frontText}
+                <a target="_blank" href={DOCUMENTATION.GLOBAL_CONFIG_AUTH}>
+                    {SSO_LOGGING_INFO.redirectLink}
+                </a>
+                {SSO_LOGGING_INFO.tailText}
+            </>
+        )
+    }
+
+    renderSSOInfoBar = () => {
+        return (
+            <InfoColourBar
+                classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp mt-20 mb-20 w-300"
+                message={this.renderLoginError()}
+                redirectLink={SSO_LOGGING_INFO.redirectLink}
+                internalLink={true}
+                Icon={ErrorIcon}
+                iconClass="warning-icon"
+            />
+        )
+    }
+
     renderSSOLoginPage() {
         const search = this.props.location.search
-        const renderLoginError = (): JSX.Element => {
-            return (
-                <>
-                    <span>
-                        {SSO_LOGGING_INFO.frontText}
-                        <a target="_blank" href={DOCUMENTATION.GLOBAL_CONFIG_AUTH}>
-                            {SSO_LOGGING_INFO.redirectLink}
-                        </a>
-                        {SSO_LOGGING_INFO.tailText}
-                    </span>
-                </>
-            )
-        }
+
         return (
             <div className="login__control">
                 <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
@@ -163,16 +179,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             </a>
                         )
                     })}
-                { this.isQueryParam && (
-                    <InfoColourBar
-                        classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp mt-20 mb-20 w-300"
-                        message={renderLoginError()}
-                        redirectLink={SSO_LOGGING_INFO.redirectLink}
-                        internalLink={true}
-                        Icon={ErrorIcon}
-                        iconClass="warning-icon"
-                    />
-                )}
                 <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>
                     Login as administrator
                 </NavLink>
@@ -225,6 +231,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                     ) : (
                         <p className="login__link"></p>
                     )}
+                    {this.renderSSOInfoBar() ? this.renderSSOInfoBar : null}
                 </form>
             </div>
         )
