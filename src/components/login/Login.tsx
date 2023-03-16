@@ -16,7 +16,6 @@ import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclama
 import { SSO_LOGGING_INFO } from '../../config/constantMessaging'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
-
     constructor(props) {
         super(props)
         this.state = {
