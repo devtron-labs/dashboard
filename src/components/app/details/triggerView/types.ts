@@ -81,6 +81,7 @@ export interface MaterialInfo {
   webhookData: string
   branch: string
   url?: string
+  type?: string
 }
 
 export interface CDMaterialType {

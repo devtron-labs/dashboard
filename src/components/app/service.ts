@@ -290,7 +290,8 @@ function cdMaterialListModal(
                           tag: mat.tag || '',
                           webhookData: mat.webhookData || '',
                           url: mat.url || '',
-                          branch: mat.branch || ''
+                          branch: (material.ciConfigureSourceType === SourceTypeMap.WEBHOOK ? material.ciConfigureSourceValue : mat.branch) || '',
+                          type: material.ciConfigureSourceType || ''
                       }
                   })
                 : [],

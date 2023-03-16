@@ -165,7 +165,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                     materialUrl={mat.url}
                                     showMaterialInfoHeader={true}
                                     commitInfo={_gitCommit}
-                                    materialSourceType={''}
+                                    materialSourceType={mat.type}
                                     selectedCommitInfo={''}
                                     materialSourceValue={mat.branch}
                                 />
