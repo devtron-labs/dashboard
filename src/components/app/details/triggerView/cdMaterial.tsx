@@ -826,7 +826,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             return
         }
 
-        if (this.state.isRollbackTrigger && this.state.isSelectImageTrigger) {
+        if (this.state.isRollbackTrigger || this.state.isSelectImageTrigger) {
             this.props.triggerDeploy(
                 this.props.stageType,
                 this.props.appId,
