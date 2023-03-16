@@ -45,7 +45,8 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         //becomes false but queryParam != "/" will be true and queryParam is also not null hence redirecting users to the
         //login page with Please login again toast appearing.
         if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != '/')) {
-            toast.error('Please login again')
+            toast.error('Please login again or got to help')
+
         }
         if (queryParam && queryParam.includes('login')) {
             queryParam = '/app'
@@ -162,7 +163,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             </a>
                         )
                     })}
-                {localStorage.isSSOLogin !== 'true' && (
+                {typeof Storage !== 'undefined' && (
                     <InfoColourBar
                         classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp mt-20 mb-20 w-300"
                         message={renderLoginError()}
