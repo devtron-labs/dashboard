@@ -112,8 +112,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                     selectedMaterial = props.ciPipelineSourceTypeOptions[0]
                 } else {
                     selectedMaterial =
-                        props.ciPipelineSourceTypeOptions
-                        .find((i) =>
+                        props.ciPipelineSourceTypeOptions.find((i) =>
                             i.value === SourceTypeMap.WEBHOOK
                                 ? i.isSelected
                                 : isBranchRegex
@@ -139,7 +138,11 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                         placeholder="Source Type"
                                         isSearchable={false}
                                         menuPortalTarget={document.getElementById('visible-modal')}
-                                        options={props.ciPipelineSourceTypeOptions}
+                                        options={
+                                            !isMultiGit
+                                                ? props.ciPipelineSourceTypeOptions
+                                                : props.ciPipelineSourceTypeOptions.slice(0, 2)
+                                        }
                                         value={selectedMaterial}
                                         closeMenuOnSelect={true}
                                         onChange={(selected) => props?.selectSourceType(selected, mat.gitMaterialId)}
