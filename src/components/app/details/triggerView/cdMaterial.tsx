@@ -664,7 +664,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 } ${isLastDeployedOption ? 'pt-10 pb-10' : 'pt-7 pb-7'}`}
                 onClick={this.reviewConfig}
             >
-                {!isLastDeployedOption && (
+                {!isLastDeployedOption && (this.state.recentDeploymentConfig !== null || this.state.checkingDiff) && (
                     <div
                         className={`flex pt-3 pb-3 pl-12 pr-12 dc__border-radius-24 fs-12 fw-6 lh-20 ${statusColorClasses}`}
                     >
