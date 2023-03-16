@@ -13,11 +13,13 @@ import { SourceMaterialsProps } from './types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { reactSelectStyles } from '../CIPipelineN/ciPipeline.utils'
+import CIPipeline from '../CIPipelineN/CIPipeline'
 
 export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) {
     const [isProviderChanged, setProviderChanged] = useState(false)
     const { ciPipelineId } = useParams<{ ciPipelineId: string }>()
     const isMultiGit = props.materials.length > 1
+    const islinkedCI = window.location.href.indexOf('linked-ci') != -1
     let _materials = props.materials
     let _webhookTypeMaterial = _materials.find((_material) => _material.type == SourceTypeMap.WEBHOOK)
 
@@ -143,6 +145,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 ? props.ciPipelineSourceTypeOptions
                                                 : props.ciPipelineSourceTypeOptions.slice(0, 2)
                                         }
+                                        isDisabled={islinkedCI}
                                         value={selectedMaterial}
                                         closeMenuOnSelect={true}
                                         onChange={(selected) => props?.selectSourceType(selected, mat.gitMaterialId)}
