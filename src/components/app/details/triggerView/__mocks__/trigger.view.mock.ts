@@ -1,14 +1,14 @@
 import { CDModalTab } from '../../../service'
 
 const materialInfo = {
-    author: 'Test User <99399155+ajaydevtron@users.noreply.github.com>',
+    author: 'Test User',
     branch: 'main',
     commitLink: 'https://github.com:ajaydevtron/devtron-test/commit/7c97426aa94528319578c898a732efbcecaf0758',
     message: 'mg test',
     modifiedTime: 'Tue, 24 Jan 2023, 11:19 PM',
-    revision: '7c97426aa94528319578c898a732efbcecaf0758',
+    revision: '7c97426aa9452732efbcecaf0758',
     tag: '',
-    url: 'git@github.com:ajaydevtron/devtron-test.git',
+    url: 'git@github.com:testuser/devtron.git',
     webhookData: "{\"Id\":0,\"EventActionType\":\"\",\"Data\":null}",
 }
 
