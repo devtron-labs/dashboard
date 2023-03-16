@@ -22,7 +22,7 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
     if (!nodeDetails.group) {
         nodeDetails.group = ''
     }
-
+    // removed argocd server api dependencies and routed through k8s methods
     const data = {
         appId: appDetails.deploymentAppType === DeploymentAppType.argo_cd ? '' : getAppId(
             appDetails.clusterId,
@@ -45,7 +45,6 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
         ClusterId:  appDetails.deploymentAppType === DeploymentAppType.argo_cd ? appDetails.clusterId : null
     }
     return post(Routes.DELETE_RESOURCE, data)
-    
 }
 
 export const getAppOtherEnvironment = (appId) => {
