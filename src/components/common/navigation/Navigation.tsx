@@ -43,6 +43,7 @@ const NavigationList = [
         icon: JobsIcon,
         href: URLS.JOB,
         isAvailableInEA: false,
+        markOnlyForSuperAdmin: true,
     },
     {
         title: 'Application Groups',
@@ -124,7 +125,9 @@ interface NavigationType extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE
     moduleInInstallingState: string
     installedModuleMap: React.MutableRefObject<Record<string, boolean>>
+    isSuperAdmin: boolean
 }
+
 export default class Navigation extends Component<
     NavigationType,
     {
@@ -295,13 +298,15 @@ export default class Navigation extends Component<
                                 </div>
                             </div>
                         </NavLink>
-                        {NavigationList.map((item, index) => {
+                        {NavigationList.map((item) => {
                             if (
-                                (!item.forceHideEnvKey ||
-                                    (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey])) &&
-                                ((this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
-                                    (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
-                                    this.props.installedModuleMap.current?.[item.moduleName])
+                                (item.markOnlyForSuperAdmin && this.props.isSuperAdmin) ||
+                                (!item.markOnlyForSuperAdmin &&
+                                    (!item.forceHideEnvKey ||
+                                        (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey])) &&
+                                    ((this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
+                                        (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
+                                        this.props.installedModuleMap.current?.[item.moduleName]))
                             ) {
                                 if (item.type === 'button') {
                                     return this.renderNavButton(item)
