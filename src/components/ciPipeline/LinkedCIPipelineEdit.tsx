@@ -17,7 +17,7 @@ import { Info } from '../common/icons/Icons'
 import { getAppListMin, getCIConfig } from '../../services/service'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import './ciPipeline.css'
+import './ciPipeline.scss'
 import { appListOptions, noOptionsMessage } from '../AppSelector/AppSelectorUtil'
 import AsyncSelect from 'react-select/async'
 

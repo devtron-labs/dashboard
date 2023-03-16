@@ -26,7 +26,7 @@ import { multiSelectStyles, DropdownIndicator, Option, MultiValueContainer } fro
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
-import './notifications.css'
+import './notifications.scss'
 import { getAppListMin, getEnvironmentListMin } from '../../services/service'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { SMTPConfigModal } from './SMTPConfigModal'

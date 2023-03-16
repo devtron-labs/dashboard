@@ -11,14 +11,14 @@
 .pipeline-list__row {
     vertical-align: top;
     box-shadow: inset 0 -1px 0 0 var(--N100);
-}
 
-.pipeline-list__row:hover {
-    background-color: #edf1f5;
-}
+    &:hover {
+        background-color: #edf1f5;
 
-.pipeline-list__row:hover .pipeline-list__hover {
-    visibility: visible;
+        .pipeline-list__hover {
+            visibility: visible;
+        }
+    }
 }
 
 .pipeline-list__row--selected {
@@ -75,6 +75,10 @@
 .pipeline-list__recipients {
     width: 30%;
     padding: 10px;
+
+    .dc__devtron-tag {
+        margin: 2px;
+    }
 }
 
 .pipeline-list__hover {
@@ -141,6 +145,10 @@
     height: 48px;
     cursor: default;
     box-shadow: inset 0 -1px 0 0 var(--N100);
+
+    &:hover {
+        background-color: var(--window-bg);
+    }
 }
 
 .configuration-tab__table-header {
@@ -205,10 +213,6 @@
     margin-right: 0;
 }
 
-.configuration-tab__table-row:hover {
-    background-color: var(--window-bg);
-}
-
 .form__row--ses-account {
     width: 45%;
     min-width: 300px;
@@ -251,7 +255,6 @@
 .pipeline-filter__select-pipeline {
     position: relative;
     width: 100%;
-    /* z-index: 4; */
     background-color: white;
     min-height: 44px;
     display: flex;
@@ -260,9 +263,11 @@
     padding-bottom: 5px;
     flex-wrap: wrap;
 }
+
 .react-select--height-44 {
     min-height: 44px;
 }
+
 .select-button--pipeline-filter {
     text-align: left;
     font-size: 14px;
@@ -272,10 +277,20 @@
     color: var(--N400);
     padding: 14px;
     padding-bottom: 4px;
+
+    &.loading-applist {
+        text-align: center;
+        padding: 12px;
+        font-size: 13px;
+    }
 }
 
 .pipeline-filter__search {
     width: 310px;
+
+    &:focus {
+        outline: none;
+    }
 }
 
 .pipeline-filter__option {
@@ -288,75 +303,67 @@
     padding: 1px;
 }
 
-.pipeline-list__recipients .dc__devtron-tag {
-    margin: 2px;
-}
-
 .popup-button--notification-tab {
     width: unset;
     border: unset;
-}
 
-.popup-button--notification-tab:hover {
-    border: unset;
+    &:hover {
+        border: unset;
+    }
 }
 
 .notification-tab__option {
     cursor: pointer;
-}
 
-.pipeline-filter__search:focus {
-    outline: none;
-}
+    &:hover {
+        .fill-color {
+            fill: var(--N800);
+        }
 
-.notification-tab__option:hover .fill-color {
-    fill: var(--N800);
-}
+        .stroke-color {
+            stroke: var(--N800);
+        }
+    }
 
-.notification-tab__option:hover .stroke-color {
-    stroke: var(--N800);
-}
+    .fill-color {
+        fill: var(--N400);
+    }
 
-.notification-tab__option .fill-color {
-    fill: var(--N400);
-}
-
-.notification-tab__option .stroke-color {
-    stroke: var(--N400);
-}
-
-.select-button--pipeline-filter.loading-applist {
-    text-align: center;
-    padding: 12px;
-    font-size: 13px;
+    .stroke-color {
+        stroke: var(--N400);
+    }
 }
 
 .no-border {
     border: none;
     display: inline-block;
+
+    .form__radio-item {
+        border: none;
+        margin: 10px 20px 0 0;
+
+        .form__radio-item-content {
+            padding: 0;
+
+            .radio__title {
+                text-transform: none;
+            }
+        }
+    }
 }
 
-.no-border .form__radio-item {
-    border: none;
-    margin: 10px 20px 0 0;
+.smtp-protected-input {
+    .protected-input__toggle {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+    }
 }
 
-.no-border .form__radio-item .form__radio-item-content {
-    padding: 0;
-}
-
-.no-border .form__radio-item .form__radio-item-content .radio__title {
-    text-transform: none;
-}
-
-.smtp-protected-input .protected-input__toggle {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    -webkit-transform: translateY(-50%);
-    transform: translateY(-50%);
-}
-
-.no-email-channel-warning path {
-    fill: var(--Y700);
+.no-email-channel-warning {
+    path {
+        fill: var(--Y700);
+    }
 }

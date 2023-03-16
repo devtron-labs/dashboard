@@ -3,10 +3,10 @@
     padding: 16px 20px;
     border: solid 1px #d6dbdf;
     background-color: var(--N000);
-}
 
-.white-card.white-card--no-padding {
-    padding: 0px;
+    &.white-card--no-padding {
+        padding: 0px;
+    }
 }
 
 .white-card__header {

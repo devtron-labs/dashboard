@@ -20,7 +20,7 @@ import { ReactComponent as OIDC } from '../../assets/icons/ic-oidc.svg'
 import { ReactComponent as Openshift } from '../../assets/icons/ic-openshift.svg'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import warn from '../../assets/icons/ic-warning.svg';
-import './login.css';
+import './login.scss';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type';
 

@@ -22,7 +22,7 @@ import { OptionType } from '../app/types'
 import AppGroupAppFilter from './AppGroupAppFilter'
 import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
 import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
-import '../app/details/app.css'
+import '../app/details/app.scss'
 import { CONTEXT_NOT_AVAILABLE_ERROR } from '../../config/constantMessaging'
 
 const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)

@@ -68,6 +68,12 @@
     border: solid 1px var(--N200);
     position: relative;
     padding-left: 16px;
+
+    &.cursor {
+        &:hover {
+            box-shadow: 0 2px 4px -1px rgba(0, 56, 112, 0.3);
+        }
+    }
 }
 
 .workflow-node--static {
@@ -302,10 +308,6 @@
     margin-bottom: 0px;
 }
 
-.workflow-node.cursor:hover {
-    box-shadow: 0 2px 4px -1px rgba(0, 56, 112, 0.3);
-}
-
 .workflow-node__deploy-btn:hover,
 .workflow-node__rollback-btn:hover {
     color: var(--B500);
@@ -320,9 +322,11 @@
     background-color: var(--N200);
 }
 
-.cta.cta--workflow {
-    height: 36px;
-    line-height: unset;
+.cta {
+    &.cta--workflow {
+        height: 36px;
+        line-height: unset;
+    }
 }
 
 .workflow-node__add-cd-btn-tippy .add-cd-btn-tippy {

@@ -9,7 +9,7 @@ import { MaterialListProps, MaterialListState } from './material.types';
 import { ReactComponent as GitHub } from '../../assets/icons/ic-sample-app.svg';
 import { ReactComponent as PlayMedia } from '../../assets/icons/ic-play-media.svg'
 import { ReactComponent as Folder } from '../../assets/icons/ic-folder-filled.svg'
-import './material.css';
+import './material.scss';
 
 class MaterialList extends Component<MaterialListProps, MaterialListState> {
     constructor(props) {

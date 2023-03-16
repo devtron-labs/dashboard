@@ -6,7 +6,7 @@ import { ConfigurationTab } from './ConfigurationTab'
 import { NotificationTab } from './NotificationTab'
 import { ErrorBoundary } from '../common'
 import { DOCUMENTATION } from '../../config'
-import './notifications.css'
+import './notifications.scss'
 
 interface NotificationsProps extends RouteComponentProps<{}> {
     isSuperAdmin: boolean

@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 import { Project } from './Project';
 import { ProjectListState, ProjectType, ProjectListProps } from './types';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import './project.css';
+import './project.scss';
 import { PROJECT_EXIST_MSG, REQUIRED_FIELD_MSG } from '../../config/constantMessaging';
 
 export default class ProjectList extends Component<ProjectListProps, ProjectListState> {

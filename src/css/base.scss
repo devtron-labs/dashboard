@@ -1,10 +1,9 @@
-@import url('./modal.css');
-@import url('./whiteCard.css');
-@import url('./workflow.css');
-@import url('./workflow.css');
-@import url('./icons.css');
-@import url('./colorPalette.css');
-@import url('./triggerView.css');
+@import './modal.scss';
+@import './whiteCard.scss';
+@import url('./workflow.scss');
+@import './icons.scss';
+@import './colorPalette.scss';
+@import url('./triggerView.scss');
 
 :root {
     --modal-index: 20;
@@ -567,6 +566,7 @@ button.anchor {
 }
 
 .app-summary__status-name {
+
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,
@@ -647,6 +647,7 @@ button.anchor {
             word-wrap: anywhere;
             white-space: pre-line;
             padding: 0;
+
             .Toastify__toast-icon {
                 display: none;
             }
@@ -1106,12 +1107,12 @@ button.anchor {
     overflow: hidden;
     border-radius: 4px;
 
-    input + .radio__item-label {
+    input+.radio__item-label {
         border-radius: 0;
         border: 1px solid var(--N200);
     }
 
-    input[type='checkbox']:checked + .radio__item-label {
+    input[type='checkbox']:checked+.radio__item-label {
         border-radius: 0;
         background-color: var(--N100);
         color: var(--N900);
@@ -1420,7 +1421,7 @@ button.anchor {
     vertical-align: bottom;
 }
 
-.dc__tertiary-tab__radio input:checked ~ .dc__tertiary-tab {
+.dc__tertiary-tab__radio input:checked~.dc__tertiary-tab {
     border: solid 1px var(--B500);
     background-color: var(--B100);
 }
@@ -1521,6 +1522,7 @@ button.anchor {
     margin: 0 3px;
     background-size: contain;
 }
+
 // End Security CSS
 
 .saved-filter {
@@ -1601,6 +1603,7 @@ button.anchor {
 
 .dc__link {
     color: var(--B500);
+
     &:hover {
         color: var(--B500);
     }
@@ -1609,6 +1612,7 @@ button.anchor {
 .dc__link-bold {
     color: var(--B500);
     font-weight: 600;
+
     &:hover {
         color: var(--B500);
     }
@@ -1616,6 +1620,7 @@ button.anchor {
 
 .dc__link-n9 {
     color: var(--N900);
+
     &:hover {
         color: var(--N900);
     }
@@ -1736,12 +1741,8 @@ button.anchor {
     border-right: solid 1px var(--N100);
 }
 
-.dc__border-bottom-r2 {
-    border-bottom: solid 1px var(--R200);
-}
-
-.dc__no-border {
-    border: none !important;
+.dc__no-border{
+  border: none
 }
 
 .dc__box-shadow {
@@ -1821,6 +1822,7 @@ button.anchor {
     &.git {
         background-image: url('../assets/icons/git/git.svg');
     }
+
     &.github {
         background-image: url('../assets/icons/git/github.svg');
     }
@@ -1840,9 +1842,11 @@ button.anchor {
     &.docker-hub {
         background-image: url('../assets/icons/git/docker.svg');
     }
+
     &.acr {
         background-image: url('../assets/icons/ic-azure.svg');
     }
+
     &.quay {
         background-image: url('../assets/icons/ic-quay.svg');
     }
@@ -1858,6 +1862,7 @@ button.anchor {
     &.gcr {
         background-image: url('../assets/icons/ic-google-container-registry.svg');
     }
+
     &.other {
         background-image: url('../assets/icons/container.svg');
     }
@@ -1965,14 +1970,17 @@ textarea,
     font-weight: 600;
     line-height: 40px;
     width: 100%;
+
     .dc__left-pane {
         width: 49%;
         border-right: 1px solid #d6dbdf;
         padding-left: 10px;
     }
+
     .dc__right-pane {
         width: 51%;
         padding-left: 25px;
+
         .apply-change {
             float: right;
             margin-top: 9px;
@@ -1980,7 +1988,7 @@ textarea,
     }
 }
 
-.basic-multi-select > .select__control--is-disabled {
+.basic-multi-select>.select__control--is-disabled {
     background-color: var(--N100) !important;
 }
 

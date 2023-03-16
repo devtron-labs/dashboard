@@ -9,7 +9,7 @@ import { AutoSizer } from 'react-virtualized'
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
 import ReactGA from 'react-ga4';
-import './terminal.css';
+import './terminal.scss';
 import { Scroller } from '../app/details/cicdHistory/History.components';
 import { SocketConnectionType } from '../app/details/appDetails/appDetails.type';
 

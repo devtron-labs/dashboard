@@ -31,7 +31,7 @@ import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-rig
 import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png'
 import ContentCard from '../../common/ContentCard/ContentCard'
 import { CardContentDirection, CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
-import '../list/list.css'
+import '../list/list.scss'
 import {
     APPLIST_EMPTY_STATE_MESSAGING,
     ENVIRONMENT_HEADER_TIPPY_CONTENT,

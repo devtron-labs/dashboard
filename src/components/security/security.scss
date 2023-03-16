@@ -20,21 +20,25 @@
     border-right: solid 1px var(--N200);
 }
 
-.search-with-dropdown__search:focus {
-    outline: none;
-}
-
 .search-with-dropdown__search {
     padding: 0px;
     border: none;
     background-color: transparent;
     flex: 1;
     padding: 7px;
+
+    &:focus {
+        outline: none;
+    }
 }
 
 .security-scan {
     background-color: white;
     min-height: calc(100vh - 80px);
+
+    .tab-list__tab-link {
+        padding: 0 0 8px 0;
+    }
 }
 
 .security-scan__filters {
@@ -49,14 +53,14 @@
     min-width: 155px;
     height: 36px;
     margin-right: 12px;
+
+    &:last-child {
+        margin-right: 0px;
+    }
 }
 
 .security-scan__filter--environments {
     width: 185px;
-}
-
-.dc__security-scan__filter:last-child {
-    margin-right: 0px;
 }
 
 .user__table {
@@ -82,6 +86,15 @@
 .table__row {
     border-bottom: solid 1px #f5f5f5;
     cursor: pointer;
+
+    &:hover {
+        background-color: var(--N100);
+
+        .table__row-icon {
+            visibility: visible;
+            fill: var(--N500);
+        }
+    }
 }
 
 .security__data {
@@ -111,19 +124,10 @@
     padding-right: 24px;
 }
 
-.table__row:hover {
-    background-color: var(--N100);
-}
-
 .table__row-icon {
     visibility: hidden;
     transform: rotate(-90deg);
     cursor: pointer;
-}
-
-.table__row:hover .table__row-icon {
-    visibility: visible;
-    fill: var(--N500);
 }
 
 .security-policy {
@@ -199,6 +203,14 @@
     justify-content: space-between;
     margin-bottom: 24px;
     border-bottom: solid 1px var(--N200);
+
+    &:first-child {
+        margin-top: 0px;
+    }
+
+    &:last-child {
+        border-bottom: none;
+    }
 }
 
 .vulnerability__title {
@@ -210,6 +222,14 @@
     margin-top: 0px;
     margin-bottom: 8px;
     position: relative;
+
+    &::before {
+        content: '';
+        width: 5px;
+        height: 18px;
+        position: absolute;
+        left: -20px;
+    }
 }
 
 .vulnerability__subtitle {
@@ -226,32 +246,22 @@
     width: 120px;
 }
 
-.vulnerability:first-child {
-    margin-top: 0px;
+.vulnerability__title--critical {
+    &::before {
+        background-color: var(--R500);
+    }
 }
 
-.vulnerability:last-child {
-    border-bottom: none;
+.vulnerability__title--moderate {
+    &::before {
+        background-color: var(--Y500);
+    }
 }
 
-.vulnerability__title::before {
-    content: '';
-    width: 5px;
-    height: 18px;
-    position: absolute;
-    left: -20px;
-}
-
-.vulnerability__title--critical::before {
-    background-color: var(--R500);
-}
-
-.vulnerability__title--moderate::before {
-    background-color: var(--Y500);
-}
-
-.vulnerability__title--low::before {
-    background-color: var(--Y200);
+.vulnerability__title--low {
+    &::before {
+        background-color: var(--Y200);
+    }
 }
 
 .security-policy-card__title {
@@ -306,6 +316,10 @@
 .vulnerability-exp-table__row {
     border-bottom: solid 1px #f5f5f5;
     cursor: default;
+
+    &:hover {
+        background-color: var(--N100);
+    }
 }
 
 .vulnerability-exp-table__data {
@@ -345,10 +359,6 @@
     width: 61px;
     font-size: 12px;
     text-transform: capitalize;
-}
-
-.vulnerability-exp-table__row:hover {
-    background-color: var(--N100);
 }
 
 .white-card--cluster {
@@ -476,10 +486,10 @@
     top: 50%;
     right: 24px;
     transform: translateY(-50%);
-}
 
-.vulnerability-exp__clear-cve .fill-color {
-    fill: var(--N400);
+    .fill-color {
+        fill: var(--N400);
+    }
 }
 
 .form__subtitle--m-0 {
@@ -535,15 +545,15 @@
     border-bottom: solid 1px var(--N200);
 }
 
-.form__title.form__title--mt-20 {
-    margin-top: 20px;
+.form__title {
+    &.form__title--mt-20 {
+        margin-top: 20px;
+    }
 }
 
-.form__label.form__label--flex {
-    display: flex;
-    align-items: flex-start;
-}
-
-.security-scan .tab-list__tab-link {
-    padding: 0 0 8px 0;
+.form__label {
+    &.form__label--flex {
+        display: flex;
+        align-items: flex-start;
+    }
 }
