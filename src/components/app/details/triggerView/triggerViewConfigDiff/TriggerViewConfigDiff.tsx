@@ -42,6 +42,8 @@ export default function TriggerViewConfigDiff({
                 YAML.stringify(JSON.parse(currentConfiguration[activeSideNavOption].codeEditorValue.value))) ||
             '',
     })
+    const [configMapOptionCollapsed, setConfigMapOptionCollapsed ] = useState<boolean>(false)
+    const [secretOptionCollapsed, setSecretOptionCollapsed ] = useState<boolean>(false)
 
     useEffect(() => {
         handleConfigToDeploySelection()
@@ -111,6 +113,14 @@ export default function TriggerViewConfigDiff({
         }
     }
 
+    const handleCollapsableNavOptionSelection= (navOptionKey: string)=>{
+        if(navOptionKey==="configMap"){
+            setConfigMapOptionCollapsed(!configMapOptionCollapsed)
+        }else{
+            setSecretOptionCollapsed(!secretOptionCollapsed)
+        }
+    }
+
     const getNavOptions = (navKey: string): string[] => {
         const navOptions = []
 
@@ -140,42 +150,66 @@ export default function TriggerViewConfigDiff({
                         return (
                             options.length > 0 && (
                                 <Fragment key={`${navOption.key}-${idx}`}>
-                                    <h3 className="cn-7 fs-12 fw-6 lh-20 m-0 pt-6 pb-6 pl-14-imp pr-18 dc__uppercase">
-                                        <DownArrowFull className="icon-dim-8 ml-6 mr-12 icon-color-grey" />
+                                    <h3
+                                        className="cn-7 fs-12 fw-6 lh-20 m-0 pt-6 pb-6 pl-14-imp pr-18 dc__uppercase pointer"
+                                        onClick={() => handleCollapsableNavOptionSelection(navOption.key)}
+                                        key={`${navOption.key}-${idx}`}
+                                    >
+                                        <DownArrowFull
+                                            className="icon-dim-8 ml-6 mr-12 icon-color-grey rotate"
+                                            style={{
+                                                ['--rotateBy' as any]:
+                                                    (navOption.key === 'configMap' && configMapOptionCollapsed) ||
+                                                    (navOption.key === 'secret' && secretOptionCollapsed)
+                                                        ? '-90deg'
+                                                        : '0deg',
+                                            }}
+                                        />
                                         {navOption.displayName}
                                     </h3>
-                                    {options.map((_option) => {
-                                        const navKey = `${navOption.key}/${_option}`
-                                        return (
-                                            <div className="pt-4 pb-4 pr-10 ml-23 dc__border-left">
-                                                <div
-                                                    className={`flex left pointer ml-4 mr-4 pt-8 pb-8 pl-12 fs-13 lh-20 dc__overflow-hidden dc__border-radius-8-imp ${
-                                                        navKey === activeSideNavOption ? 'fw-6 cb-5 bcb-1' : 'fw-4 cn-9'
-                                                    } ${diffOptions?.[_option] ? 'diff-dot pr-8' : ''}`}
-                                                    data-value={navKey}
-                                                    onClick={handleNavOptionSelection}
-                                                    key={navKey}
-                                                >
-                                                    <ManifestIcon className="icon-dim-16 mr-8" />
-                                                    {_option}
+                                    {(navOption.key === 'configMap' && !configMapOptionCollapsed) ||
+                                    (navOption.key === 'secret' && !secretOptionCollapsed) ? (
+                                        options.map((_option) => {
+                                            const navKey = `${navOption.key}/${_option}`
+                                            return (
+                                                <div className="pt-4 pb-4 pr-10 ml-23 dc__border-left">
+                                                    <div
+                                                        className={`flex left pointer ml-4 mr-4 pt-8 pb-8 pl-12 fs-13 lh-20 dc__overflow-hidden dc__border-radius-4-imp ${
+                                                            navKey === activeSideNavOption
+                                                                ? 'fw-6 cb-5 bcb-1'
+                                                                : 'fw-4 cn-9'
+                                                        } ${diffOptions?.[_option] ? 'diff-dot pr-8' : ''}`}
+                                                        data-value={navKey}
+                                                        onClick={handleNavOptionSelection}
+                                                        key={navKey}
+                                                    >
+                                                        <ManifestIcon
+                                                            className={`icon-dim-16 mr-8 ${
+                                                                navKey === activeSideNavOption ? 'scb-5' : ''
+                                                            }`}
+                                                        />
+                                                        {_option}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        )
-                                    })}
+                                            )
+                                        })
+                                    ) : (
+                                        <></>
+                                    )}
                                 </Fragment>
                             )
                         )
                     } else {
                         return (
                             <div
-                                className={`flex left pointer ml-6 mr-6 pt-8 pb-8 pl-16 pr-18 fs-13 lh-20 dc__overflow-hidden dc__border-radius-8-imp ${
+                                className={`flex left pointer ml-6 mr-6 pt-8 pb-8 pl-16 pr-18 fs-13 lh-20 dc__overflow-hidden dc__border-radius-4-imp ${
                                     navOption.key === activeSideNavOption ? 'fw-6 cb-5 bcb-1' : 'fw-4 cn-9'
                                 } ${diffOptions?.[navOption.key] ? 'diff-dot' : ''}`}
                                 data-value={navOption.key}
                                 onClick={handleNavOptionSelection}
                                 key={navOption.key}
                             >
-                                <ManifestIcon className="icon-dim-16 mr-8" />
+                                <ManifestIcon className={`icon-dim-16 mr-8 ${navOption.key === activeSideNavOption ? 'scb-5':''}`}/>
                                 {navOption.displayName}
                             </div>
                         )

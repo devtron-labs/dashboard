@@ -295,6 +295,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             this.props.materialType,
             this.props.isFromBulkCD ? { id: this.props.pipelineId, type: this.props.stageType } : null,
         )
+        if (this.state.isSelectImageTrigger && this.state.selectedMaterial?.image !== selectedMaterial.image) {
+            this.setState({
+                selectedMaterial,
+            })
+        }
 
         if (this.state.isRollbackTrigger && this.state.selectedMaterial?.wfrId !== selectedMaterial.wfrId) {
             const isSpecificTriggerConfig =
@@ -980,12 +985,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             return (
                 <VisibleModal
                     className=""
-                    parentClassName={this.state.isRollbackTrigger ? 'dc__overflow-hidden' : ''}
+                    parentClassName={
+                        this.state.isRollbackTrigger || this.state.isSelectImageTrigger ? 'dc__overflow-hidden' : ''
+                    }
                     close={this.props.closeCDModal}
                 >
                     <div
                         className={`modal-body--cd-material h-100 ${
-                            this.state.isRollbackTrigger || this.state.showConfigDiffView ? 'contains-diff-view' : ''
+                            this.state.isRollbackTrigger || this.state.isSelectImageTrigger ? 'contains-diff-view' : ''
                         } ${this.props.material.length > 0 ? '' : 'no-material'}`}
                         onClick={stopPropagation}
                     >
