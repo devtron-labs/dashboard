@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, useState } from 'react'
 import dt from '../../assets/icons/logo/logo-dt.svg'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import { Switch, Redirect, NavLink, Link } from 'react-router-dom'
@@ -16,6 +16,7 @@ import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclama
 import { SSO_LOGGING_INFO } from '../../config/constantMessaging'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
+    isQueryParam = ''
     constructor(props) {
         super(props)
         this.state = {
@@ -31,9 +32,10 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         this.autoFillLogin = this.autoFillLogin.bind(this)
         this.login = this.login.bind(this)
         this.isFormNotValid = this.isFormNotValid.bind(this)
+        
+      
     }
-
-    componentDidMount() {
+       componentDidMount() {
         let queryString = new URLSearchParams(this.props.location.search)
         let queryParam = queryString.get('continue')
 
@@ -45,7 +47,8 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         //becomes false but queryParam != "/" will be true and queryParam is also not null hence redirecting users to the
         //login page with Please login again toast appearing.
         if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != '/')) {
-            toast.error('Please login again or got to help')
+            // toast.error('Please login again or got to help')
+            this.isQueryParam = queryParam
 
         }
         if (queryParam && queryParam.includes('login')) {
@@ -163,7 +166,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             </a>
                         )
                     })}
-                {typeof Storage === 'undefined' && (
+                {this.isQueryParam && (getCookie(TOKEN_COOKIE_NAME)) && (
                     <InfoColourBar
                         classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp mt-20 mb-20 w-300"
                         message={renderLoginError()}
