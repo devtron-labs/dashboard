@@ -150,11 +150,21 @@ export function PreBuild({
         )
     }
 
+    const getImgSource = () => {
+        if (isJobView) {
+            return nojobs
+        } else if (activeStageName === BuildStageVariable.PreBuild) {
+            return EmptyPreBuild
+        } else {
+            return EmptyPostBuild
+        }
+    }
+
     function renderGUI(): JSX.Element {
         if (formData[activeStageName].steps.length === 0) {
             return (
                 <CDEmptyState
-                    imgSource={isJobView ? nojobs : activeStageName === BuildStageVariable.PreBuild ? EmptyPreBuild : EmptyPostBuild}
+                    imgSource={getImgSource()}
                     title={
                         isJobView
                             ? 'No tasks configured'
