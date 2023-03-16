@@ -208,7 +208,7 @@ export function TaskTypeDetailComponent() {
         }
     }
 
-    const MenuList = (props) => {
+    const menuList = (props) => {
         return (
             <>
                 <components.MenuList {...props}>
@@ -242,7 +242,7 @@ export function TaskTypeDetailComponent() {
                             styles={containerImageSelectStyles}
                             classNamePrefix="select"
                             components={{
-                                MenuList,
+                                MenuList:menuList,
                                 Option,
                                 IndicatorSeparator: null,
                                 ValueContainer
