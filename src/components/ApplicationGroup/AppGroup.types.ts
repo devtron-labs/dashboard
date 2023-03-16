@@ -147,7 +147,7 @@ export interface EnvDeploymentStatus {
     appId: number
     pipelineId: number
     deployStatus: string
-    wfrId: number
+    wfrId?: number
 }
 export interface EnvAppList {
     id: number
