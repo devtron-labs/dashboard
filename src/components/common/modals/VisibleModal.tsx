@@ -13,12 +13,6 @@ export class VisibleModal extends React.Component<{
         super(props)
         this.escFunction = this.escFunction.bind(this)
 
-        // added for the test case of `cd material without crashing`
-        if (!this.modalRef) {
-          this.modalRef = document.createElement('div')
-          this.modalRef.setAttribute('id', 'visible-modal')
-          document.body.appendChild(this.modalRef)
-        }
     }
 
     escFunction(event) {
