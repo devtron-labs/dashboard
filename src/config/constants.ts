@@ -205,7 +205,7 @@ export const Routes = {
     ENVIRONMENT_APPS: 'env/app-grouping',
     ENV_APPLICATIONS: 'applications',
     ENV_DEPLOYMENT_STATUS: 'deployment/status',
-    USER_ROLE_GROUP_URL: 'user/role/group'
+    USER_ROLE_GROUP: 'user/role/group'
 }
 
 export const ViewType = {

@@ -5,6 +5,7 @@ import {
     CDMaterialState,
     CDMaterialType,
     DeploymentWithConfigType,
+    MaterialInfo,
     MATERIAL_TYPE,
     STAGE_TYPE,
 } from './types'
@@ -149,10 +150,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         } catch (error) {}
     }
 
-    renderGitMaterialInfo(matInfo) {
+    renderGitMaterialInfo(matInfo: MaterialInfo[]) {
         return (
             <>
-                {matInfo.map((mat) => {
+                {matInfo.map((mat: MaterialInfo) => {
                     let _gitCommit: GitTriggers = {
                         Commit: mat.revision,
                         Author: mat.author,
@@ -175,11 +176,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
                                 <GitCommitInfoGeneric
                                     materialUrl={mat.url}
-                                    showMaterialInfo={false}
+                                    showMaterialInfoHeader={true}
                                     commitInfo={_gitCommit}
-                                    materialSourceType={''}
+                                    materialSourceType={mat.type}
                                     selectedCommitInfo={''}
-                                    materialSourceValue={''}
+                                    materialSourceValue={mat.branch}
                                 />
                             </div>
                         )
@@ -506,6 +507,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <button
                             type="button"
                             className="material-history__changes-btn"
+                            data-testid={mat.showSourceInfo ? 'collapse-show-info' : 'collapse-hide-info'}
                             onClick={(event) => {
                                 event.stopPropagation()
                                 this.props.toggleSourceInfo(
