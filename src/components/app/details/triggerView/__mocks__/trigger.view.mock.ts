@@ -1,9 +1,7 @@
 import { CDModalTab } from '../../../service'
 
-const payload = {}
-
 const materialInfo = {
-    author: 'AJAY KUMAR <99399155+ajaydevtron@users.noreply.github.com>',
+    author: 'Test User <99399155+ajaydevtron@users.noreply.github.com>',
     branch: 'main',
     commitLink: 'https://github.com:ajaydevtron/devtron-test/commit/7c97426aa94528319578c898a732efbcecaf0758',
     message: 'mg test',
