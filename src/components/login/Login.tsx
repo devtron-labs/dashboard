@@ -16,7 +16,7 @@ import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclama
 import { SSO_LOGGING_INFO } from '../../config/constantMessaging'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
-    isQueryParam = false
+    isQueryParam = ''
     constructor(props) {
         super(props)
         this.state = {
@@ -46,9 +46,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         //login page with Please login again toast appearing.
         if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != '/')) {
             // toast.error('Please login again or go to help')
-            if (queryParam == '/'){
-                this.isQueryParam = true
-            }
+            this.isQueryParam = queryParam
         }
         if (queryParam && queryParam.includes('login')) {
             queryParam = '/app'
