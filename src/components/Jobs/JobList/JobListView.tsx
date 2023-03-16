@@ -77,19 +77,19 @@ export default function JobListView(props: JobListViewProps) {
                                     />
                                 )}
                             </div>
-                            <div className="app-list__cell">
+                            <div className="app-list__cell dc__border-bottom-n1">
                                 <p className="dc__truncate-text m-0 value">{job.name}</p>
                             </div>
-                            <div className="app-list__cell">
+                            <div className="app-list__cell dc__border-bottom-n1">
                                 <AppStatus appStatus={job.defaultPipeline.status} isJobView={true} />
                             </div>
-                            <div className="app-list__cell">
+                            <div className="app-list__cell dc__border-bottom-n1">
                                 <p className="dc__truncate-text m-0">{job.defaultPipeline.lastRunAt}</p>
                             </div>
-                            <div className="app-list__cell">
+                            <div className="app-list__cell dc__border-bottom-n1">
                                 <p className="dc__truncate-text m-0">{job.defaultPipeline.lastSuccessAt}</p>
                             </div>
-                            <div className="app-list__cell">
+                            <div className="app-list__cell dc__border-bottom-n1">
                                 <p className="dc__truncate-text m-0">{job.description ? job.description : '-'}</p>
                             </div>
                             <div className="app-list__cell app-list__cell--action">
