@@ -203,7 +203,7 @@ export const RESOURCE_PAGE_SIZE_OPTIONS = [
 
 export const TRYING_TO_CONNECT = 'Trying to connect to the Kubernetes cluster and fetch resources.'
 export const TAKING_LONGER_TO_CONNECT =
-    'Is taking longer than usual to connect to the cluster. If cluster is reachable it may take up to 30 seconds.'
+    'It is taking longer than usual to connect to the cluster. If cluster is reachable it may take up to 30 seconds.'
 export const SELECTE_CLUSTER_STATE_MESSAGING = {
     heading: 'Select a cluster to view Kubernetes resources',
     infoText: 'All Kubernetes resources in the selected cluster will be shown here',
