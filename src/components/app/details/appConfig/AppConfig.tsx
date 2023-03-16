@@ -1,5 +1,5 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react'
-import { useParams, useLocation, useRouteMatch, useHistory } from 'react-router'
+import { useParams, useLocation, useRouteMatch, useHistory } from 'react-router-dom'
 import { NavLink, Link, Route, Switch } from 'react-router-dom'
 import {
     URLS,
@@ -43,6 +43,7 @@ import {
     EnvironmentOverrideRouteProps,
     EnvironmentOverridesProps,
     NextButtonProps,
+    StageNames,
     STAGE_NAME,
 } from './appConfig.type'
 import { getUserRole } from '../../../userGroups/userGroup.service'
@@ -61,7 +62,7 @@ const WorkflowEdit = lazy(() => import('../../../workflowEditor/workflowEditor')
 const EnvironmentOverride = lazy(() => import('../../../EnvironmentOverride/EnvironmentOverride'))
 
 //stage: last configured stage
-function isUnlocked(stage: string, isJobView: boolean): AppStageUnlockedType {
+function isUnlocked(stage: string): AppStageUnlockedType {
     return {
         material:
             stage === STAGE_NAME.APP ||
@@ -85,7 +86,6 @@ function isUnlocked(stage: string, isJobView: boolean): AppStageUnlockedType {
             stage === STAGE_NAME.CD_PIPELINE ||
             stage === STAGE_NAME.CHART_ENV_CONFIG,
         workflowEditor:
-            (isJobView && stage === STAGE_NAME.GIT_MATERIAL) ||
             stage === STAGE_NAME.CI_PIPELINE ||
             stage === STAGE_NAME.DEPLOYMENT_TEMPLATE ||
             stage === STAGE_NAME.CD_PIPELINE ||
@@ -111,8 +111,6 @@ function isUnlocked(stage: string, isJobView: boolean): AppStageUnlockedType {
 function getCompletedStep(isUnlocked: AppStageUnlockedType, isJobView: boolean): number {
     if (isJobView) {
         if (isUnlocked.workflowEditor) {
-            return 2
-        } else if (isUnlocked.material) {
             return 1
         }
     } else {
@@ -140,7 +138,7 @@ function getNavItems(isUnlocked: AppStageUnlockedType, appId: string, isJobView:
                 href: `/job/${appId}/edit/materials`,
                 stage: STAGE_NAME.GIT_MATERIAL,
                 isLocked: !isUnlocked.material,
-                supportDocumentURL: DOCUMENTATION.APP_CREATE_MATERIAL,
+                supportDocumentURL: DOCUMENTATION.JOB_SOURCE_CODE,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
             },
@@ -149,7 +147,7 @@ function getNavItems(isUnlocked: AppStageUnlockedType, appId: string, isJobView:
                 href: `/job/${appId}/edit/workflow`,
                 stage: 'WORKFLOW',
                 isLocked: !isUnlocked.workflowEditor,
-                supportDocumentURL: DOCUMENTATION.APP_CREATE_WORKFLOW,
+                supportDocumentURL: DOCUMENTATION.JOB_WORKFLOW_EDITOR,
                 flowCompletionPercent: completedPercent,
                 currentStep: completedSteps,
             },
@@ -246,7 +244,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
     const [state, setState] = useState<AppConfigState>({
         view: ViewType.LOADING,
         stattusCode: 0,
-        isUnlocked: isUnlocked(STAGE_NAME.LOADING, isJobView),
+        isUnlocked: isUnlocked(STAGE_NAME.LOADING),
         stageName: STAGE_NAME.LOADING,
         appName: '',
         isCiPipeline: false,
@@ -273,12 +271,7 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
     useEffect(() => {
         Promise.all([getAppConfigStatus(+appId, isJobView), getWorkflowList(appId)])
             .then(([configStatusRes, workflowRes]) => {
-                let lastConfiguredStage = configStatusRes.result
-                    .slice()
-                    .reverse()
-                    .find((stage) => stage.status)
-                let lastConfiguredStageName = lastConfiguredStage.stageName
-                let configs = isUnlocked(lastConfiguredStageName, isJobView)
+                const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes.result)
                 let { navItems } = getNavItems(configs, appId, isJobView)
                 let index = navItems.findIndex((item) => item.isLocked)
                 if (index < 0) {
@@ -343,14 +336,42 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
             })
     }
 
+    const getUnlockedConfigsAndLastStage = (
+        configStatus: any,
+    ): {
+        configs: AppStageUnlockedType
+        lastConfiguredStage: StageNames
+    } => {
+        let _configs, _lastConfiguredStage
+        if (!configStatus) {
+            _configs = {} as AppStageUnlockedType
+            _lastConfiguredStage = ''
+        } else if (isJobView) {
+            const materialStage = configStatus.find((_stage) => _stage.stageName === STAGE_NAME.GIT_MATERIAL)
+            _configs = {
+                material: true, // First step/stage will be unlocked by default.
+                workflowEditor: materialStage?.status ?? false, // Unlocked when GIT_MATERIAL step is completed
+            } as AppStageUnlockedType
+            _lastConfiguredStage = materialStage?.status ? STAGE_NAME.GIT_MATERIAL : STAGE_NAME.APP
+        } else {
+            const lastConfiguredStage = configStatus
+                .slice()
+                .reverse()
+                .find((stage) => stage.status)
+            _lastConfiguredStage = lastConfiguredStage.stageName
+            _configs = isUnlocked(_lastConfiguredStage)
+        }
+
+        return {
+            configs: _configs,
+            lastConfiguredStage: _lastConfiguredStage,
+        }
+    }
+
     function respondOnSuccess() {
         getAppConfigStatus(+appId, isJobView)
             .then((configStatusRes) => {
-                let lastConfiguredStage = configStatusRes.result
-                    .slice()
-                    .reverse()
-                    .find((stage) => stage.status)
-                let configs = isUnlocked(lastConfiguredStage.stageName, isJobView)
+                const { configs, lastConfiguredStage } = getUnlockedConfigsAndLastStage(configStatusRes.result)
                 let { navItems } = getNavItems(configs, appId, isJobView)
                 let index = navItems.findIndex((item) => item.isLocked)
                 if (index < 0) {
@@ -454,22 +475,21 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
             <>
                 <div className={`app-compose ${getAdditionalParentClass()}`}>
                     <div
-                        className={`app-compose__nav flex column left top ${
+                        className={`app-compose__nav ${isJobView ? 'job-compose__side-nav' : ''} flex column left top ${
                             showCannotDeleteTooltip ? '' : 'dc__position-rel'
                         } dc__overflow-scroll ${hideConfigHelp ? 'hide-app-config-help' : ''} ${
                             _canShowExternalLinks ? '' : 'hide-external-links'
-                        } ${isJobView ? 'job-compose__side-nav' : ''}`}
+                        }`}
                     >
                         <Navigation
                             deleteApp={showDeleteConfirmation}
                             navItems={state.navItems}
-                            isCDPipeline={state.isCDPipeline}
-                            isCiPipeline={state.isCiPipeline}
                             canShowExternalLinks={_canShowExternalLinks}
                             showCannotDeleteTooltip={showCannotDeleteTooltip}
                             toggleRepoSelectionTippy={toggleRepoSelectionTippy}
                             getRepo={showRepoOnDelete}
                             isJobView={isJobView}
+                            hideConfigHelp={hideConfigHelp}
                         />
                     </div>
                     <div className="app-compose__main">
@@ -541,21 +561,19 @@ function renderNavItem(item: CustomNavItemsType) {
 function Navigation({
     navItems,
     deleteApp,
-    isCDPipeline,
-    isCiPipeline,
     canShowExternalLinks,
     showCannotDeleteTooltip,
     toggleRepoSelectionTippy,
     getRepo,
     isJobView,
+    hideConfigHelp,
 }: AppConfigNavigationProps) {
     const location = useLocation()
     const selectedNav = navItems.filter((navItem) => location.pathname.indexOf(navItem.href) >= 0)[0]
+
     return (
         <>
-            {(!isCDPipeline || (isJobView && !isCiPipeline)) && (
-                <AppConfigurationCheckBox selectedNav={selectedNav} isJobView={isJobView} />
-            )}
+            {!hideConfigHelp && <AppConfigurationCheckBox selectedNav={selectedNav} isJobView={isJobView} />}
             {navItems.map((item) => {
                 if (item.stage === 'EXTERNAL_LINKS') {
                     return (
@@ -650,7 +668,7 @@ function AppComposeRouter({
                                 <NextButton
                                     currentStageName={STAGE_NAME.GIT_MATERIAL}
                                     navItems={navItems}
-                                    isDisabled={!isUnlocked.dockerBuildConfig}
+                                    isDisabled={!isUnlocked.workflowEditor}
                                     isCiPipeline={isCiPipeline}
                                 />
                             </>

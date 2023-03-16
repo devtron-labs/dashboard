@@ -19,6 +19,7 @@ import { TaskDetailComponent } from './TaskDetailComponent'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import { ciPipelineContext } from './CIPipeline'
+import nojobs from '../../assets/img/empty-joblist@2x.png'
 
 export function PreBuild({
     presetPlugins,
@@ -149,11 +150,21 @@ export function PreBuild({
         )
     }
 
+    const getImgSource = () => {
+        if (isJobView) {
+            return nojobs
+        } else if (activeStageName === BuildStageVariable.PreBuild) {
+            return EmptyPreBuild
+        } else {
+            return EmptyPostBuild
+        }
+    }
+
     function renderGUI(): JSX.Element {
         if (formData[activeStageName].steps.length === 0) {
             return (
                 <CDEmptyState
-                    imgSource={activeStageName === BuildStageVariable.PreBuild ? EmptyPreBuild : EmptyPostBuild}
+                    imgSource={getImgSource()}
                     title={
                         isJobView
                             ? 'No tasks configured'

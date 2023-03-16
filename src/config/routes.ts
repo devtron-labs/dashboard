@@ -105,8 +105,8 @@ export const ORDERED_APP_COMPOSE_ROUTES: { stage: string; path: string }[] = [
     { stage: APP_COMPOSE_STAGE.ENV_OVERRIDE, path: URLS.APP_ENV_OVERRIDE_CONFIG },
 ]
 
-export const getAppComposeURL = (appId: string, appStage?: APP_COMPOSE_STAGE, isJobCreateView?: boolean): string => {
-    const _url = `${isJobCreateView ? URLS.JOB : URLS.APP}/${appId}/${URLS.APP_CONFIG}`
+export const getAppComposeURL = (appId: string, appStage?: APP_COMPOSE_STAGE, isJobView?: boolean): string => {
+    const _url = `${isJobView ? URLS.JOB : URLS.APP}/${appId}/${URLS.APP_CONFIG}`
     if (!appStage) return _url
     for (let stageDetail of ORDERED_APP_COMPOSE_ROUTES) {
         const { stage, path } = stageDetail

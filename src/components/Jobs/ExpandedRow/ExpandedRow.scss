@@ -71,3 +71,24 @@
 .app-list__row--expanded:hover {
     background-color: var(--N100) !important
 }
+
+
+.jobs-view-container {
+    .app-list {
+        .app-list__row {
+            &.app-list__row--expanded {
+                grid-template-columns: 40px 250px 150px repeat(2, 170px)
+            }
+        }
+
+        .expanded-row {
+            .expanded-row__title {
+                .expanded-row__close {
+                    grid-template-columns: 40px 250px;
+                    display: grid;
+                    column-gap: 16px;
+                }
+            }
+        }
+    }
+}

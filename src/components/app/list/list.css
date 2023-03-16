@@ -463,3 +463,21 @@
 .devtron-app-guided-cards-wrapper {
     grid-template-columns: 300px 300px;
 }
+
+.jobs-view-container .app-list .app-list__header,
+.jobs-view-container .app-list .app-list__row {
+    display: grid;
+    grid-template-columns: 24px 250px 150px repeat(2, 170px) auto 48px;
+    align-items: center;
+    column-gap: 16px;
+}
+
+.jobs-view-container .app-list .app-list__header .app-list__cell,
+.jobs-view-container .app-list .app-list__row .app-list__cell {
+    justify-content: flex-start;
+    padding: 0;
+}
+
+.jobs-view-container .app-list .app-list__row .app-list__cell.app-list__cell--action {
+    justify-content: flex-end;
+}

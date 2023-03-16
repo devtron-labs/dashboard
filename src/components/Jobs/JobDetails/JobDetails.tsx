@@ -13,7 +13,7 @@ import {
 } from 'react-router-dom'
 import { URLS } from '../../../config'
 import AppConfig from '../../app/details/appConfig/AppConfig'
-import AppOverview from '../../app/details/appOverview/AppOverview'
+import Overview from '../../app/Overview/Overview'
 import CIDetails from '../../app/details/cIDetails/CIDetails'
 import TriggerView from '../../app/details/triggerView/TriggerView'
 import { getAppMetaInfo } from '../../app/service'
@@ -54,7 +54,11 @@ export default function JobDetails() {
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <AppOverview appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
+                            <Overview
+                                appMetaInfo={appMetaInfo}
+                                getAppMetaInfoRes={getAppMetaInfoRes}
+                                isJobOverview={true}
+                            />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                             <TriggerView isJobView={true} />
@@ -190,7 +194,7 @@ function JobHeader({ jobName }: { jobName: string }) {
     }
 
     return (
-        <div className="app-header-wrapper">
+        <div className="job-header-wrapper">
             <PageHeader
                 breadCrumbs={renderBreadcrumbs}
                 isBreadcrumbs={true}

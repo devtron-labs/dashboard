@@ -131,7 +131,9 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                     {!pipelineId ? (
                         <EmptyView
                             title="No pipeline selected"
-                            subTitle="Please select a pipeline to start seeing CI builds."
+                            subTitle={`Please select a pipeline ${
+                                isJobView ? 'to see execution details' : 'to start seeing CI builds'
+                            }.`}
                         />
                     ) : (
                         pipeline && (
@@ -166,7 +168,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                 ) : (
                                     !loading && (
                                         <EmptyView
-                                            title="Build pipeline not triggered"
+                                            title={`${isJobView ? 'Job' : 'Build'} pipeline not triggered`}
                                             subTitle="Pipeline trigger history, details and logs will be available here."
                                         />
                                     )
@@ -334,7 +336,7 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView }: His
                         artifact={triggerDetails.artifact}
                         blobStorageEnabled={triggerDetails.blobStorageEnabled}
                         getArtifactPromise={_getArtifactPromise}
-                        artifactsUploaded={triggerDetails.artifactsUploaded}
+                        isArtifactUploaded={triggerDetails.isArtifactUploaded}
                         isJobView={isJobView}
                     />
                 </Route>

@@ -5,7 +5,7 @@ import { DeploymentAppType } from '../v2/appDetails/appDetails.type'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: (e) => void
-    isJobCreateView?: boolean
+    isJobView?: boolean
 }
 
 export interface OptionType {
@@ -476,7 +476,7 @@ export interface DeleteComponentProps {
 export interface AppStatusType {
     appStatus: string
     isDeploymentStatus?: boolean
-    isJobCreateView?: boolean
+    isJobView?: boolean
 }
 
 export interface ResizableTagTextAreaProps {

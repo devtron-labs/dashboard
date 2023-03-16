@@ -22,11 +22,11 @@ export const IGNORE_CACHE_INFO = {
     },
     CacheNotAvailable: {
         title: 'Cache will be generated for this pipeline run',
-        infoText: 'Cache will be used in future runs to reduce build time.',
+        infoText: 'Cache will be used in future runs to reduce build time.'
     },
     IgnoreCache: {
         title: 'Ignore Cache',
-        infoText: 'Ignoring cache will lead to longer build time.',
+        infoText: 'Ignoring cache will lead to longer build time.'
     },
 }
 export const BRANCH_REGEX_MODAL_MESSAGING = {

@@ -24,10 +24,10 @@ import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
-import '../../app/list/list.css'
 import { FILE_NAMES } from '../../common/ExportToCsv/constants'
+import '../../app/list/list.css'
 
-export default function JobsList({ isArgoInstalled }: { isArgoInstalled: boolean }) {
+export default function JobsList() {
     const { path } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -102,7 +102,7 @@ export default function JobsList({ isArgoInstalled }: { isArgoInstalled: boolean
                     path={`${path}/${URLS.CREATE_JOB}`}
                     render={(props) => (
                         <AddNewApp
-                            isJobCreateView={true}
+                            isJobView={true}
                             close={closeJobCreateModal}
                             history={props.history}
                             location={props.location}
@@ -222,23 +222,19 @@ export default function JobsList({ isArgoInstalled }: { isArgoInstalled: boolean
                     </div>
                 </form>
                 <div className="app-list-filters filters">
-                    {isArgoInstalled && (
-                        <>
-                            <Filter
-                                list={masterFilters.appStatus}
-                                labelKey="label"
-                                buttonText={JobsFilterTypeText.StatusText}
-                                placeholder={JobsFilterTypeText.SearchStatus}
-                                searchable
-                                multi
-                                type={JobsFilterTypeText.APP_STATUS}
-                                applyFilter={applyFilter}
-                                onShowHideFilterContent={onShowHideFilterContent}
-                                isFirstLetterCapitalize={true}
-                            />
-                            <span className="filter-divider" />
-                        </>
-                    )}
+                    <Filter
+                        list={masterFilters.appStatus}
+                        labelKey="label"
+                        buttonText={JobsFilterTypeText.StatusText}
+                        placeholder={JobsFilterTypeText.SearchStatus}
+                        searchable
+                        multi
+                        type={JobsFilterTypeText.APP_STATUS}
+                        applyFilter={applyFilter}
+                        onShowHideFilterContent={onShowHideFilterContent}
+                        isFirstLetterCapitalize={true}
+                    />
+                    <span className="filter-divider" />
                     <Filter
                         list={masterFilters.projects}
                         labelKey="label"
@@ -313,7 +309,7 @@ export default function JobsList({ isArgoInstalled }: { isArgoInstalled: boolean
     }
 
     return (
-        <div>
+        <div className="jobs-view-container">
             {dataStateType === JobListViewType.LOADING && (
                 <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
@@ -336,7 +332,6 @@ export default function JobsList({ isArgoInstalled }: { isArgoInstalled: boolean
                         isSuperAdmin={true}
                         openJobCreateModel={openJobCreateModel}
                         setJobCount={setJobCount}
-                        isArgoInstalled={isArgoInstalled}
                         renderMasterFilters={renderMasterFilters}
                         renderAppliedFilters={renderAppliedFilters}
                     />

@@ -296,6 +296,7 @@ export default function NavigationRoutes() {
                             serverMode={serverMode}
                             moduleInInstallingState={moduleInInstallingState}
                             installedModuleMap={installedModuleMap}
+                            isSuperAdmin={isSuperAdmin}
                         />
                     )}
                     {serverMode && (
@@ -317,9 +318,11 @@ export default function NavigationRoutes() {
                                                 />
                                             )}
                                         />
-                                        <Route path={URLS.JOB}>
-                                            <Jobs />
-                                        </Route>
+                                        {isSuperAdmin && (
+                                            <Route path={URLS.JOB}>
+                                                <Jobs />
+                                            </Route>
+                                        )}
                                         <Route path={URLS.APPLICATION_GROUP}>
                                             <AppGroupRoute isSuperAdmin={isSuperAdmin} />
                                         </Route>

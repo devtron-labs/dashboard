@@ -26,6 +26,7 @@ import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import DeprecatedWarningModal from './DeprecatedWarningModal'
+import nojobs from '../../assets/img/empty-joblist@2x.png'
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     workflowTimer = null
@@ -228,7 +229,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     closeAddWorkflow = () => {
         this.props.history.push(
-            `${URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
+            `${this.props.isJobView ? URLS.JOB : URLS.APP}/${this.props.match.params.appId}/${URLS.APP_CONFIG}/${
+                URLS.APP_WORKFLOW_CONFIG
+            }`,
         )
         this.props.getWorkflows()
     }
@@ -439,7 +442,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     renderEmptyState() {
         return (
             <div className="create-here">
-                <img src={emptyWorkflow} alt="create-workflow" height="200" />
+                {this.props.isJobView ? (
+                    <img src={nojobs} width="250" height="200" alt="create-job-workflow" />
+                ) : (
+                    <img src={emptyWorkflow} alt="create-app-workflow" height="200" />
+                )}
                 <h1 className="form__title form__title--workflow-editor">Workflows</h1>
                 <p className="form__subtitle form__subtitle--workflow-editor">
                     {this.props.isJobView
@@ -578,7 +585,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         &nbsp;
                         <a
                             className="dc__link"
-                            href={DOCUMENTATION.APP_CREATE_WORKFLOW}
+                            href={
+                                this.props.isJobView
+                                    ? DOCUMENTATION.JOB_WORKFLOW_EDITOR
+                                    : DOCUMENTATION.APP_CREATE_WORKFLOW
+                            }
                             target="blank"
                             rel="noreferrer noopener"
                         >
