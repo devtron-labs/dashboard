@@ -46,7 +46,9 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         //login page with Please login again toast appearing.
         if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != '/')) {
             // toast.error('Please login again or go to help')
-            this.isQueryParam = true
+            if (queryParam == '/'){
+                this.isQueryParam = true
+            }
         }
         if (queryParam && queryParam.includes('login')) {
             queryParam = '/app'
