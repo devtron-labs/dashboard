@@ -42,7 +42,7 @@ function HelpNav({
             icon: Discord,
             showSeparator: isEnterprise,
         },
-    
+        ...(isEnterprise ? EnterpriseHelpOptions : OSSHelpOptions)
     ]
 
     const onClickGettingStarted = (): void => {
@@ -76,8 +76,13 @@ function HelpNav({
         )
     }
 
-    const renderHelpOptions = (helpOptionType): JSX.Element => {
-        return <> {CommonHelpOptions.concat(helpOptionType).map((option,index) => {
+    const handleHelpOptions = (e) => {
+        const option = CommonHelpOptions[e.currentTarget.dataset.index]
+        onClickHelpOptions(option)
+    } 
+
+    const renderHelpOptions = (): JSX.Element => {
+        return <> {CommonHelpOptions.map((option,index) => {
                 return (
                     <Fragment key={option.name}>
                         <a
@@ -86,9 +91,8 @@ function HelpNav({
                             href={option.link}
                             target="_blank"
                             rel="noreferrer noopener"
-                            onClick={() => {
-                                onClickHelpOptions(option)
-                            }}
+                            data-index = {index}
+                            onClick={handleHelpOptions}
                         >
                             <option.icon />
                             <div className="help-card__option-name ml-12 cn-9 fs-14">{option.name}</div>
@@ -113,8 +117,7 @@ function HelpNav({
                     <GettingStartedIcon />
                     <div className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
                 </NavLink>
-                {isEnterprise && renderHelpOptions(EnterpriseHelpOptions)}
-                {!isEnterprise && renderHelpOptions(OSSHelpOptions)}
+                {renderHelpOptions()}
                 {isEnterprise && renderHelpFeedback()}
                 {serverInfo?.installationType === InstallationType.OSS_HELM && (
                     <div className="help-card__update-option fs-11 fw-6 mt-4">
