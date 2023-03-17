@@ -71,17 +71,22 @@ export interface CDMaterialState {
     selectedMaterial: CDMaterialType
 }
 
+export interface MaterialInfo {
+  revision: string
+  modifiedTime: string | Date
+  author: string
+  message: string
+  commitLink: string
+  tag: string
+  webhookData: string
+  branch: string
+  url?: string
+  type?: string
+}
+
 export interface CDMaterialType {
     id: string
-    materialInfo: {
-        revision: string
-        modifiedTime: string
-        author: string
-        message: string
-        commitLink: string
-        tag: string
-        webhookData: string
-    }[]
+    materialInfo: MaterialInfo[]
     tab: CDMdalTabType
     scanEnabled: boolean
     scanned: boolean
@@ -266,7 +271,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     appId?: number
     isSelected?: boolean
     fromAppGrouping?: boolean
-    handleSelectionChange?: (e)=> void
+    handleSelectionChange?: (_appId: number)=> void
 }
 
 export interface TriggerViewContextType {
@@ -486,6 +491,9 @@ export interface CiPipeline {
     afterDockerBuildScripts?: Array<CiScript>
     isDockerConfigOverridden?: boolean
     dockerConfigOverride?: DockerConfigOverrideType
+    appName?: string
+    appId?: string
+    componentId?: number
 }
 
 export interface Material {

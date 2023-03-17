@@ -4,7 +4,7 @@ import { useRouteMatch } from 'react-router'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterList } from './clusterNodes.service'
-import { handleUTCTime, Progressing, filterImageList, showError } from '../common'
+import { handleUTCTime, Progressing, filterImageList, showError, createGroupSelectList } from '../common'
 import { ClusterDetail, ClusterListResponse, ClusterListType } from './types'
 import PageHeader from '../common/header/PageHeader'
 import { toast } from 'react-toastify'
@@ -31,7 +31,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     const [searchApplied, setSearchApplied] = useState(false)
     const [showTerminalModal, setShowTerminal] = useState(false)
     const [terminalclusterData, setTerminalCluster] = useState<ClusterDetail>()
-
+    
     const getData = () => {
         setLoader(true)
         getClusterList()
@@ -259,7 +259,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                 <ClusterTerminal
                     clusterId={terminalclusterData.id}
                     clusterName={terminalclusterData.name}
-                    nodeList={terminalclusterData.nodeNames}
+                    nodeGroups={createGroupSelectList(terminalclusterData?.nodeDetails,'nodeName')}
                     closeTerminal={closeTerminal}
                     clusterImageList={nodeImageList}
                     namespaceList={namespaceList[terminalclusterData.name]}

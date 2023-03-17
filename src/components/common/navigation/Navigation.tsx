@@ -42,6 +42,8 @@ const NavigationList = [
         icon: EnvIcon,
         href: URLS.APPLICATION_GROUP,
         isAvailableInEA: false,
+        markAsBeta: true,
+        forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
     },
     {
         title: 'Resource Browser',

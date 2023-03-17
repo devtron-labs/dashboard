@@ -400,8 +400,12 @@ export interface NodeTreeTabListProps extends LogSearchTermType {
     tabRef?: MutableRefObject<HTMLDivElement>
 }
 
-export interface Options {
+export interface OptionsBase {
     name: string;
+    isInitContainer?: boolean
+}
+
+export interface Options extends OptionsBase {
     selected: boolean;
 }
 export interface PodContainerOptions {
@@ -442,7 +446,7 @@ export interface SelectedResourceType {
     kind: string
     namespace: string
     name: string
-    containers: string[]
+    containers: OptionsBase[]
 }
 
 export interface ResourceInfoActionPropsType {
@@ -450,6 +454,11 @@ export interface ResourceInfoActionPropsType {
     isDeleted: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
+}
+
+export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
+    hideManagedFields: boolean
+    toggleManagedFields: (managedFieldsExist: boolean) => void
 }
 
 export interface NodeTreeDetailTabProps {
