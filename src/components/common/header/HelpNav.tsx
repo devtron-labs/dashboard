@@ -2,7 +2,7 @@ import React, { Fragment, useContext } from 'react'
 import ReactGA from 'react-ga4'
 import { NavLink } from 'react-router-dom'
 import { SliderButton } from '@typeform/embed-react'
-import { DOCUMENTATION, URLS } from '../../../config'
+import { DISCORD_LINK, DOCUMENTATION, URLS } from '../../../config'
 import { ReactComponent as Discord } from '../../../assets/icons/ic-discord-fill.svg'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { InstallationType } from '../../v2/devtronStackManager/DevtronStackManager.type'
@@ -38,7 +38,7 @@ function HelpNav({
     
         {
             name: 'Join discord community',
-            link: 'https://discord.devtron.ai/',
+            link: DISCORD_LINK,
             icon: Discord,
             showSeparator: isEnterprise,
         },
