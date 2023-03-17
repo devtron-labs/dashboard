@@ -19,7 +19,7 @@ export const EnterpriseHelpOptions: HelpOptionType[] = [
 
 ]
 
-export const NotEnterpriseHelpOptions: HelpOptionType[] = [
+export const OSSHelpOptions: HelpOptionType[] = [
 
     {
         name: 'Chat with support',

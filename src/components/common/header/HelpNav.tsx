@@ -10,7 +10,7 @@ import { ReactComponent as GettingStartedIcon } from '../../../assets/icons/ic-o
 import { ReactComponent as Feedback } from '../../../assets/icons/ic-feedback.svg'
 import { HelpNavType, HelpOptionType } from './header.type'
 import { stopPropagation } from '../helpers/Helpers'
-import { EnterpriseHelpOptions, NotEnterpriseHelpOptions } from './constants'
+import { EnterpriseHelpOptions, OSSHelpOptions } from './constants'
 import { mainContext } from '../navigation/NavigationRoutes'
 
 
@@ -114,7 +114,7 @@ function HelpNav({
                     <div className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
                 </NavLink>
                 {isEnterprise && renderHelpOptions(EnterpriseHelpOptions)}
-                {!isEnterprise && renderHelpOptions(NotEnterpriseHelpOptions)}
+                {!isEnterprise && renderHelpOptions(OSSHelpOptions)}
                 {isEnterprise && renderHelpFeedback()}
                 {serverInfo?.installationType === InstallationType.OSS_HELM && (
                     <div className="help-card__update-option fs-11 fw-6 mt-4">
