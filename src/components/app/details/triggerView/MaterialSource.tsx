@@ -72,7 +72,7 @@ export default function MaterialSource({
     }
 
     return (
-        <>
+        <div className='select-material--trigger-view__sidebar dc__overflow-scroll'>
             {material.map((mat, index) => {
                 return (
                     <div
@@ -103,6 +103,6 @@ export default function MaterialSource({
                     </div>
                 )
             })}
-        </>
+        </div>
     )
 }
