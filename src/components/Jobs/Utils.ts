@@ -76,9 +76,8 @@ export const jobListModal = (jobContainers) => {
 const pipelineModal = (ciPipelines: JobCIPipeline[]) => {
     return (
         ciPipelines?.map((ciPipeline) => {
-            let status = ciPipeline.status
             if (ciPipeline.status.toLocaleLowerCase() == 'deployment initiated') {
-                status = 'Progressing'
+                ciPipeline.status = 'Progressing'
             }
 
             return {
@@ -131,20 +130,20 @@ const getDefaultPipeline = (ciPipelines) => {
 }
 
 const getLastTriggeredJob = (jobList) => {
-    let job = jobList[0]
+    let selectedJob = jobList[0]
     let ms = moment(new Date(0)).valueOf()
-    for (let i = 0; i < jobList.length; i++) {
+    for (let job of jobList) {
         let time =
-            jobList[i].lastDeployedTime && jobList[i].lastDeployedTime.length
-                ? jobList[i].lastDeployedTime
+            job.lastDeployedTime && job.lastDeployedTime.length
+                ? job.lastDeployedTime
                 : new Date(0)
         let tmp = moment(time).utc(true).subtract(5, 'hours').subtract(30, 'minutes').valueOf()
         if (tmp > ms) {
             ms = tmp
-            job = jobList[i]
+            selectedJob = job
         }
     }
-    return job
+    return selectedJob
 }
 
 const handleDeploymentInitiatedStatus = (status: string): string => {

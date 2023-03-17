@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from 'react'
-import { useParams, useLocation, useRouteMatch, useHistory } from 'react-router-dom'
-import { NavLink, Link, Route, Switch } from 'react-router-dom'
+import { useParams, useLocation, useRouteMatch, useHistory, NavLink, Link, Route, Switch } from 'react-router-dom'
+
 import {
     URLS,
     getAppComposeURL,
