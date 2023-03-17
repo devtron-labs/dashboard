@@ -72,13 +72,13 @@ export default function MaterialSource({
     }
 
     return (
-        <div className='select-material--trigger-view__sidebar dc__overflow-scroll'>
+        <div className="select-material--trigger-view__sidebar dc__overflow-scroll">
             {material.map((mat, index) => {
                 return (
                     <div
                         key={index}
                         data-id={mat.id}
-                        className={`material-list__item ${mat.isSelected ? 'material-selected' : ''}`}
+                        className={`material-list__item ${mat.isSelected ? "material-selected" : ''}`}
                         onClick={handleSelectMaterialAction}
                     >
                         <div className="material-info">
