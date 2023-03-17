@@ -85,7 +85,7 @@ export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
                     >
                         <GitCommitInfoGeneric
                             materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger.GitRepoUrl : ciMaterial?.url}
-                            showMaterialInfo={true}
+                            showMaterialInfoHeader={true}
                             commitInfo={gitTrigger}
                             materialSourceType={
                                 gitTrigger?.CiConfigureSourceType ? gitTrigger.CiConfigureSourceType : ciMaterial?.type

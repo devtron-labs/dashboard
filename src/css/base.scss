@@ -1938,6 +1938,10 @@ button.anchor {
     border-radius: 8px !important;
 }
 
+.dc__border-radius-4-imp {
+    border-radius: 4px !important;
+}
+
 .dc__no-top-border {
     border-top: 0px !important;
 }
@@ -2018,6 +2022,9 @@ textarea,
     path:nth-child(2) {
         fill: var(--N900);
     }
+}
+.icon-color-grey {
+    fill: #5A5A5A;
 }
 
 .icon-color-n7 {
@@ -2454,6 +2461,10 @@ textarea,
 }
 
 // Padding in pixels
+.pl-14-imp {
+    padding-left: 14px !important;
+}
+
 .pl-16 {
     padding-left: 16px !important;
 }

@@ -77,9 +77,9 @@ export function saveGroup(request: CreateGroup) {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : 30,
     }
     if (window._env_.CONFIGURABLE_TIMEOUT) {
-        return request.id ? put(Routes.USER_ROLE_GROUP_URL, request, options) : post('user/role/group', request, options)
+        return request.id ? put(Routes.USER_ROLE_GROUP, request, options) : post('user/role/group', request, options)
     } else {
-        return request.id ? put(Routes.USER_ROLE_GROUP_URL, request) : post('user/role/group', request)
+        return request.id ? put(Routes.USER_ROLE_GROUP, request) : post('user/role/group', request)
     }
 }
 

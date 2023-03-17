@@ -27,8 +27,8 @@ export const Routes = {
     EXTERNAL_CI_CONFIG: 'app/external-ci',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
     SPECIFIC_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all',
-    RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all/latest',
-    LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/all/latest',
+    RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/latest/deployed',
+    LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/latest/saved',
     WORKFLOW_EDITOR: 'edit/workflow',
 
     CD_MATERIAL_GET: 'app/cd-pipeline',
@@ -204,7 +204,7 @@ export const Routes = {
     ENVIRONMENT_APPS: 'env/app-grouping',
     ENV_APPLICATIONS: 'applications',
     ENV_DEPLOYMENT_STATUS: 'deployment/status',
-    USER_ROLE_GROUP_URL: 'user/role/group',
+    USER_ROLE_GROUP: 'user/role/group'
 }
 
 export const ViewType = {
@@ -289,7 +289,8 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_GITOPS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/gitops`,
     GLOBAL_CONFIG_GIT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/git-accounts`,
     GLOBAL_CONFIG_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/docker-registries`,
-    GLOBAL_CONFIG_CLUSTER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/cluster-and-environments#configure-prometheus-enable-applications-metrics`,
+    GLOBAL_CONFIG_CLUSTER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/cluster-and-environments`,
+    GLOBAL_CONFIG_AUTH: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access`,
     GLOBAL_CONFIG_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/chart-repo`,
     GLOBAL_CONFIG_NOTIFICATION: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/manage-notification`,
     GLOBAL_CONFIG_PROJECT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/projects`,

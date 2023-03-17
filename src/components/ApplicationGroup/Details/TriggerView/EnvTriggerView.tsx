@@ -991,6 +991,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     const onShowBulkCDModal = (e) => {
         setCDLoading(true)
         setBulkTriggerType(e.currentTarget.dataset.triggerType)
+        setMaterialType(MATERIAL_TYPE.inputMaterialList)
         setTimeout(() => {
             setShowBulkCDModal(true)
         }, 100)
