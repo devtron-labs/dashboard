@@ -329,6 +329,14 @@ export const NETSHOOT_LINK = 'https://github.com/nicolaka/netshoot'
 
 export const BUSYBOX_LINK = 'https://busybox.net/'
 
+export const DISCORD_LINK = 'https://discord.devtron.ai/'
+
+export const OPEN_NEW_TICKET = 'https://enterprise.devtron.ai/portal/en/newticket'
+
+export const VIEW_ALL_TICKETS = 'https://enterprise.devtron.ai/portal/en/myarea'
+
+export const RAISE_ISSUE = 'https://github.com/devtron-labs/devtron/issues/new/choose'
+
 // APP LIST STARTS
 export const AppListConstants = {
     SAMPLE_NODE_REPO_URL: 'https://github.com/devtron-labs/getting-started-nodejs',
