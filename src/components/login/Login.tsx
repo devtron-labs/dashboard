@@ -26,8 +26,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 username: 'admin',
                 password: '',
             },
-            isQueryParam: false
-
+            isQueryParam: false,
         }
         this.handleChange = this.handleChange.bind(this)
         this.autoFillLogin = this.autoFillLogin.bind(this)
@@ -48,7 +47,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
         if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != '/')) {
             // toast.error('Please login again or go to help')
-            this.setState({isQueryParam: true})
+            this.setState({ isQueryParam: true })
         }
         if (queryParam && queryParam.includes('login')) {
             queryParam = '/app'
@@ -178,6 +177,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             </a>
                         )
                     })}
+                {this.state.isQueryParam && this.state.loginList ? this.renderSSOInfoBar() : null}
                 <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>
                     Login as administrator
                 </NavLink>
@@ -230,7 +230,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                     ) : (
                         <p className="login__link"></p>
                     )}
-                    {this.renderSSOInfoBar() ? this.renderSSOInfoBar : null}
                 </form>
             </div>
         )
