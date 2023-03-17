@@ -3,9 +3,8 @@ import TriggerView from '../TriggerView'
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
-
 describe('Trigger View', () => {
-    it('Render Trigger View', () => {
+    it('Render Trigger View without crashing', () => {
         const { container } = render(<TriggerView />, {
             wrapper: BrowserRouter,
         })

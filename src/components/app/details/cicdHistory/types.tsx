@@ -48,7 +48,7 @@ export interface CiMaterial {
 export interface GitTriggers {
     Commit: string
     Author: string
-    Date: Date
+    Date: Date | string
     Message: string
     Changes: string[]
     WebhookData: WebHookData
