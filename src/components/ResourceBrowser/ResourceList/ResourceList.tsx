@@ -416,7 +416,7 @@ export default function ResourceList() {
             if (retainSearched) {
                 handleFilterChanges(searchText, result, true)
             } else {
-                const sorted_data = result.data.sort((a, b) => (a.name > b.name ? 1 : -1))
+                const sorted_data = result.data.sort((a, b) => a["name"].localeCompare(b["name"]))
                 setFilteredResourceList(sorted_data)
                 setResourceListLoader(false)
             }
