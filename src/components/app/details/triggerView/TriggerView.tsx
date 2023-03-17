@@ -465,7 +465,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickTriggerCDNode = (nodeType: DeploymentNodeType, _appId: number, deploymentWithConfig?: string, wfrId?: number): void => {
+    onClickTriggerCDNode = (
+        nodeType: DeploymentNodeType,
+        _appId: number,
+        deploymentWithConfig?: string,
+        wfrId?: number,
+    ): void => {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
         this.setState({ isLoading: true })
         let node
