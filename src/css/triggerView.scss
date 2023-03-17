@@ -114,17 +114,12 @@
 
 .material-history {
     width: 530px;
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
     border: solid 1px var(--N200);
     background-color: var(--white);
     margin: 16px 20px;
     padding-top: 14px;
     padding-bottom: 14px;
     border-radius: 4px;
-
-    &:nth-child(2) {}
-
     &:last-child {
         margin-bottom: 92px;
     }
@@ -158,7 +153,7 @@
 }
 
 .material-history__info {
-    font-family: 'open sans';
+    font-family: 'Open Sans';
 }
 
 .material-history__select-text {
@@ -209,12 +204,11 @@
     color: var(--N700);
     text-align: right;
     padding: 8px 16px;
-    display: block;
     width: 100%;
     background-color: var(--white);
     border: none;
     box-shadow: inset 0 1px 0 0 var(--N200);
-    font-family: 'open sans';
+    font-family: 'Open Sans';
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -255,7 +249,7 @@
 
 .last-deployed-status {
     font-size: 12px;
-    font-family: 'open sans';
+    font-family: 'Open Sans';
     font-weight: normal;
     text-transform: uppercase;
     line-height: 1.5;
@@ -313,9 +307,6 @@
     color: var(--N900);
     border-bottom: solid 1px #d6dbdf;
     margin: 0px;
-}
-
-.trigger-modal__header {
     .modal__title {
         font-size: 16px;
         font-weight: 400;
@@ -513,10 +504,6 @@
     letter-spacing: normal;
 }
 
-.material-history:nth-child(2) {
-    /* margin-top: 0px; */
-}
-
 .material-history:last-child {
     margin-bottom: 92px;
 }
@@ -553,7 +540,7 @@
 
 .trigger-modal__empty-state {
     background-color: var(--window-bg);
-    font-family: 'Open sans';
+    font-family: 'Open Sans';
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -5,15 +5,6 @@
     margin-bottom: 24px;
 }
 
-.modal__title {
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 1.4;
-    color: var(--N900);
-    margin: 0px;
-    margin-bottom: 4px;
-}
-
 .modal__body {
     display: block;
     width: 400px;
@@ -60,6 +51,10 @@
 .modal__close-icon {
     display: inline;
     vertical-align: middle;
+    .stroke-color {
+        stroke: var(--N600);
+        stroke-width: 2;
+    }
 }
 
 .full-screen-modal__body-container {
@@ -142,7 +137,7 @@
     position: fixed;
     left: 0;
     top: 0;
-    
+
     &.notification-page-modal {
         display: block;
         background-color: var(--white);
@@ -191,9 +186,6 @@
 
 .confirmation-dialog__button-group {
     margin-top: 32px;
-}
-
-.confirmation-dialog__button-group {
     button {
         margin-left: 16px;
     }
@@ -236,11 +228,4 @@
 
 .modal__body--p-0 {
     padding: 0px;
-}
-
-.modal__close-icon {
-    .stroke-color {
-        stroke: var(--N600);
-        stroke-width: 2;
-    }
 }

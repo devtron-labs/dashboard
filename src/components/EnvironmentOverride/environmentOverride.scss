@@ -102,7 +102,7 @@ section.config-map-overrides {
         border-radius: 4px;
         text-transform: uppercase;
     }
-    &>div {
+    & > div {
         margin-left: 16px;
     }
 }
@@ -175,11 +175,11 @@ div.override-container {
 
 .override-textarea-container {
     display: flex;
-    &>div {
+    & > div {
         width: 100%;
     }
     textarea {
-        width: calc( 50% - 8px);
+        width: calc(50% - 8px);
         border: 1px solid var(--N200);
         border-radius: 4px;
         resize: vertical;
@@ -197,9 +197,6 @@ div.override-container {
     transform: scaleY(0);
     transform-origin: top;
     transition: transform 0.2s ease;
-}
-
-.list-collapse-enter {
     &.active {
         transform: scaleY(1);
     }

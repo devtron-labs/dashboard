@@ -1,4 +1,4 @@
-.hosturl__description{
+.hosturl__description {
     margin: 20px 20px;
     padding: 16px;
     border-radius: 4px;
@@ -18,9 +18,6 @@
 .hosturl__url {
     background: none;
     border: none;
-}
-
-.hosturl__url {
     &:focus {
         outline: 0;
     }

@@ -77,7 +77,7 @@
     max-width: 100%;
     overflow: auto;
 
-    &>* {
+    & > * {
         margin-bottom: 16px;
         width: 100%;
     }
@@ -119,18 +119,15 @@
 }
 
 .chart-store-card__text {
-    &.chart-store-card__text--no-margin {
-        margin: 0px;
-    }
-}
-
-.chart-store-card__text {
     min-height: 20px;
     margin-bottom: 16px;
     word-wrap: break-word;
     max-width: 100%;
     font-size: 14px;
     color: var(--N900);
+    &.chart-store-card__text--no-margin {
+        margin: 0px;
+    }
 }
 
 .chart-store-card__text--see-more {
@@ -204,7 +201,6 @@
         border-collapse: collapse;
 
         tbody {
-
             td,
             th {
                 padding: 6px 13px;
@@ -247,7 +243,7 @@
     padding: 6px 0;
     width: 100px;
 
-    &>* {
+    & > * {
         height: 40px;
         padding: 0 16px;
         cursor: pointer;
@@ -339,6 +335,21 @@
     justify-content: space-between;
     height: 44px;
     padding: 0 24px;
+    &:hover {
+        background-color: var(--N100);
+        .manage-values__item-action {
+            display: block;
+        }
+    }
+    svg {
+        .fill-color {
+            fill: var(--N600);
+        }
+
+        .stroke-color {
+            stroke: var(--N600);
+        }
+    }
 }
 
 .manage-values__create-new {
@@ -352,11 +363,10 @@
     box-shadow: 0 -1px 0 0 var(--N200);
     cursor: pointer;
     font-size: 14px;
-}
-
-.manage-values__list-item {
-    &:hover {
-        background-color: var(--N100);
+    svg {
+        .fill-color {
+            fill: var(--N600);
+        }
     }
 }
 
@@ -364,6 +374,9 @@
     margin-bottom: 8px;
     width: 48px;
     height: 48px;
+    .stroke-color {
+        stroke: var(--N300);
+    }
 }
 
 .manage-values__empty-state-title {
@@ -383,40 +396,6 @@
     display: none;
 }
 
-.manage-values__list-item {
-    &:hover {
-        .manage-values__item-action {
-            display: block;
-        }
-    }
-}
-
-.manage-values__empty-state-img {
-    .stroke-color {
-        stroke: var(--N300);
-    }
-}
-
-.manage-values__create-new {
-    svg {
-        .fill-color {
-            fill: var(--N600);
-        }
-    }
-}
-
-.manage-values__list-item {
-    svg {
-        .fill-color {
-            fill: var(--N600);
-        }
-
-        .stroke-color {
-            stroke: var(--N600);
-        }
-    }
-}
-
 .form__label {
     &.form__label--no-margin {
         margin: 0px;
@@ -430,7 +409,7 @@
     width: calc(100% - 64px);
     height: 100%;
 
-    >.default-background {
+    > .default-background {
         background-color: var(--window-bg);
     }
 }

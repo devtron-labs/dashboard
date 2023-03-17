@@ -55,6 +55,11 @@
     border-radius: 8px;
     border: solid 1px var(--N200);
     padding: 20px;
+    .code-editor {
+        border: 1px solid #d6dbdf;
+        border-radius: 4px;
+        overflow: hidden;
+    }
 }
 
 .flex-basis-50 {
@@ -113,7 +118,6 @@
     img {
         visibility: hidden;
     }
-
 }
 
 .delete-stage-icon {
@@ -130,12 +134,4 @@
     line-height: 1.43;
     letter-spacing: normal;
     color: var(--N900);
-}
-
-.cd-stage {
-    .code-editor {
-        border: 1px solid #d6dbdf;
-        border-radius: 4px;
-        overflow: hidden;
-    }
 }
