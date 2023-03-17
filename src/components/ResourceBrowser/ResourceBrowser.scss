@@ -175,15 +175,19 @@
 
     .manifest-container,
     .events-table-container {
-        height: calc(100vh - 126px);
+        height: calc(100vh - 118px);
     }
 
     .log-viewer-container {
-        height: calc(100vh - 169px);
+        height: calc(100vh - 161px);
     }
 
     .terminal-container {
-        height: calc(100vh - 193px);
+        height: calc(100vh - 185px);
+
+        &.resource-terminal-connected {
+            height: calc(100vh - 175px);
+        }
     }
 }
 

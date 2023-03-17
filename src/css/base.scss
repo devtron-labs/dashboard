@@ -256,10 +256,6 @@ a:focus {
     padding: 2px;
 }
 
-.dc__bottom-0 {
-    bottom: 0;
-}
-
 .dc__position-fixed {
     position: fixed;
 }
@@ -276,16 +272,24 @@ a:focus {
     position: sticky;
 }
 
-.dc__right-0 {
-    right: 0;
-}
-
 .dc__top-0 {
     top: 0;
 }
 
+.dc__bottom-0 {
+    bottom: 0;
+}
+
+.dc__right-0 {
+    right: 0;
+}
+
 .dc__left-35 {
     left: 35px;
+}
+
+.dc__right-20 {
+    right: 20px;
 }
 
 .dc__vertical-align-middle {
@@ -2369,6 +2373,10 @@ textarea,
 .h-100 {
     height: 100%;
 }
+.dc__height-reduce-172{
+    height: 'calc(100vh - 172px)'
+}
+
 
 // Line height
 .lh-1-4 {
