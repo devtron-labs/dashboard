@@ -30,6 +30,8 @@ interface customEnv {
     CENTRAL_API_ENDPOINT?: string
     HIDE_DEPLOYMENT_GROUPS?: boolean
     HIDE_GITOPS_OR_HELM_OPTION ?: boolean
+    CONFIGURABLE_TIMEOUT?: string
+    HIDE_APPLICATION_GROUPS?: boolean
     K8S_CLIENT?: boolean
 }
 declare global {
@@ -119,8 +121,9 @@ if (!window || !window._env_) {
         EA_APP_DETAILS_POLLING_INTERVAL: 30000,
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
         HIDE_DEPLOYMENT_GROUPS: true,
-        HIDE_GITOPS_OR_HELM_OPTION: true,
-        K8S_CLIENT: true
+        HIDE_GITOPS_OR_HELM_OPTION: false,
+        HIDE_APPLICATION_GROUPS: true,
+        K8S_CLIENT: false
     }
 }
 

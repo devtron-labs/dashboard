@@ -40,7 +40,7 @@
 }
 
 .workflow__header {
-    padding: 8px 20px;
+    padding: 8px 16px;
     border-radius: 8px 8px 0 0;
     border-bottom: solid 1px #d6dbdf;
     display: flex;
@@ -91,6 +91,11 @@
     border-top-left-radius: 8px;
 }
 
+.workflow-node__trigger-type-delete {
+    height: 6px;
+    transform: rotate(-90deg);
+}
+
 .workflow-node__details-link {
     font-size: 12px;
     font-weight: 600;
@@ -121,6 +126,12 @@
     width: 64px;
     left: -25px;
     bottom: 23px;
+}
+
+.workflow-node__trigger-type--create-delete {
+    width: 64px;
+    left: -30px;
+    bottom: 28px;
 }
 
 .workflow-node__btn-grp {
@@ -185,7 +196,7 @@
 }
 
 .workflow-node__add-cd-btn {
-    position: absolute;
+    position: fixed;
     left: 100%;
     top: 50%;
     transform: translate(-50%, -50%);

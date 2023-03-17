@@ -216,6 +216,23 @@ export default function NavigationRoutes() {
         }
     }, [])
 
+    useEffect(() => {
+        const persistedTabs = localStorage.getItem('persisted-tabs-data')
+        if (persistedTabs) {
+            try {
+                const parsedTabsData = JSON.parse(persistedTabs)
+                if (
+                    location.pathname !== parsedTabsData.key &&
+                    !location.pathname.startsWith(`${parsedTabsData.key}/`)
+                ) {
+                    localStorage.removeItem('persisted-tabs-data')
+                }
+            } catch (e) {
+                localStorage.removeItem('persisted-tabs-data')
+            }
+        }
+    }, [location.pathname])
+
     const getCurrentServerInfo = async (section?: string, withoutStatus?: boolean) => {
         if (
             currentServerInfo.fetchingServerInfo ||
@@ -303,7 +320,7 @@ export default function NavigationRoutes() {
                                         </Route>
                                         <Route
                                             path={URLS.GLOBAL_CONFIG}
-                                            render={(props) => <GlobalConfig {...props} />}
+                                            render={(props) => <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />}
                                         />
                                         <Route path={URLS.CLUSTER_LIST}>
                                             <ClusterNodeContainer />

@@ -182,7 +182,7 @@ export default function CIContainerRegistryConfig({
                                     : repository_name.value
                             }
                             onChange={handleOnChangeConfig}
-                            autoFocus
+                            autoFocus={!configOverrideView}
                             autoComplete={'off'}
                             disabled={configOverrideView && !allowOverride}
                         />

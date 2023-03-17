@@ -24,6 +24,7 @@ export interface ChartValuesViewType {
     chartVersionsDataFromParent?: ChartVersionType[]
     chartValuesFromParent?: ChartValuesType
     selectedVersionFromParent?: number
+    init?: () => void
 }
 
 export interface ChartSelectorType {
@@ -73,7 +74,7 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
     isDeployChartView?: boolean
     selectedEnvironment?: ChartEnvironmentOptionType
     handleEnvironmentSelection?: (selected: ChartEnvironmentOptionType) => void
-    environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[] 
+    environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[]
     invalidaEnvironment: boolean
 }
 
@@ -315,11 +316,6 @@ export enum ChartValuesViewActionTypes {
 export enum DeploymentAppType {
     Helm = 'helm',
     GitOps = 'argo_cd',
-}
-
-export enum DeploymentAppTypeNameMapping {
-    HelmKeyValue = 'Helm',
-    GitOpsKeyValue = 'GitOps',
 }
 
 export interface ChartValuesViewAction {

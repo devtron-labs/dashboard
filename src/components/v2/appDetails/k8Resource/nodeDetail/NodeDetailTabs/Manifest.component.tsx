@@ -14,7 +14,7 @@ import {
 import CodeEditor from '../../../../../CodeEditor/CodeEditor'
 import IndexStore from '../../../index.store'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
-import { AppType, DeploymentAppType, NodeType, ResourceInfoActionPropsType } from '../../../appDetails.type'
+import { AppType, DeploymentAppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
 import { showError, ToastBody } from '../../../../../common'
@@ -23,22 +23,26 @@ import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
     EA_MANIFEST_SECRET_INFO_TEXT,
 } from '../../../../../../config/constantMessaging'
+import { MANIFEST_KEY_FIELDS } from '../../../../../../config/constants'
 import { MODES } from '../../../../../../config'
 
 function ManifestComponent({
     selectedTab,
+    hideManagedFields,
+    toggleManagedFields,
     isDeleted,
     isResourceBrowserView,
     selectedResource,
-}: ResourceInfoActionPropsType) {
+}: ManifestActionPropsType) {
     const location = useLocation()
     const history = useHistory()
     const [{ tabs, activeTab }, dispatch] = useTab(ManifestTabJSON)
     const { url } = useRouteMatch()
-    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
+    const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string; group: string }>()
     const [manifest, setManifest] = useState('')
     const [modifiedManifest, setModifiedManifest] = useState('')
     const [activeManifestEditorData, setActiveManifestEditorData] = useState('')
+    const [trimedManifestEditorData, setTrimedManifestEditorData] = useState('')
     const [desiredManifest, setDesiredManifest] = useState('')
     const appDetails = IndexStore.getAppDetails()
     const [loading, setLoading] = useState(true)
@@ -53,7 +57,7 @@ function ManifestComponent({
     useEffect(() => {
         selectedTab(NodeDetailTab.MANIFEST, url)
         if (isDeleted) return
-
+        toggleManagedFields(false)
         const _selectedResource = isResourceBrowserView
             ? selectedResource
             : appDetails.resourceTree.nodes.filter(
@@ -76,7 +80,12 @@ function ManifestComponent({
         setShowDesiredAndCompareManifest(_showDesiredAndCompareManifest)
         setLoading(true)
 
-        if (isResourceBrowserView || appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
+        if (
+            isResourceBrowserView ||
+            appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
+            (appDetails.deploymentAppType === DeploymentAppType.argo_cd &&
+            appDetails.deploymentAppDeleteRequest)
+        ) {
             markActiveTab('Live manifest')
         }
         try {
@@ -124,15 +133,51 @@ function ManifestComponent({
         } catch (err) {
             setLoading(false)
         }
-    }, [params.podName, params.node, params.nodeType])
+    }, [params.podName, params.node, params.nodeType, params.group])
 
     useEffect(() => {
         if (!isDeleted && !isEditmode && activeManifestEditorData !== modifiedManifest) {
             setActiveManifestEditorData(modifiedManifest)
         }
+        if (isEditmode) {
+            toggleManagedFields(false)
+            const jsonManifestData = YAML.parse(activeManifestEditorData)
+            if (jsonManifestData?.metadata?.managedFields) {
+                setTrimedManifestEditorData(trimManifestData(jsonManifestData))
+            }
+        }
     }, [isEditmode])
 
+    useEffect(() => {
+        if (params.actionName) {
+            markActiveTab(params.actionName)
+        }
+    }, [params.actionName])
+
+    useEffect(() => {
+        setTrimedManifestEditorData(activeManifestEditorData)
+        if (activeTab === 'Live manifest') {
+            let jsonManifestData = YAML.parse(activeManifestEditorData)
+            if (jsonManifestData?.metadata?.managedFields) {
+                toggleManagedFields(true)
+                if (hideManagedFields) {
+                    setTrimedManifestEditorData(trimManifestData(jsonManifestData))
+                }
+            }
+        }
+    }, [activeManifestEditorData, hideManagedFields, activeTab])
+
     //For External
+    const trimManifestData = (jsonManifestData: object): string => {
+        const _trimedManifestData = JSON.stringify(jsonManifestData, (key, value) => {
+            if (key === MANIFEST_KEY_FIELDS.METADATA) {
+                value[MANIFEST_KEY_FIELDS.MANAGED_FIELDS] = undefined
+            }
+            return value
+        })
+        return _trimedManifestData
+    }
+
     const handleEditorValueChange = (codeEditorData: string) => {
         if (activeTab === 'Live manifest' && isEditmode) {
             setModifiedManifest(codeEditorData)
@@ -232,6 +277,9 @@ function ManifestComponent({
     }
 
     const markActiveTab = (_tabName: string) => {
+        if (_tabName !== 'Live manifest') {
+            toggleManagedFields(false)
+        }
         dispatch({
             type: TabActions.MarkActive,
             tabName: _tabName,
@@ -250,7 +298,6 @@ function ManifestComponent({
                 return setTimeout(() => {
                     setActiveManifestEditorData(desiredManifest)
                 }, 0)
-                break
         }
     }
 
@@ -261,12 +308,6 @@ function ManifestComponent({
         markActiveTab(_tab.name)
         updateEditor(_tab.name)
     }
-
-    useEffect(() => {
-        if (params.actionName) {
-            markActiveTab(params.actionName)
-        }
-    }, [params.actionName])
 
     return isDeleted ? (
         <div>
@@ -291,7 +332,8 @@ function ManifestComponent({
             {!error && (
                 <>
                     <div className="bcn-0">
-                        {(appDetails.appType === AppType.EXTERNAL_HELM_CHART || isResourceBrowserView) && (
+                        {(appDetails.appType === AppType.EXTERNAL_HELM_CHART || isResourceBrowserView ||  (appDetails.deploymentAppType === DeploymentAppType.argo_cd &&
+            appDetails.deploymentAppDeleteRequest)) && (
                             <div className="flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {
                                     return (!showDesiredAndCompareManifest &&
@@ -352,8 +394,8 @@ function ManifestComponent({
                                 cleanData={activeTab === 'Compare'}
                                 diffView={activeTab === 'Compare'}
                                 theme="vs-dark--dt"
-                                height={isResourceBrowserView ? 'calc(100vh - 110px)' : '100vh'}
-                                value={activeManifestEditorData}
+                                height={isResourceBrowserView ? 'calc(100vh - 116px)' : '100vh'}
+                                value={trimedManifestEditorData}
                                 mode={MODES.YAML}
                                 readOnly={activeTab !== 'Live manifest' || !isEditmode}
                                 onChange={handleEditorValueChange}
@@ -363,7 +405,7 @@ function ManifestComponent({
                                         msg={loadingMsg}
                                         icon={MsgUIType.LOADING}
                                         size={24}
-                                        minHeight={isResourceBrowserView ? 'calc(100vh - 124px)' : ''}
+                                        minHeight={isResourceBrowserView ? 'calc(100vh - 116px)' : ''}
                                     />
                                 }
                                 focus={isEditmode}

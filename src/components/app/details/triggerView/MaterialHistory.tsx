@@ -80,7 +80,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                         >
                             <GitCommitInfoGeneric
                                 materialUrl={this.props.material.gitURL}
-                                showMaterialInfo={false}
+                                showMaterialInfoHeader={false}
                                 commitInfo={history}
                                 materialSourceType={this.props.material.type}
                                 selectedCommitInfo={this.props.selectCommit}

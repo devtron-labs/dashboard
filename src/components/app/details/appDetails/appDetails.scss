@@ -9,7 +9,6 @@
 .dc__page-header {
     position: sticky;
     top: 0;
-    z-index: 11;
 }
 
 .old-new-switch-container {
@@ -1870,4 +1869,10 @@ table.resource-tree {
 
 .deployment-status-breakdown {
     height: calc(100vh - 70px);
+}
+
+.env-select{
+  font-weight: 600 !important;
+  color: var(--B500);
+  margin-left: 8px !important;
 }

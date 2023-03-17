@@ -241,6 +241,8 @@ a:focus {
     hyphens: auto;
 }
 
+//Do not use dc__truncate-text use dc__ellipsis-right
+
 .dc__truncate-text {
     white-space: nowrap;
     overflow: hidden;
@@ -252,10 +254,6 @@ a:focus {
     background: transparent;
     border: none;
     padding: 2px;
-}
-
-.dc__bottom-0 {
-    bottom: 0;
 }
 
 .dc__position-fixed {
@@ -274,12 +272,24 @@ a:focus {
     position: sticky;
 }
 
+.dc__top-0 {
+    top: 0;
+}
+
+.dc__bottom-0 {
+    bottom: 0;
+}
+
 .dc__right-0 {
     right: 0;
 }
 
-.dc__top-0 {
-    top: 0;
+.dc__left-35 {
+    left: 35px;
+}
+
+.dc__right-20 {
+    right: 20px;
 }
 
 .dc__vertical-align-middle {
@@ -949,28 +959,28 @@ button.anchor {
     z-index: 2;
 
     &.pending {
-        background-size: contain, contain;
         background: url('../assets/icons/ic-clock.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.failed,
     &.error {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/ic-appstatus-failed.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.cancelled,
     &.aborted {
-        background-size: contain, contain;
         background: url('../assets/icons/ic-appstatus-cancelled.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.healthy,
     &.synced,
     &.sync.ok,
     &.succeeded {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/healthy.svg'), $background;
+        background-size: contain, contain;
         &.healthy--node {
             background: url('../assets/icons/appstatus/ic-heart-green.svg'), transparent;
             background-size: contain, contain;
@@ -989,8 +999,8 @@ button.anchor {
 
     &.not-deployed,
     &.not-triggered {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/notdeployed.svg'), $background;
+        background-size: contain, contain;
         &.not-deployed--node {
             background: url('../assets/icons/ic-close.svg'), transparent;
             background-size: contain, contain;
@@ -998,28 +1008,28 @@ button.anchor {
     }
 
     &.suspended {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/suspended.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.degraded {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/degraded.svg'), $background;
+        background-size: contain, contain;
     }
 
     &.progressing,
     &.running,
     &.request_accepted,
     &.starting {
-        background-size: contain, contain;
         background: url('../assets/icons/appstatus/progressing-rotating.svg'), $background;
+        background-size: contain, contain;
         animation: unset;
     }
 
     &.hibernating,
     &.hibernated {
-        background-size: contain, contain;
         background: url('../assets/icons/ic-hibernate-2.svg'), $background;
+        background-size: contain, contain;
     }
 }
 
@@ -1868,6 +1878,11 @@ button.anchor {
     border-top-right-radius: 4px;
 }
 
+.dc__top-radius-8 {
+    border-top-right-radius: 8px;
+    border-top-left-radius: 8px;
+}
+
 .dc__no-top-radius {
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
@@ -1912,6 +1927,10 @@ button.anchor {
 
 .dc__border-radius-8-imp {
     border-radius: 8px !important;
+}
+
+.dc__border-radius-4-imp {
+    border-radius: 4px !important;
 }
 
 .dc__no-top-border {
@@ -1977,6 +1996,9 @@ textarea,
     path:nth-child(2) {
         fill: var(--N900);
     }
+}
+.icon-color-grey {
+    fill: #5A5A5A;
 }
 
 .icon-color-n7 {
@@ -2097,12 +2119,20 @@ textarea,
     min-width: 18px !important;
 }
 
-.w-32 {
-    width: 32px !important;
-}
-
 .mw-48 {
     min-width: 48px;
+}
+
+.mw-116 {
+    min-width: 116px;
+}
+
+.mw-232 {
+    min-width: 232px;
+}
+
+.w-32 {
+    width: 32px !important;
 }
 
 .min-w-800 {
@@ -2227,14 +2257,16 @@ textarea,
     min-width: 200px;
 }
 
-// width fix content
+.dc__mnw-100 {
+    min-width: 100px;
+}
 
+// width fix content
 .dc__w-fit-content {
     width: fit-content;
 }
 
 // Height in pixels
-
 .dc__height-inherit {
     height: inherit;
 }
@@ -2249,6 +2281,10 @@ textarea,
 
 .h-8 {
     height: 8px;
+}
+
+.h-16 {
+    height: 16px;
 }
 
 .h-18 {
@@ -2344,10 +2380,14 @@ textarea,
 .h-100 {
     height: 100%;
 }
+.dc__height-reduce-172{
+    height: 'calc(100vh - 172px)'
+}
+
 
 // Line height
 .lh-1-4 {
-  line-height: 1.4;
+    line-height: 1.4;
 }
 
 .lh-14 {
@@ -2395,6 +2435,10 @@ textarea,
 }
 
 // Padding in pixels
+.pl-14-imp {
+    padding-left: 14px !important;
+}
+
 .pl-16 {
     padding-left: 16px !important;
 }
@@ -2507,6 +2551,10 @@ textarea,
 }
 
 .dc__overflow-auto {
+    overflow: auto !important;
+}
+
+.dc__overflow-y-auto {
     overflow: auto !important;
 }
 
@@ -2662,4 +2710,12 @@ textarea::placeholder {
         background-color: var(--Y300) !important;
         font-weight: 600;
     }
+}
+
+.dc__outline-none-imp {
+    outline: none !important;
+}
+
+.dc__list-style-disc {
+    list-style-type: disc;
 }

@@ -1,5 +1,5 @@
 import React, { useState, useMemo, Component } from 'react'
-import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle, useAsync } from '../common'
+import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle, useAsync, ErrorScreenNotAuthorized } from '../common'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import {
@@ -83,7 +83,9 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     componentDidMount() {
-        this.initialise()
+        if (this.props.isSuperAdmin) {
+            this.initialise()
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -180,8 +182,11 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     render() {
-        if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR) return <Reload className='dc__align-reload-center' />
+        if (!this.props.isSuperAdmin) {
+            return <ErrorScreenNotAuthorized />
+        } 
+        else if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
+        else if (this.state.view === ViewType.ERROR) return <Reload className="dc__align-reload-center" />
         else {
             const moduleBasedTitle =
                 'Clusters' +

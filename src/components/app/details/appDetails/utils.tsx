@@ -429,7 +429,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
           },
       },
   }
-  
+
   const lastFetchedTime = handleUTCTime(data?.statusLastFetchedAt,true)
   const deploymentPhases = ['PreSync', 'Sync', 'PostSync', 'Skip', 'SyncFail']
   let tableData: { currentPhase: string; currentTableData: { icon: string; phase?: string; message: string }[] } = {
@@ -474,7 +474,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                         if(phase === item.resourcePhase){
                             tableData.currentPhase = phase
                             if(item.resourceStatus === 'failed'){
-    
+
                             }
                             tableData.currentTableData.push({icon: 'success',phase: phase, message: `${phase}: Create and update resources based on manifest` })
                             return
@@ -536,7 +536,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.icon = 'success'
                   deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
                   deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.kubeList = tableData.currentTableData
-                  
+
 
                   if (deploymentData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'inprogress'
@@ -575,7 +575,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = ''
                       deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'unreachable'
                       deploymentData.nonDeploymentError = TIMELINE_STATUS.KUBECTL_APPLY
-                  } else 
+                  } else
                   if (
                       deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.time === '' &&
                       deploymentData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS
@@ -619,4 +619,31 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
       }
   }
   return deploymentData
+}
+
+export const ValueContainer = (props) => {
+  const { children, ...rest } = props
+  return (
+      <components.ValueContainer {...rest}>
+          {'' + props.getValue()[0].value}
+          {React.cloneElement(children[1])}
+      </components.ValueContainer>
+  )
+}
+
+export const ValueContainerImage = (props) => {
+    const value = props.selectProps?.value?.value
+    return (
+        <components.ValueContainer {...props}>
+            <>
+                {!props.selectProps.menuIsOpen &&
+                    (value ? (
+                        <div className="cn-7 fs-12 flex left">{value}</div>
+                    ) : (
+                        <span className="cn-5">Select or enter image</span>
+                    ))}
+                {React.cloneElement(props.children[1])}
+            </>
+        </components.ValueContainer>
+    )
 }

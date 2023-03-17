@@ -10,7 +10,7 @@ export const AuthenticationType = {
     IAM: 'IAM'
 }
 
-export const DEFAULT_SECRET_PLACEHOLDER = '********'
+export const DEFAULT_SECRET_PLACEHOLDER = '••••••••'
 
 export enum ClusterComponentStatus {
     WF_UNKNOWN = 'WF_UNKNOWN',
@@ -58,18 +58,7 @@ export interface ClusterInstallStatusProps {
 
 export interface ClusterListProps extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE_TYPE
-    // view: string;
-    // clusters: {
-    //     id: number;
-    //     active: boolean;
-    //     cluster_name: string;
-    //     agentInstallationStage: ClusterInstallStage;
-    //     defaultClusterComponent: any[] | null;
-    //     prometheus_url: string;
-    //     environments: any[];
-    //     server_url: string;
-    // }[];
-    // clusterEnvMap: any;
+    isSuperAdmin: boolean
 }
 
 export interface ClusterStepModal {

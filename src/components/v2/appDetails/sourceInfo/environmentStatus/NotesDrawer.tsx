@@ -3,8 +3,9 @@ import { Drawer } from '../../../../common'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { MarkDown } from '../../../../charts/discoverChartDetail/DiscoverChartDetails'
 import './environmentStatus.scss'
+import { NotesDrawerType } from './notesDrawer.type'
 
-function NotesDrawer({ notes, close }: { notes: string; close: () => void }) {
+function NotesDrawer({ notes, close }: NotesDrawerType) {
     const appNotesRef = useRef<HTMLDivElement>(null)
 
     const escKeyPressHandler = (evt): void => {

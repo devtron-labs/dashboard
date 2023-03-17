@@ -48,7 +48,7 @@ export interface CiMaterial {
 export interface GitTriggers {
     Commit: string
     Author: string
-    Date: Date
+    Date: Date | string
     Message: string
     Changes: string[]
     WebhookData: WebHookData
@@ -197,11 +197,14 @@ export interface StartDetailsType {
 
 export interface CICDSidebarFilterOptionType extends OptionType {
     pipelineId: number
+    deploymentAppDeleteRequest?: boolean
 }
 
 export enum HistoryComponentType {
     CI = 'CI',
     CD = 'CD',
+    GROUP_CI = 'GROUP_CI',
+    GROUP_CD = 'GROUP_CD'
 }
 
 export enum DeploymentStageType {
