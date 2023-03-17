@@ -2,14 +2,14 @@ import React, { Fragment } from 'react'
 import ReactGA from 'react-ga4'
 import { NavLink } from 'react-router-dom'
 import { SliderButton } from '@typeform/embed-react'
-import { DOCUMENTATION, URLS } from '../../../config'
+import { URLS } from '../../../config'
 import { InstallationType } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { ReactComponent as GettingStartedIcon } from '../../../assets/icons/ic-onboarding.svg'
 import { ReactComponent as Feedback } from '../../../assets/icons/ic-feedback.svg'
 import { HelpNavType, HelpOptionType } from './header.type'
 import { stopPropagation } from '../helpers/Helpers'
-import { CommonHelpOptions, EnterpriseHelpOptions, FEEDBACK_FORM_ID, NotEnterpriseHelpOptions } from './constants'
-import { isEnterprise } from './constants'
+import { CommonHelpOptions, EnterpriseHelpOptions, FEEDBACK_FORM_ID, NotEnterpriseHelpOptions , isEnterprise } from './constants'
+
 
 function HelpNav({
     className,
