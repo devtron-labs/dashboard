@@ -1,14 +1,18 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useContext } from 'react'
 import ReactGA from 'react-ga4'
 import { NavLink } from 'react-router-dom'
 import { SliderButton } from '@typeform/embed-react'
-import { URLS } from '../../../config'
+import { DOCUMENTATION, URLS } from '../../../config'
+import { ReactComponent as Discord } from '../../../assets/icons/ic-discord-fill.svg'
+import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { InstallationType } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { ReactComponent as GettingStartedIcon } from '../../../assets/icons/ic-onboarding.svg'
 import { ReactComponent as Feedback } from '../../../assets/icons/ic-feedback.svg'
 import { HelpNavType, HelpOptionType } from './header.type'
 import { stopPropagation } from '../helpers/Helpers'
-import { CommonHelpOptions, EnterpriseHelpOptions, FEEDBACK_FORM_ID, NotEnterpriseHelpOptions , isEnterprise } from './constants'
+import { EnterpriseHelpOptions, NotEnterpriseHelpOptions } from './constants'
+import { mainContext } from '../navigation/NavigationRoutes'
+
 
 
 function HelpNav({
@@ -19,6 +23,27 @@ function HelpNav({
     setGettingStartedClicked,
     showHelpCard,
 }: HelpNavType) {
+
+    const { currentServerInfo } = useContext(mainContext)
+    const isEnterprise = currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
+    const FEEDBACK_FORM_ID = `UheGN3KJ#source=${window.location.hostname}`
+
+    const CommonHelpOptions: HelpOptionType[] = [
+        {
+            name: 'View documentation',
+            link: DOCUMENTATION.HOME_PAGE,
+            icon: File,
+            showSeparator: true,
+        },
+    
+        {
+            name: 'Join discord community',
+            link: 'https://discord.devtron.ai/',
+            icon: Discord,
+            showSeparator: isEnterprise,
+        },
+    
+    ]
 
     const onClickGettingStarted = (): void => {
         setGettingStartedClicked(true)
