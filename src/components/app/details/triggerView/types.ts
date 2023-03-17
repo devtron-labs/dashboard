@@ -19,7 +19,12 @@ export interface CDMaterialProps {
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
         appId?: number,
     ) => void
-    triggerDeploy: (stageType: DeploymentNodeType, _appId: number, deploymentWithConfig?: string, wfrId?: number) => void
+    triggerDeploy: (
+        stageType: DeploymentNodeType,
+        _appId: number,
+        deploymentWithConfig?: string,
+        wfrId?: number,
+    ) => void
     selectImage: (
         index: number,
         materialType: string,
@@ -69,6 +74,7 @@ export interface CDMaterialState {
     latestDeploymentConfig: any
     specificDeploymentConfig: any
     selectedMaterial: CDMaterialType
+    isSelectImageTrigger: boolean
 }
 
 export interface MaterialInfo {
@@ -614,6 +620,8 @@ export interface TriggerViewConfigDiffProps {
     handleConfigSelection: (selected) => void
     isConfigAvailable: (optionValue) => boolean
     diffOptions: Record<string, boolean>
+    isRollbackTriggerSelected: boolean
+    isRecentConfigAvailable: boolean
 }
 
 export const MATERIAL_TYPE = {
@@ -632,25 +640,25 @@ export const STAGE_TYPE = {
 }
 
 export interface EmptyStateCIMaterialProps {
-    isRepoError: boolean;
-    isBranchError: boolean;
+    isRepoError: boolean
+    isBranchError: boolean
     isDockerFileError: boolean
     dockerFileErrorMsg: string
-    gitMaterialName: string;
-    sourceValue: string;
-    repoUrl: string;
-    branchErrorMsg: string;
-    repoErrorMsg: string;
-    isMaterialLoading: boolean;
-    onRetry: (...args) => void;
-    anyCommit: boolean;
-    isWebHook?: boolean;
+    gitMaterialName: string
+    sourceValue: string
+    repoUrl: string
+    branchErrorMsg: string
+    repoErrorMsg: string
+    isMaterialLoading: boolean
+    onRetry: (...args) => void
+    anyCommit: boolean
+    isWebHook?: boolean
     noSearchResults?: boolean
     noSearchResultsMsg?: string
-    toggleWebHookModal?: () => void;
+    toggleWebHookModal?: () => void
     clearSearch?: () => void
     handleGoToWorkFlowEditor?: (e?: any) => void
-  }
+}
 
 export interface MaterialSourceProps {
     material: CIMaterialType[]
