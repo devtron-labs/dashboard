@@ -1,20 +1,15 @@
-import React, { Fragment, useContext } from 'react'
+import React, { Fragment } from 'react'
 import ReactGA from 'react-ga4'
 import { NavLink } from 'react-router-dom'
 import { SliderButton } from '@typeform/embed-react'
 import { DOCUMENTATION, URLS } from '../../../config'
 import { InstallationType } from '../../v2/devtronStackManager/DevtronStackManager.type'
-import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
-import { ReactComponent as Discord } from '../../../assets/icons/ic-discord-fill.svg'
-import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as EditFile } from '../../../assets/icons/ic-edit-file.svg'
-import { ReactComponent as Files } from '../../../assets/icons/ic-files.svg'
-import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
 import { ReactComponent as GettingStartedIcon } from '../../../assets/icons/ic-onboarding.svg'
 import { ReactComponent as Feedback } from '../../../assets/icons/ic-feedback.svg'
 import { HelpNavType, HelpOptionType } from './header.type'
-import { mainContext } from '../navigation/NavigationRoutes'
 import { stopPropagation } from '../helpers/Helpers'
+import { CommonHelpOptions, EnterpriseHelpOptions, FEEDBACK_FORM_ID, NotEnterpriseHelpOptions } from './constants'
+import { isEnterprise } from './constants'
 
 function HelpNav({
     className,
@@ -24,57 +19,6 @@ function HelpNav({
     setGettingStartedClicked,
     showHelpCard,
 }: HelpNavType) {
-    const { currentServerInfo } = useContext(mainContext)
-    const isEnterprise = currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE
-    const FEEDBACK_FORM_ID = `UheGN3KJ#source=${window.location.hostname}`
-
-    const CommonHelpOptions: HelpOptionType[] = [
-        {
-            name: 'View documentation',
-            link: DOCUMENTATION.HOME_PAGE,
-            icon: File,
-            showSeparator: true,
-        },
-        
-        {
-            name: 'Join discord community',
-            link: 'https://discord.devtron.ai/',
-            icon: Discord,
-            showSeparator: isEnterprise,
-        },
-        
-    ]
-
-    const EnterpriseHelpOptions: HelpOptionType[] = [
-        
-        {
-            name: 'Open New Ticket',
-            link: 'https://enterprise.devtron.ai/portal/en/newticket',
-            icon: EditFile,
-        },
-        {
-            name: 'View All Tickets',
-            link: 'https://enterprise.devtron.ai/portal/en/myarea',
-            icon: Files,
-        },
-        
-    ]
-
-    const NotEnterpriseHelpOptions: HelpOptionType[] = [
-        
-        {
-            name: 'Chat with support',
-            link: 'https://discord.devtron.ai/',
-            icon: Chat,
-            showSeparator: true,
-        },
-        
-        {
-            name: 'Raise an issue/request',
-            link: 'https://github.com/devtron-labs/devtron/issues/new/choose',
-            icon: EditFile,
-        }
-    ]
 
     const onClickGettingStarted = (): void => {
         setGettingStartedClicked(true)
