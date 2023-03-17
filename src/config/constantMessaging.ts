@@ -135,8 +135,8 @@ export enum DeploymentAppTypeNameMapping {
 }
 export const SSO_LOGGING_INFO = {
     frontText: "You don't have an account on this workplace. Please contact your manager for ",
-    tailText: ' or login as adminstration.',
-    redirectLink: 'login Permission',
+    tailText: ' or login as administration.',
+    redirectLink: 'login permission',
 }
 
 export const APP_GROUP_CD_DETAILS = {

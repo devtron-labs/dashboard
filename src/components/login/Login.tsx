@@ -45,8 +45,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         //becomes false but queryParam != "/" will be true and queryParam is also not null hence redirecting users to the
         //login page with Please login again toast appearing.
 
-        if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != '/')) {
-            // toast.error('Please login again or go to help')
+        if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || (queryParam != '/' && queryParam == '/app'))) {
             this.setState({ isQueryParam: true })
         }
         if (queryParam && queryParam.includes('login')) {
