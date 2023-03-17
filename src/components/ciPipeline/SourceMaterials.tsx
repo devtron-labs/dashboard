@@ -14,6 +14,7 @@ import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { reactSelectStyles } from '../CIPipelineN/ciPipeline.utils'
 import CIPipeline from '../CIPipelineN/CIPipeline'
+import Tippy from '@tippyjs/react'
 
 export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) {
     const [isProviderChanged, setProviderChanged] = useState(false)
@@ -123,6 +124,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                         ) || props.ciPipelineSourceTypeOptions[0]
                 }
                 let errorObj = props.validationRules?.sourceValue(isBranchRegex ? mat.regex : mat.value)
+                const multiGitAndWebhook = isMultiGit && _selectedWebhookEvent
                 return (
                     <div key={`source-material-${index}`}>
                         <div className="mt-20" key={mat.gitMaterialId}>
@@ -133,7 +135,10 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                 </p>
                             </div>
                             <div className="mt-16 flex left">
-                                <div className="w-50 mr-8">
+                                <div
+                                    className={'w-50 mr-8 '}
+                                    aria-description="Game schedule for the Boston Red Sox 2021 Season"
+                                >
                                     <label className="form__label mb-6 dc__required-field">Source Type</label>
                                     <ReactSelect
                                         className="workflow-ci__source"
@@ -145,7 +150,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 ? props.ciPipelineSourceTypeOptions
                                                 : props.ciPipelineSourceTypeOptions.slice(0, 2)
                                         }
-                                        isDisabled={islinkedCI}
+                                        isDisabled={islinkedCI || (isMultiGit && _selectedWebhookEvent)}
                                         value={selectedMaterial}
                                         closeMenuOnSelect={true}
                                         onChange={(selected) => props?.selectSourceType(selected, mat.gitMaterialId)}
@@ -170,8 +175,10 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             }),
                                         }}
                                     />
+
                                     <div className="h-18"></div>
                                 </div>
+
                                 {isBranchFixed && (
                                     <div className="w-50 ml-8 left">
                                         <div>

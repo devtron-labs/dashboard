@@ -3,8 +3,7 @@ import { get, post } from '../../services/api'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { MaterialType, Githost, PatchAction, ScriptType, PluginType, BuildStageType, RefVariableType } from './types'
-import { safeTrim } from '../../util/Util';
-
+import { safeTrim } from '../../util/Util'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -427,9 +426,9 @@ function parseCIResponse(
         const materials = createMaterialList(ciPipeline, gitMaterials, gitHost)
 
         let _isCiPipelineEditable = true
-        if (materials.length > 1 && materials.some((_material) => _material.type == SourceTypeMap.WEBHOOK)) {
-            _isCiPipelineEditable = false
-        }
+        // if (materials.length > 1 && materials.some((_material) => _material.type == SourceTypeMap.WEBHOOK)) {
+        //     _isCiPipelineEditable = false
+        // }
 
         // do webhook event specific
         let _webhookConditionList = []

@@ -37,6 +37,7 @@ import { Build } from './Build'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 
 export const ciPipelineContext = createContext(null)
 
@@ -379,7 +380,10 @@ export default function CIPipeline({
             !formDataErrorObj.postBuildStage.isValid
         ) {
             setLoadingData(false)
-            toast.error('Some Required Fields are missing')
+            const branchNameNotPresent = formData.materials.some((_mat) => !_mat.value)
+            if (formData.name === '' || branchNameNotPresent) {
+                toast.error(MULTI_REQUIRED_FIELDS_MSG)
+            }
             return
         }
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
@@ -389,11 +393,23 @@ export default function CIPipeline({
             formData.isDockerConfigOverridden = false
             formData.dockerConfigOverride = {} as DockerConfigOverrideType
         }
+        let _materials = formData.materials
+        if (formData.materials.length > 1) {
+            for (let i = 0; i < formData.materials.length; i++) {
+                if (formData.materials[i].type === 'WEBHOOK') {
+                    _materials = [formData.materials[i]]
+                }
+            }
+        }
 
         saveCIPipeline(
-            { ...formData, scanEnabled: isSecurityModuleInstalled ? formData.scanEnabled : false },
+            {
+                ...formData,
+                materials: _materials,
+                scanEnabled: isSecurityModuleInstalled ? formData.scanEnabled : false,
+            },
             ciPipeline,
-            formData.materials,
+            _materials,
             +appId,
             +workflowId,
             false,
@@ -528,10 +544,18 @@ export default function CIPipeline({
         if (stageName === BuildStageVariable.Build) {
             _formDataErrorObj.name = validationRules.name(_formData.name)
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
+
             let valid = _formData.materials.reduce((isValid, mat) => {
                 isValid = isValid && validationRules.sourceValue(mat.regex || mat.value, mat.type !== 'WEBHOOK').isValid
                 return isValid
             }, true)
+            if (formData.materials.length > 1) {
+                const _isWebhook = formData.materials.some((_mat) => _mat.type === 'WEBHOOK')
+                if (_isWebhook) {
+                    valid = true
+                }
+            }
+
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid && valid
             if (!_formDataErrorObj[BuildStageVariable.Build].isValid) {
                 setShowFormError(true)
