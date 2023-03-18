@@ -23,7 +23,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 username: 'admin',
                 password: '',
             },
-            isQueryParam: false,
         }
         this.handleChange = this.handleChange.bind(this)
         this.autoFillLogin = this.autoFillLogin.bind(this)
@@ -49,9 +48,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
             queryParam = '/app'
             let url = `${this.props.location.pathname}?continue=${queryParam}`
             this.props.history.push(url)
-        }
-        if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam === '/app')) {
-            this.setState({ isQueryParam: true })
         }
         if (!queryParam) queryParam = ''
         this.setState({

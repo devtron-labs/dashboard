@@ -15,7 +15,6 @@ export interface LoginFormState {
         password: string;
     };
     loading: boolean;
-    isQueryParam: boolean
 }
 
 export interface LoginProps extends RouteComponentProps<{}> { }
