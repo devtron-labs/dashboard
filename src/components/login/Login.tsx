@@ -11,9 +11,6 @@ import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
 import './login.css'
 import { dashboardAccessed } from '../../services/service'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
-import { SSO_LOGGING_INFO } from '../../config/constantMessaging'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
     constructor(props) {
@@ -45,13 +42,16 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         //becomes false but queryParam != "/" will be true and queryParam is also not null hence redirecting users to the
         //login page with Please login again toast appearing.
 
-        if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || (queryParam != '/' && queryParam == '/app'))) {
-            this.setState({ isQueryParam: true })
+        if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != '/')) {
+            toast.error('Please login again')
         }
         if (queryParam && queryParam.includes('login')) {
             queryParam = '/app'
             let url = `${this.props.location.pathname}?continue=${queryParam}`
             this.props.history.push(url)
+        }
+        if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam === '/app')) {
+            this.setState({ isQueryParam: true })
         }
         if (!queryParam) queryParam = ''
         this.setState({
@@ -128,31 +128,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
             })
     }
 
-    renderLoginError = (): JSX.Element => {
-        return (
-            <>
-                {SSO_LOGGING_INFO.frontText}
-                <a target="_blank" href={DOCUMENTATION.GLOBAL_CONFIG_AUTH}>
-                    {SSO_LOGGING_INFO.redirectLink}
-                </a>
-                {SSO_LOGGING_INFO.tailText}
-            </>
-        )
-    }
-
-    renderSSOInfoBar = () => {
-        return (
-            <InfoColourBar
-                classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp mt-20 mb-20 w-300"
-                message={this.renderLoginError()}
-                redirectLink={SSO_LOGGING_INFO.redirectLink}
-                internalLink={true}
-                Icon={ErrorIcon}
-                iconClass="warning-icon"
-            />
-        )
-    }
-
     renderSSOLoginPage() {
         const search = this.props.location.search
 
@@ -176,7 +151,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             </a>
                         )
                     })}
-                {this.state.isQueryParam && this.state.loginList ? this.renderSSOInfoBar() : null}
                 <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>
                     Login as administrator
                 </NavLink>
