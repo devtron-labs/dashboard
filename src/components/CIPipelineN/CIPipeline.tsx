@@ -549,10 +549,11 @@ export default function CIPipeline({
                 isValid = isValid && validationRules.sourceValue(mat.regex || mat.value, mat.type !== 'WEBHOOK').isValid
                 return isValid
             }, true)
-            if (formData.materials.length > 1) {
-                const _isWebhook = formData.materials.some((_mat) => _mat.type === 'WEBHOOK')
+            if (_formData.materials.length > 1) {
+                const _isWebhook = _formData.materials.some((_mat) => _mat.type === 'WEBHOOK')
                 if (_isWebhook) {
                     valid = true
+                    _formDataErrorObj.name.isValid = true
                 }
             }
 
