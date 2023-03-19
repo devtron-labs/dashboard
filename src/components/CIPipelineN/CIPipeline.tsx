@@ -395,9 +395,9 @@ export default function CIPipeline({
         }
         let _materials = formData.materials
         if (formData.materials.length > 1) {
-            for (let i = 0; i < formData.materials.length; i++) {
-                if (formData.materials[i].type === 'WEBHOOK') {
-                    _materials = [formData.materials[i]]
+            for (let material of formData.materials) {
+                if (material.type === 'WEBHOOK') {
+                    _materials = [material]
                 }
             }
         }

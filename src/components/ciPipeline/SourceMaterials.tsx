@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { SourceTypeMap, URLS } from '../../config'
 import { components } from 'react-select'
-import { Link, useParams } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import git from '../../assets/icons/git/git.svg'
