@@ -13,12 +13,9 @@ import { SourceMaterialsProps } from './types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { reactSelectStyles } from '../CIPipelineN/ciPipeline.utils'
-import CIPipeline from '../CIPipelineN/CIPipeline'
-import Tippy from '@tippyjs/react'
 
 export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) {
     const [isProviderChanged, setProviderChanged] = useState(false)
-    const { ciPipelineId } = useParams<{ ciPipelineId: string }>()
     const isMultiGit = props.materials.length > 1
     const islinkedCI = window.location.href.indexOf('linked-ci') != -1
     let _materials = props.materials
@@ -124,7 +121,6 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                         ) || props.ciPipelineSourceTypeOptions[0]
                 }
                 let errorObj = props.validationRules?.sourceValue(isBranchRegex ? mat.regex : mat.value)
-                const multiGitAndWebhook = isMultiGit && _selectedWebhookEvent
                 return (
                     <div key={`source-material-${index}`}>
                         <div className="mt-20" key={mat.gitMaterialId}>
