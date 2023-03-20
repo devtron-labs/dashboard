@@ -15,7 +15,7 @@ import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import './scaleWorkloadsModal.scss'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
-import { AppType } from '../../appDetails.type'
+import { AppType, DeploymentAppType } from '../../appDetails.type'
 import { getInstalledChartDetailWithResourceTree } from '../../appDetails.api'
 
 export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWorkloadsModalProps) {
@@ -90,14 +90,16 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     }, [appDetails])
 
     const _getAndSetAppDetail = async () => {
-        try {
-            let response = null;
-            response = await getInstalledChartDetailWithResourceTree(+appDetails.appId, +appDetails.environmentId);
-            IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART);
-            setfetchingDetails(false)
-        } catch(e) {
-            showError(e);
-            setfetchingDetails(false)
+        if(appDetails?.deploymentAppType === DeploymentAppType.argo_cd){
+            try {
+                let response = null;
+                response = await getInstalledChartDetailWithResourceTree(+appDetails.appId, +appDetails.environmentId);
+                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART);
+                setfetchingDetails(false)
+            } catch(e) {
+                showError(e);
+                setfetchingDetails(false)
+            }
         }
     }
 

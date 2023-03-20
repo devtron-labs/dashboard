@@ -33,7 +33,6 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
     const [showWorkloadsModal, setWorkloadsModal] = useState(false);
     const [environments, setEnvironments] = useState<Array<AppEnvironment>>();
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
-    const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
     const [urlInfo, showUrlInfo] = useState<boolean>(false)
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
