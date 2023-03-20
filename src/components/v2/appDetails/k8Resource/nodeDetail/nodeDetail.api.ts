@@ -14,21 +14,20 @@ export const getManifestResource = (
     selectedResource?: SelectedResourceType,
 ) => {
     if (
-        ad.appType === AppType.EXTERNAL_HELM_CHART ||
-        ad.deploymentAppType === DeploymentAppType.helm ||
-        isResourceBrowserView
+        ad.appType !== AppType.EXTERNAL_HELM_CHART ||
+        ad.deploymentAppType === DeploymentAppType.argo_cd ||
+        !isResourceBrowserView
     ) {
-        return getManifestResourceHelmApps(ad, podName, nodeType, isResourceBrowserView, selectedResource)
-    }
-    const cn = ad.resourceTree.nodes.filter((node) => node.name === podName && node.kind.toLowerCase() === nodeType)[0]
-    selectedResource = {
-        group: cn.group,
-        kind: cn.kind,
-        version: cn.version,
-        namespace: ad.namespace,
-        name: cn.name,
-        clusterId: 0,
-        containers: [],
+        const cn = ad.resourceTree.nodes.filter((node) => node.name === podName && node.kind.toLowerCase() === nodeType)[0]
+        selectedResource = {
+            group: cn.group,
+            kind: cn.kind,
+            version: cn.version,
+            namespace: ad.namespace,
+            name: cn.name,
+            clusterId: 0,
+            containers: [],
+        }
     }
     return getManifestResourceHelmApps(ad, podName, nodeType, isResourceBrowserView, selectedResource)
 }
@@ -58,21 +57,20 @@ export const getEvent = (
     selectedResource?: SelectedResourceType,
 ) => {
     if (
-        ad.appType === AppType.EXTERNAL_HELM_CHART ||
-        ad.deploymentAppType === DeploymentAppType.helm ||
-        isResourceBrowserView
+        ad.appType !== AppType.EXTERNAL_HELM_CHART ||
+        ad.deploymentAppType === DeploymentAppType.argo_cd ||
+        !isResourceBrowserView
     ) {
-        return getEventHelmApps(ad, nodeName, nodeType, isResourceBrowserView, selectedResource)
-    }
-    const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName && node.kind.toLowerCase() === nodeType)[0]
-    selectedResource = {
-        group: cn.group,
-        kind: cn.kind,
-        version: cn.version,
-        namespace: ad.namespace,
-        name: cn.name,
-        clusterId: 0,
-        containers: [],
+        const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName && node.kind.toLowerCase() === nodeType)[0]
+        selectedResource = {
+            group: cn.group,
+            kind: cn.kind,
+            version: cn.version,
+            namespace: ad.namespace,
+            name: cn.name,
+            clusterId: 0,
+            containers: [],
+        }
     }
     return getEventHelmApps(ad, nodeName, nodeType, isResourceBrowserView, selectedResource)
 }
