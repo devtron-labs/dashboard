@@ -20,7 +20,6 @@ import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/Onboardin
 import { APPLIST_EMPTY_STATE_MESSAGING, APP_LIST_HEADERS, ClearFiltersLabel } from '../list-new/Constants'
 import AppStatus from '../AppStatus'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
-
 export class AppListView extends Component<AppListViewProps> {
     expandEnv = (event): void => {
         event.stopPropagation()
@@ -95,7 +94,12 @@ export class AppListView extends Component<AppListViewProps> {
                                 onClick={this.sortByAppName}
                             >
                                 {APP_LIST_HEADERS.AppName}
-                                <span className={`sort ${icon} ml-4 dc__visible-hover--child`}></span>
+
+                                <span
+                                    className={` sort ${icon} ml-4 dc__visible-hover--child ${
+                                        this.props.sortRule.key == SortBy.APP_NAME ? 'displayarrow' : ''
+                                    } `}
+                                ></span>
                             </button>
                         </div>
                         {this.props.isArgoInstalled && (
@@ -122,11 +126,16 @@ export class AppListView extends Component<AppListViewProps> {
                         </div>
                         <div className="app-list__cell app-list__cell--time ">
                             <button
-                                className="app-list__cell-header flex dc__visible-hover dc__visible-hover--parent"
+                                className="app-list__cell-header flex dc__visible-hover dc__visible-hover--parent "
                                 onClick={this.sortByDeployedTime}
                             >
                                 {APP_LIST_HEADERS.LastDeployedAt}
-                                <span className={`sort ${icon} ml-4 dc__visible-hover--child`}></span>
+
+                                <span
+                                    className={` sort ${icon} ml-4  dc__visible-hover--child${
+                                        this.props.sortRule.key === SortBy.LAST_DEPLOYED ? 'displayarrow' : ''
+                                    } `}
+                                ></span>
                             </button>
                         </div>
                         <div className="app-list__cell app-list__cell--action"></div>

@@ -1341,6 +1341,9 @@ button.anchor {
     .dc__visible-hover--child {
         display: none;
     }
+    .displayarrow {
+        display: block;
+    }
 
     &.dc__visible-hover--parent:hover {
         .dc__visible-hover--child {
