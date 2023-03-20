@@ -398,6 +398,7 @@ export default function CIPipeline({
             for (let material of formData.materials) {
                 if (material.type === 'WEBHOOK') {
                     _materials = [material]
+                    break
                 }
             }
         }
