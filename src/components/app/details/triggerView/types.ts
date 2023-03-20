@@ -146,6 +146,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     isCacheAvailable?: boolean
     fromAppGrouping?: boolean
     appId: string
+    isJobView?: boolean
 }
 
 export interface RegexValueType {
@@ -278,6 +279,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     isSelected?: boolean
     fromAppGrouping?: boolean
     handleSelectionChange?: (_appId: number)=> void
+    isJobView?: boolean
 }
 
 export interface TriggerViewContextType {
@@ -301,7 +303,9 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterProps> {}
+export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterProps> {
+    isJobView?: boolean
+}
 
 export interface WorkflowType {
     id: string

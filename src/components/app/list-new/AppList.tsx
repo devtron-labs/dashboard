@@ -1,20 +1,17 @@
-import React, { useState, useEffect, useContext, Fragment } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useLocation, useHistory, useParams } from 'react-router'
-import { Link, Switch, Route, NavLink } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 import {
     Progressing,
     Filter,
     showError,
     FilterOption,
-    Modal,
     ErrorScreenManager,
     handleUTCTime,
     useAsync,
     stopPropagation,
 } from '../../common'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
-import { ReactComponent as ChartIcon } from '../../../assets/icons/ic-charts.svg'
-import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { ServerErrors } from '../../../modals/commonTypes'
 import { AppListViewType } from '../config'
@@ -28,14 +25,13 @@ import { AddNewApp } from '../create/CreateApp'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import '../list/list.css'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
-import PageHeader from '../../common/header/PageHeader'
-import { ReactComponent as DropDown } from '../../../assets/icons/ic-dropdown-filled.svg'
 import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES } from '../../common/ExportToCsv/constants'
 import { getAppList } from '../service'
 import moment from 'moment'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import { APP_LIST_HEADERS, StatusConstants } from './Constants'
+import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
@@ -50,7 +46,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [fetchingNamespacesErrored, setFetchingNamespacesErrored] = useState(false)
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
     const [currentTab, setCurrentTab] = useState(undefined)
-    const [showCreateNewAppSelectionModal, setShowCreateNewAppSelectionModal] = useState(false)
     const [syncListData, setSyncListData] = useState<boolean>()
 
     // API master data
@@ -119,19 +114,19 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     useEffect(() => {
-      let interval
+        let interval
         if (isDataSyncing) {
             setLastDataSyncTimeString(renderDataSyncingText)
         } else {
             const _lastDataSyncTime = Date()
             setLastDataSyncTimeString('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
-             interval = setInterval(() => {
+            interval = setInterval(() => {
                 setLastDataSyncTimeString('Last synced ' + handleUTCTime(_lastDataSyncTime, true))
             }, 1000)
         }
         return () => {
-          interval && clearInterval(interval)
-      }
+            interval && clearInterval(interval)
+        }
     }, [isDataSyncing])
 
     useEffect(() => {
@@ -199,7 +194,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             clusterVsNamespaceMap: _clusterVsNamespaceMap,
         }
 
-        let _masterFilters = {  appStatus: [], projects: [], environments: [], clusters: [], namespaces: [] }
+        let _masterFilters = { appStatus: [], projects: [], environments: [], clusters: [], namespaces: [] }
 
         // set projects (check/uncheck)
         _masterFilters.projects = masterFilters.projects.map((project) => {
@@ -249,7 +244,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 isChecked: filterApplied.appStatus.has(status.key),
             }
         })
-
 
         // set environments (check/uncheck)
         _masterFilters.environments = masterFilters.environments.map((env) => {
@@ -356,23 +350,10 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         return `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`
     }
 
-    function openDevtronAppCreateModel(event: React.MouseEvent) {
-        let _prefix =
+    function openDevtronAppCreateModel() {
+        const _urlPrefix =
             currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
-        let url = `${_prefix}/${AppListConstants.CREATE_DEVTRON_APP_URL}${location.search}`
-        history.push(`${url}`)
-    }
-
-    function redirectToHelmAppDiscover(event: React.MouseEvent) {
-        let url = `${URLS.CHARTS_DISCOVER}`
-        history.push(`${url}`)
-    }
-
-    const redirectToAppDetails = (appId: string | number, envId: number): string => {
-        if (envId) {
-            return `/app/${appId}/details/${envId}`
-        }
-        return `/app/${appId}/trigger`
+        history.push(`${_urlPrefix}/${AppListConstants.CREATE_DEVTRON_APP_URL}${location.search}`)
     }
 
     const updateDataSyncing = (loading: boolean): void => {
@@ -637,11 +618,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         setPageOverflowEnabled(!show)
     }
 
-    const handleCreateButton = () => {
-        setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)
-    }
-
-    const getAppListDataToExport = () => { 
+    const getAppListDataToExport = () => {
         return getAppList(
             typeof parsedPayloadOnUrlChange === 'object'
                 ? {
@@ -717,30 +694,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         })
     }
 
-    const renderActionButtons = () => {
-        return (
-            serverMode === SERVER_MODE.FULL ? (
-                <button type="button" className="flex cta h-32 lh-n" onClick={handleCreateButton}>
-                    Create
-                    <DropDown className="icon-dim-20" />
-                </button>
-            ) : (
-                <button type="button" className="flex cta h-32 lh-n" onClick={redirectToHelmAppDiscover}>
-                    Deploy helm charts
-                </button>
-            )
-        )
-    }
-
-    function renderPageHeader() {
-        return (
-            <Fragment>
-                <PageHeader headerName="Applications" renderActionButtons={renderActionButtons} />
-                {showCreateNewAppSelectionModal && renderAppCreateSelectionModal()}
-            </Fragment>
-        )
-    }
-
     function renderMasterFilters() {
         let _isAnyClusterFilterApplied = masterFilters.clusters.some((_cluster) => _cluster.isChecked)
         const showExportCsvButton =
@@ -767,7 +720,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             onChange={onChangeSearchString}
                         />
                         {searchApplied && (
-                            <button className="search__clear-button" type="button" onClick={clearSearch}>
+                            <button className="search__clear-button flex" type="button" onClick={clearSearch}>
                                 <Clear className="icon-dim-18 icon-n4 vertical-align-middle" />
                             </button>
                         )}
@@ -971,20 +924,19 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 )}
                             </span>
                         )}
-                    {params.appType == AppListConstants.AppType.HELM_APPS && fetchingExternalApps && (
-                       renderDataSyncingText()
-                    )}
+                    {params.appType == AppListConstants.AppType.HELM_APPS &&
+                        fetchingExternalApps &&
+                        renderDataSyncingText()}
                 </div>
             </div>
         )
     }
 
     const closeDevtronAppCreateModal = (e) => {
-      stopPropagation(e)
-      let _prefix =
-          currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
-      let url = `${_prefix}${location.search}`
-      history.push(`${url}`)
+        stopPropagation(e)
+        const _urlPrefix =
+            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
+        history.push(`${_urlPrefix}${location.search}`)
     }
 
     function renderAppCreateRouter() {
@@ -1016,34 +968,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         )
     }
 
-    function renderAppCreateSelectionModal() {
-        return (
-            <Modal
-                rootClassName="app-create-model-wrapper"
-                onClick={() => setShowCreateNewAppSelectionModal(!showCreateNewAppSelectionModal)}
-            >
-                <div className="app-create-child cursor" onClick={openDevtronAppCreateModel}>
-                    <AddIcon className="icon-dim-20 fcn-9" />
-                    <div className="ml-8">
-                        <strong>Custom app</strong>
-                        <div>
-                            Connect a git repository to deploy <br /> a custom application
-                        </div>
-                    </div>
-                </div>
-                <div className="app-create-child cursor" onClick={redirectToHelmAppDiscover}>
-                    <ChartIcon className="icon-dim-20" />
-                    <div className="ml-8">
-                        <strong>From Chart store</strong>
-                        <div>
-                            Deploy apps using third party helm <br /> charts (eg. prometheus, redis etc.)
-                        </div>
-                    </div>
-                </div>
-            </Modal>
-        )
-    }
-
     return (
         <div>
             {dataStateType === AppListViewType.LOADING && (
@@ -1058,7 +982,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             )}
             {dataStateType === AppListViewType.LIST && (
                 <>
-                    {renderPageHeader()}
+                    <HeaderWithCreateButton headerName="Applications" />
                     {renderMasterFilters()}
                     {renderAppliedFilters()}
                     {renderAppTabs()}
