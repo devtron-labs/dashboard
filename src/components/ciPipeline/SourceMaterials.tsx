@@ -13,6 +13,8 @@ import { SourceMaterialsProps } from './types'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { reactSelectStyles } from '../CIPipelineN/ciPipeline.utils'
+import { ConditionalWrap } from '../common'
+import Tippy from '@tippyjs/react'
 
 export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) {
     const [isProviderChanged, setProviderChanged] = useState(false)
@@ -121,6 +123,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                         ) || props.ciPipelineSourceTypeOptions[0]
                 }
                 let errorObj = props.validationRules?.sourceValue(isBranchRegex ? mat.regex : mat.value)
+                let isMultigitandWebhook = isMultiGit && _selectedWebhookEvent
                 return (
                     <div key={`source-material-${index}`}>
                         <div className="mt-20" key={mat.gitMaterialId}>
@@ -131,49 +134,63 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                 </p>
                             </div>
                             <div className="mt-16 flex left">
-                                <div
-                                    className={'w-50 mr-8 '}
-                                    aria-description="Game schedule for the Boston Red Sox 2021 Season"
+                                <ConditionalWrap
+                                    condition={isMultigitandWebhook}
+                                    wrap={(children) => (
+                                        <Tippy
+                                            className="default-tt"
+                                            arrow={false}
+                                            placement="top"
+                                            content={`Cannot change source type ${_selectedWebhookEvent.name} for multi-git applications`}
+                                            interactive={true}
+                                        >
+                                            {children}
+                                        </Tippy>
+                                    )}
                                 >
-                                    <label className="form__label mb-6 dc__required-field">Source Type</label>
-                                    <ReactSelect
-                                        className="workflow-ci__source"
-                                        placeholder="Source Type"
-                                        isSearchable={false}
-                                        menuPortalTarget={document.getElementById('visible-modal')}
-                                        options={
-                                            !isMultiGit
-                                                ? props.ciPipelineSourceTypeOptions
-                                                : props.ciPipelineSourceTypeOptions.slice(0, 2)
-                                        }
-                                        isDisabled={islinkedCI || (isMultiGit && _selectedWebhookEvent)}
-                                        value={selectedMaterial}
-                                        closeMenuOnSelect={true}
-                                        onChange={(selected) => props?.selectSourceType(selected, mat.gitMaterialId)}
-                                        isClearable={false}
-                                        isMulti={false}
-                                        components={{
-                                            DropdownIndicator,
-                                            Option,
-                                            IndicatorSeparator: null,
-                                            ClearIndicator: null,
-                                            MenuList,
-                                        }}
-                                        styles={{
-                                            ...reactSelectStyles,
-                                            menu: (base, state) => ({
-                                                ...base,
-                                                top: 'auto',
-                                            }),
-                                            menuList: (base, state) => ({
-                                                ...base,
-                                                zIndex: '99',
-                                            }),
-                                        }}
-                                    />
+                                    <div className={'w-50 mr-8 '}>
+                                        <label className="form__label mb-6 dc__required-field">Source Type</label>
+                                        <ReactSelect
+                                            className="workflow-ci__source"
+                                            placeholder="Source Type"
+                                            isSearchable={false}
+                                            menuPortalTarget={document.getElementById('visible-modal')}
+                                            options={
+                                                !isMultiGit
+                                                    ? props.ciPipelineSourceTypeOptions
+                                                    : props.ciPipelineSourceTypeOptions.slice(0, 2)
+                                            }
+                                            isDisabled={islinkedCI || (isMultiGit && _selectedWebhookEvent)}
+                                            value={selectedMaterial}
+                                            closeMenuOnSelect={true}
+                                            onChange={(selected) =>
+                                                props?.selectSourceType(selected, mat.gitMaterialId)
+                                            }
+                                            isClearable={false}
+                                            isMulti={false}
+                                            components={{
+                                                DropdownIndicator,
+                                                Option,
+                                                IndicatorSeparator: null,
+                                                ClearIndicator: null,
+                                                MenuList,
+                                            }}
+                                            styles={{
+                                                ...reactSelectStyles,
+                                                menu: (base, state) => ({
+                                                    ...base,
+                                                    top: 'auto',
+                                                }),
+                                                menuList: (base, state) => ({
+                                                    ...base,
+                                                    zIndex: '99',
+                                                }),
+                                            }}
+                                        />
 
-                                    <div className="h-18"></div>
-                                </div>
+                                        <div className="h-18"></div>
+                                    </div>
+                                </ConditionalWrap>
 
                                 {isBranchFixed && (
                                     <div className="w-50 ml-8 left">
