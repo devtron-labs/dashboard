@@ -263,7 +263,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
-                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 `}>
+                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9`}>
                             <div className="flex left">
                                 <div
                                     className="flex left top ml-2"
@@ -286,7 +286,6 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                     <div>
                                         <div className="resource__title-name flex left dc__align-start">
                                             <span className="fs-13">{node.name}</span>
-                                            
                                             <div
                                                 className={`flex left ${
                                                     node.kind.toLowerCase() == NodeType.Pod.toLowerCase()
@@ -346,7 +345,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                             </span>
                                             {node?.health?.message && (
                                                 <>
-                                                    <div className="dc__bullet ml-4 mr-4"></div>
+                                                    <div className="dc__bullet ml-4 mr-4 mw-4"></div>
                                                     <span className="dc__truncate">
                                                         {node.health.message.toLowerCase()}
                                                     </span>
@@ -360,7 +359,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
 
                         {params.nodeType === NodeType.Service.toLowerCase() && (
                             <div className={'col-5 pt-9 pb-9 flex left'}>
-                                { nodeName }
+                                {nodeName}
                                 {renderClipboardInteraction(nodeName)}
                             </div>
                         )}
