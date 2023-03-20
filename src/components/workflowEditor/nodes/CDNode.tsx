@@ -119,28 +119,32 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                     )}
                                 </span>
                                 {/* <span className="dc__ellipsis-right">{this.props.environmentName}</span> */}
-                                <TippyCustomized
+                                {/* <TippyCustomized
                                             theme={TippyTheme.black}
                                             className="default-tt"
                                             placement="bottom"
                                             heading={this.props.environmentName}
-                                            infoText={this.props.description}
-                                            //infoText={'This is env description'}
+                                            //infoText={this.props.description}
+                                            infoText={'This is env description'}
                                             // trigger="mouseenter"  //mouseenter focus click
                                             interactive={false}
                                         >
                                             <span className="dc__ellipsis-right">{this.props.environmentName}</span>
-                                        </TippyCustomized>
-                                {/* { <Tippy
+                                        </TippyCustomized> */}
+                                { <Tippy
                                         className="default-tt"
                                         arrow={true}
                                         placement="bottom"
-                                       content={this.props.environmentName}
-                                       //content={<p>Hello</p>}
+                                       content={<div>
+                                        <div>{this.props.environmentName}</div>
+                                       // <div>{this.props.description}</div>
+                                       <div>'This is a env description of max 40words'</div>
+                                       </div>}
+                                      //content={<p>Hello aryan</p>}
 
                                     >
                                         <span className="dc__ellipsis-right">{this.props.environmentName}</span>
-                                    </Tippy> }  */}
+                                    </Tippy> }  
                             </div>
                             <div className="workflow-node__icon-common workflow-node__CD-icon"></div>
                         </div>

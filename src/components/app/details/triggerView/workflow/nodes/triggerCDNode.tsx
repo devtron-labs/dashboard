@@ -86,12 +86,17 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                         >
                                             <span className="dc__ellipsis-right ">{this.props.environmentName}</span>
                                         </TippyCustomized>
-                                        // <Tippy
+                                        // <Tippyc1
                                         //     className="default-tt"
                                         //     arrow={true}
                                         //     placement="bottom"
-                                        //     content={this.props.environmentName}
+                                        //     //content={this.props.environmentName}
                                         //     //content={<p>Hello</p>}
+                                        //     content={<div>
+                                        //         <div>{this.props.environmentName}</div>
+                                        //         <div>{this.props.description}</div>
+                                        //        <div>'This is a env description of max 40words'</div>
+                                        //        </div>}
                                         // >
                                         //     <span className="dc__ellipsis-right">{this.props.environmentName}</span>
                                         // </Tippy>

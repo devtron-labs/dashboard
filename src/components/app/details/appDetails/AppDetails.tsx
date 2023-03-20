@@ -26,7 +26,7 @@ import {
     useAsync,
     ScanDetailsModal,
 } from '../../../common'
-import { CustomValueContainer, formatHighlightedText, Option } from './../../../v2/common/ReactSelect.utils'
+import { CustomValueContainer, formatHighlightedTextDescription, Option } from './../../../v2/common/ReactSelect.utils'
 import {
     getAppConfigStatus,
     getAppOtherEnvironment,
@@ -614,7 +614,8 @@ export function EnvSelector({
             : environments
 
     const handleFormatHighlightedText = (opt, { inputValue }) => {
-        return formatHighlightedText(opt, inputValue, 'label')
+
+        return formatHighlightedTextDescription(opt, inputValue, 'label')
     }
     return (
         <>
@@ -642,7 +643,8 @@ export function EnvSelector({
                             ? sortedEnvironments.map((env) => ({
                                   label: env.environmentName,
                                   value: env.environmentId,
-                                  description: env.description,
+                                  description: 'This is a env description of max 40words'
+                                  //description: env.description,
                               }))
                             : []
                     }

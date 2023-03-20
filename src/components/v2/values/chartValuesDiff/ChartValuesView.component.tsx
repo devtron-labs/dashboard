@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router'
 import ReactSelect from 'react-select'
-import { DropdownIndicator, EnvFormatOptions, formatHighlightedText, getCommonSelectStyle, GroupHeading, Option } from '../../common/ReactSelect.utils'
+import { DropdownIndicator, EnvFormatOptions, getCommonSelectStyle, GroupHeading, Option, formatHighlightedText } from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'

@@ -1,33 +1,176 @@
-.cluster-modal-wrapper {
-    display: grid;
-    grid-template-columns: auto 1fr;
-}
-.cluster-modal-number {
-    border-radius: 50%;
-    z-index: 2;
-}
+.api-token-container {
+    max-width: 1024px;
+    min-width: 960px;
+    margin: 0 auto;
+    height: 100%;
 
-.cluster-modal-container {
-    width: 440px;
-    height: 120px;
-}
+    .cluster-list {
+        // height: calc(100vh - 194px);
+        overflow: hidden;
+        // min-height: 500px;
+        // display: flex;
+        .cluster-list__enviroment_name{
+            height: 'fit-content';
+            padding-top: 5px;
+            padding-bottom: 5px;
+            text-align :left;
+            width: 170px;
+            display: flex;
+            color: #0066CC;
+            // padding-right: 2px;
+            .cluster-list__prod{
+                margin-left: 5px;
+                background: #F7FAFC;
+                border: 1px solid #D0D4D9;
+                border-radius: 4px;
+                // height: 20px;
+                font-family: 'Open Sans';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+width: 39px;
+left: 125px;
+top: 0px;
+border-radius: 4px;
+padding: 0px 2px 0px 4px;
 
-.cluster-inner-container {
-    margin-left: -28px;
-}
+            }
+        }
+        .cluster-list__name_space{
+            height: 'fit-content';
+            padding-top: 5px;
+            padding-bottom: 5px;
+            text-align :left;
+            width: 328px;
+        }
+        .cluster-list__description{
+            height: 'fit-content';
+            padding-top: 5px;
+            padding-bottom: 5px;
+            width: 350px;
+            text-align :left;
+        }
+    }
 
-.cluster-modal-wrapper:last-child {
-    .cluster-inner-container{
-        border-left: none;
-        padding-bottom: 0;
+    .api-list-row {
+        display: grid;
+        grid-template-columns: 24px 170px 328px 350px minmax(80px, 90px);
+        grid-column-gap: 5px;
+
+        .api-key-expired-icon {
+            path:first-of-type {
+                stroke: var(--R500);
+            }
+
+            path:last-of-type {
+                fill: var(--R500);
+            }
+        }
+    }
+
+    .api__row-actions {
+        display: none;
+    }
+
+    .api-list-row {
+        &:hover:not(:first-of-type) {
+            background-color: var(--N50);
+
+            .api__row-actions {
+                display: block;
+
+                button {
+                    height: 24px;
+                }
+            }
+        }
+    }
+
+    .form__row {
+        margin-bottom: 16px;
+
+        .form__label {
+            margin-bottom: 6px;
+        }
+
+        .form__input {
+            height: 36px;
+        }
+
+        .form__error {
+            display: flex !important;
+            align-items: center;
+            margin-top: 6px;
+
+            .form__icon.form__icon--error {
+                width: 16px;
+                height: 16px;
+            }
+        }
+    }
+
+    .form__permission {
+        display: grid;
+        grid-template-columns: 50% 50%;
+    }
+
+    .search {
+        margin-right: 0;
+        margin-bottom: 0 !important;
+        background-color: white;
+
+        .search__input {
+            &.search-applied {
+                width: 90%;
+            }
+
+            &:focus {
+                border: none;
+            }
+        }
+    }
+
+    .anchor {
+        font-weight: 600;
+
+        .add-svg path {
+            fill: var(--B500);
+        }
     }
 }
 
-.cluster-clipboard {
-    top: 12px;
-    right: 16px;
+.generate-token-modal,
+.regenerate-token-modal {
+    top: -84px;
+
+    .modal__body {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        border-top: none;
+    }
 }
 
-.cluster-modal-shadow {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+.generate-token-modal {
+    .api-token-icon {
+        path:first-of-type {
+            stroke: var(--G500);
+        }
+
+        path:last-of-type {
+            fill: var(--G500);
+        }
+    }
+
+    .api-token-text {
+        width: 94%;
+    }
+}
+
+.deleteIcon{
+    display: none;
+}
+#id:hover{
+    .deleteIcon{
+    display: block;
+    }
 }

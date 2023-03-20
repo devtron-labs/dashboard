@@ -47,7 +47,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import config from './sampleConfig.json'
 import ReactSelect from 'react-select'
 import { styles, DropdownIndicator, Option } from './cdpipeline.util'
-import { EnvFormatOptions, formatHighlightedText, GroupHeading} from '../v2/common/ReactSelect.utils'
+import { EnvFormatOptions, formatHighlightedText, formatHighlightedTextDescription, GroupHeading} from '../v2/common/ReactSelect.utils'
 import './cdPipeline.css'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog'
@@ -1107,7 +1107,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     handleFormatHighlightedText = (opt: Environment, { inputValue }) => {
-        return formatHighlightedText(opt, inputValue, 'name')
+        return formatHighlightedTextDescription(opt, inputValue, 'name')
     }
 
     renderEnvNamespaceAndTriggerType() {
