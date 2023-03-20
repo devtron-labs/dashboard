@@ -1248,7 +1248,7 @@ export const createGroupSelectList = (list, nodeLabel): SelectGroupType[] => {
     }))
 
     return [{ label: '', options: [AUTO_SELECT] }, ...groupList]
-}  
+}
 
 export const handleOnBlur = (e): void => {
     if (!e.target.value) {
