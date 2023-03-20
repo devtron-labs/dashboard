@@ -288,8 +288,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                     ))}
                     {this.state.showAddCluster && (
                         <Drawer position="right" width="1000px" onEscape={this.toggleShowAddCluster}>
-                            (
-                            <div className="h-100 bcn-0 pt-0 pr-20 pb-12 pl-20">
+                            <div className="h-100 bcn-0 pt-0 pb-12 pl-20">
                                 <ClusterForm
                                     id={null}
                                     cluster_name
@@ -313,7 +312,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                     toggleBrowseFile={this.toggleBrowseFile}
                                 />
                             </div>
-                            )
                         </Drawer>
                     )}
                 </section>
@@ -798,14 +796,13 @@ function ClusterForm({
             .catch((error) => {
                 setUploadState(UPLOAD_STATE.ERROR)
             })
-        
     }
 
     const handleSuccessButton = (): void => {
         if (uploadState === UPLOAD_STATE.SUCCESS) {
             onCancelUpload('Save')
         } else if (uploadState === UPLOAD_STATE.UPLOAD) {
-            inputFileRef.current.value = null //to upload the same chart
+            inputFileRef.current.value = null
             inputFileRef.current.click()
         }
     }
@@ -813,28 +810,33 @@ function ClusterForm({
     const onCancelUpload = (actionType: string): void => {
         if (actionType === 'Save') {
             setLoadingData(true)
-        }
-        else {
+        } else {
             setLoadingData(false)
         }
     }
 
-    return (
-
-            getCluster?(
-              <div>ss</div>
-            ):(
-                <>
-                <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
-                <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-0 pr-20 pb-12 pl-20">
-                    {id && <Pencil color="#363636" className="icon-dim-24 dc__vertical-align-middle mr-8" />}
-    
+    return getCluster ? (
+        <EmptyState>
+            <EmptyState.Image>
+                <MechanicalOperation />
+            </EmptyState.Image>
+            <EmptyState.Title>
+                <h4>Connecting to Cluster</h4>
+            </EmptyState.Title>
+            <EmptyState.Subtitle>
+                Please wait while the kubeconfig is verified and cluster details are fetched.
+            </EmptyState.Subtitle>
+        </EmptyState>
+    ) : (
+        <>
+            <form action="" className="cluster-form" style={{ padding: 'auto 0' }} onSubmit={handleOnSubmit}>
+                <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 mb-20">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Add Cluster</h2>
                     <button type="button" className="dc__transparent flex icon-dim-24" onClick={toggleShowAddCluster}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
-                <div className="scrollable-content p-20">
+                <div style={{ overflow: 'auto', height: 'calc(100vh - 120px)' }}>
                     <div className="form__row clone-apps dc__inline-block pt-0 pr-20 pb-12 pl-20">
                         <RadioGroup
                             className="radio-group-no-border"
@@ -846,7 +848,7 @@ function ClusterForm({
                             <RadioGroupItem value={AppCreationType.Existing}>From kubeconfig</RadioGroupItem>
                         </RadioGroup>
                     </div>
-    
+
                     {isKubeConfigFile && (
                         <>
                             <hr />
@@ -862,11 +864,13 @@ function ClusterForm({
                                     <CodeEditor.Header>
                                         <div className="user-list__subtitle flex-right">
                                             Paste the contents of kubeconfig file here
-                                            <div className='dc__link'>
+                                            <div className="dc__link">
                                                 {uploadState !== UPLOAD_STATE.UPLOAD && (
                                                     <button
                                                         className={` dc__no-text-transform ${
-                                                            uploadState === UPLOAD_STATE.UPLOADING ? '  mr-20' : '  ml-20'
+                                                            uploadState === UPLOAD_STATE.UPLOADING
+                                                                ? '  mr-20'
+                                                                : '  ml-20'
                                                         }`}
                                                         onClick={(e) => onCancelUpload('Cancel')}
                                                     >
@@ -874,9 +878,7 @@ function ClusterForm({
                                                     </button>
                                                 )}
                                                 {uploadState !== UPLOAD_STATE.UPLOADING && (
-                                                    <div
-                                                        onClick={handleSuccessButton}
-                                                    >
+                                                    <div onClick={handleSuccessButton}>
                                                         {uploadState === UPLOAD_STATE.UPLOAD
                                                             ? 'Browse file...'
                                                             : uploadState === UPLOAD_STATE.ERROR
@@ -897,18 +899,23 @@ function ClusterForm({
                                     </CodeEditor.Header>
                                 </CodeEditor>
                             </div>
-    
+
                             <div className="w-900 dc__border-top flex right pt-16 pr-0 pb-16 pl-20 dc__position-fixed dc__bottom-0">
                                 <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
                                     Cancel
                                 </button>
-                                <button className="cta" type="button" onClick={toggleGetCluster} disabled={uploadState !== UPLOAD_STATE.SUCCESS ? false : true}>
+                                <button
+                                    className="cta"
+                                    type="button"
+                                    onClick={toggleGetCluster}
+                                    disabled={uploadState !== UPLOAD_STATE.SUCCESS ? false : true}
+                                >
                                     Get cluster
                                 </button>
                             </div>
                         </>
                     )}
-    
+
                     <div className="form__row">
                         <CustomInput
                             labelClassName="dc__required-field"
@@ -955,7 +962,7 @@ function ClusterForm({
                     {isGrafanaModuleInstalled && (
                         <>
                             <hr />
-                            <div className="dc__position-rel flex left cursor dc__hover-n50">
+                            <div className="dc__position-rel flex left cursor dc__hover-n50 mb-20">
                                 <Checkbox
                                     isChecked={isTlsConnection}
                                     rootClassName="form__checkbox-label--ignore-cache mb-0"
@@ -965,39 +972,41 @@ function ClusterForm({
                                     <div className="mr-4 flex center"> Use secure TLS connection {isTlsConnection}</div>
                                 </Checkbox>
                             </div>
-    
+
                             {isTlsConnection && (
                                 <>
-                                <div className="form__row">
-                                    <span className="form__label dc__required-field">Certificate Authority Data</span>
-                                    <ResizableTextarea
-                                        className="dc__resizable-textarea__with-max-height w-100"
-                                        name="tlsClientCert"
-                                        value={state.tlsClientCert.value}
-                                        onChange={handleOnChange}
-                                        placeholder={'Enter CA Data'}
-                                    />
-                                </div>
-                                <div className="form__row">
-                                    <span className="form__label dc__required-field">TLS Key</span>
-                                    <ResizableTextarea
-                                        className="dc__resizable-textarea__with-max-height w-100"
-                                        name="tlsClientKey"
-                                        value={state.tlsClientKey.value}
-                                        onChange={handleOnChange}
-                                        placeholder={'Enter tls Key'}
-                                    />
-                                </div>
-                                <div className="form__row">
-                                    <span className="form__label dc__required-field">TLS Certificate</span>
-                                    <ResizableTextarea
-                                        className="dc__resizable-textarea__with-max-height w-100"
-                                        name="tlsClientCert"
-                                        value={state.tlsClientCert.value}
-                                        onChange={handleOnChange}
-                                        placeholder={'Enter tls Certificate'}
-                                    />
-                                </div>
+                                    <div className="form__row">
+                                        <span className="form__label dc__required-field">
+                                            Certificate Authority Data
+                                        </span>
+                                        <ResizableTextarea
+                                            className="dc__resizable-textarea__with-max-height w-100"
+                                            name="tlsClientCert"
+                                            value={state.tlsClientCert.value}
+                                            onChange={handleOnChange}
+                                            placeholder={'Enter CA Data'}
+                                        />
+                                    </div>
+                                    <div className="form__row">
+                                        <span className="form__label dc__required-field">TLS Key</span>
+                                        <ResizableTextarea
+                                            className="dc__resizable-textarea__with-max-height w-100"
+                                            name="tlsClientKey"
+                                            value={state.tlsClientKey.value}
+                                            onChange={handleOnChange}
+                                            placeholder={'Enter tls Key'}
+                                        />
+                                    </div>
+                                    <div className="form__row">
+                                        <span className="form__label dc__required-field">TLS Certificate</span>
+                                        <ResizableTextarea
+                                            className="dc__resizable-textarea__with-max-height w-100"
+                                            name="tlsClientCert"
+                                            value={state.tlsClientCert.value}
+                                            onChange={handleOnChange}
+                                            placeholder={'Enter tls Certificate'}
+                                        />
+                                    </div>
                                 </>
                             )}
                             <hr />
@@ -1007,7 +1016,9 @@ function ClusterForm({
                                 } mt-20`}
                             >
                                 <div className="dc__content-space flex">
-                                    <span className="form__input-header">See metrics for applications in this cluster</span>
+                                    <span className="form__input-header">
+                                        See metrics for applications in this cluster
+                                    </span>
                                     <div className="" style={{ width: '32px', height: '20px' }}>
                                         <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
                                     </div>
@@ -1019,7 +1030,9 @@ function ClusterForm({
                             </div>
                         </>
                     )}
-                    {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheus_url && <PrometheusWarningInfo />}
+                    {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheus_url && (
+                        <PrometheusWarningInfo />
+                    )}
                     {isGrafanaModuleInstalled && prometheusToggleEnabled && (
                         <div className="">
                             {(state.userName.error || state.password.error || state.endpoint.error) && (
@@ -1084,7 +1097,7 @@ function ClusterForm({
                         )}
                     </div>
                 </div>
-    
+
                 {!isKubeConfigFile && (
                     <div className="w-900 dc__border-top flex right pt-16 pr-0 pb-16 pl-20 dc__position-fixed dc__bottom-0">
                         <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
@@ -1093,7 +1106,7 @@ function ClusterForm({
                         <button className="cta">{loading ? <Progressing /> : 'Save cluster'}</button>
                     </div>
                 )}
-    
+
                 {confirmation && (
                     <DeleteComponent
                         setDeleting={setDeleting}
@@ -1107,11 +1120,7 @@ function ClusterForm({
                     />
                 )}
             </form>
-                </>
-
-            )
-        
-
+        </>
     )
 }
 
