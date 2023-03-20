@@ -28,8 +28,8 @@ export const Routes = {
     EXTERNAL_CI_CONFIG: 'app/external-ci',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
     SPECIFIC_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all',
-    RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all/latest',
-    LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/all/latest',
+    RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/latest/deployed',
+    LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/latest/saved',
     WORKFLOW_EDITOR: 'edit/workflow',
 
     CD_MATERIAL_GET: 'app/cd-pipeline',
@@ -126,7 +126,9 @@ export const Routes = {
     APP_CREATE_CONFIG_MAP: 'config/global/cm',
     APP_CREATE_SECRET: 'config/global/cs',
     WORKFLOW: 'app/app-wf',
-
+    APP_WF: 'app-wf',
+    ENV_WORKFLOW: 'env',
+    WORKFLOW_STATUS: 'workflow/status',
     ATTRIBUTES_USER: 'attributes/user',
     APP_WORKFLOW_STATUS: 'app/workflow/status',
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
@@ -200,6 +202,10 @@ export const Routes = {
     K8S_RESOURCE_LIST: 'k8s/resource/list',
     K8S_RESOURCE_CREATE: 'k8s/resources/apply',
     CLUSTER_LIST_PERMISSION: 'cluster/auth-list',
+    ENVIRONMENT_APPS: 'env/app-grouping',
+    ENV_APPLICATIONS: 'applications',
+    ENV_DEPLOYMENT_STATUS: 'deployment/status',
+    USER_ROLE_GROUP: 'user/role/group'
 }
 
 export const ViewType = {
@@ -239,6 +245,8 @@ export const PATTERNS = {
     KUBERNETES_VALUE: /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/,
     KUBERNETES_KEY_PREFIX: /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/,
     KUBERNETES_KEY_NAME: /^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$/,
+    START_END_ALPHANUMERIC: /^([A-Za-z0-9]).*[A-Za-z0-9]$|^[A-Za-z0-9]{1}$/,
+    ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/ // allow alphanumeric,(.) ,(-),(_)
 }
 
 export const TriggerType = {
@@ -283,6 +291,7 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_GIT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/git-accounts`,
     GLOBAL_CONFIG_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/docker-registries`,
     GLOBAL_CONFIG_CLUSTER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/cluster-and-environments`,
+    GLOBAL_CONFIG_AUTH: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access`,
     GLOBAL_CONFIG_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/chart-repo`,
     GLOBAL_CONFIG_NOTIFICATION: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/manage-notification`,
     GLOBAL_CONFIG_PROJECT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/projects`,
@@ -306,12 +315,27 @@ export const DOCUMENTATION = {
     DEPLOYMENT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/deployment-template/deployment`,
     WEBHOOK_API_TOKEN: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/authorization/api-tokens`,
     WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/ci-pipeline#3.-deploy-image-from-external-service`,
+    APP_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/create-application#tags`,
+    APP_OVERVIEW_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/overview#manage-tags`,
     K8S_RESOURCES_PERMISSIONS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access#kubernetes-resources-permissions`,
+    APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
 
 export const PREVIEW_DEVTRON = 'https://preview.devtron.ai/dashboard'
+
+export const NETSHOOT_LINK = 'https://github.com/nicolaka/netshoot'
+
+export const BUSYBOX_LINK = 'https://busybox.net/'
+
+export const DISCORD_LINK = 'https://discord.devtron.ai/'
+
+export const OPEN_NEW_TICKET = 'https://enterprise.devtron.ai/portal/en/newticket'
+
+export const VIEW_ALL_TICKETS = 'https://enterprise.devtron.ai/portal/en/myarea'
+
+export const RAISE_ISSUE = 'https://github.com/devtron-labs/devtron/issues/new/choose'
 
 // APP LIST STARTS
 export const AppListConstants = {
@@ -741,5 +765,17 @@ export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
 export const LAST_SEEN = 'last seen'
 export const GIT_BRANCH_NOT_CONFIGURED = 'Not Configured'
 export const SOURCE_NOT_CONFIGURED = 'Source not configured'
+export const DOCKER_FILE_ERROR_TITLE = 'Unable to locate Dockerfile as source is not configured for this repository'
+export const DOCKER_FILE_ERROR_MESSAGE = 'Unable to locate Dockerfile as source is not configured for this repository'
 export const DEFAULT_GIT_BRANCH_VALUE = '--'
 export const SOURCE_NOT_CONFIGURED_MESSAGE= 'Source is not configured for one or more git repositories. Please configure and try again.'
+
+export enum MANIFEST_KEY_FIELDS {
+    METADATA= 'metadata',
+    MANAGED_FIELDS= 'managedFields'
+}
+
+export enum KEY_VALUE {
+  KEY= 'key',
+  VALUE= 'value'
+}

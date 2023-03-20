@@ -6,27 +6,41 @@ import { SourceTypeMap } from '../../../../config'
 import { CiPipelineSourceConfig } from '../../../ciPipeline/CiPipelineSourceConfig'
 import { MaterialSourceProps } from './types'
 
-export default function MaterialSource({ material, refreshMaterial, selectMaterial }: MaterialSourceProps) {
+export default function MaterialSource({
+    material,
+    refreshMaterial,
+    selectMaterial,
+    ciPipelineId,
+}: MaterialSourceProps) {
+    const renderErrorMessage = (mat: CIMaterialType): string => {
+        if (mat.isRepoError) {
+            return mat.repoErrorMsg
+        } else if (mat.isDockerFileError) {
+            return mat.dockerFileErrorMsg
+        } else if (mat.isBranchError) {
+            return mat.branchErrorMsg
+        } else {
+            return ''
+        }
+    }
     const renderMaterialUpdateInfo = (mat: CIMaterialType) => {
         if (mat.isMaterialLoading) {
             return (
-                <div className="material-last-update">
+                <div className="flex fs-10">
                     <div className="material-last-update__fetching dc__loading-dots">Fetching</div>
                 </div>
             )
-        } else if (mat.isBranchError || mat.isRepoError) {
+        } else if (mat.isBranchError || mat.isRepoError || mat.isDockerFileError) {
             return (
-                <div className="material-last-update">
+                <div className="flex fs-10">
                     <Error className="form__icon--error icon-dim-14 mr-5" />
-                    <div className="material__error dc__ellipsis-right">
-                        {mat.isRepoError ? mat.repoErrorMsg : mat.isBranchError ? mat.branchErrorMsg : ''}
-                    </div>
+                    <div className="material__error dc__ellipsis-right">{renderErrorMessage(mat)}</div>
                 </div>
             )
         } else {
             return (
-                <div className="material-last-update">
-                    {mat.lastFetchTime ? 'Last Updated' : ''}
+                <div className="flex fs-10">
+                    {mat.lastFetchTime ? 'Updated' : ''}
                     <span className="fw-6 ml-5"> {mat.lastFetchTime}</span>
                 </div>
             )
@@ -54,17 +68,17 @@ export default function MaterialSource({ material, refreshMaterial, selectMateri
 
     const handleSelectMaterialAction = (e) => {
         e.stopPropagation()
-        selectMaterial(e.currentTarget.dataset.id)
+        selectMaterial(e.currentTarget.dataset.id, ciPipelineId)
     }
 
     return (
-        <>
+        <div className="select-material--trigger-view__sidebar dc__overflow-scroll">
             {material.map((mat, index) => {
                 return (
                     <div
                         key={index}
                         data-id={mat.id}
-                        className={`material-list__item ${mat.isSelected ? 'material-selected' : ''}`}
+                        className={`material-list__item ${mat.isSelected ? "material-selected" : ''}`}
                         onClick={handleSelectMaterialAction}
                     >
                         <div className="material-info">
@@ -81,7 +95,7 @@ export default function MaterialSource({ material, refreshMaterial, selectMateri
                             />
                         </div>
                         {refreshMaterial ? (
-                            <div className="material-info">
+                            <div className="material-info mt-10">
                                 {renderMaterialUpdateInfo(mat)}
                                 {mat.type != SourceTypeMap.WEBHOOK && renderRefreshButton(mat)}
                             </div>
@@ -89,6 +103,6 @@ export default function MaterialSource({ material, refreshMaterial, selectMateri
                     </div>
                 )
             })}
-        </>
+        </div>
     )
 }

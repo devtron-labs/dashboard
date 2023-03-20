@@ -11,12 +11,27 @@ export interface CDMaterialProps {
     materialType: string
     envName: string
     redirectToCD?: () => void
-    stageType: string
-    changeTab?: (materrialId: string | number, artifactId: number, tab: CDMdalTabType) => void
-    triggerDeploy: (stageType: string, deploymentWithConfig?: string, wfrId?: number) => void
-    selectImage: (index: number, materialType: string) => void
-    toggleSourceInfo: (materialIndex: number) => void
-    closeCDModal: () => void
+    stageType: DeploymentNodeType
+    changeTab?: (
+        materrialId: string | number,
+        artifactId: number,
+        tab: CDMdalTabType,
+        selectedCDDetail?: { id: number; type: DeploymentNodeType },
+        appId?: number,
+    ) => void
+    triggerDeploy: (
+        stageType: DeploymentNodeType,
+        _appId: number,
+        deploymentWithConfig?: string,
+        wfrId?: number,
+    ) => void
+    selectImage: (
+        index: number,
+        materialType: string,
+        selectedCDDetail?: { id: number; type: DeploymentNodeType },
+    ) => void
+    toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
+    closeCDModal: (e) => void
     onClickRollbackMaterial?: (
         cdNodeId: number,
         offset?: number,
@@ -29,6 +44,7 @@ export interface CDMaterialProps {
     hideInfoTabsContainer?: boolean
     appId?: number
     pipelineId?: number
+    isFromBulkCD?: boolean
 }
 
 export enum DeploymentWithConfigType {
@@ -58,19 +74,25 @@ export interface CDMaterialState {
     latestDeploymentConfig: any
     specificDeploymentConfig: any
     selectedMaterial: CDMaterialType
+    isSelectImageTrigger: boolean
+}
+
+export interface MaterialInfo {
+  revision: string
+  modifiedTime: string | Date
+  author: string
+  message: string
+  commitLink: string
+  tag: string
+  webhookData: string
+  branch: string
+  url?: string
+  type?: string
 }
 
 export interface CDMaterialType {
     id: string
-    materialInfo: {
-        revision: string
-        modifiedTime: string
-        author: string
-        message: string
-        commitLink: string
-        tag: string
-        webhookData: string
-    }[]
+    materialInfo: MaterialInfo[]
     tab: CDMdalTabType
     scanEnabled: boolean
     scanned: boolean
@@ -107,7 +129,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     toggleWebhookModal: (id, webhookTimeStampOrder) => void
     webhookPayloads: WebhookPayloads
     isWebhookPayloadLoading: boolean
-    hideWebhookModal: () => void
+    hideWebhookModal: (e?) => void
     onClickWebhookTimeStamp: () => void
     webhhookTimeStampOrder: string
     showMaterialRegexModal: boolean
@@ -122,6 +144,8 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     setLoader: (isLoading) => void
     isFirstTrigger?: boolean
     isCacheAvailable?: boolean
+    fromAppGrouping?: boolean
+    appId: string
 }
 
 export interface RegexValueType {
@@ -179,6 +203,7 @@ export interface NodeAttr {
     regex?: string
     primaryBranchAfterRegex?: string
     storageConfigured?: boolean
+    deploymentAppDeleteRequest?: boolean
 }
 
 export interface DownStreams {
@@ -214,6 +239,7 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     parentPipelineId?: string
     parentPipelineType?: string
     parentEnvironmentName?: string
+    fromAppGrouping: boolean
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -228,10 +254,11 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     triggerType: string
     colourCode: string
     stageIndex: number
-    type: 'PRECD' | 'CD' | 'POSTCD'
+    type: DeploymentNodeType
     downstreams?: string[]
     inputMaterialList: InputMaterials[]
     rollbackMaterialList: InputMaterials[]
+    fromAppGrouping: boolean
 }
 
 export interface TriggerEdgeType {
@@ -247,15 +274,19 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     width: number
     height: number
     nodes: NodeAttr[]
+    appId?: number
+    isSelected?: boolean
+    fromAppGrouping?: boolean
+    handleSelectionChange?: (_appId: number)=> void
 }
 
 export interface TriggerViewContextType {
     invalidateCache: boolean
     refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => void
     onClickTriggerCINode: () => void
-    onClickTriggerCDNode: (nodeType: 'PRECD' | 'CD' | 'POSTCD') => void
+    onClickTriggerCDNode: (nodeType: DeploymentNodeType, _appId: number) => void
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => void
-    onClickCDMaterial: (cdNodeId, nodeType: 'PRECD' | 'CD' | 'POSTCD') => void
+    onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType) => void
     onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => void
     closeCIModal: () => void
     selectCommit: (materialId: string, hash: string) => void
@@ -284,6 +315,8 @@ export interface WorkflowType {
     nodes: NodeAttr[]
     dag: any
     showTippy?: boolean
+    appId?: number
+    isSelected?: boolean
 }
 
 export interface WebhookPayloadDataResponse {
@@ -366,6 +399,12 @@ export enum WorkflowNodeType {
     PRE_CD = 'PRECD',
     CD = 'CD',
     POST_CD = 'POSTCD',
+}
+
+export enum DeploymentNodeType {
+    PRECD = 'PRECD',
+    CD = 'CD',
+    POSTCD = 'POSTCD',
 }
 
 export interface Task {
@@ -458,6 +497,9 @@ export interface CiPipeline {
     afterDockerBuildScripts?: Array<CiScript>
     isDockerConfigOverridden?: boolean
     dockerConfigOverride?: DockerConfigOverrideType
+    appName?: string
+    appId?: string
+    componentId?: number
 }
 
 export interface Material {
@@ -521,6 +563,8 @@ export interface CdPipeline {
     isClusterCdActive?: boolean
     parentPipelineId?: number
     parentPipelineType?: string
+    deploymentAppDeleteRequest?: boolean
+    deploymentAppCreated?: boolean
 }
 
 export interface CdPipelineResult {
@@ -556,6 +600,7 @@ export interface BranchRegexModalProps {
     handleRegexInputValue: (id, value, mat) => void
     regexValue
     onCloseBranchRegexModal
+    hideHeaderFooter?: boolean
 }
 export interface AppDetailsProps {
     isV2: boolean
@@ -575,6 +620,8 @@ export interface TriggerViewConfigDiffProps {
     handleConfigSelection: (selected) => void
     isConfigAvailable: (optionValue) => boolean
     diffOptions: Record<string, boolean>
+    isRollbackTriggerSelected: boolean
+    isRecentConfigAvailable: boolean
 }
 
 export const MATERIAL_TYPE = {
@@ -593,30 +640,33 @@ export const STAGE_TYPE = {
 }
 
 export interface EmptyStateCIMaterialProps {
-    isRepoError: boolean;
-    isBranchError: boolean;
-    gitMaterialName: string;
-    sourceValue: string;
-    repoUrl: string;
-    branchErrorMsg: string;
-    repoErrorMsg: string;
-    isMaterialLoading: boolean;
-    onRetry: (...args) => void;
-    anyCommit: boolean;
-    isWebHook?: boolean;
+    isRepoError: boolean
+    isBranchError: boolean
+    isDockerFileError: boolean
+    dockerFileErrorMsg: string
+    gitMaterialName: string
+    sourceValue: string
+    repoUrl: string
+    branchErrorMsg: string
+    repoErrorMsg: string
+    isMaterialLoading: boolean
+    onRetry: (...args) => void
+    anyCommit: boolean
+    isWebHook?: boolean
     noSearchResults?: boolean
     noSearchResultsMsg?: string
-    toggleWebHookModal?: () => void;
+    toggleWebHookModal?: () => void
     clearSearch?: () => void
     handleGoToWorkFlowEditor?: (e?: any) => void
-  }
+}
 
 export interface MaterialSourceProps {
     material: CIMaterialType[]
-    selectMaterial: (materialId: string) => void
+    selectMaterial: (materialId: string, ciPipelineId?: number) => void
     refreshMaterial?: {
         pipelineId: number
         title: string
         refresh: (pipelineId: number, title: string, gitMaterialId: number) => void
     }
+    ciPipelineId?: number
 }

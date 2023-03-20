@@ -85,7 +85,7 @@ export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
                     >
                         <GitCommitInfoGeneric
                             materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger.GitRepoUrl : ciMaterial?.url}
-                            showMaterialInfo={true}
+                            showMaterialInfoHeader={true}
                             commitInfo={gitTrigger}
                             materialSourceType={
                                 gitTrigger?.CiConfigureSourceType ? gitTrigger.CiConfigureSourceType : ciMaterial?.type
@@ -104,20 +104,20 @@ export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
     )
 }
 
-export const EmptyView = ({ title, subTitle, link, linkText }: EmptyViewType) => {
+export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyViewType) => {
     return (
         <EmptyState>
             <EmptyState.Image>
-                <img src={AppNotDeployed} alt="" />
+                <img src={imgSrc ?? AppNotDeployed} alt="" />
             </EmptyState.Image>
             <EmptyState.Title>
-                <h4>{title}</h4>
+                <h4 className="fw-6 w-300 dc__text-center lh-1-4">{title}</h4>
             </EmptyState.Title>
             <EmptyState.Subtitle>{subTitle}</EmptyState.Subtitle>
             {link && (
                 <EmptyState.Button>
-                    <NavLink to={link} className="cta cta--ci-details" target="_blank">
-                        <OpenInNew className="mr-5 mr-5 scn-0 fcb-5" />
+                    <NavLink to={link} className="cta cta--ci-details flex" target="_blank">
+                        <OpenInNew className="mr-5 mr-5 scn-0 fcb-5 icon-fill-blue-imp" />
                         {linkText}
                     </NavLink>
                 </EmptyState.Button>

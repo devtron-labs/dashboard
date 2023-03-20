@@ -12,6 +12,7 @@ import { EmptyView } from './History.components'
 import '../cIDetails/ciDetails.scss'
 import { ArtifactType, CIListItemType, CopyTippyWithTextType } from './types'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
+import { extractImage } from '../../service'
 export default function Artifacts({ status, artifact, blobStorageEnabled, getArtifactPromise }: ArtifactType) {
     const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
     const [copied, setCopied] = useState(false)
@@ -44,15 +45,15 @@ export default function Artifacts({ status, artifact, blobStorageEnabled, getArt
         return (
             <div className="flex left column p-16">
                 <CIListItem type="artifact">
-                    <div className="flex column left hover-trigger ">
-                        <div className="cn-9 fs-14 flex left dc__visible-hover dc__visible-hover--parent">
+                    <div className="flex column left hover-trigger">
+                        <div className="cn-9 fs-14 flex left">
                             <CopyTippyWithText
-                                copyText={artifact?.split(':')[1]}
+                                copyText={extractImage(artifact)}
                                 copied={copied}
                                 setCopied={setCopied}
                             />
                         </div>
-                        <div className="cn-7 fs-12 flex left dc__visible-hover dc__visible-hover--parent">
+                        <div className="cn-7 fs-12 flex left">
                             <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
                         </div>
                     </div>
@@ -94,7 +95,7 @@ const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWithTextTyp
             >
                 <CopyIcon
                     data-copy-text={copyText}
-                    className="pointer dc__visible-hover--child ml-6 icon-dim-16"
+                    className="pointer ml-6 icon-dim-16"
                     onClick={onClickCopyToClipboard}
                 />
             </Tippy>

@@ -1,11 +1,13 @@
 import { Routes } from '../../../config/constants'
 import { get, post, trash } from '../../../services/api'
-import { AppDetails } from '../../app/types'
 import { AppType, DeploymentAppType } from './appDetails.type'
 import { getAppId } from '../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
 export const getInstalledChartDetail = (_appId: number, _envId: number) => {
     return get(`app-store/installed-app/detail?installed-app-id=${_appId}&env-id=${_envId}`)
+}
+export const getInstalledChartNotesDetail = (_appId: number, _envId: number) => {
+    return get(`app-store/installed-app/notes?installed-app-id=${_appId}&env-id=${_envId}`)
 }
 
 export const getInstalledChartDetailWithResourceTree = (_appId: number, _envId: number) => {
