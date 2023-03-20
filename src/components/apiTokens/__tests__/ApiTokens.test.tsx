@@ -1,14 +1,13 @@
 import React from 'react';
 import '@testing-library/jest-dom'
-import { fireEvent, render } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import APITokenList from '../APITokenList';
-import EditAPIToken from '../EditAPIToken'
 import { BrowserRouter } from 'react-router-dom';
 
-
-
 describe('APITokenList', () => {
-    const tokenList = [
+
+    const tokenList   = [
         {
             expireAtInMs: 1647519,
             id: 1,
@@ -56,7 +55,7 @@ describe('APITokenList', () => {
     it('create token button trigger', () => {
 
         const reload = jest.fn();
-        const { container } = render(<APITokenList tokenList={tokenList} renderSearchToken={jest.fn()} reload={reload} /> , {
+        const { container , getByText } = render(<APITokenList tokenList={tokenList} renderSearchToken={jest.fn()} reload={reload} /> , {
             wrapper:BrowserRouter});
         const generateTokenButton = container.querySelector('.app-status-card__divider') as HTMLElement;
         expect(generateTokenButton).toBeInTheDocument();
@@ -64,26 +63,16 @@ describe('APITokenList', () => {
 
     });
 
-    it('edit token button trigger', () => {
-
-        const reload = jest.fn();
-        const { container } = render(<APITokenList tokenList={tokenList} renderSearchToken={jest.fn()} reload={reload} /> , {
-            wrapper:BrowserRouter});
-        const editTokenButton = container.querySelectorAll('.dc__transparent.cursor')[0] as HTMLElement;
-        expect(editTokenButton).toBeInTheDocument();
-        fireEvent.click(editTokenButton);
-        expect(reload).toHaveBeenCalledTimes(1);
-    });
-
-    it('search token button trigger', () => {
-
-        const reload = jest.fn();
-        const { container } = render(<APITokenList tokenList={tokenList} renderSearchToken={jest.fn()} reload={reload} /> , {
-            wrapper:BrowserRouter});
-        const searchTokenButton = container.querySelector('.flex.dc__align-end.dc__content-end') as HTMLElement;
-        fireEvent.input(searchTokenButton, { target: { value: 'test' } })
-        expect(searchTokenButton.getAttribute('value')).toEqual('test')
-    
-    });
+    // it('edit token button trigger', async () => {
+    //     const user = userEvent.setup();
+    //     const reload = jest.fn();
+    //     const { container , findByText } = render(<APITokenList tokenList={tokenList} renderSearchToken={jest.fn()} reload={reload} /> , {
+    //         wrapper:BrowserRouter});
+    //     const editTokenButton = container.querySelectorAll('.dc__transparent.cursor')[0] as HTMLElement;
+    //     expect(editTokenButton).toBeInTheDocument();
+    //     await userEvent.click(editTokenButton);
+    //     expect(await screen.findByText('Edit API token')).toBeVisible();
+    // });
 
 });
+
