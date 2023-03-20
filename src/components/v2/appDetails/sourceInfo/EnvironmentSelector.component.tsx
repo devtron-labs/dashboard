@@ -223,28 +223,13 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
                         Urls
                     </button>
                 )}
-                {appDetails.appType === AppType.EXTERNAL_HELM_CHART && !showWorkloadsModal && (
-                    <>
-                        {canScaleWorkloads ? (
-                            <button
-                                className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
-                                onClick={() => setWorkloadsModal(true)}
-                            >
-                                <ScaleObjects className="mr-4" /> Scale workloads
-                            </button>
-                        ) : (
-                            <Tippy
-                                placement="top"
-                                arrow={false}
-                                className="default-tt"
-                                content={'No scalable workloads available'}
-                            >
-                                <button className="scale-workload__btn flex left cta pb-6 pt-6 pl-12 pr-12 not-allowed">
-                                    <ScaleObjects className="scale-workload-icon mr-4" /> Scale workloads
-                                </button>
-                            </Tippy>
-                        )}
-                    </>
+                {!showWorkloadsModal && (
+                    <button
+                        className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
+                        onClick={() => setWorkloadsModal(true)}
+                    >
+                        <ScaleObjects className="mr-4" /> Scale workloads
+                    </button>    
                 )}
 
                 {!(
