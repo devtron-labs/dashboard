@@ -53,6 +53,8 @@ export const Routes = {
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/edit',
+    
+    JOB_CI_DETAIL:'job/ci-pipeline/list',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
@@ -205,7 +207,10 @@ export const Routes = {
     ENVIRONMENT_APPS: 'env/app-grouping',
     ENV_APPLICATIONS: 'applications',
     ENV_DEPLOYMENT_STATUS: 'deployment/status',
-    USER_ROLE_GROUP: 'user/role/group'
+    JOB: 'job',
+    JOB_LIST: 'job/list',
+    JOB_CI_PIPELINE_LIST: 'job/ci-pipeline/list',
+    USER_ROLE_GROUP: 'user/role/group',
 }
 
 export const ViewType = {
@@ -319,6 +324,8 @@ export const DOCUMENTATION = {
     APP_OVERVIEW_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/overview#manage-tags`,
     K8S_RESOURCES_PERMISSIONS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access#kubernetes-resources-permissions`,
     APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile`,
+    JOB_SOURCE_CODE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/configuration-job`,
+    JOB_WORKFLOW_EDITOR: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/workflow-editor-job`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -581,6 +588,11 @@ export const BuildTabText = {
     preBuildStage: 'Pre-build stage',
     buildStage: 'Build stage',
     postBuildStage: 'Post-build stage',
+}
+
+export const JobPipelineTabText = {
+    buildStage: 'Basic configuration',
+    preBuildStage: 'Tasks to be executed',
 }
 
 export const APP_STATUS_CUSTOM_MESSAGES = {
