@@ -13,13 +13,7 @@ import './apiToken.scss'
 import EmptyState from '../EmptyState/EmptyState'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help-filled.svg'
-import TippyCustomized from '../common/TippyCustomized'
-
-
-enum TippyTheme {
-    black = 'black',
-    white = 'white',
-}
+import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 
 function NoMatchingResults() {
     return (
@@ -56,7 +50,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                 className="w-300"
                 placement="right"
                 Icon={QuestionFilled}
-                heading={'API tokens'}
+                heading={"API tokens"}
                 infoText="Tokens you have generated that can be used to access the Devtron API."
                 showCloseButton={true}
                 trigger="click"
@@ -72,9 +66,22 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
         )
     }
 
+    const handleGenerateRowAction = () => {
+        handleGenerateRowActionButton('create')
+    }
+
+    const handleEditRowAction = (e) => {
+        const id = tokenList[e.currentTarget.dataset.index].id
+        handleGenerateRowActionButton('edit',id)
+    }
+
+    const handleDelete = (e) => {
+        const list = tokenList[e.currentTarget.dataset.index]
+        handleDeleteButton(list)
+    }
 
     return (
-        <div className='white-background'>
+        <div className='bcn-0'>
             <div className='flex dc__content-space pl-20 pr-20'>
                 <div className='flex row ml-0'>
                     <div className="cn-9 fw-6 fs-16">API tokens</div>
@@ -82,7 +89,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                 </div>
                 <div className="flex dc__align-end dc__content-end mb-8 mt-16">
                     {renderSearchToken()}
-                    <button className="flex cta h-32 ml-10 app-status-card__divider" onClick={() => handleGenerateRowActionButton('create')}>
+                    <button className="flex cta h-32 ml-10 app-status-card__divider" onClick={handleGenerateRowAction}>
                         Generate new token
                     </button>
                 </div>
@@ -96,7 +103,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                     <div>Expires on</div>
                     <div></div>
                 </div>
-                <div className="dc__overflow-scroll" style={{'height': 'calc(100vh - 141px)'}}>
+                <div className="dc__overflow-scroll api__list__height">
                     {!tokenList || tokenList.length === 0 ? (
                         <NoMatchingResults />
                     ) : (
@@ -109,7 +116,8 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                                 <button
                                     type="button"
                                     className="dc__transparent cursor flex"
-                                    onClick={() => handleGenerateRowActionButton('edit', list.id)}
+                                    data-index = {index}
+                                    onClick={handleEditRowAction}
                                 >
                                     <Key
                                         className={`api-key-icon icon-dim-20 ${
@@ -119,7 +127,8 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                                 </button>
                                 <div
                                     className={`flexbox cb-5 cursor`}
-                                    onClick={() => handleGenerateRowActionButton('edit', list.id)}
+                                    data-index = {index}
+                                    onClick={handleEditRowAction}
                                 >
                                     <span className="dc__ellipsis-right">{list.name}</span>
                                 </div>
@@ -141,14 +150,16 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                                     <button
                                         type="button"
                                         className="dc__transparent mr-12"
-                                        onClick={() => handleGenerateRowActionButton('edit', list.id)}
+                                        data-index = {index}
+                                        onClick={handleEditRowAction}
                                     >
                                         <Edit className="icon-dim-20" />
                                     </button>
                                     <button
                                         type="button"
                                         className="dc__transparent"
-                                        onClick={() => handleDeleteButton(list)}
+                                        data-index = {index}
+                                        onClick={handleDelete}
                                     >
                                         <Trash className="scn-6 icon-dim-20" />
                                     </button>
