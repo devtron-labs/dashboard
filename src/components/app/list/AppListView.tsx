@@ -97,7 +97,7 @@ export class AppListView extends Component<AppListViewProps> {
 
                                 <span
                                     className={` sort ${icon} ml-4 dc__visible-hover--child ${
-                                        this.props.sortRule.key == SortBy.APP_NAME ? 'displayarrow' : ''
+                                        this.props.sortRule.key == SortBy.APP_NAME ? 'display-arrow' : ''
                                     } `}
                                 ></span>
                             </button>
@@ -133,7 +133,7 @@ export class AppListView extends Component<AppListViewProps> {
 
                                 <span
                                     className={` sort ${icon} ml-4  dc__visible-hover--child${
-                                        this.props.sortRule.key === SortBy.LAST_DEPLOYED ? 'displayarrow' : ''
+                                        this.props.sortRule.key === SortBy.LAST_DEPLOYED ? 'display-arrow' : ''
                                     } `}
                                 ></span>
                             </button>
