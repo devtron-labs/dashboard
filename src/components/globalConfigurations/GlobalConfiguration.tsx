@@ -346,12 +346,9 @@ function NavItem({ hostURLConfig, serverMode }) {
                 <div className="flexbox flex-justify">External Links</div>
             </NavLink>
             {TagListContainer && (
-                <>
-                    <hr className="mt-8 mb-8 w-100 checklist__divider" />
-                    <NavLink to={URLS.GLOBAL_CONFIG_TAGS} key={URLS.GLOBAL_CONFIG_TAGS} activeClassName="active-route">
-                        <div className="flexbox flex-justify">Tags</div>
-                    </NavLink>
-                </>
+                <NavLink to={URLS.GLOBAL_CONFIG_TAGS} key={URLS.GLOBAL_CONFIG_TAGS} activeClassName="active-route">
+                    <div className="flexbox flex-justify">Tags</div>
+                </NavLink>
             )}
         </div>
     )
