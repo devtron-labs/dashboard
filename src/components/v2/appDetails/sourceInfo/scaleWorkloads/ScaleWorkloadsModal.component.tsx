@@ -100,6 +100,8 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                 showError(e);
                 setfetchingDetails(false)
             }
+        }else{
+            setfetchingDetails(false)
         }
     }
 
