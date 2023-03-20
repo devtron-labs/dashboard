@@ -137,11 +137,6 @@ export enum DeploymentAppTypeNameMapping {
     Helm = 'Helm',
     GitOps = 'GitOps',
 }
-export const SSO_LOGGING_INFO = {
-    frontText: "You don't have an account on this workplace. Please contact your manager for ",
-    tailText: ' or login as adminstration.',
-    redirectLink: 'login Permission',
-}
 
 export const APP_GROUP_CD_DETAILS = {
     noSelectedApp: {
