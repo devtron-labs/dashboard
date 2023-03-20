@@ -128,7 +128,7 @@ function ResourceFilterOptions({
                     )}
                     {showShortcutKey && (
                         <ShortcutKeyBadge
-                            shortcutKey="R"
+                            shortcutKey="r"
                             rootClassName="resource-search-shortcut-key"
                             onClick={handleInputShortcut}
                         />

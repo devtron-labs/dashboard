@@ -17,6 +17,7 @@ export default function AboutAppInfoModal({
     getAppMetaInfoRes,
     fetchingProjects,
     projectsList,
+    isJobOverview,
 }: AboutAppInfoModalProps) {
     const [projectsOptions, setProjectsOption] = useState<NumberOptionType[]>([])
     const [selectedProject, setSelectedProject] = useState<NumberOptionType>()
@@ -123,7 +124,7 @@ export default function AboutAppInfoModal({
                     <>
                         <div className="fs-12 fw-4 lh-20 mb-2">Project</div>
                         {renderProjectSelect()}
-                        {selectedProject && appMetaInfo && selectedProject.label !== appMetaInfo.projectName && (
+                        {selectedProject && appMetaInfo && selectedProject.label !== appMetaInfo.projectName && !isJobOverview &&(
                             <InfoColourBar
                                 classname="warn cn-9 lh-20"
                                 Icon={Error}
