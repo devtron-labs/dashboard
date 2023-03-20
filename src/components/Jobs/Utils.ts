@@ -101,10 +101,6 @@ const getDefaultPipeline = (ciPipelines) => {
     if (ciPipelines?.length > 0) {
         const ciPipeline =
             ciPipelines.find((pipeline) => pipeline.default) || getLastTriggeredJob(ciPipelines) || ciPipelines[0]
-        let status = ciPipeline.status
-        if (ciPipeline.status.toLowerCase() === 'deployment initiated') {
-            status = 'Progressing'
-        }
 
         return {
             ciPipelineId: ciPipeline.ciPipelineId || 0,

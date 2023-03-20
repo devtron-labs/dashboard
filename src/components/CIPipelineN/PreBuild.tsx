@@ -162,23 +162,18 @@ export function PreBuild({
 
     function renderGUI(): JSX.Element {
         if (formData[activeStageName].steps.length === 0) {
+            const _preBuildText = activeStageName === BuildStageVariable.PreBuild ? 'pre-build' : 'post-build'
+            const _execOrderText = activeStageName === BuildStageVariable.PreBuild ? 'before' : 'after'
+            const _title = isJobView ? 'No tasks configured' : `No ${_preBuildText} tasks configured`
+            const _subtitle = isJobView
+                ? 'Configure tasks to be executed by this job.'
+                : `Here, you can configure tasks to be executed ${_execOrderText} the container image is built.`
+
             return (
                 <CDEmptyState
                     imgSource={getImgSource()}
-                    title={
-                        isJobView
-                            ? 'No tasks configured'
-                            : `No ${
-                                  activeStageName === BuildStageVariable.PreBuild ? 'pre-build' : 'post-build'
-                              } tasks configured`
-                    }
-                    subtitle={
-                        isJobView
-                            ? 'Configure tasks to be executed by this job.'
-                            : `Here, you can configure tasks to be executed ${
-                                  activeStageName === BuildStageVariable.PreBuild ? 'before' : 'after'
-                              } the container image is built.`
-                    }
+                    title={_title}
+                    subtitle={_subtitle}
                     actionHandler={addNewTask}
                     actionButtonText="Add task"
                     ActionButtonIcon={Add}

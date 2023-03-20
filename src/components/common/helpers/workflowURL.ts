@@ -14,8 +14,8 @@ export function getCIPipelineURL(
     appId: string,
     workflowId: string,
     isGitNotConfigured: boolean,
-    isJobView: boolean,
     ciPipelineId: string | number = null,
+    isJobView?: boolean,
 ) {
     let prefixURL = ''
     if (isGitNotConfigured) {

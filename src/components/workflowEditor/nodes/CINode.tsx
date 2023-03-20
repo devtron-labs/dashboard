@@ -40,7 +40,8 @@ export class CINode extends Component<CINodeProps> {
     }
 
     renderReadOnlyCard = () => {
-        const nodeText = this.props.isJobView ? 'Job' : this.props.isExternalCI ? 'Build: External' : 'Build'
+        const _buildText = this.props.isExternalCI ? 'Build: External' : 'Build'
+        const nodeText = this.props.isJobView ? 'Job' : _buildText
         return (
             <div className="workflow-node">
                 <div className="workflow-node__title flex">
@@ -55,13 +56,9 @@ export class CINode extends Component<CINodeProps> {
     }
 
     renderCardContent = () => {
-        const pipeline = this.props.isJobView
-            ? 'Job'
-            : this.props.isLinkedCI
-            ? 'Build: Linked'
-            : this.props.isExternalCI
-            ? 'Build: External'
-            : 'Build'
+        const _buildText = this.props.isExternalCI ? 'Build: External' : 'Build'
+        const _linkedBuildText = this.props.isLinkedCI ? 'Build: Linked' : _buildText
+        const pipeline = this.props.isJobView ? 'Job' : _linkedBuildText
 
         return (
             <>
