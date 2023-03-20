@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service'
-import { Progressing, useScrollable, showError, useAsync, useInterval, mapByKey, asyncWrap } from '../../../common'
+import { Progressing, useScrollable, showError, useAsync, useInterval, mapByKey, asyncWrap, formatDurationDiff } from '../../../common'
 import { URLS, ModuleNameMap } from '../../../../config'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
@@ -205,6 +205,19 @@ export const Details = ({
         [pipelineId, buildId, appId],
         !!buildId && !terminalStatus.has(triggerDetails?.status?.toLowerCase()),
     )
+    const [durationStr, setDurationStr] = useState<string>('')
+        useEffect(() => {
+            setDurationStr(formatDurationDiff(triggerDetails.startedOn, Date()))
+            const intervalTimer = setInterval(() => {
+                setDurationStr(formatDurationDiff(triggerDetails.startedOn, Date()))
+            }, 1000) 
+
+            return () => {
+                if (intervalTimer) {
+                    clearInterval(intervalTimer)
+                }
+            }
+        }, [buildId])
     useEffect(() => {
         if (triggerDetailsLoading || triggerDetailsError) return
         if (triggerDetailsResult?.result) synchroniseState(+buildId, triggerDetailsResult?.result)
@@ -248,6 +261,7 @@ export const Details = ({
                             podStatus={triggerDetails.podStatus}
                             stage={triggerDetails.stage}
                             artifact={triggerDetails.artifact}
+                            durationStr={durationStr}
                         />
                         <ul className="tab-list dc__border-bottom pl-20 pr-20">
                             <li className="tab-list__tab">

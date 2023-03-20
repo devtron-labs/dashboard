@@ -151,6 +151,7 @@ export interface TriggerDetailsType {
     type: HistoryComponentType
     stage: DeploymentStageType
     artifact?: string
+    durationStr:string
 }
 
 export interface TriggerDetailsStatusIconType {
@@ -175,6 +176,7 @@ export interface ProgressingStatusType {
     podStatus: string
     stage: DeploymentStageType
     type: HistoryComponentType
+    durationStr:string
 }
 
 export interface CurrentStatusType {
@@ -186,6 +188,7 @@ export interface CurrentStatusType {
     podStatus: string
     stage: DeploymentStageType
     type: HistoryComponentType
+    durationStr:string
 }
 
 export interface StartDetailsType {

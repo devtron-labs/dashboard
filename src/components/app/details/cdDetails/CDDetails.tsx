@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { getAppOtherEnvironment, getCDConfig as getCDPipelines } from '../../../../services/service'
-import { Progressing, showError, useAsync, useInterval, useScrollable, mapByKey, asyncWrap } from '../../../common'
+import { Progressing, showError, useAsync, useInterval, useScrollable, mapByKey, asyncWrap, formatDurationDiff } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
@@ -230,6 +230,20 @@ export const TriggerOutput: React.FC<{
         [triggerId, appId, envId],
         !!triggerId && !!pipelineId,
     )
+    const [durationStr, setDurationStr] = useState<string>('');
+    useEffect(() => {
+        setDurationStr(formatDurationDiff(triggerDetails.startedOn, Date()))
+        const intervalTimer = setInterval(() => {
+            setDurationStr(formatDurationDiff(triggerDetails.startedOn, Date()))
+        }, 1000) 
+
+        return () => {
+            if (intervalTimer) {
+                clearInterval(intervalTimer)
+            }
+        }
+    }, [triggerId])
+
     useEffect(() => {
         if (triggerDetailsLoading || triggerDetailsError) return
 
@@ -256,7 +270,6 @@ export const TriggerOutput: React.FC<{
     if (triggerDetails?.id !== +triggerId) {
         return null
     }
-
     return (
         <>
             <div className="trigger-details-container">
@@ -274,6 +287,7 @@ export const TriggerOutput: React.FC<{
                             message={triggerDetails.message}
                             podStatus={triggerDetails.podStatus}
                             stage={triggerDetails.stage}
+                            durationStr={durationStr}
                         />
                         <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
                             {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppType.helm && (

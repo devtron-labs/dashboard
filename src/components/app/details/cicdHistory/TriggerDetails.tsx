@@ -58,6 +58,7 @@ export const TriggerDetails = React.memo(
         type,
         stage,
         artifact,
+        durationStr
     }: TriggerDetailsType): JSX.Element => {
         return (
             <div className="trigger-details">
@@ -83,6 +84,7 @@ export const TriggerDetails = React.memo(
                         podStatus={podStatus}
                         stage={stage}
                         type={type}
+                        durationStr={durationStr}
                     />
                 </div>
             </div>
@@ -142,10 +144,9 @@ const WorkerStatus = React.memo(({ message, podStatus, stage }: WorkerStatusType
 })
 
 const ProgressingStatus = React.memo(
-    ({ status, startedOn, message, podStatus, stage, type }: ProgressingStatusType): JSX.Element => {
+    ({ status, startedOn, message, podStatus, stage, type, durationStr }: ProgressingStatusType): JSX.Element => {
         const [aborting, setAborting] = useState(false)
         const [abortConfirmation, setAbortConfiguration] = useState(false)
-        const [durationStr, setDurationStr] = useState<string>('');
         const { buildId, triggerId, pipelineId } = useParams<{
             buildId: string
             triggerId: string
@@ -157,19 +158,6 @@ const ProgressingStatus = React.memo(
         } else if (stage !== 'DEPLOY') {
             abort = () => cancelPrePostCdTrigger(pipelineId, triggerId)
         }
-
-        useEffect(() => {
-            setDurationStr(formatDurationDiff(startedOn, Date()))
-            const intervalTimer = setInterval(() => {
-                setDurationStr(formatDurationDiff(startedOn, Date()))
-            }, 1000) 
-
-            return () => {
-                if (intervalTimer) {
-                    clearInterval(intervalTimer)
-                }
-            }
-        }, [])
 
         async function abortRunning() {
             setAborting(true)
@@ -240,10 +228,10 @@ const ProgressingStatus = React.memo(
 )
 
 const CurrentStatus = React.memo(
-    ({ status, startedOn, finishedOn, artifact, message, podStatus, stage, type }: CurrentStatusType): JSX.Element => {
+    ({ status, startedOn, finishedOn, artifact, message, podStatus, stage, type, durationStr }: CurrentStatusType): JSX.Element => {
         if (PROGRESSING_STATUS[status.toLowerCase()]) {
             return (
-                <ProgressingStatus status={status} startedOn={startedOn} message={message} podStatus={podStatus} stage={stage} type={type} />
+                <ProgressingStatus status={status} startedOn={startedOn} message={message} podStatus={podStatus} stage={stage} type={type} durationStr={durationStr}/>
             )
         } else {
             return (
