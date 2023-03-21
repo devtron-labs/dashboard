@@ -78,6 +78,9 @@
     textarea {
         border-radius: 4px;
         border: solid 1px #d6dbdf;
+        &.form__input--error {
+          border: solid 1px var(--R500);
+        }
     }
 }
 
