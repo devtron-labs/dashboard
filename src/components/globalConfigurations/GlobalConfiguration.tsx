@@ -401,7 +401,7 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 render={(props) => {
                     return (
                         <div className="flexbox">
-                            <ClusterList {...props} serverMode={serverMode} isSuperAdmin={isSuperAdmin} />
+                            <ClusterList {...props} serverMode={serverMode} isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT} />
                         </div>
                     )
                 }}
