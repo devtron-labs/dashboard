@@ -23,6 +23,7 @@ import ReactGA from 'react-ga4'
 import './navigation.scss'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
 import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
+import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 
@@ -36,6 +37,15 @@ const NavigationList = [
         isAvailableInEA: true,
     },
     {
+        title: 'Jobs',
+        type: 'link',
+        iconClass: 'nav-short-jobs',
+        icon: JobsIcon,
+        href: URLS.JOB,
+        isAvailableInEA: false,
+        markOnlyForSuperAdmin: true,
+    },
+    {
         title: 'Application Groups',
         type: 'link',
         iconClass: 'nav-short-env',
@@ -44,24 +54,6 @@ const NavigationList = [
         isAvailableInEA: false,
         markAsBeta: true,
         forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
-    },
-    {
-        title: 'Resource Browser',
-        type: 'link',
-        iconClass: 'nav-short-apps',
-        icon: CubeIcon,
-        href: URLS.RESOURCE_BROWSER,
-        isAvailableInEA: true,
-        markAsBeta: false,
-        isAvailableInDesktop: true,
-    },
-    {
-        title: 'Chart Store',
-        type: 'link',
-        iconClass: 'nav-short-helm',
-        icon: ChartStoreIcon,
-        href: URLS.CHARTS,
-        isAvailableInEA: true,
     },
     {
         title: 'Deployment Groups',
@@ -73,12 +65,14 @@ const NavigationList = [
         forceHideEnvKey: 'HIDE_DEPLOYMENT_GROUPS',
     },
     {
-        title: 'Security',
+        title: 'Resource Browser',
         type: 'link',
-        href: URLS.SECURITY,
-        iconClass: 'nav-security',
-        icon: SecurityIcon,
-        moduleName: ModuleNameMap.SECURITY,
+        iconClass: 'nav-short-resource-browser',
+        icon: CubeIcon,
+        href: URLS.RESOURCE_BROWSER,
+        isAvailableInEA: true,
+        markAsBeta: false,
+        isAvailableInDesktop: true,
     },
     {
         title: 'Clusters',
@@ -88,6 +82,22 @@ const NavigationList = [
         icon: ClusterIcon,
         isAvailableInEA: true,
         isAvailableInDesktop: true,
+    },
+    {
+        title: 'Chart Store',
+        type: 'link',
+        iconClass: 'nav-short-helm',
+        icon: ChartStoreIcon,
+        href: URLS.CHARTS,
+        isAvailableInEA: true,
+    },
+    {
+        title: 'Security',
+        type: 'link',
+        href: URLS.SECURITY,
+        iconClass: 'nav-security',
+        icon: SecurityIcon,
+        moduleName: ModuleNameMap.SECURITY,
     },
     {
         title: 'Bulk Edit',
@@ -119,7 +129,9 @@ interface NavigationType extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE
     moduleInInstallingState: string
     installedModuleMap: React.MutableRefObject<Record<string, boolean>>
+    isSuperAdmin: boolean
 }
+
 export default class Navigation extends Component<
     NavigationType,
     {
@@ -290,15 +302,16 @@ export default class Navigation extends Component<
                                 </div>
                             </div>
                         </NavLink>
-                        {NavigationList.map((item, index) => {
+                        {NavigationList.map((item) => {
                             if (
-                                (!window._env_.K8S_CLIENT &&
-                                    (!item.forceHideEnvKey ||
-                                        (item.forceHideEnvKey && !window._env_[item.forceHideEnvKey])) &&
+                                (item.markOnlyForSuperAdmin && this.props.isSuperAdmin) ||
+                                (!item.markOnlyForSuperAdmin &&
+                                    (!item.forceHideEnvKey ||(!item.forceHideEnvKey ||
+                                        (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey])) &&
                                     ((this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
                                         (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
-                                        this.props.installedModuleMap.current?.[item.moduleName])) ||
-                                item.isAvailableInDesktop
+                                        this.props.installedModuleMap.current?.[item.moduleName])))||
+                                        item.isAvailableInDesktop
                             ) {
                                 if (item.type === 'button') {
                                     return this.renderNavButton(item)

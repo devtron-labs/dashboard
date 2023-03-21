@@ -115,9 +115,13 @@ export const TOAST_INFO = {
 }
 
 export const APP_DETAILS = {
-    APP_FULLY_NOT_CONFIGURED:
-        'This application is not fully configured. Complete the configuration, trigger a deployment and come back here.',
-    NEED_HELP: 'Need help?',
+  APP_FULLY_NOT_CONFIGURED: 'This application is not fully configured. Complete the configuration, trigger a deployment and come back here.',
+  JOB_FULLY_NOT_CONFIGURED: {
+    title: 'Finish configuring this job',
+    subTitle: 'This job is not fully configured. Complete the configuration and come back here to run the job.',
+    buttonTitle: 'Go to configurations'
+  },
+  NEED_HELP: 'Need help?'
 }
 
 // All CTA
@@ -132,11 +136,6 @@ export const BUTTON_TEXT = {
 export enum DeploymentAppTypeNameMapping {
     Helm = 'Helm',
     GitOps = 'GitOps',
-}
-export const SSO_LOGGING_INFO = {
-    frontText: "You don't have an account on this workplace. Please contact your manager for ",
-    tailText: ' or login as adminstration.',
-    redirectLink: 'login Permission',
 }
 
 export const APP_GROUP_CD_DETAILS = {
