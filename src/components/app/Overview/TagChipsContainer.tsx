@@ -2,7 +2,7 @@ import React from 'react'
 import { ReactComponent as InjectTag } from '../../../../assets/icons/inject-tag.svg'
 import Tippy from '@tippyjs/react'
 
-export default function TagChips({ labelTags }) {
+export default function TagChipsContainer({ labelTags }) {
     return (
         <div className="flex left flex-wrap dc__gap-8">
             {labelTags.length > 0 ? (

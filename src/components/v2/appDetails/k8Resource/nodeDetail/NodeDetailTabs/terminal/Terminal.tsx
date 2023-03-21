@@ -149,6 +149,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             if (dim) {
                 _socket.send(JSON.stringify({ Op: 'resize', Cols: dim.cols, Rows: dim.rows }))
             }
+            _terminal.focus()
             if (isReconnection) {
                 _terminal.writeln('')
                 _terminal.writeln('---------------------------------------------')
@@ -160,7 +161,6 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
 
         _socket.onmessage = function (evt) {
             _terminal.write(JSON.parse(evt.data).Data)
-            _terminal.focus()
             enableInput()
 
             if (!firstMessageReceived) {

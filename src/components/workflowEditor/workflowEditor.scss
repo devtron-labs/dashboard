@@ -27,14 +27,15 @@
 	}
 }
 .create-here {
-	display: flex;
-	align-items: center;
-	flex-direction: column;
-	margin: auto;
-	margin-top: 125px;
-	width: 250px;
-	border-radius: 4px;
-	margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  flex-direction: column;
+  margin: auto;
+  margin-top: 125px;
+  width: 300px;
+  border-radius: 4px;
+  margin-bottom: 20px;
 }
 .form__title {
 	&.form__title--workflow-editor {

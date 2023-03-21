@@ -23,7 +23,7 @@ import LogsRenderer from '../cicdHistory/LogsRenderer'
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
 
-export default function CIDetails() {
+export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     const { appId, pipelineId, buildId } = useParams<{
         appId: string
         pipelineId: string
@@ -70,11 +70,11 @@ export default function CIDetails() {
     }, [triggerHistoryResult])
 
     useEffect(() => {
-      return () => {
-          setTriggerHistory(new Map())
-          setHasMoreLoading(false)
-      }
-  }, [pipelineId])
+        return () => {
+            setTriggerHistory(new Map())
+            setHasMoreLoading(false)
+        }
+    }, [pipelineId])
 
     function synchroniseState(triggerId: number, triggerDetails: History) {
         if (triggerId === triggerDetails.id) {
@@ -105,8 +105,8 @@ export default function CIDetails() {
     const pipelines: CIPipeline[] = (initDataResults[0]?.['value']?.['result'] || [])?.filter(
         (pipeline) => pipeline.pipelineType !== 'EXTERNAL',
     ) // external pipelines not visible in dropdown
-    if(pipelines.length ===1 && !pipelineId){
-      replace(generatePath(path, { appId, pipelineId: pipelines[0].id }))
+    if (pipelines.length === 1 && !pipelineId) {
+        replace(generatePath(path, { appId, pipelineId: pipelines[0].id }))
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelines || []).map((item) => {
         return { value: `${item.id}`, label: item.name, pipelineId: item.id }
@@ -131,7 +131,9 @@ export default function CIDetails() {
                     {!pipelineId ? (
                         <EmptyView
                             title="No pipeline selected"
-                            subTitle="Please select a pipeline to start seeing CI builds."
+                            subTitle={`Please select a pipeline ${
+                                isJobView ? 'to see execution details' : 'to start seeing CI builds'
+                            }.`}
                         />
                     ) : (
                         pipeline && (
@@ -153,6 +155,7 @@ export default function CIDetails() {
                                             isBlobStorageConfigured={
                                                 initDataResults[2]?.['value']?.['result']?.enabled || false
                                             }
+                                            isJobView={isJobView}
                                         />
                                     </Route>
                                 ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
@@ -165,7 +168,7 @@ export default function CIDetails() {
                                 ) : (
                                     !loading && (
                                         <EmptyView
-                                            title="Build pipeline not triggered"
+                                            title={`${isJobView ? 'Job' : 'Build'} pipeline not triggered`}
                                             subTitle="Pipeline trigger history, details and logs will be available here."
                                         />
                                     )
@@ -186,6 +189,7 @@ export const Details = ({
     triggerHistory,
     isSecurityModuleInstalled,
     isBlobStorageConfigured,
+    isJobView,
 }: BuildDetails) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
@@ -245,7 +249,7 @@ export const Details = ({
                             stage={triggerDetails.stage}
                             artifact={triggerDetails.artifact}
                         />
-                        <ul className="ml-20 tab-list dc__border-bottom mr-20">
+                        <ul className="tab-list dc__border-bottom pl-20 pr-20">
                             <li className="tab-list__tab">
                                 <NavLink replace className="tab-list__tab-link" activeClassName="active" to={`logs`}>
                                     Logs
@@ -271,7 +275,7 @@ export const Details = ({
                                     Artifacts
                                 </NavLink>
                             </li>
-                            {isSecurityModuleInstalled && (
+                            {!isJobView && isSecurityModuleInstalled && (
                                 <li className="tab-list__tab">
                                     <NavLink
                                         replace
@@ -291,17 +295,19 @@ export const Details = ({
                 key={triggerDetails.id}
                 triggerDetails={triggerDetails}
                 isBlobStorageConfigured={isBlobStorageConfigured}
+                isJobView={isJobView}
             />
         </>
     )
 }
 
-const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured }: HistoryLogsType) => {
+const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView }: HistoryLogsType) => {
     let { path } = useRouteMatch()
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
+    const _getArtifactPromise = () => getArtifact(pipelineId, buildId)
 
     return (
         <div className="trigger-outputs-container">
@@ -329,18 +335,26 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured }: HistoryLogsTyp
                         status={triggerDetails.status}
                         artifact={triggerDetails.artifact}
                         blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                        getArtifactPromise={() => getArtifact(pipelineId, buildId)}
+                        getArtifactPromise={_getArtifactPromise}
+                        isArtifactUploaded={triggerDetails.isArtifactUploaded}
+                        isJobView={isJobView}
                     />
                 </Route>
-                <Route path={`${path}/security`}>
-                    <SecurityTab
-                        ciPipelineId={triggerDetails.ciPipelineId}
-                        artifactId={triggerDetails.artifactId}
-                        status={triggerDetails.status}
-                    />
-                </Route>
+                {!isJobView && (
+                    <Route path={`${path}/security`}>
+                        <SecurityTab
+                            ciPipelineId={triggerDetails.ciPipelineId}
+                            artifactId={triggerDetails.artifactId}
+                            status={triggerDetails.status}
+                        />
+                    </Route>
+                )}
                 <Redirect
-                    to={triggerDetails.status.toLowerCase() === 'succeeded' ? `${path}/artifacts` : `${path}/logs`}
+                    to={
+                        !isJobView && triggerDetails.status.toLowerCase() === 'succeeded'
+                            ? `${path}/artifacts`
+                            : `${path}/logs`
+                    }
                 />
             </Switch>
         </div>

@@ -14,6 +14,7 @@ interface CreateMaterialProps {
     isCheckoutPathValid;
     isWorkflowEditorUnlocked: boolean;
     reload: () => void
+    isJobView?: boolean
 }
 
 export class CreateMaterial extends Component<CreateMaterialProps, CreateMaterialState> {
@@ -200,6 +201,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 cancel={this.cancel}
                 isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
                 reload = {this.props.reload}
+                isJobView={this.props.isJobView}
             />
         </>
     }

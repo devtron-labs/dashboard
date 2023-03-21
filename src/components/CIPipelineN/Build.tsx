@@ -24,6 +24,7 @@ export function Build({
     pageState,
     isSecurityModuleInstalled,
     setDockerConfigOverridden,
+    isJobView
 }: BuildType) {
     const {
         formData,
@@ -254,7 +255,7 @@ export function Build({
     ) : (
         <div className="p-20 ci-scrollable-content">
             {renderBasicCI()}
-            {isAdvanced && (
+            {!isJobView && isAdvanced && (
                 <>
                     {isSecurityModuleInstalled && renderScanner()}
                     <AdvancedConfigOptions

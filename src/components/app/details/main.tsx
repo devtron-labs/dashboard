@@ -15,7 +15,7 @@ import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.sv
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import PageHeader from '../../common/header/PageHeader'
 import { AppDetailsProps } from './triggerView/types'
-import AppOverview from './appOverview/AppOverview'
+import Overview from '../Overview/Overview'
 import { importComponentFromFELibrary, noop, trackByGAEvent } from '../../common/helpers/Helpers'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
@@ -70,7 +70,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                             />
                         )}
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <AppOverview appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
+                            <Overview appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>

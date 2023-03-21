@@ -3,8 +3,7 @@ import { get, post } from '@devtron-labs/devtron-fe-common-lib'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { MaterialType, Githost, PatchAction, ScriptType, PluginType, BuildStageType, RefVariableType } from './types'
-import { safeTrim } from '../../util/Util';
-
+import { safeTrim } from '../../util/Util'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -25,7 +24,11 @@ export function getCIPipelineNameSuggestion(appId: string | number): Promise<any
     return get(URL)
 }
 
-export function getInitData(appId: string | number, includeWebhookData: boolean = false): Promise<any> {
+export function getInitData(
+    appId: string | number,
+    includeWebhookData: boolean = false,
+    preFillName: boolean = true,
+): Promise<any> {
     return Promise.all([
         getCIPipelineNameSuggestion(appId),
         getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true),
@@ -35,7 +38,7 @@ export function getInitData(appId: string | number, includeWebhookData: boolean 
         return {
             result: {
                 form: {
-                    name: pipelineNameRes.result,
+                    name: preFillName ? pipelineNameRes.result : '',
                     args: [{ key: '', value: '' }],
                     materials: pipelineMetaConfig.result.materials,
                     gitHost: pipelineMetaConfig.result.gitHost,

@@ -189,6 +189,10 @@
     background-image: url('../assets/icons/ic-CD.svg');
 }
 
+.workflow-node__job-icon {
+    background-image: url('../assets/icons/ic-job-node.svg');
+}
+
 .workflow-node__full-width-minus-Icon {
     flex: 1;
     min-width: 0;
@@ -196,8 +200,8 @@
 
 .workflow-node__icon-common {
     display: block;
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     background-size: 100% 100%;
 }
 

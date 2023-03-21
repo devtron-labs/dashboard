@@ -10,9 +10,8 @@ import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils';
 import { CdPipeline } from '../components/app/details/triggerView/types';
 
 
-export function getAppConfigStatus(appId: number): Promise<any> {
-    const URL = `${Routes.APP_CONFIG_STATUS}?app-id=${appId}`;
-    return get(URL);
+export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<any> {
+    return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`);
 }
 
 export const getSourceConfig = (id: string) => {
@@ -55,22 +54,37 @@ export const getUserTeams = (): Promise<any> => {
     return get(URL);
 }
 
-export function getAppListMin(teamId = null, options?, appName?): Promise<AppListMin> {
-    let URL = `${Routes.APP_LIST_MIN}`;
-    if (teamId) URL = `${URL}?teamId=${teamId}`
-    if (appName) URL = `${URL}?appName=${appName}`
-    return get(URL, options).then(response => {
+export function getAppListMin(
+    teamId = null,
+    options?: APIOptions,
+    appName?: string,
+    isJobView?: boolean,
+): Promise<AppListMin> {
+    const queryString = new URLSearchParams()
+    if (teamId) {
+        queryString.set('teamId', teamId)
+    }
+
+    if (appName) {
+        queryString.set('appName', appName)
+    }
+
+    if (isJobView) {
+        queryString.set('appType', '2')
+    }
+
+    return get(`${Routes.APP_LIST_MIN}?${queryString.toString()}`, options).then((response) => {
         let list = response?.result || []
         list = list.sort((a, b) => {
-            return sortCallback('name', a, b);
-        });
+            return sortCallback('name', a, b)
+        })
 
         return {
             ...response,
             code: response.code,
             result: list,
-        };
-    });
+        }
+    })
 }
 
 export function getProjectFilteredApps(
@@ -130,6 +144,10 @@ export function getDockerRegistryList(): Promise<ResponseType> {
 export function getAppOtherEnvironment(appId): Promise<AppOtherEnvironment> {
     const URL = `${Routes.APP_OTHER_ENVIRONMENT}?app-id=${appId}`;
     return get(URL);
+}
+
+export function getJobCIPipeline(jobId){
+    return get(`${Routes.JOB_CI_DETAIL}/${jobId}`)
 }
 
 export function getEnvironmentConfigs(appId, envId) {
