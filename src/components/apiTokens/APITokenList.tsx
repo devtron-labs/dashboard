@@ -12,7 +12,7 @@ import NoResults from '../../assets/img/empty-noresult@2x.png'
 import './apiToken.scss'
 import EmptyState from '../EmptyState/EmptyState'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help-filled.svg'
+import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 
 function NoMatchingResults() {
@@ -47,7 +47,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
         return (
             <TippyCustomized
                 theme={TippyTheme.white}
-                className="w-300"
+                className="w-300 h-100 fcv-5"
                 placement="right"
                 Icon={QuestionFilled}
                 heading={"API tokens"}
