@@ -517,13 +517,12 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <Route path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
                         <ExternalLinks />
                     </Route>
+                    {TagListContainer && (
+                        <Route path={URLS.GLOBAL_CONFIG_TAGS}>
+                            <TagListContainer />
+                        </Route>
+                    )}
                 </>
-            )}
-
-            {TagListContainer && (
-                <Route path={URLS.GLOBAL_CONFIG_TAGS}>
-                    <TagListContainer />
-                </Route>
             )}
             <Redirect to={defaultRoute()} />
         </Switch>
