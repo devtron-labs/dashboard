@@ -12,18 +12,22 @@ import { ClusterImageList } from './types'
 
 export default function ClusterNodeContainer() {
     const [imageList, setImageList] = useState<ClusterImageList[]>(null)
-    const [isSuperAdmin, setSuperAdmin] = useState<boolean>()
+    const [isSuperAdmin, setSuperAdmin] = useState<boolean>(window._env_.K8S_CLIENT ? true : false)
     const [namespaceDefaultList, setNameSpaceList] = useState<string[]>()
 
     useEffect(() => {
         try {
-            Promise.all([getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'), getUserRole(), clusterNamespaceList()])
+            Promise.all([
+                getHostURLConfiguration('DEFAULT_TERMINAL_IMAGE_LIST'),
+                window._env_.K8S_CLIENT ? null : getUserRole(),
+                clusterNamespaceList(),
+            ])
                 .then(([hostUrlConfig, userRole, namespaceList]) => {
                     if (hostUrlConfig.result) {
                         const imageValue: string = hostUrlConfig.result.value
                         setImageList(JSON.parse(imageValue))
                     }
-                    if (userRole.result) {
+                    if (userRole?.result) {
                         setSuperAdmin(userRole.result?.superAdmin)
                     }
                     if (namespaceList.result) {
