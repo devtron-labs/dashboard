@@ -13,7 +13,7 @@ import Tippy from '@tippyjs/react'
 import EmptyState from '../../../EmptyState/EmptyState'
 import { EmptyView } from './History.components'
 import '../cIDetails/ciDetails.scss'
-import { ArtifactType } from './types'
+import { ArtifactType, CIListItemType, CopyTippyWithTextType } from './types'
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { ARTIFACTS_EMPTY_STATE_TEXTS } from './Constants'
 import { extractImage } from '../../service'
@@ -89,15 +89,20 @@ export default function Artifacts({
         return (
             <div className="flex left column p-16">
                 {!isJobView && (
-                    <CIListItem type="artifact">
-                        <div className="flex column left hover-trigger">
-                            <CopyTippyWithText
-                                copyText={extractImage(artifact)}
-                                copied={copied}
-                                setCopied={setCopied}
-                            />
-                        </div>
-                    </CIListItem>
+                   <CIListItem type="artifact">
+                   <div className="flex column left hover-trigger">
+                       <div className="cn-9 fs-14 flex left">
+                           <CopyTippyWithText
+                               copyText={extractImage(artifact)}
+                               copied={copied}
+                               setCopied={setCopied}
+                           />
+                       </div>
+                       <div className="cn-7 fs-12 flex left">
+                           <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
+                       </div>
+                   </div>
+               </CIListItem>
                 )}
                 {isArtifactUploaded && blobStorageEnabled && getArtifactPromise && (
                     <CIListItem type="report">
