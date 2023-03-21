@@ -72,6 +72,7 @@ const NavigationList = [
         href: URLS.RESOURCE_BROWSER,
         isAvailableInEA: true,
         markAsBeta: false,
+        isAvailableInDesktop: true,
     },
     {
         title: 'Clusters',
@@ -80,6 +81,7 @@ const NavigationList = [
         iconClass: 'nav-short-clusters',
         icon: ClusterIcon,
         isAvailableInEA: true,
+        isAvailableInDesktop: true,
     },
     {
         title: 'Chart Store',
@@ -112,6 +114,7 @@ const NavigationList = [
         iconClass: 'nav-short-global',
         icon: GlobalConfigIcon,
         isAvailableInEA: true,
+        isAvailableInDesktop: true,
     },
 ]
 
@@ -174,7 +177,7 @@ export default class Navigation extends Component<
     }
 
     async getSecurityModuleStatus(retryOnError: number): Promise<void> {
-        if (this.props.installedModuleMap.current?.[ModuleNameMap.SECURITY]) {
+        if (this.props.installedModuleMap.current?.[ModuleNameMap.SECURITY] || window._env_.K8S_CLIENT) {
             return
         }
         try {
@@ -301,13 +304,16 @@ export default class Navigation extends Component<
                         </NavLink>
                         {NavigationList.map((item) => {
                             if (
-                                (item.markOnlyForSuperAdmin && this.props.isSuperAdmin) ||
-                                (!item.markOnlyForSuperAdmin &&
-                                    (!item.forceHideEnvKey ||
-                                        (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey])) &&
-                                    ((this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
-                                        (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
-                                        this.props.installedModuleMap.current?.[item.moduleName]))
+                                (!window._env_.K8S_CLIENT &&
+                                    ((item.markOnlyForSuperAdmin && this.props.isSuperAdmin) ||
+                                        (!item.markOnlyForSuperAdmin &&
+                                            (!item.forceHideEnvKey ||
+                                                (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey])) &&
+                                            ((this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
+                                                (this.props.serverMode === SERVER_MODE.EA_ONLY &&
+                                                    item.isAvailableInEA) ||
+                                                this.props.installedModuleMap.current?.[item.moduleName])))) ||
+                                item.isAvailableInDesktop
                             ) {
                                 if (item.type === 'button') {
                                     return this.renderNavButton(item)
@@ -316,8 +322,12 @@ export default class Navigation extends Component<
                                 }
                             }
                         })}
-                        <div className="short-nav__divider" />
-                        {this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}
+                        {!window._env_.K8S_CLIENT && (
+                            <>
+                                <div className="short-nav__divider" />
+                                {this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}
+                            </>
+                        )}
                     </aside>
                 </nav>
                 <CommandErrorBoundary toggleCommandBar={this.toggleCommandBar}>
