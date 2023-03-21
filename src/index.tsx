@@ -123,7 +123,7 @@ if (!window || !window._env_) {
         HIDE_DEPLOYMENT_GROUPS: true,
         HIDE_GITOPS_OR_HELM_OPTION: false,
         HIDE_APPLICATION_GROUPS: true,
-        K8S_CLIENT: false
+        K8S_CLIENT: process.env.REACT_APP_K8S_CLIENT === 'true'
     }
 }
 

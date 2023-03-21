@@ -365,7 +365,7 @@ export default function NavigationRoutes() {
                                                         serverInfo={currentServerInfo.serverInfo}
                                                         getCurrentServerInfo={getCurrentServerInfo}
                                                     />
-                                                </Route>{' '}
+                                                </Route>
                                                 <Route exact path={`/${URLS.GETTING_STARTED}`}>
                                                     <OnboardingGuide
                                                         loginCount={loginCount}
