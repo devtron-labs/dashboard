@@ -1,5 +1,5 @@
 import React from 'react'
-import { ReactComponent as InjectTag } from '../../../../assets/icons/inject-tag.svg'
+import { ReactComponent as InjectTag } from '../../../assets/icons/inject-tag.svg'
 import Tippy from '@tippyjs/react'
 
 export default function TagChipsContainer({ labelTags }) {
