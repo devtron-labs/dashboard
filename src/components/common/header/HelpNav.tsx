@@ -35,7 +35,7 @@ function HelpNav({
             icon: File,
             showSeparator: true,
         },
-    
+
         {
             name: 'Join discord community',
             link: DISCORD_LINK,
@@ -79,7 +79,7 @@ function HelpNav({
     const handleHelpOptions = (e) => {
         const option = CommonHelpOptions[e.currentTarget.dataset.index]
         onClickHelpOptions(option)
-    } 
+    }
 
     const renderHelpOptions = (): JSX.Element => {
         return <> {CommonHelpOptions.map((option,index) => {
@@ -108,15 +108,17 @@ function HelpNav({
     return (
         <div className="dc__transparent-div" onClick={toggleHelpCard}>
             <div className={`help-card pt-4 pb-4 ${className} ${isEnterprise ? `help-grid__feedback` : ''}`}>
-                <NavLink
-                    to={`/${URLS.GETTING_STARTED}`}
-                    className="help-card__option dc__no-decor help-card__link flex left cn-9"
-                    activeClassName="active"
-                    onClick={onClickGettingStarted}
-                >
-                    <GettingStartedIcon />
-                    <div className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
-                </NavLink>
+                {!window._env_.K8S_CLIENT && (
+                    <NavLink
+                        to={`/${URLS.GETTING_STARTED}`}
+                        className="help-card__option dc__no-decor help-card__link flex left cn-9"
+                        activeClassName="active"
+                        onClick={onClickGettingStarted}
+                    >
+                        <GettingStartedIcon />
+                        <div className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
+                    </NavLink>
+                )}
                 {renderHelpOptions()}
                 {isEnterprise && renderHelpFeedback()}
                 {serverInfo?.installationType === InstallationType.OSS_HELM && (
