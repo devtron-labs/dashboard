@@ -304,13 +304,15 @@ export default class Navigation extends Component<
                         </NavLink>
                         {NavigationList.map((item) => {
                             if (
-                                (!window._env_.K8S_CLIENT && item.markOnlyForSuperAdmin && this.props.isSuperAdmin) ||
-                                (!item.markOnlyForSuperAdmin &&
-                                    (!item.forceHideEnvKey ||
-                                        (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey])) &&
-                                    ((this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
-                                        (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
-                                        this.props.installedModuleMap.current?.[item.moduleName])) ||
+                                (!window._env_.K8S_CLIENT &&
+                                    ((item.markOnlyForSuperAdmin && this.props.isSuperAdmin) ||
+                                        (!item.markOnlyForSuperAdmin &&
+                                            (!item.forceHideEnvKey ||
+                                                (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey])) &&
+                                            ((this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
+                                                (this.props.serverMode === SERVER_MODE.EA_ONLY &&
+                                                    item.isAvailableInEA) ||
+                                                this.props.installedModuleMap.current?.[item.moduleName])))) ||
                                 item.isAvailableInDesktop
                             ) {
                                 if (item.type === 'button') {
