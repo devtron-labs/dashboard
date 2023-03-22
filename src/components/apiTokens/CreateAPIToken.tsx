@@ -235,7 +235,7 @@ function CreateAPIToken({
     }
 
     return (
-        <div className='bcn-0 api__token' style={{ minHeight: 'calc(100vh)' }}>
+        <div className='bcn-0 api__token'>
             <div className='flex dc__content-space pt-16 pb-16 dc__gap-8'>
                 <div className='flex row ml-0 h-32'>
                     <div className="cn-9 fw-6 fs-16">

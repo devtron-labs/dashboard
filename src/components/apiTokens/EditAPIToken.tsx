@@ -255,7 +255,7 @@ function EditAPIToken({
     }
 
     return (
-        <div className="fs-13 fw-4 api__token" style={{ minHeight: 'calc(100vh - 235px)' }}>
+        <div className="fs-13 fw-4 api__token">
             <div className='flex dc__content-space pt-16 pb-16 dc__gap-8'>
                 <div className='flex row ml-0'>
                     <div className="cn-9 fw-6 fs-16">
