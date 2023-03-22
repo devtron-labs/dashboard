@@ -81,7 +81,7 @@ export class AppListView extends Component<AppListViewProps> {
 
     renderAppList() {
         if (this.props.apps.length) {
-            let icon = this.props.sortRule.order == OrderBy.ASC ? 'sort-up' : ''
+            let icon = this.props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
             return (
                 <div className="app-list">
                     <div className="app-list__header ">
@@ -97,7 +97,7 @@ export class AppListView extends Component<AppListViewProps> {
 
                                 <span
                                     className={` sort ${icon} ml-4 dc__visible-hover--child ${
-                                        this.props.sortRule.key == SortBy.APP_NAME ? 'display-arrow' : ''
+                                        this.props.sortRule.key === SortBy.APP_NAME ? 'display-arrow' : ''
                                     } `}
                                 ></span>
                             </button>

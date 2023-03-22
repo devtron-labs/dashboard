@@ -3,6 +3,7 @@ import EmptyState from '../../EmptyState/EmptyState'
 import notAuthorized from '../../../assets/img/ic-not-authorized.svg'
 import Reload from '../../Reload/Reload'
 import ErrorScreenNotFound from './ErrorScreenNotFound'
+import { ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
 
 export class ErrorScreenManager extends Component<{
     code?: number
@@ -18,9 +19,7 @@ export class ErrorScreenManager extends Component<{
             case 401:
                 return 'Unauthorized'
             case 403:
-                return (
-                    <ErrorScreenNotAuthorized subtitle={this.props.subtitle} subtitleClass={this.props.subtitleClass} />
-                )
+                return <ErrorScreenNotAuthorized subtitle={this.props.subtitle} subtitleClass={this.props.subtitleClass}/>
             case 404:
                 return <ErrorScreenNotFound />
             case 500:
@@ -43,20 +42,22 @@ export class ErrorScreenManager extends Component<{
     }
 }
 
-export class ErrorScreenNotAuthorized extends Component<{ subtitle: React.ReactChild; subtitleClass?: string }> {
+export class ErrorScreenNotAuthorized extends Component<{
+    subtitle?: React.ReactChild
+    title?: string
+    subtitleClass?: string
+}> {
     render() {
         return (
-            <EmptyState>
+            <EmptyState className="dc__align-reload-center">
                 <EmptyState.Image>
                     <img src={notAuthorized} alt="Not Authorized" />
                 </EmptyState.Image>
                 <EmptyState.Title>
-                    <h3 className="title">Not authorized</h3>
+                    <h3 className="title">{this.props.title ?? ERROR_EMPTY_SCREEN.NOT_AUTHORIZED}</h3>
                 </EmptyState.Title>
                 <EmptyState.Subtitle className={this.props.subtitleClass}>
-                    {this.props.subtitle
-                        ? this.props.subtitle
-                        : "Looks like you don't have access to information on this page. Please contact your manager to request access."}
+                    {this.props.subtitle ?? ERROR_EMPTY_SCREEN.ONLY_FOR_SUPERADMIN}
                 </EmptyState.Subtitle>
             </EmptyState>
         )

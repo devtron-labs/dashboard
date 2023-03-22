@@ -12,6 +12,7 @@ import {
     handleOnBlur,
     handleOnFocus,
     parsePassword,
+    ErrorScreenNotAuthorized,
 } from '../common'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'
@@ -46,9 +47,9 @@ enum CERTTYPE {
 
 
 export default function Docker({ ...props }) {
-    const [loading, result, error, reload] = useAsync(getDockerRegistryList)
-    const [clusterOption, setClusterOptions] = useState([])
-    const [clusterLoader, setClusterLoader] = useState(false)
+        const [loading, result, error, reload] = useAsync(getDockerRegistryList, [], props.isSuperAdmin)
+        const [clusterOption, setClusterOptions] = useState([])
+        const [clusterLoader, setClusterLoader] = useState(false)
 
     const _getInit = async () => {
         setClusterLoader(true)
@@ -73,10 +74,15 @@ export default function Docker({ ...props }) {
             })
     }
 
-    useEffect(() => {
+useEffect(() => {
+    if (props.isSuperAdmin) {
         _getInit()
-    }, [])
+    }
+}, [])
 
+    if (!props.isSuperAdmin) {
+        return <ErrorScreenNotAuthorized />
+    }
     if ((loading && !result) || clusterLoader) return <Progressing pageLoader />
     if (error) {
         showError(error)
@@ -86,7 +92,7 @@ export default function Docker({ ...props }) {
         return <Reload />
     }
 
-    let dockerRegistryList = result.result || []
+    let dockerRegistryList = result?.result || []
     dockerRegistryList = dockerRegistryList.sort((a, b) => sortCallback('id', a, b))
     dockerRegistryList = [{ id: null }].concat(dockerRegistryList)
     return (
