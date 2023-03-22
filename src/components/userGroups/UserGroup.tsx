@@ -170,7 +170,7 @@ function HeaderSection(type: string) {
     const isUserPremissions = type === 'user'
 
     return (
-        <div className="auth-page__header">
+        <div className="auth-page__header pt-20">
             <h2 className="auth-page__header-title form__title">
                 {isUserPremissions ? 'User permissions' : 'Permission groups'}
             </h2>

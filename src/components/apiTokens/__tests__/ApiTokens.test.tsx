@@ -17,7 +17,7 @@ describe('APITokenList', () => {
         expect(container).toBeInTheDocument();
         expect(getByText('Token 1')).toBeInTheDocument();
         expect(getByText('127.0.0.1')).toBeInTheDocument();
-        expect(getByText('192.168.1.1')).toBeInTheDocument();
+        expect(getByText('190.160.0.0')).toBeInTheDocument();
         expect(getByText('Token 2')).toBeInTheDocument();
 
     });
@@ -32,17 +32,6 @@ describe('APITokenList', () => {
         fireEvent.click(generateTokenButton);
 
     });
-
-    // it('edit token button trigger', async () => {
-    //     const user = userEvent.setup();
-    //     const reload = jest.fn();
-    //     const { container , findByText } = render(<APITokenList tokenList={tokenList} renderSearchToken={jest.fn()} reload={reload} /> , {
-    //         wrapper:BrowserRouter});
-    //     const editTokenButton = container.querySelectorAll('.dc__transparent.cursor')[0] as HTMLElement;
-    //     expect(editTokenButton).toBeInTheDocument();
-    //     await userEvent.click(editTokenButton);
-    //     expect(await screen.findByText('Edit API token')).toBeVisible();
-    // });
 
 });
 

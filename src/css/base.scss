@@ -856,6 +856,37 @@ button.anchor {
     background-color: #f5f5f5;
 }
 
+.override-button.cta {
+
+    &.ghosted,
+    &.delete {
+        height: 32px;
+        display: flex;
+        align-items: center;
+        margin: auto;
+    }
+
+    &.delete {
+        svg path {
+            fill: none;
+            stroke: var(--R500);
+        }
+
+        &:hover{
+            svg path {
+                fill: var(--R500);
+                stroke: white;
+            }
+        }
+        &:active,
+        &:focus {
+            svg path {
+                stroke: white;
+            }
+        }
+    }
+}
+
 .loader {
     display: flex;
     justify-content: center;
@@ -2456,6 +2487,11 @@ textarea,
 }
 
 // Padding in pixels
+
+.p-0-imp {
+    padding: 0px !important;
+}
+
 .pl-0-imp {
     padding-left: 0px !important;
 }

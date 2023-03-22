@@ -32,6 +32,8 @@ import { mainContext } from '../common/navigation/NavigationRoutes'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
+import { components } from 'react-select'
+import EnvironmentOverride from '../EnvironmentOverride/EnvironmentOverride'
 
 function EditAPIToken({
     setShowRegeneratedModal,
@@ -272,8 +274,8 @@ function EditAPIToken({
                         isLoading={false}
                         loaderColor="white"
                     >
-                    <Delete className='icon-dim-16 mr-8 cursor'/>
-                    Delete
+                    <Delete className='icon-dim-16 mr-8'/>
+                    <span>Delete</span>
                     </ButtonWithLoader>
                 </div>
             </div>
