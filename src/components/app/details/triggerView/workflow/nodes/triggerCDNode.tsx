@@ -1,32 +1,81 @@
-import React, { Component } from 'react';
-import { DeploymentNodeType, TriggerCDNodeProps } from '../../types';
-import { statusColor, statusIcon } from '../../../../config';
-import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg';
-import { URLS, DEFAULT_STATUS } from '../../../../../../config';
-import Tippy from '@tippyjs/react';
-import { Link } from 'react-router-dom';
-import { TriggerViewContext } from '../../config';
-import { triggerStatus } from '../../../cicdHistory/History.components';
+import React, { Component } from 'react'
+import { DeploymentNodeType, TriggerCDNodeProps, TriggerCDNodeState } from '../../types'
+import { statusColor, statusIcon } from '../../../../config'
+import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
+import { URLS, DEFAULT_STATUS, Routes } from '../../../../../../config'
+import Tippy from '@tippyjs/react'
+import { Link } from 'react-router-dom'
+import { TriggerViewContext } from '../../config'
+import { triggerStatus } from '../../../cicdHistory/History.components'
+import { get } from '../../../../../../services/api'
+// import { cdMaterialListModal } from '../../../../service'
+import { getCDMaterialList } from '../../../../service'
+let stageMap = {
+    PRECD: 'PRE',
+    CD: 'DEPLOY',
+    POSTCD: 'POST',
+}
 
-export class TriggerCDNode extends Component<TriggerCDNodeProps> {
+export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeState> {
     constructor(props) {
         super(props)
         this.redirectToCDDetails = this.redirectToCDDetails.bind(this)
+        this.state = {
+            ci_artifacts: [],
+            latest_ci_artifact_id: 0,
+            latest_ci_artifact_status: '',
+            status: this.props.status,
+            latest_wf_artifact_status: '',
+            latest_wf_artifact_id: 0,
+        }
     }
-
     getCDNodeDetailsURL(): string {
         return `${this.props.match.url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}/${
             this.props.environmentId
         }`
     }
 
+    getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType) {
+        let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${stageMap[stageType]}`
+        return get(URL).then((response) => {
+            // return {
+            //     ci_artifacts: response.result.ci_artifacts,
+            //     latest_ci_artifact_id: response.result.latest_wf_artifact_id,
+            //     latest_wf_artifact_status: response.result.latest_wf_artifact_status,
+            // }
+            let ci_artifacts = response.result.ci_artifacts
+
+            this.setState({
+                ci_artifacts: ci_artifacts,
+                latest_ci_artifact_id: ci_artifacts.length > 1 ? ci_artifacts[0].id : 0,
+                latest_ci_artifact_status: ci_artifacts.length > 0 ? ci_artifacts[0].deployed : true,
+                status: response.result.latest_wf_artifact_status,
+                latest_wf_artifact_status: response.result.latest_wf_artifact_status,
+                latest_wf_artifact_id: response.result.latest_wf_artifact_id,
+            })
+        })
+    }
     redirectToCDDetails() {
-      if (this.props.fromAppGrouping) {
-          return
-      }
-      this.props.history.push(this.getCDNodeDetailsURL())
+        if (this.props.fromAppGrouping) {
+            return
+        }
+        this.props.history.push(this.getCDNodeDetailsURL())
     }
 
+    componentDidMount() {
+        this.getCDMaterialList(this.props.id, DeploymentNodeType[this.props.type])
+    }
+    componentDidUpdate(
+        prevProps: Readonly<TriggerCDNodeProps>,
+        prevState: Readonly<TriggerCDNodeState>,
+        snapshot?: any,
+    ) {
+        if (this.state.latest_ci_artifact_id === this.state.latest_wf_artifact_id && this.state.status != '') {
+            if (prevState.status !== this.props.status && this.props.status === 'succeeded') {
+                this.getCDMaterialList(this.props.id, DeploymentNodeType[this.props.type])
+            }
+        }
+    }
     renderStatus() {
         const url = this.getCDNodeDetailsURL()
         let statusText = this.props.status ? triggerStatus(this.props.status) : ''
@@ -102,6 +151,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                     }}
                                 >
                                     Select Image
+                                    {!this.state.latest_ci_artifact_status && <span>Not deplyed</span>}
                                 </button>
                             </div>
                         </div>

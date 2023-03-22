@@ -78,16 +78,16 @@ export interface CDMaterialState {
 }
 
 export interface MaterialInfo {
-  revision: string
-  modifiedTime: string | Date
-  author: string
-  message: string
-  commitLink: string
-  tag: string
-  webhookData: string
-  branch: string
-  url?: string
-  type?: string
+    revision: string
+    modifiedTime: string | Date
+    author: string
+    message: string
+    commitLink: string
+    tag: string
+    webhookData: string
+    branch: string
+    url?: string
+    type?: string
 }
 
 export interface CDMaterialType {
@@ -242,6 +242,14 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     parentEnvironmentName?: string
     fromAppGrouping: boolean
 }
+export interface TriggerCDNodeState {
+    ci_artifacts: any[]
+    latest_ci_artifact_id: number
+    latest_ci_artifact_status: string
+    status: string
+    latest_wf_artifact_status: string
+    latest_wf_artifact_id: number
+}
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
     x: number
@@ -261,6 +269,14 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     rollbackMaterialList: InputMaterials[]
     fromAppGrouping: boolean
 }
+export interface TriggerPrePostCDNodeState {
+    ci_artifacts: any[]
+    latest_ci_artifact_id: number
+    latest_ci_artifact_status: string
+    status: string
+    latest_wf_artifact_status: string
+    latest_wf_artifact_id: number
+}
 
 export interface TriggerEdgeType {
     startNode: any
@@ -278,7 +294,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     appId?: number
     isSelected?: boolean
     fromAppGrouping?: boolean
-    handleSelectionChange?: (_appId: number)=> void
+    handleSelectionChange?: (_appId: number) => void
     isJobView?: boolean
 }
 
