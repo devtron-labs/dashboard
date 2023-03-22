@@ -2448,6 +2448,11 @@ textarea,
 }
 
 // Padding in pixels
+
+.pl-0-imp {
+    padding-left: 0px !important;
+}
+
 .pl-14-imp {
     padding-left: 14px !important;
 }
@@ -2534,6 +2539,10 @@ textarea,
     margin-bottom: 16px !important;
 }
 
+.mb-24-imp {
+    margin-bottom: 24px !important;
+}
+
 .ml-0-imp {
     margin-left: 0px !important;
 }
@@ -2548,6 +2557,10 @@ textarea,
 
 .mb-0-imp {
     margin-bottom: 0px !important;
+}
+
+.mt-24 {
+    margin-top: 24px;
 }
 
 .mt-120 {

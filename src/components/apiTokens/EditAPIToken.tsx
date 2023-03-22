@@ -5,12 +5,15 @@ import RegeneratedModal from './RegenerateModal'
 import { EditDataType, EditTokenType } from './authorization.type'
 import { createUserPermissionPayload, isFormComplete, isTokenExpired, PermissionType } from './authorization.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
+import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
+import { ReactComponent as Delete } from '../../assets/icons/ic-delete-sign.svg'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import GenerateActionButton from './GenerateActionButton'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { useParams } from 'react-router'
 import moment from 'moment'
-import { MomentDateFormat } from '../../config'
-import { copyToClipboard, DeleteDialog, Progressing, showError } from '../common'
+import { DOCUMENTATION, MomentDateFormat } from '../../config'
+import { ButtonWithLoader, copyToClipboard, DeleteDialog, Progressing, showError } from '../common'
 import { deleteGeneratedAPIToken, updateGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -28,6 +31,7 @@ import { getUserId, saveUser } from '../userGroups/userGroup.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
+import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 
 function EditAPIToken({
     setShowRegeneratedModal,
@@ -83,7 +87,6 @@ function EditAPIToken({
     const renderActionButton = () => {
         return (
             <span
-                style={{ width: '120px' }}
                 className="cr-5 cursor flexbox top fw-6"
                 onClick={() => setShowRegeneratedModal(true)}
             >
@@ -96,7 +99,7 @@ function EditAPIToken({
         return (
             <InfoColourBar
                 message="To set a new expiration date, you can regenerate this token. Any scripts or applications using this token will need to be updated."
-                classname="info_bar m-20"
+                classname="info_bar"
                 Icon={InfoIcon}
                 iconClass="icon-dim-20"
                 renderActionButton={renderActionButton}
@@ -226,22 +229,58 @@ function EditAPIToken({
         copyToClipboard(editData.token, () => setCopied(true))
     }
 
-    return (
-        <div className="fs-13 fw-4" style={{ minHeight: 'calc(100vh - 235px)' }}>
-            <div className="cn-9 fw-6 fs-16">
-                <span className="cb-5 cursor" onClick={redirectToTokenList}>
-                    API tokens
-                </span>{' '}
-                / Edit API token
-            </div>
-            <p className="fs-12 fw-4">
-                API tokens function like ordinary OAuth access tokens. They can be used instead of a password for Git
-                over HTTPS, or can be used to authenticate to the API over Basic Authentication.
-            </p>
+    const handleQuestion = () => {
+        return (
+            <TippyCustomized
+                theme={TippyTheme.white}
+                className="w-300 h-100 fcv-5"
+                placement="right"
+                Icon={QuestionFilled}
+                heading={"API tokens"}
+                infoText="API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API."
+                showCloseButton={true}
+                trigger="click"
+                interactive = {true}
+                documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
+                documentationLinkText="View Documentation"
+            >
+                <div className="icon-dim-20 fcn-9 ml-8 cursor">
+                    <Question />    
+                </div>
 
-            <div className="bcn-0 br-8 en-2 bw-1">
+            </TippyCustomized>
+        )
+    }
+
+    return (
+        <div className="fs-13 fw-4 api__token" style={{ minHeight: 'calc(100vh - 235px)' }}>
+            <div className='flex dc__content-space pt-20 mb-24-imp dc__gap-8'>
+                <div className='flex row ml-0'>
+                    <div className="cn-9 fw-6 fs-16">
+                        <span className="cb-5 cursor" onClick={redirectToTokenList}>
+                            API tokens
+                        </span>{' '}
+                        / Edit API token
+                    </div>
+                    {handleQuestion()}
+                </div>
+                <div className="flex dc__align-end dc__content-end">
+                    <ButtonWithLoader
+                        rootClassName="flex cta delete h-36"
+                        onClick={handleDeleteButton}
+                        disabled={loader}
+                        isLoading={false}
+                        loaderColor="white"
+                    >
+                    <Delete className='icon-dim-16 mr-8 cursor'/>
+                    Delete
+                    </ButtonWithLoader>
+                </div>
+            </div>
+
+            <div className="bcn-0 mt 24 dc__gap-8">
                 {renderRegenerateInfoBar()}
-                <div className="pl-20 pr-20 pb-20 ">
+                <div className="pb-20 dc__gap-8">
                     <div>
                         <label className="form__row w-400">
                             <span className="form__label">Name</span>
@@ -342,8 +381,6 @@ function EditAPIToken({
                     onCancel={redirectToTokenList}
                     onSave={() => handleUpdatedToken(editData.id)}
                     buttonText={'Update token'}
-                    showDelete={true}
-                    onDelete={handleDeleteButton}
                 />
             </div>
             {deleteConfirmation && (
