@@ -583,7 +583,6 @@ button.anchor {
 }
 
 .app-summary__status-name {
-
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,
@@ -1124,12 +1123,12 @@ button.anchor {
     overflow: hidden;
     border-radius: 4px;
 
-    input+.radio__item-label {
+    input + .radio__item-label {
         border-radius: 0;
         border: 1px solid var(--N200);
     }
 
-    input[type='checkbox']:checked+.radio__item-label {
+    input[type='checkbox']:checked + .radio__item-label {
         border-radius: 0;
         background-color: var(--N100);
         color: var(--N900);
@@ -1438,7 +1437,7 @@ button.anchor {
     vertical-align: bottom;
 }
 
-.dc__tertiary-tab__radio input:checked~.dc__tertiary-tab {
+.dc__tertiary-tab__radio input:checked ~ .dc__tertiary-tab {
     border: solid 1px var(--B500);
     background-color: var(--B100);
 }
@@ -1758,8 +1757,12 @@ button.anchor {
     border-right: solid 1px var(--N100);
 }
 
-.dc__no-border{
-  border: none
+.dc__no-border {
+    border: none;
+}
+
+.dc__no-border-imp {
+    border: none !important;
 }
 
 .dc__box-shadow {
@@ -2009,7 +2012,7 @@ textarea,
     }
 }
 
-.basic-multi-select>.select__control--is-disabled {
+.basic-multi-select > .select__control--is-disabled {
     background-color: var(--N100) !important;
 }
 
@@ -2037,7 +2040,7 @@ textarea,
     }
 }
 .icon-color-grey {
-    fill: #5A5A5A;
+    fill: #5a5a5a;
 }
 
 .icon-color-n7 {
@@ -2061,6 +2064,12 @@ textarea,
 .info-icon-n6 {
     circle {
         fill: var(--N600);
+    }
+}
+
+.icon-fill-n4 {
+    rect {
+        fill: var(--N400);
     }
 }
 
@@ -2415,14 +2424,17 @@ textarea,
     min-height: 600px;
 }
 
+.mxh-210 {
+    max-height: 210px;
+}
+
 // Height in percentage
 .h-100 {
     height: 100%;
 }
-.dc__height-reduce-172{
-    height: 'calc(100vh - 172px)'
+.dc__height-reduce-172 {
+    height: 'calc(100vh - 172px)';
 }
-
 
 // Line height
 .lh-1-4 {
@@ -2788,8 +2800,7 @@ textarea::placeholder {
 }
 
 .dc__icon-bg-color {
-    background-color: #DFF3F7;
-
+    background-color: #dff3f7;
 }
 
 .dc__list-style-disc {
