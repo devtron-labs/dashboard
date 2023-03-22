@@ -141,31 +141,33 @@ function ApiTokens() {
                                 reload={getData}
                             />
                         </Route>
-                        <Route path={`${path}/create`}>
-                            <CreateAPIToken
-                                setShowGenerateModal={setShowGenerateModal}
-                                showGenerateModal={showGenerateModal}
-                                handleGenerateTokenActionButton={handleActionButton}
-                                setSelectedExpirationDate={setSelectedExpirationDate}
-                                selectedExpirationDate={selectedExpirationDate}
-                                tokenResponse={tokenResponse}
-                                setTokenResponse={setTokenResponse}
-                                reload={getData}
-                            />
-                        </Route>
-                        <Route path={`${path}/edit/:id`}>
-                            <EditAPIToken
-                                handleRegenerateActionButton={handleActionButton}
-                                setShowRegeneratedModal={setShowRegenerateTokenModal}
-                                showRegeneratedModal={showRegenerateTokenModal}
-                                setSelectedExpirationDate={setSelectedExpirationDate}
-                                selectedExpirationDate={selectedExpirationDate}
-                                tokenList={tokenList}
-                                setCopied={setCopied}
-                                copied={copied}
-                                reload={getData}
-                            />
-                        </Route>
+                        <div className='p-20 pb-0-imp'>
+                            <Route path={`${path}/create`}>
+                                <CreateAPIToken
+                                    setShowGenerateModal={setShowGenerateModal}
+                                    showGenerateModal={showGenerateModal}
+                                    handleGenerateTokenActionButton={handleActionButton}
+                                    setSelectedExpirationDate={setSelectedExpirationDate}
+                                    selectedExpirationDate={selectedExpirationDate}
+                                    tokenResponse={tokenResponse}
+                                    setTokenResponse={setTokenResponse}
+                                    reload={getData}
+                                />
+                            </Route>
+                            <Route path={`${path}/edit/:id`}>
+                                <EditAPIToken
+                                    handleRegenerateActionButton={handleActionButton}
+                                    setShowRegeneratedModal={setShowRegenerateTokenModal}
+                                    showRegeneratedModal={showRegenerateTokenModal}
+                                    setSelectedExpirationDate={setSelectedExpirationDate}
+                                    selectedExpirationDate={selectedExpirationDate}
+                                    tokenList={tokenList}
+                                    setCopied={setCopied}
+                                    copied={copied}
+                                    reload={getData}
+                                />
+                            </Route>
+                        </div>
                         <Redirect to={`${path}/list`} />
                     </Switch>
                 </div>

@@ -7,12 +7,12 @@ import { DISCORD_LINK, OPEN_NEW_TICKET, RAISE_ISSUE, VIEW_ALL_TICKETS } from "..
 export const EnterpriseHelpOptions: HelpOptionType[] = [
 
     {
-        name: 'Open New Ticket',
+        name: 'Open new ticket',
         link: OPEN_NEW_TICKET,
         icon: EditFile,
     },
     {
-        name: 'View All Tickets',
+        name: 'View all tickets',
         link: VIEW_ALL_TICKETS,
         icon: Files,
     },
