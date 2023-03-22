@@ -338,43 +338,35 @@ function Cluster(this: any, {
                                 {clusterId ? (
                                     <ClusterIcon className="cluster-icon icon-dim-24 dc__vertical-align-middle mr-16" />
                                 ) : null}
-                                <List.Title 
+                                <List.Title
                                     title={cluster_name || 'Add cluster'}
                                     subtitle={server_url}
                                     className="fw-6"
                                 />
                             </div>
-                            {clusterId && 
-                            <div className="flex right">
-                                
-                            <List 
-                                            onClick={(e) =>
-                                                setEnvironment({
-                                                    
-                                                })
-                                            }
-                                        >
-                                            <List.Logo>
-                                                {(
-                                                    <Add className="icon-dim-24 fcb-5" />
-                                                )}
-                                            </List.Logo>
-                                            <div className="flex left">
-                                                <List.Title
-                                                    style={{fontSize:"13px",width:"120px",color:"#0066CC",fontWeight:"600"}}  
-                                                    title={'Add environment'}
-                                                    subtitle={''}
-                                                    tag={ null}
-                                                />
-                                            </div>
-                                        </List>
-                            <div>
-                            <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />
-                            </div>
-
-                            </div>
-                            
-                            }
+                            {clusterId && (
+                                <div className="flex right">
+                                    <List onClick={(e) => setEnvironment({})}>
+                                        <List.Logo>{<Add className="icon-dim-24 fcb-5" />}</List.Logo>
+                                        <div className="flex left">
+                                            <List.Title
+                                                style={{
+                                                    fontSize: '13px',
+                                                    width: '120px',
+                                                    color: '#0066CC',
+                                                    fontWeight: '600',
+                                                }}
+                                                title={'Add environment'}
+                                                subtitle={''}
+                                                tag={null}
+                                            />
+                                        </div>
+                                    </List>
+                                    <div>
+                                        <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />
+                                    </div>
+                                </div>
+                            )}
                         </List>
                         {serverMode !== SERVER_MODE.EA_ONLY && clusterId ? <hr className="mt-0 mb-0" /> : null}
                         {serverMode !== SERVER_MODE.EA_ONLY && clusterId ? (
@@ -435,7 +427,7 @@ function Cluster(this: any, {
                             //                     )}
                             //                 </List.Logo>
                             //                 <div className="flex left">
-                                                // <List.Title
+                            // <List.Title
                             //                         title={environment_name || 'Add environment'}
                             //                         subtitle={id ? `namespace: ${namespace}` : ''}
                             //                         tag={isProduction ? 'PROD' : null}
@@ -446,70 +438,61 @@ function Cluster(this: any, {
                             //     )}
                             // </div>
 
-
-
-                <div className= "api-token-container">
-                <div className="cluster-list en-2 bw-1 bcn-0 br-8">
-                    <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-3 dc__uppercase">
-                        <div></div>
-                        <div className="cluster-list__enviroment_name"  >ENVIRONMENT</div>
-                        <div className="cluster-list__name_space" >NAMESPACE</div>
-                        <div className="cluster-list__description">DESCRIPTION</div>
-                        <div></div>
-                    </div>
-                {newEnvs.map(
-                                    ({
-                                        id,
-                                        environment_name,
-                                        cluster_id,
-                                        cluster_name,
-                                        active,
-                                        prometheus_url,
-                                        namespace,
-                                        default: isProduction,
-                                        description,
-                                    }) => (
-                                    environment_name?    <div
-                                className="api-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-10"
-                                style={{ height: 'fit-content' }}
-                            >
-
-                                <div className="dc__transparent cursor flex">   
-                                {environment_name&&<Database className="icon-dim-24" />}
-                                </div>
-                                {/* } */}
-                                    {/* jnvcjnk */}
-                                <div className="cluster-list__enviroment_name">
-                                    {environment_name}
-                                    
-                                    {isProduction ? <div className="cluster-list__prod">Prod</div> : null}
-                                    
-                                </div>
-                                <div className="cluster-list__name_space">
-                                    {namespace}
-                                </div>
-                                <div className="cluster-list__description">
-                                    {description}
+                            <div className="api-token-container">
+                                <div className="cluster-list">
+                                    <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-3 dc__uppercase">
+                                        <div></div>
+                                        <div className="cluster-list__enviroment_name">ENVIRONMENT</div>
+                                        <div className="cluster-list__name_space">NAMESPACE</div>
+                                        <div className="cluster-list__description">DESCRIPTION</div>
+                                        <div></div>
                                     </div>
-                                <div className="api__row-actions flex right">
-                                {/* <button
+                                    {newEnvs.map(
+                                        ({
+                                            id,
+                                            environment_name,
+                                            cluster_id,
+                                            cluster_name,
+                                            active,
+                                            prometheus_url,
+                                            namespace,
+                                            default: isProduction,
+                                            description,
+                                        }) =>
+                                            environment_name ? (
+                                                <div
+                                                    className="api-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-10"
+                                                    style={{ height: 'fit-content' }}
+                                                >
+                                                    <div className="dc__transparent cursor flex">
+                                                        {environment_name && <Database className="icon-dim-24" />}
+                                                    </div>
+                                                    {/* } */}
+                                                    {/* jnvcjnk */}
+                                                    <div className="cluster-list__enviroment_name">
+                                                        {environment_name}
+
+                                                        {isProduction ? (
+                                                            <div className="cluster-list__prod">Prod</div>
+                                                        ) : null}
+                                                    </div>
+                                                    <div className="cluster-list__name_space">{namespace}</div>
+                                                    <div className="cluster-list__description">{description}</div>
+                                                    <div className="api__row-actions flex right">
+                                                        {/* <button
                                         type="button"
                                         className="dc__transparent mr-18"
                                         // onClick={() => handleGenerateRowActionButton('edit', list.id)}
                                     > */}
-                                    <PencilEdit className="mr-7" onClick={showClusterDrawer}/>
-                                    <DeleteInvolvement/>
-                                    {/* </button> */}
+                                                        <PencilEdit className="mr-7" onClick={showClusterDrawer} />
+                                                        <DeleteInvolvement />
+                                                        {/* </button> */}
+                                                    </div>
+                                                </div>
+                                            ) : null,
+                                    )}
                                 </div>
-                            </div> : null 
-                            
-
-
-                                    ),
-                                )}
                             </div>
-                </div>
-
                         )}
                     </>
                 ) : (
@@ -526,29 +509,35 @@ function Cluster(this: any, {
                                 prometheus_url,
                                 prometheusAuth,
                                 defaultClusterComponent,
-                                isGrafanaModuleInstalled: grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED
+                                isGrafanaModuleInstalled:
+                                    grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED,
                             }}
                         />
                     </>
                 )}
             </article>
-            {environment && (
+            {/* {environment && (
                 <Environment
                     reload={reload}
                     cluster_name={cluster_name}
                     {...environment}
                     handleClose={handleClose}
                 />
+            )} */}
+            {showWindow && (
+                <Drawer position="right" width="1000px" onEscape={hideClusterDrawer}>
+                    <div className="h-100 bcn-0 pt-0 pr-20 pb-12 pl-20">
+                        {environment && (
+                            <Environment
+                                reload={reload}
+                                cluster_name={cluster_name}
+                                {...environment}
+                                handleClose={handleClose}
+                            />
+                        )}
+                    </div>
+                </Drawer>
             )}
-         {showWindow && (
-            <Drawer position="right" width="1000px" onEscape={hideClusterDrawer}>
-                (
-                <div className="h-100 bcn-0 pt-0 pr-20 pb-12 pl-20">
-                    bjhvjkb
-                </div>
-                )
-            </Drawer>
-        )}
         </>
     )
 }
@@ -1057,7 +1046,7 @@ function Environment({
     }
 
     return (
-        <VisibleModal className="environment-create-modal" close={handleClose}>
+        //<VisibleModal className="environment-create-modal" close={handleClose}>
             <form className="environment-create-body" onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit}>
                 <div className="form__row">
                     <div className="flex left">
@@ -1153,6 +1142,6 @@ function Environment({
                     />
                 )}
             </form>
-        </VisibleModal>
+       // </VisibleModal>
     )
 }
