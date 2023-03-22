@@ -236,8 +236,8 @@ function CreateAPIToken({
 
     return (
         <div className='bcn-0 api__token '>
-            <div className='flex dc__content-space mb-24-imp pt-20 dc__gap-8'>
-                <div className='flex row ml-0'>
+            <div className='flex dc__content-space pt-16 pb-16 dc__gap-8'>
+                <div className='flex row ml-0 h-32'>
                     <div className="cn-9 fw-6 fs-16">
                         <span className="cb-5 cursor" onClick={redirectToTokenList}>
                             API tokens
@@ -249,7 +249,7 @@ function CreateAPIToken({
             </div>
 
             <div className="bcn-0">
-                <div>
+                <div className='pb-20'>
                     <div>
                         <label className="form__row w-400">
                             <span className="form__label dc__required-field">

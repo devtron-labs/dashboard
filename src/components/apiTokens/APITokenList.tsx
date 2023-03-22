@@ -82,12 +82,12 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
 
     return (
         <div className='bcn-0'>
-            <div className='flex dc__content-space pl-20 pr-20'>
+            <div className='flex dc__content-space pl-20 pr-20 pt-16 pb-16'>
                 <div className='flex row ml-0'>
                     <div className="cn-9 fw-6 fs-16">API tokens</div>
                     {handleQuestion()}
                 </div>
-                <div className="flex dc__align-end dc__content-end mb-8 mt-16">
+                <div className="flex dc__align-end dc__content-end">
                     {renderSearchToken()}
                     <button className="flex cta h-32 ml-10 app-status-card__divider" onClick={handleGenerateRowAction}>
                         Generate new token

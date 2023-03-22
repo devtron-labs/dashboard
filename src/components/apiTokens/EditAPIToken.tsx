@@ -6,7 +6,7 @@ import { EditDataType, EditTokenType } from './authorization.type'
 import { createUserPermissionPayload, isFormComplete, isTokenExpired, PermissionType } from './authorization.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as Delete } from '../../assets/icons/ic-delete-sign.svg'
+import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import GenerateActionButton from './GenerateActionButton'
 import { useHistory, useRouteMatch } from 'react-router-dom'
@@ -254,7 +254,7 @@ function EditAPIToken({
 
     return (
         <div className="fs-13 fw-4 api__token" style={{ minHeight: 'calc(100vh - 235px)' }}>
-            <div className='flex dc__content-space pt-20 mb-24-imp dc__gap-8'>
+            <div className='flex dc__content-space pt-16 pb-16 dc__gap-8'>
                 <div className='flex row ml-0'>
                     <div className="cn-9 fw-6 fs-16">
                         <span className="cb-5 cursor" onClick={redirectToTokenList}>
@@ -266,7 +266,7 @@ function EditAPIToken({
                 </div>
                 <div className="flex dc__align-end dc__content-end">
                     <ButtonWithLoader
-                        rootClassName="flex cta delete h-36"
+                        rootClassName="flex cta override-button delete scr-5 h-32"
                         onClick={handleDeleteButton}
                         disabled={loader}
                         isLoading={false}

@@ -27,7 +27,7 @@
     }
 
     .api-list-row {
-        &:hover:not(:first-of-type) {
+        &:hover {
             background-color: var(--N50);
 
             .api__row-actions {

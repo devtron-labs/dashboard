@@ -10,9 +10,9 @@ function GenerateActionButton({
     regenerateButton
 }: GenerateActionButtonType) {
     return (
-            <div className={`modal__buttons w-100 p-16 pl-0-imp flex ${regenerateButton ? 'right ml-auto' : 'left ml-0'} dc__border-top`}>
+            <div className={`modal__buttons w-100 p-16 pl-0-imp flex ${regenerateButton ? 'right ml-auto' : 'left ml-0'} dc__border-top-1`}>
                 <ButtonWithLoader
-                    rootClassName={`flex cta cancel h-36 ${regenerateButton ? 'mr-16 first' : 'second'}`}
+                    rootClassName={`flex cta cancel h-36 ${regenerateButton ? 'mr-12 first' : 'second'}`}
                     onClick={onCancel}
                     disabled={loader}
                     isLoading={false}
@@ -21,7 +21,7 @@ function GenerateActionButton({
                     Cancel
                 </ButtonWithLoader>
                 <ButtonWithLoader
-                    rootClassName= {`flex cta h-36 ${regenerateButton ? 'second' : 'mr-16 first'}`}
+                    rootClassName= {`flex cta h-36 ${regenerateButton ? 'second' : 'mr-12 first'}`}
                     onClick={() => onSave()}
                     disabled={loader}
                     isLoading={loader}
