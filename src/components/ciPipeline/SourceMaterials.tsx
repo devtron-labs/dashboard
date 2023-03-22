@@ -19,7 +19,7 @@ import Tippy from '@tippyjs/react'
 export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) {
     const [isProviderChanged, setProviderChanged] = useState(false)
     const isMultiGit = props.materials.length > 1
-    const islinkedCI = window.location.href.indexOf('linked-ci') != -1
+    const islinkedCI = window.location.href.includes('linked-ci')
     let _materials = props.materials
     let _webhookTypeMaterial = _materials.find((_material) => _material.type == SourceTypeMap.WEBHOOK)
 
