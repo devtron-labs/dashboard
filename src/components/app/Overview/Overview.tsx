@@ -59,10 +59,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const [otherEnvsLoading, otherEnvsResult] = useAsync(
         () =>
             Promise.all([
-                isJobOverview ? { result: null } : getAppOtherEnvironment(appId),
+                getAppOtherEnvironment(appId),
                 getModuleInfo(ModuleNameMap.ARGO_CD),
             ]),
         [appId],
+        !isJobOverview
     )
     const isAgroInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
