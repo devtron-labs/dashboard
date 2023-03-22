@@ -32,6 +32,5 @@ describe('APITokenList', () => {
         fireEvent.click(generateTokenButton);
 
     });
-
 });
 
