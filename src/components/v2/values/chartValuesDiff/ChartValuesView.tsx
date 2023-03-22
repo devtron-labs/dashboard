@@ -75,7 +75,7 @@ import { convertSchemaJsonToMap, getAndUpdateSchemaValue, updateGeneratedManifes
 import { getAppId } from '../../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ChartValuesGUIForm from './ChartValuesGUIView'
 import './ChartValuesView.scss'
-import '../../../../components/app/details/appOverview/AppOverview.scss'
+import '../../../app/Overview/Overview.scss'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../../services/service'
 import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfiguredWarning'
 import { AppMetaInfo } from '../../../app/types'
@@ -84,7 +84,7 @@ import ProjectUpdateModal from './ProjectUpdateModal'
 import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 import ChartValuesEditor from './ChartValuesEditor'
 import { ChartRepoSelector } from './ChartRepoSelector'
-import { MULTI_REQUIRED_FIELDS_MSG, SOME_ERROR_MSG } from '../../../../config/constantMessaging'
+import { MULTI_REQUIRED_FIELDS_MSG, SOME_ERROR_MSG, TOAST_INFO } from '../../../../config/constantMessaging'
 import {
     CHART_VALUE_TOAST_MSGS,
     COMPARISON_OPTION_LABELS,
@@ -92,8 +92,9 @@ import {
     CONNECT_TO_HELM_CHART_TEXTS,
     DATA_VALIDATION_ERROR_MSG,
     MANIFEST_TAB_VALIDATION_ERROR,
-    MANIFEST_INFO
+    MANIFEST_INFO,
 } from './ChartValuesView.constants'
+import { DeploymentAppType } from '../../appDetails/appDetails.type'
 
 function ChartValuesView({
     appId,
@@ -106,10 +107,15 @@ function ChartValuesView({
     chartVersionsDataFromParent = [],
     chartValuesFromParent,
     selectedVersionFromParent,
+    init,
 }: ChartValuesViewType) {
     const history = useHistory()
     const { url } = useRouteMatch()
-    const { chartValueId, presetValueId } = useParams<{ chartValueId: string; presetValueId: string }>()
+    const { chartValueId, presetValueId, envId } = useParams<{
+        chartValueId: string
+        presetValueId: string
+        envId: string
+    }>()
     const { serverMode } = useContext(mainContext)
     const [chartValuesList, setChartValuesList] = useState<ChartValuesType[]>(chartValuesListFromParent || [])
     const [appName, setAppName] = useState('')
@@ -118,6 +124,7 @@ function ChartValuesView({
     const [isProjectLoading, setProjectLoading] = useState(false)
     const [isUnlinkedCLIApp, setIsUnlinkedCLIApp] = useState(false)
     const [deploymentVersion, setDeploymentVersion] = useState(1)
+    const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -134,6 +141,7 @@ function ChartValuesView({
             chartVersionsDataFromParent,
         ),
     )
+
     const [obj] = useJsonYaml(commonState.modifiedValuesYaml, 4, 'yaml', true)
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
@@ -163,7 +171,6 @@ function ChartValuesView({
 
             const _fetchedReadMe = commonState.fetchedReadMe
             _fetchedReadMe.set(0, commonState.installedConfig.readme)
-
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
@@ -177,7 +184,6 @@ function ChartValuesView({
             })
         } else if (isExternalApp) {
             fetchProjects(dispatch)
-
             getReleaseInfo(appId)
                 .then((releaseInfoResponse: ReleaseInfoResponse) => {
                     const _releaseInfo = releaseInfoResponse.result.releaseInfo
@@ -292,7 +298,6 @@ function ChartValuesView({
                         ) || []
 
                     setDeploymentVersion(_deploymentHistoryArr[0].version)
-
                     dispatch({
                         type: ChartValuesViewActionTypes.deploymentHistoryArr,
                         payload: _deploymentHistoryArr,
@@ -312,8 +317,6 @@ function ChartValuesView({
             ((commonState.chartValues.id && commonState.chartValues.chartVersion) ||
                 (isExternalApp && commonState.releaseInfo))
         ) {
-
-
             dispatch({ type: ChartValuesViewActionTypes.fetchingValuesYaml, payload: true })
             if (commonState.chartValues.id && commonState.chartValues.chartVersion) {
                 getChartValues(commonState.chartValues.id, commonState.chartValues.kind)
@@ -404,7 +407,7 @@ function ChartValuesView({
                     (e) => e.value.toString() === commonState.installedConfig.environmentId.toString(),
                 )
             })
-            
+
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
@@ -565,11 +568,12 @@ function ChartValuesView({
                     type: ChartValuesViewActionTypes.isDeleteInProgress,
                     payload: false,
                 })
-                toast.success('Successfully deleted.')
+                toast.success(TOAST_INFO.DELETION_INITIATED)
+                init()
                 history.push(
                     isCreateValueView
                         ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
-                        : `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`,
+                        : `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appId}/env/${envId}`,
                 )
             })
             .catch((error) => {
@@ -608,7 +612,7 @@ function ChartValuesView({
         } else if (isCreateValueView) {
             return deleteChartValues(parseInt(chartValueId))
         } else {
-            return deleteInstalledChart(commonState.installedConfig.installedAppId, force)
+            return deleteInstalledChart(commonState.installedConfig.installedAppId, isGitops, force)
         }
     }
 
@@ -995,7 +999,7 @@ function ChartValuesView({
                 disabled={false}
                 onChange={handleTabSwitch}
             >
-                {initialSelectedTab === ConfigurationType.GUI && (
+                {(initialSelectedTab === ConfigurationType.GUI || !!commonState.schemaJson) && (
                     <RadioGroup.Radio value={ConfigurationType.GUI.toLowerCase()}>
                         {ConfigurationType.GUI} (Beta)
                     </RadioGroup.Radio>
@@ -1004,13 +1008,7 @@ function ChartValuesView({
                     <Edit className="icon-dim-12 mr-6" />
                     {ConfigurationType.YAML}
                 </RadioGroup.Radio>
-                <RadioGroup.Radio
-                    value="manifest"
-                    canSelect={isValidData()}
-                    tippyContent={
-                        MANIFEST_INFO.InfoText
-                    }
-                >
+                <RadioGroup.Radio value="manifest" canSelect={isValidData()} tippyContent={MANIFEST_INFO.InfoText}>
                     Manifest output
                 </RadioGroup.Radio>
             </RadioGroup>
@@ -1331,7 +1329,7 @@ function ChartValuesView({
                             </div>
                         )}
 
-                        {!isDeployChartView && showUpdateAppModal && !isCreateValueView &&(
+                        {!isDeployChartView && showUpdateAppModal && !isCreateValueView && (
                             <div className="app-overview-container display-grid bcn-0 dc__overflow-hidden">
                                 <ProjectUpdateModal
                                     appId={appId}

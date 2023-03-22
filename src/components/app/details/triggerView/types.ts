@@ -19,7 +19,12 @@ export interface CDMaterialProps {
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
         appId?: number,
     ) => void
-    triggerDeploy: (stageType: DeploymentNodeType, _appId: number, deploymentWithConfig?: string, wfrId?: number) => void
+    triggerDeploy: (
+        stageType: DeploymentNodeType,
+        _appId: number,
+        deploymentWithConfig?: string,
+        wfrId?: number,
+    ) => void
     selectImage: (
         index: number,
         materialType: string,
@@ -69,19 +74,25 @@ export interface CDMaterialState {
     latestDeploymentConfig: any
     specificDeploymentConfig: any
     selectedMaterial: CDMaterialType
+    isSelectImageTrigger: boolean
+}
+
+export interface MaterialInfo {
+  revision: string
+  modifiedTime: string | Date
+  author: string
+  message: string
+  commitLink: string
+  tag: string
+  webhookData: string
+  branch: string
+  url?: string
+  type?: string
 }
 
 export interface CDMaterialType {
     id: string
-    materialInfo: {
-        revision: string
-        modifiedTime: string
-        author: string
-        message: string
-        commitLink: string
-        tag: string
-        webhookData: string
-    }[]
+    materialInfo: MaterialInfo[]
     tab: CDMdalTabType
     scanEnabled: boolean
     scanned: boolean
@@ -135,6 +146,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     isCacheAvailable?: boolean
     fromAppGrouping?: boolean
     appId: string
+    isJobView?: boolean
 }
 
 export interface RegexValueType {
@@ -192,6 +204,7 @@ export interface NodeAttr {
     regex?: string
     primaryBranchAfterRegex?: string
     storageConfigured?: boolean
+    deploymentAppDeleteRequest?: boolean
 }
 
 export interface DownStreams {
@@ -265,7 +278,8 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     appId?: number
     isSelected?: boolean
     fromAppGrouping?: boolean
-    handleSelectionChange?: (e)=> void
+    handleSelectionChange?: (_appId: number)=> void
+    isJobView?: boolean
 }
 
 export interface TriggerViewContextType {
@@ -289,7 +303,9 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterProps> {}
+export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterProps> {
+    isJobView?: boolean
+}
 
 export interface WorkflowType {
     id: string
@@ -485,6 +501,9 @@ export interface CiPipeline {
     afterDockerBuildScripts?: Array<CiScript>
     isDockerConfigOverridden?: boolean
     dockerConfigOverride?: DockerConfigOverrideType
+    appName?: string
+    appId?: string
+    componentId?: number
 }
 
 export interface Material {
@@ -548,6 +567,8 @@ export interface CdPipeline {
     isClusterCdActive?: boolean
     parentPipelineId?: number
     parentPipelineType?: string
+    deploymentAppDeleteRequest?: boolean
+    deploymentAppCreated?: boolean
 }
 
 export interface CdPipelineResult {
@@ -603,6 +624,8 @@ export interface TriggerViewConfigDiffProps {
     handleConfigSelection: (selected) => void
     isConfigAvailable: (optionValue) => boolean
     diffOptions: Record<string, boolean>
+    isRollbackTriggerSelected: boolean
+    isRecentConfigAvailable: boolean
 }
 
 export const MATERIAL_TYPE = {
@@ -621,25 +644,25 @@ export const STAGE_TYPE = {
 }
 
 export interface EmptyStateCIMaterialProps {
-    isRepoError: boolean;
-    isBranchError: boolean;
+    isRepoError: boolean
+    isBranchError: boolean
     isDockerFileError: boolean
     dockerFileErrorMsg: string
-    gitMaterialName: string;
-    sourceValue: string;
-    repoUrl: string;
-    branchErrorMsg: string;
-    repoErrorMsg: string;
-    isMaterialLoading: boolean;
-    onRetry: (...args) => void;
-    anyCommit: boolean;
-    isWebHook?: boolean;
+    gitMaterialName: string
+    sourceValue: string
+    repoUrl: string
+    branchErrorMsg: string
+    repoErrorMsg: string
+    isMaterialLoading: boolean
+    onRetry: (...args) => void
+    anyCommit: boolean
+    isWebHook?: boolean
     noSearchResults?: boolean
     noSearchResultsMsg?: string
-    toggleWebHookModal?: () => void;
+    toggleWebHookModal?: () => void
     clearSearch?: () => void
     handleGoToWorkFlowEditor?: (e?: any) => void
-  }
+}
 
 export interface MaterialSourceProps {
     material: CIMaterialType[]

@@ -1,0 +1,20 @@
+.create-modal-wrapper {
+    position: fixed;
+    right: 24px;
+    top: 50px;
+    overflow: hidden;
+
+    .create-modal-child {
+        padding: 10px 15px;
+        display: flex;
+
+        &:first-child {
+            border-bottom: 1px solid var(--N100);
+        }
+
+        &:hover {
+            background-color: var(--N100);
+        }
+    }
+
+}

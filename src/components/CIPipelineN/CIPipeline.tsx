@@ -2,7 +2,15 @@ import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ButtonWithLoader, ConditionalWrap, DeleteDialog, Drawer, showError, VisibleModal } from '../common'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
-import { BuildStageVariable, BuildTabText, ModuleNameMap, TriggerType, URLS, ViewType } from '../../config'
+import {
+    BuildStageVariable,
+    BuildTabText,
+    JobPipelineTabText,
+    ModuleNameMap,
+    TriggerType,
+    URLS,
+    ViewType,
+} from '../../config'
 import {
     deleteCIPipeline,
     getGlobalVariable,
@@ -39,6 +47,7 @@ import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.ser
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 import { SourceTypeMap } from '../../config'
+
 export const ciPipelineContext = createContext(null)
 
 export default function CIPipeline({
@@ -47,6 +56,7 @@ export default function CIPipeline({
     getWorkflows,
     close,
     deleteWorkflow,
+    isJobView,
 }: CIPipelineType) {
     let { appId, workflowId, ciPipelineId } = useParams<{ appId: string; workflowId: string; ciPipelineId: string }>()
     if (ciPipelineId === '0') {
@@ -62,9 +72,9 @@ export default function CIPipeline({
     const { path } = useRouteMatch()
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const text = ciPipelineId ? 'Update Pipeline' : 'Create Pipeline'
-    const title = ciPipelineId ? 'Edit build pipeline' : 'Create build pipeline'
+    const title = `${ciPipelineId ? 'Edit ' : 'Create '}${isJobView ? 'job' : 'build'} pipeline`
     const [isAdvanced, setIsAdvanced] = useState<boolean>(
-        activeStageName !== BuildStageVariable.PreBuild && !!ciPipelineId,
+        isJobView || (activeStageName !== BuildStageVariable.PreBuild && !!ciPipelineId),
     )
     const [showFormError, setShowFormError] = useState<boolean>(false)
     const [loadingData, setLoadingData] = useState<boolean>(false)
@@ -161,7 +171,7 @@ export default function CIPipeline({
                     showError(error)
                 })
         } else {
-            getInitData(appId, true)
+            getInitData(appId, true, !isJobView)
                 .then((response) => {
                     setFormData(response.result.form)
                     setPageState(ViewType.FORM)
@@ -318,7 +328,6 @@ export default function CIPipeline({
             )
         }
     }
-
     const checkUniqueness = (): boolean => {
         const list = formData.preBuildStage.steps.concat(formData.postBuildStage.steps)
         const stageNameList = list.map((taskData) => {
@@ -356,7 +365,6 @@ export default function CIPipeline({
         // Below code is to check if all the task name from pre-stage and post-stage is unique
         return stageNameList.length === new Set(stageNameList).size
     }
-
     const savePipeline = () => {
         const isUnique = checkUniqueness()
         if (!isUnique) {
@@ -374,6 +382,7 @@ export default function CIPipeline({
             toast.error('Scanning is mandatory, please enable scanning')
             return
         }
+
         if (
             !formDataErrorObj.buildStage.isValid ||
             !formDataErrorObj.preBuildStage.isValid ||
@@ -386,6 +395,7 @@ export default function CIPipeline({
             }
             return
         }
+
         const msg = ciPipeline.id ? 'Pipeline Updated' : 'Pipeline Created'
 
         // Reset allow override flag to false if config matches with global
@@ -543,9 +553,8 @@ export default function CIPipeline({
     }
 
     const validateStage = (stageName: string, _formData: FormType): void => {
-        const _formDataErrorObj = { ...formDataErrorObj }
+        const _formDataErrorObj = { ...formDataErrorObj, name: validationRules.name(_formData.name) } // validating name always as it's a mandatory field
         if (stageName === BuildStageVariable.Build) {
-            _formDataErrorObj.name = validationRules.name(_formData.name)
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
 
             let valid = _formData.materials.reduce((isValid, mat) => {
@@ -710,14 +719,14 @@ export default function CIPipeline({
             <li className="tab-list__tab">
                 <NavLink
                     replace
-                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox dc__capitalize"
+                    className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                     activeClassName="active"
                     to={toLink}
                     onClick={() => {
                         validateStage(activeStageName, formData)
                     }}
                 >
-                    {BuildTabText[stageName]}
+                    {isJobView ? JobPipelineTabText[stageName] : BuildTabText[stageName]}
                     {!formDataErrorObj[stageName].isValid && <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-3" />}
                 </NavLink>
             </li>
@@ -745,9 +754,18 @@ export default function CIPipeline({
                 </div>
                 {isAdvanced && (
                     <ul className="ml-20 tab-list w-90">
-                        {isAdvanced && getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
-                        {getNavLink(`build`, BuildStageVariable.Build)}
-                        {isAdvanced && getNavLink(`post-build`, BuildStageVariable.PostBuild)}
+                        {isJobView ? (
+                            <>
+                                {getNavLink(`build`, BuildStageVariable.Build)}
+                                {getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
+                            </>
+                        ) : (
+                            <>
+                                {isAdvanced && getNavLink(`pre-build`, BuildStageVariable.PreBuild)}
+                                {getNavLink(`build`, BuildStageVariable.Build)}
+                                {isAdvanced && getNavLink(`post-build`, BuildStageVariable.PostBuild)}
+                            </>
+                        )}
                     </ul>
                 )}
                 <hr className="divider m-0" />
@@ -775,13 +793,17 @@ export default function CIPipeline({
                     <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
                         {isAdvanced && (
                             <div className="sidebar-container">
-                                <Sidebar />
+                                <Sidebar isJobView={isJobView} />
                             </div>
                         )}
                         <Switch>
                             {isAdvanced && (
                                 <Route path={`${path}/pre-build`}>
-                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
+                                    <PreBuild
+                                        presetPlugins={presetPlugins}
+                                        sharedPlugins={sharedPlugins}
+                                        isJobView={isJobView}
+                                    />
                                 </Route>
                             )}
                             {isAdvanced && (
@@ -797,6 +819,7 @@ export default function CIPipeline({
                                     ciPipeline={ciPipeline}
                                     isSecurityModuleInstalled={isSecurityModuleInstalled}
                                     setDockerConfigOverridden={setDockerConfigOverridden}
+                                    isJobView={isJobView}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

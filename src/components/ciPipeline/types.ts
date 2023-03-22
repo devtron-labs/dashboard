@@ -196,6 +196,7 @@ export interface StepType {
     outputDirectoryPath: string[]
     inlineStepDetail?: InlineStepDetailType
     pluginRefStepDetail?: PluginRefStepDetailType
+    triggerIfParentStageFail: boolean
 }
 
 export interface BuildStageType {
@@ -326,6 +327,7 @@ export interface CIPipelineType {
     getWorkflows: () => void
     close: () => void
     deleteWorkflow: (appId?: string, workflowId?: number) => any
+    isJobView?: boolean
 }
 
 export interface CIPipelineDataType {
@@ -503,4 +505,5 @@ export interface BuildType {
     pageState: string
     isSecurityModuleInstalled: boolean
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
+    isJobView?: boolean
 }

@@ -28,6 +28,7 @@ export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string 
     workflowId: string
     branch: string
     fromAppGrouping: boolean
+    isJobView?: boolean
 }
 
 export class TriggerCINode extends Component<TriggerCINodeProps> {
@@ -41,10 +42,10 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
     }
 
     redirectToCIDetails() {
-      if (this.props.fromAppGrouping) {
-          return
-      }
-      this.props.history.push(this.getCIDetailsURL())
+        if (this.props.fromAppGrouping) {
+            return
+        }
+        this.props.history.push(this.getCIDetailsURL())
     }
 
     renderStatus() {
@@ -64,14 +65,10 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                     {this.props.status && this.props.status.toLowerCase() === 'cancelled'
                         ? 'ABORTED'
                         : this.props.status}
-                    {!this.props.fromAppGrouping && (
-                        <>
-                            <span className="mr-5 ml-5">/</span>
-                            <Link to={url} className="workflow-node__details-link">
-                                Details
-                            </Link>
-                        </>
-                    )}
+                        <span className="mr-5 ml-5">/</span>
+                        <Link to={url} className="workflow-node__details-link">
+                            Details
+                        </Link>
                 </div>
             )
     }
@@ -103,12 +100,16 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 <div className="workflow-node__title flex">
                     {/* <img src={build} className="icon-dim-24 mr-16" /> */}
                     <div className="workflow-node__full-width-minus-Icon">
-                        <span className="workflow-node__text-light">Build</span>
+                        <span className="workflow-node__text-light">{this.props.isJobView ? 'Job' : 'Build'}</span>
                         <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.title}>
                             <div className="dc__ellipsis-left">{this.props.title}</div>
                         </Tippy>
                     </div>
-                    <div className="workflow-node__icon-common ml-8 workflow-node__CI-icon" />
+                    <div
+                        className={`workflow-node__icon-common ml-8 ${
+                            this.props.isJobView ? 'workflow-node__job-icon' : 'workflow-node__CI-icon'
+                        }`}
+                    />
                 </div>
                 {this.renderStatus()}
                 <div className="workflow-node__btn-grp">
