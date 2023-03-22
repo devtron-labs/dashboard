@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { SourceTypeMap, URLS } from '../../config'
 import { components } from 'react-select'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import git from '../../assets/icons/git/git.svg'
@@ -19,7 +19,8 @@ import Tippy from '@tippyjs/react'
 export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) {
     const [isProviderChanged, setProviderChanged] = useState(false)
     const isMultiGit = props.materials.length > 1
-    const islinkedCI = window.location.href.includes('linked-ci')
+    const location = useLocation()
+    const islinkedCI = location.pathname.includes('linked-ci')
     let _materials = props.materials
     let _webhookTypeMaterial = _materials.find((_material) => _material.type == SourceTypeMap.WEBHOOK)
 
