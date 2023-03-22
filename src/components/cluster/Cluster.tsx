@@ -309,6 +309,14 @@ function Cluster(this: any, {
         } else toggleClusterComponentModal(!showClusterComponentModal)
     }
 
+    const showClusterDrawer = ()=>{
+        setShowWindow(true)
+    }
+
+    const hideClusterDrawer = ()=>{
+        setShowWindow(false)
+    }
+
     let envName: string = getEnvName(defaultClusterComponent, agentInstallationStage)
 
     return (
@@ -489,7 +497,7 @@ function Cluster(this: any, {
                                         className="dc__transparent mr-18"
                                         // onClick={() => handleGenerateRowActionButton('edit', list.id)}
                                     > */}
-                                    <PencilEdit style={{marginRight:"7px"}}/>
+                                    <PencilEdit className="mr-7" onClick={showClusterDrawer}/>
                                     <DeleteInvolvement/>
                                     {/* </button> */}
                                 </div>
@@ -532,8 +540,8 @@ function Cluster(this: any, {
                     handleClose={handleClose}
                 />
             )}
-         {this.state.showAddCluster && (
-            <Drawer position="right" width="1000px" onEscape={this.toggleShowAddCluster}>
+         {showWindow && (
+            <Drawer position="right" width="1000px" onEscape={hideClusterDrawer}>
                 (
                 <div className="h-100 bcn-0 pt-0 pr-20 pb-12 pl-20">
                     bjhvjkb

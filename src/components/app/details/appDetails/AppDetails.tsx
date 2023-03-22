@@ -605,7 +605,7 @@ export function EnvSelector({
             ...controlStyleOverrides,
         }),
         singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: 'var(--B500)' }),
-        indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
+        indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),menu: (base)=>({...base, width: '250px'})
     }
     // cb-5 ml-8 fw-6
     const sortedEnvironments =
@@ -643,7 +643,7 @@ export function EnvSelector({
                             ? sortedEnvironments.map((env) => ({
                                   label: env.environmentName,
                                   value: env.environmentId,
-                                  description: 'This is a env description of max 40words'
+                                  description: 'This is a env description of max 40words' //for testing purpose only
                                   //description: env.description,
                               }))
                             : []
@@ -1149,7 +1149,7 @@ export function EnvironmentNotConfigured({ environments, ...props }) {
                         Go to Trigger
                     </Link>
                 )}
-            </div>
+            </div>  
         </section>
     )
 }
