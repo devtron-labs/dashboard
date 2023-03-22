@@ -57,23 +57,15 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         monitoringTools: [],
     })
     const [otherEnvsLoading, otherEnvsResult] = useAsync(
-        () => Promise.all([getAppOtherEnvironment(appId), getModuleInfo(ModuleNameMap.ARGO_CD)]),
+        () =>
+            Promise.all([
+                isJobOverview ? { result: null } : getAppOtherEnvironment(appId),
+                getModuleInfo(ModuleNameMap.ARGO_CD),
+            ]),
         [appId],
     )
-    const isAgroInstalled: boolean = otherEnvsResult?.[1].result.status === ModuleStatus.INSTALLED
+    const isAgroInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
-
-    useEffect(() => {
-        getJobCIPipeline(appId)
-            .then((response) => {
-                setJobPipelines(response.result)
-                setIsLoading(false)
-            })
-            .catch((error) => {
-                console.error(error)
-                setIsLoading(false)
-            })
-    }, [])
 
     useEffect(() => {
         if (appMetaInfo?.appName) {
@@ -84,7 +76,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     }, [appMetaInfo])
 
     useEffect(() => {
-        getExternalLinksDetails()
+        if (isJobOverview) {
+            getCIPipelinesForJob()
+        } else {
+            getExternalLinksDetails()
+        }
     }, [appId])
 
     const getExternalLinksDetails = (): void => {
@@ -113,6 +109,16 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     externalLinks: [],
                     monitoringTools: [],
                 })
+            })
+    }
+
+    const getCIPipelinesForJob = (): void => {
+        getJobCIPipeline(appId)
+            .then((response) => {
+                setJobPipelines(response.result)
+            })
+            .catch((error) => {
+                showError(error)
             })
     }
 
@@ -285,7 +291,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     }
 
     const renderDeploymentComponent = () => {
-        if (otherEnvsResult[0].result?.length > 0) {
+        if (otherEnvsResult?.[0]?.result?.length > 0) {
             return (
                 <div className="env-deployments-info-wrapper w-100">
                     <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
@@ -345,12 +351,12 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const getStatusIcon = (status: string): JSX.Element => {
         switch (status) {
             case 'Succeeded':
-                return <SucceededIcon className="dc__app-summary__icon icon-dim-16 mr-6"/>
+                return <SucceededIcon className="dc__app-summary__icon icon-dim-16 mr-6" />
             case 'Failed':
             case 'Error':
-                return <FailedIcon className="dc__app-summary__icon icon-dim-16 mr-6"/>
+                return <FailedIcon className="dc__app-summary__icon icon-dim-16 mr-6" />
             case 'InProgress':
-                return <InProgressIcon className="dc__app-summary__icon icon-dim-16 mr-6"/>
+                return <InProgressIcon className="dc__app-summary__icon icon-dim-16 mr-6" />
             case 'Starting':
                 return <div className="dc__app-summary__icon icon-dim-16 mr-6 progressing" />
             case 'Running':
