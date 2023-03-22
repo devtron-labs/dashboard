@@ -6,6 +6,19 @@ export const getAppId = (clusterId: number, namespace: string, appName: string) 
     return `${clusterId}|${namespace}|${appName}`
 }
 
+export const getSelectedResource = (ad: AppDetails, name: string, nodeType: string) => {
+    const cn = ad.resourceTree.nodes.filter((node) => node.name === name && node.kind.toLowerCase() === nodeType)[0]
+    return {
+            group: cn.group,
+            kind: cn.kind,
+            version: cn.version,
+            namespace: ad.namespace,
+            name: cn.name,
+            clusterId: 0,
+            containers: [],
+        }
+}
+
 export const getManifestResource = (
     ad: AppDetails,
     podName: string,
@@ -18,16 +31,7 @@ export const getManifestResource = (
         ad.deploymentAppType === DeploymentAppType.argo_cd ||
         !isResourceBrowserView
     ) {
-        const cn = ad.resourceTree.nodes.filter((node) => node.name === podName && node.kind.toLowerCase() === nodeType)[0]
-        selectedResource = {
-            group: cn.group,
-            kind: cn.kind,
-            version: cn.version,
-            namespace: ad.namespace,
-            name: cn.name,
-            clusterId: 0,
-            containers: [],
-        }
+        selectedResource = getSelectedResource(ad, podName, nodeType)
     }
     return getManifestResourceHelmApps(ad, podName, nodeType, isResourceBrowserView, selectedResource)
 }
@@ -61,21 +65,12 @@ export const getEvent = (
         ad.deploymentAppType === DeploymentAppType.argo_cd ||
         !isResourceBrowserView
     ) {
-        const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName && node.kind.toLowerCase() === nodeType)[0]
-        selectedResource = {
-            group: cn.group,
-            kind: cn.kind,
-            version: cn.version,
-            namespace: ad.namespace,
-            name: cn.name,
-            clusterId: 0,
-            containers: [],
-        }
+        selectedResource = getSelectedResource(ad, nodeName, nodeType)
     }
     return getEventHelmApps(ad, nodeName, nodeType, isResourceBrowserView, selectedResource)
 }
 
-function createResourceRequestBody(selectedResource: SelectedResourceType, updatedManifest?: string) {
+export function createResourceRequestBody(selectedResource: SelectedResourceType, updatedManifest?: string) {
     const requestBody = {
         appId: '',
         clusterId: selectedResource.clusterId,
@@ -97,7 +92,7 @@ function createResourceRequestBody(selectedResource: SelectedResourceType, updat
     return requestBody
 }
 
-function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, updatedManifest?: string) {
+export function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, updatedManifest?: string) {
     const selectedResource = appDetails.resourceTree.nodes.filter(
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0]
@@ -163,7 +158,7 @@ export const updateManifestResourceHelmApps = (
     return put(Routes.MANIFEST, requestData)
 }
 
-function getEventHelmApps(
+export function getEventHelmApps(
     ad: AppDetails,
     nodeName: string,
     nodeType: string,
@@ -186,12 +181,7 @@ export const getLogsURL = (
     namespace?: string,
 ) => {
     //const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0];
-    let prefix = ''
-    if (process.env.NODE_ENV === 'production') {
-        prefix = `${location.protocol}//${location.host}` // eslint-disable-line
-    } else {
-        prefix = `${location.protocol}//${location.host}` // eslint-disable-line
-    }
+    let prefix = `${location.protocol}//${location.host}` // eslint-disable-line
 
     let logsURL = `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}`
 
@@ -209,12 +199,6 @@ export const getLogsURL = (
         )}`
     }
     return `${logsURL}&follow=true&tailLines=500`
-}
-
-export const getTerminalData = (ad: AppDetails, nodeName: string, terminalType: string) => {
-    const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0]
-    const _url = `api/v1/applications/pod/exec/session/${ad.appId}/${ad.environmentId}/${ad.namespace}/${ad.appName}-${ad.environmentName}/${terminalType}/${ad.appName}`
-    return get(_url)
 }
 
 export const createResource = (
