@@ -40,14 +40,13 @@ export function CiPipelineSourceConfig({
 
     const updateSourceValue = () => {
         if (_isWebhook) {
-            let _sourceValueObj = JSON.parse(sourceValue)
-            let _eventId = _sourceValueObj.eventId
-            let _condition = _sourceValueObj.condition
-
-            getWebhookEventsForEventId(_eventId).then((_res) => {
+            const _sourceValueObj = JSON.parse(sourceValue)
+            getWebhookEventsForEventId(_sourceValueObj.eventId).then((_res) => {
                 let _webhookEvent = _res.result
                 setSourceValueBase(_webhookEvent.name)
-                setSourceValueAdv(_buildHoverHtmlForWebhook(_webhookEvent.name, _condition, _webhookEvent.selectors))
+                setSourceValueAdv(
+                    _buildHoverHtmlForWebhook(_webhookEvent.name, _sourceValueObj.condition, _webhookEvent.selectors),
+                )
                 setLoading(false)
             })
         } else {

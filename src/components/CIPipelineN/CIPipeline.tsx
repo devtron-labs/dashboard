@@ -38,7 +38,7 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
-
+import { SourceTypeMap } from '../../config'
 export const ciPipelineContext = createContext(null)
 
 export default function CIPipeline({
@@ -393,10 +393,12 @@ export default function CIPipeline({
             formData.isDockerConfigOverridden = false
             formData.dockerConfigOverride = {} as DockerConfigOverrideType
         }
+        //here we check for the case where the pipeline is multigit and user selects pullrequest or tag creation(webhook)
+        //in that case we only send the webhook data not the other one.
         let _materials = formData.materials
         if (formData.materials.length > 1) {
             for (let material of formData.materials) {
-                if (material.type === 'WEBHOOK') {
+                if (material.type === SourceTypeMap.WEBHOOK) {
                     _materials = [material]
                     break
                 }
@@ -547,11 +549,13 @@ export default function CIPipeline({
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
 
             let valid = _formData.materials.reduce((isValid, mat) => {
-                isValid = isValid && validationRules.sourceValue(mat.regex || mat.value, mat.type !== 'WEBHOOK').isValid
+                isValid =
+                    isValid &&
+                    validationRules.sourceValue(mat.regex || mat.value, mat.type !== SourceTypeMap.WEBHOOK).isValid
                 return isValid
             }, true)
             if (_formData.materials.length > 1) {
-                const _isWebhook = _formData.materials.some((_mat) => _mat.type === 'WEBHOOK')
+                const _isWebhook = _formData.materials.some((_mat) => _mat.type === SourceTypeMap.WEBHOOK)
                 if (_isWebhook) {
                     valid = true
                     _formDataErrorObj.name.isValid = true
