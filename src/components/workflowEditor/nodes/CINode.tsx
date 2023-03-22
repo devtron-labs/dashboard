@@ -74,8 +74,7 @@ export class CINode extends Component<CINodeProps> {
                                     className="default-tt"
                                     arrow={true}
                                     placement="bottom"
-                                    // content={this.props.title}
-                                    content={<p>Hello dev</p>}
+                                    content={this.props.title}
                                 >
                                     <div className="dc__ellipsis-left">{this.props.title}</div>
                                 </Tippy>
