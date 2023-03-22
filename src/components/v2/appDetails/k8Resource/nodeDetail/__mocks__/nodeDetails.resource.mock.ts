@@ -1,4 +1,4 @@
-import { AppDetails, Node, SelectedResourceType } from '../../../appDetails.type'
+import { SelectedResourceType, ResourceTree, Node, AppType, AppDetails, DeploymentAppType } from "../../../appDetails.type"
 
 export const NodeData = {
     name: 'node1',
@@ -28,14 +28,14 @@ export const NodeData = {
     canBeHibernated: false,
     isHibernated: false,
 } as Node
-
-export const external_helm_chart_argocd_appDetails = {
+export const ad: AppDetails = {
+    appType: AppType.EXTERNAL_HELM_CHART,
+    deploymentAppType: DeploymentAppType.argo_cd,
     appId: 0,
-    appName: 'app1',
-    environmentName: 'dev',
-    lastDeployedTime: '2021-05-18T12:00:00Z',
-    appType: 'external_helm_chart',
-    deploymentAppType: 'argo_cd',
+    appName: 'my-app',
+    environmentName: 'development',
+    namespace: 'my-namespace',
+    lastDeployedTime: '',
     resourceTree: {
         conditions: '',
         newGenerationReplicaSet: '',
@@ -50,79 +50,18 @@ export const external_helm_chart_argocd_appDetails = {
         ],
         status: 'status1',
         nodes: [NodeData],
-    },
-    namespace: 'default',
-} as AppDetails
-export const helm_chart_argocd_appDetails = {
-    appId: 0,
-    appName: 'app1',
-    environmentName: 'dev',
-    lastDeployedTime: '2021-05-18T12:00:00Z',
-    appType: 'devtron_helm_chart',
-    deploymentAppType: 'argo_cd',
-    resourceTree: {
-        conditions: '',
-        newGenerationReplicaSet: '',
-        podMetadata: [
-            {
-                containers: [],
-                initContainers: '',
-                isNew: false,
-                name: 'name1',
-                uid: 'uid1',
-            },
-        ],
-        status: 'status1',
-        nodes: [NodeData],
-    },
-    namespace: 'default',
-} as AppDetails
-
-export const devtron_app_argocd_appDetails = {
-    appId: 0,
-    appName: 'app1',
-    environmentName: 'dev',
-    lastDeployedTime: '2021-05-18T12:00:00Z',
-    appType: 'devtron_app',
-    deploymentAppType: 'argo_cd',
-    resourceTree: {
-        conditions: '',
-        newGenerationReplicaSet: '',
-        podMetadata: [
-            {
-                containers: [],
-                initContainers: '',
-                isNew: false,
-                name: 'name1',
-                uid: 'uid1',
-            },
-        ],
-        status: 'status1',
-        nodes: [NodeData],
-    },
-    namespace: 'default',
-} as AppDetails
-
-export const selectedResource = {
-    group: '',
+    } as ResourceTree,
+}
+export const selectedResource: SelectedResourceType = {
+    group: 'test',
     kind: 'Deployment',
     version: 'v1',
     namespace: 'default',
     name: 'node1',
     clusterId: 0,
     containers: [],
-} as SelectedResourceType
-
-export const mockResponse = {
-    code: 200,
-    status: 'OK',
-    result: {
-        events: {
-            metadata: {
-                selfLink: '/api/v1/namespaces/nonprod-noti/events',
-                resourceVersion: '13248663',
-            },
-            items: [],
-        },
-    },
 }
+
+export const nodeName = 'testNode'
+export const nodeType = 'testNodeType'
+export const isResourceBrowserView = true
