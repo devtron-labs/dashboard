@@ -24,6 +24,7 @@ import {
     ImageList,
 } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
 import PageHeader from '../common/header/PageHeader'
@@ -78,6 +79,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const clusterName: string = filteredFlattenNodeList[0]?.['clusterName'] || ''
     const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
     const [selectedNode, setSelectedNode] = useState<string>()
+    const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const pageSize = 15
 
     useEffect(() => {
@@ -281,6 +283,15 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             clearInterval(interval)
         }
     }, [lastDataSync])
+
+    const changeNodeTab = (e): void => {
+        const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
+        if (_tabIndex === 0) {
+            setSelectedTabIndex(0)
+        } else if (_tabIndex === 1) {
+            setSelectedTabIndex(1)
+        }
+    }
 
     const handleUrlChange = (sortedResult) => {
         const queryParams = new URLSearchParams(location.search)
@@ -783,53 +794,101 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         }
     }
 
-    return (
-        <div>
-            <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs={true} />
-            <div className={`node-list dc__overflow-scroll ${showTerminal ? 'show-terminal' : ''}`}>
-                {renderClusterSummary()}
-                <div
-                    className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${
-                        clusterErrorList?.length ? 'with-error-bar' : ''
-                    }`}
-                >
-                    <div className="pl-20 pr-20">
-                        <NodeListSearchFilter
-                            defaultVersion={defaultVersion}
-                            nodeK8sVersions={clusterCapacityData?.nodeK8sVersions}
-                            selectedVersion={selectedVersion}
-                            setSelectedVersion={setSelectedVersion}
-                            appliedColumns={appliedColumns}
-                            setAppliedColumns={setAppliedColumns}
-                            selectedSearchTextType={selectedSearchTextType}
-                            setSelectedSearchTextType={setSelectedSearchTextType}
-                            searchText={searchText}
-                            setSearchText={setSearchText}
-                            searchedTextMap={searchedTextMap}
-                            setSearchedTextMap={setSearchedTextMap}
-                        />
+    const renderClusterTabs = ():JSX.Element => {
+        return (
+            <ul role="tablist" className="tab-list">
+                <li className="tab-list__tab pointer" data-tab-index="0" onClick={changeNodeTab}>
+                    <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
+                    About Cluster
                     </div>
-                    {noResults ? (
-                        <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
-                    ) : (
-                        <>
-                            <div className="mt-16" style={{ width: '100%', overflow: 'auto hidden' }}>
-                                <div
-                                    className=" fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase"
-                                    style={{ width: 'max-content', minWidth: '100%' }}
-                                >
-                                    {appliedColumns.map((column) => renderNodeListHeader(column))}
-                                </div>
-                                {filteredFlattenNodeList
-                                    .slice(nodeListOffset, nodeListOffset + pageSize)
-                                    ?.map((nodeData) => renderNodeList(nodeData))}
-                            </div>
-                            {!showTerminal && renderPagination()}
-                        </>
-                    )}
+                    {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
+                </li>
+                <li className="tab-list__tab pointer" data-tab-index="1" onClick={changeNodeTab}>
+                    <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
+                        Cluster Detail
+                    </div>
+                    {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
+                </li>
+            </ul>
+        )
+    }
+    const randerAboutCluster = ():JSX.Element => { 
+        return (
+            <div className="cluster-about__body">
+                <div className="cluster-column-container">
+                    <div className='pr-16 pt-16 pl-16 pb-16'>
+                        <div className="cluster-icon-container flex br-4 cb-5 bcb-1 scb-5">
+                            <ClusterIcon className="flex cluster-icon icon-dim-24" />
+                        </div>
+                        <div className="fs-14 h-36 pt-8 pb-8 fw-6">default_cluster</div>
+                    </div>
+                    <hr className="mt-0 mb-0" />
+                    <div className='pr-16 pt-16 pl-16'>
+                        <div className="fs-13 fw-4">Added by</div>
+                        <div className="fs-13 mt-2">Utkarsh Arya</div>
+                        <div className="fs-13 mt-16">Added on</div>
+                        <div className="fs-13 mt-2">Fri, 09 Sep 2022, 01:11 PM</div>
+                    </div>
                 </div>
+                <div className="cluster__body-details">hi</div>
             </div>
-            {showTerminal && selectedNode && (
+        )
+    }
+    return (
+        <div className='cluster-about-page'>
+            <PageHeader
+                breadCrumbs={renderBreadcrumbs}
+                isBreadcrumbs={true}
+                showTabs={true}
+                renderHeaderTabs={renderClusterTabs}
+            />
+            {selectedTabIndex == 0 && randerAboutCluster()}
+            {selectedTabIndex == 1 && (
+                <div className={`node-list dc__overflow-scroll ${showTerminal ? 'show-terminal' : ''}`}>
+                    {renderClusterSummary()}
+                    <div
+                        className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${
+                            clusterErrorList?.length ? 'with-error-bar' : ''
+                        }`}
+                    >
+                        <div className="pl-20 pr-20">
+                            <NodeListSearchFilter
+                                defaultVersion={defaultVersion}
+                                nodeK8sVersions={clusterCapacityData?.nodeK8sVersions}
+                                selectedVersion={selectedVersion}
+                                setSelectedVersion={setSelectedVersion}
+                                appliedColumns={appliedColumns}
+                                setAppliedColumns={setAppliedColumns}
+                                selectedSearchTextType={selectedSearchTextType}
+                                setSelectedSearchTextType={setSelectedSearchTextType}
+                                searchText={searchText}
+                                setSearchText={setSearchText}
+                                searchedTextMap={searchedTextMap}
+                                setSearchedTextMap={setSearchedTextMap}
+                            />
+                        </div>
+                        {noResults ? (
+                            <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
+                        ) : (
+                            <>
+                                <div className="mt-16" style={{ width: '100%', overflow: 'auto hidden' }}>
+                                    <div
+                                        className=" fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase"
+                                        style={{ width: 'max-content', minWidth: '100%' }}
+                                    >
+                                        {appliedColumns.map((column) => renderNodeListHeader(column))}
+                                    </div>
+                                    {filteredFlattenNodeList
+                                        .slice(nodeListOffset, nodeListOffset + pageSize)
+                                        ?.map((nodeData) => renderNodeList(nodeData))}
+                                </div>
+                                {!showTerminal && renderPagination()}
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
+            {showTerminal && selectedNode && selectedTabIndex == 1 && (
                 <ClusterTerminal
                     clusterId={Number(clusterId)}
                     nodeGroups={createGroupSelectList(filteredFlattenNodeList, 'name')}
