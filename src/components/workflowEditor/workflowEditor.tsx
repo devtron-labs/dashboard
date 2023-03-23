@@ -355,49 +355,52 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         isJobView={this.props.isJobView}
                     />
                 </Route>
-                {!this.props.isJobView && (
-                    <>
-                        <Route path={`${this.props.match.path}/webhook/:webhookId`}>
-                            <WebhookDetailsModal close={this.closePipeline} />
-                        </Route>
-                        <Route
-                            path={`${this.props.match.path}/linked-ci/:ciPipelineId`}
-                            render={({ location, history, match }: { location: any; history: any; match: any }) => {
-                                return (
-                                    <LinkedCIPipelineView
-                                        match={match}
-                                        history={history}
-                                        location={location}
-                                        appName={this.state.appName}
-                                        connectCDPipelines={this.getLen()}
-                                        close={this.closePipeline}
-                                        getWorkflows={this.getWorkflows}
-                                        deleteWorkflow={this.deleteWorkflow}
-                                    />
-                                )
-                            }}
-                        />
-                        <Route
-                            path={`${this.props.match.path}/linked-ci`}
-                            render={({ location, history, match }: { location: any; history: any; match: any }) => {
-                                return (
-                                    <LinkedCIPipeline
-                                        match={match}
-                                        history={history}
-                                        location={location}
-                                        appName={this.state.appName}
-                                        connectCDPipelines={0}
-                                        close={this.closePipeline}
-                                        getWorkflows={this.getWorkflows}
-                                    />
-                                )
-                            }}
-                        />
-                    </>
-                )}
                 <Route path={`${this.props.match.path}/deprecated-warning`}>
                     <DeprecatedWarningModal closePopup={this.closePipeline} />
                 </Route>
+                {!this.props.isJobView && [
+                    <Route
+                        key={`${this.props.match.path}/webhook/`}
+                        path={`${this.props.match.path}/webhook/:webhookId`}
+                    >
+                        <WebhookDetailsModal close={this.closePipeline} />
+                    </Route>,
+                    <Route
+                        key={`${this.props.match.path}/linked-ci/`}
+                        path={`${this.props.match.path}/linked-ci/:ciPipelineId`}
+                        render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                            return (
+                                <LinkedCIPipelineView
+                                    match={match}
+                                    history={history}
+                                    location={location}
+                                    appName={this.state.appName}
+                                    connectCDPipelines={this.getLen()}
+                                    close={this.closePipeline}
+                                    getWorkflows={this.getWorkflows}
+                                    deleteWorkflow={this.deleteWorkflow}
+                                />
+                            )
+                        }}
+                    />,
+                    <Route
+                        key={`${this.props.match.path}/linked-ci`}
+                        path={`${this.props.match.path}/linked-ci`}
+                        render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                            return (
+                                <LinkedCIPipeline
+                                    match={match}
+                                    history={history}
+                                    location={location}
+                                    appName={this.state.appName}
+                                    connectCDPipelines={0}
+                                    close={this.closePipeline}
+                                    getWorkflows={this.getWorkflows}
+                                />
+                            )
+                        }}
+                    />,
+                ]}
             </Switch>
         )
     }

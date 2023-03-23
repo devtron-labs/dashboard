@@ -327,56 +327,57 @@ export default function NavigationRoutes() {
                                         <Route path={URLS.CLUSTER_LIST}>
                                             <ClusterNodeContainer />
                                         </Route>
-                                        {!window._env_.K8S_CLIENT && (
-                                            <>
-                                                <Route
-                                                    path={URLS.APP}
-                                                    render={() => (
-                                                        <AppRouter
-                                                            isSuperAdmin={isSuperAdmin}
-                                                            appListCount={appListCount}
-                                                            loginCount={loginCount}
-                                                        />
-                                                    )}
-                                                />
-                                                {isSuperAdmin && (
-                                                    <Route path={URLS.JOB}>
-                                                        <Jobs />
-                                                    </Route>
-                                                )}
-                                                <Route path={URLS.APPLICATION_GROUP}>
-                                                    <AppGroupRoute isSuperAdmin={isSuperAdmin} />
-                                                </Route>
-                                                <Route path={URLS.CHARTS} render={() => <Charts />} />
-                                                <Route
-                                                    path={URLS.DEPLOYMENT_GROUPS}
-                                                    render={(props) => <BulkActions {...props} />}
-                                                />
-                                                <Route
-                                                    path={URLS.BULK_EDITS}
-                                                    render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
-                                                />
-                                                <Route
-                                                    path={URLS.SECURITY}
-                                                    render={(props) => <Security {...props} serverMode={serverMode} />}
-                                                />
-                                                <Route path={URLS.STACK_MANAGER}>
-                                                    <DevtronStackManager
-                                                        serverInfo={currentServerInfo.serverInfo}
-                                                        getCurrentServerInfo={getCurrentServerInfo}
-                                                    />
-                                                </Route>
-                                                <Route exact path={`/${URLS.GETTING_STARTED}`}>
-                                                    <OnboardingGuide
-                                                        loginCount={loginCount}
+                                        {!window._env_.K8S_CLIENT && [
+                                            <Route
+                                                key={URLS.APP}
+                                                path={URLS.APP}
+                                                render={() => (
+                                                    <AppRouter
                                                         isSuperAdmin={isSuperAdmin}
-                                                        serverMode={serverMode}
-                                                        isGettingStartedClicked={isGettingStartedClicked}
+                                                        appListCount={appListCount}
+                                                        loginCount={loginCount}
                                                     />
-                                                </Route>
-                                            </>
+                                                )}
+                                            />,
+                                            <Route key={URLS.APPLICATION_GROUP} path={URLS.APPLICATION_GROUP}>
+                                                <AppGroupRoute isSuperAdmin={isSuperAdmin} />
+                                            </Route>,
+                                            <Route key={URLS.CHARTS} path={URLS.CHARTS} render={() => <Charts />} />,
+                                            <Route
+                                                key={URLS.DEPLOYMENT_GROUPS}
+                                                path={URLS.DEPLOYMENT_GROUPS}
+                                                render={(props) => <BulkActions {...props} />}
+                                            />,
+                                            <Route
+                                                key={URLS.BULK_EDITS}
+                                                path={URLS.BULK_EDITS}
+                                                render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
+                                            />,
+                                            <Route
+                                                key={URLS.SECURITY}
+                                                path={URLS.SECURITY}
+                                                render={(props) => <Security {...props} serverMode={serverMode} />}
+                                            />,
+                                            <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
+                                                <DevtronStackManager
+                                                    serverInfo={currentServerInfo.serverInfo}
+                                                    getCurrentServerInfo={getCurrentServerInfo}
+                                                />
+                                            </Route>,
+                                            <Route key={URLS.GETTING_STARTED} exact path={`/${URLS.GETTING_STARTED}`}>
+                                                <OnboardingGuide
+                                                    loginCount={loginCount}
+                                                    isSuperAdmin={isSuperAdmin}
+                                                    serverMode={serverMode}
+                                                    isGettingStartedClicked={isGettingStartedClicked}
+                                                />
+                                            </Route>,
+                                        ]}
+                                        {isSuperAdmin && !window._env_.K8S_CLIENT && (
+                                            <Route path={URLS.JOB}>
+                                                <Jobs />
+                                            </Route>
                                         )}
-
                                         <Route>
                                             <RedirectUserWithSentry
                                                 isFirstLoginUser={

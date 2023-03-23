@@ -736,38 +736,40 @@ function AppComposeRouter({
                                 <ExternalLinks isAppConfigView={true} userRole={userRole} />
                             </Route>
                         )}
-                        {isUnlocked.workflowEditor && (
-                            <>
-                                <Route
-                                    path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
-                                    render={(props) => (
-                                        <WorkflowEdit
-                                            configStatus={1}
-                                            isCDPipeline={isCDPipeline}
-                                            respondOnSuccess={respondOnSuccess}
-                                            getWorkflows={getWorkflows}
-                                        />
-                                    )}
-                                />
-                                <Route
-                                    path={`${path}/${URLS.APP_CM_CONFIG}`}
-                                    render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} />}
-                                />
-                                <Route
-                                    path={`${path}/${URLS.APP_CS_CONFIG}`}
-                                    render={(props) => <Secret respondOnSuccess={respondOnSuccess} />}
-                                />
-                                <Route
-                                    path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
-                                    render={(props) => (
-                                        <EnvironmentOverride
-                                            environments={environments}
-                                            setEnvironments={setEnvironments}
-                                        />
-                                    )}
-                                />
-                            </>
-                        )}
+                        {isUnlocked.workflowEditor && [
+                            <Route
+                                key={`${path}/${URLS.APP_WORKFLOW_CONFIG}`}
+                                path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
+                                render={(props) => (
+                                    <WorkflowEdit
+                                        configStatus={1}
+                                        isCDPipeline={isCDPipeline}
+                                        respondOnSuccess={respondOnSuccess}
+                                        getWorkflows={getWorkflows}
+                                    />
+                                )}
+                            />,
+                            <Route
+                                key={`${path}/${URLS.APP_CM_CONFIG}`}
+                                path={`${path}/${URLS.APP_CM_CONFIG}`}
+                                render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} />}
+                            />,
+                            <Route
+                                key={`${path}/${URLS.APP_CS_CONFIG}`}
+                                path={`${path}/${URLS.APP_CS_CONFIG}`}
+                                render={(props) => <Secret respondOnSuccess={respondOnSuccess} />}
+                            />,
+                            <Route
+                                key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
+                                path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
+                                render={(props) => (
+                                    <EnvironmentOverride
+                                        environments={environments}
+                                        setEnvironments={setEnvironments}
+                                    />
+                                )}
+                            />,
+                        ]}
                     </Switch>
                 )}
             </Suspense>
