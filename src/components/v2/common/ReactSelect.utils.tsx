@@ -251,7 +251,7 @@ export function formatHighlightedTextDescription(option: Environment, inputValue
                     __html: option[environmentfieldName].replace(regex, highLightText),
                 }}
             />
-            {(
+            {option.description && (
                 <small
                     className="cn-6"
                     dangerouslySetInnerHTML={{

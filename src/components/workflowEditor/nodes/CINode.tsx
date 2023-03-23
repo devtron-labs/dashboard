@@ -56,7 +56,6 @@ export class CINode extends Component<CINodeProps> {
                                 arrow={true}
                                 placement="bottom"
                                 content={this.props.linkedCount}
-                                
                             >
                                 <span className="link-count">
                                     <img src={link} className="icon-dim-12 mr-5" alt="" />

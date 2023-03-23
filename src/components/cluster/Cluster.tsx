@@ -190,6 +190,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 active: true,
                 config: {},
                 environments: [],
+                //description:[]
             })
             clusters = clusters.sort((a, b) => sortCallback('cluster_name', a, b))
             this.setState({ clusters: clusters })
@@ -253,7 +254,7 @@ function Cluster(this: any, {
     serverMode,
 }) {
     const [editMode, toggleEditMode] = useState(false)
-    const [environment,setEnvironment] = useState(null)
+    const [environment, setEnvironment] = useState(null)
     const [config, setConfig] = useState(defaultConfig)
     const [prometheusAuth, setPrometheusAuth] = useState(undefined)
     const [showClusterComponentModal, toggleClusterComponentModal] = useState(false)
@@ -346,24 +347,25 @@ function Cluster(this: any, {
                             </div>
                             {clusterId && (
                                 <div className="flex right">
-                                    <List onClick={(e) => setEnvironment({})}>
+                                    <List onClick={showClusterDrawer }>
                                         <List.Logo>{<Add className="icon-dim-24 fcb-5" />}</List.Logo>
                                         <div className="flex left">
-                                            <List.Title
+                                            <List.Title 
                                                 style={{
                                                     fontSize: '13px',
                                                     width: '120px',
                                                     color: '#0066CC',
                                                     fontWeight: '600',
                                                 }}
-                                                title={'Add environment'}
+                                                title={'Add Environment'}
+                                                //onClick={showClusterDrawer}
                                                 subtitle={''}
-                                                tag={null}
+                                                tag={null}   
                                             />
                                         </div>
                                     </List>
                                     <div>
-                                        <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />
+                                        <List.DropDown src={<Pencil color="#b1b7bc"  onClick={handleEdit} />} />
                                     </div>
                                 </div>
                             )}
@@ -403,17 +405,17 @@ function Cluster(this: any, {
                             //             description,
                             //         }) => (
                             //             <List
-                            //                 onClick={(e) =>
-                            //                     setEnvironment({
-                            //                         id,
-                            //                         environment_name,
-                            //                         cluster_id: clusterId,
-                            //                         namespace,
-                            //                         prometheus_url,
-                            //                         isProduction,
-                            //                         description,
-                            //                     })
-                            //                 }
+                                            //  onClick={(e) =>
+                                            //      setEnvironment({
+                                            //          id,
+                                            //          environment_name,
+                                            //          cluster_id: clusterId,
+                                            //          namespace,
+                                            //          prometheus_url,
+                                            //         isProduction,
+                                            //          description,
+                                            //      })
+                                            //  }
                             //                 key={id}
                             //                 className={`cluster-environment cluster-environment--${
                             //                     id ? 'update' : 'create collapsed-list collapsed-list--create'
@@ -527,14 +529,15 @@ function Cluster(this: any, {
             {showWindow && (
                 <Drawer position="right" width="1000px" onEscape={hideClusterDrawer}>
                     <div className="h-100 bcn-0 pt-0 pr-20 pb-12 pl-20">
-                        {environment && (
+                       
                             <Environment
                                 reload={reload}
                                 cluster_name={cluster_name}
                                 {...environment}
                                 handleClose={handleClose}
+                                hideClusterDrawer={hideClusterDrawer}
                             />
-                        )}
+                        
                     </div>
                 </Drawer>
             )}
@@ -968,6 +971,7 @@ function Environment({
     isProduction,
     description,
     reload,
+    hideClusterDrawer
 }) {
     const [loading, setLoading] = useState(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
@@ -1051,7 +1055,7 @@ function Environment({
                 <div className="form__row">
                     <div className="flex left">
                         <div className="form__title">{id ? 'Update Environment' : 'New Environment'}</div>
-                        <Close className="icon-dim-24 dc__align-right cursor" onClick={(e) => handleClose(false)} />
+                        <Close className="icon-dim-24 dc__align-right cursor" onClick={hideClusterDrawer} />
                     </div>
                 </div>
                 <div className="form__row">
