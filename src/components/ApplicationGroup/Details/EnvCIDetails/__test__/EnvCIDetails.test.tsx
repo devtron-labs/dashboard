@@ -4,8 +4,9 @@ import { act, render } from '@testing-library/react'
 import { BrowserRouter, Route } from 'react-router-dom'
 import EnvCIDetails from '../EnvCIDetails'
 import { renderWithRouter } from '../../EnvironmentConfig/__test__/ApplicationRoutes.test'
-import { ciResult, filteredData, mockCIList } from '../__mock__/EnvCIDetails.mock'
+import { ciResult, filteredData, mockCIList, mockTrigger } from '../__mock__/EnvCIDetails.mock'
 import * as configData from '../../../AppGroup.service'
+import * as serviceData from '../../../../app/service'
 
 describe('EnvCIDetails', () => {
     it('EnvCIDetails render without error', () => {
@@ -21,6 +22,7 @@ describe('EnvCIDetails', () => {
     it('EnvCIDetails render without error', async () => {
         let component
         jest.spyOn(configData, 'getCIConfigList').mockImplementation(mockCIList)
+        jest.spyOn(serviceData, 'getTriggerHistory').mockImplementation(mockTrigger)
         await act(async () => {
             component = renderWithRouter(
             <Route path="application-group/:envId/ci-details/:pipelineId/:buildId">
