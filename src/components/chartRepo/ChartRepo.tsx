@@ -1,22 +1,39 @@
 import React, { useState } from 'react'
-import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ToastBody, Checkbox, CHECKBOX_VALUE } from '../common'
+import {
+    showError,
+    useForm,
+    useEffectAfterMount,
+    useAsync,
+    Progressing,
+    ToastBody,
+    Checkbox,
+    CHECKBOX_VALUE,
+} from '../common'
 import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
-import Tippy from '@tippyjs/react';
-import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoConfiguration, reSyncChartRepo, deleteChartRepo } from './chartRepo.service';
+import Tippy from '@tippyjs/react'
+import {
+    saveChartProviderConfig,
+    updateChartProviderConfig,
+    validateChartRepoConfiguration,
+    reSyncChartRepo,
+    deleteChartRepo,
+} from './chartRepo.service'
 import { getChartRepoList } from '../../services/service'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
-import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg';
-import { DOCUMENTATION, PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL } from '../../config';
-import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm';
-import "./chartRepo.scss";
-import DeleteComponent from '../../util/DeleteComponent';
-import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
+import { ReactComponent as Helm } from '../../assets/icons/ic-helmchart.svg'
+import { DOCUMENTATION, PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_REPO_LABEL } from '../../config'
+import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm'
+import './chartRepo.scss'
+import DeleteComponent from '../../util/DeleteComponent'
+import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
+import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
+import TippyCustomized from '../common/TippyCustomized'
+import { ChartFormFields } from './ChartRepoType'
 
 export default function ChartRepo() {
     const [loading, result, error, reload] = useAsync(getChartRepoList)
-    const [fetching, setFetching] = useState(false);
+    const [fetching, setFetching] = useState(false)
     if (loading && !result) return <Progressing pageLoader />
     if (error) {
         showError(error)
@@ -96,7 +113,7 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
     }
 
     const handleCollapse = (e) => {
-        if (isEditable) {
+        if (isEditable || authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD) {
             e.stopPropagation()
             toggleCollapse((t) => !t)
         } else {
@@ -125,17 +142,53 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
                 </div>
                 {id && <List.DropDown onClick={handleCollapse} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
             </List>
-            {!collapsed && <ChartForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse, collapsed }} />}
+            {!collapsed && (
+                <ChartForm
+                    {...{
+                        id,
+                        name,
+                        active,
+                        url,
+                        authMode,
+                        accessToken,
+                        userName,
+                        password,
+                        reload,
+                        toggleCollapse,
+                        collapsed,
+                        isEditable,
+                    }}
+                />
+            )}
         </article>
     )
 }
 
-function ChartForm({ id = null, name = "", active = false, url = "", authMode = "ANONYMOUS", accessToken = "", userName = "", password = "", reload, toggleCollapse, collapsed, ...props }) {
-
-    const [validationError, setValidationError] = useState({ errtitle: "", errMessage: "" });
-    const [validationStatus, setValidationStatus] = useState(VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS)
-    const [loading, setLoading] = useState(false);
-    const [customState, setCustomState] = useState({ password: { value: password, error: '' }, username: { value: userName, error: '' }, accessToken: { value: accessToken, error: '' } })
+function ChartForm({
+    id = null,
+    name = '',
+    active = false,
+    url = '',
+    authMode = 'ANONYMOUS',
+    accessToken = '',
+    userName = '',
+    password = '',
+    reload,
+    toggleCollapse,
+    collapsed,
+    isEditable,
+    ...props
+}) {
+    const [validationError, setValidationError] = useState({ errtitle: '', errMessage: '' })
+    const [validationStatus, setValidationStatus] = useState(
+        VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
+    )
+    const [loading, setLoading] = useState(false)
+    const [customState, setCustomState] = useState({
+        password: { value: password, error: '' },
+        username: { value: userName, error: '' },
+        accessToken: { value: accessToken, error: '' },
+    })
     const [secureWithTls, setSecureWithTls] = useState(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -173,7 +226,6 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
     }else{
         state.auth.value= CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD
     }
-
 
     const chartRepoPayload = {
         id: id || 0,
@@ -298,6 +350,37 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
     const handleDeleteClick = () => toggleConfirmation(true)
     const handleCancelClick = (e) => toggleCollapse((t) => !t)
 
+    const renderChartInputElement = (field: string) => {
+        return (
+            <CustomInput
+                autoComplete="off"
+                value={field === 'name' ? state.name.value : state.url.value}
+                onChange={handleOnChange}
+                name={field === 'name' ? 'name' : 'url'}
+                error={field === 'name' ? state.name.error : state.url.error}
+                label={field === 'name' ? 'Name*' : 'URL*'}
+                disabled={!isEditable}
+            />
+        )
+    }
+
+    const renderModifiedChartInputElement = (field: string, isEditable: boolean) => {
+        return (
+            !isEditable ? (
+                <Tippy
+                    className="default-tt w-200"
+                    arrow={false}
+                    placement="bottom"
+                    content={`Cannot edit ${field}. Some charts from this repository are being used by helm apps.`}
+                >
+                    <div>{renderChartInputElement(field)}</div>
+                </Tippy>
+            ) : (
+                renderChartInputElement(field)
+            )
+        )
+    }
+
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
             {!id && (
@@ -326,22 +409,8 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             />
 
             <div className="form__row form__row--two-third">
-                <CustomInput
-                    autoComplete="off"
-                    value={state.name.value}
-                    onChange={handleOnChange}
-                    name="name"
-                    error={state.name.error}
-                    label="Name*"
-                />
-                <CustomInput
-                    autoComplete="off"
-                    value={state.url.value}
-                    onChange={handleOnChange}
-                    name="url"
-                    error={state.url.error}
-                    label="URL*"
-                />
+                { renderModifiedChartInputElement(ChartFormFields.NAME, isEditable)}
+                { renderModifiedChartInputElement(ChartFormFields.URL, isEditable)}
                 {(chartRepoType !== CHART_REPO_TYPE.PUBLIC ||
                     (id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD)) && (
                     <>
