@@ -16,7 +16,7 @@
             text-align :left;
             width: 170px;
             display: flex;
-            color: #0066CC;
+            // color: #0066CC;
             // padding-right: 2px;
             .cluster-list__prod{
                 margin-left: 5px;
@@ -37,17 +37,18 @@
             }
         }
         .cluster-list__name_space{
+            // color: #3B444C;
             height: 'fit-content';
             padding-top: 5px;
             padding-bottom: 5px;
             text-align :left;
-            width: 328px;
+            width: 280px;
         }
         .cluster-list__description{
             height: 'fit-content';
             padding-top: 5px;
             padding-bottom: 5px;
-            width: 350px;
+            width: 300px;
             text-align :left;
         }
     }

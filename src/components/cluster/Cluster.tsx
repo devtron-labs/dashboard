@@ -527,7 +527,7 @@ function Cluster(this: any, {
                 />
             )} */}
             {showWindow && (
-                <Drawer position="right" width="1000px" onEscape={hideClusterDrawer}>
+                <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
                     <div className="h-100 bcn-0 pt-0 pr-20 pb-12 pl-20">
                        
                             <Environment
@@ -1051,10 +1051,10 @@ function Environment({
 
     return (
         //<VisibleModal className="environment-create-modal" close={handleClose}>
-            <form className="environment-create-body" onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit}>
+            <form /*className="environment-create-body"*/ onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit}>
                 <div className="form__row">
                     <div className="flex left">
-                        <div className="form__title">{id ? 'Update Environment' : 'New Environment'}</div>
+                        <div className="form__title">{id ? 'Update Environment' : 'Add Environment'}</div>
                         <Close className="icon-dim-24 dc__align-right cursor" onClick={hideClusterDrawer} />
                     </div>
                 </div>
