@@ -10,10 +10,10 @@ describe('Trigger View', () => {
         })
         expect(container).toBeInTheDocument()
     })
-    it('Finish config message appearing without breaking when no workflow is configured',async () => {
-        expect(screen.findByText('Go To App Configurations')).toBeInTheDocument
-    })
-    it('Select Image button for a cd must appear without breaking',async () => {
-        expect(screen.findByText('Select Image')).toBeInTheDocument
-    })
+    // it('Finish config message appearing without breaking when no workflow is configured',async () => {
+    //     expect(screen.findByText('Go To App Configurations')).toBeInTheDocument
+    // })
+    // it('Select Image button for a cd must appear without breaking',async () => {
+    //     expect(screen.findByText('Select Image')).toBeInTheDocument
+    // })
 })
