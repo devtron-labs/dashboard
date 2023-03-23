@@ -329,6 +329,7 @@ export default function NavigationRoutes() {
                                         </Route>
                                         {!window._env_.K8S_CLIENT && [
                                             <Route
+                                                key={URLS.APP}
                                                 path={URLS.APP}
                                                 render={() => (
                                                     <AppRouter
@@ -338,29 +339,32 @@ export default function NavigationRoutes() {
                                                     />
                                                 )}
                                             />,
-                                            <Route path={URLS.APPLICATION_GROUP}>
+                                            <Route key={URLS.APPLICATION_GROUP} path={URLS.APPLICATION_GROUP}>
                                                 <AppGroupRoute isSuperAdmin={isSuperAdmin} />
                                             </Route>,
-                                            <Route path={URLS.CHARTS} render={() => <Charts />} />,
+                                            <Route key={URLS.CHARTS} path={URLS.CHARTS} render={() => <Charts />} />,
                                             <Route
+                                                key={URLS.DEPLOYMENT_GROUPS}
                                                 path={URLS.DEPLOYMENT_GROUPS}
                                                 render={(props) => <BulkActions {...props} />}
                                             />,
                                             <Route
+                                                key={URLS.BULK_EDITS}
                                                 path={URLS.BULK_EDITS}
                                                 render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
                                             />,
                                             <Route
+                                                key={URLS.SECURITY}
                                                 path={URLS.SECURITY}
                                                 render={(props) => <Security {...props} serverMode={serverMode} />}
                                             />,
-                                            <Route path={URLS.STACK_MANAGER}>
+                                            <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
                                                 <DevtronStackManager
                                                     serverInfo={currentServerInfo.serverInfo}
                                                     getCurrentServerInfo={getCurrentServerInfo}
                                                 />
                                             </Route>,
-                                            <Route exact path={`/${URLS.GETTING_STARTED}`}>
+                                            <Route key={URLS.GETTING_STARTED} exact path={`/${URLS.GETTING_STARTED}`}>
                                                 <OnboardingGuide
                                                     loginCount={loginCount}
                                                     isSuperAdmin={isSuperAdmin}

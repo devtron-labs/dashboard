@@ -735,6 +735,7 @@ function AppComposeRouter({
                         )}
                         {isUnlocked.workflowEditor && [
                             <Route
+                                key={`${path}/${URLS.APP_WORKFLOW_CONFIG}`}
                                 path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
                                 render={(props) => (
                                     <WorkflowEdit
@@ -746,14 +747,17 @@ function AppComposeRouter({
                                 )}
                             />,
                             <Route
+                                key={`${path}/${URLS.APP_CM_CONFIG}`}
                                 path={`${path}/${URLS.APP_CM_CONFIG}`}
                                 render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} />}
                             />,
                             <Route
+                                key={`${path}/${URLS.APP_CS_CONFIG}`}
                                 path={`${path}/${URLS.APP_CS_CONFIG}`}
                                 render={(props) => <Secret respondOnSuccess={respondOnSuccess} />}
                             />,
                             <Route
+                                key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
                                 path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
                                 render={(props) => (
                                     <EnvironmentOverride

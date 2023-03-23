@@ -354,10 +354,14 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     <DeprecatedWarningModal closePopup={this.closePipeline} />
                 </Route>
                 {!this.props.isJobView && [
-                    <Route path={`${this.props.match.path}/webhook/:webhookId`}>
+                    <Route
+                        key={`${this.props.match.path}/webhook/`}
+                        path={`${this.props.match.path}/webhook/:webhookId`}
+                    >
                         <WebhookDetailsModal close={this.closePipeline} />
                     </Route>,
                     <Route
+                        key={`${this.props.match.path}/linked-ci/`}
                         path={`${this.props.match.path}/linked-ci/:ciPipelineId`}
                         render={({ location, history, match }: { location: any; history: any; match: any }) => {
                             return (
@@ -375,6 +379,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         }}
                     />,
                     <Route
+                        key={`${this.props.match.path}/linked-ci`}
                         path={`${this.props.match.path}/linked-ci`}
                         render={({ location, history, match }: { location: any; history: any; match: any }) => {
                             return (
