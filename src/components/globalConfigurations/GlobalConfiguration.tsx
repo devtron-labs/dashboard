@@ -401,111 +401,112 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 render={(props) => {
                     return (
                         <div className="flexbox">
-                            <ClusterList {...props} serverMode={serverMode} isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT} />
+                            <ClusterList
+                                {...props}
+                                serverMode={serverMode}
+                                isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
+                            />
                         </div>
                     )
                 }}
             />
-            {!window._env_.K8S_CLIENT && (
-                <>
-                    <Route
-                        path={URLS.GLOBAL_CONFIG_HOST_URL}
-                        render={(props) => {
-                            return (
-                                <div className="flexbox">
-                                    <HostURLConfiguration
-                                        {...props}
-                                        isSuperAdmin={isSuperAdmin}
-                                        refreshGlobalConfig={getHostURLConfig}
-                                        handleChecklistUpdate={handleChecklistUpdate}
-                                    />
-                                </div>
-                            )
-                        }}
-                    />
-                    <Route
-                        path={URLS.GLOBAL_CONFIG_GITOPS}
-                        render={(props) => {
-                            return (
-                                <div className="flexbox">
-                                    <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                                </div>
-                            )
-                        }}
-                    />
-
-                    <Route
-                        path={URLS.GLOBAL_CONFIG_PROJECT}
-                        render={(props) => {
-                            return (
-                                <div className="flexbox">
-                                    <Project {...props} isSuperAdmin={isSuperAdmin} />
-                                </div>
-                            )
-                        }}
-                    />
-                    <Route
-                        path={URLS.GLOBAL_CONFIG_GIT}
-                        render={(props) => {
-                            return (
-                                <div className="flexbox">
-                                    <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
-                                </div>
-                            )
-                        }}
-                    />
-                    <Route
-                        path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
-                        render={(props) => {
-                            return (
-                                <div className="flexbox">
-                                    <Docker
-                                        {...props}
-                                        handleChecklistUpdate={handleChecklistUpdate}
-                                        isSuperAdmin={isSuperAdmin}
-                                    />
-                                </div>
-                            )
-                        }}
-                    />
-                    <Route
-                        path={URLS.GLOBAL_CONFIG_CHART}
-                        render={(props) => {
-                            return <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />
-                        }}
-                    />
-                    <Route path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
-                        <CustomChartList />
-                    </Route>
-                    <Route
-                        path={URLS.GLOBAL_CONFIG_LOGIN}
-                        render={(props) => {
-                            return <SSOLogin {...props} />
-                        }}
-                    />
-                    <Route
-                        path={URLS.GLOBAL_CONFIG_AUTH}
-                        render={(props) => {
-                            return <UserGroup />
-                        }}
-                    />
-                    <Route
-                        path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`}
-                        render={(props) => {
-                            return <AddNotification {...props} />
-                        }}
-                    />
-                    <Route
-                        path={URLS.GLOBAL_CONFIG_NOTIFIER}
-                        render={(props) => {
-                            return <Notifier {...props} isSuperAdmin={isSuperAdmin} />
-                        }}
-                    />
-                    <Route path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
-                        <ExternalLinks />
-                    </Route>
-                </>
-            )}
+            {!window._env_.K8S_CLIENT && [
+                <Route
+                    path={URLS.GLOBAL_CONFIG_HOST_URL}
+                    render={(props) => {
+                        return (
+                            <div className="flexbox">
+                                <HostURLConfiguration
+                                    {...props}
+                                    isSuperAdmin={isSuperAdmin}
+                                    refreshGlobalConfig={getHostURLConfig}
+                                    handleChecklistUpdate={handleChecklistUpdate}
+                                />
+                            </div>
+                        )
+                    }}
+                />,
+                <Route
+                    path={URLS.GLOBAL_CONFIG_GITOPS}
+                    render={(props) => {
+                        return (
+                            <div className="flexbox">
+                                <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
+                            </div>
+                        )
+                    }}
+                />,
+                <Route
+                    path={URLS.GLOBAL_CONFIG_PROJECT}
+                    render={(props) => {
+                        return (
+                            <div className="flexbox">
+                                <Project {...props} isSuperAdmin={isSuperAdmin} />
+                            </div>
+                        )
+                    }}
+                />,
+                <Route
+                    path={URLS.GLOBAL_CONFIG_GIT}
+                    render={(props) => {
+                        return (
+                            <div className="flexbox">
+                                <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
+                            </div>
+                        )
+                    }}
+                />,
+                <Route
+                    path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
+                    render={(props) => {
+                        return (
+                            <div className="flexbox">
+                                <Docker
+                                    {...props}
+                                    handleChecklistUpdate={handleChecklistUpdate}
+                                    isSuperAdmin={isSuperAdmin}
+                                />
+                            </div>
+                        )
+                    }}
+                />,
+                <Route
+                    path={URLS.GLOBAL_CONFIG_CHART}
+                    render={(props) => {
+                        return <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />
+                    }}
+                />,
+                <Route path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
+                    <CustomChartList />
+                </Route>,
+                <Route
+                    path={URLS.GLOBAL_CONFIG_LOGIN}
+                    render={(props) => {
+                        return <SSOLogin {...props} />
+                    }}
+                />,
+                <Route
+                    path={URLS.GLOBAL_CONFIG_AUTH}
+                    render={(props) => {
+                        return <UserGroup />
+                    }}
+                />,
+                <Route
+                    path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`}
+                    render={(props) => {
+                        return <AddNotification {...props} />
+                    }}
+                />,
+                <Route
+                    path={URLS.GLOBAL_CONFIG_NOTIFIER}
+                    render={(props) => {
+                        return <Notifier {...props} isSuperAdmin={isSuperAdmin} />
+                    }}
+                />,
+                <Route path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
+                    <ExternalLinks />
+                </Route>,
+            ]}
             <Redirect to={defaultRoute()} />
         </Switch>
     )
