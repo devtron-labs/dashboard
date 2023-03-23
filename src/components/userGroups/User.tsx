@@ -185,6 +185,8 @@ export default function UserForm({
                         entityName: permission.entityName.find((entity) => entity.value === '*')
                             ? ''
                             : permission.entityName.map((entity) => entity.value).join(','),
+                        entity: EntityTypes.DIRECT
+
                     })),
                     ...k8sPermission.map((permission) => ({
                         ...permission,
