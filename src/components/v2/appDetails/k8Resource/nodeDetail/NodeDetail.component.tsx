@@ -7,7 +7,7 @@ import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch } from 'react-router'
 import { NodeDetailTab } from './nodeDetail.type'
-import { getNodeDetailTabs } from './nodeDetail.util'
+import { getNodeDetailResourceBrowserTabs } from './nodeDetail.util'
 import { NodeDetailPropsType, NodeType } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
@@ -56,7 +56,7 @@ function NodeDetailComponent({
     
     useEffect(() => {
         if (params.nodeType) {
-            const _tabs = getNodeDetailTabs(params.nodeType as NodeType)
+            const _tabs = getNodeDetailResourceBrowserTabs(params.nodeType as NodeType)
             setTabs(_tabs)
         }
     }, [params.nodeType])
@@ -186,7 +186,7 @@ function NodeDetailComponent({
     const handleChanges = ():void => {
         setHideManagedFields(!hideManagedFields)
     }
-
+    
     return (
         <React.Fragment>
             <div className="pl-20 bcn-0 flex left w-100 pr-20">
@@ -214,6 +214,7 @@ function NodeDetailComponent({
                             </div>
                         )
                     })}
+                    
                 {isManagedFields && (
                     <>
                         <div className="ml-12 mr-5 tab-cell-border"></div>

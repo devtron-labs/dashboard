@@ -23,6 +23,16 @@ export const getNodeDetailTabs = (nodeType: NodeType) => {
     }
 }
 
+export const getNodeDetailResourceBrowserTabs = (nodeType: NodeType) => {
+    if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
+        return [NodeDetailTab.MANIFEST, NodeDetailTab.EVENTS, NodeDetailTab.LOGS, NodeDetailTab.TERMINAL]
+    } else if (nodeType.toLowerCase() === NodeType.Containers.toLowerCase()) {
+        return [NodeDetailTab.LOGS]
+    } else {
+        return [NodeDetailTab.MANIFEST, NodeDetailTab.EVENTS]
+    }
+}
+
 export const flatContainers = (pod: PodMetaData): string[] => {
     return [...(pod?.containers || []), ...(pod?.initContainers || [])]
 }
