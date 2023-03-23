@@ -614,7 +614,6 @@ export function EnvSelector({
             : environments
 
     const handleFormatHighlightedText = (opt, { inputValue }) => {
-
         return formatHighlightedTextDescription(opt, inputValue, 'label')
     }
     return (
@@ -643,8 +642,7 @@ export function EnvSelector({
                             ? sortedEnvironments.map((env) => ({
                                   label: env.environmentName,
                                   value: env.environmentId,
-                                  description: 'This is a env description of max 40words' //for testing purpose only
-                                  //description: env.description,
+                                  description: env.description,
                               }))
                             : []
                     }
@@ -1149,7 +1147,7 @@ export function EnvironmentNotConfigured({ environments, ...props }) {
                         Go to Trigger
                     </Link>
                 )}
-            </div>  
+            </div>
         </section>
     )
 }

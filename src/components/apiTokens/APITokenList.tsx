@@ -12,7 +12,6 @@ import NoResults from '../../assets/img/empty-noresult@2x.png'
 import './apiToken.scss'
 import EmptyState from '../EmptyState/EmptyState'
 
-
 function NoMatchingResults() {
     return (
         <EmptyState>
@@ -40,8 +39,6 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
         setSelectedToken(tokenList)
         setDeleteConfirmation(true)
     }
-
-
     return (
         <div>
             <div className="cn-9 fw-6 fs-16">API tokens</div>
@@ -60,7 +57,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                     <div>Last used by Ip add.</div>
                     <div>Expires on</div>
                     <div></div>
-                </div>\
+                </div>
                 <div className="dc__overflow-scroll" style={{'height': 'calc(100vh - 153px)'}}>
                     {!tokenList || tokenList.length === 0 ? (
                         <NoMatchingResults />
