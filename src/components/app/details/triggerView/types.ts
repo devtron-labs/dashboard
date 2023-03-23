@@ -245,9 +245,8 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
 export interface TriggerCDNodeState {
     ci_artifacts: any[]
     latest_ci_artifact_id: number
-    latest_ci_artifact_status: string
+    latest_ci_artifact_status: boolean
     status: string
-    latest_wf_artifact_status: string
     latest_wf_artifact_id: number
 }
 
@@ -272,9 +271,8 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
 export interface TriggerPrePostCDNodeState {
     ci_artifacts: any[]
     latest_ci_artifact_id: number
-    latest_ci_artifact_status: string
+    latest_ci_artifact_status: boolean
     status: string
-    latest_wf_artifact_status: string
     latest_wf_artifact_id: number
 }
 

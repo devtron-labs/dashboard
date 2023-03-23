@@ -2011,7 +2011,7 @@ textarea,
     }
 }
 .icon-color-grey {
-    fill: #5A5A5A;
+    fill: #5a5a5a;
 }
 
 .icon-color-n7 {
@@ -2393,10 +2393,9 @@ textarea,
 .h-100 {
     height: 100%;
 }
-.dc__height-reduce-172{
-    height: 'calc(100vh - 172px)'
+.dc__height-reduce-172 {
+    height: 'calc(100vh - 172px)';
 }
-
 
 // Line height
 .lh-1-4 {
@@ -2750,8 +2749,7 @@ textarea::placeholder {
 }
 
 .dc__icon-bg-color {
-    background-color: #DFF3F7;
-
+    background-color: #dff3f7;
 }
 
 .dc__list-style-disc {
@@ -2760,4 +2758,11 @@ textarea::placeholder {
 
 .dc__zi-4 {
     z-index: 4;
+}
+.dot {
+    height: 8px;
+    width: 8px;
+    background-color: orange;
+    border-radius: 50%;
+    display: inline-block;
 }

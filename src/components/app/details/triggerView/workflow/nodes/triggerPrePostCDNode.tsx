@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom'
 import { DEFAULT_STATUS } from '../../../../../../config'
 import { TriggerViewContext } from '../../config'
 import { get } from '../../../../../../services/api'
+import { ConditionalWrap } from '../../../../../common'
+import Tippy from '@tippyjs/react'
 let stageMap = {
     PRECD: 'PRE',
     CD: 'DEPLOY',
@@ -19,9 +21,8 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
         this.state = {
             ci_artifacts: [],
             latest_ci_artifact_id: 0,
-            latest_ci_artifact_status: '',
+            latest_ci_artifact_status: true,
             status: this.props.status,
-            latest_wf_artifact_status: '',
             latest_wf_artifact_id: 0,
         }
     }
@@ -40,7 +41,6 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                 latest_ci_artifact_id: ci_artifacts.length > 1 ? ci_artifacts[0].id : 0,
                 latest_ci_artifact_status: ci_artifacts.length > 0 ? ci_artifacts[0].deployed : true,
                 status: response.result.latest_wf_artifact_status,
-                latest_wf_artifact_status: response.result.latest_wf_artifact_status,
                 latest_wf_artifact_id: response.result.latest_wf_artifact_id,
             })
         })
@@ -96,6 +96,13 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                 </div>
             )
     }
+    renderMessageContent() {
+        return (
+            <>
+                <span className="dot mr-4"></span> Latest image is not run
+            </>
+        )
+    }
 
     renderCardContent() {
         let status = this.props.status ? this.props.status.toLocaleLowerCase() : ''
@@ -127,16 +134,28 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                             </div>
                             {this.renderStatus(isClickable, status)}
                             <div className="workflow-node__btn-grp">
-                                <button
-                                    className="workflow-node__deploy-btn"
-                                    onClick={(event) => {
-                                        event.stopPropagation()
-                                        context.onClickCDMaterial(this.props.id, this.props.type)
-                                    }}
+                                <ConditionalWrap
+                                    condition={!this.state.latest_ci_artifact_status}
+                                    wrap={(children) => <Tippy content={this.renderMessageContent()}>{children}</Tippy>}
                                 >
-                                    Select Image
-                                    {!this.state.latest_ci_artifact_status && <span>Not deplyed</span>}
-                                </button>
+                                    <button
+                                        className="workflow-node__deploy-btn"
+                                        onClick={(event) => {
+                                            event.stopPropagation()
+                                            context.onClickCDMaterial(
+                                                this.props.id,
+                                                DeploymentNodeType[this.props.type],
+                                            )
+                                        }}
+                                    >
+                                        Select Image
+                                        {!this.state.latest_ci_artifact_status && (
+                                            <span className="ml-8">
+                                                <span className="dot"></span>
+                                            </span>
+                                        )}
+                                    </button>
+                                </ConditionalWrap>
                             </div>
                         </div>
                     )

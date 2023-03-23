@@ -10,6 +10,7 @@ import { triggerStatus } from '../../../cicdHistory/History.components'
 import { get } from '../../../../../../services/api'
 // import { cdMaterialListModal } from '../../../../service'
 import { getCDMaterialList } from '../../../../service'
+import { ConditionalWrap } from '../../../../../common'
 let stageMap = {
     PRECD: 'PRE',
     CD: 'DEPLOY',
@@ -23,9 +24,8 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
         this.state = {
             ci_artifacts: [],
             latest_ci_artifact_id: 0,
-            latest_ci_artifact_status: '',
+            latest_ci_artifact_status: true,
             status: this.props.status,
-            latest_wf_artifact_status: '',
             latest_wf_artifact_id: 0,
         }
     }
@@ -44,13 +44,13 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
             //     latest_wf_artifact_status: response.result.latest_wf_artifact_status,
             // }
             let ci_artifacts = response.result.ci_artifacts
+            let latest_
 
             this.setState({
                 ci_artifacts: ci_artifacts,
                 latest_ci_artifact_id: ci_artifacts.length > 1 ? ci_artifacts[0].id : 0,
                 latest_ci_artifact_status: ci_artifacts.length > 0 ? ci_artifacts[0].deployed : true,
                 status: response.result.latest_wf_artifact_status,
-                latest_wf_artifact_status: response.result.latest_wf_artifact_status,
                 latest_wf_artifact_id: response.result.latest_wf_artifact_id,
             })
         })
@@ -74,6 +74,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
             if (prevState.status !== this.props.status && this.props.status === 'succeeded') {
                 this.getCDMaterialList(this.props.id, DeploymentNodeType[this.props.type])
             }
+            //here we can see whether prevstate and curr state status  are same and status is progressing or running etc
         }
     }
     renderStatus() {
@@ -105,6 +106,13 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                     )}
                 </div>
             )
+    }
+    renderMessageContent() {
+        return (
+            <>
+                <span className="dot mr-4"></span> Latest image is not deployed
+            </>
+        )
     }
 
     renderCardContent() {
@@ -143,16 +151,24 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                                         <Rollback className="icon-dim-20 dc__vertical-align-middle" />
                                     </button>
                                 </Tippy>
-                                <button
-                                    className="workflow-node__deploy-btn"
-                                    onClick={(event) => {
-                                        event.stopPropagation()
-                                        context.onClickCDMaterial(this.props.id, DeploymentNodeType[this.props.type])
-                                    }}
+                                <ConditionalWrap
+                                    condition={!this.state.latest_ci_artifact_status}
+                                    wrap={(children) => <Tippy content={this.renderMessageContent()}>{children}</Tippy>}
                                 >
-                                    Select Image
-                                    {!this.state.latest_ci_artifact_status && <span>Not deplyed</span>}
-                                </button>
+                                    <button
+                                        className="workflow-node__deploy-btn"
+                                        onClick={(event) => {
+                                            event.stopPropagation()
+                                            context.onClickCDMaterial(
+                                                this.props.id,
+                                                DeploymentNodeType[this.props.type],
+                                            )
+                                        }}
+                                    >
+                                        Select Image
+                                        {!this.state.latest_ci_artifact_status && <span className="dot ml-12"></span>}
+                                    </button>
+                                </ConditionalWrap>
                             </div>
                         </div>
                     )
