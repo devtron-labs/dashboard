@@ -23,6 +23,7 @@ import DeleteComponent from '../../util/DeleteComponent'
 import {DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName, TOAST_INFO} from '../../config/constantMessaging'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import TippyCustomized from '../common/TippyCustomized'
+import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwise.svg'
 import { ChartFormFields } from './ChartRepoType'
 import {ChartRepoType} from "./chartRepo.types";
 
