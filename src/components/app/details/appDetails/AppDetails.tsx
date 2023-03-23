@@ -441,11 +441,7 @@ export const Details: React.FC<DetailsType> = ({
                     showCommitInfo={isAppDeployment && appDetails?.dataSource !== 'EXTERNAL' ? showCommitInfo : null}
                     showUrlInfo={isAppDeployment ? setUrlInfo : null}
                     showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
-                    deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
-                    deploymentStatusText={deploymentStatusDetailsBreakdownData.deploymentStatusText}
-                    deploymentTriggerTime={deploymentStatusDetailsBreakdownData.deploymentTriggerTime}
-                    triggeredBy={deploymentStatusDetailsBreakdownData.triggeredBy}
-                />
+                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData} />
             </div>
             <SyncErrorComponent
                 showApplicationDetailedModal={showApplicationDetailedModal}

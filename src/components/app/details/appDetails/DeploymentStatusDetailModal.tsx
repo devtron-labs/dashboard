@@ -3,9 +3,8 @@ import { Drawer } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import DeploymentStatusDetailBreakdown from './DeploymentStatusBreakdown'
 import { DeploymentStatusDetailModalType } from './appDetails.type'
-import { URLS } from '../../../../config'
 import { useHistory, useParams } from 'react-router-dom'
-
+import './appDetails.scss'
 export default function DeploymentStatusDetailModal({
     appName,
     environmentName,

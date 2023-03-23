@@ -9,8 +9,6 @@ import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessagi
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
-import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { useParams } from 'react-router'
@@ -20,6 +18,7 @@ import ReactGA from 'react-ga4'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
+import DeploymentStatusCard from './DeploymentStatusCard'
 
 export function SourceInfo({
     appDetails,
@@ -28,10 +27,7 @@ export function SourceInfo({
     showCommitInfo = null,
     showUrlInfo = null,
     showHibernateModal = null,
-    deploymentStatus = null,
-    deploymentStatusText = null,
-    deploymentTriggerTime = null,
-    triggeredBy = null,
+    deploymentStatusDetailsBreakdownData = null,
 }) {
     const history = useHistory()
     const status = appDetails?.resourceTree?.status || ''
@@ -203,63 +199,9 @@ export function SourceInfo({
                                     </div>
                                 </div>
                             </div>
-                            <div
-                                onClick={showDeploymentDetailedStatus}
-                                className={`flex left bcn-0 p-16 br-4 mw-382 en-2 bw-1 ${
-                                    appDetails?.deploymentAppType === DeploymentAppType.helm ? '' : 'cursor'
-                                }`}
-                            >
-                                <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
-                                    <CD className="icon-dim-32" />
-                                </div>
-                                <div className="flex left column pr-16 dc__border-right-n1 mr-16">
-                                    <div className="flexbox">
-                                        <span className="fs-12 mr-5 fw-4 cn-9">Deployment status</span>
-
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="top"
-                                            content="Status of last triggered deployment"
-                                        >
-                                            <Question className="icon-dim-16 mt-2" />
-                                        </Tippy>
-                                    </div>
-                                    <div className="flexbox">
-                                        <span
-                                            className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus} ${
-                                                deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS
-                                                    ? 'dc__loading-dots'
-                                                    : ''
-                                            }`}
-                                        >
-                                            {deploymentStatusText}
-                                        </span>
-                                        <div className={`${deploymentStatus} icon-dim-20 mt-2`}></div>
-                                    </div>
-                                    {appDetails?.deploymentAppType !== DeploymentAppType.helm && (
-                                        <div>
-                                            <span className="cb-5 fw-6 pointer">Details</span>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="flex left column mw-140">
-                                    <div className="fs-12 fw-4 cn-9">Deployment triggered</div>
-                                    <div className="flexbox">
-                                        <span className="fs-13 mr-5 fw-6 cn-9">
-                                            {deploymentTriggerTime
-                                                ? moment(deploymentTriggerTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
-                                                : '-'}
-                                        </span>
-                                        {deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS && (
-                                            <Timer className="icon-dim-16 mt-4" />
-                                        )}
-                                    </div>
-                                    <div className="fw-4 fs-12 cn-9 dc__ellipsis-right" style={{ maxWidth: 'inherit' }}>
-                                        by {triggeredBy || '-'}
-                                    </div>
-                                </div>
-                            </div>
+                            <DeploymentStatusCard
+                                deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                            />
                         </>
                     )}
                     <div style={{ marginLeft: 'auto' }} className="flex right">

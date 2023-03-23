@@ -5,7 +5,6 @@ import { ReactComponent as Question } from '../../../assets/icons/ic-question.sv
 import { ReactComponent as Alert } from '../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
 import IndexStore from '../../index.store'
-import moment from 'moment'
 import { URLS } from '../../../../../config'
 import { AppType } from '../../../appDetails/appDetails.type'
 import { useSharedState } from '../../../utils/useSharedState'
@@ -15,25 +14,29 @@ import Tippy from '@tippyjs/react'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
 import { useAsync } from '../../../../common'
+import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
+import { DeploymentStatusDetailsBreakdownDataType } from '../../../../app/details/appDetails/appDetails.type'
 
-function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
+function EnvironmentStatusComponent({ appStreamData, deploymentStatusDetailsBreakdownData }: { appStreamData: any, deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType }) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
     const [showNotes, setShowNotes] = useState(false)
     const status = appDetails.resourceTree?.status || ''
     const showHibernationStatusMessage =
         status.toLowerCase() === 'hibernated' || status.toLowerCase() === 'partially hibernated'
-    const { path, url } = useRouteMatch()
+    const { url } = useRouteMatch()
     const history = useHistory()
     const params = useParams<{ appId: string; envId: string }>()
     const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
+
+
     const onClickUpgrade = () => {
         let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
         history.push(_url)
     }
 
-    const notes = appDetails.notes || notesResult?.result?.gitOpsNotes;
-    
+    const notes = appDetails.notes || notesResult?.result?.gitOpsNotes
+
     const handleShowAppStatusDetail = () => {
         setShowAppStatusDetail(true)
     }
@@ -99,32 +102,36 @@ function EnvironmentStatusComponent({ appStreamData }: { appStreamData: any }) {
                 )}
 
                 {appDetails?.lastDeployedTime && (
-                    <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
-                        <div className="cn-9 lh-1-33 flex left">
-                            <span>Last updated</span>
-                            <Tippy
-                                className="default-tt cursor"
-                                arrow={false}
-                                content={'When was this app last updated'}
-                            >
-                                <Question className="cursor icon-dim-16 ml-4" />
-                            </Tippy>
-                        </div>
-                        <div className=" fw-6 fs-14">
-                            {moment(appDetails?.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()}
-                        </div>
-                        {appDetails?.lastDeployedBy && appDetails?.lastDeployedBy}
-                        {appDetails.appType == AppType.EXTERNAL_HELM_CHART && (
-                            <div>
-                                <Link
-                                    className="cb-5 fw-6"
-                                    to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/${appDetails.appId}/${appDetails.appName}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
-                                >
-                                    Details
-                                </Link>
-                            </div>
-                        )}
-                    </div>
+                    // <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
+                    //     <div className="cn-9 lh-1-33 flex left">
+                    //         <span>Last updated</span>
+                    //         <Tippy
+                    //             className="default-tt cursor"
+                    //             arrow={false}
+                    //             content={'When was this app last updated'}
+                    //         >
+                    //             <Question className="cursor icon-dim-16 ml-4" />
+                    //         </Tippy>
+                    //     </div>
+                    //     <div className=" fw-6 fs-14">
+                    //         {moment(appDetails?.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()}
+                    //     </div>
+                    //     {appDetails?.lastDeployedBy && appDetails?.lastDeployedBy}
+                    //     {appDetails.appType == AppType.EXTERNAL_HELM_CHART && (
+                    //         <div>
+                    //             <Link
+                    //                 className="cb-5 fw-6"
+                    //                 to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/${appDetails.appId}/${appDetails.appName}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
+                    //             >
+                    //                 Details
+                    //             </Link>
+                    //         </div>
+                    //     )}
+                    // </div>
+
+                    <DeploymentStatusCard
+                        deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                    />
                 )}
 
                 {appDetails?.appStoreAppName && (
