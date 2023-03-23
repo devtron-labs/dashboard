@@ -21,7 +21,6 @@
         "moment": "^2.29.4",
         "monaco-editor": "^0.19.3",
         "monaco-editor-webpack-plugin": "^1.8.2",
-        "copy-webpack-plugin": "6.3.2",
         "monaco-yaml": "^3.2.1",
         "patternfly-react": "^2.40.0",
         "query-string": "^7.1.1",
@@ -46,7 +45,7 @@
         "xterm-webfont": "^2.0.0",
         "yaml": "^1.7.2",
         "yamljs": "^0.3.0",
-        "@devtron-labs/devtron-fe-common-lib": "0.0.7-beta-11"
+        "@devtron-labs/devtron-fe-common-lib": "0.0.7-beta-12"
     },
     "scripts": {
         "lint": "eslint src/**/*.tsx",
