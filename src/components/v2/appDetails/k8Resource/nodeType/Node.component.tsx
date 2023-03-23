@@ -5,6 +5,7 @@ import Tippy from '@tippyjs/react'
 import { copyToClipboard, getElapsedTime } from '../../../../common'
 import { ReactComponent as DropDown } from '../../../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as Clipboard } from '../../../../../assets/icons/ic-copy.svg'
+import { ReactComponent as Check } from '../../../../../assets/icons/ic-check.svg'
 import PodHeaderComponent from './PodHeader.component'
 import { NodeType, Node, iNode, NodeComponentProps } from '../../appDetails.type'
 import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
@@ -18,6 +19,7 @@ import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
 import { NoPod } from '../../../../app/ResourceTreeNodes'
 import './nodeType.scss'
+import { COPIED_MESSAGE } from '../../../../../config/constantMessaging'
 
 function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevtronApp }: NodeComponentProps) {
     const { url } = useRouteMatch()
@@ -25,7 +27,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
     const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0)
-    const [copied, setCopied] = useState(false)
+    const [copiedNodeName, setCopiedNodeName] = useState<string>('')
     const [tableHeader, setTableHeader] = useState([])
     const [firstColWidth, setFirstColWidth] = useState('')
     const [podType, setPodType] = useState(false)
@@ -71,9 +73,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     }, [externalLinks])
 
     useEffect(() => {
-        if (!copied) return
-        setTimeout(() => setCopied(false), 2000)
-    }, [copied])
+        if (!copiedNodeName) return
+        setTimeout(() => setCopiedNodeName(''), 2000)
+    }, [copiedNodeName])
 
     useEffect(() => {
         if (params.nodeType) {
@@ -129,6 +131,11 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
             setSelectedHealthyNodeCount(_healthyNodeCount)
         }
     }, [params.nodeType, podType, url, filteredNodes, podLevelExternalLinks])
+
+    const toggleClipBoard = (event: React.MouseEvent, nodeName: string) => {
+        event.stopPropagation()
+        copyToClipboard(nodeName, () => setCopiedNodeName(nodeName))
+    }
 
     const getPodRestartCount = (node: iNode) => {
         let restartCount = '0'
@@ -187,17 +194,37 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
 
     const makeNodeTree = (nodes: Array<iNode>, showHeader?: boolean) => {
         let _currentNodeHeader = ''
+        const renderClipboardInteraction = (nodeName: string): JSX.Element => {
+            return copiedNodeName === nodeName ? (
+                <Tippy
+                    className="default-tt"
+                    hideOnClick={false}
+                    arrow={false}
+                    placement="bottom"
+                    content={COPIED_MESSAGE}
+                    duration={[100, 200]}
+                    trigger="mouseenter click"
+                >
+                    <span>
+                        <Check className="icon-dim-12 scg-5 ml-8 mr-8" />
+                    </span>
+                </Tippy>
+            ) : (
+                <span>
+                    <Clipboard
+                        className="resource-action-tabs__clipboard icon-dim-12 pointer ml-8 mr-8"
+                        onClick={(event) => {
+                            toggleClipBoard(event, nodeName)
+                        }}
+                    />
+                </span>
+            )
+        }
         return nodes.map((node, index) => {
             const nodeName = `${node.name}.${node.namespace} : { portnumber }`
             const _isSelected = markedNodes.current.get(node.name)
-
             // Only render node kind header when it's the first node or it's a different kind header
             _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
-
-            const onClickClipboard = (e) => {
-                e.stopPropagation()
-                copyToClipboard(node?.name, () => setCopied(true))
-            }
 
             const onClickNodeDetailsTab = (e) => {
                 const _kind = e.target.dataset.name
@@ -236,7 +263,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         </div>
                     )}
                     <div className="node-row m-0 resource-row">
-                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9 `}>
+                        <div className={`resource-row__content ${firstColWidth} pt-9 pb-9`}>
                             <div className="flex left">
                                 <div
                                     className="flex left top ml-2"
@@ -259,20 +286,6 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                     <div>
                                         <div className="resource__title-name flex left dc__align-start">
                                             <span className="fs-13">{node.name}</span>
-                                            <Tippy
-                                                className="default-tt"
-                                                arrow={false}
-                                                placement="bottom"
-                                                content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                                                trigger="mouseenter click"
-                                            >
-                                                <span>
-                                                    <Clipboard
-                                                        className="icon-dim-12 pointer ml-8 mr-8 mt-4"
-                                                        onClick={onClickClipboard}
-                                                    />
-                                                </span>
-                                            </Tippy>
                                             <div
                                                 className={`flex left ${
                                                     node.kind.toLowerCase() == NodeType.Pod.toLowerCase()
@@ -280,6 +293,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                                         : 'mw-116'
                                                 }`}
                                             >
+                                                {renderClipboardInteraction(node.name)}
                                                 <div
                                                     className={`flex left ${getWidthClassnameForTabs()} ${
                                                         node.kind === NodeType.Containers ? '' : 'node__tabs'
@@ -331,7 +345,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                             </span>
                                             {node?.health?.message && (
                                                 <>
-                                                    <div className="dc__bullet ml-4 mr-4"></div>
+                                                    <div className="dc__bullet ml-4 mr-4 mw-4"></div>
                                                     <span className="dc__truncate">
                                                         {node.health.message.toLowerCase()}
                                                     </span>
@@ -346,21 +360,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         {params.nodeType === NodeType.Service.toLowerCase() && (
                             <div className={'col-5 pt-9 pb-9 flex left'}>
                                 {nodeName}
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="bottom"
-                                    content={copied ? 'Copied!' : 'Copy to clipboard.'}
-                                    trigger="mouseenter click"
-                                >
-                                    <Clipboard
-                                        className="resource-action-tabs__active pl-4 icon-dim-16 pointer"
-                                        onClick={(e) => {
-                                            e.stopPropagation()
-                                            copyToClipboard(nodeName, () => setCopied(true))
-                                        }}
-                                    />
-                                </Tippy>
+                                {renderClipboardInteraction(nodeName)}
                             </div>
                         )}
 
