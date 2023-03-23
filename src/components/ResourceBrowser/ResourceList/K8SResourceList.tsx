@@ -172,7 +172,7 @@ export function K8SResourceList({
                     ) : (
                         <div
                             key={`${resourceData.name}-${idx}`}
-                            className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
+                            className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 pl-20 pr-20 ${
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
                                     : ''
