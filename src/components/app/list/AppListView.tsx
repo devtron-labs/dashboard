@@ -92,6 +92,7 @@ export class AppListView extends Component<AppListViewProps> {
                             <button
                                 className="app-list__cell-header flex  dc__visible-hover dc__visible-hover--parent  "
                                 onClick={this.sortByAppName}
+                                data-testid="appname"
                             >
                                 {APP_LIST_HEADERS.AppName}
 
@@ -104,11 +105,15 @@ export class AppListView extends Component<AppListViewProps> {
                         </div>
                         {this.props.isArgoInstalled && (
                             <div className="app-list__cell app-list__cell--app_status">
-                                <span className="app-list__cell-header">{APP_LIST_HEADERS.AppStatus}</span>
+                                <span className="app-list__cell-header" data-testid="appstatus">
+                                    {APP_LIST_HEADERS.AppStatus}
+                                </span>
                             </div>
                         )}
                         <div className="app-list__cell app-list__cell--env">
-                            <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
+                            <span className="app-list__cell-header mr-4" data-testid="env">
+                                {APP_LIST_HEADERS.Environment}
+                            </span>
                             <Tippy
                                 className="default-tt"
                                 arrow={true}
@@ -119,15 +124,20 @@ export class AppListView extends Component<AppListViewProps> {
                             </Tippy>
                         </div>
                         <div className="app-list__cell app-list__cell--cluster">
-                            <span className="app-list__cell-header">{APP_LIST_HEADERS.Cluster}</span>
+                            <span className="app-list__cell-header" data-testid="cluster">
+                                {APP_LIST_HEADERS.Cluster}
+                            </span>
                         </div>
                         <div className="app-list__cell app-list__cell--namespace">
-                            <span className="app-list__cell-header">{APP_LIST_HEADERS.Namespace}</span>
+                            <span className="app-list__cell-header" data-testid="namespace">
+                                {APP_LIST_HEADERS.Namespace}
+                            </span>
                         </div>
                         <div className="app-list__cell app-list__cell--time ">
                             <button
                                 className="app-list__cell-header flex dc__visible-hover dc__visible-hover--parent "
                                 onClick={this.sortByDeployedTime}
+                                data-testid="lastdeployedat"
                             >
                                 {APP_LIST_HEADERS.LastDeployedAt}
 
@@ -300,3 +310,4 @@ export class AppListView extends Component<AppListViewProps> {
         }
     }
 }
+export default AppListView
