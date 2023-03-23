@@ -9,7 +9,7 @@ function ErrorScreenNotFound() {
   const history = useHistory()
 
   const redirectToHome = () => {
-    history.push(`/${URLS.APP}/${URLS.APP_LIST}`)
+    history.push(`${URLS.APP}/${URLS.APP_LIST}`)
   }
 
   return (
