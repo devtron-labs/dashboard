@@ -9,10 +9,10 @@ export class VisibleModal extends React.Component<{
     onEscape?: (e) => void
 }> {
     modalRef = document.getElementById('visible-modal')
-
     constructor(props) {
         super(props)
         this.escFunction = this.escFunction.bind(this)
+
     }
 
     escFunction(event) {

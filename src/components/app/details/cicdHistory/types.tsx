@@ -27,6 +27,7 @@ export interface History {
     triggeredByEmail: string
     stage?: DeploymentStageType
     blobStorageEnabled?: boolean
+    isArtifactUploaded?: boolean
 }
 
 export interface CiMaterial {
@@ -48,7 +49,7 @@ export interface CiMaterial {
 export interface GitTriggers {
     Commit: string
     Author: string
-    Date: Date
+    Date: Date | string
     Message: string
     Changes: string[]
     WebhookData: WebHookData
@@ -62,7 +63,9 @@ export interface ArtifactType {
     status: string
     artifact: string
     blobStorageEnabled: boolean
+    isArtifactUploaded?: boolean
     getArtifactPromise?: () => Promise<any>
+    isJobView?: boolean
 }
 
 export interface CopyTippyWithTextType {

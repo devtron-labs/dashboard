@@ -1069,21 +1069,24 @@ export function AppNotConfigured({
     buttonTitle,
     appConfigTabs = '',
     style,
+    isJobView,
 }: {
     image?: any
     title?: string
-    subtitle?: string
+    subtitle?: React.ReactNode
     buttonTitle?: string
     appConfigTabs?: string
     style?: React.CSSProperties
+    isJobView?: boolean
 }) {
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
     function handleEditApp(e) {
         getAppConfigStatus(+appId).then((response) => {
-            let url = `/app/${appId}/edit`
+            const _urlPrefix = `/${isJobView ? 'job' : 'app'}/${appId}`
+            let url = `${_urlPrefix}/edit`
             if (appConfigTabs) {
-                url = `/app/${appId}/${appConfigTabs}`
+                url = `${_urlPrefix}/${appConfigTabs}`
             }
             push(url)
         })
@@ -1098,7 +1101,7 @@ export function AppNotConfigured({
                     subtitle
                 ) : (
                     <>
-                        {APP_DETAILS.APP_FULLY_NOT_CONFIGURED}
+                        {APP_DETAILS.APP_FULLY_NOT_CONFIGURED}&nbsp;
                         <a href={DOCUMENTATION.APP_CREATE} target="_blank">
                             {APP_DETAILS.NEED_HELP}
                         </a>
