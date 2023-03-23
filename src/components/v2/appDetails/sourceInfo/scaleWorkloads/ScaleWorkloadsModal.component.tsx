@@ -36,7 +36,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const [fetchingLatestDetails, setFetchingLatestDetails] = useState(false)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const scaleWorkloadTabs = ['Active workloads', 'Scaled down workloads']
-    const [fetchingDetails,setfetchingDetails] = useState(true)
+    const [fetchingDetails, setfetchingDetails] = useState(true)
     const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
 
     useEffect(()=> {
@@ -92,12 +92,11 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const _getAndSetAppDetail = async () => {
         if(appDetails?.deploymentAppType === DeploymentAppType.argo_cd){
             try {
-                let response = null;
-                response = await getInstalledChartDetailWithResourceTree(+appDetails.appId, +appDetails.environmentId);
+                let response = await getInstalledChartDetailWithResourceTree(+appDetails.appId, +appDetails.environmentId);
                 IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART);
-                setfetchingDetails(false)
             } catch(e) {
                 showError(e);
+            } finally {
                 setfetchingDetails(false)
             }
         }else{
