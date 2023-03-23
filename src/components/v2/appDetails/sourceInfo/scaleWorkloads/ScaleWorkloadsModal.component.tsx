@@ -92,7 +92,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const _getAndSetAppDetail = async () => {
         if(appDetails?.deploymentAppType === DeploymentAppType.argo_cd){
             try {
-                let response = await getInstalledChartDetailWithResourceTree(+appDetails.appId, +appDetails.environmentId);
+                let response = await getInstalledChartDetailWithResourceTree(+appDetails.installedAppId, +appDetails.environmentId);
                 IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART);
             } catch(e) {
                 showError(e);
