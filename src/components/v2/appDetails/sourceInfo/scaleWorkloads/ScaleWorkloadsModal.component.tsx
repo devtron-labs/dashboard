@@ -39,9 +39,9 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const [fetchingDetails, setfetchingDetails] = useState(true)
     const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
 
-    useEffect(()=> {
-        _getAndSetAppDetail();
-    },[])
+    useEffect(() => {
+        _getAndSetAppDetail()
+    }, [])
 
     useEffect(() => {
         if (fetchingLatestDetails) {
@@ -90,16 +90,19 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     }, [appDetails])
 
     const _getAndSetAppDetail = async () => {
-        if(appDetails?.deploymentAppType === DeploymentAppType.argo_cd){
+        if (appDetails?.deploymentAppType === DeploymentAppType.argo_cd) {
             try {
-                const response = await getInstalledChartDetailWithResourceTree(+appDetails.installedAppId, +appDetails.environmentId);
-                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART);
-            } catch(e) {
-                showError(e);
+                const response = await getInstalledChartDetailWithResourceTree(
+                    +appDetails.installedAppId,
+                    +appDetails.environmentId,
+                )
+                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART)
+            } catch (e) {
+                showError(e)
             } finally {
                 setfetchingDetails(false)
             }
-        }else{
+        } else {
             setfetchingDetails(false)
         }
     }
@@ -258,8 +261,8 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
         try {
             setScalingInProgress(true)
-            if(appDetails.appType != AppType.EXTERNAL_HELM_CHART){
-                appId = appDetails.clusterId + '|' + appDetails.namespace + '|' + appDetails.appName
+            if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
+                appId = `${appDetails.clusterId}|${appDetails.namespace}|${appDetails.appName}`
             }
             const workloadUpdate = isHibernateReq ? hibernateApp : unhibernateApp
             const _workloadsList = isHibernateReq ? workloadsToScaleDown : workloadsToRestore
@@ -314,35 +317,39 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         const isWorkloadPresent = _workloadsList && _workloadsList.size > 0
         const isAnySelected =
             _workloadsList && Array.from(_workloadsList.values()).some((workload) => workload.isChecked)
-        let loadingText = `${
-            isActiveWorkloadsTab ? 'Scaling down' : 'Restoring'
-        } workloads. Please wait...`
-        if(fetchingDetails) {
+        let loadingText = ''
+        if (fetchingDetails) {
             loadingText = 'Looking for scalable workloads'
-        }
-        let msg = `${
-            isActiveWorkloadsTab
-                ? 'No active workloads available'
-                : 'No scaled down workloads available'
-        }`
-        if(!canScaleWorkloads) {
-            msg = 'No scalable workloads found'
+        } else {
+            if (fetchingLatestDetails || scalingInProgress) {
+                if (isActiveWorkloadsTab) {
+                    loadingText = 'Scaling down workloads. Please wait...'
+                } else {
+                    loadingText = 'Restoring workloads. Please wait...'
+                }
+            } else {
+                if (!canScaleWorkloads) {
+                    loadingText = 'No scalable workloads found'
+                } else {
+                    if (isActiveWorkloadsTab) {
+                        loadingText = 'No active workloads available'
+                    } else {
+                        loadingText = 'No scaled down workloads available'
+                    }
+                }
+            }
         }
         return (
             <div className="scale-worklists-container">
-                {(fetchingLatestDetails || fetchingDetails || scalingInProgress) ? (
+                {fetchingLatestDetails || fetchingDetails || scalingInProgress ? (
                     <div
                         className="flex"
                         style={{
-                            height: fetchingDetails? '275px' : '234px',
+                            height: fetchingDetails ? '275px' : '234px',
                             flexDirection: 'column',
                         }}
                     >
-                        <DetailsProgressing
-                            pageLoader
-                            fullHeight={true}
-                            loadingText={loadingText}
-                        />
+                        <DetailsProgressing pageLoader fullHeight={true} loadingText={loadingText} />
                     </div>
                 ) : (
                     <>
@@ -399,7 +406,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                         ) : (
                             <MessageUI
                                 icon={MsgUIType.INFO}
-                                msg={msg}
+                                msg={loadingText}
                                 size={20}
                                 theme="white"
                                 iconClassName="no-readme-icon"
