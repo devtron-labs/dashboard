@@ -1,5 +1,14 @@
 import React, { useState } from 'react'
-import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ToastBody, ErrorScreenNotAuthorized } from '../common'
+import {
+    showError,
+    useForm,
+    useEffectAfterMount,
+    useAsync,
+    Progressing,
+    ToastBody,
+    ErrorScreenNotAuthorized,
+    Checkbox, CHECKBOX_VALUE
+} from '../common'
 import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
@@ -11,13 +20,14 @@ import { DOCUMENTATION, PATTERNS, CHART_REPO_TYPE, CHART_REPO_AUTH_TYPE, CHART_R
 import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/ValidateForm'
 import './chartRepo.scss'
 import DeleteComponent from '../../util/DeleteComponent'
-import { DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
+import {DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName, TOAST_INFO} from '../../config/constantMessaging'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import TippyCustomized from '../common/TippyCustomized'
 import { ChartFormFields } from './ChartRepoType'
+import {ChartRepoType} from "./chartRepo.types";
 
-export default function ChartRepo() {
-    const [loading, result, error, reload] = useAsync(getChartRepoList)
+export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
+    const [loading, result, error, reload] = useAsync(getChartRepoList, [], isSuperAdmin)
     const [fetching, setFetching] = useState(false)
     if (loading && !result) return <Progressing pageLoader />
     if (error) {
@@ -504,6 +514,7 @@ function ChartForm({
                     reload={reload}
                 />
             )}
+
         </form>
     )
 }
