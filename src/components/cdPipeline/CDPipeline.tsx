@@ -884,14 +884,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 : this.state.pipelineConfig.runPostStageInEnv
         function getOptionLabel(option) {
             if (option.type === CONFIGMAPS_SECRETS.configmaps) {
-                return (<div className='dropdown__option'>
-                    <File className='icon-dim-16' />
-                    <span  className='ml-8 fs-12 dc__align-center'>{option.name}</span>
+                return (<div className="dropdown__option">
+                    <File className="icon-dim-16" />
+                    <span  className="ml-8 fs-12 dc__align-center">{option.name}</span>
                 </div>)
             } else {
-                return (<div className='dropdown__option'>
-                    <Key className='icon-dim-16' />
-                    <span className='ml-8 fs-12 dc__align-center'>{option.name}</span>
+                return (<div className="dropdown__option">
+                    <Key className="icon-dim-16" />
+                    <span className="ml-8 fs-12 dc__align-center">{option.name}</span>
                 </div>)
             }
         }
