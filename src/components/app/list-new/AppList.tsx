@@ -563,6 +563,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         keys.map((key) => {
             query[key] = qs[key]
         })
+
         query['orderBy'] = key
         query['sortOrder'] = query['sortOrder'] == OrderBy.DESC ? OrderBy.ASC : OrderBy.DESC
         let queryStr = queryString.stringify(query)

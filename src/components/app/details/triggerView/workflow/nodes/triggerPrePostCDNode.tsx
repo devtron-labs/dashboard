@@ -13,6 +13,7 @@ let stageMap = {
     CD: 'DEPLOY',
     POSTCD: 'POST',
 }
+let statusArray = ['progressing', 'running', 'starting', 'Succeeded']
 
 export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState> {
     constructor(props) {
@@ -35,11 +36,17 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
             //     latest_wf_artifact_status: response.result.latest_wf_artifact_status,
             // }
             let ci_artifacts = response.result.ci_artifacts
+            let latest_ci_artifact_condition = true
+            if (ci_artifacts.length > 0 && ci_artifacts[0].id === response.result.latest_wf_artifact_id) {
+                latest_ci_artifact_condition = ci_artifacts[0].deployed || statusArray.includes(this.props.status)
+            } else {
+                latest_ci_artifact_condition = ci_artifacts.length > 0 ? ci_artifacts[0].deployed : true
+            }
 
             this.setState({
                 ci_artifacts: ci_artifacts,
                 latest_ci_artifact_id: ci_artifacts.length > 1 ? ci_artifacts[0].id : 0,
-                latest_ci_artifact_status: ci_artifacts.length > 0 ? ci_artifacts[0].deployed : true,
+                latest_ci_artifact_status: latest_ci_artifact_condition,
                 status: response.result.latest_wf_artifact_status,
                 latest_wf_artifact_id: response.result.latest_wf_artifact_id,
             })
@@ -52,11 +59,15 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
         prevProps: Readonly<TriggerPrePostCDNodeProps>,
         prevState: Readonly<TriggerPrePostCDNodeState>,
         snapshot?: any,
-    ): void {
-        if (this.state.latest_ci_artifact_id === this.state.latest_wf_artifact_id && this.state.status != '') {
-            if (prevState.status !== this.props.status && this.props.status === 'succeeded') {
-                this.getCDMaterialList(this.props.id, DeploymentNodeType[this.props.type])
-            }
+    ) {
+        if (
+            this.state.ci_artifacts.length > 0 &&
+            this.state.latest_ci_artifact_id === this.state.latest_wf_artifact_id
+        ) {
+            this.setState({
+                ...prevState,
+                latest_ci_artifact_status: statusArray.includes(this.props.status),
+            })
         }
     }
 
