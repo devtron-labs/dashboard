@@ -6,6 +6,7 @@ import { ReactComponent as ScaleDown } from '../../../../../assets/icons/ic-scal
 import { ReactComponent as Restore } from '../../../../../assets/icons/ic-restore.svg'
 import {
     HibernateRequest,
+    LoadingText,
     ScaleWorkloadsModalProps,
     ScaleWorkloadsType,
     WorkloadCheckType,
@@ -311,22 +312,22 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const getLoadingText = (isActiveWorkloadsTab: boolean): string => {
         let loadingText = ''
         if (isFetchingDetails) {
-            loadingText = 'Looking for scalable workloads'
+            loadingText = LoadingText.LOOKING_FOR_SCALABLE_WORKLOADS
         } else {
             if (fetchingLatestDetails || scalingInProgress) {
                 if (isActiveWorkloadsTab) {
-                    loadingText = 'Scaling down workloads. Please wait...'
+                    loadingText = LoadingText.SCALING_DOWN_WORKLOADS
                 } else {
-                    loadingText = 'Restoring workloads. Please wait...'
+                    loadingText = LoadingText.RESTORING_WORKLOADS
                 }
             } else {
                 if (!canScaleWorkloads) {
-                    loadingText = 'No scalable workloads found'
+                    loadingText = LoadingText.NO_SCALABLE_WORKLOADS
                 } else {
                     if (isActiveWorkloadsTab) {
-                        loadingText = 'No active workloads available'
+                        loadingText = LoadingText.NO_ACTIVE_WORKLOADS
                     } else {
-                        loadingText = 'No scaled down workloads available'
+                        loadingText = LoadingText.NO_SCALED_DOWN_WORKLOADS
                     }
                 }
             }
