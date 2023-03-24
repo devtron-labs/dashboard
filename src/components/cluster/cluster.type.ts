@@ -1,13 +1,13 @@
-import { RouteComponentProps } from "react-router-dom";
-import { SERVER_MODE_TYPE } from "../../config";
-import { OptionType } from "../app/types";
+import { RouteComponentProps } from 'react-router-dom'
+import { SERVER_MODE_TYPE } from '../../config'
+import { OptionType } from '../app/types'
 
-export const POLLING_INTERVAL = 30000;
+export const POLLING_INTERVAL = 30000
 
 export const AuthenticationType = {
-    BASIC: "BASIC",
-    ANONYMOUS: "ANONYMOUS",
-    IAM: 'IAM'
+    BASIC: 'BASIC',
+    ANONYMOUS: 'ANONYMOUS',
+    IAM: 'IAM',
 }
 
 export const DEFAULT_SECRET_PLACEHOLDER = '********'
@@ -27,34 +27,33 @@ export enum ClusterComponentStatus {
     ACD_SUCCESS = 'ACD_SUCCESS',
 }
 
-export type ClusterComponentStatusType = keyof typeof ClusterComponentStatus;
+export type ClusterComponentStatusType = keyof typeof ClusterComponentStatus
 
-export type ClusterInstallStage = -1 | 0 | 1 | 2 | 3;
+export type ClusterInstallStage = -1 | 0 | 1 | 2 | 3
 
 export interface ClusterComponentType {
-    name: string;
-    appId: number;
-    installedAppId: number;
-    envId: number;
-    envName: string;
-    status: ClusterComponentStatusType;
+    name: string
+    appId: number
+    installedAppId: number
+    envId: number
+    envName: string
+    status: ClusterComponentStatusType
 }
 
 export interface ClusterComponentModalProps {
-    agentInstallationStage: ClusterInstallStage;
-    components: ClusterComponentType[] | null;
-    environmentName: string;
-    redirectToChartDeployment: (appId, envId) => void;
-    callRetryClusterInstall: () => void;
-    close: (event) => void;
+    agentInstallationStage: ClusterInstallStage
+    components: ClusterComponentType[] | null
+    environmentName: string
+    redirectToChartDeployment: (appId, envId) => void
+    callRetryClusterInstall: () => void
+    close: (event) => void
 }
 
 export interface ClusterInstallStatusProps {
-    agentInstallationStage: ClusterInstallStage;
-    envName: string | undefined;
-    onClick: (...args) => void;
+    agentInstallationStage: ClusterInstallStage
+    envName: string | undefined
+    onClick: (...args) => void
 }
-
 
 export interface ClusterListProps extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE_TYPE
@@ -86,18 +85,18 @@ export interface ClusterTerminalParamsType {
 }
 
 export interface ClusterFormType {
-                        id: any
-                        cluster_name: any
-                        server_url: any
-                        active: any
-                        config: any
-                        toggleEditMode: any
-                        reload: any
-                        prometheus_url: any
-                        prometheusAuth: any
-                        defaultClusterComponent: any
-                        isGrafanaModuleInstalled: boolean
-                        isTlsConnection: boolean
-                        toggleCheckTlsConnection: () => void 
-                        isDrawer: boolean
+    id: any
+    cluster_name: any
+    server_url: any
+    active: any
+    config: any
+    toggleEditMode: any
+    reload: any
+    prometheus_url: any
+    prometheusAuth: any
+    defaultClusterComponent: any
+    isGrafanaModuleInstalled: boolean
+    isTlsConnection: boolean
+    toggleCheckTlsConnection: () => void
+    isDrawer: boolean
 }
