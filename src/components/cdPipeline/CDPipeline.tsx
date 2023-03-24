@@ -87,8 +87,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         const parentPipelineType = parentPipelineTypeFromURL
             ? parentPipelineTypeFromURL.toLocaleUpperCase().replace('-', '_')
             : this.isWebhookCD
-            ? SourceTypeMap.WEBHOOK
-            : ''
+                ? SourceTypeMap.WEBHOOK
+                : ''
         const parentPipelineId = urlParams.get('parentPipelineId')
         this.state = {
             view: ViewType.LOADING,
@@ -196,7 +196,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                         },
                                     })
                                 })
-                                .catch((error) => {})
+                                .catch((error) => { })
                             getEnvironmentListMinPublic()
                                 .then((response) => {
                                     let list = response.result || []
@@ -532,13 +532,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             try {
                 json = JSON.parse(jsonStr)
                 yamlStr = yamlJsParser.stringify(json, { indent: 2 })
-            } catch (error) {}
+            } catch (error) { }
         } else {
             yamlStr = event.target.value
             try {
                 json = yamlJsParser.parse(yamlStr)
                 jsonStr = JSON.stringify(json, undefined, 2)
-            } catch (error) {}
+            } catch (error) { }
         }
         let state = { ...this.state }
         let strategies = this.state.pipelineConfig.strategies.map((strategy) => {
@@ -595,7 +595,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             deploymentTemplate:
                 this.state.pipelineConfig.strategies.length > 0
                     ? this.state.pipelineConfig.strategies.find((savedStrategy) => savedStrategy.default)
-                          .deploymentTemplate
+                        .deploymentTemplate
                     : null,
             strategies: this.state.pipelineConfig.strategies.map((savedStrategy) => {
                 return {
@@ -762,8 +762,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             this.isWebhookCD && this.props.match.params.workflowId === '0'
                 ? DEPLOY_IMAGE_EXTERNALSOURCE
                 : this.props.match.params.cdPipelineId
-                ? EDIT_DEPLOYMENT_PIPELINE
-                : CREATE_DEPLOYMENT_PIPELINE
+                    ? EDIT_DEPLOYMENT_PIPELINE
+                    : CREATE_DEPLOYMENT_PIPELINE
         return (
             <>
                 <div className="p-20 flex flex-align-center flex-justify">
@@ -883,18 +883,18 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 : this.state.pipelineConfig.runPostStageInEnv
         function getOptionLabel(option) {
             if (option.type === 'configmaps') {
-                return (<div className= 'dropdown__option'>
+                return (<div className='dropdown__option'>
                     <File className='icon-dim-16' />
                     <span style={{ marginLeft: 8, alignItems: 'center', fontSize: '12px' }}>{option.name}</span>
                 </div>)
             } else {
-                return (<div className= 'dropdown__option'>
+                return (<div className='dropdown__option'>
                     <Key className='icon-dim-16' />
-                    <span style={{ marginLeft: 8, alignItems: 'center', fontSize: '12px'}}>{option.name}</span>
+                    <span style={{ marginLeft: 8, alignItems: 'center', fontSize: '12px' }}>{option.name}</span>
                 </div>)
             }
-        }   
-        
+        }
+
         function getOptionValue(option) {
             return (`${option.name}${option.type}`)
         }
@@ -955,8 +955,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         onChange={
                             this.state.pipelineConfig[key].switch === SwitchItemValues.Config
                                 ? (resp) => {
-                                      this.handleStageConfigChange(resp, key, 'config')
-                                  }
+                                    this.handleStageConfigChange(resp, key, 'config')
+                                }
                                 : null
                         }
                     >
@@ -1210,9 +1210,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <p className="fs-14 fw-6 cn-9 mb-8">When do you want to deploy</p>
                 <div className="flex mb-20">
                     <div
-                        className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 mr-8 bw-1${
-                            this.state.pipelineConfig.triggerType === TriggerType.Auto ? ' bcb-1 eb-2' : ' bcn-0 en-2'
-                        }`}
+                        className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 mr-8 bw-1${this.state.pipelineConfig.triggerType === TriggerType.Auto ? ' bcb-1 eb-2' : ' bcn-0 en-2'
+                            }`}
                         onClick={() => this.handleTriggerTypeChange(TriggerType.Auto)}
                     >
                         <BotIcon className="icon-dim-20 mr-12" />
@@ -1222,9 +1221,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         </div>
                     </div>
                     <div
-                        className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 ml-8 bw-1${
-                            this.state.pipelineConfig.triggerType === TriggerType.Manual ? ' bcb-1 eb-2' : ' bcn-0 en-2'
-                        }`}
+                        className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 ml-8 bw-1${this.state.pipelineConfig.triggerType === TriggerType.Manual ? ' bcb-1 eb-2' : ' bcn-0 en-2'
+                            }`}
                         onClick={() => this.handleTriggerTypeChange(TriggerType.Manual)}
                     >
                         <PersonIcon className="icon-dim-20 mr-12" />
@@ -1372,9 +1370,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         })
         let strategy = this.state.pipelineConfig.strategies[0]
             ? {
-                  label: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
-                  value: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
-              }
+                label: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
+                value: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
+            }
             : undefined
         return (
             <>
@@ -1453,9 +1451,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     </div>
 
                     <div
-                        className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
-                            this.isWebhookCD && !this.props.match.params.cdPipelineId ? 'right' : 'flex-justify'
-                        }`}
+                        className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${this.isWebhookCD && !this.props.match.params.cdPipelineId ? 'right' : 'flex-justify'
+                            }`}
                     >
                         {this.renderSecondaryButton()}
                         <ButtonWithLoader
