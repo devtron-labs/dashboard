@@ -35,6 +35,7 @@ import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 import { components } from 'react-select'
 import EnvironmentOverride from '../EnvironmentOverride/EnvironmentOverride'
 import { API_COMPONENTS } from '../../config/constantMessaging'
+import { handleQuestion } from './CreateAPIToken'
 
 function EditAPIToken({
     setShowRegeneratedModal,
@@ -230,29 +231,6 @@ function EditAPIToken({
     const handleCopyToClipboard = (e) => {
         e.stopPropagation()
         copyToClipboard(editData.token, () => setCopied(true))
-    }
-
-    const handleQuestion = () => {
-        return (
-            <TippyCustomized
-                theme={TippyTheme.white}
-                className="w-300 h-100 fcv-5"
-                placement="right"
-                Icon={QuestionFilled}
-                heading={API_COMPONENTS.TITLE}
-                infoText= {API_COMPONENTS.QUESTION_ICON_INFO}
-                showCloseButton={true}
-                trigger="click"
-                interactive = {true}
-                documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
-                documentationLinkText="View Documentation"
-            >
-                <div className="icon-dim-20 fcn-9 ml-8 cursor">
-                    <Question />    
-                </div>
-
-            </TippyCustomized>
-        )
     }
 
     return (
