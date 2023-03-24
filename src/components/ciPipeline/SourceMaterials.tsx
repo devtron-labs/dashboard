@@ -124,7 +124,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                         ) || props.ciPipelineSourceTypeOptions[0]
                 }
                 let errorObj = props.validationRules?.sourceValue(isBranchRegex ? mat.regex : mat.value)
-                let isMultigitandWebhook = isMultiGit && _selectedWebhookEvent
+                const isMultiGitAndWebhook = isMultiGit && _selectedWebhookEvent
                 return (
                     <div key={`source-material-${index}`}>
                         <div className="mt-20" key={mat.gitMaterialId}>
@@ -136,7 +136,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                             </div>
                             <div className="mt-16 flex left">
                                 <ConditionalWrap
-                                    condition={isMultigitandWebhook}
+                                    condition={isMultiGitAndWebhook}
                                     wrap={(children) => (
                                         <Tippy
                                             className="default-tt"
