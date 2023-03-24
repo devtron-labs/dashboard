@@ -25,7 +25,7 @@ export default function EnvConfig({ filteredApps }: AppGroupDetailDefaultType) {
                 .sort((a, b) => a.name.localeCompare(b.name))
             setEnvAppList(_envAppList)
             if (!appId) {
-                history.push(`${url}/${_envAppList[0].id}`)
+                history.replace(`${url}/${_envAppList[0].id}`)
             } else if (!_filteredAppMap.get(+appId)) {
                 const oldUrlSubstring = `/edit/${appId}`
                 const newUrlSubstring = `/edit/${_envAppList[0].id}`

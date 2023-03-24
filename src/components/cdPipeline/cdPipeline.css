@@ -141,3 +141,9 @@
     border-radius: 4px;
     overflow: hidden;
 }
+
+.dropdown__option {
+    display: flex;
+    align-items: center;
+    margin-left: 0px;
+}
