@@ -47,13 +47,11 @@ export function Build({
                 if (sourceType === SourceTypeMap.BranchRegex) {
                     return {
                         ...mat,
-                        value: '',
                         regex: event.target.value,
                     }
                 }
                 return {
                     ...mat,
-                    regex: '',
                     value: event.target.value,
                 }
             } else {
@@ -69,19 +67,13 @@ export function Build({
         const _formData = { ...formData }
         let isPrevWebhook =
             _formData.ciPipelineSourceTypeOptions.find((sto) => sto.isSelected)?.value === SourceTypeMap.WEBHOOK
-
         const allMaterials = _formData.materials.map((mat) => {
-            const sourceType = gitMaterialId === mat.gitMaterialId ? selectedSource.value : mat.type
-            const isBranchRegexType = sourceType === SourceTypeMap.BranchRegex
             return {
                 ...mat,
-                type: sourceType,
-                isRegex: isBranchRegexType,
-                regex: isBranchRegexType ? mat.regex : '',
+                type: gitMaterialId === mat.gitMaterialId ? selectedSource.value : mat.type,
                 value: isPrevWebhook && selectedSource.value !== SourceTypeMap.WEBHOOK ? '' : mat.value,
             }
         })
-
         _formData.materials = allMaterials
         // update source type selected option in dropdown
         const _ciPipelineSourceTypeOptions = _formData.ciPipelineSourceTypeOptions.map((sourceTypeOption) => {
@@ -90,7 +82,6 @@ export function Build({
                 isSelected: sourceTypeOption.label === selectedSource.label,
             }
         })
-       
         _formData.ciPipelineSourceTypeOptions = _ciPipelineSourceTypeOptions
 
         // if selected source is of type webhook, then set eventId in value, assume single git material, set condition list
