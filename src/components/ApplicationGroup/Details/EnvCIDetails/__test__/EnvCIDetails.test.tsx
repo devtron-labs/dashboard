@@ -1,10 +1,10 @@
 import React from 'react'
 import '@testing-library/jest-dom'
-import { act, render } from '@testing-library/react'
-import { BrowserRouter, Route } from 'react-router-dom'
+import { act } from '@testing-library/react'
+import { Route } from 'react-router-dom'
 import EnvCIDetails from '../EnvCIDetails'
 import { renderWithRouter } from '../../EnvironmentConfig/__test__/ApplicationRoutes.test'
-import { ciResult, filteredData, mockCIList, mockTrigger } from '../__mock__/EnvCIDetails.mock'
+import { filteredData, mockCIList, mockTrigger } from '../__mock__/EnvCIDetails.mock'
 import * as configData from '../../../AppGroup.service'
 import * as serviceData from '../../../../app/service'
 
