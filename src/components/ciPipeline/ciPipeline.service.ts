@@ -429,12 +429,6 @@ function parseCIResponse(
             ciPipeline.postBuildStage = migrateOldData(ciPipeline.afterDockerBuildScripts)
         }
         const materials = createMaterialList(ciPipeline, gitMaterials, gitHost)
-
-        let _isCiPipelineEditable = true
-        if (materials.length > 1 && materials.some((_material) => _material.type == SourceTypeMap.WEBHOOK)) {
-            _isCiPipelineEditable = false
-        }
-
         // do webhook event specific
         let _webhookConditionList = []
         if (webhookEvents && webhookEvents.length > 0) {
@@ -476,7 +470,7 @@ function parseCIResponse(
                 webhookEvents: webhookEvents,
                 ciPipelineSourceTypeOptions: ciPipelineSourceTypeOptions,
                 webhookConditionList: _webhookConditionList,
-                ciPipelineEditable: _isCiPipelineEditable,
+                ciPipelineEditable: true,
                 preBuildStage: ciPipeline.preBuildStage || emptyStepsData(),
                 postBuildStage: ciPipeline.postBuildStage || emptyStepsData(),
                 isDockerConfigOverridden: ciPipeline.isDockerConfigOverridden,

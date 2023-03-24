@@ -170,7 +170,7 @@ function HeaderSection(type: string) {
     const isUserPremissions = type === 'user'
 
     return (
-        <div className="auth-page__header">
+        <div className="auth-page__header pt-20">
             <h2 className="auth-page__header-title form__title">
                 {isUserPremissions ? 'User permissions' : 'Permission groups'}
             </h2>
@@ -229,7 +229,7 @@ export default function UserGroupRoute() {
             }, appList)
         })
         try {
-            const { result } = await getProjectFilteredApps(missingProjects)
+            const { result } = await getProjectFilteredApps(missingProjects,ACCESS_TYPE_MAP.DEVTRON_APPS)
             const projectsMap = mapByKey(result || [], 'projectId')
             setAppsList((appList) => {
                 return new Map(
@@ -255,7 +255,7 @@ export default function UserGroupRoute() {
     }
 
     async function fetchAppListHelmApps(projectIds: number[]) {
-        const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
+            const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
         if (missingProjects.length === 0) return
         setAppsListHelmApps((appListHelmApps) => {
             return missingProjects.reduce((appListHelmApps, projectId) => {
