@@ -1,5 +1,5 @@
 import { Routes } from '../../../../../config'
-import { get, post, put } from '../../../../../services/api'
+import { post, put } from '../../../../../services/api'
 import { AppDetails, AppType, DeploymentAppType, SelectedResourceType } from '../../appDetails.type'
 
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {

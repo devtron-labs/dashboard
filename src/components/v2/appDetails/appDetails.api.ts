@@ -1,5 +1,5 @@
 import { Routes } from '../../../config/constants'
-import { get, post, trash } from '../../../services/api'
+import { get, post } from '../../../services/api'
 import { AppType, DeploymentAppType } from './appDetails.type'
 import { getAppId } from '../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
@@ -22,27 +22,31 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
     if (!nodeDetails.group) {
         nodeDetails.group = ''
     }
+    const { appName, clusterId, namespace, environmentName, appType, deploymentAppType } = appDetails;
+    const { group, version, kind, name } = nodeDetails;
+    const appDetailsName = deploymentAppType === DeploymentAppType.helm && appType === AppType.DEVTRON_APP 
+    ? `${appName}-${environmentName}` 
+    : appName;
+
     // removed argocd server api dependencies and routed through k8s methods
     const data = {
-        appId: appDetails.deploymentAppType === DeploymentAppType.argo_cd ? '' : getAppId(
-            appDetails.clusterId,
-            appDetails.namespace,
-            appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP
-                ? `${appDetails.appName}-${appDetails.environmentName}`
-                : appDetails.appName,
+        appId: deploymentAppType === DeploymentAppType.argo_cd ? '' : getAppId(
+            clusterId,
+            namespace,
+            appDetailsName
         ),
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
-                    Group: nodeDetails.group,
-                    Version: nodeDetails.version,
-                    Kind: nodeDetails.kind,
+                    Group: group,
+                    Version: version,
+                    Kind: kind,
                 },
-                namespace: nodeDetails.namespace,
-                name: nodeDetails.name,
+                namespace: namespace,
+                name: name,
             },
         },
-        ClusterId:  appDetails.deploymentAppType === DeploymentAppType.argo_cd ? appDetails.clusterId : null
+        ClusterId:  deploymentAppType === DeploymentAppType.argo_cd ? clusterId : null
     }
     return post(Routes.DELETE_RESOURCE, data)
 }
