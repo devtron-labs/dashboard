@@ -1358,6 +1358,9 @@ button.anchor {
     .dc__visible-hover--child {
         display: none;
     }
+    .dc__visible {
+        display: block;
+    }
 
     &.dc__visible-hover--parent:hover {
         .dc__visible-hover--child {
@@ -2015,7 +2018,7 @@ textarea,
     }
 }
 .icon-color-grey {
-    fill: #5A5A5A;
+    fill: #5a5a5a;
 }
 
 .icon-color-n7 {
@@ -2397,10 +2400,9 @@ textarea,
 .h-100 {
     height: 100%;
 }
-.dc__height-reduce-172{
-    height: 'calc(100vh - 172px)'
+.dc__height-reduce-172 {
+    height: 'calc(100vh - 172px)';
 }
-
 
 // Line height
 .lh-1-4 {
@@ -2755,8 +2757,7 @@ textarea::placeholder {
 }
 
 .dc__icon-bg-color {
-    background-color: #DFF3F7;
-
+    background-color: #dff3f7;
 }
 
 .dc__list-style-disc {
