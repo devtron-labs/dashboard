@@ -271,10 +271,10 @@ function Cluster(this: any, {
         return namespacesInAll && clusterId ? [{ id: null }].concat(environments || []) : environments || []
     }, [environments])
 
-    function handleClose(isReload): void {
-        setEnvironment(null)
-        if (isReload) reload()
-    }
+    // function handleClose(isReload): void {
+    //     setEnvironment(null)
+    //     if (isReload) reload()
+    // }
 
     async function handleEdit(e) {
         try {
@@ -578,7 +578,7 @@ function Cluster(this: any, {
                             reload={reload}
                             cluster_name={cluster_name}
                             {...environment}
-                            handleClose={handleClose}
+                            //handleClose={handleClose}
                             hideClusterDrawer={hideClusterDrawer}
                         />
                     </div>
@@ -1023,7 +1023,7 @@ function Environment({
     namespace,
     id,
     cluster_id,
-    handleClose,
+    //handleClose,
     prometheus_endpoint,
     isProduction,
     description,
@@ -1093,7 +1093,8 @@ function Environment({
             setLoading(true)
             await api(payload, id)
             toast.success(`Successfully ${id ? 'updated' : 'saved'}`)
-            handleClose(true)
+            reload()
+        hideClusterDrawer()
         } catch (err) {
             showError(err)
         } finally {
@@ -1103,13 +1104,15 @@ function Environment({
 
     const clusterDelete = (): void => {
         setDeleting(true)
-        handleClose(false)
+        reload()
+        hideClusterDrawer()
     }
 
-    const deleteEnv = async(payload):Promise<any> => {
-        const promise = await deleteEnvironment(payload)
+    const deleteEnv = ():void => {
+        //const promise = await deleteEnvironment(payload)
+        reload()
         hideClusterDrawer()
-        return promise
+        //return promise
     }
     
     return (
@@ -1192,20 +1195,20 @@ function Environment({
                             {deleting ? <Progressing /> : 'Delete'}
                         </button>
                     )}
-                    <button className="cta" type="submit" disabled={loading}>
+                    <button className="cta" type="submit" disabled={loading} >
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}
                     </button>
                 </div>
                 {confirmation && (
                     <DeleteComponent
                         setDeleting={clusterDelete}
-                        deleteComponent={deleteEnv}
+                        deleteComponent={deleteEnvironment}
                         payload={getEnvironmentPayload()}
                         title={state.environment_name.value}
                         toggleConfirmation={toggleConfirmation}
                         component={DeleteComponentsName.Environment}
                         confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
-                        reload={reload}
+                        reload={deleteEnv}
                     />
                 )}
             </form>

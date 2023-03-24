@@ -65,5 +65,5 @@ export function deleteCluster(request): Promise<any> {
 }
 
 export function deleteEnvironment(request): Promise<any>{
-    return trash(Routes.ENVIRONMENT, request); 
+    return trash(Routes.ENVIRONMENT, request);
 }
