@@ -32,6 +32,8 @@ import {
 import { CDPipelineProps, CDPipelineState, CD_PATCH_ACTION, Environment } from './cdPipeline.types'
 import { ValidationRules } from './validationRules'
 import { getEnvironmentListMinPublic } from '../../services/service'
+import { ReactComponent as Key } from '../../assets/icons/ic-key-bulb.svg'
+import { ReactComponent as File } from '../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as PrePostCD } from '../../assets/icons/ic-cd-stage.svg'
@@ -879,6 +881,19 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             key === 'preStage'
                 ? this.state.pipelineConfig.runPreStageInEnv
                 : this.state.pipelineConfig.runPostStageInEnv
+        function getOptionLabel(option:any) {
+            if (option.type === 'configmaps') {
+                return (<div style={{ display: 'flex', alignItems: 'center', marginLeft: '0px'}}>
+                    <File className='icon-dim-16' />
+                    <span style={{ marginLeft: 8, alignItems: 'center', fontSize: '12px' }}>{option.name}</span>
+                </div>)
+            } else {
+                return (<div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Key className='icon-dim-16' />
+                    <span style={{ marginLeft: 8, alignItems: 'center', fontSize: '12px'}}>{option.name}</span>
+                </div>)
+            }
+        }        
         return (
             <div className="cd-stage mt-12">
                 <div className="form__row">
@@ -912,8 +927,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         isClearable={true}
                         value={selections}
                         options={this.configMapAndSecrets}
-                        getOptionLabel={(option) => `${option.name}`}
-                        getOptionValue={(option) => `${option.name}`}
+                        formatOptionLabel={getOptionLabel}
+                        getOptionValue={(option) => `${option.name}${option.type}`}
                         onChange={(selected) => {
                             this.handleConfigmapAndSecretsChange(selected, configmapKey)
                         }}
