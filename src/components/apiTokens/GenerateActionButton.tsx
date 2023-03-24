@@ -22,7 +22,7 @@ function GenerateActionButton({
                 </ButtonWithLoader>
                 <ButtonWithLoader
                     rootClassName= {`flex cta h-36 ${regenerateButton ? 'second' : 'mr-12 first'}`}
-                    onClick={() => onSave()}
+                    onClick={onSave}
                     disabled={loader}
                     isLoading={loader}
                     loaderColor="white"

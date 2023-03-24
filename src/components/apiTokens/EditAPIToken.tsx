@@ -239,8 +239,8 @@ function EditAPIToken({
                 className="w-300 h-100 fcv-5"
                 placement="right"
                 Icon={QuestionFilled}
-                heading={API_COMPONENTS.title}
-                infoText= {API_COMPONENTS.question_icon_info}
+                heading={API_COMPONENTS.TITLE}
+                infoText= {API_COMPONENTS.QUESTION_ICON_INFO}
                 showCloseButton={true}
                 trigger="click"
                 interactive = {true}
@@ -261,9 +261,9 @@ function EditAPIToken({
                 <div className='flex row ml-0'>
                     <div className="cn-9 fw-6 fs-16">
                         <span className="cb-5 cursor" onClick={redirectToTokenList}>
-                            {API_COMPONENTS.title}
+                            {API_COMPONENTS.TITLE}
                         </span>{' '}
-                        {API_COMPONENTS.edit_api_title}
+                        {API_COMPONENTS.EDIT_API_TITLE}
                     </div>
                     {handleQuestion()}
                 </div>
