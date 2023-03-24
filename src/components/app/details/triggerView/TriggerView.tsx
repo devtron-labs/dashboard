@@ -30,6 +30,7 @@ import {
     SourceTypeMap,
     BUILD_STATUS,
     DEFAULT_GIT_BRANCH_VALUE,
+    DOCUMENTATION,
 } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'
@@ -42,7 +43,7 @@ import { getCIWebhookRes } from './ciWebhook.service'
 import { CIMaterialType } from './MaterialHistory'
 import { TriggerViewContext } from './config'
 import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
-import { CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
+import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
 import { handleSourceNotConfigured, processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.utils'
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
@@ -465,7 +466,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickTriggerCDNode = (nodeType: DeploymentNodeType, _appId: number, deploymentWithConfig?: string, wfrId?: number): void => {
+    onClickTriggerCDNode = (
+        nodeType: DeploymentNodeType,
+        _appId: number,
+        deploymentWithConfig?: string,
+        wfrId?: number,
+    ): void => {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
         this.setState({ isLoading: true })
         let node
@@ -879,6 +885,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
                     isCacheAvailable={nd?.storageConfigured}
                     appId={this.props.match.params.appId}
+                    isJobView={this.props.isJobView}
                 />
             )
         }
@@ -939,6 +946,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             history={this.props.history}
                             location={this.props.location}
                             match={this.props.match}
+                            isJobView={this.props.isJobView}
                         />
                     )
                 })}
@@ -965,6 +973,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return null
     }
 
+    jobNotConfiguredSubtitle = () => {
+        return (
+            <>
+                {APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.subTitle}&nbsp;
+                <a href={DOCUMENTATION.APP_CREATE} target="_blank">
+                    {APP_DETAILS.NEED_HELP}
+                </a>
+            </>
+        )
+    }
+
     render() {
         if (this.state.view === ViewType.LOADING) {
             return <Progressing pageLoader />
@@ -973,7 +992,16 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         } else if (!this.state.workflows.length) {
             return (
                 <div>
-                    <AppNotConfigured />
+                    {this.props.isJobView ? (
+                        <AppNotConfigured
+                            title={APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.title}
+                            subtitle={this.jobNotConfiguredSubtitle()}
+                            buttonTitle={APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.buttonTitle}
+                            isJobView={this.props.isJobView}
+                        />
+                    ) : (
+                        <AppNotConfigured />
+                    )}
                 </div>
             )
         }

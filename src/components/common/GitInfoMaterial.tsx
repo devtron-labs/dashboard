@@ -35,6 +35,7 @@ export default function GitInfoMaterial({
     appId,
     fromBulkCITrigger,
     hideSearchHeader,
+    isJobView = false,
 }) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
@@ -171,7 +172,7 @@ export default function GitInfoMaterial({
     }
 
     const goToWorkFlowEditor = () => {
-        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId)
+        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId, isJobView)
         if (fromAppGrouping) {
             window.open(window.location.href.replace(location.pathname, ciPipelineURL), '_blank', 'noreferrer')
         } else {
@@ -296,6 +297,7 @@ export default function GitInfoMaterial({
                     fromAppGrouping={fromAppGrouping}
                     fromBulkCITrigger={fromBulkCITrigger}
                     appId={appId}
+                    isJobView={isJobView}
                 />
             </div>
         )

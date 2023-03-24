@@ -82,15 +82,18 @@ export default function App() {
         }
     }, [isOnline])
 
+    const defaultRedirection = (): void => {
+        if (location.search && location.search.includes('?continue=')) {
+            const newLocation = location.search.replace('?continue=', '')
+            push(newLocation)
+        }
+    }
+
     useEffect(() => {
         async function validation() {
             try {
                 await validateToken()
-                // check if admin then direct to admin otherwise router will redirect to app list
-                if (location.search && location.search.includes('?continue=')) {
-                    const newLocation = location.search.replace('?continue=', '')
-                    push(newLocation)
-                }
+                defaultRedirection()
             } catch (err: any) {
                 // push to login without breaking search
                 if (err?.code === 401) {
@@ -107,7 +110,13 @@ export default function App() {
                 setValidating(false)
             }
         }
-        validation()
+        // If not K8S_CLIENT then validateToken otherwise directly redirect
+        if (!window._env_.K8S_CLIENT) {
+            validation()
+        } else {
+            setValidating(false)
+            defaultRedirection()
+        }
     }, [])
 
     async function update() {
@@ -212,9 +221,11 @@ export default function App() {
                         <ErrorBoundary>
                             <BreadcrumbStore>
                                 <Switch>
-                                    <Route path={`/login`} component={Login} />
+                                    {!window._env_.K8S_CLIENT && <Route path={`/login`} component={Login} />}
                                     <Route path="/" render={() => <NavigationRoutes />} />
-                                    <Redirect to={`${URLS.LOGIN_SSO}${location.search}`} />
+                                    <Redirect
+                                        to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
+                                    />
                                 </Switch>
                                 <div id="full-screen-modal"></div>
                                 <div id="visible-modal"></div>
