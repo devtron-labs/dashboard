@@ -286,6 +286,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     <span className="form__label dc__required-field">{this.props.isJobView ? 'Job' : 'App'} Name</span>
                     <input
                         ref={(node) => (this._inputAppName = node)}
+                        data-testid="app_name_textBox"
                         className="form__input"
                         type="text"
                         name="app-name"
@@ -335,7 +336,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             this.changeTemplate(event.target.value)
                         }}
                     >
-                        <RadioGroupItem value={AppCreationType.Blank}>Create from scratch</RadioGroupItem>
+                        <RadioGroupItem value={AppCreationType.Blank} data-testid="create-from-scratch-radio-button">Create from scratch</RadioGroupItem>
                         <RadioGroupItem value={AppCreationType.Existing}>
                             Clone existing {this.props.isJobView ? 'job' : 'application'}
                         </RadioGroupItem>
@@ -343,7 +344,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 </div>
                 {this.state.form.appCreationType === AppCreationType.Existing && (
                     <>
-                        <div className="form__row clone-apps dc__inline-block">
+                        <div className="form__row clone-apps dc__inline-block" data-testid="clone-existing-application-radio-button">
                             <span className="form__label dc__required-field">
                                 Select an {this.props.isJobView ? 'job' : 'app'} to clone
                             </span>
@@ -385,6 +386,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 <div className="form__row">
                     <span className="form__label dc__required-field">Project</span>
                     <ReactSelect
+                        classNamePrefix="create-app__select-project"
                         className="m-0"
                         tabIndex={4}
                         isMulti={false}
@@ -424,7 +426,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     renderFooterSection = (): JSX.Element => {
         return (
             <div className="w-800 dc__border-top flex right pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0">
-                <button className="cta flex h-36" onClick={this.createApp}>
+                <button className="cta flex h-36" onClick={this.createApp} data-testid="create-app-button-on-drawer">
                     {`${this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}${
                         this.props.isJobView ? 'Job' : 'App'
                     }`}

@@ -165,6 +165,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 <form className="login-dt__form" autoComplete="on" onSubmit={this.login}>
                     <input
                         type="text"
+                        data-testid="username-textbox"
                         className="form__input fs-14 mb-24"
                         placeholder="Username"
                         value={this.state.form.username}
@@ -173,6 +174,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                     />
                     <input
                         type={process.env.NODE_ENV !== 'development' ? 'password' : 'text'}
+                        data-testid="password-textbox"
                         className="form__input fs-14"
                         placeholder="Password"
                         value={this.state.form.password}
@@ -189,8 +191,8 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             What is my admin password?
                         </a>
                     </div>
-                    <button disabled={this.isFormNotValid() || this.state.loading} className="cta login__button">
-                        {this.state.loading ? <Progressing /> : 'Login'}
+                    <button disabled={this.isFormNotValid() || this.state.loading} className="cta login__button" data-testid="login-button">
+                        {this.state.loading ? <Progressing /> : 'Login' }
                     </button>
                     {this.state.loginList.length ? (
                         <NavLink className="login__link cb-5" to={`${URLS.LOGIN_SSO}${search}`}>

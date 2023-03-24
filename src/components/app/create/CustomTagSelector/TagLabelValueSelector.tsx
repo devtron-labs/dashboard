@@ -144,6 +144,7 @@ export default function TagLabelValueSelector({
                     tabIndex={tabIndex}
                     refVar={refVar}
                     dependentRef={dependentRef}
+                    dataTestId={`tag-${tagInputType === KEY_VALUE.KEY ? 'key' : 'value'}-${selectedTagIndex}`}
                 />
             </PopupMenu.Button>
             <PopupMenu.Body rootClassName={`tag-${selectedTagIndex}-class`} autoWidth={true} preventWheelDisable={true}>

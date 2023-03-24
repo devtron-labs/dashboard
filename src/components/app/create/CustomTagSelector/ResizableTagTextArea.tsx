@@ -14,6 +14,7 @@ export function ResizableTagTextArea({
     tabIndex,
     refVar,
     dependentRef,
+    dataTestId,
 }: ResizableTagTextAreaProps) {
     const [text, setText] = useState('')
 
@@ -69,6 +70,7 @@ export function ResizableTagTextArea({
             onBlur={handleOnBlur}
             onFocus={handleOnFocus}
             tabIndex={tabIndex}
+            data-testid={dataTestId}
         />
     )
 }

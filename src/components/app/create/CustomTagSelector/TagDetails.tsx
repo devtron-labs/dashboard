@@ -24,6 +24,7 @@ export default function TagDetails({ index, tagData, setTagData, removeTag, tabI
             <div
                 className={`dc__border h-30 pl-4 pr-4 br-4 mr-8 pointer ${tagData.propagate ? 'bcn-7' : ''}`}
                 onClick={propagateTagToResource}
+                data-testid={`propagate-tag-${index}`}
             >
                 <InjectTag className={`icon-dim-20 mt-4 ${tagData.propagate ? 'scn-0' : ''}`} />
             </div>
