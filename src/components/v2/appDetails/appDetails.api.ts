@@ -4,10 +4,14 @@ import { AppType, DeploymentAppType } from './appDetails.type'
 import { getAppId } from '../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
 export const getInstalledChartDetail = (_appId: number, _envId: number) => {
-    return get(`app-store/installed-app/detail?installed-app-id=${_appId}&env-id=${_envId}`)
+    return get(`${Routes.APP_STORE_INSTALLED_APP}/detail?installed-app-id=${_appId}&env-id=${_envId}`)
 }
 export const getInstalledChartNotesDetail = (_appId: number, _envId: number) => {
-    return get(`app-store/installed-app/notes?installed-app-id=${_appId}&env-id=${_envId}`)
+    return get(`${Routes.APP_STORE_INSTALLED_APP}/notes?installed-app-id=${_appId}&env-id=${_envId}`)
+}
+
+export const getInstalledChartDetailWithResourceTree = (_appId: number, _envId: number) => {
+    return get(`${Routes.APP_STORE_INSTALLED_APP}/resource/hibernate?installed-app-id=${_appId}&env-id=${_envId}`)
 }
 
 export const getInstalledAppDetail = (_appId: number, _envId: number) => {
