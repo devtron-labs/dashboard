@@ -856,6 +856,37 @@ button.anchor {
     background-color: #f5f5f5;
 }
 
+.override-button.cta {
+
+    &.ghosted,
+    &.delete {
+        height: 32px;
+        display: flex;
+        align-items: center;
+        margin: auto;
+    }
+
+    &.delete {
+        svg path {
+            fill: none;
+            stroke: var(--R500);
+        }
+
+        &:hover{
+            svg path {
+                fill: var(--R500);
+                stroke: white;
+            }
+        }
+        &:active,
+        &:focus {
+            svg path {
+                stroke: white;
+            }
+        }
+    }
+}
+
 .loader {
     display: flex;
     justify-content: center;
@@ -1357,6 +1388,9 @@ button.anchor {
 .dc__visible-hover {
     .dc__visible-hover--child {
         display: none;
+    }
+    .dc__visible {
+        display: block;
     }
 
     &.dc__visible-hover--parent:hover {
@@ -2490,7 +2524,6 @@ textarea,
 }
 
 // Padding in pixels
-
 .pl-14-imp {
     padding-left: 14px !important;
 }

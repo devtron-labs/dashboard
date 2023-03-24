@@ -132,6 +132,7 @@ function RegeneratedModal({
                     onCancel={() => setShowRegeneratedModal(false)}
                     onSave={handleRegenrateToken}
                     buttonText="Regenerate Token"
+                    regenerateButton={true}
                 />
             </div>
         </VisibleModal>

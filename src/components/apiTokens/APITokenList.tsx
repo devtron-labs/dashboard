@@ -81,12 +81,12 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
 
     return (
         <div className='bcn-0'>
-            <div className='flex dc__content-space pl-20 pr-20'>
+            <div className='flex dc__content-space pl-20 pr-20 pt-16 pb-16'>
                 <div className='flex row ml-0'>
                     <div className="cn-9 fw-6 fs-16">API tokens</div>
                     {handleQuestion()}
                 </div>
-                <div className="flex dc__align-end dc__content-end mb-8 mt-16">
+                <div className="flex dc__align-end dc__content-end">
                     {renderSearchToken()}
                     <button className="flex cta h-32 ml-10 app-status-card__divider" onClick={handleGenerateRowAction}>
                         Generate new token
@@ -94,7 +94,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                 </div>
             </div>
             <div className="api-token__list">
-                <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
+                <div className="api-list__row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pl-20 pr-20 dc__uppercase">
                     <div></div>
                     <div>Name</div>
                     <div>Last Used On</div>
@@ -109,7 +109,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                         tokenList.map((list, index) => (
                             <div
                                 key={`api_${index}`}
-                                className="api-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
+                                className="api-list__row api-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
                                 style={{ height: '45px' }}
                             >
                                 <button

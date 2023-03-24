@@ -135,3 +135,15 @@
     letter-spacing: normal;
     color: var(--N900);
 }
+
+.cd-stage .code-editor {
+    border: 1px solid #d6dbdf;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.dropdown__option {
+    display: flex;
+    align-items: center;
+    margin-left: 0px;
+}

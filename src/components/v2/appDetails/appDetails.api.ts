@@ -1,5 +1,5 @@
 import { Routes } from '../../../config/constants'
-import { get, post, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post } from '@devtron-labs/devtron-fe-common-lib'
 import { AppType, DeploymentAppType } from './appDetails.type'
 import { getAppId } from '../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
@@ -22,33 +22,33 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
     if (!nodeDetails.group) {
         nodeDetails.group = ''
     }
+    const { appName, clusterId, namespace, environmentName, appType, deploymentAppType } = appDetails;
+    const { group, version, kind, name } = nodeDetails;
+    const appDetailsName = deploymentAppType === DeploymentAppType.helm && appType === AppType.DEVTRON_APP
+    ? `${appName}-${environmentName}`
+    : appName;
 
-    if (appDetails.appType === AppType.EXTERNAL_HELM_CHART || appDetails.deploymentAppType === DeploymentAppType.helm) {
-        const data = {
-            appId: getAppId(
-                appDetails.clusterId,
-                appDetails.namespace,
-                appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP
-                    ? `${appDetails.appName}-${appDetails.environmentName}`
-                    : appDetails.appName,
-            ),
-            k8sRequest: {
-                resourceIdentifier: {
-                    groupVersionKind: {
-                        Group: nodeDetails.group,
-                        Version: nodeDetails.version,
-                        Kind: nodeDetails.kind,
-                    },
-                    namespace: nodeDetails.namespace,
-                    name: nodeDetails.name,
+    // removed argocd server api dependencies and routed through k8s methods
+    const data = {
+        appId: deploymentAppType === DeploymentAppType.argo_cd ? '' : getAppId(
+            clusterId,
+            namespace,
+            appDetailsName
+        ),
+        k8sRequest: {
+            resourceIdentifier: {
+                groupVersionKind: {
+                    Group: group,
+                    Version: version,
+                    Kind: kind,
                 },
+                namespace: namespace,
+                name: name,
             },
-        }
-        return post(Routes.DELETE_RESOURCE, data)
+        },
+        ClusterId:  deploymentAppType === DeploymentAppType.argo_cd ? clusterId : null
     }
-    return trash(
-        `${Routes.APPLICATIONS}/${appDetails.appName}-${appDetails.environmentName}/resource?name=${nodeDetails.name}&namespace=${nodeDetails.namespace}&resourceName=${nodeDetails.name}&version=${nodeDetails.version}&group=${nodeDetails.group}&kind=${nodeDetails.kind}&force=${forceDelete}&appId=${appDetails.appId}&envId=${envId}`,
-    )
+    return post(Routes.DELETE_RESOURCE, data)
 }
 
 export const getAppOtherEnvironment = (appId) => {

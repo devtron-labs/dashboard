@@ -18,6 +18,7 @@ import {
     TriggerType,
     URLS,
     ViewType,
+    SourceTypeMap,
 } from '../../config'
 import {
     deleteCIPipeline,
@@ -409,11 +410,21 @@ export default function CIPipeline({
             formData.isDockerConfigOverridden = false
             formData.dockerConfigOverride = {} as DockerConfigOverrideType
         }
+        //here we check for the case where the pipeline is multigit and user selects pullrequest or tag creation(webhook)
+        //in that case we only send the webhook data not the other one.
+        let _materials = formData.materials
+        if (formData.materials.length > 1) {
+            _materials = formData.materials.filter((material) => material.type === SourceTypeMap.WEBHOOK)
+        }
 
         saveCIPipeline(
-            { ...formData, scanEnabled: isSecurityModuleInstalled ? formData.scanEnabled : false },
+            {
+                ...formData,
+                materials: _materials,
+                scanEnabled: isSecurityModuleInstalled ? formData.scanEnabled : false,
+            },
             ciPipeline,
-            formData.materials,
+            _materials,
             +appId,
             +workflowId,
             false,
@@ -547,10 +558,21 @@ export default function CIPipeline({
         const _formDataErrorObj = { ...formDataErrorObj, name: validationRules.name(_formData.name) } // validating name always as it's a mandatory field
         if (stageName === BuildStageVariable.Build) {
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
+
             let valid = _formData.materials.reduce((isValid, mat) => {
-                isValid = isValid && validationRules.sourceValue(mat.regex || mat.value, mat.type !== 'WEBHOOK').isValid
+                isValid =
+                    isValid &&
+                    validationRules.sourceValue(mat.regex || mat.value, mat.type !== SourceTypeMap.WEBHOOK).isValid
                 return isValid
             }, true)
+            if (_formData.materials.length > 1) {
+                const _isWebhook = _formData.materials.some((_mat) => _mat.type === SourceTypeMap.WEBHOOK)
+                if (_isWebhook) {
+                    valid = true
+                    _formDataErrorObj.name.isValid = true
+                }
+            }
+
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid && valid
             if (!_formDataErrorObj[BuildStageVariable.Build].isValid) {
                 setShowFormError(true)

@@ -142,35 +142,6 @@ div.override-container {
     .override-subtitle {
         font-weight: 400;
     }
-
-    .override-button.cta {
-        &.ghosted,
-        &.delete {
-            height: 32px;
-            display: flex;
-            align-items: center;
-            margin: auto;
-        }
-
-        &.delete {
-            svg {
-                path {
-                    fill: none;
-                    stroke: var(--R500);
-                }
-            }
-
-            &:hover,
-            &:active,
-            &:focus {
-                svg {
-                    path {
-                        stroke: white;
-                    }
-                }
-            }
-        }
-    }
 }
 
 .override-textarea-container {
