@@ -65,6 +65,7 @@ import {
     CREATE_DEPLOYMENT_PIPELINE,
     MULTI_REQUIRED_FIELDS_MSG,
     TOAST_INFO,
+    CONFIGMAPS_SECRETS,
 } from '../../config/constantMessaging'
 
 export const SwitchItemValues = {
@@ -882,15 +883,15 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 ? this.state.pipelineConfig.runPreStageInEnv
                 : this.state.pipelineConfig.runPostStageInEnv
         function getOptionLabel(option) {
-            if (option.type === 'configmaps') {
+            if (option.type === CONFIGMAPS_SECRETS.configmaps) {
                 return (<div className='dropdown__option'>
                     <File className='icon-dim-16' />
-                    <span style={{ marginLeft: 8, alignItems: 'center', fontSize: '12px' }}>{option.name}</span>
+                    <span  className='ml-8 fs-12 dc__align-center'>{option.name}</span>
                 </div>)
             } else {
                 return (<div className='dropdown__option'>
                     <Key className='icon-dim-16' />
-                    <span style={{ marginLeft: 8, alignItems: 'center', fontSize: '12px' }}>{option.name}</span>
+                    <span className='ml-8 fs-12 dc__align-center'>{option.name}</span>
                 </div>)
             }
         }
