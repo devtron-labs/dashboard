@@ -1,4 +1,4 @@
-import React, { useState, useMemo, Component, useRef } from 'react'
+import React, { useState, useMemo, Component, useRef, useEffect } from 'react'
 import {
     showError,
     Pencil,
@@ -261,6 +261,7 @@ function Cluster(this: any, {
     const [showWindow, setShowWindow] = useState(false)
     const [showEditWindow,setEditShowWindow] = useState(false)
     const [, grafanaModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [clusterId])
+    const editLabelRef = useRef(null)
     const history = useHistory()
     const newEnvs = useMemo(() => {
         let namespacesInAll = true
@@ -311,7 +312,7 @@ function Cluster(this: any, {
         setShowWindow(true)
     }
 
-    const hideClusterDrawer = ()=>{
+    const hideClusterDrawer = (e)=>{
         setShowWindow(false)
     }
 
@@ -321,6 +322,18 @@ function Cluster(this: any, {
     const hideEditClusterDrawer = ()=>{
         setEditShowWindow(false)
     }
+    //console.log(editLabelRef)
+    const outsideClickHandler = (evt): void => {
+        if (editLabelRef.current && !editLabelRef.current.contains(evt.target) && showWindow) {
+            setShowWindow(false)
+        }
+    }
+    useEffect(() => {
+        document.addEventListener('click', outsideClickHandler)
+        return (): void => {
+            document.removeEventListener('click', outsideClickHandler)
+        }
+    }, [outsideClickHandler])
 
     let envName: string = getEnvName(defaultClusterComponent, agentInstallationStage)
 
@@ -351,10 +364,10 @@ function Cluster(this: any, {
                             </div>
                             {clusterId && (
                                 <div className="flex right">
-                                    <List onClick={
-                                        ()=>{
+                                    <List
+                                        onClick={() => {
                                             setEnvironment({
-                                                id: null ,
+                                                id: null,
                                                 environment_name: null,
                                                 cluster_id: clusterId,
                                                 namespace: null,
@@ -363,8 +376,8 @@ function Cluster(this: any, {
                                                 description: null,
                                             })
                                             setShowWindow(true)
-                                        }
-                                    }>
+                                        }}
+                                    >
                                         <List.Logo>{<Add className="icon-dim-24 fcb-5" />}</List.Logo>
                                         <div className="flex left">
                                             <List.Title
@@ -458,7 +471,7 @@ function Cluster(this: any, {
 
                             <div className="api-token-container">
                                 <div className="cluster-list">
-                                    <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-3 dc__uppercase">
+                                    <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-10 dc__uppercase">
                                         <div></div>
                                         <div className="cluster-list__enviroment_name">ENVIRONMENT</div>
                                         <div className="cluster-list__name_space">NAMESPACE</div>
@@ -479,7 +492,7 @@ function Cluster(this: any, {
                                         }) =>
                                             environment_name ? (
                                                 <div
-                                                    className="api-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-10"
+                                                    className="api-list-row flex-align-center fw-4 cn-9 fs-13 pl-10"
                                                     style={{ height: 'fit-content' }}
                                                 >
                                                     <div className="dc__transparent cursor flex">
@@ -496,25 +509,30 @@ function Cluster(this: any, {
                                                     </div>
                                                     <div className="cluster-list__name_space">{namespace}</div>
                                                     <div className="cluster-list__description">{description}</div>
-                                                    <div className="api__row-actions flex right">
+                                                    <div className="api__row-actions flex right mr-12">
                                                         {/* <button
                                         type="button"
                                         className="dc__transparent mr-18"
                                         // onClick={() => handleGenerateRowActionButton('edit', list.id)}
                                     > */}
-                                                        <PencilEdit className="mr-7" onClick={()=>{
-                                                            setEnvironment({
-                                                                id,
-                                                                environment_name,
-                                                                cluster_id: clusterId,
-                                                                namespace,
-                                                                prometheus_url,
-                                                                isProduction,
-                                                                description,
-                                                            })
-                                                            setShowWindow(true)
-                                                        }} />
-                                                        <DeleteInvolvement />
+                                                        <PencilEdit
+                                                            className="mr-12"
+                                                            onClick={() => {
+                                                                setEnvironment({
+                                                                    id,
+                                                                    environment_name,
+                                                                    cluster_id: clusterId,
+                                                                    namespace,
+                                                                    prometheus_url,
+                                                                    isProduction,
+                                                                    description,
+                                                                })
+                                                                setShowWindow(true)
+                                                            }}
+                                                        />
+                                                        <DeleteInvolvement 
+                                                        //onClick={() => toggleConfirmation(true)}
+                                                        />
                                                         {/* </button> */}
                                                     </div>
                                                 </div>
@@ -555,7 +573,7 @@ function Cluster(this: any, {
             )} */}
             {showWindow && (
                 <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
-                    <div className="h-100 bcn-0 pt-0 pr-20 pb-12 pl-20">
+                    <div className="h-100 bcn-0 pt-0 pr-20 pb-12 pl-20" ref={editLabelRef}>
                         <Environment
                             reload={reload}
                             cluster_name={cluster_name}
@@ -580,8 +598,6 @@ function Cluster(this: any, {
                     </div>
                 </Drawer>
             )} */}
-
-
         </>
     )
 }
@@ -1048,7 +1064,7 @@ function Environment({
             description: {
                 required: false,
                 validators: [
-                    { error: 'Maximum 50 characters required', regex: /^.{0,50}$/ },
+                    { error: 'Maximum 40 characters required', regex: /^.{0,40}$/ },
                 ],
             },
         },
@@ -1090,6 +1106,12 @@ function Environment({
         handleClose(false)
     }
 
+    const deleteEnv = async(payload):Promise<any> => {
+        const promise = await deleteEnvironment(payload)
+        hideClusterDrawer()
+        return promise
+    }
+    
     return (
         //<VisibleModal className="environment-create-modal" close={handleClose}>
             <form /*className="environment-create-body"*/ onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit}>
@@ -1177,7 +1199,7 @@ function Environment({
                 {confirmation && (
                     <DeleteComponent
                         setDeleting={clusterDelete}
-                        deleteComponent={deleteEnvironment}
+                        deleteComponent={deleteEnv}
                         payload={getEnvironmentPayload()}
                         title={state.environment_name.value}
                         toggleConfirmation={toggleConfirmation}
