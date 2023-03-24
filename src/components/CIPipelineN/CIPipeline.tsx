@@ -10,6 +10,7 @@ import {
     TriggerType,
     URLS,
     ViewType,
+    SourceTypeMap,
 } from '../../config'
 import {
     deleteCIPipeline,
@@ -46,7 +47,6 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
-import { SourceTypeMap } from '../../config'
 
 export const ciPipelineContext = createContext(null)
 
