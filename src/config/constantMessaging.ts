@@ -172,10 +172,8 @@ export const CONFIGMAPS_SECRETS = {
 }
 
 export const API_COMPONENTS = {
-
-    TITLE: "API tokens",
+    TITLE: "API tokens ",
     QUESTION_ICON_INFO: "API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API.",
     NEW_API_TITLE: "/ New API token",
     EDIT_API_TITLE: "/ Edit API token"
-
 }

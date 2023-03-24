@@ -30,7 +30,7 @@ import { mainContext } from '../common/navigation/NavigationRoutes'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { API_COMPONENTS } from '../../config/constantMessaging'
-import { handleQuestion } from './CreateAPIToken'
+import { renderQuestionwithTippy } from './CreateAPIToken'
 
 function EditAPIToken({
     setShowRegeneratedModal,
@@ -235,10 +235,10 @@ function EditAPIToken({
                     <div className="cn-9 fw-6 fs-16">
                         <span className="cb-5 cursor" onClick={redirectToTokenList}>
                             {API_COMPONENTS.TITLE}
-                        </span>{' '}
+                        </span>
                         {API_COMPONENTS.EDIT_API_TITLE}
                     </div>
-                    {handleQuestion()}
+                    {renderQuestionwithTippy()}
                 </div>
                 <div className="flex dc__align-end dc__content-end">
                     <ButtonWithLoader

@@ -34,7 +34,7 @@ import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 import { DOCUMENTATION } from '../../config'
 import { API_COMPONENTS } from '../../config/constantMessaging'
 
-export const handleQuestion = () => {
+export const renderQuestionwithTippy = () => {
     return (
         <TippyCustomized
             theme={TippyTheme.white}
@@ -242,10 +242,10 @@ function CreateAPIToken({
                     <div className="cn-9 fw-6 fs-16">
                         <span className="cb-5 cursor" onClick={redirectToTokenList}>
                             {API_COMPONENTS.TITLE}
-                        </span>{' '}
+                        </span>
                         {API_COMPONENTS.NEW_API_TITLE}
                     </div>
-                    {handleQuestion()}
+                    {renderQuestionwithTippy()}
                 </div>
             </div>
 
