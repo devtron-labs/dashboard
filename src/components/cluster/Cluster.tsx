@@ -259,6 +259,7 @@ function Cluster(this: any, {
     const [prometheusAuth, setPrometheusAuth] = useState(undefined)
     const [showClusterComponentModal, toggleClusterComponentModal] = useState(false)
     const [showWindow, setShowWindow] = useState(false)
+    const [showEditWindow,setEditShowWindow] = useState(false)
     const [, grafanaModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [clusterId])
     const history = useHistory()
     const newEnvs = useMemo(() => {
@@ -273,10 +274,6 @@ function Cluster(this: any, {
         setEnvironment(null)
         if (isReload) reload()
     }
-
-    // function toggleWindow{
-        
-    // }
 
     async function handleEdit(e) {
         try {
@@ -318,6 +315,13 @@ function Cluster(this: any, {
         setShowWindow(false)
     }
 
+    const showEditClusterDrawer = ()=>{
+        setEditShowWindow(true)
+    }
+    const hideEditClusterDrawer = ()=>{
+        setEditShowWindow(false)
+    }
+
     let envName: string = getEnvName(defaultClusterComponent, agentInstallationStage)
 
     return (
@@ -347,10 +351,23 @@ function Cluster(this: any, {
                             </div>
                             {clusterId && (
                                 <div className="flex right">
-                                    <List onClick={showClusterDrawer }>
+                                    <List onClick={
+                                        ()=>{
+                                            setEnvironment({
+                                                id: null ,
+                                                environment_name: null,
+                                                cluster_id: clusterId,
+                                                namespace: null,
+                                                prometheus_url,
+                                                isProduction: null,
+                                                description: null,
+                                            })
+                                            setShowWindow(true)
+                                        }
+                                    }>
                                         <List.Logo>{<Add className="icon-dim-24 fcb-5" />}</List.Logo>
                                         <div className="flex left">
-                                            <List.Title 
+                                            <List.Title
                                                 style={{
                                                     fontSize: '13px',
                                                     width: '120px',
@@ -358,14 +375,13 @@ function Cluster(this: any, {
                                                     fontWeight: '600',
                                                 }}
                                                 title={'Add Environment'}
-                                                //onClick={showClusterDrawer}
                                                 subtitle={''}
-                                                tag={null}   
+                                                tag={null}
                                             />
                                         </div>
                                     </List>
                                     <div>
-                                        <List.DropDown src={<Pencil color="#b1b7bc"  onClick={handleEdit} />} />
+                                        <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />
                                     </div>
                                 </div>
                             )}
@@ -405,17 +421,17 @@ function Cluster(this: any, {
                             //             description,
                             //         }) => (
                             //             <List
-                                            //  onClick={(e) =>
-                                            //      setEnvironment({
-                                            //          id,
-                                            //          environment_name,
-                                            //          cluster_id: clusterId,
-                                            //          namespace,
-                                            //          prometheus_url,
-                                            //         isProduction,
-                                            //          description,
-                                            //      })
-                                            //  }
+                            //  onClick={(e) =>
+                            //      setEnvironment({
+                            //          id,
+                            //          environment_name,
+                            //          cluster_id: clusterId,
+                            //          namespace,
+                            //          prometheus_url,
+                            //          isProduction,
+                            //          description,
+                            //      })
+                            //  }
                             //                 key={id}
                             //                 className={`cluster-environment cluster-environment--${
                             //                     id ? 'update' : 'create collapsed-list collapsed-list--create'
@@ -486,7 +502,18 @@ function Cluster(this: any, {
                                         className="dc__transparent mr-18"
                                         // onClick={() => handleGenerateRowActionButton('edit', list.id)}
                                     > */}
-                                                        <PencilEdit className="mr-7" onClick={showClusterDrawer} />
+                                                        <PencilEdit className="mr-7" onClick={()=>{
+                                                            setEnvironment({
+                                                                id,
+                                                                environment_name,
+                                                                cluster_id: clusterId,
+                                                                namespace,
+                                                                prometheus_url,
+                                                                isProduction,
+                                                                description,
+                                                            })
+                                                            setShowWindow(true)
+                                                        }} />
                                                         <DeleteInvolvement />
                                                         {/* </button> */}
                                                     </div>
@@ -529,18 +556,32 @@ function Cluster(this: any, {
             {showWindow && (
                 <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
                     <div className="h-100 bcn-0 pt-0 pr-20 pb-12 pl-20">
-                       
-                            <Environment
-                                reload={reload}
-                                cluster_name={cluster_name}
-                                {...environment}
-                                handleClose={handleClose}
-                                hideClusterDrawer={hideClusterDrawer}
-                            />
-                        
+                        <Environment
+                            reload={reload}
+                            cluster_name={cluster_name}
+                            {...environment}
+                            handleClose={handleClose}
+                            hideClusterDrawer={hideClusterDrawer}
+                        />
                     </div>
                 </Drawer>
             )}
+
+            {/* {showEditWindow && (
+                <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
+                    <div className="h-100 bcn-0 pt-0 pr-20 pb-12 pl-20">
+                        <Environment
+                            reload={reload}
+                            cluster_name={cluster_name}
+                            {...environment}
+                            handleClose={handleClose}
+                            hideClusterDrawer={hideClusterDrawer}
+                        />
+                    </div>
+                </Drawer>
+            )} */}
+
+
         </>
     )
 }
@@ -1054,7 +1095,7 @@ function Environment({
             <form /*className="environment-create-body"*/ onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit}>
                 <div className="form__row">
                     <div className="flex left">
-                        <div className="form__title">{id ? 'Update Environment' : 'Add Environment'}</div>
+                        <div className="form__title">{id ? 'Edit Environment' : 'Add Environment'}</div>
                         <Close className="icon-dim-24 dc__align-right cursor" onClick={hideClusterDrawer} />
                     </div>
                 </div>
@@ -1116,7 +1157,7 @@ function Environment({
                         value={state.description.value}
                         error={state.description.error}
                         onChange={handleOnChange}
-                        label="Description (Max 50 characters)"
+                        label="Description (Max 40 characters)"
                     />
                 </div>
                 <div className={`form__buttons`}>

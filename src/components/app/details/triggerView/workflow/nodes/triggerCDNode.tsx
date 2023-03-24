@@ -7,7 +7,6 @@ import Tippy from '@tippyjs/react';
 import { Link } from 'react-router-dom';
 import { TriggerViewContext } from '../../config';
 import { triggerStatus } from '../../../cicdHistory/History.components';
-import TippyCustomized, { TippyTheme } from '../../../../../common/TippyCustomized';
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     constructor(props) {
@@ -83,7 +82,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                                 <div>
                                                     <div>{this.props.environmentName}</div>
                                                     <div>{this.props.description}</div>
-                                                    <div>'This is env description of 40 words</div>
+                                                  //<div>'This is env description of 40 words</div>
                                                 </div>
                                             }
                                         >
