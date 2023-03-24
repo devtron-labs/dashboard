@@ -407,13 +407,10 @@ export default function CIPipeline({
         //in that case we only send the webhook data not the other one.
         let _materials = formData.materials
         if (formData.materials.length > 1) {
-            const _isWebhook = formData.materials.some((_mat) => _mat.type === SourceTypeMap.WEBHOOK)
-            if (_isWebhook) {
-                for (let material of formData.materials) {
-                    if (material.type === SourceTypeMap.WEBHOOK) {
-                        _materials = [material]
-                        break
-                    }
+            for (let material of formData.materials) {
+                if (material.type === SourceTypeMap.WEBHOOK) {
+                    _materials = [material]
+                    break
                 }
             }
         }
