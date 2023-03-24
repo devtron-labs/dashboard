@@ -426,7 +426,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     renderFooterSection = (): JSX.Element => {
         return (
             <div className="w-800 dc__border-top flex right pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0">
-                <button className="cta flex h-36" onClick={this.createApp} data-testid="create-app-button-on-drawer">
+                <button className="cta flex h-36" onClick={this.createApp}  data-testid="create-app-button-on-drawer">
                     {`${this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}${
                         this.props.isJobView ? 'Job' : 'App'
                     }`}
