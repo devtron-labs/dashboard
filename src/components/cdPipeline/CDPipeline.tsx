@@ -881,19 +881,27 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             key === 'preStage'
                 ? this.state.pipelineConfig.runPreStageInEnv
                 : this.state.pipelineConfig.runPostStageInEnv
-        function getOptionLabel(option:any) {
+        function getOptionLabel(option) {
             if (option.type === 'configmaps') {
-                return (<div style={{ display: 'flex', alignItems: 'center', marginLeft: '0px'}}>
+                return (<div className= 'dropdown__option'>
                     <File className='icon-dim-16' />
                     <span style={{ marginLeft: 8, alignItems: 'center', fontSize: '12px' }}>{option.name}</span>
                 </div>)
             } else {
-                return (<div style={{ display: 'flex', alignItems: 'center' }}>
+                return (<div className= 'dropdown__option'>
                     <Key className='icon-dim-16' />
                     <span style={{ marginLeft: 8, alignItems: 'center', fontSize: '12px'}}>{option.name}</span>
                 </div>)
             }
-        }        
+        }   
+        
+        function getOptionValue(option) {
+            return (`${option.name}${option.type}`)
+        }
+
+        const onChangeOption = (selected) => {
+            this.handleConfigmapAndSecretsChange(selected, configmapKey)
+        }
         return (
             <div className="cd-stage mt-12">
                 <div className="form__row">
@@ -928,10 +936,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         value={selections}
                         options={this.configMapAndSecrets}
                         formatOptionLabel={getOptionLabel}
-                        getOptionValue={(option) => `${option.name}${option.type}`}
-                        onChange={(selected) => {
-                            this.handleConfigmapAndSecretsChange(selected, configmapKey)
-                        }}
+                        getOptionValue={getOptionValue}
+                        onChange={onChangeOption}
                         components={{
                             IndicatorSeparator: null,
                             DropdownIndicator,
