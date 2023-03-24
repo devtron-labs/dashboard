@@ -165,3 +165,12 @@ export const APP_GROUP_CI_DETAILS = {
 export const DEPLOYMENT_HISTORY_TABS = {
   SOURCE : 0,
 }
+
+export const API_COMPONENTS = {
+
+    title: "API tokens",
+    question_icon_info: "API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API.",
+    new_api_title: "/ New API token",
+    edit_api_title: "/ Edit API token"
+
+}

@@ -34,6 +34,7 @@ import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 import { components } from 'react-select'
 import EnvironmentOverride from '../EnvironmentOverride/EnvironmentOverride'
+import { API_COMPONENTS } from '../../config/constantMessaging'
 
 function EditAPIToken({
     setShowRegeneratedModal,
@@ -238,8 +239,8 @@ function EditAPIToken({
                 className="w-300 h-100 fcv-5"
                 placement="right"
                 Icon={QuestionFilled}
-                heading={"API tokens"}
-                infoText="API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API."
+                heading={API_COMPONENTS.title}
+                infoText= {API_COMPONENTS.question_icon_info}
                 showCloseButton={true}
                 trigger="click"
                 interactive = {true}
@@ -260,9 +261,9 @@ function EditAPIToken({
                 <div className='flex row ml-0'>
                     <div className="cn-9 fw-6 fs-16">
                         <span className="cb-5 cursor" onClick={redirectToTokenList}>
-                            API tokens
+                            {API_COMPONENTS.title}
                         </span>{' '}
-                        / Edit API token
+                        {API_COMPONENTS.edit_api_title}
                     </div>
                     {handleQuestion()}
                 </div>

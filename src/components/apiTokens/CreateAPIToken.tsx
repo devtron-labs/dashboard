@@ -32,6 +32,7 @@ import { toast } from 'react-toastify'
 import { ServerErrors } from '../../modals/commonTypes'
 import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 import { DOCUMENTATION } from '../../config'
+import { API_COMPONENTS } from '../../config/constantMessaging'
 
 function CreateAPIToken({
     setShowGenerateModal,
@@ -218,8 +219,8 @@ function CreateAPIToken({
                 className="w-300 h-100 fcv-5"
                 placement="right"
                 Icon={QuestionFilled}
-                heading={"API tokens"}
-                infoText="API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API."
+                heading={API_COMPONENTS.title}
+                infoText={API_COMPONENTS.question_icon_info}
                 showCloseButton={true}
                 trigger="click"
                 interactive = {true}
@@ -240,9 +241,9 @@ function CreateAPIToken({
                 <div className='flex row ml-0 h-32'>
                     <div className="cn-9 fw-6 fs-16">
                         <span className="cb-5 cursor" onClick={redirectToTokenList}>
-                            API tokens
+                            {API_COMPONENTS.title}
                         </span>{' '}
-                        / New API token
+                        {API_COMPONENTS.new_api_title}
                     </div>
                     {handleQuestion()}
                 </div>
