@@ -40,17 +40,22 @@ describe('EnvironmentOverview', () => {
                 { route: 'application-group/4/overview' },
             )
         })
+        //left side component
         expect(component.container).toBeInTheDocument()
         const leftInfoComponent = component.container.querySelector('.pt-16.pb-16.pl-20.pr-20.dc__border-right')
         expect(leftInfoComponent).toBeInTheDocument()
         const infoLeftRowComponent = leftInfoComponent.querySelector('.fs-13.fw-4.lh-20.cn-9')
         expect(infoLeftRowComponent).toBeInTheDocument()
-        
-
+        expect(component.getByText('prakash-1mar')).toBeInTheDocument()
+        expect(component.getByText('ns-2')).toBeInTheDocument()
+        expect(component.getByText('default_cluster')).toBeInTheDocument()
+        //right side component
         const rightInfoComponent = component.container.querySelector('.dc__overflow-scroll')
         expect(rightInfoComponent).toBeInTheDocument()
         const infoRightRowComponent = rightInfoComponent.querySelector('.app-deployments-info-body')
         expect(infoRightRowComponent).toBeInTheDocument()
+        expect(component.getAllByText('Succeeded')[0]).toBeInTheDocument()
+        expect(component.getAllByText('Healthy')[0]).toBeInTheDocument()
     })
 })
 
