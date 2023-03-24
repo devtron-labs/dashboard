@@ -56,10 +56,10 @@ describe('AppListView tests', () => {
         expect(getByTestId('appstatus')).toHaveTextContent('App status')
         expect(getByTestId('env')).toHaveTextContent('Environment')
         expect(getByTestId('cluster')).toHaveTextContent('Cluster')
-        expect(getByTestId('lastdeployedat')).toHaveTextContent('Last deployed at')
+        expect(getByTestId('lastdeployedate')).toHaveTextContent('Last deployed at')
         expect(getByTestId('namespace')).toHaveTextContent('Namespace')
     })
-    test('app-name,lastdeployed-at button functionality', () => {
+    test('app-name,lastdeployedate button functionality', () => {
         const { getByTestId, container } = render(
             <AppListView
                 expandRow={jest.fn()}

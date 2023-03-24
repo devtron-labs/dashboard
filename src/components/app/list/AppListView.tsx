@@ -137,7 +137,7 @@ export class AppListView extends Component<AppListViewProps> {
                             <button
                                 className="app-list__cell-header flex dc__visible-hover dc__visible-hover--parent "
                                 onClick={this.sortByDeployedTime}
-                                data-testid="lastdeployedat"
+                                data-testid="lastdeployedate"
                             >
                                 {APP_LIST_HEADERS.LastDeployedAt}
 
