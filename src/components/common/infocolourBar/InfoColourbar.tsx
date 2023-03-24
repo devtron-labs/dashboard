@@ -69,7 +69,7 @@ function InfoColourBar({
     }
 
     return (
-        <div className="info-bar-container mb-16-imp">
+        <div className="info-bar-container">
             <div
                 className={`${classname} info_text flex dc__content-space pt-8 pb-8 pl-16 pr-16 br-4 top fs-13 fw-4`}
                 style={styles}
