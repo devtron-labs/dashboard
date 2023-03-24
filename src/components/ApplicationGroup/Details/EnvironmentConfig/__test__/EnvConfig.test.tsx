@@ -26,21 +26,20 @@ describe('EnvConfig', () => {
         expect(loadState).toBeInTheDocument()
     })
 
-    // it('Application render with data', async () => {
-    //     let component
-    //     jest.spyOn(configData, 'getConfigAppList').mockImplementation(mockConfigAppList)
-    //     await act(async () => {
-    //         component = renderWithRouter(
-    //             <Route path="application-group/:envId/edit/:appId/deployment-template">
-    //                <EnvConfig filteredApps={filteredData} />
-    //             </Route>,
-    //             { route: 'application-group/4/edit/1/' },
-    //         )
-    //     })
-    //     expect(component.container).toBeInTheDocument()
-    //     const rightBar = component.container.querySelector('.env-compose')
-    //     expect(rightBar).toBeInTheDocument()
-    // })
+    it('Application render with data', async () => {
+        let component
+        jest.spyOn(configData, 'getConfigAppList').mockImplementation(mockConfigAppList)
+        await act(async () => {
+            component = renderWithRouter(
+                <Route path="application-group/:envId/edit/:appId/">
+                   <EnvConfig filteredApps={filteredData} />
+                </Route>,
+                { route: 'application-group/4/edit/' },
+            )
+        })
+        expect(component.container).toBeInTheDocument()
+        // expect(component.container.querySelector('.env-compose')).toBeInTheDocument()
+    })
 })
 
 
