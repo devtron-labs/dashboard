@@ -36,7 +36,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const [fetchingLatestDetails, setFetchingLatestDetails] = useState(false)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const scaleWorkloadTabs = ['Active workloads', 'Scaled down workloads']
-    const [fetchingDetails, setfetchingDetails] = useState(true)
+    const [isFetchingDetails, setfetchingDetails] = useState(true)
     const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
 
     useEffect(() => {
@@ -308,15 +308,9 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
             })
         }
     }
-
-    const renderScaleWorkloadsList = (isActiveWorkloadsTab: boolean): JSX.Element => {
-        const _nameSelection = nameSelection[isActiveWorkloadsTab ? 'scaleDown' : 'restore']
-        const _workloadsList = isActiveWorkloadsTab ? workloadsToScaleDown : workloadsToRestore
-        const isWorkloadPresent = _workloadsList && _workloadsList.size > 0
-        const isAnySelected =
-            _workloadsList && Array.from(_workloadsList.values()).some((workload) => workload.isChecked)
+    const getLoadingText = (isActiveWorkloadsTab: boolean): string => {
         let loadingText = ''
-        if (fetchingDetails) {
+        if (isFetchingDetails) {
             loadingText = 'Looking for scalable workloads'
         } else {
             if (fetchingLatestDetails || scalingInProgress) {
@@ -337,17 +331,29 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                 }
             }
         }
+        return loadingText
+    }
+    const renderScaleWorkloadsList = (isActiveWorkloadsTab: boolean): JSX.Element => {
+        const _nameSelection = nameSelection[isActiveWorkloadsTab ? 'scaleDown' : 'restore']
+        const _workloadsList = isActiveWorkloadsTab ? workloadsToScaleDown : workloadsToRestore
+        const isWorkloadPresent = _workloadsList && _workloadsList.size > 0
+        const isAnySelected =
+            _workloadsList && Array.from(_workloadsList.values()).some((workload) => workload.isChecked)
         return (
             <div className="scale-worklists-container">
-                {fetchingLatestDetails || fetchingDetails || scalingInProgress ? (
+                {fetchingLatestDetails || isFetchingDetails || scalingInProgress ? (
                     <div
                         className="flex"
                         style={{
-                            height: fetchingDetails ? '275px' : '234px',
+                            height: isFetchingDetails ? '275px' : '234px',
                             flexDirection: 'column',
                         }}
                     >
-                        <DetailsProgressing pageLoader fullHeight={true} loadingText={loadingText} />
+                        <DetailsProgressing
+                            pageLoader
+                            fullHeight={true}
+                            loadingText={getLoadingText(isActiveWorkloadsTab)}
+                        />
                     </div>
                 ) : (
                     <>
@@ -404,7 +410,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                         ) : (
                             <MessageUI
                                 icon={MsgUIType.INFO}
-                                msg={loadingText}
+                                msg={getLoadingText(isActiveWorkloadsTab)}
                                 size={20}
                                 theme="white"
                                 iconClassName="no-readme-icon"
@@ -455,7 +461,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         <VisibleModal className="scale-workload-modal">
             <div className={`modal__body br-4`}>
                 {renderScaleModalHeader()}
-                {!fetchingDetails && canScaleWorkloads && renderScaleWorkloadTabs()}
+                {!isFetchingDetails && canScaleWorkloads && renderScaleWorkloadTabs()}
                 {renderScaleWorkloadsList(selectedDeploymentTabIndex === 0)}
             </div>
         </VisibleModal>
