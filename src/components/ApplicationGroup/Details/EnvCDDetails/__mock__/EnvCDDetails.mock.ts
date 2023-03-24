@@ -3,17 +3,6 @@ import { ModuleConfigResponse } from "../../../../app/details/appDetails/appDeta
 import { OptionType } from "../../../../app/types"
 import { ResponseType } from '../../../../../services/service.types'
 
-export const filteredData:MultiValue<OptionType> = [
-    {
-        "value": '1',
-        "label": "test-1"
-    },
-    {
-        "value": '2',
-        "label": "test-2"
-    }
-]
-
 export async function mockCDList(): Promise<ResponseType> {
     const response = {
         code: 200,

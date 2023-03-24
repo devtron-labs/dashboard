@@ -6,7 +6,8 @@ import { renderWithRouter } from '../../EnvironmentConfig/__test__/ApplicationRo
 import EnvCDDetails from '../EnvCDDetails'
 import * as apiData from '../../../AppGroup.service'
 import * as appdetailsData from '../../../../app/details/appDetails/appDetails.service'
-import { filteredData, mockCDList, mockCDModuleConfig } from '../__mock__/EnvCDDetails.mock'
+import { mockCDList, mockCDModuleConfig } from '../__mock__/EnvCDDetails.mock'
+import { filteredData } from '../../EnvCIDetails/__mock__/EnvCIDetails.mock'
 
 describe('EnvCDDetails', () => {
     it('EnvCDDetails render without error', () => {
