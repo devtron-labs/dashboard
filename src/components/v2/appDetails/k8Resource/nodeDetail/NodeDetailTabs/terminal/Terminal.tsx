@@ -9,7 +9,7 @@ import { ErrorMessageType, ERROR_MESSAGE, POD_LINKS, SocketConnectionType, Termi
 import { get } from '../../../../../../../services/api'
 import ReactGA from 'react-ga4'
 import IndexStore from '../../../../index.store'
-import { AppType } from '../../../../appDetails.type'
+import { AppType, DeploymentAppType } from '../../../../appDetails.type'
 import { elementDidMount, useOnline, showError } from '../../../../../../common'
 import { ServerErrors } from '../../../../../../../modals/commonTypes'
 import { SERVER_MODE } from '../../../../../../../config'
@@ -421,6 +421,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         let url
         if (terminalViewProps.isResourceBrowserView) {
             url = `k8s/pod/exec/session/${terminalViewProps.selectedResource.clusterId}`
+        } else if (appDetails.deploymentAppType === DeploymentAppType.argo_cd) {
+            url = `k8s/pod/exec/session/${appDetails.clusterId}`
         } else if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
             url = `k8s/pod/exec/session/${appDetails.appId}`
         } else {
