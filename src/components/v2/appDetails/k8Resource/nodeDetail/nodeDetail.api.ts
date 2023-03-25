@@ -26,6 +26,7 @@ export const getManifestResource = (
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
 ) => {
+    // removed existing condition as it is being handled by selectedResource for resource browser view
     return getManifestResourceHelmApps(ad, podName, nodeType, isResourceBrowserView, selectedResource)
 }
 
@@ -53,13 +54,7 @@ export const getEvent = (
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
 ) => {
-    if (
-        ad.appType !== AppType.EXTERNAL_HELM_CHART ||
-        ad.deploymentAppType === DeploymentAppType.argo_cd ||
-        !isResourceBrowserView
-    ) {
-        selectedResource = getSelectedResource(ad, nodeName, nodeType)
-    }
+    // removed existing condition as it is being handled by selectedResource for resource browser view
     return getEventHelmApps(ad, nodeName, nodeType, isResourceBrowserView, selectedResource)
 }
 
