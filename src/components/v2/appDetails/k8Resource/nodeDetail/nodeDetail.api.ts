@@ -6,18 +6,6 @@ export const getAppId = (clusterId: number, namespace: string, appName: string) 
     return `${clusterId}|${namespace}|${appName}`
 }
 
-export const getSelectedResource = (ad: AppDetails, name: string, nodeType: string) => {
-    const cn = ad.resourceTree.nodes.filter((node) => node.name === name && node.kind.toLowerCase() === nodeType)[0]
-    return {
-            group: cn.group,
-            kind: cn.kind,
-            version: cn.version,
-            namespace: ad.namespace,
-            name: cn.name,
-            clusterId: 0,
-            containers: [],
-        }
-}
 
 export const getManifestResource = (
     ad: AppDetails,
@@ -26,13 +14,7 @@ export const getManifestResource = (
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
 ) => {
-    if (
-        ad.appType !== AppType.EXTERNAL_HELM_CHART ||
-        ad.deploymentAppType === DeploymentAppType.argo_cd ||
-        !isResourceBrowserView
-    ) {
-        selectedResource = getSelectedResource(ad, podName, nodeType)
-    }
+    // removed existing condition as it is being handled by selectedResource for resource browser view
     return getManifestResourceHelmApps(ad, podName, nodeType, isResourceBrowserView, selectedResource)
 }
 
@@ -60,13 +42,7 @@ export const getEvent = (
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
 ) => {
-    if (
-        ad.appType !== AppType.EXTERNAL_HELM_CHART ||
-        ad.deploymentAppType === DeploymentAppType.argo_cd ||
-        !isResourceBrowserView
-    ) {
-        selectedResource = getSelectedResource(ad, nodeName, nodeType)
-    }
+    // removed existing condition as it is being handled by selectedResource for resource browser view
     return getEventHelmApps(ad, nodeName, nodeType, isResourceBrowserView, selectedResource)
 }
 
