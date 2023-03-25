@@ -6,18 +6,6 @@ export const getAppId = (clusterId: number, namespace: string, appName: string) 
     return `${clusterId}|${namespace}|${appName}`
 }
 
-export const getSelectedResource = (ad: AppDetails, name: string, nodeType: string) => {
-    const cn = ad.resourceTree.nodes.filter((node) => node.name === name && node.kind.toLowerCase() === nodeType)[0]
-    return {
-            group: cn.group,
-            kind: cn.kind,
-            version: cn.version,
-            namespace: ad.namespace,
-            name: cn.name,
-            clusterId: 0,
-            containers: [],
-        }
-}
 
 export const getManifestResource = (
     ad: AppDetails,
