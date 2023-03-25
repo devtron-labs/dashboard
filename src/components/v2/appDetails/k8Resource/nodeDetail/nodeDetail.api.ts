@@ -27,9 +27,7 @@ export const getManifestResource = (
     selectedResource?: SelectedResourceType,
 ) => {
     if (
-        ad.appType !== AppType.EXTERNAL_HELM_CHART ||
-        ad.deploymentAppType === DeploymentAppType.argo_cd ||
-        !isResourceBrowserView
+        ad.deploymentAppType === DeploymentAppType.argo_cd 
     ) {
         selectedResource = getSelectedResource(ad, podName, nodeType)
     }
