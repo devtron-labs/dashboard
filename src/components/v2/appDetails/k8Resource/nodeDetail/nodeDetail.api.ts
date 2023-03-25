@@ -26,11 +26,6 @@ export const getManifestResource = (
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
 ) => {
-    if (
-        ad.deploymentAppType === DeploymentAppType.argo_cd 
-    ) {
-        selectedResource = getSelectedResource(ad, podName, nodeType)
-    }
     return getManifestResourceHelmApps(ad, podName, nodeType, isResourceBrowserView, selectedResource)
 }
 
