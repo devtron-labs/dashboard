@@ -9,19 +9,19 @@
         overflow: hidden;
         // min-height: 500px;
         // display: flex;
-        .cluster-list__enviroment_name{
+        .cluster-list__enviroment_name {
             height: 'fit-content';
             padding-top: 5px;
             padding-bottom: 5px;
-            text-align :left;
+            text-align: left;
             width: 170px;
             display: flex;
             // color: #0066CC;
             // padding-right: 2px;
-            .cluster-list__prod{
+            .cluster-list__prod {
                 margin-left: 5px;
-                background: #F7FAFC;
-                border: 1px solid #D0D4D9;
+                background: #f7fafc;
+                border: 1px solid #d0d4d9;
                 border-radius: 4px;
                 height: 20px;
                 font-family: 'Open Sans';
@@ -33,30 +33,29 @@
                 top: 0px;
                 border-radius: 4px;
                 padding: 0px 2px 0px 4px;
-
             }
         }
-        .cluster-list__name_space{
+        .cluster-list__name_space {
             // color: #3B444C;
             height: 'fit-content';
             padding-top: 5px;
             padding-bottom: 5px;
-            text-align :left;
+            text-align: left;
             width: 280px;
         }
-        .cluster-list__description{
+        .cluster-list__description {
             height: 'fit-content';
             padding-top: 5px;
             padding-bottom: 5px;
             width: 300px;
-            text-align :left;
+            text-align: left;
         }
     }
 
     .api-list-row {
         display: grid;
-        grid-template-columns: 24px 170px 328px 350px minmax(80px, 90px);
-        grid-column-gap: 5px;
+        grid-template-columns: 24px 170px 328px auto minmax(80px, 90px);
+        grid-column-gap: 10px;
 
         .api-key-expired-icon {
             path:first-of-type {
@@ -78,7 +77,7 @@
             background-color: var(--N50);
 
             .api__row-actions {
-                display: block;
+                display: flex;
 
                 button {
                     height: 24px;
@@ -167,11 +166,26 @@
     }
 }
 
-.deleteIcon{
+.deleteIcon {
     display: none;
 }
-#id:hover{
-    .deleteIcon{
-    display: block;
+#id:hover {
+    .deleteIcon {
+        display: block;
     }
+}
+
+.environment-type pointer {
+    display: grid;
+}
+
+.layout {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    padding: 0px;
+    gap: 20px;
+
+    width: 239px;
+    height: 40px;
 }
