@@ -416,8 +416,7 @@ export default function ResourceList() {
             if (retainSearched) {
                 handleFilterChanges(searchText, result, true)
             } else {
-                const sortedData = result.data.sort((a, b) => a["name"].localeCompare(b["name"]))
-                setFilteredResourceList(sortedData)
+                setFilteredResourceList(result.data)
                 setResourceListLoader(false)
             }
             setNoResults(result.data.length === 0)
@@ -696,7 +695,7 @@ export default function ResourceList() {
                                     placement="top"
                                     content={K8S_RESOURCE_LIST.createResource}
                                 >
-                                    <div className="cursor cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
+                                    <div className="cursor cb-5 fw-6 fs-13 flexbox">
                                         <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
                                     </div>
                                 </Tippy>
@@ -740,6 +739,7 @@ export default function ResourceList() {
                 <PageHeader headerName="Kubernetes Resource Browser" />
                 {renderResourceListBody()}
                 {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
+                {/* <PageHeader  /> */}
             </div>
         </ShortcutProvider>
     )
