@@ -56,6 +56,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     )
     const isAgroInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
+    const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
 
     useEffect(() => {
         if (appMetaInfo?.appName) {
@@ -120,6 +121,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const toggleTagsUpdateModal = (e) => {
         stopPropagation(e)
         setShowUpdateTagModal(!showUpdateTagModal)
+        if(showUpdateTagModal){
+          setReloadMandatoryProjects(!reloadMandatoryProjects)
+        }
     }
 
     const renderInfoModal = () => {
@@ -197,7 +201,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
 
     const renderLabelTags = () => {
         return (
-            <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
+            <div className="pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
                 <div className="flex left dc__content-space mb-12 w-100">
                     <div className="flex left fs-14 fw-6 lh-20 cn-9">
                         <TagIcon className="tags-icon icon-dim-20 mr-8" />
@@ -214,6 +218,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                         labelTags={currentLabelTags}
                         handleAddTag={toggleTagsUpdateModal}
                         selectedProjectId={appMetaInfo.projectId}
+                        reloadProjectTags={reloadMandatoryProjects}
                     />
                 )}
             </div>

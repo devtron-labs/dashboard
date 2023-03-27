@@ -27,6 +27,7 @@ export default function AboutTagEditModal({
     const [labelTags, setLabelTags] = useState<TagType[]>(
         currentLabelTags?.length ? currentLabelTags : [DEFAULT_TAG_DATA],
     )
+    const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
 
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof onClose === 'function') {
@@ -83,10 +84,11 @@ export default function AboutTagEditModal({
             toast.success('Successfully saved')
             // Fetch the latest project & labels details
             await getAppMetaInfoRes()
+            onClose(e)
         } catch (err) {
             showError(err)
+            setReloadMandatoryProjects(!reloadMandatoryProjects)
         } finally {
-            onClose(e)
             setSubmitting(false)
         }
     }
@@ -99,6 +101,7 @@ export default function AboutTagEditModal({
                         labelTags={labelTags}
                         setLabelTags={setLabelTags}
                         selectedProjectId={appMetaInfo.projectId}
+                        reloadProjectTags={reloadMandatoryProjects}
                     />
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">

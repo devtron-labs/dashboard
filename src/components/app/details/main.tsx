@@ -10,7 +10,7 @@ import AppConfig from './appConfig/AppConfig'
 import './appDetails/appDetails.scss'
 import './app.scss'
 import { getAppMetaInfo } from '../service'
-import { AppMetaInfo } from '../types'
+import { AppHeaderType, AppMetaInfo } from '../types'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import PageHeader from '../../common/header/PageHeader'
@@ -34,6 +34,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const { appId } = useParams<{ appId }>()
     const [appName, setAppName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
+    const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
 
     useEffect(() => {
         getAppMetaInfoRes()
@@ -45,6 +46,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             if (result) {
                 setAppName(result.appName)
                 setAppMetaInfo(result)
+                setReloadMandatoryProjects(!reloadMandatoryProjects)
                 return result
             }
         } catch (err) {
@@ -54,7 +56,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
 
     return (
         <div className="app-details-page">
-            {!isV2 && <AppHeader appName={appName} appMetaInfo={appMetaInfo} />}
+            {!isV2 && <AppHeader appName={appName} appMetaInfo={appMetaInfo} reloadMandatoryProjects={reloadMandatoryProjects}/>}
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
@@ -100,7 +102,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     )
 }
 
-export function AppHeader({ appName, appMetaInfo }: { appName: string; appMetaInfo: AppMetaInfo }) {
+export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: AppHeaderType) {
     const { appId } = useParams<{ appId }>()
     const match = useRouteMatch()
     const history = useHistory()
@@ -171,6 +173,7 @@ export function AppHeader({ appName, appMetaInfo }: { appName: string; appMetaIn
                                 handleAddTag={noop}
                                 selectedProjectId={appMetaInfo?.projectId}
                                 showOnlyIcon={true}
+                                reloadProjectTags={reloadMandatoryProjects}
                             />
                         )}
                     </NavLink>

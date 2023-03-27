@@ -82,6 +82,12 @@ export interface AppMetaInfo {
     labels?: TagType[]
 }
 
+export interface AppHeaderType {
+    appName: string
+    appMetaInfo: AppMetaInfo
+    reloadMandatoryProjects: boolean
+}
+
 interface ResourceTree {
     nodes: Node[]
     newGenerationReplicaSet: string
