@@ -16,6 +16,8 @@ import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
+import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
+import { error } from 'console'
 
 export function K8SResourceList({
     selectedResource,
@@ -291,6 +293,9 @@ export function K8SResourceList({
                 filteredResourceList.length === 0 ? 'no-result-container' : ''
             }`}
         >
+            <div>
+                ss
+            </div>
             <ResourceFilterOptions
                 selectedResource={selectedResource}
                 clusterOptions={clusterOptions}

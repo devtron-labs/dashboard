@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import {
     convertToOptionsList,
@@ -36,7 +36,7 @@ import {
     SIDEBAR_KEYS,
     STALE_DATA_WARNING_TEXT,
 } from '../Constants'
-import { DOCUMENTATION, URLS } from '../../../config'
+import { DOCUMENTATION, SERVER_MODE, URLS } from '../../../config'
 import Sidebar from './Sidebar'
 import { K8SResourceList } from './K8SResourceList'
 import { ClusterSelection } from './ClusterSelection'
@@ -68,6 +68,7 @@ import {
     sortEventListData,
 } from '../Utils'
 import '../ResourceBrowser.scss'
+import { mainContext } from '../../common/navigation/NavigationRoutes'
 
 export default function ResourceList() {
     const { clusterId, namespace, nodeType, node, group } = useParams<{
@@ -83,6 +84,7 @@ export default function ResourceList() {
         `${URLS.RESOURCE_BROWSER}`,
     )
     const [loader, setLoader] = useState(false)
+    const { serverMode } = useContext(mainContext)
     const [clusterLoader, setClusterLoader] = useState(false)
     const [showErrorState, setShowErrorState] = useState(false)
     const [resourceListLoader, setResourceListLoader] = useState(true)
@@ -694,11 +696,8 @@ export default function ResourceList() {
                                     arrow={false}
                                     placement="top"
                                     content={K8S_RESOURCE_LIST.createResource}
-                                >
-                                    <div className="cursor cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
-                                        <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
-                                    </div>
-                                </Tippy>
+                                />
+
                                 {!node && lastDataSyncTimeString && (
                                     <div className="ml-12 flex pl-12 dc__border-left">
                                         {resourceListLoader ? (
@@ -733,10 +732,19 @@ export default function ResourceList() {
         )
     }
 
+    const renderCreateButton = () => {
+        return serverMode === SERVER_MODE.FULL ? (
+            <button type="button" className="flex cta h-32 lh-n" onClick={showResourceModal}>
+                <Add className="icon-dim-16 mr-5" />
+                Create Resource
+            </button>
+        ) : null
+    }
+
     return (
         <ShortcutProvider>
             <div className="resource-browser-container">
-                <PageHeader headerName="Kubernetes Resource Browser" />
+                <PageHeader headerName="Kubernetes Resource Browser" renderActionButtons={renderCreateButton} />
                 {renderResourceListBody()}
                 {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
             </div>
