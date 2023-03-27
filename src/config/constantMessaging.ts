@@ -53,7 +53,9 @@ export const EDIT_DEPLOYMENT_PIPELINE='Edit deployment pipeline'
 export const CREATE_DEPLOYMENT_PIPELINE='Create deployment pipeline'
 export const ERROR_MESSAGE_FOR_VALIDATION="Min 2 chars; Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-), (.); Do not use 'spaces'"
 export const CHARACTER_ERROR_MIN='At least 2 characters required'
-export const CHARACTER_ERROR_MAX='Max 50 characters allowed'
+export const CHARACTER_ERROR_MAX = 'Max 50 characters allowed'
+export const COPIED_MESSAGE='Copied!'
+export const PROJECT_EXIST_MSG = 'This Project already exists.'
 
 export const CI_CONFIGURED_GIT_MATERIAL_ERROR =
     "Unable to trigger build as you're using Dockerfile from $GIT_MATERIAL_ID repo but code source is not configured for the repo."
@@ -75,7 +77,9 @@ export const TOAST_ACCESS_DENIED = {
 }
 
 export const DELETE_DEPLOYMENT_PIPELINE = 'Deleting deployment pipeline'
+export const DELETE_DEPLOYMENT = 'Deleting deployment'
 export const VIEW_DELETION_STATUS = 'View deletion status'
+export const USER_NOT_EDITABLE = 'user cannot be edited'
 
 // Empty state messgaes
 export const ERROR_EMPTY_SCREEN = {
@@ -88,7 +92,13 @@ export const ERROR_EMPTY_SCREEN = {
     ALL_SET_GO_CONFIGURE: 'Looks like you’re all set. Go ahead and select an image to deploy',
     DEPLOYEMENT_WILL_BE_HERE: 'Once deployed, details for the deployment will be available here',
     GO_TO_DEPLOY: 'Go to deploy',
-    TAB_NOT_AVAILABLE_POSTFIX: 'is not available for this deployment'
+    TAB_NOT_AVAILABLE_POSTFIX: 'is not available for this deployment',
+    ONLY_FOR_SUPERADMIN: 'Information on this page is available only to superadmin users.',
+    NOT_AUTHORIZED: 'Not authorized',
+    UNAUTHORIZED:'unauthorized',
+    FORBIDDEN:'forbidden',
+    REQUIRED_MANAGER_ACCESS:
+        'Looks like you don’t have access to information on this page. Please contact your manager to request access.',
 }
 
 //Confirmation Dialog messgaes
@@ -99,14 +109,19 @@ export const CONFIRMATION_DIALOG_MESSAGING = {
 // Toast messages
 
 export const TOAST_INFO = {
-    PIPELINE_DELETION_INIT: 'Pipeline Deletion Initiated',
-    DELETION_INITIATED: 'Deletion initiated',
+  PIPELINE_DELETION_INIT: 'Pipeline Deletion Initiated',
+  DELETION_INITIATED: 'Deletion initiated',
+  RE_SYNC: 'Re-sync initiated. It may take upto 5 minutes for it to complete.'
 }
 
 export const APP_DETAILS = {
-    APP_FULLY_NOT_CONFIGURED:
-        'This application is not fully configured. Complete the configuration, trigger a deployment and come back here.',
-    NEED_HELP: 'Need help?',
+  APP_FULLY_NOT_CONFIGURED: 'This application is not fully configured. Complete the configuration, trigger a deployment and come back here.',
+  JOB_FULLY_NOT_CONFIGURED: {
+    title: 'Finish configuring this job',
+    subTitle: 'This job is not fully configured. Complete the configuration and come back here to run the job.',
+    buttonTitle: 'Go to configurations'
+  },
+  NEED_HELP: 'Need help?'
 }
 
 // All CTA
@@ -145,4 +160,20 @@ export const APP_GROUP_CI_DETAILS = {
         title: 'Build pipeline not triggered',
         subTitle: 'Pipeline trigger history, details and logs will be available here.',
     },
+}
+
+export const DEPLOYMENT_HISTORY_TABS = {
+  SOURCE : 0,
+}
+
+export const CONFIGMAPS_SECRETS = {
+    configmaps: "configmaps",
+    secrets: "secrets"
+}
+
+export const API_COMPONENTS = {
+    TITLE: "API tokens ",
+    QUESTION_ICON_INFO: "API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API.",
+    NEW_API_TITLE: "/ New API token",
+    EDIT_API_TITLE: "/ Edit API token"
 }

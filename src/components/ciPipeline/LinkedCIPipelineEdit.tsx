@@ -52,7 +52,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         this.selectApp = this.selectApp.bind(this)
         this.handleName = this.handleName.bind(this)
         this.validationRules = new ValidationRules()
-        this.escFunction = this.escFunction.bind(this);
+        this.escFunction = this.escFunction.bind(this)
     }
 
     componentDidMount() {
@@ -65,7 +65,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
 
     escFunction(event) {
         if (event.keyCode === 27 || event.key === 'Escape') {
-             this.props.close()
+            this.props.close()
         }
     }
 
@@ -252,6 +252,8 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         )
     }
 
+    loadAppListOptions = (inputValue: string) => appListOptions(inputValue, false)
+
     renderCIPipelineBody() {
         if (this.state.view === ViewType.LOADING) {
             return (
@@ -265,7 +267,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                     <div className="typeahead form__row">
                         <span className="form__label">Filter By Application</span>
                         <AsyncSelect
-                            loadOptions={appListOptions}
+                            loadOptions={this.loadAppListOptions}
                             noOptionsMessage={noOptionsMessage}
                             onChange={this.selectApp}
                             styles={this._multiSelectStyles}

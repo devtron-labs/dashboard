@@ -1,26 +1,25 @@
-import React, { Component } from 'react';
-import { AppListViewType } from '../config';
-import { ErrorScreenManager, Pagination, Progressing, handleUTCTime } from '../../common';
-import { Link } from 'react-router-dom';
-import { ExpandedRow } from './expandedRow/ExpandedRow';
-import { Empty } from './emptyView/Empty';
-import { AppListViewProps, OrderBy, SortBy } from './types';
+import React, { Component } from 'react'
+import { AppListViewType } from '../config'
+import { ErrorScreenManager, Pagination, Progressing, handleUTCTime } from '../../common'
+import { Link } from 'react-router-dom'
+import { ExpandedRow } from './expandedRow/ExpandedRow'
+import { Empty } from './emptyView/Empty'
+import { AppListViewProps, OrderBy, SortBy } from './types'
 import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
-import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg';
-import {ReactComponent as DevtronAppIcon} from '../../../assets/icons/ic-devtron-app.svg';
-import {ReactComponent as HelpOutlineIcon} from '../../../assets/icons/ic-help-outline.svg';
+import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
+import { ReactComponent as DevtronAppIcon } from '../../../assets/icons/ic-devtron-app.svg'
+import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as PlayMedia } from '../../../assets/icons/ic-play-media.svg'
-import Tippy from '@tippyjs/react';
-import ContentCard from '../../common/ContentCard/ContentCard';
-import { AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config';
-import { CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types';
-import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants';
-import { APPLIST_EMPTY_STATE_MESSAGING, APP_LIST_HEADERS, ClearFiltersLabel } from '../list-new/Constants';
-import AppStatus from '../AppStatus';
-import { ReactComponent as Arrow} from '../../../assets/icons/ic-dropdown-filled.svg'
-
+import Tippy from '@tippyjs/react'
+import ContentCard from '../../common/ContentCard/ContentCard'
+import { AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO, URLS } from '../../../config'
+import { CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
+import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
+import { APPLIST_EMPTY_STATE_MESSAGING, APP_LIST_HEADERS, ClearFiltersLabel } from '../list-new/Constants'
+import AppStatus from '../AppStatus'
+import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
 export class AppListView extends Component<AppListViewProps> {
     expandEnv = (event): void => {
         event.stopPropagation()
@@ -34,7 +33,7 @@ export class AppListView extends Component<AppListViewProps> {
         this.props.handleEditApp(event.currentTarget.dataset.key)
     }
 
-    closeExpandedRow = (event): void => { 
+    closeExpandedRow = (event): void => {
         this.props.closeExpandedRow(event.currentTarget.dataset.key)
     }
 
@@ -61,6 +60,10 @@ export class AppListView extends Component<AppListViewProps> {
         e.preventDefault()
         this.props.sort('appNameSort')
     }
+    sortByDeployedTime = (e) => {
+        e.preventDefault()
+        this.props.sort('lastDeployedSort')
+    }
 
     toggleAllExpandRow = () => {
         if (this.props.isAllExpandable) {
@@ -69,39 +72,48 @@ export class AppListView extends Component<AppListViewProps> {
     }
 
     arrowIcon = (): string => {
-        if(this.props.isAllExpandable){
+        if (this.props.isAllExpandable) {
             return this.props.isAllExpanded ? 'fcn-7' : 'fcn-7 dc__flip-90'
-        }else {
+        } else {
             return 'cursor-not-allowed dc__flip-90'
         }
     }
 
     renderAppList() {
         if (this.props.apps.length) {
-            let icon = this.props.sortRule.order == OrderBy.ASC ? 'sort-up' : ''
+            let icon = this.props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
             return (
                 <div className="app-list">
-                    <div className="app-list__header">
+                    <div className="app-list__header ">
                         <div className="app-list__cell--icon flex left cursor" onClick={this.toggleAllExpandRow}>
                             <Arrow className={`icon-dim-24 p-2 ${this.arrowIcon()}`} />
                         </div>
-                        <div className="app-list__cell app-list__cell--name">
-                            <button className="app-list__cell-header flex" onClick={this.sortByAppName}>
+                        <div className="app-list__cell app-list__cell--name  ">
+                            <button
+                                className="app-list__cell-header flex  dc__visible-hover dc__visible-hover--parent  "
+                                onClick={this.sortByAppName}
+                                data-testid="appname"
+                            >
                                 {APP_LIST_HEADERS.AppName}
-                                {this.props.sortRule.key == SortBy.APP_NAME ? (
-                                    <span className={`sort ${icon} ml-4`}></span>
-                                ) : (
-                                    <span className="sort-col"></span>
-                                )}
+
+                                <span
+                                    className={` sort ${icon} ml-4 dc__visible-hover--child ${
+                                        this.props.sortRule.key === SortBy.APP_NAME ? 'dc__visible' : ''
+                                    } `}
+                                ></span>
                             </button>
                         </div>
                         {this.props.isArgoInstalled && (
                             <div className="app-list__cell app-list__cell--app_status">
-                                <span className="app-list__cell-header">{APP_LIST_HEADERS.AppStatus}</span>
+                                <span className="app-list__cell-header" data-testid="appstatus">
+                                    {APP_LIST_HEADERS.AppStatus}
+                                </span>
                             </div>
                         )}
                         <div className="app-list__cell app-list__cell--env">
-                            <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
+                            <span className="app-list__cell-header mr-4" data-testid="env">
+                                {APP_LIST_HEADERS.Environment}
+                            </span>
                             <Tippy
                                 className="default-tt"
                                 arrow={true}
@@ -112,13 +124,29 @@ export class AppListView extends Component<AppListViewProps> {
                             </Tippy>
                         </div>
                         <div className="app-list__cell app-list__cell--cluster">
-                            <span className="app-list__cell-header">{APP_LIST_HEADERS.Cluster}</span>
+                            <span className="app-list__cell-header" data-testid="cluster">
+                                {APP_LIST_HEADERS.Cluster}
+                            </span>
                         </div>
                         <div className="app-list__cell app-list__cell--namespace">
-                            <span className="app-list__cell-header">{APP_LIST_HEADERS.Namespace}</span>
+                            <span className="app-list__cell-header" data-testid="namespace">
+                                {APP_LIST_HEADERS.Namespace}
+                            </span>
                         </div>
-                        <div className="app-list__cell app-list__cell--time">
-                            <span className="app-list__cell-header">{APP_LIST_HEADERS.LastDeployedAt}</span>
+                        <div className="app-list__cell app-list__cell--time ">
+                            <button
+                                className="app-list__cell-header flex dc__visible-hover dc__visible-hover--parent "
+                                onClick={this.sortByDeployedTime}
+                                data-testid="lastdeployedate"
+                            >
+                                {APP_LIST_HEADERS.LastDeployedAt}
+
+                                <span
+                                    className={` sort ${icon} ml-4  dc__visible-hover--child${
+                                        this.props.sortRule.key === SortBy.LAST_DEPLOYED ? 'dc__visible' : ''
+                                    } `}
+                                ></span>
+                            </button>
                         </div>
                         <div className="app-list__cell app-list__cell--action"></div>
                     </div>
@@ -282,3 +310,4 @@ export class AppListView extends Component<AppListViewProps> {
         }
     }
 }
+export default AppListView

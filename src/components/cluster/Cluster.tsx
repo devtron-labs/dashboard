@@ -8,7 +8,7 @@ import {
     VisibleModal,
     sortCallback,
     Toggle,
-    useAsync,
+    useAsync, ErrorScreenNotAuthorized,
     Drawer,
     Checkbox,
     DevtronSwitch as Switch,
@@ -109,7 +109,9 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     componentDidMount() {
-        this.initialise()
+        if (this.props.isSuperAdmin) {
+            this.initialise()
+        }
     }
 
     componentDidUpdate(prevProps) {
@@ -122,7 +124,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         if (this.timerRef) clearInterval(this.timerRef)
         Promise.all([
             getClusterList(),
-            this.props.serverMode === SERVER_MODE.EA_ONLY ? { result: undefined } : getEnvironmentList(),
+            (this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT) ? { result: undefined } : getEnvironmentList(),
         ])
             .then(([clusterRes, envResponse]) => {
                 let environments = envResponse.result || []
@@ -207,11 +209,17 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     render() {
-        if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
-        else if (this.state.view === ViewType.ERROR) return <Reload className='dc__align-reload-center' />
+        if (!this.props.isSuperAdmin) {
+            return <ErrorScreenNotAuthorized />
+        } 
+        else if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
+        else if (this.state.view === ViewType.ERROR) return <Reload className="dc__align-reload-center" />
         else {
             const moduleBasedTitle =
-                'Clusters' + (this.props.serverMode === SERVER_MODE.EA_ONLY ? '' : ' and Environments')
+                'Clusters' +
+                (this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT
+                    ? ''
+                    : ' and Environments')
             return (
                 <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
                     <h2 className="form__title">{moduleBasedTitle}</h2>
@@ -260,7 +268,11 @@ function Cluster(this: any, {
     const [showClusterComponentModal, toggleClusterComponentModal] = useState(false)
     const [showWindow, setShowWindow] = useState(false)
     const [showEditWindow,setEditShowWindow] = useState(false)
-    const [, grafanaModuleStatus, ] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [clusterId])
+    const [, grafanaModuleStatus] = useAsync(
+        () => getModuleInfo(ModuleNameMap.GRAFANA),
+        [clusterId],
+        !window._env_.K8S_CLIENT,
+    )
     const editLabelRef = useRef(null)
     const history = useHistory()
     const newEnvs = useMemo(() => {
@@ -399,13 +411,15 @@ function Cluster(this: any, {
                                 </div>
                             )}
                         </List>
-                        {serverMode !== SERVER_MODE.EA_ONLY && clusterId ? <hr className="mt-0 mb-0" /> : null}
-                        {serverMode !== SERVER_MODE.EA_ONLY && clusterId ? (
-                            <ClusterInstallStatus
-                                agentInstallationStage={agentInstallationStage}
-                                envName={envName}
-                                onClick={clusterInstallStatusOnclick}
-                            />
+                        {serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId ? (
+                            <>
+                                <hr className="mt-0 mb-0" />
+                                <ClusterInstallStatus
+                                    agentInstallationStage={agentInstallationStage}
+                                    envName={envName}
+                                    onClick={clusterInstallStatusOnclick}
+                                />
+                            </>
                         ) : null}
                         {showClusterComponentModal ? (
                             <ClusterComponentModal

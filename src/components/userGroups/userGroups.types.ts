@@ -4,7 +4,7 @@ import { Nodes } from '../app/types'
 
 export enum EntityTypes {
     CHART_GROUP = 'chart-group',
-    DIRECT = '',
+    DIRECT = 'apps',
     DOCKER = 'docker',
     GIT = 'git',
     CLUSTER = 'cluster',
@@ -18,6 +18,16 @@ export enum ActionTypes {
     VIEW = 'view',
     UPDATE = 'update',
     EDIT = 'edit',
+}
+
+export enum DefaultUserKey {
+    SYSTEM = 'system',
+    ADMIN = 'admin',
+}
+
+export const DefaultUserValue = {
+    system: 'System',
+    admin: 'Admin',
 }
 
 export const ACTION_LABEL = {

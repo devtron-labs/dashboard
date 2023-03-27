@@ -28,8 +28,8 @@ export const Routes = {
     EXTERNAL_CI_CONFIG: 'app/external-ci',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
     SPECIFIC_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all',
-    RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all/latest',
-    LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/all/latest',
+    RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/latest/deployed',
+    LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/latest/saved',
     WORKFLOW_EDITOR: 'edit/workflow',
 
     CD_MATERIAL_GET: 'app/cd-pipeline',
@@ -53,6 +53,8 @@ export const Routes = {
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/edit',
+    
+    JOB_CI_DETAIL:'job/ci-pipeline/list',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
@@ -153,6 +155,7 @@ export const Routes = {
     HELM_LINK_TO_CHART_STORE_API: 'app-store/deployment/application/helm/link-to-chart-store',
     HELM_DEPLOYMENT_ROLLBACK_API: 'application/rollback',
     NAMESPACE: 'env/namespace',
+    APP_STORE_INSTALLED_APP: 'app-store/installed-app',
     APP_RELEASE_DEPLOYMENT_HISTORY_API: 'app-store/installed-app/deployment-history',
     APP_RELEASE_DEPLOYMENT_DETAIL_API: 'app-store/installed-app/deployment-history/info',
     PLUGIN_LIST: 'plugin/global/list',
@@ -205,7 +208,10 @@ export const Routes = {
     ENVIRONMENT_APPS: 'env/app-grouping',
     ENV_APPLICATIONS: 'applications',
     ENV_DEPLOYMENT_STATUS: 'deployment/status',
-    USER_ROLE_GROUP_URL: 'user/role/group'
+    JOB: 'job',
+    JOB_LIST: 'job/list',
+    JOB_CI_PIPELINE_LIST: 'job/ci-pipeline/list',
+    USER_ROLE_GROUP: 'user/role/group',
 }
 
 export const ViewType = {
@@ -290,7 +296,8 @@ export const DOCUMENTATION = {
     GLOBAL_CONFIG_GITOPS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/gitops`,
     GLOBAL_CONFIG_GIT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/git-accounts`,
     GLOBAL_CONFIG_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/docker-registries`,
-    GLOBAL_CONFIG_CLUSTER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/cluster-and-environments#configure-prometheus-enable-applications-metrics`,
+    GLOBAL_CONFIG_CLUSTER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/cluster-and-environments`,
+    GLOBAL_CONFIG_AUTH: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access`,
     GLOBAL_CONFIG_CHART: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/chart-repo`,
     GLOBAL_CONFIG_NOTIFICATION: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/manage-notification`,
     GLOBAL_CONFIG_PROJECT: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/getting-started/global-configurations/projects`,
@@ -318,6 +325,8 @@ export const DOCUMENTATION = {
     APP_OVERVIEW_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/overview#manage-tags`,
     K8S_RESOURCES_PERMISSIONS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access#kubernetes-resources-permissions`,
     APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile`,
+    JOB_SOURCE_CODE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/configuration-job`,
+    JOB_WORKFLOW_EDITOR: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/workflow-editor-job`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
@@ -327,6 +336,14 @@ export const PREVIEW_DEVTRON = 'https://preview.devtron.ai/dashboard'
 export const NETSHOOT_LINK = 'https://github.com/nicolaka/netshoot'
 
 export const BUSYBOX_LINK = 'https://busybox.net/'
+
+export const DISCORD_LINK = 'https://discord.devtron.ai/'
+
+export const OPEN_NEW_TICKET = 'https://enterprise.devtron.ai/portal/en/newticket'
+
+export const VIEW_ALL_TICKETS = 'https://enterprise.devtron.ai/portal/en/myarea'
+
+export const RAISE_ISSUE = 'https://github.com/devtron-labs/devtron/issues/new/choose'
 
 // APP LIST STARTS
 export const AppListConstants = {
@@ -358,7 +375,7 @@ export enum SERVER_MODE {
 export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE
 
 export enum ACCESS_TYPE_MAP {
-    DEVTRON_APPS = '', // devtron app work flow
+    DEVTRON_APPS = 'devtron-app', // devtron app work flow
     HELM_APPS = 'helm-app', //helm app work flow
 }
 
@@ -574,6 +591,11 @@ export const BuildTabText = {
     postBuildStage: 'Post-build stage',
 }
 
+export const JobPipelineTabText = {
+    buildStage: 'Basic configuration',
+    preBuildStage: 'Tasks to be executed',
+}
+
 export const APP_STATUS_CUSTOM_MESSAGES = {
     HIBERNATED: "This application's workloads are scaled down to 0 replicas",
     'PARTIALLY HIBERNATED': "Some of this application's workloads are scaled down to 0 replicas.",
@@ -760,6 +782,11 @@ export const DOCKER_FILE_ERROR_TITLE = 'Unable to locate Dockerfile as source is
 export const DOCKER_FILE_ERROR_MESSAGE = 'Unable to locate Dockerfile as source is not configured for this repository'
 export const DEFAULT_GIT_BRANCH_VALUE = '--'
 export const SOURCE_NOT_CONFIGURED_MESSAGE= 'Source is not configured for one or more git repositories. Please configure and try again.'
+
+export enum MANIFEST_KEY_FIELDS {
+    METADATA= 'metadata',
+    MANAGED_FIELDS= 'managedFields'
+}
 
 export enum KEY_VALUE {
   KEY= 'key',

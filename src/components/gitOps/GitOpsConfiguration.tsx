@@ -11,7 +11,7 @@ import {
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg'
-import { CustomInput, ErrorScreenManager, handleOnBlur, handleOnFocus, Progressing, showError } from '../common'
+import { CustomInput, ErrorScreenManager, handleOnBlur, handleOnFocus, parsePassword, Progressing, showError } from '../common'
 import Check from '../../assets/icons/ic-outline-check.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
 import { ReactComponent as InfoFill } from '../../assets/icons/appstatus/info-filled.svg'
@@ -166,7 +166,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                 })
             })
             .catch((error) => {
-                showError(error)
+                showError(error,true,true)
                 this.setState({ view: ViewType.ERROR, statusCode: error.code })
             })
     }
@@ -294,7 +294,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             provider: this.state.form.provider,
             username: this.state.form.username.replace(/\s/g, ''),
             host: this.state.form.host.replace(/\s/g, ''),
-            token: this.state.form.token.replace(/\s/g, ''),
+            token: parsePassword(this.state.form.token.replace(/\s/g, '')),
             gitLabGroupId: this.state.form.gitLabGroupId.replace(/\s/g, ''),
             gitHubOrgId: this.state.form.gitHubOrgId.replace(/\s/g, ''),
             azureProjectName: this.state.form.azureProjectName.replace(/\s/g, ''),

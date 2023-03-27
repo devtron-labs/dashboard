@@ -133,7 +133,7 @@ function ApiTokens() {
     const renderAPITokenRoutes = (): JSX.Element => {
         return (
             <Fragment>
-                <div className="api-token-container">
+                <div className="api-token-container bcn-0">
                     <Switch>
                         <Route path={`${path}/list`}>
                             <APITokenList

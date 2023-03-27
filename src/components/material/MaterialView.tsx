@@ -288,20 +288,26 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         rootClassName="fs-14 cn-9 mb-8 flex top"
                     >
                         <div className="ml-12">
-                            <span className="mb-4 mt-4 flex left">
-                                Set clone directory
-                                <Tippy
-                                    className="default-tt w-200"
-                                    arrow={false}
-                                    placement="bottom"
-                                    content={'Devtron will create the directory and clone the code in it'}
-                                >
-                                    <Question className="icon-dim-16 ml-4" />
-                                </Tippy>
-                            </span>
-                            <div className="fs-12 cn-7">
-                                Eg. If your app needs code from multiple git repositories for CI
-                            </div>
+                            {this.props.isJobView ? (
+                                <span className="mb-4 mt-4 flex left">Set checkout path</span>
+                            ) : (
+                                <>
+                                    <span className="mb-4 mt-4 flex left">
+                                        Set clone directory
+                                        <Tippy
+                                            className="default-tt w-200"
+                                            arrow={false}
+                                            placement="bottom"
+                                            content={'Devtron will create the directory and clone the code in it'}
+                                        >
+                                            <Question className="icon-dim-16 ml-4" />
+                                        </Tippy>
+                                    </span>
+                                    <div className="fs-12 cn-7">
+                                        Eg. If your app needs code from multiple git repositories for CI
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </Checkbox>
                     {this.props.isChecked ? (
