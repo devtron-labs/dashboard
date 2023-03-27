@@ -32,6 +32,7 @@ import moment from 'moment'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import { APP_LIST_HEADERS, StatusConstants } from './Constants'
 import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
+import Index from '../details/appDetails'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
@@ -740,6 +741,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 applyFilter={applyFilter}
                                 onShowHideFilterContent={onShowHideFilterContent}
                                 isFirstLetterCapitalize={true}
+                                dataTestId={'app-status-filter'}
                             />
                             <span className="filter-divider"></span>
                         </>
@@ -754,6 +756,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         type={AppListConstants.FilterType.PROJECT}
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
+                        dataTestId={'projects-filter'}
                     />
                     {serverMode == SERVER_MODE.FULL && (
                         <>
@@ -768,6 +771,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 type={AppListConstants.FilterType.ENVIRONMENT}
                                 applyFilter={applyFilter}
                                 onShowHideFilterContent={onShowHideFilterContent}
+                                dataTestId={'environment-filter'}
                             />
                         </>
                     )}
@@ -783,6 +787,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
                         showPulsatingDot={showPulsatingDot}
+                        dataTestId={'cluster-filter'}
                     />
                     <Filter
                         rootClassName="ml-0-imp"
@@ -804,6 +809,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         errored={fetchingNamespacesErrored}
                         errorMessage={'Could not load namespaces'}
                         errorCallbackFunction={_forceFetchAndSetNamespaces}
+                        dataTestId={'namespace-filter'}
                     />
                     {showExportCsvButton && (
                         <>
@@ -918,7 +924,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             <span>
                                 {lastDataSyncTimeString}&nbsp;
                                 {!isDataSyncing && (
-                                    <button className="btn btn-link p-0 fw-6 cb-5" onClick={syncNow}>
+                                    <button className="btn btn-link p-0 fw-6 cb-5" onClick={syncNow} data-testid="sync-now-button">
                                         Sync now
                                     </button>
                                 )}

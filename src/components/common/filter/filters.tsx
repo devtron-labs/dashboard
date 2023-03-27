@@ -141,7 +141,7 @@ export class Filter extends Component<FilterProps, FilterState>{
                         this.props.showPulsatingDot && !this.state.show &&
                         <div className="pulse-highlight"></div>
                     }
-                    <button type="button" className="filter__trigger" onClick={() => this.onFilterButtonClick()}>
+                    <button data-testid={`${this.props.dataTestId}-button`} type="button" className="filter__trigger" onClick={() => this.onFilterButtonClick()}>
                         {this.props.buttonText}
                         {badge > 0 ? <span className="badge">{badge}</span> : null}
                         <span className="filter-icon"><i className={faIcon}></i></span>
@@ -176,8 +176,8 @@ export class Filter extends Component<FilterProps, FilterState>{
                                     </div>
                                 :
                                 <>
-                                    {this.props.searchable && <input type="text" placeholder={this.props.placeholder} className="filter__search" onChange={this.handleSearch} value={this.state.searchStr} />}
-                                    <div className="filter__options">
+                                    {this.props.searchable && <input type="text" placeholder={this.props.placeholder} className="filter__search" onChange={this.handleSearch} value={this.state.searchStr} data-testid={`${this.props.dataTestId}-search`}/>}
+                                    <div className="filter__options" data-testid={`${this.props.dataTestId}-optionlist`}>
                                         {filterOptions}
                                     </div>
                                     {this.props.multi && <button type="button" className="filter__apply" disabled={isDisable} onClick={() => { this.applyFilter(); }}>

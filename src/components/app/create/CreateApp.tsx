@@ -286,7 +286,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     <span className="form__label dc__required-field">{this.props.isJobView ? 'Job' : 'App'} Name</span>
                     <input
                         ref={(node) => (this._inputAppName = node)}
-                        data-testid="app_name_textBox"
+                        data-testid="app-name-textbox"
                         className="form__input"
                         type="text"
                         name="app-name"
