@@ -102,11 +102,10 @@ function ManifestComponent({
                     getDesiredManifestResource(appDetails, params.podName, params.nodeType),
             ])
                 .then((response) => {
-                    let _manifest: string
+                    let _manifest
                     if (
                         appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
                         appDetails.deploymentAppType === DeploymentAppType.helm ||
-                        appDetails.deploymentAppType === DeploymentAppType.argo_cd ||
                         isResourceBrowserView
                     ) {
                         _manifest = JSON.stringify(response[0]?.result?.manifest)
