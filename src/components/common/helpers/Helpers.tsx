@@ -1157,7 +1157,6 @@ export const processK8SObjects = (
                 element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
                 element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
                 element.gvk.Kind.toLowerCase() === selectedResourceKind
-                currentData.isExpanded = element.gvk.Kind.toLowerCase() === selectedResourceKind
             }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind) {
