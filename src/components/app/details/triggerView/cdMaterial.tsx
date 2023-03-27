@@ -722,7 +722,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         : ''
                 }`}
             >
-                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) && !this.state.showConfigDiffView && (
+                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) && !this.state.showConfigDiffView && !(this.renderCDModalHeader()=== 'Pre Deployment' || this.renderCDModalHeader()=== 'Post Deployment') &&(
                     <div className="flex left dc__border br-4 h-42">
                         <div className="flex">
                             <ReactSelect
@@ -785,7 +785,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     )}
                 >
                     <button
-                        className={`cta flex h-36 ${this.isDeployButtonDisabled() ? 'disabled-opacity' : ''}`}
+                        className={`cta flex ml-auto h-36 ${this.isDeployButtonDisabled() ? 'disabled-opacity' : ''}`}
                         onClick={this.deployTrigger}
                     >
                         {this.props.isLoading ? (
