@@ -433,128 +433,131 @@ function Cluster(this: any, {
                                 }}
                             />
                         ) : null}
-                        {serverMode !== SERVER_MODE.EA_ONLY && Array.isArray(newEnvs) && newEnvs.length > 0 && (
-                            // <div className="environments-container">
-                            //     {newEnvs.map(
-                            //         ({
-                            //             id,
-                            //             environment_name,
-                            //             cluster_id,
-                            //             cluster_name,
-                            //             active,
-                            //             prometheus_url,
-                            //             namespace,
-                            //             default: isProduction,
-                            //             description,
-                            //         }) => (
-                            //             <List
-                            //  onClick={(e) =>
-                            //      setEnvironment({
-                            //          id,
-                            //          environment_name,
-                            //          cluster_id: clusterId,
-                            //          namespace,
-                            //          prometheus_url,
-                            //          isProduction,
-                            //          description,
-                            //      })
-                            //  }
-                            //                 key={id}
-                            //                 className={`cluster-environment cluster-environment--${
-                            //                     id ? 'update' : 'create collapsed-list collapsed-list--create'
-                            //                 }`}
-                            //             >
-                            //                 <List.Logo>
-                            //                     {id ? (
-                            //                         <Database className="icon-dim-24" />
-                            //                     ) : (
-                            //                         <Add className="icon-dim-24 fcb-5" />
-                            //                     )}
-                            //                 </List.Logo>
-                            //                 <div className="flex left">
-                            // <List.Title
-                            //                         title={environment_name || 'Add environment'}
-                            //                         subtitle={id ? `namespace: ${namespace}` : ''}
-                            //                         tag={isProduction ? 'PROD' : null}
-                            //                     />
-                            //                 </div>
-                            //             </List>
-                            //         ),
-                            //     )}
-                            // </div>
+                        {serverMode !== SERVER_MODE.EA_ONLY &&
+                            !window._env_.K8S_CLIENT &&
+                            Array.isArray(newEnvs) &&
+                            newEnvs.length > 0 && (
+                                // <div className="environments-container">
+                                //     {newEnvs.map(
+                                //         ({
+                                //             id,
+                                //             environment_name,
+                                //             cluster_id,
+                                //             cluster_name,
+                                //             active,
+                                //             prometheus_url,
+                                //             namespace,
+                                //             default: isProduction,
+                                //             description,
+                                //         }) => (
+                                //             <List
+                                //  onClick={(e) =>
+                                //      setEnvironment({
+                                //          id,
+                                //          environment_name,
+                                //          cluster_id: clusterId,
+                                //          namespace,
+                                //          prometheus_url,
+                                //          isProduction,
+                                //          description,
+                                //      })
+                                //  }
+                                //                 key={id}
+                                //                 className={`cluster-environment cluster-environment--${
+                                //                     id ? 'update' : 'create collapsed-list collapsed-list--create'
+                                //                 }`}
+                                //             >
+                                //                 <List.Logo>
+                                //                     {id ? (
+                                //                         <Database className="icon-dim-24" />
+                                //                     ) : (
+                                //                         <Add className="icon-dim-24 fcb-5" />
+                                //                     )}
+                                //                 </List.Logo>
+                                //                 <div className="flex left">
+                                // <List.Title
+                                //                         title={environment_name || 'Add environment'}
+                                //                         subtitle={id ? `namespace: ${namespace}` : ''}
+                                //                         tag={isProduction ? 'PROD' : null}
+                                //                     />
+                                //                 </div>
+                                //             </List>
+                                //         ),
+                                //     )}
+                                // </div>
 
-                            <div className="api-token-container">
-                                <div className="cluster-list">
-                                    <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-10 dc__uppercase">
-                                        <div></div>
-                                        <div className="cluster-list__enviroment_name">ENVIRONMENT</div>
-                                        <div className="cluster-list__name_space">NAMESPACE</div>
-                                        <div className="cluster-list__description">DESCRIPTION</div>
-                                        <div></div>
-                                    </div>
-                                    {newEnvs.map(
-                                        ({
-                                            id,
-                                            environment_name,
-                                            cluster_id,
-                                            cluster_name,
-                                            active,
-                                            prometheus_url,
-                                            namespace,
-                                            default: isProduction,
-                                            description,
-                                        }) =>
-                                            environment_name ? (
-                                                <div
-                                                    className="api-list-row flex-align-center fw-4 cn-9 fs-13 pl-10"
-                                                    style={{ height: 'fit-content' }}
-                                                >
-                                                    <div className="dc__transparent cursor flex">
-                                                        {environment_name && <Database className="icon-dim-24" />}
-                                                    </div>
-                                                    {/* } */}
-                                                    {/* jnvcjnk */}
-                                                    <div className="cluster-list__enviroment_name">
-                                                        {environment_name}
+                                <div className="api-token-container">
+                                    <div className="cluster-list">
+                                        <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-10 dc__uppercase">
+                                            <div></div>
+                                            <div className="cluster-list__enviroment_name">ENVIRONMENT</div>
+                                            <div className="cluster-list__name_space">NAMESPACE</div>
+                                            <div className="cluster-list__description">DESCRIPTION</div>
+                                            <div></div>
+                                        </div>
+                                        {newEnvs.map(
+                                            ({
+                                                id,
+                                                environment_name,
+                                                cluster_id,
+                                                cluster_name,
+                                                active,
+                                                prometheus_url,
+                                                namespace,
+                                                default: isProduction,
+                                                description,
+                                            }) =>
+                                                environment_name ? (
+                                                    <div
+                                                        className="api-list-row flex-align-center fw-4 cn-9 fs-13 pl-10"
+                                                        style={{ height: 'fit-content' }}
+                                                    >
+                                                        <div className="dc__transparent cursor flex">
+                                                            {environment_name && <Database className="icon-dim-24" />}
+                                                        </div>
+                                                        {/* } */}
+                                                        {/* jnvcjnk */}
+                                                        <div className="cluster-list__enviroment_name">
+                                                            {environment_name}
 
-                                                        {isProduction ? (
-                                                            <div className="cluster-list__prod">Prod</div>
-                                                        ) : null}
-                                                    </div>
-                                                    <div className="cluster-list__name_space">{namespace}</div>
-                                                    <div className="cluster-list__description">{description}</div>
-                                                    <div className="api__row-actions flex right mr-12">
-                                                        {/* <button
+                                                            {isProduction ? (
+                                                                <div className="cluster-list__prod">Prod</div>
+                                                            ) : null}
+                                                        </div>
+                                                        <div className="cluster-list__name_space">{namespace}</div>
+                                                        <div className="cluster-list__description">{description}</div>
+                                                        <div className="api__row-actions flex right mr-12">
+                                                            {/* <button
                                         type="button"
                                         className="dc__transparent mr-18"
                                         // onClick={() => handleGenerateRowActionButton('edit', list.id)}
                                     > */}
-                                                        <PencilEdit
-                                                            className="mr-12"
-                                                            onClick={() => {
-                                                                setEnvironment({
-                                                                    id,
-                                                                    environment_name,
-                                                                    cluster_id: clusterId,
-                                                                    namespace,
-                                                                    prometheus_url,
-                                                                    isProduction,
-                                                                    description,
-                                                                })
-                                                                setShowWindow(true)
-                                                            }}
-                                                        />
-                                                        <DeleteInvolvement 
-                                                        //onClick={() => toggleConfirmation(true)}
-                                                        />
-                                                        {/* </button> */}
+                                                            <PencilEdit
+                                                                className="mr-12"
+                                                                onClick={() => {
+                                                                    setEnvironment({
+                                                                        id,
+                                                                        environment_name,
+                                                                        cluster_id: clusterId,
+                                                                        namespace,
+                                                                        prometheus_url,
+                                                                        isProduction,
+                                                                        description,
+                                                                    })
+                                                                    setShowWindow(true)
+                                                                }}
+                                                            />
+                                                            <DeleteInvolvement
+                                                            //onClick={() => toggleConfirmation(true)}
+                                                            />
+                                                            {/* </button> */}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ) : null,
-                                    )}
+                                                ) : null,
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
                     </>
                 ) : (
                     <>
