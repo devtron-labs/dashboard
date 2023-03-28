@@ -500,7 +500,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             filterType === AppListConstants.FilterType.CLUTSER || filterType === AppListConstants.FilterType.NAMESPACE
                 ? AppListConstants.FilterType.NAMESPACE
                 : filterType
-        let appliedFilters = query[queryParamType]
+        let appliedFilters = query[queryParamType] || ''
         let arr = appliedFilters.split(',')
         if (filterType === AppListConstants.FilterType.CLUTSER) {
             arr = arr.filter((item) => !item.startsWith(val))

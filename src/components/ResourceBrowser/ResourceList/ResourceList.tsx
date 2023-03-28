@@ -372,7 +372,7 @@ export default function ResourceList() {
             type: 'start',
             payload: {
                 searchText: _searchText,
-                list: _resourceList.data,
+                list: _resourceList?.data,
                 searchInKeys: [
                     'name',
                     'namespace',
