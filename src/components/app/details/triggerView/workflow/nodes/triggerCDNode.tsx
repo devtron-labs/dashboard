@@ -82,7 +82,6 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                                 <div>
                                                     <div>{this.props.environmentName}</div>
                                                     <div>{this.props.description}</div>
-                                                  //<div>'This is env description of 40 words</div>
                                                 </div>
                                             }
                                         >

@@ -79,8 +79,7 @@ export default function TippyCustomized(props: TippyCustomizedProps) {
             documentationLink,
             documentationLinkText,
         } = props
-        return (
-            
+        return (           
             <>
                 <div
                     className={`dc__word-break dc__hyphens-auto flex left ${

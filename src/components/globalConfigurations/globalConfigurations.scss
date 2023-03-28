@@ -108,7 +108,7 @@
     height: 64px;
     padding: 0 20px;
     display: grid;
-    grid-template-columns: 14px 1fr 24px;
+    grid-template-columns: 24px 1fr 24px;
     align-items: center;
     background: white;
     grid-column-gap: 16px;
@@ -159,7 +159,7 @@
 }
 
 .cluster-list {
-    //border: 1px solid #d6dbdf;
+    border: 1px solid #d6dbdf;
     margin-bottom: 16px;
     background: white;
     border-radius: 8px;
