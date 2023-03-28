@@ -713,7 +713,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     renderTriggerModalCTA() {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
-        const cdModalHeader = ['Pre Deployment' , 'Post Deployent']
+        const cdModalHeader = ['Pre Deployment' , 'Post Deployment']
         return (
             <div
                 className={`trigger-modal__trigger ${
