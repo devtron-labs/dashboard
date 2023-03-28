@@ -713,7 +713,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     renderTriggerModalCTA() {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
-        const cdModalHeader = ['Pre Deployment' , 'Post Deployment']
         return (
             <div
                 className={`trigger-modal__trigger ${
@@ -722,7 +721,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         : ''
                 }`}
             >
-                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) && !this.state.showConfigDiffView && !(cdModalHeader.some(heading=> this.renderCDModalHeader()===heading)) &&(
+                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) && !this.state.showConfigDiffView && this.props.stageType === STAGE_TYPE.CD &&(
                     <div className="flex left dc__border br-4 h-42">
                         <div className="flex">
                             <ReactSelect
