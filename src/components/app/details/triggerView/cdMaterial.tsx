@@ -4,6 +4,7 @@ import {
     CDMaterialProps,
     CDMaterialState,
     CDMaterialType,
+    DeploymentNodeType,
     DeploymentWithConfigType,
     MaterialInfo,
     MATERIAL_TYPE,
@@ -721,7 +722,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         : ''
                 }`}
             >
-                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) && !this.state.showConfigDiffView && this.props.stageType === STAGE_TYPE.CD &&(
+                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) && !this.state.showConfigDiffView && this.props.stageType === DeploymentNodeType.CD &&(
                     <div className="flex left dc__border br-4 h-42">
                         <div className="flex">
                             <ReactSelect
