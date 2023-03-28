@@ -39,6 +39,7 @@ import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as DeleteInvolvement } from '../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as DeleteEnvironment } from '../../assets/icons/ic-delete-interactive.svg'
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from './cluster.type'
@@ -267,7 +268,7 @@ function Cluster(this: any, {
     const [prometheusAuth, setPrometheusAuth] = useState(undefined)
     const [showClusterComponentModal, toggleClusterComponentModal] = useState(false)
     const [showWindow, setShowWindow] = useState(false)
-    const [showEditWindow,setEditShowWindow] = useState(false)
+    const [confirmation, toggleConfirmation] = useState(false)
     const [, grafanaModuleStatus] = useAsync(
         () => getModuleInfo(ModuleNameMap.GRAFANA),
         [clusterId],
@@ -328,12 +329,22 @@ function Cluster(this: any, {
         setShowWindow(false)
     }
 
-    const showEditClusterDrawer = ()=>{
-        setEditShowWindow(true)
+    const getEnvironmentPayload = () => {
+        console.log(environment);
+        
+        return {
+            id: environment.id ,
+            environment_name: environment.environment_name,
+            cluster_id: environment.cluster_id,
+            prometheus_endpoint: environment.prometheus_endpoint,
+            namespace: environment.namespace || '',
+            active: true,
+            default: environment.isProduction,
+            description: environment.description || '',
+        }
     }
-    const hideEditClusterDrawer = ()=>{
-        setEditShowWindow(false)
-    }
+
+
     //console.log(editLabelRef)
     const outsideClickHandler = (evt): void => {
         if (editLabelRef.current && !editLabelRef.current.contains(evt.target) && showWindow) {
@@ -391,7 +402,7 @@ function Cluster(this: any, {
                                         }}
                                     >
                                         <List.Logo>{<Add className="icon-dim-24 fcb-5" />}</List.Logo>
-                                        <div className="flex left">
+                                        <div className="flex left fcb-5">
                                             <List.Title
                                                 style={{
                                                     fontSize: '13px',
@@ -399,14 +410,16 @@ function Cluster(this: any, {
                                                     color: '#0066CC',
                                                     fontWeight: '600',
                                                 }}
+                                                // className="fw-6 fs-13 w-120 fcb-5"
                                                 title={'Add Environment'}
                                                 subtitle={''}
                                                 tag={null}
                                             />
                                         </div>
                                     </List>
-                                    <div>
-                                        <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />
+
+                                    <div className="app-status-card__divider">
+                                        <List.DropDown src={<PencilEdit onClick={handleEdit} />} />
                                     </div>
                                 </div>
                             )}
@@ -488,7 +501,7 @@ function Cluster(this: any, {
 
                                 <div className="api-token-container">
                                     <div className="cluster-list">
-                                        <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-10 dc__uppercase">
+                                        <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-6 pb-6 pr-20 pl-10 dc__uppercase">
                                             <div></div>
                                             <div className="cluster-list__enviroment_name">ENVIRONMENT</div>
                                             <div className="cluster-list__name_space">NAMESPACE</div>
@@ -532,8 +545,9 @@ function Cluster(this: any, {
                                         className="dc__transparent mr-18"
                                         // onClick={() => handleGenerateRowActionButton('edit', list.id)}
                                     > */}
+
                                                             <PencilEdit
-                                                                className="mr-12"
+                                                                className="cursor mr-12"
                                                                 onClick={() => {
                                                                     setEnvironment({
                                                                         id,
@@ -548,8 +562,24 @@ function Cluster(this: any, {
                                                                 }}
                                                             />
                                                             <DeleteInvolvement
-                                                            //onClick={() => toggleConfirmation(true)}
+                                                                className="cursor"
+
+                                                                onClick={() => toggleConfirmation(true)}
                                                             />
+                                                            {confirmation && (
+                                                                <DeleteComponent
+                                                                    setDeleting={() => {}}
+                                                                    deleteComponent={deleteEnvironment}
+                                                                    payload={getEnvironmentPayload()}
+                                                                    title={'jh'}
+                                                                    toggleConfirmation={toggleConfirmation}
+                                                                    component={DeleteComponentsName.Environment}
+                                                                    confirmationDialogDescription={
+                                                                        DC_ENVIRONMENT_CONFIRMATION_MESSAGE
+                                                                    }
+                                                                    //reload={()=> {}}
+                                                                />
+                                                            )}
                                                             {/* </button> */}
                                                         </div>
                                                     </div>
@@ -590,7 +620,7 @@ function Cluster(this: any, {
             )} */}
             {showWindow && (
                 <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
-                    <div className="h-100 bcn-0 pt-0 pr-20 pb-12 pl-20" ref={editLabelRef}>
+                    <div className="h-100 bcn-0" ref={editLabelRef}>
                         <Environment
                             reload={reload}
                             cluster_name={cluster_name}
@@ -1004,12 +1034,13 @@ function ClusterForm({
             )}
             <div className={`form__buttons`}>
                 {id && (
-                    <button
+                       <button    
                         style={{ margin: 'auto', marginLeft: 0 }}
-                        className="cta delete"
+                        className="flex cta override-button delete scr-5 h-32"
                         type="button"
                         onClick={() => toggleConfirmation(true)}
                     >
+                       
                         {deleting ? <Progressing /> : 'Delete'}
                     </button>
                 )}
@@ -1046,6 +1077,7 @@ function Environment({
     description,
     reload,
     hideClusterDrawer
+
 }) {
     const [loading, setLoading] = useState(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
@@ -1134,39 +1166,47 @@ function Environment({
     
     return (
         //<VisibleModal className="environment-create-modal" close={handleClose}>
-            <form /*className="environment-create-body"*/ onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit}>
-                <div className="form__row">
-                    <div className="flex left">
-                        <div className="form__title">{id ? 'Edit Environment' : 'Add Environment'}</div>
-                        <Close className="icon-dim-24 dc__align-right cursor" onClick={hideClusterDrawer} />
+        // <div className='ml-0 mr-0'>
+            <form onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit} className="h-100 bcn-0 pt-0 pb-12">
+                <div className="form__row bcn-0 pt-0 pr-20 pb-12 pl-20">
+                    <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12 ">
+                        <div className="form__title fw-6">{id ? 'Edit Environment' : 'Add Environment'}</div>
+                        {/* <Close className="icon-dim-24 dc__align-right cursor" onClick={hideClusterDrawer} /> */}
+                        <button type="button" className="dc__transparent flex icon-dim-24" onClick={hideClusterDrawer}>
+                            <Close className="icon-dim-24 dc__align-right cursor" />
+                        </button>
                     </div>
                 </div>
                 <div className="form__row">
                     <CustomInput
+                        labelClassName="dc__required-field"
                         autoComplete="off"
                         disabled={!!environment_name}
                         name="environment_name"
+                        placeholder={id ? 'sample-env-name' : 'Eg. production'}
                         value={state.environment_name.value}
                         error={state.environment_name.error}
                         onChange={handleOnChange}
-                        label="Environment Name*"
+                        label="Environment Name"
                     />
                 </div>
                 <div className="form__row form__row--namespace">
                     <CustomInput
+                        labelClassName="dc__required-field"
                         disabled={!!namespace}
                         name="namespace"
+                        placeholder={id ? 'sample-namespace' : 'Eg. prod'}
                         value={state.namespace.value}
                         error={state.namespace.error}
                         onChange={handleOnChange}
-                        label="Namespace*"
+                        label="Namespace"
                     />
                 </div>
                 <div className="form__row">
-                    <div className="form__label">Environment type*</div>
-                    <div className="environment-type pointer">
+                    {/* <div className="form__label">Environment type*</div> */}
+                    <div className="flex row left">
                         <div className="flex left environment environment--production">
-                            <label className="form__label">
+                            <label className="pr-10 form__label">
                                 <input
                                     type="radio"
                                     name="isProduction"
@@ -1174,7 +1214,7 @@ function Environment({
                                     value="true"
                                     onChange={handleOnChange}
                                 />
-                                <span>Production</span>
+                                <span className="pl-10 cursor">Production</span>
                             </label>
                         </div>
                         <div className="flex left environment environment--non-production">
@@ -1186,7 +1226,7 @@ function Environment({
                                     value="false"
                                     onChange={handleOnChange}
                                 />
-                                <span>Non - Production</span>
+                                <span className="pl-10 cursor">Non - Production</span>
                             </label>
                         </div>
                     </div>
@@ -1194,25 +1234,30 @@ function Environment({
                 <div className="form__row">
                     <CustomInput
                         autoComplete="off"
-                        disabled={!!description}
+                        //disabled={!!description}
                         name="description"
+                        placeholder={'Add a description for this environment'}
                         value={state.description.value}
                         error={state.description.error}
                         onChange={handleOnChange}
                         label="Description (Max 40 characters)"
                     />
                 </div>
-                <div className={`form__buttons`}>
+                <div className={`flex form__buttons dc__position-fixed dc__bottom-0 dc__border-top pt-10`}>
                     {id && (
                         <button
-                            className="cta delete dc__m-auto ml-0"
+                            className="flex cta override-button delete scr-5 h-32 ml-0"
                             type="button"
                             onClick={() => toggleConfirmation(true)}
                         >
-                            {deleting ? <Progressing /> : 'Delete'}
+                            <DeleteEnvironment className="icon-dim-16 mr-8" />
+                            {deleting ? <Progressing /> : 'Delete Environment'}
                         </button>
                     )}
-                    <button className="cta" type="submit" disabled={loading} >
+                    <button className="cta cancel ml-auto" type="button" onClick={hideClusterDrawer}>
+                        Cancel
+                    </button>
+                    <button className="cta ml-auto" type="submit" disabled={loading}>
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}
                     </button>
                 </div>
@@ -1229,6 +1274,7 @@ function Environment({
                     />
                 )}
             </form>
-       // </VisibleModal>
+        // </div>
+        // </VisibleModal>
     )
 }
