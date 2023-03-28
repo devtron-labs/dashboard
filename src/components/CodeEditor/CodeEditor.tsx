@@ -310,7 +310,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
 
 const Header: React.FC<CodeEditorHeaderInterface> & CodeEditorHeaderComposition = ({ children, hideDefaultSplitHeader }) => {
     const { defaultValue } = useCodeEditorContext()
-    return <div className="code-editor__header flex left">
+    return <div className="code-editor__header">
         {children}
         {!hideDefaultSplitHeader && defaultValue && <SplitPane />}
     </div>

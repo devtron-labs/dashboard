@@ -288,30 +288,28 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                     ))}
                     {this.state.showAddCluster && (
                         <Drawer position="right" width="1000px" onEscape={this.toggleShowAddCluster}>
-                            <div className="h-100 bcn-0 pt-0 pb-12 pl-20">
-                                <ClusterForm
-                                    id={null}
-                                    cluster_name
-                                    server_url
-                                    active={true}
-                                    config={{}}
-                                    toggleEditMode={() => {}}
-                                    reload={true}
-                                    prometheus_url=""
-                                    prometheusAuth={this.state.prometheus}
-                                    defaultClusterComponent={this.state.defaultClusterComponent}
-                                    isGrafanaModuleInstalled={true}
-                                    isTlsConnection={this.state.isTlsConnection}
-                                    toggleCheckTlsConnection={this.toggleCheckTlsConnection}
-                                    toggleShowAddCluster={this.toggleShowAddCluster}
-                                    toggleKubeConfigFile={this.toggleKubeConfigFile}
-                                    isKubeConfigFile={this.state.isKubeConfigFile}
-                                    getCluster={this.state.getCluster}
-                                    toggleGetCluster={this.toggleGetCluster}
-                                    browseFile={this.state.browseFile}
-                                    toggleBrowseFile={this.toggleBrowseFile}
-                                />
-                            </div>
+                            <ClusterForm
+                                id={null}
+                                cluster_name
+                                server_url
+                                active={true}
+                                config={{}}
+                                toggleEditMode={() => {}}
+                                reload={true}
+                                prometheus_url=""
+                                prometheusAuth={this.state.prometheus}
+                                defaultClusterComponent={this.state.defaultClusterComponent}
+                                isGrafanaModuleInstalled={true}
+                                isTlsConnection={this.state.isTlsConnection}
+                                toggleCheckTlsConnection={this.toggleCheckTlsConnection}
+                                toggleShowAddCluster={this.toggleShowAddCluster}
+                                toggleKubeConfigFile={this.toggleKubeConfigFile}
+                                isKubeConfigFile={this.state.isKubeConfigFile}
+                                getCluster={this.state.getCluster}
+                                toggleGetCluster={this.toggleGetCluster}
+                                browseFile={this.state.browseFile}
+                                toggleBrowseFile={this.toggleBrowseFile}
+                            />
                         </Drawer>
                     )}
                 </section>
@@ -815,29 +813,289 @@ function ClusterForm({
         }
     }
 
-    return getCluster ? (
-        <EmptyState>
-            <EmptyState.Image>
-                <MechanicalOperation />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>Connecting to Cluster</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
-                Please wait while the kubeconfig is verified and cluster details are fetched.
-            </EmptyState.Subtitle>
-        </EmptyState>
-    ) : (
+    const renderUrlAndBearerToken = () => {
+        return (
+            <>
+                <div className="form__row">
+                    <CustomInput
+                        labelClassName="dc__required-field"
+                        autoComplete="off"
+                        name="cluster_name"
+                        disabled={isDefaultCluster()}
+                        value={state.cluster_name.value}
+                        error={state.cluster_name.error}
+                        onChange={handleOnChange}
+                        label="Cluster Name"
+                        placeholder="Cluster Name"
+                    />
+                </div>
+                <div className="form__row mb-8-imp">
+                    <CustomInput
+                        autoComplete="off"
+                        name="url"
+                        value={state.url.value}
+                        error={state.url.error}
+                        onChange={handleOnChange}
+                        label={clusterLabel()}
+                        placeholder="Enter server URL"
+                    />
+                </div>
+                <div className="form__row form__row--bearer-token flex column left top">
+                    <div className="bearer-token">
+                        <ResizableTextarea
+                            className="dc__resizable-textarea__with-max-height dc__required-field"
+                            name="token"
+                            value={config && config.bearer_token ? config.bearer_token : ''}
+                            onChange={handleOnChange}
+                            onBlur={handleOnBlur}
+                            onFocus={handleOnFocus}
+                            placeholder="Enter bearer token"
+                        />
+                    </div>
+                    {state.token.error && (
+                        <label htmlFor="" className="form__error">
+                            <FormError className="form__icon form__icon--error" />
+                            {state.token.error}
+                        </label>
+                    )}
+                </div>
+                {isGrafanaModuleInstalled && (
+                    <>
+                        <hr />
+                        <div className="dc__position-rel flex left cursor dc__hover mb-20">
+                            <Checkbox
+                                isChecked={isTlsConnection}
+                                rootClassName="form__checkbox-label--ignore-cache mb-0"
+                                value={'CHECKED'}
+                                onChange={toggleCheckTlsConnection}
+                            >
+                                <div className="mr-4 flex center"> Use secure TLS connection {isTlsConnection}</div>
+                            </Checkbox>
+                        </div>
+
+                        {isTlsConnection && (
+                            <>
+                                <div className="form__row">
+                                    <span className="form__label dc__required-field">Certificate Authority Data</span>
+                                    <ResizableTextarea
+                                        className="dc__resizable-textarea__with-max-height w-100"
+                                        name="tlsClientCert"
+                                        value={state.tlsClientCert.value}
+                                        onChange={handleOnChange}
+                                        placeholder={'Enter CA Data'}
+                                    />
+                                </div>
+                                <div className="form__row">
+                                    <span className="form__label dc__required-field">TLS Key</span>
+                                    <ResizableTextarea
+                                        className="dc__resizable-textarea__with-max-height w-100"
+                                        name="tlsClientKey"
+                                        value={state.tlsClientKey.value}
+                                        onChange={handleOnChange}
+                                        placeholder={'Enter tls Key'}
+                                    />
+                                </div>
+                                <div className="form__row">
+                                    <span className="form__label dc__required-field">TLS Certificate</span>
+                                    <ResizableTextarea
+                                        className="dc__resizable-textarea__with-max-height w-100"
+                                        name="tlsClientCert"
+                                        value={state.tlsClientCert.value}
+                                        onChange={handleOnChange}
+                                        placeholder={'Enter tls Certificate'}
+                                    />
+                                </div>
+                            </>
+                        )}
+                        <hr />
+                        <div
+                            className={`${
+                                prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'
+                            } mt-20`}
+                        >
+                            <div className="dc__content-space flex">
+                                <span className="form__input-header">See metrics for applications in this cluster</span>
+                                <div className="" style={{ width: '32px', height: '20px' }}>
+                                    <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
+                                </div>
+                            </div>
+                            <span className="cn-6 fs-12">
+                                Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications
+                                running in this cluster
+                            </span>
+                        </div>
+                    </>
+                )}
+                {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheus_url && <PrometheusWarningInfo />}
+                {isGrafanaModuleInstalled && prometheusToggleEnabled && (
+                    <div className="">
+                        {(state.userName.error || state.password.error || state.endpoint.error) && (
+                            <PrometheusRequiredFieldInfo />
+                        )}
+                        <div className="form__row">
+                            <CustomInput
+                                labelClassName="dc__required-field"
+                                autoComplete="off"
+                                name="endpoint"
+                                value={state.endpoint.value}
+                                error={state.endpoint.error}
+                                onChange={handleOnChange}
+                                label="Prometheus endpoint"
+                            />
+                        </div>
+                        <div className="form__row">
+                            <span className="form__label">Authentication Type*</span>
+                            <RadioGroup
+                                value={state.authType.value}
+                                name={`authType`}
+                                onChange={(e) => OnPrometheusAuthTypeChange(e)}
+                            >
+                                <RadioGroupItem value={AuthenticationType.BASIC}> Basic </RadioGroupItem>
+                                <RadioGroupItem value={AuthenticationType.ANONYMOUS}> Anonymous </RadioGroupItem>
+                            </RadioGroup>
+                        </div>
+                        {state.authType.value === AuthenticationType.BASIC ? (
+                            <div className="form__row form__row--flex">
+                                <div className="w-50 mr-8 ">
+                                    <CustomInput
+                                        name="userName"
+                                        value={state.userName.value}
+                                        error={state.userName.error}
+                                        onChange={handleOnChange}
+                                        label="Username"
+                                    />
+                                </div>
+                                <div className="w-50 ml-8">
+                                    <CustomPassword
+                                        name="password"
+                                        value={state.password.value}
+                                        error={state.userName.error}
+                                        onChange={handleOnChange}
+                                        label="Password"
+                                    />
+                                </div>
+                            </div>
+                        ) : null}
+                    </div>
+                )}
+                <div className={`form__buttons`}>
+                    {id && (
+                        <button
+                            style={{ margin: 'auto', marginLeft: 0 }}
+                            className="cta delete"
+                            type="button"
+                            onClick={() => toggleConfirmation(true)}
+                        >
+                            {deleting ? <Progressing /> : 'Delete'}
+                        </button>
+                    )}
+                </div>
+            </>
+        )
+    }
+
+    const codeEditor = () => {
+        return (
+            <>
+                <hr />
+                <div className="code-editor-container">
+                    <CodeEditor value={''} height={650} diffView={false} readOnly={false} mode={MODES.YAML} noParsing>
+                        <CodeEditor.Header>
+                            <div className="user-list__subtitle flex p-8">
+                                <span className="flex left">Paste the contents of kubeconfig file here</span>
+                                <div className="dc__link ml-auto cursor">
+                                    {uploadState !== UPLOAD_STATE.UPLOAD && (
+                                        <button
+                                            className={` dc__no-text-transform ${
+                                                uploadState === UPLOAD_STATE.UPLOADING ? '  mr-20' : '  ml-20'
+                                            }`}
+                                            onClick={(e) => onCancelUpload('Cancel')}
+                                        >
+                                            Cancel upload
+                                        </button>
+                                    )}
+                                    {uploadState !== UPLOAD_STATE.UPLOADING && (
+                                        <div onClick={handleSuccessButton} className="flex">
+                                            {uploadState === UPLOAD_STATE.UPLOAD
+                                                ? 'Browse file...'
+                                                : uploadState === UPLOAD_STATE.ERROR
+                                                ? 'Upload another chart'
+                                                : 'Save'}
+                                        </div>
+                                    )}
+                                </div>
+                                <input
+                                    type="file"
+                                    ref={inputFileRef}
+                                    onChange={onFileChange}
+                                    accept=".yaml"
+                                    style={{ display: 'none' }}
+                                />
+                            </div>
+                            <CodeEditor.ValidationError />
+                        </CodeEditor.Header>
+                    </CodeEditor>
+                </div>
+
+                <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                    <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
+                        Cancel
+                    </button>
+                    <button
+                        className="cta mr-20 ml-20"
+                        type="button"
+                        onClick={toggleGetCluster}
+                        disabled={uploadState !== UPLOAD_STATE.SUCCESS ? false : true}
+                    >
+                        Get cluster
+                    </button>
+                </div>
+            </>
+        )
+    }
+
+    const loadingCluster = () => {
+        return (
+            <EmptyState>
+                <EmptyState.Image>
+                    <MechanicalOperation />
+                </EmptyState.Image>
+                <EmptyState.Title>
+                    <h4>Connecting to Cluster</h4>
+                </EmptyState.Title>
+                <EmptyState.Subtitle>
+                    Please wait while the kubeconfig is verified and cluster details are fetched.
+                </EmptyState.Subtitle>
+            </EmptyState>
+        )
+    }
+
+    // const displayClusterDetails = () => {
+    //     return
+    //     (<div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-20 dc__uppercase">
+    //         <div></div>
+    //         <div>Cluster Name</div>
+    //         <div>User</div>
+    //         <div>Message </div>
+    //         <div></div>
+    //     </div>)
+    // }
+
+    return (
         <>
-            <form action="" className="cluster-form" style={{ padding: 'auto 0' }} onSubmit={handleOnSubmit}>
-                <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 mb-20">
+            <div
+                className="cluster-form dc__position-rel h-100 bcn-0"
+                style={{ padding: 'auto 0' }}
+                onSubmit={handleOnSubmit}
+            >
+                <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Add Cluster</h2>
-                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={toggleShowAddCluster}>
+                    <button type="button" className="dc__transparent flex icon-dim-24 mr-24" onClick={toggleShowAddCluster}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
-                <div style={{ overflow: 'auto', height: 'calc(100vh - 120px)' }}>
-                    <div className="form__row clone-apps dc__inline-block pt-0 pr-20 pb-12 pl-20">
+                <div className="pl-20 pr-20" style={{ overflow: 'auto', height: 'calc(100vh - 120px)' }}>
+                    <div className="form__row clone-apps dc__inline-block pd-0 pt-0 pb-12">
                         <RadioGroup
                             className="radio-group-no-border"
                             value={isKubeConfigFile ? 'EXISTING' : 'BLANK'}
@@ -849,261 +1107,15 @@ function ClusterForm({
                         </RadioGroup>
                     </div>
 
-                    {isKubeConfigFile && (
-                        <>
-                            <hr />
-                            <div className="code-editor-container">
-                                <CodeEditor
-                                    value={''}
-                                    height={650}
-                                    diffView={false}
-                                    readOnly={false}
-                                    mode={MODES.YAML}
-                                    noParsing
-                                >
-                                    <CodeEditor.Header>
-                                        <div className="user-list__subtitle flex-right">
-                                            Paste the contents of kubeconfig file here
-                                            <div className="dc__link">
-                                                {uploadState !== UPLOAD_STATE.UPLOAD && (
-                                                    <button
-                                                        className={` dc__no-text-transform ${
-                                                            uploadState === UPLOAD_STATE.UPLOADING
-                                                                ? '  mr-20'
-                                                                : '  ml-20'
-                                                        }`}
-                                                        onClick={(e) => onCancelUpload('Cancel')}
-                                                    >
-                                                        Cancel upload
-                                                    </button>
-                                                )}
-                                                {uploadState !== UPLOAD_STATE.UPLOADING && (
-                                                    <div onClick={handleSuccessButton}>
-                                                        {uploadState === UPLOAD_STATE.UPLOAD
-                                                            ? 'Browse file...'
-                                                            : uploadState === UPLOAD_STATE.ERROR
-                                                            ? 'Upload another chart'
-                                                            : 'Save'}
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <input
-                                                type="file"
-                                                ref={inputFileRef}
-                                                onChange={onFileChange}
-                                                accept=".yaml"
-                                                style={{ display: 'none' }}
-                                            />
-                                        </div>
-                                        <CodeEditor.ValidationError />
-                                    </CodeEditor.Header>
-                                </CodeEditor>
-                            </div>
-
-                            <div className="w-900 dc__border-top flex right pt-16 pr-0 pb-16 pl-20 dc__position-fixed dc__bottom-0">
-                                <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
-                                    Cancel
-                                </button>
-                                <button
-                                    className="cta"
-                                    type="button"
-                                    onClick={toggleGetCluster}
-                                    disabled={uploadState !== UPLOAD_STATE.SUCCESS ? false : true}
-                                >
-                                    Get cluster
-                                </button>
-                            </div>
-                        </>
-                    )}
-
-                    <div className="form__row">
-                        <CustomInput
-                            labelClassName="dc__required-field"
-                            autoComplete="off"
-                            name="cluster_name"
-                            disabled={isDefaultCluster()}
-                            value={state.cluster_name.value}
-                            error={state.cluster_name.error}
-                            onChange={handleOnChange}
-                            label="Cluster Name"
-                            placeholder="Cluster Name"
-                        />
-                    </div>
-                    <div className="form__row mb-8-imp">
-                        <CustomInput
-                            autoComplete="off"
-                            name="url"
-                            value={state.url.value}
-                            error={state.url.error}
-                            onChange={handleOnChange}
-                            label={clusterLabel()}
-                            placeholder="Enter server URL"
-                        />
-                    </div>
-                    <div className="form__row form__row--bearer-token flex column left top">
-                        <div className="bearer-token">
-                            <ResizableTextarea
-                                className="dc__resizable-textarea__with-max-height dc__required-field"
-                                name="token"
-                                value={config && config.bearer_token ? config.bearer_token : ''}
-                                onChange={handleOnChange}
-                                onBlur={handleOnBlur}
-                                onFocus={handleOnFocus}
-                                placeholder="Enter bearer token"
-                            />
-                        </div>
-                        {state.token.error && (
-                            <label htmlFor="" className="form__error">
-                                <FormError className="form__icon form__icon--error" />
-                                {state.token.error}
-                            </label>
-                        )}
-                    </div>
-                    {isGrafanaModuleInstalled && (
-                        <>
-                            <hr />
-                            <div className="dc__position-rel flex left cursor dc__hover-n50 mb-20">
-                                <Checkbox
-                                    isChecked={isTlsConnection}
-                                    rootClassName="form__checkbox-label--ignore-cache mb-0"
-                                    value={'CHECKED'}
-                                    onChange={toggleCheckTlsConnection}
-                                >
-                                    <div className="mr-4 flex center"> Use secure TLS connection {isTlsConnection}</div>
-                                </Checkbox>
-                            </div>
-
-                            {isTlsConnection && (
-                                <>
-                                    <div className="form__row">
-                                        <span className="form__label dc__required-field">
-                                            Certificate Authority Data
-                                        </span>
-                                        <ResizableTextarea
-                                            className="dc__resizable-textarea__with-max-height w-100"
-                                            name="tlsClientCert"
-                                            value={state.tlsClientCert.value}
-                                            onChange={handleOnChange}
-                                            placeholder={'Enter CA Data'}
-                                        />
-                                    </div>
-                                    <div className="form__row">
-                                        <span className="form__label dc__required-field">TLS Key</span>
-                                        <ResizableTextarea
-                                            className="dc__resizable-textarea__with-max-height w-100"
-                                            name="tlsClientKey"
-                                            value={state.tlsClientKey.value}
-                                            onChange={handleOnChange}
-                                            placeholder={'Enter tls Key'}
-                                        />
-                                    </div>
-                                    <div className="form__row">
-                                        <span className="form__label dc__required-field">TLS Certificate</span>
-                                        <ResizableTextarea
-                                            className="dc__resizable-textarea__with-max-height w-100"
-                                            name="tlsClientCert"
-                                            value={state.tlsClientCert.value}
-                                            onChange={handleOnChange}
-                                            placeholder={'Enter tls Certificate'}
-                                        />
-                                    </div>
-                                </>
-                            )}
-                            <hr />
-                            <div
-                                className={`${
-                                    prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'
-                                } mt-20`}
-                            >
-                                <div className="dc__content-space flex">
-                                    <span className="form__input-header">
-                                        See metrics for applications in this cluster
-                                    </span>
-                                    <div className="" style={{ width: '32px', height: '20px' }}>
-                                        <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
-                                    </div>
-                                </div>
-                                <span className="cn-6 fs-12">
-                                    Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications
-                                    running in this cluster
-                                </span>
-                            </div>
-                        </>
-                    )}
-                    {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheus_url && (
-                        <PrometheusWarningInfo />
-                    )}
-                    {isGrafanaModuleInstalled && prometheusToggleEnabled && (
-                        <div className="">
-                            {(state.userName.error || state.password.error || state.endpoint.error) && (
-                                <PrometheusRequiredFieldInfo />
-                            )}
-                            <div className="form__row">
-                                <CustomInput
-                                    labelClassName="dc__required-field"
-                                    autoComplete="off"
-                                    name="endpoint"
-                                    value={state.endpoint.value}
-                                    error={state.endpoint.error}
-                                    onChange={handleOnChange}
-                                    label="Prometheus endpoint"
-                                />
-                            </div>
-                            <div className="form__row">
-                                <span className="form__label">Authentication Type*</span>
-                                <RadioGroup
-                                    value={state.authType.value}
-                                    name={`authType`}
-                                    onChange={(e) => OnPrometheusAuthTypeChange(e)}
-                                >
-                                    <RadioGroupItem value={AuthenticationType.BASIC}> Basic </RadioGroupItem>
-                                    <RadioGroupItem value={AuthenticationType.ANONYMOUS}> Anonymous </RadioGroupItem>
-                                </RadioGroup>
-                            </div>
-                            {state.authType.value === AuthenticationType.BASIC ? (
-                                <div className="form__row form__row--flex">
-                                    <div className="w-50 mr-8 ">
-                                        <CustomInput
-                                            name="userName"
-                                            value={state.userName.value}
-                                            error={state.userName.error}
-                                            onChange={handleOnChange}
-                                            label="Username"
-                                        />
-                                    </div>
-                                    <div className="w-50 ml-8">
-                                        <CustomPassword
-                                            name="password"
-                                            value={state.password.value}
-                                            error={state.userName.error}
-                                            onChange={handleOnChange}
-                                            label="Password"
-                                        />
-                                    </div>
-                                </div>
-                            ) : null}
-                        </div>
-                    )}
-                    <div className={`form__buttons`}>
-                        {id && (
-                            <button
-                                style={{ margin: 'auto', marginLeft: 0 }}
-                                className="cta delete"
-                                type="button"
-                                onClick={() => toggleConfirmation(true)}
-                            >
-                                {deleting ? <Progressing /> : 'Delete'}
-                            </button>
-                        )}
-                    </div>
+                    {isKubeConfigFile ? codeEditor() : renderUrlAndBearerToken()}
                 </div>
 
                 {!isKubeConfigFile && (
-                    <div className="w-900 dc__border-top flex right pt-16 pr-0 pb-16 pl-20 dc__position-fixed dc__bottom-0">
+                    <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
                         <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
                             Cancel
                         </button>
-                        <button className="cta">{loading ? <Progressing /> : 'Save cluster'}</button>
+                        <button className="cta mr-20 ml-20">{loading ? <Progressing /> : 'Save'}</button>
                     </div>
                 )}
 
@@ -1119,7 +1131,7 @@ function ClusterForm({
                         reload={reload}
                     />
                 )}
-            </form>
+            </div>
         </>
     )
 }
