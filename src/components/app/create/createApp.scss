@@ -1,34 +1,39 @@
 .create-app-container {
-  .scrollable-content {
-      height: calc(100vh - 120px);
-      overflow: auto;
+    .scrollable-content {
+        height: calc(100vh - 120px);
+        overflow: auto;
 
-      .info-container--create-app {
-          padding: 10px 12px;
-          align-items: start;
-          grid-template-columns: 20px 1fr auto;
-          grid-column-gap: 12px;
+        .info-container--create-app {
+            padding: 10px 12px;
+            align-items: start;
+            grid-template-columns: 20px 1fr auto;
+            grid-column-gap: 12px;
 
-          .dc__info-title {
-              display: inline;
-          }
-      }
+            .dc__info-title {
+                display: inline;
+            }
+        }
 
-      .form__row {
-          margin-bottom: 16px;
-          span.form__label {
-              font-size: 12px;
-              color: #404040;
-          }
+        .form__row {
+            margin-bottom: 16px;
+            span.form__label {
+                font-size: 12px;
+                color: #404040;
+            }
 
-          .form__text-field-info--create-app {
-              align-items: flex-start;
+            .form__text-field-info--create-app {
+                align-items: flex-start;
 
-              .form__icon--create-app {
-                  position: relative;
-                  top: 3px;
-              }
-          }
-      }
-  }
+                .form__icon--create-app {
+                    position: relative;
+                    top: 3px;
+                }
+            }
+        }
+
+        .mandatory-tag-key-container {
+            min-width: 345px;
+            width: 345px;
+        }
+    }
 }
