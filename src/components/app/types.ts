@@ -448,3 +448,7 @@ export interface JobPipeline {
     started_on: string
     status: string
 }
+
+export interface TagChipsContainerType {
+  labelTags: TagType[]
+}
