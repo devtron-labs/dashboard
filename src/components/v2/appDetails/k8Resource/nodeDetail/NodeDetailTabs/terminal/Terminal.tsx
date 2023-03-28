@@ -421,6 +421,8 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         let url
         if (terminalViewProps.isResourceBrowserView) {
             url = `k8s/pod/exec/session/${terminalViewProps.selectedResource.clusterId}`
+        } else if (appDetails.deploymentAppType === DeploymentAppType.argo_cd) {
+            url = `k8s/pod/exec/session/${appDetails.clusterId}`
         } else if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
             url = `k8s/pod/exec/session/${appDetails.appId}`
         } else {
@@ -430,7 +432,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             terminalViewProps.isResourceBrowserView
                 ? terminalViewProps.selectedResource.namespace
                 : appDetails.namespace
-        }/${terminalViewProps.nodeName}/${terminalViewProps.shell.value}/${terminalViewProps.containerName}`
+            }/${terminalViewProps.nodeName}/${terminalViewProps.shell.value}/${terminalViewProps.containerName}`
+        if (appDetails.deploymentAppType === DeploymentAppType.argo_cd) { 
+            return url+`?envId=${appDetails.environmentId}&acdAppId=${appDetails.appId}`
+        }
         return url
     }
 
