@@ -1,9 +1,9 @@
 @import './modal.scss';
 @import './whiteCard.scss';
-@import url('./workflow.scss');
+@import './workflow.scss';
 @import './icons.scss';
 @import './colorPalette.scss';
-@import url('./triggerView.scss');
+@import './triggerView.scss';
 
 :root {
     --modal-index: 20;
@@ -872,15 +872,11 @@ button.anchor {
             stroke: var(--R500);
         }
 
-        &:hover{
-            svg path {
-                fill: var(--R500);
-                stroke: white;
-            }
-        }
+        &:hover,
         &:active,
         &:focus {
             svg path {
+                fill: var(--R500);
                 stroke: white;
             }
         }
