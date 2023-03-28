@@ -8,7 +8,8 @@ import {
     VisibleModal,
     sortCallback,
     Toggle,
-    useAsync, ErrorScreenNotAuthorized,
+    useAsync,
+    ErrorScreenNotAuthorized,
     Drawer,
     Checkbox,
     DevtronSwitch as Switch,
@@ -34,7 +35,7 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Database } from '../../assets/icons/ic-env.svg'
-import { ReactComponent as PencilEdit} from '../../assets/icons/ic-pencil.svg'
+import { ReactComponent as PencilEdit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -125,7 +126,9 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         if (this.timerRef) clearInterval(this.timerRef)
         Promise.all([
             getClusterList(),
-            (this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT) ? { result: undefined } : getEnvironmentList(),
+            this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT
+                ? { result: undefined }
+                : getEnvironmentList(),
         ])
             .then(([clusterRes, envResponse]) => {
                 let environments = envResponse.result || []
@@ -212,15 +215,12 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     render() {
         if (!this.props.isSuperAdmin) {
             return <ErrorScreenNotAuthorized />
-        } 
-        else if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
+        } else if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view === ViewType.ERROR) return <Reload className="dc__align-reload-center" />
         else {
             const moduleBasedTitle =
                 'Clusters' +
-                (this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT
-                    ? ''
-                    : ' and Environments')
+                (this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT ? '' : ' and Environments')
             return (
                 <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
                     <h2 className="form__title">{moduleBasedTitle}</h2>
@@ -249,19 +249,22 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 }
 
-function Cluster(this: any, {
-    id: clusterId,
-    cluster_name,
-    defaultClusterComponent,
-    agentInstallationStage,
-    server_url,
-    active,
-    config: defaultConfig,
-    environments,
-    reload,
-    prometheus_url,
-    serverMode,
-}) {
+function Cluster(
+    this: any,
+    {
+        id: clusterId,
+        cluster_name,
+        defaultClusterComponent,
+        agentInstallationStage,
+        server_url,
+        active,
+        config: defaultConfig,
+        environments,
+        reload,
+        prometheus_url,
+        serverMode,
+    },
+) {
     const [editMode, toggleEditMode] = useState(false)
     const [environment, setEnvironment] = useState(null)
     const [config, setConfig] = useState(defaultConfig)
@@ -321,19 +324,19 @@ function Cluster(this: any, {
         } else toggleClusterComponentModal(!showClusterComponentModal)
     }
 
-    const showClusterDrawer = ()=>{
+    const showClusterDrawer = () => {
         setShowWindow(true)
     }
 
-    const hideClusterDrawer = (e)=>{
+    const hideClusterDrawer = (e) => {
         setShowWindow(false)
     }
 
     const getEnvironmentPayload = () => {
-        console.log(environment);
-        
+        console.log(environment)
+
         return {
-            id: environment.id ,
+            id: environment.id,
             environment_name: environment.environment_name,
             cluster_id: environment.cluster_id,
             prometheus_endpoint: environment.prometheus_endpoint,
@@ -343,7 +346,6 @@ function Cluster(this: any, {
             description: environment.description || '',
         }
     }
-
 
     //console.log(editLabelRef)
     const outsideClickHandler = (evt): void => {
@@ -563,7 +565,6 @@ function Cluster(this: any, {
                                                             />
                                                             <DeleteInvolvement
                                                                 className="cursor"
-
                                                                 onClick={() => toggleConfirmation(true)}
                                                             />
                                                             {confirmation && (
@@ -660,7 +661,7 @@ function ClusterForm({
     prometheus_url,
     prometheusAuth,
     defaultClusterComponent,
-    isGrafanaModuleInstalled
+    isGrafanaModuleInstalled,
 }) {
     const [loading, setLoading] = useState(false)
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false)
@@ -728,12 +729,13 @@ function ClusterForm({
                 required: false,
                 validator: { error: 'TLS Certificate is required', regex: /^(?!\s*$).+/ },
             },
-            token: isDefaultCluster() || id
-                ? {}
-                : {
-                      required: true,
-                      validator: { error: 'token is required', regex: /[^]+/ },
-                  },
+            token:
+                isDefaultCluster() || id
+                    ? {}
+                    : {
+                          required: true,
+                          validator: { error: 'token is required', regex: /[^]+/ },
+                      },
             endpoint: {
                 required: prometheusToggleEnabled ? true : false,
                 validator: { error: 'endpoint is required', regex: /^.*$/ },
@@ -863,18 +865,18 @@ function ClusterForm({
                             placement="bottom"
                             trigger="click"
                             interactive={true}
-                            render={() =>
+                            render={() => (
                                 <ClusterInfoStepsModal
                                     subTitle={cluster.title}
                                     command={cluster.command}
                                     clusterName={cluster.clusterName}
                                 />
-                            }
+                            )}
                             maxWidth="468px"
                         >
                             <span className="ml-4 mr-2 cb-5 cursor">{cluster.heading}</span>
                         </TippyHeadless>
-                        {key !== k8sClusters.length -1 && <span className="cn-2">|</span>}
+                        {key !== k8sClusters.length - 1 && <span className="cn-2">|</span>}
                     </>
                 ))}
             </>
@@ -897,9 +899,7 @@ function ClusterForm({
     return (
         <form action="" className="cluster-form" onSubmit={handleOnSubmit}>
             <div className="flex left mb-20">
-                {id && (
-                    <Pencil color="#363636" className="icon-dim-24 dc__vertical-align-middle mr-8" />
-                )}
+                {id && <Pencil color="#363636" className="icon-dim-24 dc__vertical-align-middle mr-8" />}
                 <span className="fw-6 fs-14 cn-9">{clusterTitle()}</span>
             </div>
             <div className="form__row">
@@ -946,7 +946,7 @@ function ClusterForm({
             </div>
             {isGrafanaModuleInstalled && (
                 <>
-                    <hr/>
+                    <hr />
                     <div className={`${prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'} mt-20`}>
                         <div className="dc__content-space flex">
                             <span className="form__input-header">See metrics for applications in this cluster</span>
@@ -961,9 +961,7 @@ function ClusterForm({
                     </div>
                 </>
             )}
-            {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheus_url && (
-                <PrometheusWarningInfo />
-            )}
+            {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheus_url && <PrometheusWarningInfo />}
             {isGrafanaModuleInstalled && prometheusToggleEnabled && (
                 <div className="">
                     {(state.userName.error || state.password.error || state.endpoint.error) && (
@@ -1034,13 +1032,12 @@ function ClusterForm({
             )}
             <div className={`form__buttons`}>
                 {id && (
-                       <button    
+                    <button
                         style={{ margin: 'auto', marginLeft: 0 }}
                         className="flex cta override-button delete scr-5 h-32"
                         type="button"
                         onClick={() => toggleConfirmation(true)}
                     >
-                       
                         {deleting ? <Progressing /> : 'Delete'}
                     </button>
                 )}
@@ -1076,8 +1073,7 @@ function Environment({
     isProduction,
     description,
     reload,
-    hideClusterDrawer
-
+    hideClusterDrawer,
 }) {
     const [loading, setLoading] = useState(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
@@ -1112,9 +1108,7 @@ function Environment({
             },
             description: {
                 required: false,
-                validators: [
-                    { error: 'Maximum 40 characters required', regex: /^.{0,40}$/ },
-                ],
+                validators: [{ error: 'Maximum 40 characters required', regex: /^.{0,40}$/ }],
             },
         },
         onValidation,
@@ -1143,7 +1137,7 @@ function Environment({
             await api(payload, id)
             toast.success(`Successfully ${id ? 'updated' : 'saved'}`)
             reload()
-        hideClusterDrawer()
+            hideClusterDrawer()
         } catch (err) {
             showError(err)
         } finally {
@@ -1157,27 +1151,29 @@ function Environment({
         hideClusterDrawer()
     }
 
-    const deleteEnv = ():void => {
+    const deleteEnv = (): void => {
         //const promise = await deleteEnvironment(payload)
         reload()
         hideClusterDrawer()
         //return promise
     }
-    
+
     return (
         //<VisibleModal className="environment-create-modal" close={handleClose}>
         // <div className='ml-0 mr-0'>
-            <form onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit} className="h-100 bcn-0 pt-0 pb-12">
-                <div className="form__row bcn-0 pt-0 pr-20 pb-12 pl-20">
-                    <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12 ">
-                        <div className="form__title fw-6">{id ? 'Edit Environment' : 'Add Environment'}</div>
-                        {/* <Close className="icon-dim-24 dc__align-right cursor" onClick={hideClusterDrawer} /> */}
-                        <button type="button" className="dc__transparent flex icon-dim-24" onClick={hideClusterDrawer}>
-                            <Close className="icon-dim-24 dc__align-right cursor" />
-                        </button>
-                    </div>
+        <div>
+            {/* <form onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit} className="h-100 bcn-0 pt-0 pb-12"> */}
+            <div className="form__row bcn-0 pt-0 pr-20 pb-12 pl-20">
+                <div className="h-48 flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12">
+                    <div className="form__title fw-6 ml-8">{id ? 'Edit Environment' : 'Add Environment'}</div>
+                    {/* <Close className="icon-dim-24 dc__align-right cursor" onClick={hideClusterDrawer} /> */}
+                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={hideClusterDrawer}>
+                        <Close className="icon-dim-24 dc__align-right cursor" />
+                    </button>
                 </div>
-                <div className="form__row">
+            </div>
+            <form className="" onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit}>
+                <div className="form__row bcn-0 pt-0 pr-20 pb-12 pl-20 ml-20 mr-12">
                     <CustomInput
                         labelClassName="dc__required-field"
                         autoComplete="off"
@@ -1190,7 +1186,7 @@ function Environment({
                         label="Environment Name"
                     />
                 </div>
-                <div className="form__row form__row--namespace">
+                <div className="form__row form__row--namespace ml-20 mr-12">
                     <CustomInput
                         labelClassName="dc__required-field"
                         disabled={!!namespace}
@@ -1204,7 +1200,7 @@ function Environment({
                 </div>
                 <div className="form__row">
                     {/* <div className="form__label">Environment type*</div> */}
-                    <div className="flex row left">
+                    <div className="flex row left ml-20">
                         <div className="flex left environment environment--production">
                             <label className="pr-10 form__label">
                                 <input
@@ -1231,7 +1227,7 @@ function Environment({
                         </div>
                     </div>
                 </div>
-                <div className="form__row">
+                <div className="form__row ml-20 mr-12">
                     <CustomInput
                         autoComplete="off"
                         //disabled={!!description}
@@ -1243,10 +1239,11 @@ function Environment({
                         label="Description (Max 40 characters)"
                     />
                 </div>
-                <div className={`flex form__buttons dc__position-fixed dc__bottom-0 dc__border-top pt-10`}>
+
+                    <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
                     {id && (
                         <button
-                            className="flex cta override-button delete scr-5 h-32 ml-0"
+                            className= "cta override-button delete scr-5"
                             type="button"
                             onClick={() => toggleConfirmation(true)}
                         >
@@ -1254,13 +1251,19 @@ function Environment({
                             {deleting ? <Progressing /> : 'Delete Environment'}
                         </button>
                     )}
-                    <button className="cta cancel ml-auto" type="button" onClick={hideClusterDrawer}>
-                        Cancel
-                    </button>
-                    <button className="cta ml-auto" type="submit" disabled={loading}>
-                        {loading ? <Progressing /> : id ? 'Update' : 'Save'}
-                    </button>
-                </div>
+                    
+                        <button
+                            className="cta cancel mt-8"
+                            type="button"
+                            onClick={hideClusterDrawer}
+                        >
+                            Cancel
+                        </button>
+                        <button className="cta ml-8 mr-20 mt-8" type="submit" disabled={loading}>
+                            {loading ? <Progressing /> : id ? 'Update' : 'Save'}
+                        </button>
+                    </div>
+                
                 {confirmation && (
                     <DeleteComponent
                         setDeleting={clusterDelete}
@@ -1274,7 +1277,7 @@ function Environment({
                     />
                 )}
             </form>
-        // </div>
+        </div>
         // </VisibleModal>
     )
 }
