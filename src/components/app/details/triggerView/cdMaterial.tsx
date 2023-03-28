@@ -4,6 +4,7 @@ import {
     CDMaterialProps,
     CDMaterialState,
     CDMaterialType,
+    DeploymentNodeType,
     DeploymentWithConfigType,
     MaterialInfo,
     MATERIAL_TYPE,
@@ -713,7 +714,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     renderTriggerModalCTA() {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
-
         return (
             <div
                 className={`trigger-modal__trigger ${
@@ -722,7 +722,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         : ''
                 }`}
             >
-                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) && !this.state.showConfigDiffView && (
+                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) && !this.state.showConfigDiffView && this.props.stageType === DeploymentNodeType.CD &&(
                     <div className="flex left dc__border br-4 h-42">
                         <div className="flex">
                             <ReactSelect
@@ -785,7 +785,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     )}
                 >
                     <button
-                        className={`cta flex h-36 ${this.isDeployButtonDisabled() ? 'disabled-opacity' : ''}`}
+                        className={`cta flex ml-auto h-36 ${this.isDeployButtonDisabled() ? 'disabled-opacity' : ''}`}
                         onClick={this.deployTrigger}
                     >
                         {this.props.isLoading ? (
