@@ -798,18 +798,9 @@ function ClusterForm({
 
     const handleSuccessButton = (): void => {
         if (uploadState === UPLOAD_STATE.SUCCESS) {
-            onCancelUpload('Save')
+            
         } else if (uploadState === UPLOAD_STATE.UPLOAD) {
-            inputFileRef.current.value = null
             inputFileRef.current.click()
-        }
-    }
-
-    const onCancelUpload = (actionType: string): void => {
-        if (actionType === 'Save') {
-            setLoadingData(true)
-        } else {
-            setLoadingData(false)
         }
     }
 
@@ -1009,7 +1000,6 @@ function ClusterForm({
                                             className={` dc__no-text-transform ${
                                                 uploadState === UPLOAD_STATE.UPLOADING ? '  mr-20' : '  ml-20'
                                             }`}
-                                            onClick={(e) => onCancelUpload('Cancel')}
                                         >
                                             Cancel upload
                                         </button>
@@ -1094,7 +1084,7 @@ function ClusterForm({
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
-                <div className="pl-20 pr-20" style={{ overflow: 'auto', height: 'calc(100vh - 120px)' }}>
+                <div className="pl-20 pr-20" style={{ overflow: 'auto', height: 'calc(100vh - 169px)' }}>
                     <div className="form__row clone-apps dc__inline-block pd-0 pt-0 pb-12">
                         <RadioGroup
                             className="radio-group-no-border"
