@@ -161,7 +161,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             const payload = {
                 id: parseInt(appId),
                 description: newDescription,
-                labelTags: appMetaInfo.labels
+                labels: appMetaInfo.labels
             }
 
             const appLabel = await createAppLabels(payload)
