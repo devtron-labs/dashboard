@@ -110,7 +110,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     renderPageHeader() {
         return (
             <>
-                <h2 className="form__title form__title--artifacts" data-testid="git-repositories-heading">
+                <h2 className="form__title form__title--artifacts" data-testid={`${this.props.isJobView ? 'source-code-heading':'git-repositories-heading'}`}>
                     {this.props.isJobView ? 'Source code' : 'Git Repositories'}
                 </h2>
                 <p className="form__subtitle form__subtitle--artifacts">

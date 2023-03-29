@@ -548,6 +548,7 @@ const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, current
 function renderNavItem(item: CustomNavItemsType) {
     return (
         <NavLink
+            data-testid={`${item.title.toLowerCase().split(' ').join('-')}-link`}
             key={item.title}
             onClick={(event) => {
                 if (item.isLocked) event.preventDefault()

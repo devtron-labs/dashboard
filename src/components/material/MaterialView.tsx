@@ -137,7 +137,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             : []
         return (
             <form key={`${this.props.material.id}`} className="white-card p-20 mb-16">
-                <div className="mb-20 cn-9 fs-16 fw-6 white-card__header--form" data-testid="add-git-repository-heading">
+                <div className="mb-20 cn-9 fs-16 fw-6 white-card__header--form" data-testid={`${this.props.material.id ? 'edit' : 'add'}-git-repository-heading`} >
                     {this.props.material.id ? 'Edit Git Repository' : 'Add Git Repository'}
                     {this.props.material.id ? (
                         <button
