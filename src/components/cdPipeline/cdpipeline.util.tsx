@@ -56,3 +56,5 @@ export function DropdownIndicator(props) {
         <ArrowDown className="icon-dim-20 icon-n5" />
     </components.DropdownIndicator>
 }
+
+export const NUMBER_OF_APPROVALS = 6

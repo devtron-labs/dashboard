@@ -18,7 +18,10 @@ export enum ActionTypes {
     VIEW = 'view',
     UPDATE = 'update',
     EDIT = 'edit',
+    APPROVER = 'approver'
 }
+
+export type ActionRoleType = ActionTypes.MANAGER | ActionTypes.VIEW | ActionTypes.TRIGGER | ActionTypes.ADMIN | ActionTypes.APPROVER
 
 export enum DefaultUserKey {
     SYSTEM = 'system',
@@ -69,7 +72,7 @@ export interface DirectPermissionsRoleFilter extends RoleFilter {
     environmentError?: string
     action: {
         label: string
-        value: ActionTypes.ADMIN | ActionTypes.MANAGER | ActionTypes.TRIGGER | ActionTypes.VIEW
+        value: ActionRoleType
     }
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
 }

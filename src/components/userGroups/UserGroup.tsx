@@ -48,6 +48,7 @@ import {
     CreateUser,
     DefaultUserKey,
     DefaultUserValue,
+    ActionRoleType,
 } from './userGroups.types'
 import { ACCESS_TYPE_MAP, DOCUMENTATION, HELM_APP_UNASSIGNED_PROJECT, Routes, SERVER_MODE } from '../../config'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -122,6 +123,10 @@ const possibleRolesMeta = {
     [ActionTypes.UPDATE]: {
         value: 'Build and deploy',
         description: 'Can build and deploy apps on selected environments.',
+    },
+    [ActionTypes.APPROVER]: {
+        value: 'Approver',
+        description: 'Can approve images to be deployed. The user must be added as an approver for a deployment pipeline.',
     },
 }
 
@@ -817,7 +822,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             ? projectsList.find((project) => project.name === permission.team.value)?.id
             : null
 
-    const possibleRoles = [ActionTypes.VIEW, ActionTypes.TRIGGER, ActionTypes.ADMIN, ActionTypes.MANAGER]
+    const possibleRoles = [ActionTypes.VIEW, ActionTypes.TRIGGER, ActionTypes.ADMIN, ActionTypes.MANAGER, ActionTypes.APPROVER]
     const possibleRolesHelmApps = [ActionTypes.VIEW, ActionTypes.EDIT, ActionTypes.ADMIN]
     const [openMenu, changeOpenMenu] = useState<'entityName' | 'environment' | ''>('')
     const [environments, setEnvironments] = useState([])
@@ -1218,7 +1223,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : possibleRoles
                 ).map((role) => ({
                     label: role as string,
-                    value: role as ActionTypes.MANAGER | ActionTypes.VIEW | ActionTypes.TRIGGER | ActionTypes.ADMIN,
+                    value: role as ActionRoleType
                 }))}
                 className="basic-multi-select"
                 classNamePrefix="select"
