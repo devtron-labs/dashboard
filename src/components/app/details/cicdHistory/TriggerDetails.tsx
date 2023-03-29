@@ -103,10 +103,10 @@ const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: Finish
                             {moment(finishedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
                         </time>
                         <div className="dc__bullet mr-6 ml-6"/>
-                        <TimerIcon className="mb-1 grace-period-timer-icon icon-dim-20 mr-4 scn-6 commit-hash__icon grayscale dc__vertical-align-middle" />
+                        {/* <TimerIcon className="mb-1 grace-period-timer-icon icon-dim-20 mr-4 scn-6 commit-hash__icon grayscale dc__vertical-align-middle" />
                         <time className="dc__vertical-align-middle mr-12">
                            { formatDurationDiff(startedOn, finishedOn) }
-                        </time>                        
+                        </time>                          */}
                     </>           
                 )}
                 {artifact && (
@@ -145,7 +145,7 @@ const ProgressingStatus = React.memo(
     ({ status, startedOn, message, podStatus, stage, type }: ProgressingStatusType): JSX.Element => {
         const [aborting, setAborting] = useState(false)
         const [abortConfirmation, setAbortConfiguration] = useState(false)
-        const [durationStr, setDurationStr] = useState<string>('');
+        // const [durationStr, setDurationStr] = useState<string>('');
         const { buildId, triggerId, pipelineId } = useParams<{
             buildId: string
             triggerId: string
@@ -158,18 +158,18 @@ const ProgressingStatus = React.memo(
             abort = () => cancelPrePostCdTrigger(pipelineId, triggerId)
         }
 
-        useEffect(() => {
-            setDurationStr(formatDurationDiff(startedOn, Date()))
-            const intervalTimer = setInterval(() => {
-                setDurationStr(formatDurationDiff(startedOn, Date()))
-            }, 1000) 
+        // useEffect(() => {
+        //     setDurationStr(formatDurationDiff(startedOn, Date()))
+        //     const intervalTimer = setInterval(() => {
+        //         setDurationStr(formatDurationDiff(startedOn, Date()))
+        //     }, 1000) 
 
-            return () => {
-                if (intervalTimer) {
-                    clearInterval(intervalTimer)
-                }
-            }
-        }, [])
+        //     return () => {
+        //         if (intervalTimer) {
+        //             clearInterval(intervalTimer)
+        //         }
+        //     }
+        // }, [])
 
         async function abortRunning() {
             setAborting(true)
@@ -193,10 +193,10 @@ const ProgressingStatus = React.memo(
                         <div className={`${status} fs-14 fw-6 flex left inprogress-status-color`}>
                             In progress
                         </div>
-                        <TimerIcon className="mb-2 grace-period-timer-icon icon-dim-20 mr-6 scn-6 commit-hash__icon grayscale dc__vertical-align-middle" />
+                        {/* <TimerIcon className="mb-2 grace-period-timer-icon icon-dim-20 mr-6 scn-6 commit-hash__icon grayscale dc__vertical-align-middle" />
                         <time className="dc__vertical-align-middle">
                             {durationStr}
-                        </time>
+                        </time> */}
                     </div>
                     
                     {abort && (
