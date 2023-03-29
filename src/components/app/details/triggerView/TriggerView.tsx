@@ -49,6 +49,7 @@ import { handleSourceNotConfigured, processWorkflowStatuses } from '../../../App
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
     inprogressStatusTimer
+    abortController: AbortController
 
     constructor(props: TriggerViewProps) {
         super(props)
@@ -74,7 +75,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             showMaterialRegexModal: false,
             filteredCIPipelines: [],
             isChangeBranchClicked: false,
-            loader: false,
+            ciLoader: false,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -236,9 +237,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     workflows: workflows,
                 },
                 () => {
-                    this.updateCIMaterialList(ciNodeId.toString(), pipelineName, true).catch((errors: ServerErrors) => {
-                        showError(errors)
-                        this.setState({ code: errors.code })
+                    this.abortController = new AbortController()
+                    this.updateCIMaterialList(
+                        ciNodeId.toString(),
+                        pipelineName,
+                        true,
+                        this.abortController.signal,
+                    ).catch((errors: ServerErrors) => {
+                        if (!this.abortController.signal.aborted) {
+                            showError(errors)
+                            this.setState({ code: errors.code })
+                        }
                     })
                 },
             )
@@ -262,15 +271,22 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             return wf
         })
         this.setState({ workflows })
-        refreshGitMaterial(gitMaterialId.toString())
+        this.abortController = new AbortController()
+        refreshGitMaterial(gitMaterialId.toString(), this.abortController.signal)
             .then((response) => {
-                this.updateCIMaterialList(ciNodeId.toString(), pipelineName, true).catch((errors: ServerErrors) => {
-                    showError(errors)
-                    this.setState({ code: errors.code })
-                })
+                this.updateCIMaterialList(ciNodeId.toString(), pipelineName, true, this.abortController.signal).catch(
+                    (errors: ServerErrors) => {
+                        if (!this.abortController.signal.aborted) {
+                            showError(errors)
+                            this.setState({ code: errors.code })
+                        }
+                    },
+                )
             })
             .catch((error: ServerErrors) => {
-                showError(error)
+                if (!this.abortController.signal.aborted) {
+                    showError(error)
+                }
             })
     }
 
@@ -295,12 +311,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    async updateCIMaterialList(ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) {
+    async updateCIMaterialList(
+        ciNodeId: string,
+        ciPipelineName: string,
+        preserveMaterialSelection: boolean,
+        abortSignal: AbortSignal,
+    ) {
         const params = {
             appId: this.props.match.params.appId,
             pipelineId: ciNodeId,
         }
-        return getCIMaterialList(params).then((response) => {
+        return getCIMaterialList(params, abortSignal).then((response) => {
             let workflowId
             const workflows = [...this.state.workflows].map((workflow) => {
                 workflow.nodes.map((node) => {
@@ -366,15 +387,18 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     onClickCIMaterial(ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) {
-        this.setState({ loader: true })
+        this.setState({ ciLoader: true, showCIModal: true })
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
-        this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection)
+        this.abortController = new AbortController()
+        this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection, this.abortController.signal)
             .catch((errors: ServerErrors) => {
-                showError(errors)
-                this.setState({ code: errors.code })
+                if (!this.abortController.signal.aborted) {
+                    showError(errors)
+                    this.setState({ code: errors.code })
+                }
             })
             .finally(() => {
-                this.setState({ loader: false })
+                this.setState({ ciLoader: false })
             })
     }
 
@@ -771,6 +795,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     closeCIModal = (): void => {
         preventBodyScroll(false)
+        this.abortController.abort()
         this.setState({ showCIModal: false, showMaterialRegexModal: false })
     }
 
@@ -822,35 +847,39 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         )
     }
 
-    setLoader = (isLoader) => {
+    setCILoader = (isLoader) => {
         this.setState({
-            loader: isLoader,
+            ciLoader: isLoader,
         })
     }
 
     renderCIMaterial = () => {
-        if ((this.state.ciNodeId && this.state.showCIModal) || this.state.showMaterialRegexModal) {
+        if (this.state.showCIModal || this.state.showMaterialRegexModal) {
             let nd: NodeAttr
-            const configuredMaterialList = new Map<number, Set<number>>()
-            for (let i = 0; i < this.state.workflows.length; i++) {
-                nd = this.state.workflows[i].nodes.find((node) => +node.id == this.state.ciNodeId && node.type === 'CI')
-
-                if (nd) {
-                    const gitMaterials = new Map<number, string[]>()
-                    for (const _inputMaterial of nd.inputMaterialList) {
-                        gitMaterials[_inputMaterial.gitMaterialId] = [
-                            _inputMaterial.gitMaterialName.toLowerCase(),
-                            _inputMaterial.value,
-                        ]
-                    }
-                    configuredMaterialList[this.state.workflows[i].name] = new Set<number>()
-                    handleSourceNotConfigured(
-                        configuredMaterialList,
-                        this.state.workflows[i],
-                        nd[this.state.materialType],
-                        !gitMaterials[this.state.workflows[i].ciConfiguredGitMaterialId],
+            if (this.state.ciNodeId) {
+                const configuredMaterialList = new Map<number, Set<number>>()
+                for (let i = 0; i < this.state.workflows.length; i++) {
+                    nd = this.state.workflows[i].nodes.find(
+                        (node) => +node.id == this.state.ciNodeId && node.type === 'CI',
                     )
-                    break
+
+                    if (nd) {
+                        const gitMaterials = new Map<number, string[]>()
+                        for (const _inputMaterial of nd.inputMaterialList) {
+                            gitMaterials[_inputMaterial.gitMaterialId] = [
+                                _inputMaterial.gitMaterialName.toLowerCase(),
+                                _inputMaterial.value,
+                            ]
+                        }
+                        configuredMaterialList[this.state.workflows[i].name] = new Set<number>()
+                        handleSourceNotConfigured(
+                            configuredMaterialList,
+                            this.state.workflows[i],
+                            nd[this.state.materialType],
+                            !gitMaterials[this.state.workflows[i].ciConfiguredGitMaterialId],
+                        )
+                        break
+                    }
                 }
             }
             const material = nd?.[this.state.materialType] || []
@@ -880,8 +909,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     onShowCIModal={this.onShowCIModal}
                     isChangeBranchClicked={this.state.isChangeBranchClicked}
                     getWorkflows={this.getWorkflows}
-                    loader={this.state.loader}
-                    setLoader={this.setLoader}
+                    loader={this.state.ciLoader}
+                    setLoader={this.setCILoader}
                     isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
                     isCacheAvailable={nd?.storageConfigured}
                     appId={this.props.match.params.appId}

@@ -359,7 +359,7 @@ export interface TriggerViewState {
     showMaterialRegexModal: boolean
     filteredCIPipelines: any[]
     isChangeBranchClicked: boolean
-    loader: boolean
+    ciLoader: boolean
 }
 
 //-- begining of response type objects for trigger view

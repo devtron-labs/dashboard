@@ -5,6 +5,7 @@ import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-media.svg'
+import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { VisibleModal, ButtonWithLoader, Checkbox, showError, Progressing } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
@@ -257,9 +258,16 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         return (
             <div className="modal-body--ci-material h-100" onClick={this.onClickStopPropagation}>
                 {this.props.loader ? (
-                    <div style={{ height: '100vh' }}>
-                        <Progressing pageLoader />
-                    </div>
+                    <>
+                        <div className="trigger-modal__header flex right">
+                            <button type="button" className="dc__transparent" onClick={this.context.closeCIModal}>
+                                <CloseIcon />
+                            </button>
+                        </div>
+                        <div style={{ height: 'calc(100% - 55px)' }}>
+                            <Progressing pageLoader />
+                        </div>
+                    </>
                 ) : (
                     <>
                         {this.props.showMaterialRegexModal && (
