@@ -48,7 +48,7 @@ export default function TagDetails({ index, tagData, setTagData, removeTag, tabI
                 refVar={valueRef}
                 dependentRef={keyRef}
             />
-            <div className="dc__border pl-4 pr-4 dc__right-radius-4 pointer flex top" onClick={deleteTag}>
+            <div className="dc__border pl-4 pr-4 dc__right-radius-4 pointer flex top" onClick={deleteTag} data-testid={`delete-tag-${index}`}>
                 <DeleteCross className="icon-dim-20 mt-4" />
             </div>
         </div>

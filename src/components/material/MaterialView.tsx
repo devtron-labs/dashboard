@@ -139,7 +139,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             : []
         return (
             <form key={`${this.props.material.id}`} className="white-card p-20 mb-16">
-                <div className="mb-20 cn-9 fs-16 fw-6 white-card__header--form">
+                <div className="mb-20 cn-9 fs-16 fw-6 white-card__header--form" data-testid="add-git-repository-heading">
                     {this.props.material.id ? 'Edit Git Repository' : 'Add Git Repository'}
                     {this.props.material.id ? (
                         <button
@@ -152,10 +152,11 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </button>
                     ) : null}
                 </div>
-                <div className="form__row form-row__material">
+                <div className="form__row form-row__material" data-testid="add-git-repository-form">
                     <div className="">
                         <label className="form__label">Git Account*</label>
                         <ReactSelect
+                            classNamePrefix="material-view__select-project"
                             className="m-0"
                             tabIndex={1}
                             isMulti={false}
@@ -208,7 +209,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 to={`${URLS.GLOBAL_CONFIG_GIT}`}
                                                 className="dc__border-top dc__react-select__bottom bcn-0 p-10 cb-5 dc__block fw-5 anchor cursor dc__no-decor"
                                             >
-                                                <Add className="icon-dim-20 fcb-5 mr-12 dc__vertical-align-bottom " />
+                                                <Add className="icon-dim-20 fcb-5 mr-12 dc__vertical-align-bottom " data-testid="add-git-account-option"/>
                                                 Add Git Account
                                             </NavLink>
                                         </components.MenuList>
@@ -260,6 +261,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             placeholder={this.gitAuthType('placeholder')}
                             value={`${this.props.material.url}`}
                             onChange={this.props.handleUrlChange}
+                            data-testid="git-repo-url-text-box"
                         />
                         <span className="form__error">
                             {this.props.isError.url && (
@@ -292,7 +294,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 <span className="mb-4 mt-4 flex left">Set checkout path</span>
                             ) : (
                                 <>
-                                    <span className="mb-4 mt-4 flex left">
+                                    <span className="mb-4 mt-4 flex left" data-testid="set-clone-directory-checkbox">
                                         Set clone directory
                                         <Tippy
                                             className="default-tt w-200"
@@ -340,7 +342,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             rootClassName="fs-14 cn-9 flex top"
                         >
                             <div className="ml-12">
-                                <span className="mb-4 mt-4 flex left">
+                                <span className="mb-4 mt-4 flex left" data-testid="pull-submodule-recursively-checkbox">
                                     Pull submodules recursively
                                     <Tippy
                                         className="default-tt w-200"
@@ -378,17 +380,18 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 type="button"
                                 onClick={this.onClickDelete}
                                 disabled={this.props.preventRepoDelete}
+                                data-testid="git-repository-delete-button"
                             >
                                 {this.state.deleting ? <Progressing /> : 'Delete'}
                             </button>
                         </ConditionalWrap>
                     )}
                     {this.props.isMultiGit ? (
-                        <button type="button" className="cta cancel mr-16" onClick={this.props.cancel}>
+                        <button type="button" className="cta cancel mr-16" onClick={this.props.cancel} data-testid="git-repository-cancel-button">
                             Cancel
                         </button>
                     ) : null}
-                    <button type="button" className="cta" disabled={this.props.isLoading} onClick={this.props.save}>
+                    <button type="button" className="cta" disabled={this.props.isLoading} onClick={this.props.save} data-testid="git-repository-save-button">
                         {this.props.isLoading ? <Progressing /> : 'Save'}
                     </button>
                 </div>

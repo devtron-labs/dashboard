@@ -263,7 +263,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                     Create {this.props.isJobView ? 'job' : 'application'}
                 </h2>
-                <button type="button" className="dc__transparent flex icon-dim-24" onClick={this.props.close}>
+                <button type="button" className="dc__transparent flex icon-dim-24" onClick={this.props.close} data-testid="close-create-cutomapp-wing">
                     <Close className="icon-dim-24" />
                 </button>
             </div>
@@ -387,6 +387,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     <span className="form__label dc__required-field">Project</span>
                     <ReactSelect
                         classNamePrefix="create-app__select-project"
+                        
                         className="m-0"
                         tabIndex={4}
                         isMulti={false}
