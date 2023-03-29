@@ -57,17 +57,19 @@ import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff
 import Tippy from '@tippyjs/react'
 
 export default function CDMaterial(props: CDMaterialProps) {
-    const [state, dispatch] = useReducer(cdMaterialReducer, {})
+    const [state, dispatch] = useReducer(cdMaterialReducer, getInitCDMaterialState(props))
 
     useEffect(() => {
         getSecurityModuleStatus()
     }, [])
 
     useEffect(() => {
-        dispatch({
-            type: CDMaterialActionTypes.multipleOptions,
-            payload: getInitCDMaterialState(props),
-        })
+        if (props.material.length > 0) {
+            dispatch({
+                type: CDMaterialActionTypes.multipleOptions,
+                payload: getInitCDMaterialState(props),
+            })
+        }
     }, [props.material])
 
     useEffect(() => {
