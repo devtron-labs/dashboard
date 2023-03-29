@@ -42,6 +42,7 @@ import {
 import { OptionType } from '../userGroups/userGroups.types'
 import { getClusterTerminalParamsData } from '../cluster/cluster.util'
 import { useHistory, useLocation } from 'react-router-dom'
+import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'
 
 export default function ClusterTerminal({
     clusterId,
@@ -125,10 +126,13 @@ export default function ClusterTerminal({
             setSelectedTabIndex(0)
             if (update) {
                 socketDisconnecting()
-                clusterTerminalUpdate({ ...payload, id: terminalAccessIdRef.current},{signal: abortController.signal})
+                clusterTerminalUpdate(
+                    { ...payload, id: terminalAccessIdRef.current },
+                    { signal: abortController.signal },
+                )
                     .then((response) => {
                         terminalAccessIdRef.current = response.result.terminalAccessId
-                        if(abortController.signal.aborted) {
+                        if (abortController.signal.aborted) {
                             return
                         }
                         setTerminalCleared(true)
@@ -142,7 +146,7 @@ export default function ClusterTerminal({
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
             } else {
-                clusterTerminalStart(payload,{signal: abortController.signal})
+                clusterTerminalStart(payload, { signal: abortController.signal })
                     .then((response) => {
                         terminalAccessIdRef.current = response.result.terminalAccessId
                         setUpdate(true)
@@ -170,7 +174,7 @@ export default function ClusterTerminal({
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
             }
-            
+
             return () => {
                 abortController.abort()
             }
@@ -442,229 +446,14 @@ export default function ClusterTerminal({
         return <GroupHeading {...props} hideClusterName={true} />
     }
 
-    return (
-        <div
-            className={`${
-                isFullScreen || isNodeDetailsPage ? 'cluster-full_screen' : 'cluster-terminal-view-container'
-            } ${isNodeDetailsPage ? '' : 'node-terminal'}`}
-        >
-            <div className="flex dc__content-space bcn-0 pl-20 dc__border-top h-32">
-                <div className="flex left">
-                    {clusterName && (
-                        <>
-                            <div className="cn-6 mr-16">{SELECT_TITLE.CLUSTER}</div>
-                            <div className="flex fw-6 fs-13 mr-20">{clusterName}</div>
-                            <span className="bcn-2 mr-16 h-32" style={{ width: '1px' }} />
-                        </>
-                    )}
-                    {isNodeDetailsPage && (
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="bottom"
-                            content={connectTerminal ? 'Disconnect and terminate pod' : 'Connect to terminal'}
-                        >
-                            {connectTerminal ? (
-                                <span className="flex mr-8">
-                                    <Disconnect className="icon-dim-16 mr-4 cursor" onClick={closeTerminalModal} />
-                                </span>
-                            ) : (
-                                <span className="flex mr-8">
-                                    <Connect className="icon-dim-16 mr-4 cursor" onClick={reconnectTerminal} />
-                                </span>
-                            )}
-                        </Tippy>
-                    )}
-
-                    {!isNodeDetailsPage && (
-                        <>
-                        <div className="cn-6 mr-10">{SELECT_TITLE.NODE}</div>
-                            <div style={{ minWidth: '145px' }}>
-                                <ReactSelect
-                                    placeholder="Select Containers"
-                                    options={nodeGroups}
-                                    defaultValue={selectedNodeName}
-                                    value={selectedNodeName}
-                                    onChange={onChangeNodes}
-                                    styles={nodeSelect}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        GroupHeading: groupHeading,
-                                        Option,
-                                    }}
-                                />
-                            </div>
-                        </>
-                    )}
-
-                    <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                    <div className="cn-6 ml-8 mr-10">{SELECT_TITLE.NAMESPACE}</div>
-                    <div>
-                        <CreatableSelect
-                            placeholder="Select Namespace"
-                            options={defaultNamespaceList}
-                            defaultValue={selectedNamespace}
-                            value={selectedNamespace}
-                            onChange={onChangeNamespace}
-                            styles={clusterSelectStyle}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option,
-                            }}
-                        />
-                    </div>
-
-                    <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                    <div className="cn-6 ml-8 mr-4">{SELECT_TITLE.IMAGE}</div>
-                    <TippyCustomized
-                        theme={TippyTheme.white}
-                        heading="Image"
-                        placement="top"
-                        interactive={true}
-                        trigger="click"
-                        className="w-300"
-                        Icon={Help}
-                        showCloseButton={true}
-                        iconClass="icon-dim-20 fcv-5"
-                        additionalContent={imageTippyInfo()}
-                    >
-                        <HelpIcon className="icon-dim-16 mr-8 cursor" />
-                    </TippyCustomized>
-                    <div>
-                        <CreatableSelect
-                            placeholder="Select Image"
-                            options={imageList}
-                            defaultValue={selectedImage}
-                            value={selectedImage}
-                            onChange={onChangeImages}
-                            styles={clusterImageSelect}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: imageOptionComponent,
-                                MenuList: menuComponent,
-                            }}
-                        />
-                    </div>
-                </div>
-                {!isNodeDetailsPage && (
-                    <span className="flex">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content={isFullScreen ? 'Restore height' : 'Maximise height'}
-                        >
-                            {isFullScreen ? (
-                                <ExitScreen
-                                    className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
-                                    onClick={toggleScreenView}
-                                />
-                            ) : (
-                                <FullScreen
-                                    className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
-                                    onClick={toggleScreenView}
-                                />
-                            )}
-                        </Tippy>
-                        <Tippy className="default-tt" arrow={false} placement="top" content={'Close'}>
-                            <Close
-                                className="icon-dim-20 cursor fcr-5 dc__hover-r100 br-4 fcn-6 mr-20"
-                                onClick={closeTerminalModal}
-                            />
-                        </Tippy>
-                    </span>
-                )}
-            </div>
-
-            <div className="flex left bcn-0 pl-20 dc__border-top h-28">
-                <ul role="tablist" className="tab-list">
-                    <li className="tab-list__tab pointer fs-12" onClick={selectTerminalTab}>
-                        <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 0 ? 'active' : ''}`}>
-                            {SELECT_TITLE.TERMINAL}
-                        </div>
-                        {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
-                    </li>
-                    {terminalAccessIdRef.current && connectTerminal && (
-                        <li className="tab-list__tab fs-12" onClick={() => selectEventsTab()}>
-                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
-                                {SELECT_TITLE.POD_EVENTS}
-                            </div>
-                            {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
-                        </li>
-                    )}
-                    {terminalAccessIdRef.current && connectTerminal && (
-                        <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
-                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
-                                {SELECT_TITLE.POD_MANIFEST}
-                            </div>
-                            {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
-                        </li>
-                    )}
-                </ul>
-                <div className={`${selectedTabIndex !== 0 ? 'dc__hide-section' : 'flex'}`}>
-                    {connectTerminal && isPodCreated && (
-                        <>
-                            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
-                            <Tippy
-                                className="default-tt cursor"
-                                arrow={false}
-                                placement="bottom"
-                                content={
-                                    socketConnection === SocketConnectionType.CONNECTING ||
-                                    socketConnection === SocketConnectionType.CONNECTED
-                                        ? 'Disconnect from pod'
-                                        : 'Reconnect to pod'
-                                }
-                            >
-                                {socketConnection === SocketConnectionType.CONNECTING ||
-                                socketConnection === SocketConnectionType.CONNECTED ? (
-                                    <span className="mr-8 cursor">
-                                        <div
-                                            className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5"
-                                            onClick={stopTerminalConnection}
-                                        />
-                                    </span>
-                                ) : (
-                                    <span className="mr-8 flex">
-                                        <Play className="icon-dim-16 mr-4 cursor" onClick={resumePodConnection} />
-                                    </span>
-                                )}
-                            </Tippy>
-                            <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-                                <div className="flex">
-                                    <Abort
-                                        className="icon-dim-16 mr-4 fcn-6 cursor"
-                                        onClick={(e) => {
-                                            setTerminalCleared(true)
-                                        }}
-                                    />
-                                </div>
-                            </Tippy>
-                            <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                            <div className="cn-6 ml-8 mr-10">{SELECT_TITLE.SHELL} </div>
-                            <div>
-                                <CreatableSelect
-                                    placeholder="Select Shell"
-                                    options={clusterShellTypes}
-                                    defaultValue={selectedTerminalType}
-                                    onChange={onChangeTerminalType}
-                                    styles={clusterSelectStyle}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        Option,
-                                    }}
-                                />
-                            </div>
-                        </>
-                    )}
-                </div>
-            </div>
+    const terminalTabWrapper = (terminalView) => {
+        return (
             <div
                 className={`cluster-terminal__wrapper ${isFullScreen ? 'full-screen-terminal' : ''} ${
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
                 }`}
             >
-                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalContainer()}</div>
+                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalView()}</div>
                 {selectedTabIndex === 1 && (
                     <div className="h-100 dc__overflow-scroll">
                         <ClusterEvents terminalAccessId={terminalAccessIdRef.current} reconnectStart={reconnectStart} />
@@ -676,6 +465,357 @@ export default function ClusterTerminal({
                     </div>
                 )}
             </div>
-        </div>
+        )
+    }
+
+    const renderTabs = () => {
+        return  <ul role="tablist" className="tab-list">
+                     <li className="tab-list__tab pointer fs-12" onClick={selectTerminalTab}>
+                           <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 0 ? 'active' : ''}`}>
+                           {SELECT_TITLE.TERMINAL}
+                            </div>
+                          {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
+                       </li>
+                      {terminalAccessIdRef.current && connectTerminal && (
+                            <li className="tab-list__tab fs-12" onClick={() => selectEventsTab()}>
+                                <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
+                                    {SELECT_TITLE.POD_EVENTS}
+                                </div>
+                                {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
+                            </li>
+                        )}
+                        {terminalAccessIdRef.current && connectTerminal && (
+                            <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
+                                <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
+                                    {SELECT_TITLE.POD_MANIFEST}
+                                </div>
+                                {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
+                            </li>
+                        )}
+                    </ul>
+    }
+
+
+    const selectionListData = {
+        firstRow: [
+            {
+                type: clusterName ? 'titleName' : '',
+                title: SELECT_TITLE.CLUSTER,
+                value: clusterName,
+            },
+            {
+                type: isNodeDetailsPage ? 'connectionButton' : '',
+                connectTerminal: connectTerminal,
+                closeTerminalModal: closeTerminalModal,
+                reconnectTerminal: reconnectTerminal,
+            },
+            {
+                type: !isNodeDetailsPage ? 'reactSelect' : '',
+                title: SELECT_TITLE.NODE,
+                placeholder: 'Select node',
+                options: nodeGroups,
+                defaultValue: selectedNodeName,
+                value: selectedNodeName,
+                onChange: onChangeNodes,
+                styles: nodeSelect,
+                components: {
+                    IndicatorSeparator: null,
+                    GroupHeading: groupHeading,
+                    Option,
+                },
+            },
+            {
+                type: 'creatableSelect',
+                showInfoTippy: false,
+                title: SELECT_TITLE.NAMESPACE,
+                placeholder: 'Select Namespace',
+                options: defaultNamespaceList,
+                defaultValue: selectedNamespace,
+                value: selectedNamespace,
+                onChange: onChangeNamespace,
+                styles: clusterSelectStyle,
+                components: {
+                    IndicatorSeparator: null,
+                    Option,
+                },
+            },{
+                type: 'creatableSelect',
+                title: SELECT_TITLE.IMAGE,
+                placeholder: "Select Image",
+                options: imageList,
+                showInfoTippy: true,
+                defaultValue: selectedImage,
+                value: selectedImage,
+                onChange: onChangeImages,
+                infoContent: imageTippyInfo(),
+                styles: clusterImageSelect,
+                components: {
+                    IndicatorSeparator: null,
+                    Option: imageOptionComponent,
+                    MenuList: menuComponent,
+                }
+
+            },{
+                type: !isNodeDetailsPage ? 'closeExpandView': '',
+                showExpand: true,
+                isFullScreen: isFullScreen,
+                toggleScreenView: toggleScreenView,
+                closeTerminalModal: closeTerminalModal,
+            }
+        ],
+        secondRow: [{
+            type: 'tabs',
+            renderTabs: renderTabs
+        },
+        ],
+        tabSwitcher: terminalTabWrapper
+    }
+
+    return (
+        <TerminalWrapper
+            selectionListData={selectionListData}
+            socketConnection={socketConnection}
+            setSocketConnection={setSocketConnection}
+            className={`${
+                isFullScreen || isNodeDetailsPage ? 'cluster-full_screen' : 'cluster-terminal-view-container'
+            } ${isNodeDetailsPage ? '' : 'node-terminal'}`}
+        />
     )
+
+    // return (
+    //     <div
+    //         className={`${
+    //             isFullScreen || isNodeDetailsPage ? 'cluster-full_screen' : 'cluster-terminal-view-container'
+    //         } ${isNodeDetailsPage ? '' : 'node-terminal'}`}
+    //     >
+    //         <div className="flex dc__content-space bcn-0 pl-20 dc__border-top h-32">
+    //             <div className="flex left">
+    //                 {clusterName && (
+    //                     <>
+    //                         <div className="cn-6 mr-16">{SELECT_TITLE.CLUSTER}</div>
+    //                         <div className="flex fw-6 fs-13 mr-20">{clusterName}</div>
+    //                         <span className="bcn-2 mr-16 h-32" style={{ width: '1px' }} />
+    //                     </>
+    //                 )}
+    //                 {isNodeDetailsPage && (
+    //                     <Tippy
+    //                         className="default-tt"
+    //                         arrow={false}
+    //                         placement="bottom"
+    //                         content={connectTerminal ? 'Disconnect and terminate pod' : 'Connect to terminal'}
+    //                     >
+    //                         {connectTerminal ? (
+    //                             <span className="flex mr-8">
+    //                                 <Disconnect className="icon-dim-16 mr-4 cursor" onClick={closeTerminalModal} />
+    //                             </span>
+    //                         ) : (
+    //                             <span className="flex mr-8">
+    //                                 <Connect className="icon-dim-16 mr-4 cursor" onClick={reconnectTerminal} />
+    //                             </span>
+    //                         )}
+    //                     </Tippy>
+    //                 )}
+
+    //                 {!isNodeDetailsPage && (
+    //                     <>
+    //                         <div className="cn-6 mr-10">{SELECT_TITLE.NODE}</div>
+    //                         <div style={{ minWidth: '145px' }}>
+    //                             <ReactSelect
+    //                                 placeholder="Select Containers"
+    //                                 options={nodeGroups}
+    //                                 defaultValue={selectedNodeName}
+    //                                 value={selectedNodeName}
+    //                                 onChange={onChangeNodes}
+    //                                 styles={nodeSelect}
+    //                                 components={{
+    //                                     IndicatorSeparator: null,
+    //                                     GroupHeading: groupHeading,
+    //                                     Option,
+    //                                 }}
+    //                             />
+    //                         </div>
+    //                     </>
+    //                 )}
+
+    //                 <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
+    //                 <div className="cn-6 ml-8 mr-10">{SELECT_TITLE.NAMESPACE}</div>
+    //                 <div>
+    //                     <CreatableSelect
+    //                         placeholder="Select Namespace"
+    //                         options={defaultNamespaceList}
+    //                         defaultValue={selectedNamespace}
+    //                         value={selectedNamespace}
+    //                         onChange={onChangeNamespace}
+    //                         styles={clusterSelectStyle}
+    //                         components={{
+    //                             IndicatorSeparator: null,
+    //                             Option,
+    //                         }}
+    //                     />
+    //                 </div>
+
+    //                 <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
+    //                 <div className="cn-6 ml-8 mr-4">{SELECT_TITLE.IMAGE}</div>
+    //                 <TippyCustomized
+    //                     theme={TippyTheme.white}
+    //                     heading="Image"
+    //                     placement="top"
+    //                     interactive={true}
+    //                     trigger="click"
+    //                     className="w-300"
+    //                     Icon={Help}
+    //                     showCloseButton={true}
+    //                     iconClass="icon-dim-20 fcv-5"
+    //                     additionalContent={imageTippyInfo()}
+    //                 >
+    //                     <HelpIcon className="icon-dim-16 mr-8 cursor" />
+    //                 </TippyCustomized>
+    //                 <div>
+    //                     <CreatableSelect
+    //                         placeholder="Select Image"
+    //                         options={imageList}
+    //                         defaultValue={selectedImage}
+    //                         value={selectedImage}
+    //                         onChange={onChangeImages}
+    //                         styles={clusterImageSelect}
+    //                         components={{
+    //                             IndicatorSeparator: null,
+    //                             Option: imageOptionComponent,
+    //                             MenuList: menuComponent,
+    //                         }}
+    //                     />
+    //                 </div>
+    //             </div>
+    //             {!isNodeDetailsPage && (
+    //                 <span className="flex">
+    //                     <Tippy
+    //                         className="default-tt"
+    //                         arrow={false}
+    //                         placement="top"
+    //                         content={isFullScreen ? 'Restore height' : 'Maximise height'}
+    //                     >
+    //                         {isFullScreen ? (
+    //                             <ExitScreen
+    //                                 className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
+    //                                 onClick={toggleScreenView}
+    //                             />
+    //                         ) : (
+    //                             <FullScreen
+    //                                 className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
+    //                                 onClick={toggleScreenView}
+    //                             />
+    //                         )}
+    //                     </Tippy>
+    //                     <Tippy className="default-tt" arrow={false} placement="top" content={'Close'}>
+    //                         <Close
+    //                             className="icon-dim-20 cursor fcr-5 dc__hover-r100 br-4 fcn-6 mr-20"
+    //                             onClick={closeTerminalModal}
+    //                         />
+    //                     </Tippy>
+    //                 </span>
+    //             )}
+    //         </div>
+
+    //         <div className="flex left bcn-0 pl-20 dc__border-top h-28">
+    //             <ul role="tablist" className="tab-list">
+    //                 <li className="tab-list__tab pointer fs-12" onClick={selectTerminalTab}>
+    //                     <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 0 ? 'active' : ''}`}>
+    //                         {SELECT_TITLE.TERMINAL}
+    //                     </div>
+    //                     {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
+    //                 </li>
+    //                 {terminalAccessIdRef.current && connectTerminal && (
+    //                     <li className="tab-list__tab fs-12" onClick={() => selectEventsTab()}>
+    //                         <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
+    //                             {SELECT_TITLE.POD_EVENTS}
+    //                         </div>
+    //                         {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
+    //                     </li>
+    //                 )}
+    //                 {terminalAccessIdRef.current && connectTerminal && (
+    //                     <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
+    //                         <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
+    //                             {SELECT_TITLE.POD_MANIFEST}
+    //                         </div>
+    //                         {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
+    //                     </li>
+    //                 )}
+    //             </ul>
+    //             <div className={`${selectedTabIndex !== 0 ? 'dc__hide-section' : 'flex'}`}>
+    //                 {connectTerminal && isPodCreated && (
+    //                     <>
+    //                         <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+    //                         <Tippy
+    //                             className="default-tt cursor"
+    //                             arrow={false}
+    //                             placement="bottom"
+    //                             content={
+    //                                 socketConnection === SocketConnectionType.CONNECTING ||
+    //                                 socketConnection === SocketConnectionType.CONNECTED
+    //                                     ? 'Disconnect from pod'
+    //                                     : 'Reconnect to pod'
+    //                             }
+    //                         >
+    //                             {socketConnection === SocketConnectionType.CONNECTING ||
+    //                             socketConnection === SocketConnectionType.CONNECTED ? (
+    //                                 <span className="mr-8 cursor">
+    //                                     <div
+    //                                         className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5"
+    //                                         onClick={stopTerminalConnection}
+    //                                     />
+    //                                 </span>
+    //                             ) : (
+    //                                 <span className="mr-8 flex">
+    //                                     <Play className="icon-dim-16 mr-4 cursor" onClick={resumePodConnection} />
+    //                                 </span>
+    //                             )}
+    //                         </Tippy>
+    //                         <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
+    //                             <div className="flex">
+    //                                 <Abort
+    //                                     className="icon-dim-16 mr-4 fcn-6 cursor"
+    //                                     onClick={(e) => {
+    //                                         setTerminalCleared(true)
+    //                                     }}
+    //                                 />
+    //                             </div>
+    //                         </Tippy>
+    //                         <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
+    //                         <div className="cn-6 ml-8 mr-10">{SELECT_TITLE.SHELL} </div>
+    //                         <div>
+    //                             <CreatableSelect
+    //                                 placeholder="Select Shell"
+    //                                 options={clusterShellTypes}
+    //                                 defaultValue={selectedTerminalType}
+    //                                 onChange={onChangeTerminalType}
+    //                                 styles={clusterSelectStyle}
+    //                                 components={{
+    //                                     IndicatorSeparator: null,
+    //                                     Option,
+    //                                 }}
+    //                             />
+    //                         </div>
+    //                     </>
+    //                 )}
+    //             </div>
+    //         </div>
+    //         <div
+    //             className={`cluster-terminal__wrapper ${isFullScreen ? 'full-screen-terminal' : ''} ${
+    //                 isNodeDetailsPage ? 'node-details-full-screen' : ''
+    //             }`}
+    //         >
+    //             <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalContainer()}</div>
+    //             {selectedTabIndex === 1 && (
+    //                 <div className="h-100 dc__overflow-scroll">
+    //                     <ClusterEvents terminalAccessId={terminalAccessIdRef.current} reconnectStart={reconnectStart} />
+    //                 </div>
+    //             )}
+    //             {selectedTabIndex === 2 && (
+    //                 <div className="h-100">
+    //                     <ClusterManifest terminalAccessId={terminalAccessIdRef.current} />
+    //                 </div>
+    //             )}
+    //         </div>
+    //     </div>
+    // )
 }
