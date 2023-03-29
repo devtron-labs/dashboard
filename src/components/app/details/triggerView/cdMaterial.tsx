@@ -614,20 +614,9 @@ export default function CDMaterial(props: CDMaterialProps) {
         )
     }
 
-    const renderConfigDiffStatus = () => {
-        const _canReviewConfig = canReviewConfig() && state.recentDeploymentConfig !== null
-        const isLastDeployedOption =
-            state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
-        const statusColorClasses = state.checkingDiff
-            ? 'cn-0 bcb-5'
-            : !_canReviewConfig
-            ? 'cn-9 bcn-1 cursor-not-allowed'
-            : state.diffFound
-            ? 'cn-0 bcr-5'
-            : 'cn-0 bcg-5'
-        let checkingdiff: JSX.Element, configNotAvailable: JSX.Element, noDiff: JSX.Element, diffFound: JSX.Element
+    const renderStatus = (_canReviewConfig: boolean) => {
         if (state.checkingDiff) {
-            checkingdiff = (
+            return (
                 <>
                     Checking diff&nbsp;
                     <Progressing
@@ -640,23 +629,43 @@ export default function CDMaterial(props: CDMaterialProps) {
             )
         } else {
             if (!_canReviewConfig) {
-                configNotAvailable = state.recentDeploymentConfig && (
-                    <>
-                        <WarningIcon className="no-config-found-icon icon-dim-16" />
-                        &nbsp; Config Not Available
-                    </>
+                return (
+                    state.recentDeploymentConfig && (
+                        <>
+                            <WarningIcon className="no-config-found-icon icon-dim-16" />
+                            &nbsp; Config Not Available
+                        </>
+                    )
                 )
             } else if (state.diffFound) {
-                diffFound = (
+                return (
                     <>
                         <WarningIcon className="config-diff-found-icon icon-dim-16" />
                         &nbsp; <span className="config-diff-status">Config Diff</span>
                     </>
                 )
             } else {
-                noDiff = <span className="config-diff-status">No Config Diff</span>
+                return <span className="config-diff-status">No Config Diff</span>
             }
         }
+    }
+
+    const getStatusColorClasses = (_canReviewConfig: boolean) => {
+        if (state.checkingDiff) {
+            return 'cn-0 bcb-5'
+        } else if (!_canReviewConfig) {
+            return 'cn-9 bcn-1 cursor-not-allowed'
+        } else if (state.diffFound) {
+            return 'cn-0 bcr-5'
+        }
+        return 'cn-0 bcg-5'
+    }
+
+    const renderConfigDiffStatus = () => {
+        const _canReviewConfig = canReviewConfig() && state.recentDeploymentConfig !== null
+        const isLastDeployedOption =
+            state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
+
         return (
             <div
                 className={`trigger-modal__config-diff-status flex pl-16 pr-16 dc__right-radius-4 ${
@@ -666,12 +675,11 @@ export default function CDMaterial(props: CDMaterialProps) {
             >
                 {!isLastDeployedOption && (state.recentDeploymentConfig !== null || state.checkingDiff) && (
                     <div
-                        className={`flex pt-3 pb-3 pl-12 pr-12 dc__border-radius-24 fs-12 fw-6 lh-20 ${statusColorClasses}`}
+                        className={`flex pt-3 pb-3 pl-12 pr-12 dc__border-radius-24 fs-12 fw-6 lh-20 ${getStatusColorClasses(
+                            _canReviewConfig,
+                        )}`}
                     >
-                        {checkingdiff}
-                        {configNotAvailable}
-                        {diffFound}
-                        {noDiff}
+                        {renderStatus(_canReviewConfig)}
                     </div>
                 )}
                 {((!state.checkingDiff && _canReviewConfig) ||
