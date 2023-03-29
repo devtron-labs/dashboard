@@ -102,7 +102,7 @@ const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: Finish
                         <time className="dc__vertical-align-middle">
                             {moment(finishedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
                         </time>
-                        <div className="dc__bullet mr-6 ml-6"/>
+                        {artifact && <div className="dc__bullet mr-6 ml-6"/>}
                         {/* <TimerIcon className="mb-1 grace-period-timer-icon icon-dim-20 mr-4 scn-6 commit-hash__icon grayscale dc__vertical-align-middle" />
                         <time className="dc__vertical-align-middle mr-12">
                            { formatDurationDiff(startedOn, finishedOn) }
