@@ -674,3 +674,27 @@ export interface MaterialSourceProps {
     }
     ciPipelineId?: number
 }
+
+export enum CDMaterialActionTypes {
+    isSecurityModuleInstalled = 'isSecurityModuleInstalled',
+    checkingDiff = 'checkingDiff',
+    diffFound = 'diffFound',
+    diffOptions = 'diffOptions',
+    showConfigDiffView = 'showConfigDiffView',
+    loadingMore = 'loadingMore',
+    showOlderImages = 'showOlderImages',
+    noMoreImages = 'noMoreImages',
+    selectedConfigToDeploy = 'selectedConfigToDeploy',
+    selectedMaterial = 'selectedMaterial',
+    isRollbackTrigger = 'isRollbackTrigger',
+    recentDeploymentConfig = 'recentDeploymentConfig',
+    latestDeploymentConfig = 'latestDeploymentConfig',
+    specificDeploymentConfig = 'specificDeploymentConfig',
+    isSelectImageTrigger = 'isSelectImageTrigger',
+    multipleOptions = 'multipleOptions',
+}
+
+export interface CDMaterialStateAction {
+    type: CDMaterialActionTypes
+    payload: any
+}

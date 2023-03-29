@@ -2,7 +2,14 @@ import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../config'
 import { deepEqual, showError } from '../../../common'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { prepareHistoryData } from '../cdDetails/service'
-import { DeploymentWithConfigType, TriggerViewDeploymentConfigType } from './types'
+import {
+    CDMaterialActionTypes,
+    CDMaterialState,
+    CDMaterialStateAction,
+    DeploymentWithConfigType,
+    MATERIAL_TYPE,
+    TriggerViewDeploymentConfigType,
+} from './types'
 
 export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
     DEPLOYMENT_TEMPLATE: {
@@ -184,4 +191,64 @@ export const checkForDiff = (configA: TriggerViewDeploymentConfigType, configB: 
     }
 
     return diffForOptions
+}
+
+export const getInitCDMaterialState = (props) => ({
+    isSecurityModuleInstalled: false,
+    checkingDiff: false,
+    diffFound: false,
+    diffOptions: null,
+    showConfigDiffView: false,
+    loadingMore: false,
+    showOlderImages: true,
+    noMoreImages: false,
+    selectedConfigToDeploy:
+        props.materialType === MATERIAL_TYPE.rollbackMaterialList
+            ? SPECIFIC_TRIGGER_CONFIG_OPTION
+            : LAST_SAVED_CONFIG_OPTION,
+    selectedMaterial: props.material.find((_mat) => _mat.isSelected),
+    isRollbackTrigger: props.materialType === MATERIAL_TYPE.rollbackMaterialList,
+    recentDeploymentConfig: null,
+    latestDeploymentConfig: null,
+    specificDeploymentConfig: null,
+    isSelectImageTrigger: props.materialType === MATERIAL_TYPE.inputMaterialList,
+})
+
+export const cdMaterialReducer = (state: CDMaterialState, action: CDMaterialStateAction) => {
+    switch (action.type) {
+        case CDMaterialActionTypes.isSecurityModuleInstalled:
+            return { ...state, isSecurityModuleInstalled: action.payload }
+        case CDMaterialActionTypes.checkingDiff:
+            return { ...state, checkingDiff: action.payload }
+        case CDMaterialActionTypes.diffFound:
+            return { ...state, diffFound: action.payload }
+        case CDMaterialActionTypes.diffOptions:
+            return { ...state, diffOptions: action.payload }
+        case CDMaterialActionTypes.showConfigDiffView:
+            return { ...state, showConfigDiffView: !state.showConfigDiffView }
+        case CDMaterialActionTypes.loadingMore:
+            return { ...state, loadingMore: action.payload }
+        case CDMaterialActionTypes.showOlderImages:
+            return { ...state, showOlderImages: action.payload }
+        case CDMaterialActionTypes.noMoreImages:
+            return { ...state, noMoreImages: action.payload }
+        case CDMaterialActionTypes.selectedConfigToDeploy:
+            return { ...state, selectedConfigToDeploy: action.payload }
+        case CDMaterialActionTypes.selectedMaterial:
+            return { ...state, selectedMaterial: action.payload }
+        case CDMaterialActionTypes.isRollbackTrigger:
+            return { ...state, isRollbackTrigger: action.payload }
+        case CDMaterialActionTypes.recentDeploymentConfig:
+            return { ...state, recentDeploymentConfig: action.payload }
+        case CDMaterialActionTypes.latestDeploymentConfig:
+            return { ...state, latestDeploymentConfig: action.payload }
+        case CDMaterialActionTypes.specificDeploymentConfig:
+            return { ...state, specificDeploymentConfig: action.payload }
+        case CDMaterialActionTypes.isSelectImageTrigger:
+            return { ...state, isSelectImageTrigger: action.payload }
+        case CDMaterialActionTypes.multipleOptions:
+            return { ...state, ...action.payload }
+        default:
+            return state
+    }
 }

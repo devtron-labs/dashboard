@@ -3,7 +3,7 @@ import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-
 import ReactGA from 'react-ga4'
 import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, SourceTypeMap, ViewType } from '../../../../config'
 import { ServerErrors } from '../../../../modals/commonTypes'
-import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
+import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { CIMaterialType } from '../../../app/details/triggerView/MaterialHistory'

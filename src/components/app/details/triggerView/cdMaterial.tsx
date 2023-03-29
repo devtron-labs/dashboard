@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
+import React, { useEffect, useReducer } from 'react'
 import ReactSelect, { components } from 'react-select'
 import {
+    CDMaterialActionTypes,
     CDMaterialProps,
-    CDMaterialState,
     CDMaterialType,
     DeploymentNodeType,
     DeploymentWithConfigType,
@@ -20,6 +20,7 @@ import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-ba
 import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
 import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
+import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import {
@@ -49,74 +50,56 @@ import {
     checkForDiff,
     getDeployConfigOptions,
     processResolvedPromise,
-    SPECIFIC_TRIGGER_CONFIG_OPTION,
-    LAST_SAVED_CONFIG_OPTION,
+    getInitCDMaterialState,
+    cdMaterialReducer,
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
 
-export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
-    constructor(props: CDMaterialProps) {
-        super(props)
-        this.state = {
-            isSecurityModuleInstalled: false,
-            checkingDiff: false,
-            diffFound: false,
-            diffOptions: null,
-            showConfigDiffView: false,
-            loadingMore: false,
-            showOlderImages: true,
-            noMoreImages: false,
-            selectedConfigToDeploy:
-                props.materialType === MATERIAL_TYPE.rollbackMaterialList
-                    ? SPECIFIC_TRIGGER_CONFIG_OPTION
-                    : LAST_SAVED_CONFIG_OPTION,
-            selectedMaterial: props.material.find((_mat) => _mat.isSelected),
-            isRollbackTrigger: props.materialType === MATERIAL_TYPE.rollbackMaterialList,
-            recentDeploymentConfig: null,
-            latestDeploymentConfig: null,
-            specificDeploymentConfig: null,
-            isSelectImageTrigger: props.materialType === MATERIAL_TYPE.inputMaterialList,
-        }
-        this.handleConfigSelection = this.handleConfigSelection.bind(this)
-        this.deployTrigger = this.deployTrigger.bind(this)
-        this.reviewConfig = this.reviewConfig.bind(this)
-        this.loadOlderImages = this.loadOlderImages.bind(this)
-        this.handleOlderImagesLoading = this.handleOlderImagesLoading.bind(this)
-        this.isConfigAvailable = this.isConfigAvailable.bind(this)
-    }
+export default function CDMaterial(props: CDMaterialProps) {
+    const [state, dispatch] = useReducer(cdMaterialReducer, {})
 
-    componentDidMount() {
-        this.getSecurityModuleStatus()
+    useEffect(() => {
+        getSecurityModuleStatus()
+    }, [])
 
-        if (
-            (this.state.isRollbackTrigger || this.state.isSelectImageTrigger) &&
-            this.state.selectedMaterial &&
-            this.props.material.length > 0
-        ) {
-            this.getDeploymentConfigDetails()
-        }
-    }
-
-    getWfrId() {
-        if (this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
-            return this.state.recentDeploymentConfig.wfrId
-        }
-
-        return this.state.selectedMaterial
-            ? this.state.selectedMaterial.wfrId
-            : this.props.material?.find((_mat) => _mat.isSelected)?.wfrId
-    }
-
-    getDeploymentConfigDetails() {
-        this.setState({
-            checkingDiff: true,
+    useEffect(() => {
+        dispatch({
+            type: CDMaterialActionTypes.multipleOptions,
+            payload: getInitCDMaterialState(props),
         })
-        const { appId, pipelineId } = this.props
+    }, [props.material])
+
+    useEffect(() => {
+        if (
+            (state.isRollbackTrigger || (state.isSelectImageTrigger && props.stageType === DeploymentNodeType.CD)) &&
+            state.selectedMaterial &&
+            props.material.length > 0
+        ) {
+            getDeploymentConfigDetails()
+        }
+    }, [state.isRollbackTrigger, state.isSelectImageTrigger, state.selectedMaterial])
+
+    const getWfrId = () => {
+        if (state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG) {
+            return state.recentDeploymentConfig.wfrId
+        }
+
+        return state.selectedMaterial
+            ? state.selectedMaterial.wfrId
+            : props.material?.find((_mat) => _mat.isSelected)?.wfrId
+    }
+
+    const getDeploymentConfigDetails = () => {
+        dispatch({
+            type: CDMaterialActionTypes.checkingDiff,
+            payload: true,
+        })
+        const { appId, pipelineId } = props
         Promise.allSettled([
             getRecentDeploymentConfig(appId, pipelineId),
             getLatestDeploymentConfig(appId, pipelineId),
-            this.state.isRollbackTrigger ? getSpecificDeploymentConfig(appId, pipelineId, this.getWfrId()) : noop,
+            state.isRollbackTrigger ? getSpecificDeploymentConfig(appId, pipelineId, getWfrId()) : noop,
         ]).then(
             ([recentDeploymentConfigRes, latestDeploymentConfigRes, specificDeploymentConfigRes]: {
                 status: string
@@ -126,32 +109,38 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 const _recentDeploymentConfig = processResolvedPromise(recentDeploymentConfigRes, true)
                 const _specificDeploymentConfig = processResolvedPromise(specificDeploymentConfigRes)
                 const _latestDeploymentConfig = processResolvedPromise(latestDeploymentConfigRes)
-                const _diffOptions = this.state.isRollbackTrigger
+                const _diffOptions = state.isRollbackTrigger
                     ? checkForDiff(_recentDeploymentConfig, _specificDeploymentConfig)
                     : checkForDiff(_recentDeploymentConfig, _latestDeploymentConfig)
 
-                this.setState({
-                    recentDeploymentConfig: _recentDeploymentConfig, //last deployed config
-                    latestDeploymentConfig: _latestDeploymentConfig, //last saved config
-                    specificDeploymentConfig: _specificDeploymentConfig, //config of one particular wfrId
-                    diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
-                    diffOptions: _diffOptions,
-                    checkingDiff: false,
+                dispatch({
+                    type: CDMaterialActionTypes.multipleOptions,
+                    payload: {
+                        recentDeploymentConfig: _recentDeploymentConfig, //last deployed config
+                        latestDeploymentConfig: _latestDeploymentConfig, //last saved config
+                        specificDeploymentConfig: _specificDeploymentConfig, //config of one particular wfrId
+                        diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
+                        diffOptions: _diffOptions,
+                        checkingDiff: false,
+                    },
                 })
             },
         )
     }
 
-    async getSecurityModuleStatus(): Promise<void> {
+    const getSecurityModuleStatus = async (): Promise<void> => {
         try {
             const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
             if (result?.status === ModuleStatus.INSTALLED) {
-                this.setState({ isSecurityModuleInstalled: true })
+                dispatch({
+                    type: CDMaterialActionTypes.isSecurityModuleInstalled,
+                    payload: true,
+                })
             }
         } catch (error) {}
     }
 
-    renderGitMaterialInfo(matInfo: MaterialInfo[]) {
+    const renderGitMaterialInfo = (matInfo: MaterialInfo[]) => {
         return (
             <>
                 {matInfo.map((mat: MaterialInfo) => {
@@ -191,7 +180,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    renderVulnerabilities(mat) {
+    const renderVulnerabilities = (mat) => {
         if (!mat.scanned) {
             return (
                 <div className="security-tab-empty">
@@ -226,14 +215,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             )
     }
 
-    renderActiveCD = (mat) => {
+    const renderActiveCD = (mat) => {
         return (
             <>
                 {mat.latest && (
                     <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
                         <div className="fw-4 fs-11 lh-16 flex">
                             <World className="icon-dim-16 mr-4 scg-5" />
-                            Active on <span className="fw-6 ml-4">{this.props.envName} </span>
+                            Active on <span className="fw-6 ml-4">{props.envName} </span>
                         </div>
                     </span>
                 )}
@@ -241,7 +230,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
                         <div className="fw-4 fs-11 lh-16 flex">
                             <World className="icon-dim-16 mr-4 scg-5" />
-                            Active on <span className="fw-6 ml-4">{this.props.parentEnvironmentName}</span>
+                            Active on <span className="fw-6 ml-4">{props.parentEnvironmentName}</span>
                         </div>
                     </span>
                 )}
@@ -249,30 +238,30 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    renderProgressingCD = (mat) => {
+    const renderProgressingCD = (mat) => {
         return (
             <span className="bcy-1 br-4 ey-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
                 <div className="fw-4 fs-11 lh-16 flex">
                     <div className={`dc__app-summary__icon icon-dim-16 mr-6 progressing progressing--node`}></div>
-                    Deploying on <span className="fw-6 ml-4">{this.props.envName} </span>
+                    Deploying on <span className="fw-6 ml-4">{props.envName} </span>
                 </div>
             </span>
         )
     }
 
-    renderFailedCD = (mat) => {
+    const renderFailedCD = (mat) => {
         return (
             <span className="bcr-1 br-4 er-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
                 <div className="fw-4 fs-11 lh-16 flex">
                     <Failed className="icon-dim-16 mr-4" />
-                    Last deployment failed on <span className="fw-6 ml-4">{this.props.envName} </span>
+                    Last deployment failed on <span className="fw-6 ml-4">{props.envName} </span>
                 </div>
             </span>
         )
     }
 
-    renderSequentialCDCardTitle = (mat) => {
-        if (this.props.stageType !== STAGE_TYPE.CD) return
+    const renderSequentialCDCardTitle = (mat) => {
+        if (props.stageType !== STAGE_TYPE.CD) return
 
         if (
             mat.latest ||
@@ -283,38 +272,43 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         ) {
             return (
                 <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
-                    {this.renderActiveCD(mat)}
-                    {mat.artifactStatus === 'Progressing' && this.renderProgressingCD(mat)}
-                    {(mat.artifactStatus === 'Degraded' || mat.artifactStatus === 'Failed') && this.renderFailedCD(mat)}
+                    {renderActiveCD(mat)}
+                    {mat.artifactStatus === 'Progressing' && renderProgressingCD(mat)}
+                    {(mat.artifactStatus === 'Degraded' || mat.artifactStatus === 'Failed') && renderFailedCD(mat)}
                 </div>
             )
         }
     }
 
-    async handleImageSelection(index: number, selectedMaterial: CDMaterialType) {
-        this.props.selectImage(
+    const handleImageSelection = async (index: number, selectedMaterial: CDMaterialType) => {
+        props.selectImage(
             index,
-            this.props.materialType,
-            this.props.isFromBulkCD ? { id: this.props.pipelineId, type: this.props.stageType } : null,
+            props.materialType,
+            props.isFromBulkCD ? { id: props.pipelineId, type: props.stageType } : null,
         )
-        if (this.state.isSelectImageTrigger && this.state.selectedMaterial?.image !== selectedMaterial.image) {
-            this.setState({
-                selectedMaterial,
+        if (state.isSelectImageTrigger && state.selectedMaterial?.image !== selectedMaterial.image) {
+            dispatch({
+                type: CDMaterialActionTypes.selectedMaterial,
+                payload: selectedMaterial,
             })
         }
 
-        if (this.state.isRollbackTrigger && this.state.selectedMaterial?.wfrId !== selectedMaterial.wfrId) {
+        if (state.isRollbackTrigger && state.selectedMaterial?.wfrId !== selectedMaterial.wfrId) {
             const isSpecificTriggerConfig =
-                this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
-            this.setState({
-                selectedMaterial,
-                checkingDiff: isSpecificTriggerConfig,
+                state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
+
+            dispatch({
+                type: CDMaterialActionTypes.multipleOptions,
+                payload: {
+                    selectedMaterial,
+                    checkingDiff: isSpecificTriggerConfig,
+                },
             })
 
             try {
                 const { result } = await getSpecificDeploymentConfig(
-                    this.props.appId,
-                    this.props.pipelineId,
+                    props.appId,
+                    props.pipelineId,
                     selectedMaterial.wfrId,
                 )
                 if (result) {
@@ -326,29 +320,34 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     })
 
                     if (isSpecificTriggerConfig) {
-                        const _diffOptions = checkForDiff(this.state.recentDeploymentConfig, _specificDeploymentConfig)
-                        this.setState({
-                            specificDeploymentConfig: _specificDeploymentConfig,
-                            diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
-                            diffOptions: _diffOptions,
+                        const _diffOptions = checkForDiff(state.recentDeploymentConfig, _specificDeploymentConfig)
+                        dispatch({
+                            type: CDMaterialActionTypes.multipleOptions,
+                            payload: {
+                                specificDeploymentConfig: _specificDeploymentConfig,
+                                diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
+                                diffOptions: _diffOptions,
+                            },
                         })
                     } else {
-                        this.setState({
-                            specificDeploymentConfig: _specificDeploymentConfig,
+                        dispatch({
+                            type: CDMaterialActionTypes.specificDeploymentConfig,
+                            payload: _specificDeploymentConfig,
                         })
                     }
                 }
             } catch (error) {
                 showError(error)
             } finally {
-                this.setState({
-                    checkingDiff: false,
+                dispatch({
+                    type: CDMaterialActionTypes.checkingDiff,
+                    payload: false,
                 })
             }
         }
     }
 
-    renderMaterialInfo(mat: CDMaterialType, hideSelector?: boolean) {
+    const renderMaterialInfo = (mat: CDMaterialType, hideSelector?: boolean) => {
         return (
             <>
                 <div className="flex left column">
@@ -356,11 +355,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <img src={docker} alt="" className="commit-hash__icon" />
                         {mat.image}
                     </div>
-                    {this.props.stageType !== STAGE_TYPE.CD && mat.latest && (
+                    {props.stageType !== STAGE_TYPE.CD && mat.latest && (
                         <span className="last-deployed-status">Last Run</span>
                     )}
                 </div>
-                {this.props.materialType === MATERIAL_TYPE.none ? (
+                {props.materialType === MATERIAL_TYPE.none ? (
                     <div />
                 ) : (
                     <div className="material-history__info flex left fs-13">
@@ -368,7 +367,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <span className="fs-13 fw-4">{mat.deployedTime}</span>
                     </div>
                 )}
-                {!!mat.deployedBy && this.state.isRollbackTrigger ? (
+                {!!mat.deployedBy && state.isRollbackTrigger ? (
                     <div className="material-history__deployed-by flex left">
                         {mat.deployedBy === 'system' ? (
                             <>
@@ -407,9 +406,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    renderMaterial() {
-        const materialList =
-            this.state.isRollbackTrigger && this.state.showOlderImages ? [this.props.material[0]] : this.props.material
+    const renderMaterial = () => {
+        const materialList = state.isRollbackTrigger && state.showOlderImages ? [props.material[0]] : props.material
 
         return materialList.map((mat, index) => {
             let isMaterialInfoAvailable = true
@@ -432,39 +430,39 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         mat.isSelected ? 'material-history-selected' : ''
                     }`}
                 >
-                    {this.renderSequentialCDCardTitle(mat)}
+                    {renderSequentialCDCardTitle(mat)}
                     <div
                         className={`material-history__top mh-66 ${
-                            !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
+                            !state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
                         }`}
                         style={{ cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
                         onClick={(event) => {
                             event.stopPropagation()
                             if (!mat.vulnerable) {
-                                this.handleImageSelection(index, mat)
+                                handleImageSelection(index, mat)
                             }
                         }}
                     >
-                        {this.renderMaterialInfo(mat)}
+                        {renderMaterialInfo(mat)}
                     </div>
                     {mat.showSourceInfo && (
                         <>
-                            {this.state.isSecurityModuleInstalled && !this.props.hideInfoTabsContainer && (
+                            {state.isSecurityModuleInstalled && !props.hideInfoTabsContainer && (
                                 <ul className="tab-list tab-list--vulnerability">
                                     <li className="tab-list__tab">
                                         <button
                                             type="button"
                                             onClick={(e) => {
                                                 e.stopPropagation()
-                                                this.props.changeTab(
+                                                props.changeTab(
                                                     index,
                                                     Number(mat.id),
                                                     CDModalTab.Changes,
                                                     {
-                                                        id: this.props.pipelineId,
-                                                        type: this.props.stageType,
+                                                        id: props.pipelineId,
+                                                        type: props.stageType,
                                                     },
-                                                    this.props.appId,
+                                                    props.appId,
                                                 )
                                             }}
                                             className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
@@ -479,14 +477,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                             type="button"
                                             onClick={(e) => {
                                                 e.stopPropagation()
-                                                this.props.changeTab(
+                                                props.changeTab(
                                                     index,
                                                     Number(mat.id),
                                                     CDModalTab.Security,
-                                                    this.props.isFromBulkCD
-                                                        ? { id: this.props.pipelineId, type: this.props.stageType }
+                                                    props.isFromBulkCD
+                                                        ? { id: props.pipelineId, type: props.stageType }
                                                         : null,
-                                                    this.props.appId,
+                                                    props.appId,
                                                 )
                                             }}
                                             className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
@@ -500,8 +498,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 </ul>
                             )}
                             {mat.tab === CDModalTab.Changes
-                                ? this.renderGitMaterialInfo(mat.materialInfo)
-                                : this.renderVulnerabilities(mat)}
+                                ? renderGitMaterialInfo(mat.materialInfo)
+                                : renderVulnerabilities(mat)}
                         </>
                     )}
                     {mat.materialInfo.length > 0 && isMaterialInfoAvailable && (
@@ -511,11 +509,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             data-testid={mat.showSourceInfo ? 'collapse-show-info' : 'collapse-hide-info'}
                             onClick={(event) => {
                                 event.stopPropagation()
-                                this.props.toggleSourceInfo(
+                                props.toggleSourceInfo(
                                     index,
-                                    this.props.isFromBulkCD
-                                        ? { id: this.props.pipelineId, type: this.props.stageType }
-                                        : null,
+                                    props.isFromBulkCD ? { id: props.pipelineId, type: props.stageType } : null,
                                 )
                             }}
                         >
@@ -532,15 +528,15 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         })
     }
 
-    renderCDModalHeader(): JSX.Element | string {
-        const _stageType = this.state.isRollbackTrigger ? STAGE_TYPE.ROLLBACK : this.props.stageType
+    const renderCDModalHeader = (): JSX.Element | string => {
+        const _stageType = state.isRollbackTrigger ? STAGE_TYPE.ROLLBACK : props.stageType
         switch (_stageType) {
             case STAGE_TYPE.PRECD:
                 return 'Pre Deployment'
             case STAGE_TYPE.CD:
                 return (
                     <>
-                        Deploy to <span className="fw-6">{this.props.envName}</span>
+                        Deploy to <span className="fw-6">{props.envName}</span>
                     </>
                 )
             case STAGE_TYPE.POSTCD:
@@ -548,7 +544,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             case STAGE_TYPE.ROLLBACK:
                 return (
                     <>
-                        Rollback for <span className="fw-6">{this.props.envName}</span>
+                        Rollback for <span className="fw-6">{props.envName}</span>
                     </>
                 )
             default:
@@ -556,45 +552,46 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
     }
 
-    reviewConfig() {
-        if (this.canReviewConfig()) {
-            this.setState((prevState) => ({
-                showConfigDiffView: !prevState.showConfigDiffView,
-            }))
+    const reviewConfig = () => {
+        if (canReviewConfig()) {
+            dispatch({
+                type: CDMaterialActionTypes.showConfigDiffView,
+                payload: !state.showConfigDiffView,
+            })
         }
     }
 
-    isConfigPresent() {
+    const isConfigPresent = () => {
         return (
-            (this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
-                this.state.specificDeploymentConfig?.deploymentTemplate &&
-                this.state.specificDeploymentConfig.pipelineStrategy) ||
-            (this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LAST_SAVED_CONFIG &&
-                this.state.latestDeploymentConfig?.deploymentTemplate &&
-                this.state.latestDeploymentConfig.pipelineStrategy)
+            (state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
+                state.specificDeploymentConfig?.deploymentTemplate &&
+                state.specificDeploymentConfig.pipelineStrategy) ||
+            (state.selectedConfigToDeploy.value === DeploymentWithConfigType.LAST_SAVED_CONFIG &&
+                state.latestDeploymentConfig?.deploymentTemplate &&
+                state.latestDeploymentConfig.pipelineStrategy)
         )
     }
 
-    canReviewConfig() {
+    const canReviewConfig = () => {
         return (
-            (this.state.recentDeploymentConfig?.deploymentTemplate &&
-                this.state.recentDeploymentConfig.pipelineStrategy &&
-                (this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG ||
-                    this.isConfigPresent())) ||
-            !this.state.recentDeploymentConfig
+            (state.recentDeploymentConfig?.deploymentTemplate &&
+                state.recentDeploymentConfig.pipelineStrategy &&
+                (state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG ||
+                    isConfigPresent())) ||
+            !state.recentDeploymentConfig
         )
     }
 
-    canDeployWithConfig() {
+    const canDeployWithConfig = () => {
         return (
-            (this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
-                this.state.recentDeploymentConfig?.deploymentTemplate &&
-                this.state.recentDeploymentConfig.pipelineStrategy) ||
-            this.isConfigPresent()
+            (state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
+                state.recentDeploymentConfig?.deploymentTemplate &&
+                state.recentDeploymentConfig.pipelineStrategy) ||
+            isConfigPresent()
         )
     }
 
-    formatOptionLabel(option) {
+    const formatOptionLabel = (option) => {
         return (
             <div className="flex left column w-100">
                 <span className="dc__ellipsis-right">{option.label}</span>
@@ -604,7 +601,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    customValueContainer(props) {
+    const customValueContainer = (props) => {
         return (
             <components.ValueContainer {...props}>
                 <div className="fs-13 fw-4 cn-9">
@@ -617,19 +614,19 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    renderConfigDiffStatus() {
-        const _canReviewConfig = this.canReviewConfig() && this.state.recentDeploymentConfig !== null
+    const renderConfigDiffStatus = () => {
+        const _canReviewConfig = canReviewConfig() && state.recentDeploymentConfig !== null
         const isLastDeployedOption =
-            this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
-        const statusColorClasses = this.state.checkingDiff
+            state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
+        const statusColorClasses = state.checkingDiff
             ? 'cn-0 bcb-5'
             : !_canReviewConfig
             ? 'cn-9 bcn-1 cursor-not-allowed'
-            : this.state.diffFound
+            : state.diffFound
             ? 'cn-0 bcr-5'
             : 'cn-0 bcg-5'
         let checkingdiff: JSX.Element, configNotAvailable: JSX.Element, noDiff: JSX.Element, diffFound: JSX.Element
-        if (this.state.checkingDiff) {
+        if (state.checkingDiff) {
             checkingdiff = (
                 <>
                     Checking diff&nbsp;
@@ -643,13 +640,13 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             )
         } else {
             if (!_canReviewConfig) {
-                configNotAvailable = this.state.recentDeploymentConfig && (
+                configNotAvailable = state.recentDeploymentConfig && (
                     <>
                         <WarningIcon className="no-config-found-icon icon-dim-16" />
                         &nbsp; Config Not Available
                     </>
                 )
-            } else if (this.state.diffFound) {
+            } else if (state.diffFound) {
                 diffFound = (
                     <>
                         <WarningIcon className="config-diff-found-icon icon-dim-16" />
@@ -665,9 +662,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 className={`trigger-modal__config-diff-status flex pl-16 pr-16 dc__right-radius-4 ${
                     _canReviewConfig ? 'cursor' : 'config-not-found'
                 } ${isLastDeployedOption ? 'pt-10 pb-10' : 'pt-7 pb-7'}`}
-                onClick={this.reviewConfig}
+                onClick={reviewConfig}
             >
-                {!isLastDeployedOption && (this.state.recentDeploymentConfig !== null || this.state.checkingDiff) && (
+                {!isLastDeployedOption && (state.recentDeploymentConfig !== null || state.checkingDiff) && (
                     <div
                         className={`flex pt-3 pb-3 pl-12 pr-12 dc__border-radius-24 fs-12 fw-6 lh-20 ${statusColorClasses}`}
                     >
@@ -677,34 +674,34 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         {noDiff}
                     </div>
                 )}
-                {((!this.state.checkingDiff && _canReviewConfig) ||
+                {((!state.checkingDiff && _canReviewConfig) ||
                     isLastDeployedOption ||
-                    !this.state.recentDeploymentConfig) && (
+                    !state.recentDeploymentConfig) && (
                     <span className={`dc__uppercase cb-5 pointer ${!isLastDeployedOption ? 'ml-12' : ''}`}>REVIEW</span>
                 )}
             </div>
         )
     }
 
-    isDeployButtonDisabled() {
-        const selectedImage = this.props.material.find((artifact) => artifact.isSelected)
+    const isDeployButtonDisabled = () => {
+        const selectedImage = props.material.find((artifact) => artifact.isSelected)
         return (
             !selectedImage ||
-            (this.state.isRollbackTrigger && (this.state.checkingDiff || !this.canDeployWithConfig())) ||
-            (this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
-                !this.state.recentDeploymentConfig)
+            (state.isRollbackTrigger && (state.checkingDiff || !canDeployWithConfig())) ||
+            (state.selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
+                !state.recentDeploymentConfig)
         )
     }
 
-    getTippyContent() {
+    const getTippyContent = () => {
         return (
             <>
                 <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not available!</h2>
                 <p className="fs-12 fw-4 lh-18 m-0">
-                    {this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
-                    (!this.state.specificDeploymentConfig ||
-                        !this.state.specificDeploymentConfig.deploymentTemplate ||
-                        !this.state.specificDeploymentConfig.pipelineStrategy)
+                    {state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
+                    (!state.specificDeploymentConfig ||
+                        !state.specificDeploymentConfig.deploymentTemplate ||
+                        !state.specificDeploymentConfig.pipelineStrategy)
                         ? 'Please select a different image or configuration to deploy'
                         : 'Please select a different configuration to deploy'}
                 </p>
@@ -712,87 +709,84 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    renderTriggerModalCTA() {
-        const buttonLabel = CDButtonLabelMap[this.props.stageType]
+    const renderTriggerModalCTA = () => {
+        const buttonLabel = CDButtonLabelMap[props.stageType]
         return (
             <div
                 className={`trigger-modal__trigger ${
-                    (!this.state.isRollbackTrigger && !this.state.isSelectImageTrigger) || this.state.showConfigDiffView
+                    (!state.isRollbackTrigger && !state.isSelectImageTrigger) || state.showConfigDiffView
                         ? 'flex right'
                         : ''
                 }`}
             >
-                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) && !this.state.showConfigDiffView && this.props.stageType === DeploymentNodeType.CD &&(
-                    <div className="flex left dc__border br-4 h-42">
-                        <div className="flex">
-                            <ReactSelect
-                                options={getDeployConfigOptions(
-                                    this.state.isRollbackTrigger,
-                                    this.state.recentDeploymentConfig !== null,
+                {(state.isRollbackTrigger || state.isSelectImageTrigger) &&
+                    !state.showConfigDiffView &&
+                    props.stageType === DeploymentNodeType.CD && (
+                        <div className="flex left dc__border br-4 h-42">
+                            <div className="flex">
+                                <ReactSelect
+                                    options={getDeployConfigOptions(
+                                        state.isRollbackTrigger,
+                                        state.recentDeploymentConfig !== null,
+                                    )}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator,
+                                        Option,
+                                        ValueContainer: customValueContainer,
+                                    }}
+                                    isDisabled={state.checkingDiff}
+                                    isSearchable={false}
+                                    formatOptionLabel={formatOptionLabel}
+                                    classNamePrefix="deploy-config-select"
+                                    placeholder="Select Config"
+                                    menuPlacement="top"
+                                    value={state.selectedConfigToDeploy}
+                                    styles={getCommonConfigSelectStyles({
+                                        valueContainer: (base, state) => ({
+                                            ...base,
+                                            minWidth: '135px',
+                                            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+                                        }),
+                                    })}
+                                    onChange={handleConfigSelection}
+                                />
+                            </div>
+                            <span className="dc__border-left h-100" />
+                            <ConditionalWrap
+                                condition={!state.checkingDiff && isDeployButtonDisabled()}
+                                wrap={(children) => (
+                                    <Tippy
+                                        className="default-tt w-200"
+                                        arrow={false}
+                                        placement="top"
+                                        content={getTippyContent()}
+                                    >
+                                        {children}
+                                    </Tippy>
                                 )}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    DropdownIndicator,
-                                    Option,
-                                    ValueContainer: this.customValueContainer,
-                                }}
-                                isDisabled={this.state.checkingDiff}
-                                isSearchable={false}
-                                formatOptionLabel={this.formatOptionLabel}
-                                classNamePrefix="deploy-config-select"
-                                placeholder="Select Config"
-                                menuPlacement="top"
-                                value={this.state.selectedConfigToDeploy}
-                                styles={getCommonConfigSelectStyles({
-                                    valueContainer: (base, state) => ({
-                                        ...base,
-                                        minWidth: '135px',
-                                        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-                                    }),
-                                })}
-                                onChange={this.handleConfigSelection}
-                            />
+                            >
+                                {renderConfigDiffStatus()}
+                            </ConditionalWrap>
                         </div>
-                        <span className="dc__border-left h-100" />
-                        <ConditionalWrap
-                            condition={!this.state.checkingDiff && this.isDeployButtonDisabled()}
-                            wrap={(children) => (
-                                <Tippy
-                                    className="default-tt w-200"
-                                    arrow={false}
-                                    placement="top"
-                                    content={this.getTippyContent()}
-                                >
-                                    {children}
-                                </Tippy>
-                            )}
-                        >
-                            {this.renderConfigDiffStatus()}
-                        </ConditionalWrap>
-                    </div>
-                )}
+                    )}
                 <ConditionalWrap
-                    condition={!this.state.checkingDiff && this.isDeployButtonDisabled()}
+                    condition={!state.checkingDiff && isDeployButtonDisabled()}
                     wrap={(children) => (
-                        <Tippy
-                            className="default-tt w-200"
-                            arrow={false}
-                            placement="top"
-                            content={this.getTippyContent()}
-                        >
+                        <Tippy className="default-tt w-200" arrow={false} placement="top" content={getTippyContent()}>
                             {children}
                         </Tippy>
                     )}
                 >
                     <button
-                        className={`cta flex ml-auto h-36 ${this.isDeployButtonDisabled() ? 'disabled-opacity' : ''}`}
-                        onClick={this.deployTrigger}
+                        className={`cta flex ml-auto h-36 ${isDeployButtonDisabled() ? 'disabled-opacity' : ''}`}
+                        onClick={deployTrigger}
                     >
-                        {this.props.isLoading ? (
+                        {props.isLoading ? (
                             <Progressing />
                         ) : (
                             <>
-                                {this.props.stageType === STAGE_TYPE.CD ? (
+                                {props.stageType === STAGE_TYPE.CD ? (
                                     <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
                                 ) : (
                                     <img src={play} alt="trigger" className="trigger-btn__icon" />
@@ -806,89 +800,87 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    handleConfigSelection(selected) {
-        if (selected.value !== this.state.selectedConfigToDeploy.value) {
-            const _diffOptions = checkForDiff(
-                this.state.recentDeploymentConfig,
-                this.getBaseTemplateConfiguration(selected),
-            )
-            this.setState({
-                selectedConfigToDeploy: selected,
-                diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
-                diffOptions: _diffOptions,
+    const handleConfigSelection = (selected) => {
+        if (selected.value !== state.selectedConfigToDeploy.value) {
+            const _diffOptions = checkForDiff(state.recentDeploymentConfig, getBaseTemplateConfiguration(selected))
+            dispatch({
+                type: CDMaterialActionTypes.multipleOptions,
+                payload: {
+                    selectedConfigToDeploy: selected,
+                    diffFound: _diffOptions && Object.values(_diffOptions).some((d) => d),
+                    diffOptions: _diffOptions,
+                },
             })
         }
     }
 
-    deployTrigger(e) {
+    const deployTrigger = (e) => {
         e.stopPropagation()
 
         // Blocking the deploy action if already deploying or config is not available
-        if (this.props.isLoading || this.isDeployButtonDisabled()) {
+        if (props.isLoading || isDeployButtonDisabled()) {
             return
         }
 
-        if (this.state.isRollbackTrigger || this.state.isSelectImageTrigger) {
-            this.props.triggerDeploy(
-                this.props.stageType,
-                this.props.appId,
-                this.state.selectedConfigToDeploy?.value,
-                this.getWfrId(),
-            )
+        if (state.isRollbackTrigger || state.isSelectImageTrigger) {
+            props.triggerDeploy(props.stageType, props.appId, state.selectedConfigToDeploy?.value, getWfrId())
         } else {
-            this.props.triggerDeploy(this.props.stageType, this.props.appId)
+            props.triggerDeploy(props.stageType, props.appId)
         }
     }
 
-    getBaseTemplateConfiguration(selected = null) {
-        const selectedConfig = selected?.value || this.state.selectedConfigToDeploy.value
+    const getBaseTemplateConfiguration = (selected = null) => {
+        const selectedConfig = selected?.value || state.selectedConfigToDeploy.value
         return selectedConfig === DeploymentWithConfigType.LAST_SAVED_CONFIG
-            ? this.state.latestDeploymentConfig
+            ? state.latestDeploymentConfig
             : selectedConfig === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
-            ? this.state.recentDeploymentConfig
-            : this.state.specificDeploymentConfig
+            ? state.recentDeploymentConfig
+            : state.specificDeploymentConfig
     }
 
-    handleOlderImagesLoading(loadingMore: boolean, noMoreImages?: boolean) {
-        this.setState({
-            loadingMore,
-            noMoreImages,
+    const handleOlderImagesLoading = (loadingMore: boolean, noMoreImages?: boolean) => {
+        dispatch({
+            type: CDMaterialActionTypes.multipleOptions,
+            payload: {
+                loadingMore,
+                noMoreImages,
+            },
         })
     }
 
-    loadOlderImages() {
-        if (this.props.onClickRollbackMaterial && !this.state.loadingMore) {
-            if (this.props.material.length > 19) {
-                this.props.onClickRollbackMaterial(
-                    this.props.pipelineId,
-                    this.props.material.length + 1,
-                    20,
-                    this.handleOlderImagesLoading,
-                )
-                this.setState({
-                    showOlderImages: false,
-                    loadingMore: true,
+    const loadOlderImages = () => {
+        if (props.onClickRollbackMaterial && !state.loadingMore) {
+            if (props.material.length > 19) {
+                props.onClickRollbackMaterial(props.pipelineId, props.material.length + 1, 20, handleOlderImagesLoading)
+                dispatch({
+                    type: CDMaterialActionTypes.multipleOptions,
+                    payload: {
+                        showOlderImages: false,
+                        loadingMore: true,
+                    },
                 })
             } else {
-                this.setState({
-                    showOlderImages: false,
-                    noMoreImages: true,
+                dispatch({
+                    type: CDMaterialActionTypes.multipleOptions,
+                    payload: {
+                        showOlderImages: false,
+                        noMoreImages: true,
+                    },
                 })
             }
         }
     }
 
-    isConfigAvailable(optionValue: string) {
+    const isConfigAvailable = (optionValue: string) => {
         if (
             (optionValue === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
-                (!this.state.specificDeploymentConfig?.deploymentTemplate ||
-                    !this.state.specificDeploymentConfig.pipelineStrategy)) ||
+                (!state.specificDeploymentConfig?.deploymentTemplate ||
+                    !state.specificDeploymentConfig.pipelineStrategy)) ||
             (optionValue === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
-                (!this.state.recentDeploymentConfig?.deploymentTemplate ||
-                    !this.state.recentDeploymentConfig.pipelineStrategy)) ||
+                (!state.recentDeploymentConfig?.deploymentTemplate ||
+                    !state.recentDeploymentConfig.pipelineStrategy)) ||
             (optionValue === DeploymentWithConfigType.LAST_SAVED_CONFIG &&
-                (!this.state.latestDeploymentConfig?.deploymentTemplate ||
-                    !this.state.latestDeploymentConfig.pipelineStrategy))
+                (!state.latestDeploymentConfig?.deploymentTemplate || !state.latestDeploymentConfig.pipelineStrategy))
         ) {
             return false
         }
@@ -896,47 +888,36 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return true
     }
 
-    renderTriggerBody() {
+    const renderTriggerBody = () => {
         return (
             <div
-                className={`trigger-modal__body ${
-                    this.state.showConfigDiffView && this.canReviewConfig() ? 'p-0' : ''
-                }`}
+                className={`trigger-modal__body ${state.showConfigDiffView && canReviewConfig() ? 'p-0' : ''}`}
                 style={{
-                    height: this.state.showConfigDiffView ? 'calc(100vh - 141px)' : 'calc(100vh - 116px)',
+                    height: state.showConfigDiffView ? 'calc(100vh - 141px)' : 'calc(100vh - 116px)',
                 }}
             >
-                {this.state.showConfigDiffView && this.canReviewConfig() ? (
+                {state.showConfigDiffView && canReviewConfig() ? (
                     <TriggerViewConfigDiff
-                        currentConfiguration={this.state.recentDeploymentConfig}
-                        baseTemplateConfiguration={this.getBaseTemplateConfiguration()}
-                        selectedConfigToDeploy={this.state.selectedConfigToDeploy}
-                        handleConfigSelection={this.handleConfigSelection}
-                        isConfigAvailable={this.isConfigAvailable}
-                        diffOptions={this.state.diffOptions}
-                        isRollbackTriggerSelected={this.state.isRollbackTrigger}
-                        isRecentConfigAvailable={this.state.recentDeploymentConfig !== null}
+                        currentConfiguration={state.recentDeploymentConfig}
+                        baseTemplateConfiguration={getBaseTemplateConfiguration()}
+                        selectedConfigToDeploy={state.selectedConfigToDeploy}
+                        handleConfigSelection={handleConfigSelection}
+                        isConfigAvailable={isConfigAvailable}
+                        diffOptions={state.diffOptions}
+                        isRollbackTriggerSelected={state.isRollbackTrigger}
+                        isRecentConfigAvailable={state.recentDeploymentConfig !== null}
                     />
                 ) : (
                     <>
-                        {!this.props.isFromBulkCD && (
+                        {!props.isFromBulkCD && (
                             <div className="material-list__title pb-16">
-                                {this.state.isRollbackTrigger
-                                    ? 'Select from previously deployed images'
-                                    : 'Select Image'}
+                                {state.isRollbackTrigger ? 'Select from previously deployed images' : 'Select Image'}
                             </div>
                         )}
-                        {this.renderMaterial()}
-                        {this.state.isRollbackTrigger && !this.state.noMoreImages && this.props.material.length !== 1 && (
-                            <button
-                                className="show-older-images-cta cta ghosted flex h-32"
-                                onClick={this.loadOlderImages}
-                            >
-                                {this.state.loadingMore ? (
-                                    <Progressing styles={{ height: '32px' }} />
-                                ) : (
-                                    'Show older images'
-                                )}
+                        {renderMaterial()}
+                        {state.isRollbackTrigger && !state.noMoreImages && props.material.length !== 1 && (
+                            <button className="show-older-images-cta cta ghosted flex h-32" onClick={loadOlderImages}>
+                                {state.loadingMore ? <Progressing styles={{ height: '32px' }} /> : 'Show older images'}
                             </button>
                         )}
                     </>
@@ -945,75 +926,90 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    renderCDModal() {
+    const renderCDModal = () => {
         return (
             <>
                 <div className="trigger-modal__header">
-                    {this.state.showConfigDiffView ? (
+                    {state.showConfigDiffView ? (
                         <div className="flex left">
-                            <button type="button" className="dc__transparent icon-dim-24" onClick={this.reviewConfig}>
+                            <button type="button" className="dc__transparent icon-dim-24" onClick={reviewConfig}>
                                 <BackIcon />
                             </button>
                             <div className="flex column left ml-16">
-                                <h1 className="modal__title mb-8">{this.renderCDModalHeader()}</h1>
-                                {this.state.selectedMaterial && (
+                                <h1 className="modal__title mb-8">{renderCDModalHeader()}</h1>
+                                {state.selectedMaterial && (
                                     <div className="flex left dc__column-gap-24">
-                                        {this.renderMaterialInfo(this.state.selectedMaterial, true)}
+                                        {renderMaterialInfo(state.selectedMaterial, true)}
                                     </div>
                                 )}
                             </div>
                         </div>
                     ) : (
-                        <h1 className="modal__title">{this.renderCDModalHeader()}</h1>
+                        <h1 className="modal__title">{renderCDModalHeader()}</h1>
                     )}
-                    <button type="button" className="dc__transparent" onClick={this.props.closeCDModal}>
+                    <button type="button" className="dc__transparent" onClick={props.closeCDModal}>
                         <img alt="close" src={close} />
                     </button>
                 </div>
-                {this.renderTriggerBody()}
-                {this.renderTriggerModalCTA()}
+                {renderTriggerBody()}
+                {renderTriggerModalCTA()}
             </>
         )
     }
 
-    render() {
-        if (this.props.isFromBulkCD) {
-            return this.props.material.length > 0 ? (
-                this.renderTriggerBody()
-            ) : (
-                <EmptyStateCdMaterial materialType={this.props.materialType} />
+    const renderCDMaterialBody = () => {
+        if (props.isLoading) {
+            return (
+                <>
+                    <div className="trigger-modal__header flex right">
+                        <button type="button" className="dc__transparent" onClick={props.closeCDModal}>
+                            <CloseIcon />
+                        </button>
+                    </div>
+                    <div style={{ height: 'calc(100% - 55px)' }}>
+                        <Progressing pageLoader />
+                    </div>
+                </>
             )
+        } else if (props.material.length > 0) {
+            return renderCDModal()
         } else {
             return (
-                <VisibleModal
-                    className=""
-                    parentClassName={
-                        this.state.isRollbackTrigger || this.state.isSelectImageTrigger ? 'dc__overflow-hidden' : ''
-                    }
-                    close={this.props.closeCDModal}
-                >
-                    <div
-                        className={`modal-body--cd-material h-100 ${
-                            this.state.isRollbackTrigger || this.state.isSelectImageTrigger ? 'contains-diff-view' : ''
-                        } ${this.props.material.length > 0 ? '' : 'no-material'}`}
-                        onClick={stopPropagation}
-                    >
-                        {this.props.material.length > 0 ? (
-                            this.renderCDModal()
-                        ) : (
-                            <>
-                                <div className="trigger-modal__header">
-                                    <h1 className="modal__title">{this.renderCDModalHeader()}</h1>
-                                    <button type="button" className="dc__transparent" onClick={this.props.closeCDModal}>
-                                        <img alt="close" src={close} />
-                                    </button>
-                                </div>
-                                <EmptyStateCdMaterial materialType={this.props.materialType} />
-                            </>
-                        )}
+                <>
+                    <div className="trigger-modal__header">
+                        <h1 className="modal__title">{renderCDModalHeader()}</h1>
+                        <button type="button" className="dc__transparent" onClick={props.closeCDModal}>
+                            <img alt="close" src={close} />
+                        </button>
                     </div>
-                </VisibleModal>
+                    <EmptyStateCdMaterial materialType={props.materialType} />
+                </>
             )
         }
+    }
+
+    if (props.isFromBulkCD) {
+        return props.material.length > 0 ? (
+            renderTriggerBody()
+        ) : (
+            <EmptyStateCdMaterial materialType={props.materialType} />
+        )
+    } else {
+        return (
+            <VisibleModal
+                className=""
+                parentClassName={state.isRollbackTrigger || state.isSelectImageTrigger ? 'dc__overflow-hidden' : ''}
+                close={props.closeCDModal}
+            >
+                <div
+                    className={`modal-body--cd-material h-100 ${
+                        state.isRollbackTrigger || state.isSelectImageTrigger ? 'contains-diff-view' : ''
+                    } ${props.material.length > 0 ? '' : 'no-material'}`}
+                    onClick={stopPropagation}
+                >
+                    {renderCDMaterialBody()}
+                </div>
+            </VisibleModal>
+        )
     }
 }

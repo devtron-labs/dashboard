@@ -8,7 +8,7 @@ import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-lock
 import emptyPreDeploy from '../../../../assets/img/empty-pre-deploy.png'
 import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
 import { getCDMaterialList } from '../../../app/service'
-import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
+import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { DeploymentNodeType, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'

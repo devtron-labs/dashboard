@@ -23,7 +23,7 @@ import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
 import { DeploymentNodeType, MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
-import { CDMaterial } from './cdMaterial'
+import CDMaterial from './cdMaterial'
 import {
     URLS,
     ViewType,
@@ -404,6 +404,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType) {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.ImageClicked)
+        this.setState({
+            isLoading: true,
+            showCDModal: true,
+            materialType: 'inputMaterialList',
+        })
         getCDMaterialList(cdNodeId, nodeType)
             .then((data) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
@@ -428,7 +433,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
-                this.setState({ code: errors.code })
+                this.setState({ code: errors.code, isLoading: false })
             })
     }
 
@@ -445,6 +450,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         const _offset = offset || 1
         const _size = size || 20
 
+        this.setState({
+            isLoading: true,
+            showCDModal: true,
+            materialType: 'rollbackMaterialList',
+        })
         getRollbackMaterialList(cdNodeId, _offset, _size)
             .then((response) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
@@ -482,7 +492,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
-                this.setState({ code: errors.code })
+                this.setState({ code: errors.code, isLoading: false })
 
                 if (callback) {
                     callback(false)
@@ -801,7 +811,22 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     closeCDModal = (e): void => {
         preventBodyScroll(false)
-        this.setState({ showCDModal: false })
+
+        // Reset material list for selected node as it's being persisted
+        let node: NodeAttr
+        const _workflows = [...this.state.workflows]
+        if (this.state.cdNodeId) {
+            for (let i = 0; i < _workflows.length; i++) {
+                node = _workflows[i].nodes.find((el) => {
+                    return +el.id == this.state.cdNodeId && el.type == this.state.nodeType
+                })
+                if (node) {
+                    node[this.state.materialType] = []
+                }
+            }
+        }
+
+        this.setState({ showCDModal: false, materialType: '', workflows: _workflows })
     }
 
     hideWebhookModal = () => {
@@ -923,16 +948,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     renderCDMaterial() {
-        if (this.state.showCDModal && this.state.cdNodeId) {
+        if (this.state.showCDModal) {
             let node: NodeAttr
-            for (let i = 0; i < this.state.workflows.length; i++) {
-                node = this.state.workflows[i].nodes.find((el) => {
-                    return +el.id == this.state.cdNodeId && el.type == this.state.nodeType
-                })
-                if (node) break
+            if (this.state.cdNodeId) {
+                for (let i = 0; i < this.state.workflows.length; i++) {
+                    node = this.state.workflows[i].nodes.find((el) => {
+                        return +el.id == this.state.cdNodeId && el.type == this.state.nodeType
+                    })
+                    if (node) break
+                }
             }
             const material = node?.[this.state.materialType] || []
-
             return (
                 <CDMaterial
                     appId={Number(this.props.match.params.appId)}
@@ -940,7 +966,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     stageType={DeploymentNodeType[this.state.nodeType]}
                     material={material}
                     materialType={this.state.materialType}
-                    envName={node.environmentName}
+                    envName={node?.environmentName}
                     isLoading={this.state.isLoading}
                     changeTab={this.changeTab}
                     triggerDeploy={this.onClickTriggerCDNode}
@@ -948,9 +974,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     closeCDModal={this.closeCDModal}
                     selectImage={this.selectImage}
                     toggleSourceInfo={this.toggleSourceInfo}
-                    parentPipelineId={node.parentPipelineId}
-                    parentPipelineType={node.parentPipelineType}
-                    parentEnvironmentName={node.parentEnvironmentName}
+                    parentPipelineId={node?.parentPipelineId}
+                    parentPipelineType={node?.parentPipelineType}
+                    parentEnvironmentName={node?.parentEnvironmentName}
                 />
             )
         }
