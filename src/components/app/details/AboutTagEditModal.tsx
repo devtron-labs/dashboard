@@ -12,6 +12,7 @@ import { AboutAppInfoModalProps } from '../types'
 import { createAppLabels } from '../service'
 import { toast } from 'react-toastify'
 import { importComponentFromFELibrary } from '../../common'
+import '../create/createApp.scss'
 
 const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 export default function AboutTagEditModal({
@@ -77,6 +78,7 @@ export default function AboutTagEditModal({
         const payload = {
             id: parseInt(appId),
             labels: _labelTags,
+            teamId: appMetaInfo.projectId
         }
 
         try {

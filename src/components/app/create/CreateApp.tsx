@@ -29,7 +29,6 @@ import { appListOptions, noOptionsMessage } from '../../AppSelector/AppSelectorU
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
 import { createJob } from '../../Jobs/Service'
-
 import './createApp.scss'
 const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
