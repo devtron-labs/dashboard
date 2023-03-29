@@ -77,6 +77,7 @@ export default function AboutTagEditModal({
         const payload = {
             id: parseInt(appId),
             labels: _labelTags,
+            team: appMetaInfo.projectId
         }
 
         try {
