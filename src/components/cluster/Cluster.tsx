@@ -1,6 +1,15 @@
 import React, { useState, useMemo, Component } from 'react'
-import { showError, Pencil, useForm, Progressing, CustomPassword, VisibleModal, sortCallback, Toggle, useAsync, ErrorScreenNotAuthorized } from '../common'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
+import { Pencil, useForm, CustomPassword, Toggle, useAsync } from '../common'
+import {
+    showError,
+    Progressing,
+    VisibleModal,
+    sortCallback,
+    ErrorScreenNotAuthorized,
+    Reload,
+    RadioGroup,
+    RadioGroupItem,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import {
     getClusterList,
@@ -29,7 +38,6 @@ import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, ModuleNameMap, CLUSTER_COMMAND } from '../../config'
 import { getEnvName } from './cluster.util'
-import Reload from '../Reload/Reload'
 import DeleteComponent from '../../util/DeleteComponent'
 import {
     DC_CLUSTER_CONFIRMATION_MESSAGE,
@@ -184,7 +192,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     render() {
         if (!this.props.isSuperAdmin) {
             return <ErrorScreenNotAuthorized />
-        } 
+        }
         else if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view === ViewType.ERROR) return <Reload className="dc__align-reload-center" />
         else {

@@ -2,7 +2,18 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, SourceTypeMap, ViewType } from '../../../../config'
-import { ServerErrors } from '../../../../modals/commonTypes'
+import {
+    ServerErrors,
+    ErrorScreenManager,
+    PopupMenu,
+    Progressing,
+    showError,
+    stopPropagation,
+    sortCallback,
+    Checkbox,
+    CHECKBOX_VALUE,
+    VisibleModal,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
@@ -26,21 +37,7 @@ import {
     triggerCDNode,
     triggerCINode,
 } from '../../../app/service'
-import {
-    Checkbox,
-    CHECKBOX_VALUE,
-    createGitCommitUrl,
-    ErrorScreenManager,
-    ISTTimeModal,
-    PopupMenu,
-    preventBodyScroll,
-    Progressing,
-    showError,
-    sortCallback,
-    sortObjectArrayAlphabetically,
-    stopPropagation,
-    VisibleModal,
-} from '../../../common'
+import { createGitCommitUrl, ISTTimeModal, preventBodyScroll, sortObjectArrayAlphabetically } from '../../../common'
 import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING, TIME_STAMP_ORDER } from '../../../app/details/triggerView/Constants'
 import { toast } from 'react-toastify'
@@ -1444,7 +1441,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                                     </button>
                                 </div>
                                 <div style={{ height: 'calc(100% - 55px)' }}>
-                                    <Progressing pageLoader size={32} fillColor="var(--N500)" />
+                                    <Progressing pageLoader size={32} />
                                 </div>
                             </>
                         ) : (
@@ -1567,7 +1564,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                                     </button>
                                 </div>
                                 <div style={{ height: 'calc(100% - 55px)' }}>
-                                    <Progressing pageLoader size={32} fillColor="var(--N500)" />
+                                    <Progressing pageLoader size={32} />
                                 </div>
                             </>
                         ) : (

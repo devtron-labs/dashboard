@@ -1,5 +1,13 @@
 import React, { Component } from 'react'
 import {
+    ServerErrors,
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    stopPropagation,
+    VisibleModal,
+} from '@devtron-labs/devtron-fe-common-lib'
+import {
     getCDMaterialList,
     getRollbackMaterialList,
     triggerCDNode,
@@ -10,17 +18,7 @@ import {
     CDModalTab,
     getGitMaterialByCommitHash,
 } from '../../service'
-import { ServerErrors } from '../../../../modals/commonTypes'
-import {
-    createGitCommitUrl,
-    ErrorScreenManager,
-    ISTTimeModal,
-    preventBodyScroll,
-    Progressing,
-    showError,
-    stopPropagation,
-    VisibleModal,
-} from '../../../common'
+import { createGitCommitUrl, ISTTimeModal, preventBodyScroll } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
 import { DeploymentNodeType, MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
@@ -908,7 +906,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                     </button>
                                 </div>
                                 <div style={{ height: 'calc(100% - 55px)' }}>
-                                    <Progressing pageLoader size={32} fillColor="var(--N500)" />
+                                    <Progressing pageLoader size={32} />
                                 </div>
                             </>
                         ) : (
@@ -988,7 +986,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                     </button>
                                 </div>
                                 <div style={{ height: 'calc(100% - 55px)' }}>
-                                    <Progressing pageLoader size={32} fillColor="var(--N500)" />
+                                    <Progressing pageLoader size={32} />
                                 </div>
                             </>
                         ) : (

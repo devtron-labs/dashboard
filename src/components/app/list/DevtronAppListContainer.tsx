@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
+import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib';
 import { buildInitState, appListModal } from './appList.modal';
-import { ServerErrors } from '../../../modals/commonTypes';
 import { AppListProps, AppListState, OrderBy, SortBy } from './types';
 import { URLS, ViewType } from '../../../config';
 import { AppListView } from './AppListView';
 import { getAppList } from '../service';
-import { showError } from '../../common';
 import { AppListViewType } from '../config';
 import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
-import './list.css';
+import './list.scss';
 
 class DevtronAppListContainer extends Component<AppListProps, AppListState>{
     abortController: AbortController;
@@ -107,7 +106,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
                     _expandedRow[_app.id] = _app.environments.length > 1
                 }
             }
-    
+
             return { expandedRow: _expandedRow, isAllExpanded: !prevState.isAllExpanded }
         })
     }

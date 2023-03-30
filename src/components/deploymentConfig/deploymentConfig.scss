@@ -3,8 +3,10 @@
     width: 100%;
 }
 
-#deployment-config .tab-content {
-    width: 100%;
+#deployment-config {
+    .tab-content {
+        width: 100%;
+    }
 }
 
 .json-bottom-row {

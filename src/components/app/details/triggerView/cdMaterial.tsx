@@ -22,14 +22,8 @@ import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
-import {
-    ScanVulnerabilitiesTable,
-    Progressing,
-    getRandomColor,
-    showError,
-    ConditionalWrap,
-    noop,
-} from '../../../common'
+import { ScanVulnerabilitiesTable, getRandomColor, noop } from '../../../common'
+import { showError, Progressing, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { EmptyStateCdMaterial } from './EmptyStateCdMaterial'
 import { CDButtonLabelMap, getCommonConfigSelectStyles } from './config'
 import {

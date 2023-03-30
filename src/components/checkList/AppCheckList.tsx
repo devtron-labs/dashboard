@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';
 import { ReactComponent as Check } from '../../assets/icons/ic-outline-check.svg';
 import Uncheck from '../../assets/img/ic-success@2x.png';
-import './checklist.css';
+import './checklist.scss';
 
 export class AppCheckList extends Component<AppCheckListProps, AppCheckListState> {
 

@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import { RouteComponentProps, NavLink } from 'react-router-dom';
 import { SecurityPolicyEdit } from './SecurityPolicyEdit';
 import { getClusterListMinNoAuth } from './security.service';
-import { showError, Progressing, sortCallback } from '../common';
+import { showError, Progressing, sortCallback, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config';
 import { SecurityPolicyClusterState } from './security.types';
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg';
-import Reload from '../Reload/Reload';
 
 export class SecurityPolicyCluster extends Component<RouteComponentProps<{ clusterId: string; }>, SecurityPolicyClusterState> {
 

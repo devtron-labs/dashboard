@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Checkbox, DetailsProgressing, Progressing, showError, VisibleModal } from '../../../../common'
+import { showError, Progressing, VisibleModal, DetailsProgressing, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as ScaleDown } from '../../../../../assets/icons/ic-scale-down.svg'

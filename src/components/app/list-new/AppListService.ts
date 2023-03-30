@@ -1,7 +1,7 @@
-import { getEnvironmentListMin as getEnvironmentList, getTeamListMin as getProjectList, getClusterListMinWithoutAuth as getClusterList, getNamespaceListMin as getNamespaceList } from '../../../services/service';
+import { getEnvironmentListMin as getEnvironmentList, getClusterListMinWithoutAuth as getClusterList, getNamespaceListMin as getNamespaceList } from '../../../services/service';
 import {Routes, SERVER_MODE} from '../../../config';
-import { get } from '../../../services/api';
-import {ResponseType, EnvironmentListHelmResult, EnvironmentHelmResult, Cluster, EnvironmentListHelmResponse} from '../../../services/service.types';
+import {get, ResponseType, getTeamListMin as getProjectList} from '@devtron-labs/devtron-fe-common-lib';
+import { EnvironmentListHelmResult, EnvironmentHelmResult, Cluster, EnvironmentListHelmResponse} from '../../../services/service.types';
 import { APP_STATUS } from '../config';
 
 
@@ -114,9 +114,9 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
         filters.namespaces = _namespaces.sort((a, b) => { return sortByLabel(a, b) });
         //set filter namespace ends
 
-        //set filter appStatus starts 
+        //set filter appStatus starts
 
-        filters.appStatus = Object.entries(APP_STATUS).map(([keys,values]) => { 
+        filters.appStatus = Object.entries(APP_STATUS).map(([keys,values]) => {
             return {
                 key: values,
                 label: keys,

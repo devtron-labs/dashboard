@@ -13,7 +13,6 @@ import {
     StackManagerNavLinkType,
     StackManagerPageHeaderType,
 } from './DevtronStackManager.type'
-import EmptyState from '../../EmptyState/EmptyState'
 import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
 import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
@@ -27,14 +26,15 @@ import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
 import {
+    showError,
+    Progressing,
+    ConditionalWrap,
+    VisibleModal,
+    ToastBody,
     Checkbox,
     CHECKBOX_VALUE,
-    ConditionalWrap,
-    Progressing,
-    showError,
-    ToastBody,
-    VisibleModal,
-} from '../../common'
+    EmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
 import { DOCUMENTATION, ModuleNameMap, URLS } from '../../../config'

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Drawer, noop, Progressing, showError } from '../../../common'
+import { Drawer, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { noop } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'

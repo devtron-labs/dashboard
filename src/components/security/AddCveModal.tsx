@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { VisibleModal, showError, Progressing } from '../common';
+import { showError, Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { getCVEPolicies } from './security.service';
 import { ViewType } from '../../config';
 import { VulnerabilityAction } from './security.types';

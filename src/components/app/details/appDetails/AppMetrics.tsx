@@ -4,7 +4,8 @@ import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid, La
 import { ChartTypes, AppMetricsTab, AppMetricsTabType, ChartType, StatusTypes, StatusType, CalendarFocusInput, CalendarFocusInputType } from './appDetails.type';
 import { AppDetailsPathParams } from './appDetails.type';
 import { GraphModal } from './GraphsModal';
-import { DatePickerType2 as DateRangePicker, Progressing, not, useAsync } from '../../../common';
+import { DatePickerType2 as DateRangePicker, not, useAsync } from '../../../common';
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg';
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
