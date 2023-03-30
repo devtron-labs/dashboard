@@ -410,7 +410,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         }
         return (
             <>
-                <button type="button" className="cta dc__no-decor flex mb-20" onClick={this.toggleCIMenu}>
+                <button type="button" className="cta dc__no-decor flex mb-20" data-testid="new-workflow-button" onClick={this.toggleCIMenu}>
                     <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
                     New workflow
                 </button>
@@ -588,6 +588,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         &nbsp;
                         <a
                             className="dc__link"
+                            data-testid="learn-more-about-creating-workflow-link"
                             href={
                                 this.props.isJobView
                                     ? DOCUMENTATION.JOB_WORKFLOW_EDITOR

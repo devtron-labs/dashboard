@@ -202,6 +202,7 @@ export function Build({
                 <span className="form__label dc__required-field">Pipeline Name</span>
                 <input
                     className="form__input"
+                    data-testid="build-pipeline-name-textbox"
                     autoComplete="off"
                     disabled={!!ciPipeline?.id}
                     placeholder="e.g. my-first-pipeline"

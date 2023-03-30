@@ -138,6 +138,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                     <ReactSelect
                                         className="workflow-ci__source"
                                         placeholder="Source Type"
+                                        classNamePrefix={`select-build-pipeline-sourcetype-${index}`}
                                         isSearchable={false}
                                         menuPortalTarget={document.getElementById('visible-modal')}
                                         options={props.ciPipelineSourceTypeOptions}
@@ -182,6 +183,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 autoComplete="off"
                                                 placeholder="Eg. main"
                                                 type="text"
+                                                data-testid="build-pipeline-branch-name-textbox"
                                                 disabled={!props.handleSourceChange}
                                                 value={mat.value}
                                                 onChange={(event) => {
@@ -215,6 +217,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             autoComplete="off"
                                             placeholder="Eg. feature.*"
                                             type="text"
+                                            data-testid="build-pipeline-branch-regex-textbox"
                                             disabled={!props.handleSourceChange}
                                             value={mat.regex}
                                             onChange={(event) => {
@@ -227,7 +230,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             autoFocus={true}
                                         />
                                         {errorObj && !errorObj.isValid ? (
-                                            <span className="form__error ci-error ">
+                                            <span className="form__error ci-error " data-testid="build-pipeline-validation-error-message" >
                                                 <img src={error} className="form__icon" />
                                                 {props.validationRules?.sourceValue(_materials[index].regex).message}
                                             </span>
