@@ -12,7 +12,7 @@ import {
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { AppListViewType } from '../config'
-import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, Moment12HourFormat } from '../../../config'
+import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, Moment12HourFormat, ModuleNameMap } from '../../../config'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
@@ -29,6 +29,7 @@ import moment from 'moment'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import { APP_LIST_HEADERS, StatusConstants } from './Constants'
 import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
+import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
@@ -95,6 +96,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                 setDataStateType(AppListViewType.LIST)
                 if (serverMode === SERVER_MODE.EA_ONLY) {
                     applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, _currentTab)
+                    getModuleInfo(ModuleNameMap.CICD) //To check the latest status and show user reload toast
                 }
             })
             .catch((errors: ServerErrors) => {

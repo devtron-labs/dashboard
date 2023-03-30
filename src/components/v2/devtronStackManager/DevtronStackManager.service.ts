@@ -15,6 +15,7 @@ import { reloadToastBody } from '../../common'
 import { toast } from 'react-toastify'
 
 let moduleStatusMap: Record<string, ModuleInfo> = {}
+let isReloadToastShown = false
 
 const getSavedModuleStatus = (): Record<string, ModuleInfo> => {
     let _moduleStatusMaps = moduleStatusMap
@@ -35,9 +36,7 @@ export const getAllModulesInfo = async (): Promise<Record<string, ModuleInfo>> =
     if (result) {
         const _moduleStatusMap = {}
         for (const _moduleDetails of result) {
-            if (_moduleDetails.name === ModuleNameMap.CICD) {
-                _moduleStatusMap[_moduleDetails.name] = _moduleDetails
-            }
+            _moduleStatusMap[_moduleDetails.name] = _moduleDetails
         }
         if (typeof Storage !== 'undefined') {
             localStorage.moduleStatusMap = JSON.stringify(_moduleStatusMap)
@@ -54,11 +53,12 @@ export const getModuleInfo = async (moduleName: string): Promise<ModuleInfoRespo
     }
     const { result } = await get(`${Routes.MODULE_INFO_API}?name=${moduleName}`)
     if (result && result.status === ModuleStatus.INSTALLED) {
-        if (moduleName === ModuleNameMap.CICD) {
+        if (moduleName === ModuleNameMap.CICD && !isReloadToastShown) {
             // To show a reload tost if CICD installation complete
             toast.info(reloadToastBody(), { autoClose: false, closeButton: false })
+            isReloadToastShown = true
         }
-        _savedModuleStatusMap[moduleName] = result
+        _savedModuleStatusMap[moduleName] = {...result, moduleResourcesStatus: null}
         if (typeof Storage !== 'undefined') {
             localStorage.moduleStatusMap = JSON.stringify(_savedModuleStatusMap)
         }
