@@ -207,6 +207,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         getNewGraphs(tab);
     }, [datasource, calendarValue])
 
+    //@ts-ignore
     if(grafanaModuleStatus?.result?.status !== ModuleStatus.INSTALLED){
         return <MonitoringModuleNotInstalled addSpace={addSpace} />
     } else if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
