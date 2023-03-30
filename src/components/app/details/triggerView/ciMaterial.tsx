@@ -29,6 +29,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         })
         this.state = {
             regexValue: regexValue,
+            savingRegexValue: false,
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isBlobStorageConfigured: false,
         }
@@ -195,6 +196,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     onClickNextButton = () => {
+        this.setState({
+            savingRegexValue: true,
+        })
         const payload: any = {
             appId: +this.props.match.params.appId,
             id: +this.props.workflowId,
@@ -240,6 +244,11 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             .catch((error: ServerErrors) => {
                 showError(error)
             })
+            .finally(() => {
+                this.setState({
+                    savingRegexValue: false,
+                })
+            })
     }
 
     handleRegexInputValue = (id, value, mat) => {
@@ -253,41 +262,26 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         })
     }
 
-    renderCIMaterialModal = () => {
-        return (
-            <div className="modal-body--ci-material h-100" onClick={this.onClickStopPropagation}>
-                {this.props.loader ? (
-                    <div style={{ height: '100vh' }}>
-                        <Progressing pageLoader />
-                    </div>
-                ) : (
-                    <>
-                        {this.props.showMaterialRegexModal && (
-                            <BranchRegexModal
-                                material={this.props.material}
-                                selectedCIPipeline={this.state.selectedCIPipeline}
-                                showWebhookModal={this.props.showWebhookModal}
-                                title={this.props.title}
-                                isChangeBranchClicked={this.props.isChangeBranchClicked}
-                                onClickNextButton={this.onClickNextButton}
-                                onShowCIModal={this.props.onShowCIModal}
-                                handleRegexInputValue={this.handleRegexInputValue}
-                                regexValue={this.state.regexValue}
-                                onCloseBranchRegexModal={this.props.onCloseBranchRegexModal}
-                            />
-                        )}
-                        {this.props.showCIModal && this.renderCIModal()}
-                    </>
-                )}
-            </div>
-        )
-    }
-
     render() {
-        return (
-            <VisibleModal className="" close={this.context.closeCIModal}>
-                {this.renderCIMaterialModal()}
-            </VisibleModal>
-        )
+        if (this.props.showMaterialRegexModal) {
+            return (
+                <BranchRegexModal
+                    material={this.props.material}
+                    selectedCIPipeline={this.state.selectedCIPipeline}
+                    showWebhookModal={this.props.showWebhookModal}
+                    title={this.props.title}
+                    isChangeBranchClicked={this.props.isChangeBranchClicked}
+                    onClickNextButton={this.onClickNextButton}
+                    onShowCIModal={this.props.onShowCIModal}
+                    handleRegexInputValue={this.handleRegexInputValue}
+                    regexValue={this.state.regexValue}
+                    onCloseBranchRegexModal={this.props.onCloseBranchRegexModal}
+                    savingRegexValue={this.state.savingRegexValue}
+                />
+            )
+        } else if (this.props.showCIModal) {
+            return this.renderCIModal()
+        }
+        return null
     }
 }

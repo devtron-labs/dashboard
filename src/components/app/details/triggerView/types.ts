@@ -156,6 +156,7 @@ export interface RegexValueType {
 
 export interface CIMaterialState {
     regexValue: Record<number, RegexValueType>
+    savingRegexValue: boolean
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
 }
@@ -605,6 +606,7 @@ export interface BranchRegexModalProps {
     regexValue
     onCloseBranchRegexModal
     hideHeaderFooter?: boolean
+    savingRegexValue: boolean
 }
 export interface AppDetailsProps {
     isV2: boolean

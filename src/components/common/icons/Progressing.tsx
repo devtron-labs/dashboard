@@ -6,11 +6,12 @@ interface ProgressingProps {
     size?: number
     fullHeight?: boolean
     theme?: 'white' | 'default'
+    fillColor?: string
     styles?: React.CSSProperties
     children?: React.ReactNode
 }
 
-export function Progressing({ pageLoader, size, theme, styles }: ProgressingProps): JSX.Element {
+export function Progressing({ pageLoader, size, theme, styles, fillColor }: ProgressingProps): JSX.Element {
     const loaderSize = size ? `${size}px` : pageLoader ? '48px' : '20px'
     return (
         <div className={`loader ${theme || 'default'}-background`} style={styles}>
@@ -27,7 +28,7 @@ export function Progressing({ pageLoader, size, theme, styles }: ProgressingProp
                             type="rotate"
                         />
                         <path
-                            fill="#06C"
+                            fill={fillColor || '#06C'}
                             fillRule="nonzero"
                             d="M12 2.5A9.5 9.5 0 1 1 2.5 12a1.5 1.5 0 0 1 3 0A6.5 6.5 0 1 0 12 5.5a1.5 1.5 0 0 1 0-3z"
                         />
