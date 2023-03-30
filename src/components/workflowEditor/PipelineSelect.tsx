@@ -24,6 +24,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                 </div>
                 <div
                     className="pipeline-select-item flexbox p-12 pointer"
+                    data-testid="build-deploy-from-source-code-button"
                     data-pipeline-type={CIPipelineNodeType.CI}
                     onClick={this.handleMenuClick}
                 >
@@ -38,6 +39,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                 <div
                     className="pipeline-select-item flexbox p-12 pointer"
                     data-pipeline-type={CIPipelineNodeType.LINKED_CI}
+                    data-testid="linked-build-pipeline-button"
                     onClick={this.handleMenuClick}
                 >
                     <img src={linkedPipeline} className="br-8 mr-12 h-40" alt="linked-ci" />
@@ -53,6 +55,7 @@ export class PipelineSelect extends Component<PipelineSelectProps> {
                 </div>
                 <div
                     className="pipeline-select-item flexbox p-12 pointer"
+                    data-testid="deploy-image-external-service-link"
                     data-pipeline-type={PipelineType.WEBHOOK}
                     onClick={this.handleMenuClick}
                 >
