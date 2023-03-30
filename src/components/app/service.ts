@@ -170,7 +170,7 @@ const gitTriggersModal = (triggers, materials) => {
     })
 }
 
-export const getCIMaterialList = (params, abortSignal?: AbortSignal) => {
+export const getCIMaterialList = (params, abortSignal: AbortSignal) => {
     return get(`${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`, {
         signal: abortSignal,
     }).then((response) => {
@@ -218,9 +218,11 @@ export const getCIMaterialList = (params, abortSignal?: AbortSignal) => {
     })
 }
 
-export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType) {
+export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType, abortSignal: AbortSignal) {
     let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${stageMap[stageType]}`
-    return get(URL).then((response) => {
+    return get(URL, {
+        signal: abortSignal,
+    }).then((response) => {
         return cdMaterialListModal(
             response.result.ci_artifacts,
             true,
@@ -230,9 +232,16 @@ export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType) {
     })
 }
 
-export function getRollbackMaterialList(cdMaterialId, offset: number, size: number): Promise<ResponseType> {
+export function getRollbackMaterialList(
+    cdMaterialId,
+    offset: number,
+    size: number,
+    abortSignal: AbortSignal,
+): Promise<ResponseType> {
     let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material/rollback?offset=${offset}&size=${size}`
-    return get(URL).then((response) => {
+    return get(URL, {
+        signal: abortSignal,
+    }).then((response) => {
         return {
             code: response.code,
             status: response.status,
@@ -375,7 +384,7 @@ export const getCIPipelines = (appId) => {
     return get(URL)
 }
 
-export function refreshGitMaterial(gitMaterialId: string, abortSignal?: AbortSignal) {
+export function refreshGitMaterial(gitMaterialId: string, abortSignal: AbortSignal) {
     const URL = `${Routes.REFRESH_MATERIAL}/${gitMaterialId}`
     return get(URL, {
         signal: abortSignal,

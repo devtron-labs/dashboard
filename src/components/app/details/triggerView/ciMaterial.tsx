@@ -282,6 +282,6 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         } else if (this.props.showCIModal) {
             return this.renderCIModal()
         }
-        return null
+        return <></>
     }
 }

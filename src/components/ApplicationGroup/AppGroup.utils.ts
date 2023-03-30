@@ -78,9 +78,10 @@ export const handleSourceNotConfigured = (
     _materialList: any[],
     isDockerFileError: boolean,
 ) => {
-    if (_materialList?.length > 0) {
+    if (_materialList.length > 0) {
         _materialList.forEach((node) => configuredMaterialList[wf.name].add(node.gitMaterialId))
     }
+
     for (const material of wf.gitMaterials) {
         if (configuredMaterialList[wf.name].has(material.gitMaterialId)) {
             continue

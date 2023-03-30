@@ -23,13 +23,11 @@ import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fai
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import {
-    VisibleModal,
     ScanVulnerabilitiesTable,
     Progressing,
     getRandomColor,
     showError,
     ConditionalWrap,
-    stopPropagation,
     noop,
 } from '../../../common'
 import { EmptyStateCdMaterial } from './EmptyStateCdMaterial'

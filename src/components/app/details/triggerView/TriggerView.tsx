@@ -400,10 +400,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     this.setState({ code: errors.code })
                 }
             })
-            .catch((errors: ServerErrors) => {
-                showError(errors)
-                this.setState({ code: errors.code })
-            })
             .finally(() => {
                 this.setState({ loader: false })
             })
@@ -412,7 +408,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType) {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         this.setState({ isLoading: true, showCDModal: true })
-        getCDMaterialList(cdNodeId, nodeType)
+        this.abortController = new AbortController()
+        getCDMaterialList(cdNodeId, nodeType, this.abortController.signal)
             .then((data) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
@@ -435,8 +432,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 preventBodyScroll(true)
             })
             .catch((errors: ServerErrors) => {
-                showError(errors)
-                this.setState({ code: errors.code })
+                if (!this.abortController.signal.aborted) {
+                    showError(errors)
+                    this.setState({ code: errors.code })
+                }
             })
     }
 
@@ -453,7 +452,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         const _offset = offset || 1
         const _size = size || 20
         this.setState({ isLoading: true, showCDModal: true })
-        getRollbackMaterialList(cdNodeId, _offset, _size)
+        this.abortController = new AbortController()
+        getRollbackMaterialList(cdNodeId, _offset, _size, this.abortController.signal)
             .then((response) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
@@ -489,11 +489,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 }
             })
             .catch((errors: ServerErrors) => {
-                showError(errors)
-                this.setState({ code: errors.code })
+                if (!this.abortController.signal.aborted) {
+                    showError(errors)
+                    this.setState({ code: errors.code })
 
-                if (callback) {
-                    callback(false)
+                    if (callback) {
+                        callback(false)
+                    }
                 }
             })
     }
@@ -809,6 +811,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     closeCDModal = (e): void => {
         preventBodyScroll(false)
+        this.abortController.abort()
         this.setState({ showCDModal: false })
     }
 
