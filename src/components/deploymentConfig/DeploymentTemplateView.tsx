@@ -710,13 +710,13 @@ export const DeploymentTemplateEditorView = ({
     const addRow = (e): void => {
         if (readOnly) return
         const _basicFieldValues = { ...basicFieldValues }
-        if (e.target.dataset.name === BASIC_FIELDS.PATH) {
+        if (e.currentTarget.dataset.name === BASIC_FIELDS.PATH) {
             _basicFieldValues[BASIC_FIELDS.HOSTS][0][BASIC_FIELDS.PATHS].unshift('')
         } else {
             _basicFieldValues[BASIC_FIELDS.ENV_VARIABLES].unshift({ name: '', value: '' })
         }
         setBasicFieldValues(_basicFieldValues)
-        if (e.target.dataset.name === BASIC_FIELDS.ENV_VARIABLES) {
+        if (e.currentTarget.dataset.name === BASIC_FIELDS.ENV_VARIABLES) {
             const _basicFieldValuesErrorObj = { ...basicFieldValuesErrorObj }
             _basicFieldValuesErrorObj.envVariables.unshift({ isValid: true, message: null })
             setBasicFieldValuesErrorObj(_basicFieldValuesErrorObj)
