@@ -181,7 +181,7 @@ export default class Navigation extends Component<
             return
         }
         try {
-            const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
+            const result = await getModuleInfo(ModuleNameMap.SECURITY)
             if (result?.status === ModuleStatus.INSTALLED) {
                 this.props.installedModuleMap.current = {
                     ...this.props.installedModuleMap.current,

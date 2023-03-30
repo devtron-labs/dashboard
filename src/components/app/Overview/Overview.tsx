@@ -54,7 +54,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         [appId],
         !isJobOverview,
     )
-    const isAgroInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
+    const isAgroInstalled: boolean = otherEnvsResult?.[1]?.status === ModuleStatus.INSTALLED
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
 

@@ -337,7 +337,7 @@ export default function DeploymentTemplateOverride({
                     initialise={initialise}
                     handleAppMetrics={handleAppMetrics}
                     handleDelete={handleDelete}
-                    isGrafanaModuleInstalled={grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED}
+                    isGrafanaModuleInstalled={grafanaModuleStatus?.status === ModuleStatus.INSTALLED}
                 />
             )}
         </div>

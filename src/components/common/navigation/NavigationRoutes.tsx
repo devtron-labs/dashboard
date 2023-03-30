@@ -19,7 +19,7 @@ import {
 } from '../../../services/service'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import { ModuleStatus, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
-import { getModuleInfo, getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { getAllModulesInfo, getModuleInfo, getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { useAsync } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../userGroups/userGroup.service'
@@ -195,13 +195,21 @@ export default function NavigationRoutes() {
     useEffect(() => {
         async function getServerMode() {
             try {
-                const response = getVersionConfig()
-                const json = await response
-                if (json.code == 200) {
-                    getInit(json.result.serverMode)
-                    setServerMode(json.result.serverMode)
-                    setPageState(ViewType.FORM)
+                getAllModulesInfo()
+                const response = await getVersionConfig()
+                if(SERVER_MODE[response]){
+                  getInit(response)
+                  setServerMode(response)
+                  setPageState(ViewType.FORM)
+                } else{
+                  setPageState(ViewType.ERROR)
                 }
+                // const json = await response
+                // if (json.code == 200) {
+                //     getInit(json.result.serverMode)
+                //     setServerMode(json.result.serverMode)
+                //     setPageState(ViewType.FORM)
+                // }
             } catch (err) {
                 setPageState(ViewType.ERROR)
             }
@@ -439,7 +447,7 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     const [, argoInfoData] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD))
-    const isArgoInstalled: boolean = argoInfoData?.result.status === ModuleStatus.INSTALLED
+    const isArgoInstalled: boolean = argoInfoData?.status === ModuleStatus.INSTALLED
 
     return (
         <ErrorBoundary>

@@ -142,7 +142,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     async getSecurityModuleStatus(): Promise<void> {
         try {
-            const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
+            const result = await getModuleInfo(ModuleNameMap.SECURITY)
             if (result?.status === ModuleStatus.INSTALLED) {
                 this.setState({ isSecurityModuleInstalled: true })
             }
