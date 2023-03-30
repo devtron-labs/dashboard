@@ -439,7 +439,7 @@ export function AppListRouter({ isSuperAdmin, appListCount, loginCount }: AppRou
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     const [, argoInfoData] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD))
-    const isArgoInstalled: boolean = argoInfoData?.status === ModuleStatus.INSTALLED
+    const isArgoInstalled: boolean = argoInfoData?.result?.status === ModuleStatus.INSTALLED
 
     return (
         <ErrorBoundary>

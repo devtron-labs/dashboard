@@ -198,7 +198,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         if(inputCalendarValue !== calendarValue){
           setCalendarValue(inputCalendarValue);
         }
-        if(grafanaModuleStatus?.status === ModuleStatus.INSTALLED){
+        if(grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED){
           checkDatasource();
         }
     }, [appName, grafanaModuleStatus])
@@ -207,7 +207,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         getNewGraphs(tab);
     }, [datasource, calendarValue])
 
-    if(grafanaModuleStatus?.status !== ModuleStatus.INSTALLED){
+    if(grafanaModuleStatus?.result?.status !== ModuleStatus.INSTALLED){
         return <MonitoringModuleNotInstalled addSpace={addSpace} />
     } else if (!datasource.isConfigured || !datasource.isHealthy || !hostURLConfig || hostURLConfig.value !== window.location.origin) {
         return (

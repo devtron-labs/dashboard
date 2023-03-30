@@ -6,11 +6,13 @@ import {
     ModuleActionRequest,
     ModuleActionResponse,
     ModuleInfo,
+    ModuleInfoResponse,
     ModuleStatus,
     ReleaseNotesResponse,
     ServerInfoResponse,
 } from './DevtronStackManager.type'
-import { showReloadToast } from '../../common'
+import { reloadToastBody } from '../../common'
+import { toast } from 'react-toastify'
 
 let moduleStatusMap: Record<string, ModuleInfo> = {}
 
@@ -33,7 +35,9 @@ export const getAllModulesInfo = async (): Promise<Record<string, ModuleInfo>> =
     if (result) {
         const _moduleStatusMap = {}
         for (const _moduleDetails of result) {
-            _moduleStatusMap[ModuleNameMap[_moduleDetails.name]] = _moduleDetails
+            if (_moduleDetails.name === ModuleNameMap.CICD) {
+                _moduleStatusMap[_moduleDetails.name] = _moduleDetails
+            }
         }
         if (typeof Storage !== 'undefined') {
             localStorage.moduleStatusMap = JSON.stringify(_moduleStatusMap)
@@ -43,25 +47,24 @@ export const getAllModulesInfo = async (): Promise<Record<string, ModuleInfo>> =
     return Promise.resolve(moduleStatusMap)
 }
 
-export const getModuleInfo = async (moduleName: string): Promise<ModuleInfo> => {
+export const getModuleInfo = async (moduleName: string): Promise<ModuleInfoResponse> => {
     const _savedModuleStatusMap = getSavedModuleStatus()
     if (_savedModuleStatusMap && _savedModuleStatusMap[moduleName]) {
-        return Promise.resolve(_savedModuleStatusMap[moduleName])
+        return Promise.resolve({ status: '', code: 200, result: _savedModuleStatusMap[moduleName] })
     }
     const { result } = await get(`${Routes.MODULE_INFO_API}?name=${moduleName}`)
     if (result && result.status === ModuleStatus.INSTALLED) {
-        if (moduleName === ModuleNameMap.CICD) { // To show a reload tost if CICD installation complete
-            showReloadToast()
+        if (moduleName === ModuleNameMap.CICD) {
+            // To show a reload tost if CICD installation complete
+            toast.info(reloadToastBody(), { autoClose: false, closeButton: false })
         }
         _savedModuleStatusMap[moduleName] = result
         if (typeof Storage !== 'undefined') {
             localStorage.moduleStatusMap = JSON.stringify(_savedModuleStatusMap)
         }
         moduleStatusMap = _savedModuleStatusMap
-    } else {
-        Promise.resolve(result)
     }
-    return Promise.resolve(_savedModuleStatusMap[moduleName])
+    return Promise.resolve({ status: '', code: 200, result: result })
 }
 
 export const executeModuleAction = (

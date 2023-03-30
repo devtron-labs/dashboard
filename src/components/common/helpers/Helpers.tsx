@@ -18,7 +18,6 @@ import { toast } from 'react-toastify';
 import { ToastBody3 as UpdateToast } from '../ToastBody'
 
 const commandLineParser = require('command-line-parser')
-const updateToastRef = useRef(null)
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
 
@@ -1221,17 +1220,12 @@ export const parsePassword = (password:string): string => {
     return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password
 }
 
-export const showReloadToast = () => {
-    if (!toast.isActive(updateToastRef.current)) {
-        updateToastRef.current = toast.info(
-            <UpdateToast
-                onClick={() => {
-                    window.location.reload()
-                }}
-                text="You are viewing an outdated version of Devtron UI."
-                buttonText="Reload"
-            />,
-            { autoClose: false, closeButton: false },
-        )
-    }
+export const reloadToastBody = () => {
+    return <UpdateToast
+        onClick={() => {
+            window.location.reload()
+        }}
+        text="You are viewing an outdated version of Devtron UI."
+        buttonText="Reload"
+    />
 }

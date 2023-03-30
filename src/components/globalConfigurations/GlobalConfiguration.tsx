@@ -230,11 +230,11 @@ function NavItem({ serverMode }) {
             return
         }
         try {
-            const { status } = await getModuleInfo(moduleName)
-            if (status === ModuleStatus.INSTALLED) {
+            const { result } = await getModuleInfo(moduleName)
+            if (result?.status === ModuleStatus.INSTALLED) {
                 installedModuleMap.current = { ...installedModuleMap.current, [moduleName]: true }
                 setForceUpdateTime(Date.now())
-            } else if (status === ModuleStatus.INSTALLING) {
+            } else if (result?.status === ModuleStatus.INSTALLING) {
                 moduleStatusTimer = setTimeout(() => {
                     getModuleStatus(moduleName, MODULE_STATUS_RETRY_COUNT)
                 }, MODULE_STATUS_POLLING_INTERVAL)

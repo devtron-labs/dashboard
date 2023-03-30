@@ -175,7 +175,7 @@ export default function DevtronStackManager({
     const getLatestInfo = async () => {
         try {
             if (queryParams.has('id')) {
-                const result = await getModuleInfo(queryParams.get('id'))
+                const { result } = await getModuleInfo(queryParams.get('id'))
 
                 if (result) {
                     const _stackDetails: StackDetailsType = stackDetails
