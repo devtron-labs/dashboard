@@ -8,6 +8,7 @@ import {
     CDMaterialStateAction,
     DeploymentWithConfigType,
     MATERIAL_TYPE,
+    RegexValueType,
     TriggerViewDeploymentConfigType,
 } from './types'
 
@@ -251,4 +252,17 @@ export const cdMaterialReducer = (state: CDMaterialState, action: CDMaterialStat
         default:
             return state
     }
+}
+
+export const getInitCIMaterialRegexValue = (material: any[]): Record<number, RegexValueType> => {
+    const regexValue: Record<number, RegexValueType> = {}
+    if (material) {
+        for (const mat of material) {
+            regexValue[mat.gitMaterialId] = {
+                value: mat.value,
+                isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
+            }
+        }
+    }
+    return regexValue
 }

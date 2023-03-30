@@ -605,6 +605,7 @@ export interface BranchRegexModalProps {
     regexValue
     onCloseBranchRegexModal
     hideHeaderFooter?: boolean
+    savingRegexValue?: boolean
 }
 export interface AppDetailsProps {
     isV2: boolean

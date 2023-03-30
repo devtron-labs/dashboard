@@ -22,7 +22,7 @@ import {
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
 import { DeploymentNodeType, MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
-import { CIMaterial } from './ciMaterial'
+import CIMaterial from './ciMaterial'
 import CDMaterial from './cdMaterial'
 import {
     URLS,

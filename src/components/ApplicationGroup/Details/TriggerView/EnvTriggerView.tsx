@@ -3,8 +3,8 @@ import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-
 import ReactGA from 'react-ga4'
 import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, SourceTypeMap, ViewType } from '../../../../config'
 import { ServerErrors } from '../../../../modals/commonTypes'
+import CIMaterial from '../../../app/details/triggerView/ciMaterial'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
-import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { CIMaterialType } from '../../../app/details/triggerView/MaterialHistory'
 import {
@@ -162,7 +162,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             .catch((errors: ServerErrors) => {
                 showError(errors)
                 // If ci cd is in progress then call the api after every 10sec
-                pollWorkflowStatus({cicdInProgress: true, workflows: workflowsList})
+                pollWorkflowStatus({ cicdInProgress: true, workflows: workflowsList })
             })
     }
 
@@ -215,7 +215,11 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             setShowPostDeployment(_postNodeExist)
             setSelectedAppList(_selectedAppList)
             setSelectAll(_selectedAppList.length !== 0)
-            setSelectAllValue(_filteredWorkflows.length === _selectedAppList.length ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE)
+            setSelectAllValue(
+                _filteredWorkflows.length === _selectedAppList.length
+                    ? CHECKBOX_VALUE.CHECKED
+                    : CHECKBOX_VALUE.INTERMEDIATE,
+            )
             _filteredWorkflows.sort((a, b) => sortCallback('name', a, b))
             setFilteredWorkflows(_filteredWorkflows)
         }
@@ -311,7 +315,9 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         setFilteredWorkflows(_workflows)
         setSelectedAppList(_selectedAppList)
         setSelectAll(_selectedAppList.length !== 0)
-        setSelectAllValue(_workflows.length === _selectedAppList.length ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE)
+        setSelectAllValue(
+            _workflows.length === _selectedAppList.length ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE,
+        )
     }
 
     const getCommitHistory = (
