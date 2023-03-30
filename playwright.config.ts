@@ -12,13 +12,13 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './e2e-tests',
   /* Maximum time one test can run for. */
-  timeout: 30 * 1000,
+  timeout: 60000,
   expect: {
     /**
      * Maximum time expect() should wait for the condition to be met.
      * For example in `await expect(locator).toHaveText();`
      */
-    timeout: 50000
+    timeout: 60000
   },
   /* Run tests in files in parallel */
   fullyParallel: true,
@@ -33,9 +33,9 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
-    actionTimeout: 0,
+    actionTimeout: 60000,
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'https://devtronurl/dashboard/',
+    baseURL: 'https://devtronurl:32443/dashboard',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
@@ -51,7 +51,6 @@ export default defineConfig({
       name: 'chromium',
       use: { 
         ...devices['Desktop Chrome'],
-        //storageState: 'playwright/.auth/admin.json', 
       },
       dependencies: ['setup'],
     },
