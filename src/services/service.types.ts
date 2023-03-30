@@ -1,18 +1,6 @@
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib';
 import { VulnerabilityType } from '../components/common';
 import { DeploymentAppType } from '../components/v2/appDetails/appDetails.type';
-
-export interface ResponseType {
-    code: number;
-    status: string;
-    result?: any;
-    errors?: any;
-}
-
-export interface APIOptions {
-    timeout?: number;
-    signal?: AbortSignal;
-    preventAutoLogout?: boolean;
-}
 
 export interface RootObject {
     code: number;
@@ -55,16 +43,6 @@ export interface CDPipeline {
     runPostStageInEnv: boolean;
     isClusterCdActive: boolean;
     deploymentAppType?: DeploymentAppType
-}
-
-export interface TeamList extends RootObject {
-    result: Teams[];
-}
-
-export interface Teams {
-    id: number;
-    name: string;
-    active: boolean;
 }
 
 export interface AppListMin extends ResponseType {

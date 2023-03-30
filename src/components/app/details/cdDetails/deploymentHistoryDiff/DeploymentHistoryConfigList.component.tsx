@@ -7,7 +7,7 @@ import { DeploymentHistoryParamsType } from './types'
 import { getDeploymentHistoryList } from '../service'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../../config'
 import CDEmptyState from '../CDEmptyState'
-import { Progressing } from '../../../../common'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 interface TemplateConfiguration {
   setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>

@@ -6,12 +6,11 @@ import CopyToast, { handleSelectionChange } from '../CopyToast'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
 import { ErrorMessageType, ERROR_MESSAGE, POD_LINKS, SocketConnectionType, TerminalViewProps } from '../node.type'
-import { get } from '../../../../../../../services/api'
 import ReactGA from 'react-ga4'
 import IndexStore from '../../../../index.store'
-import { AppType } from '../../../../appDetails.type'
-import { elementDidMount, useOnline, showError } from '../../../../../../common'
-import { ServerErrors } from '../../../../../../../modals/commonTypes'
+import { AppType, DeploymentAppType } from '../../../../appDetails.type'
+import { elementDidMount, useOnline } from '../../../../../../common'
+import { get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { SERVER_MODE } from '../../../../../../../config'
 import { mainContext } from '../../../../../../common/navigation/NavigationRoutes'
 import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
@@ -35,7 +34,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const autoSelectNodeRef = useRef('')
     const prevNodeRef = useRef('')
     const currNodeRef = useRef('')
-   
+
     const resizeSocket = () => {
         if (terminal && fitAddon && terminalViewProps.isTerminalTab) {
             const dim = fitAddon.proposeDimensions()
@@ -53,7 +52,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     useEffect(() => {
         resizeSocket()
     }, [terminalViewProps.isFullScreen])
-    
+
     const appDetails = IndexStore.getAppDetails()
 
     const createNewTerminal = () => {
@@ -200,7 +199,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         }
     }
 
-    const preFetchData = (podState = '', status = '') => {  
+    const preFetchData = (podState = '', status = '') => {
         const _terminal = terminal
         let startingText = TERMINAL_STATUS.CREATE
         if (!_terminal) return
@@ -221,7 +220,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             if(terminalViewProps.isShellSwitched){
                 startingText = TERMINAL_STATUS.SHELL
             }
-    
+
             if(startingText){
                 if(startingText === TERMINAL_STATUS.CREATE){
                     _terminal.write('Creating pod.')
@@ -236,7 +235,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     _terminal.write('Connecting to pod terminal.')
                 }
             }
-    
+
             if(status){
                 if (status === TERMINAL_STATUS.TIMEDOUT) {
                     _terminal.write(' \u001b[38;5;196mTimed out\u001b[0m')

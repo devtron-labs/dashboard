@@ -1,17 +1,15 @@
 import React, { Component } from 'react'
 import { saveLinkedCIPipeline } from './ciPipeline.service'
 import { ViewType } from '../../config'
-import { ServerErrors } from '../../modals/commonTypes'
-import { CIPipelineProps, LinkedCIPipelineState } from './types'
 import {
-    Progressing,
-    Typeahead,
-    TypeaheadOption,
-    TypeaheadErrorOption,
-    showError,
+    ServerErrors,
     VisibleModal,
+    showError,
+    Progressing,
     multiSelectStyles,
-} from '../common'
+} from '@devtron-labs/devtron-fe-common-lib'
+import { CIPipelineProps, LinkedCIPipelineState } from './types'
+import { Typeahead, TypeaheadOption, TypeaheadErrorOption } from '../common'
 import { toast } from 'react-toastify'
 import { ValidationRules } from './validationRules'
 import { ButtonWithLoader } from '../common/formFields/ButtonWithLoader'
@@ -19,7 +17,7 @@ import { Info } from '../common/icons/Icons'
 import { getAppListMin, getCIConfig } from '../../services/service'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import './ciPipeline.css'
+import './ciPipeline.scss'
 import { appListOptions, noOptionsMessage } from '../AppSelector/AppSelectorUtil'
 import AsyncSelect from 'react-select/async'
 
@@ -52,7 +50,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         this.selectApp = this.selectApp.bind(this)
         this.handleName = this.handleName.bind(this)
         this.validationRules = new ValidationRules()
-        this.escFunction = this.escFunction.bind(this);
+        this.escFunction = this.escFunction.bind(this)
     }
 
     componentDidMount() {
@@ -65,7 +63,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
 
     escFunction(event) {
         if (event.keyCode === 27 || event.key === 'Escape') {
-             this.props.close()
+            this.props.close()
         }
     }
 
@@ -252,6 +250,8 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         )
     }
 
+    loadAppListOptions = (inputValue: string) => appListOptions(inputValue, false)
+
     renderCIPipelineBody() {
         if (this.state.view === ViewType.LOADING) {
             return (
@@ -265,7 +265,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                     <div className="typeahead form__row">
                         <span className="form__label">Filter By Application</span>
                         <AsyncSelect
-                            loadOptions={appListOptions}
+                            loadOptions={this.loadAppListOptions}
                             noOptionsMessage={noOptionsMessage}
                             classNamePrefix="link-pipeline-filter-application"
                             onChange={this.selectApp}

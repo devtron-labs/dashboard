@@ -1,10 +1,9 @@
-@import url('./modal.css');
-@import url('./whiteCard.css');
-@import url('./workflow.css');
-@import url('./workflow.css');
-@import url('./icons.css');
-@import url('./colorPalette.css');
-@import url('./triggerView.css');
+@import './modal.scss';
+@import './whiteCard.scss';
+@import './workflow.scss';
+@import './icons.scss';
+@import './colorPalette.scss';
+@import './triggerView.scss';
 
 :root {
     --modal-index: 20;
@@ -664,6 +663,7 @@ button.anchor {
             word-wrap: anywhere;
             white-space: pre-line;
             padding: 0;
+
             .Toastify__toast-icon {
                 display: none;
             }
@@ -854,6 +854,33 @@ button.anchor {
 
 .dc__kebab-menu__list-item:hover {
     background-color: #f5f5f5;
+}
+
+.override-button.cta {
+
+    &.ghosted,
+    &.delete {
+        height: 32px;
+        display: flex;
+        align-items: center;
+        margin: auto;
+    }
+
+    &.delete {
+        svg path {
+            fill: none;
+            stroke: var(--R500);
+        }
+
+        &:hover,
+        &:active,
+        &:focus {
+            svg path {
+                fill: var(--R500);
+                stroke: white;
+            }
+        }
+    }
 }
 
 .loader {
@@ -1358,6 +1385,9 @@ button.anchor {
     .dc__visible-hover--child {
         display: none;
     }
+    .dc__visible {
+        display: block;
+    }
 
     &.dc__visible-hover--parent:hover {
         .dc__visible-hover--child {
@@ -1389,6 +1419,10 @@ button.anchor {
 
 .dc__underline {
     text-decoration: underline;
+}
+
+.dc__strike-through {
+    text-decoration: line-through;
 }
 
 .dc__underline-onhover {
@@ -1534,6 +1568,7 @@ button.anchor {
     margin: 0 3px;
     background-size: contain;
 }
+
 // End Security CSS
 
 .saved-filter {
@@ -1614,6 +1649,7 @@ button.anchor {
 
 .dc__link {
     color: var(--B500);
+
     &:hover {
         color: var(--B500);
     }
@@ -1622,6 +1658,7 @@ button.anchor {
 .dc__link-bold {
     color: var(--B500);
     font-weight: 600;
+
     &:hover {
         color: var(--B500);
     }
@@ -1629,6 +1666,7 @@ button.anchor {
 
 .dc__link-n9 {
     color: var(--N900);
+
     &:hover {
         color: var(--N900);
     }
@@ -1753,11 +1791,11 @@ button.anchor {
     border-right: solid 1px var(--N100);
 }
 
-.dc__border-bottom-r2 {
-    border-bottom: solid 1px var(--R200);
+.dc__no-border {
+    border: none;
 }
 
-.dc__no-border {
+.dc__no-border-imp {
     border: none !important;
 }
 
@@ -1838,6 +1876,7 @@ button.anchor {
     &.git {
         background-image: url('../assets/icons/git/git.svg');
     }
+
     &.github {
         background-image: url('../assets/icons/git/github.svg');
     }
@@ -1857,9 +1896,11 @@ button.anchor {
     &.docker-hub {
         background-image: url('../assets/icons/git/docker.svg');
     }
+
     &.acr {
         background-image: url('../assets/icons/ic-azure.svg');
     }
+
     &.quay {
         background-image: url('../assets/icons/ic-quay.svg');
     }
@@ -1875,6 +1916,7 @@ button.anchor {
     &.gcr {
         background-image: url('../assets/icons/ic-google-container-registry.svg');
     }
+
     &.other {
         background-image: url('../assets/icons/container.svg');
     }
@@ -1986,14 +2028,17 @@ textarea,
     font-weight: 600;
     line-height: 40px;
     width: 100%;
+
     .dc__left-pane {
         width: 49%;
         border-right: 1px solid #d6dbdf;
         padding-left: 10px;
     }
+
     .dc__right-pane {
         width: 51%;
         padding-left: 25px;
+
         .apply-change {
             float: right;
             margin-top: 9px;
@@ -2009,13 +2054,27 @@ textarea,
     fill: var(--Y700);
 }
 
+.warning-icon-y7-imp {
+    path {
+        &:nth-child(1) {
+            fill: var(--N0) !important;
+        }
+        &:nth-child(2) {
+            fill: var(--Y700) !important;
+        }
+        &:nth-child(3) {
+            fill: var(--N0) !important;
+        }
+    }
+}
+
 .icon-color-n9 {
     path:nth-child(2) {
         fill: var(--N900);
     }
 }
 .icon-color-grey {
-    fill: #5A5A5A;
+    fill: #5a5a5a;
 }
 
 .icon-color-n7 {
@@ -2039,6 +2098,12 @@ textarea,
 .info-icon-n6 {
     circle {
         fill: var(--N600);
+    }
+}
+
+.icon-fill-n4 {
+    rect {
+        fill: var(--N400);
     }
 }
 
@@ -2393,14 +2458,17 @@ textarea,
     min-height: 600px;
 }
 
+.mxh-210 {
+    max-height: 210px;
+}
+
 // Height in percentage
 .h-100 {
     height: 100%;
 }
-.dc__height-reduce-172{
-    height: 'calc(100vh - 172px)'
+.dc__height-reduce-172 {
+    height: 'calc(100vh - 172px)';
 }
-
 
 // Line height
 .lh-1-4 {
@@ -2452,7 +2520,6 @@ textarea,
 }
 
 // Padding in pixels
-
 .pl-14-imp {
     padding-left: 14px !important;
 }
@@ -2497,6 +2564,14 @@ textarea,
 
 .pt-4-imp {
     padding-top: 4px !important;
+}
+
+.pb-6-imp {
+    padding-bottom: 6px !important;
+}
+
+.pt-6-imp {
+    padding-top: 6px !important;
 }
 
 .pl-8-imp {
@@ -2549,6 +2624,10 @@ textarea,
 
 .mr-0-imp {
     margin-right: 0px !important;
+}
+
+.mr-8-imp {
+    margin-right: 8px !important;
 }
 
 .mb-0-imp {
@@ -2755,8 +2834,7 @@ textarea::placeholder {
 }
 
 .dc__icon-bg-color {
-    background-color: #DFF3F7;
-
+    background-color: #dff3f7;
 }
 
 .dc__list-style-disc {

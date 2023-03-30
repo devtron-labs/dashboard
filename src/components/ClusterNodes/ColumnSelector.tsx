@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import ReactSelect, { components, MultiValue } from 'react-select'
-import { Option } from '../common'
+import { Option } from '@devtron-labs/devtron-fe-common-lib'
 import { ColumnMetadataType } from './types'
 import { ReactComponent as Setting } from '../../assets/icons/ic-nav-gear.svg'
 import { containerImageSelectStyles } from '../CIPipelineN/ciPipeline.utils'

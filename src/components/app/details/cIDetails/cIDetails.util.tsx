@@ -1,11 +1,10 @@
-import EmptyState from '../../../EmptyState/EmptyState';
 import notScanned from '../../../../assets/img/not-scanned.png';
 import scannedDisabled from '../../../../assets/img/ic-empty-scanner-disabled.png'
 import { ReactComponent as Vulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg';
 import React from 'react';
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg';
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg';
-import { NavLink } from 'react-router-dom';
+import { EmptyState } from '@devtron-labs/devtron-fe-common-lib';
 
 export function ScanDisabledView(props) {
     return (

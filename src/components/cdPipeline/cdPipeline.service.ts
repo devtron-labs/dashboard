@@ -1,6 +1,5 @@
 import { Routes } from '../../config';
-import { post, get } from '../../services/api';
-import { sortCallback } from '../common';
+import { post, get, sortCallback } from '@devtron-labs/devtron-fe-common-lib';
 import { getEnvironmentSecrets, getEnvironmentListMinPublic, getEnvironmentConfigs } from '../../services/service';
 
 export function getCDPipelineNameSuggestion(appId: string | number): Promise<any> {

@@ -1,6 +1,5 @@
 import { Routes } from '../../../config'
-import { get, put } from '../../../services/api'
-import { ResponseType } from '../../../services/service.types'
+import { get, put, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { ActionResponse, ChartMetadata, DeployedAt, InstalledAppInfo } from '../../external-apps/ExternalAppService'
 
 export interface ChartDeploymentManifestDetail {

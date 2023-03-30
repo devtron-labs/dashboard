@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { PipelineSelectProps } from './types'
-import { Modal } from '../common'
 import ci from '../../assets/img/ic-pipeline-ci@2x.png'
 import linkedPipeline from '../../assets/icons/ic-pipeline-linked.svg'
 import webhook from '../../assets/img/webhook.svg'
 import { CIPipelineNodeType, PipelineType } from '../app/details/triggerView/types'
+import { Modal } from '@devtron-labs/devtron-fe-common-lib'
 
 export class PipelineSelect extends Component<PipelineSelectProps> {
     handleMenuClick = (e): void => {

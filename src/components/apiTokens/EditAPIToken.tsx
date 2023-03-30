@@ -1,16 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import { showError, Progressing, InfoColourBar, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
 import { EditDataType, EditTokenType } from './authorization.type'
 import { createUserPermissionPayload, isFormComplete, isTokenExpired, PermissionType } from './authorization.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
+import { ReactComponent as Delete } from '../../assets/icons/ic-delete-interactive.svg'
 import GenerateActionButton from './GenerateActionButton'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import { useParams } from 'react-router'
 import moment from 'moment'
-import { MomentDateFormat } from '../../config'
-import { copyToClipboard, DeleteDialog, Progressing, showError } from '../common'
+import {  MomentDateFormat } from '../../config'
+import { ButtonWithLoader, copyToClipboard } from '../common'
 import { deleteGeneratedAPIToken, updateGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -23,11 +24,12 @@ import {
     EntityTypes,
     OptionType,
 } from '../userGroups/userGroups.types'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { getUserId, saveUser } from '../userGroups/userGroup.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
+import { API_COMPONENTS } from '../../config/constantMessaging'
+import { renderQuestionwithTippy } from './CreateAPIToken'
 
 function EditAPIToken({
     setShowRegeneratedModal,
@@ -83,7 +85,6 @@ function EditAPIToken({
     const renderActionButton = () => {
         return (
             <span
-                style={{ width: '120px' }}
                 className="cr-5 cursor flexbox top fw-6"
                 onClick={() => setShowRegeneratedModal(true)}
             >
@@ -96,7 +97,7 @@ function EditAPIToken({
         return (
             <InfoColourBar
                 message="To set a new expiration date, you can regenerate this token. Any scripts or applications using this token will need to be updated."
-                classname="info_bar m-20"
+                classname="info_bar mb-16"
                 Icon={InfoIcon}
                 iconClass="icon-dim-20"
                 renderActionButton={renderActionButton}
@@ -227,21 +228,34 @@ function EditAPIToken({
     }
 
     return (
-        <div className="fs-13 fw-4" style={{ minHeight: 'calc(100vh - 235px)' }}>
-            <div className="cn-9 fw-6 fs-16">
-                <span className="cb-5 cursor" onClick={redirectToTokenList}>
-                    API tokens
-                </span>{' '}
-                / Edit API token
+        <div className="fs-13 fw-4 api__token">
+            <div className='flex dc__content-space pt-16 pb-16 dc__gap-8'>
+                <div className='flex row ml-0'>
+                    <div className="cn-9 fw-6 fs-16">
+                        <span className="cb-5 cursor" onClick={redirectToTokenList}>
+                            {API_COMPONENTS.TITLE}
+                        </span>
+                        {API_COMPONENTS.EDIT_API_TITLE}
+                    </div>
+                    {renderQuestionwithTippy()}
+                </div>
+                <div className="flex dc__align-end dc__content-end">
+                    <ButtonWithLoader
+                        rootClassName="flex cta override-button delete scr-5 h-32"
+                        onClick={handleDeleteButton}
+                        disabled={loader}
+                        isLoading={false}
+                        loaderColor="white"
+                    >
+                    <Delete className='icon-dim-16 mr-8'/>
+                    <span>Delete</span>
+                    </ButtonWithLoader>
+                </div>
             </div>
-            <p className="fs-12 fw-4">
-                API tokens function like ordinary OAuth access tokens. They can be used instead of a password for Git
-                over HTTPS, or can be used to authenticate to the API over Basic Authentication.
-            </p>
 
-            <div className="bcn-0 br-8 en-2 bw-1">
+            <div className="bcn-0 mt 24 dc__gap-8">
                 {renderRegenerateInfoBar()}
-                <div className="pl-20 pr-20 pb-20 ">
+                <div className="pb-20 dc__gap-8">
                     <div>
                         <label className="form__row w-400">
                             <span className="form__label">Name</span>
@@ -342,8 +356,6 @@ function EditAPIToken({
                     onCancel={redirectToTokenList}
                     onSave={() => handleUpdatedToken(editData.id)}
                     buttonText={'Update token'}
-                    showDelete={true}
-                    onDelete={handleDeleteButton}
                 />
             </div>
             {deleteConfirmation && (
