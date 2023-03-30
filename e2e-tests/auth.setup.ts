@@ -8,7 +8,7 @@ setup('authenticate as admin', async ({ page }) => {
   await page.goto('https://devtronurl:32443/dashboard/');
   await page.getByRole('link', { name: 'Login as administrator' }).click();
   await page.getByPlaceholder('Password').click();
-  await page.getByPlaceholder('Password').fill('3g0Wqt-0Y3JadAtI');
+  await page.getByPlaceholder('Password').fill('adminpwd');
   await page.getByRole('button', { name: 'Login' }).click();
   await expect(page.getByRole('button', {name: 'App name'})).toBeVisible();
   // End of authentication steps.
