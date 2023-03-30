@@ -170,46 +170,54 @@ const gitTriggersModal = (triggers, materials) => {
     })
 }
 
+const processMaterialHistory = (material) => {
+    if (material.history) {
+        return material.history.map((history, indx) => {
+            return {
+                commitURL: material.gitMaterialUrl ? createGitCommitUrl(material.gitMaterialUrl, history.Commit) : '',
+                changes: history.Changes || [],
+                author: history.Author,
+                message: history.Message,
+                date: history.Date ? moment(history.Date).format(Moment12HourFormat) : '',
+                commit: history?.Commit,
+                isSelected: indx == 0,
+                showChanges: false,
+                webhookData: history.WebhookData
+                    ? {
+                          id: history.WebhookData.id,
+                          eventActionType: history.WebhookData.eventActionType,
+                          data: history.WebhookData.data,
+                      }
+                    : null,
+            }
+        })
+    }
+    return []
+}
+
+const processCIMaterialResponse = (response) => {
+    if (Array.isArray(response?.result)) {
+        const sortedCIMaterials = response.result.sort((a, b) => sortCallback('id', a, b))
+        return sortedCIMaterials.map((material, index) => {
+            return {
+                ...material,
+                isSelected: index == 0,
+                gitURL: material.gitMaterialUrl || '',
+                lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
+                isMaterialLoading: false,
+                history: processMaterialHistory(material),
+            }
+        })
+    }
+
+    return []
+}
+
 export const getCIMaterialList = (params, abortSignal: AbortSignal) => {
     return get(`${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`, {
         signal: abortSignal,
     }).then((response) => {
-        const materials = Array.isArray(response?.result)
-            ? response.result
-                  .sort((a, b) => sortCallback('id', a, b))
-                  .map((material, index) => {
-                      return {
-                          ...material,
-                          isSelected: index == 0,
-                          gitURL: material.gitMaterialUrl || '',
-                          lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
-                          isMaterialLoading: false,
-                          history: material.history
-                              ? material.history.map((history, indx) => {
-                                    return {
-                                        commitURL: material.gitMaterialUrl
-                                            ? createGitCommitUrl(material.gitMaterialUrl, history.Commit)
-                                            : '',
-                                        changes: history.Changes || [],
-                                        author: history.Author,
-                                        message: history.Message,
-                                        date: history.Date ? moment(history.Date).format(Moment12HourFormat) : '',
-                                        commit: history?.Commit,
-                                        isSelected: indx == 0,
-                                        showChanges: false,
-                                        webhookData: history.WebhookData
-                                            ? {
-                                                  id: history.WebhookData.id,
-                                                  eventActionType: history.WebhookData.eventActionType,
-                                                  data: history.WebhookData.data,
-                                              }
-                                            : null,
-                                    }
-                                })
-                              : [],
-                      }
-                  })
-            : []
+        const materials = processCIMaterialResponse(response)
         return {
             code: response.code,
             status: response.status,

@@ -12,7 +12,8 @@ interface ProgressingProps {
 }
 
 export function Progressing({ pageLoader, size, theme, styles, fillColor }: ProgressingProps): JSX.Element {
-    const loaderSize = size ? `${size}px` : pageLoader ? '48px' : '20px'
+    const pageLoaderSize = pageLoader ? '48px' : '20px'
+    const loaderSize = size ? `${size}px` : pageLoaderSize
     return (
         <div className={`loader ${theme || 'default'}-background`} style={styles}>
             <div style={{ width: loaderSize, height: loaderSize }}>

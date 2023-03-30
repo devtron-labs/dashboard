@@ -950,6 +950,20 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return null
     }
 
+    getCDNode = () => {
+        let node: NodeAttr
+        if (this.state.cdNodeId) {
+            for (const _workflow of this.state.workflows) {
+                node = _workflow.nodes.find((el) => {
+                    return +el.id == this.state.cdNodeId && el.type == this.state.nodeType
+                })
+                if (node) break
+            }
+        }
+
+        return node
+    }
+
     renderCDMaterial() {
         if (this.state.showCDModal) {
             let node: NodeAttr
