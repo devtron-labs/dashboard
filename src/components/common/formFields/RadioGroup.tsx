@@ -3,6 +3,7 @@ const RadioGroupContext = createContext({ name: '', value: '', disabled: false, 
 
 export interface RadioGroupItemProps {
     value: string;
+    dataTestid?: string
 }
 
 export class RadioGroupItem extends Component<RadioGroupItemProps> {
@@ -23,7 +24,7 @@ export class RadioGroupItem extends Component<RadioGroupItemProps> {
                                     checked={context.value === this.props.value}
                                 />
                                 <span className="form__radio-item-content">
-                                    <span className="radio__button"></span>
+                                    <span className="radio__button" data-testid = {this.props.dataTestid}></span>
                                     <span className="radio__title">{this.props.children}</span>
                                 </span>
                             </label>
