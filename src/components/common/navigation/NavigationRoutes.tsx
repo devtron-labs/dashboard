@@ -14,7 +14,6 @@ import {
     getAppListMin,
     getClusterListMinWithoutAuth,
     getLoginData,
-    getVersionConfig,
     updateLoginCount,
 } from '../../../services/service'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
@@ -192,29 +191,22 @@ export default function NavigationRoutes() {
         }
     }, [])
 
-    useEffect(() => {
-        async function getServerMode() {
-            try {
-                getAllModulesInfo()
-                const response = await getVersionConfig()
-                if(SERVER_MODE[response]){
-                  getInit(response)
-                  setServerMode(response)
-                  setPageState(ViewType.FORM)
-                } else{
-                  setPageState(ViewType.ERROR)
-                }
-                // const json = await response
-                // if (json.code == 200) {
-                //     getInit(json.result.serverMode)
-                //     setServerMode(json.result.serverMode)
-                //     setPageState(ViewType.FORM)
-                // }
-            } catch (err) {
-                setPageState(ViewType.ERROR)
+    async function getServerMode() {
+        try {
+            const response = getAllModulesInfo()
+            let _serverMode = SERVER_MODE.EA_ONLY
+            if (response[ModuleNameMap.CICD] && response[ModuleNameMap.CICD].status === ModuleStatus.INSTALLED) {
+                _serverMode = SERVER_MODE.FULL
             }
+            getInit(_serverMode)
+            setServerMode(_serverMode)
+            setPageState(ViewType.FORM)
+        } catch (err) {
+            setPageState(ViewType.ERROR)
         }
+    }
 
+    useEffect(() => {
         if (window._env_.K8S_CLIENT) {
             setPageState(ViewType.FORM)
             setLoginLoader(false)

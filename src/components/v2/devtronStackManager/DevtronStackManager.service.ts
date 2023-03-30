@@ -1,4 +1,4 @@
-import { Routes } from '../../../config'
+import { ModuleNameMap, Routes } from '../../../config'
 import { get, post } from '@devtron-labs/devtron-fe-common-lib'
 import {
     AllModuleInfoResponse,
@@ -10,6 +10,7 @@ import {
     ReleaseNotesResponse,
     ServerInfoResponse,
 } from './DevtronStackManager.type'
+import { showReloadToast } from '../../common'
 
 let moduleStatusMap: Record<string, ModuleInfo> = {}
 
@@ -24,15 +25,15 @@ const getSavedModuleStatus = (): Record<string, ModuleInfo> => {
 }
 
 export const getAllModulesInfo = async (): Promise<Record<string, ModuleInfo>> => {
-    const _savedModuleStatusMap = getSavedModuleStatus()
-    if (Object.keys(_savedModuleStatusMap).length) {
-        return Promise.resolve(_savedModuleStatusMap)
-    }
+    // const _savedModuleStatusMap = getSavedModuleStatus()
+    // if (Object.keys(_savedModuleStatusMap).length) {
+    //     return Promise.resolve(_savedModuleStatusMap)
+    // }
     const { result } = await get(Routes.MODULE_INFO_API) // to fetch all modules
     if (result) {
         const _moduleStatusMap = {}
         for (const _moduleDetails of result) {
-            _moduleStatusMap[_moduleDetails.name] = _moduleDetails
+            _moduleStatusMap[ModuleNameMap[_moduleDetails.name]] = _moduleDetails
         }
         if (typeof Storage !== 'undefined') {
             localStorage.moduleStatusMap = JSON.stringify(_moduleStatusMap)
@@ -49,6 +50,9 @@ export const getModuleInfo = async (moduleName: string): Promise<ModuleInfo> => 
     }
     const { result } = await get(`${Routes.MODULE_INFO_API}?name=${moduleName}`)
     if (result && result.status === ModuleStatus.INSTALLED) {
+        if (moduleName === ModuleNameMap.CICD) { // To show a reload tost if CICD installation complete
+            showReloadToast()
+        }
         _savedModuleStatusMap[moduleName] = result
         if (typeof Storage !== 'undefined') {
             localStorage.moduleStatusMap = JSON.stringify(_savedModuleStatusMap)

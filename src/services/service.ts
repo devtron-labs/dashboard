@@ -444,18 +444,6 @@ export function getClusterNamespaceMapping(): Promise<ClusterEnvironmentDetailLi
     return get(url)
 }
 
-export async function getVersionConfig() {
-    if (typeof Storage !== 'undefined' && localStorage.serverMode) {
-        return Promise.resolve(localStorage.serverMode)
-    }
-    const response = await get(Routes.APP_VERSION)
-    if (response.code == 200) {
-        localStorage.serverMode = response.result.serverMode
-        return Promise.resolve(localStorage.serverMode)
-    }
-    return Promise.resolve(null)
-}
-
 export function getClusterListMinWithoutAuth(): Promise<ClusterListResponse> {
     const URL = `${Routes.CLUSTER}/autocomplete?auth=false`
     return get(URL)
