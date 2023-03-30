@@ -59,7 +59,7 @@ export default function ChartSelectorDropdown({
     }
 
     if (!isUnSet) {
-        return <span className="fs-13 fw-6 cn-9 flex pointer">{selectedChart?.name}</span>
+        return <span className="fs-13 fw-6 cn-9 flex pointer" data-testid="select-chartversion-dropdown">{selectedChart?.name}</span>
     } else {
         return (
             <PopupMenu onToggleCallback={setPopupState} autoClose>
@@ -89,6 +89,7 @@ export default function ChartSelectorDropdown({
                                     <RadioGroup.Radio
                                         value={CHART_TYPE_TAB_KEYS.DEVTRON_CHART}
                                         canSelect={selectedChartTypeTab !== CHART_TYPE_TAB_KEYS.DEVTRON_CHART}
+                                        dataTestId="select-chartversion-menu-list"
                                     >
                                         {CHART_TYPE_TAB[CHART_TYPE_TAB_KEYS.DEVTRON_CHART]}
                                     </RadioGroup.Radio>

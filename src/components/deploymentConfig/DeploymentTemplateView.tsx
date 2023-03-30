@@ -179,6 +179,7 @@ export const ChartTypeVersionOptions = ({
                     <ReactSelect
                         options={filteredCharts}
                         isMulti={false}
+                        classNamePrefix="select-chartversion"
                         getOptionLabel={(option) => `${option.version}`}
                         getOptionValue={(option) => `${option.id}`}
                         value={selectedChart}
@@ -303,6 +304,7 @@ export const DeploymentTemplateOptionsTab = ({
                                 isDisabled={isBasicViewLocked}
                                 showTippy={isBasicViewLocked}
                                 tippyClass="default-white no-content-padding tippy-shadow"
+                                dataTestId="base-deployment-template-basic-button"
                                 tippyContent={
                                     <>
                                         <div className="flexbox fw-6 p-12 dc__border-bottom-n1">
@@ -324,6 +326,7 @@ export const DeploymentTemplateOptionsTab = ({
                                     codeEditorValue &&
                                     basicFieldValuesErrorObj?.isValid
                                 }
+                                dataTestId="base-deployment-template-advanced-button"
                             >
                                 Advanced (YAML)
                             </RadioGroup.Radio>
@@ -843,6 +846,7 @@ export const DeploymentTemplateEditorView = ({
                                     name={BASIC_FIELDS.PORT}
                                     value={basicFieldValues?.[BASIC_FIELDS.PORT]}
                                     className="w-200 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                                    data-testid="containerport-textbox"
                                     onChange={handleInputChange}
                                     readOnly={readOnly}
                                     autoComplete="off"
@@ -864,6 +868,7 @@ export const DeploymentTemplateEditorView = ({
                                     selected={basicFieldValues?.[BASIC_FIELDS.ENABLED]}
                                     onSelect={handleIngressEnabledToggle}
                                     disabled={readOnly || basicFieldValues?.[BASIC_FIELDS.HOSTS].length === 0}
+                                    dataTestId="httprequests-routes-toggle"
                                 />
                             </div>
                         </div>
