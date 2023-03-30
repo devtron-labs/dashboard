@@ -864,36 +864,39 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    renderCIMaterial = () => {
-        if (this.state.showCIModal || this.state.showMaterialRegexModal) {
-            let nd: NodeAttr
-            if (this.state.ciNodeId) {
-                const configuredMaterialList = new Map<number, Set<number>>()
-                for (let i = 0; i < this.state.workflows.length; i++) {
-                    nd = this.state.workflows[i].nodes.find(
-                        (node) => +node.id == this.state.ciNodeId && node.type === 'CI',
-                    )
-
-                    if (nd) {
-                        const gitMaterials = new Map<number, string[]>()
-                        for (const _inputMaterial of nd.inputMaterialList) {
-                            gitMaterials[_inputMaterial.gitMaterialId] = [
-                                _inputMaterial.gitMaterialName.toLowerCase(),
-                                _inputMaterial.value,
-                            ]
-                        }
-                        configuredMaterialList[this.state.workflows[i].name] = new Set<number>()
-                        handleSourceNotConfigured(
-                            configuredMaterialList,
-                            this.state.workflows[i],
-                            nd[this.state.materialType],
-                            !gitMaterials[this.state.workflows[i].ciConfiguredGitMaterialId],
-                        )
-                        break
+    getCINode = (): NodeAttr => {
+        let nd: NodeAttr
+        if (this.state.ciNodeId) {
+            const configuredMaterialList = new Map<number, Set<number>>()
+            for (let i = 0; i < this.state.workflows.length; i++) {
+                nd = this.state.workflows[i].nodes.find((node) => +node.id == this.state.ciNodeId && node.type === 'CI')
+                if (nd) {
+                    const gitMaterials = new Map<number, string[]>()
+                    for (const _inputMaterial of nd.inputMaterialList) {
+                        gitMaterials[_inputMaterial.gitMaterialId] = [
+                            _inputMaterial.gitMaterialName.toLowerCase(),
+                            _inputMaterial.value,
+                        ]
                     }
+                    configuredMaterialList[this.state.workflows[i].name] = new Set<number>()
+                    handleSourceNotConfigured(
+                        configuredMaterialList,
+                        this.state.workflows[i],
+                        nd[this.state.materialType],
+                        !gitMaterials[this.state.workflows[i].ciConfiguredGitMaterialId],
+                    )
+                    break
                 }
             }
+        }
+        return nd
+    }
+
+    renderCIMaterial = () => {
+        if (this.state.showCIModal || this.state.showMaterialRegexModal) {
+            const nd: NodeAttr = this.getCINode()
             const material = nd?.[this.state.materialType] || []
+
             return (
                 <VisibleModal className="" close={this.closeCIModal}>
                     <div className="modal-body--ci-material h-100" onClick={stopPropagation}>
@@ -950,7 +953,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return null
     }
 
-    getCDNode = () => {
+    getCDNode = (): NodeAttr => {
         let node: NodeAttr
         if (this.state.cdNodeId) {
             for (const _workflow of this.state.workflows) {
@@ -966,16 +969,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     renderCDMaterial() {
         if (this.state.showCDModal) {
-            let node: NodeAttr
-            if (this.state.cdNodeId) {
-                for (let i = 0; i < this.state.workflows.length; i++) {
-                    node = this.state.workflows[i].nodes.find((el) => {
-                        return +el.id == this.state.cdNodeId && el.type == this.state.nodeType
-                    })
-                    if (node) break
-                }
-            }
-
+            const node: NodeAttr = this.getCDNode()
             const material = node?.[this.state.materialType] || []
 
             return (
