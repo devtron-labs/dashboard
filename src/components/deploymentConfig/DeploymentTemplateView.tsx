@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-//test
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { DEPLOYMENT, DOCUMENTATION, MODES, ROLLOUT_DEPLOYMENT } from '../../config'
