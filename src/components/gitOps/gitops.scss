@@ -1,0 +1,29 @@
+.gitops__id {
+	color: #404040;
+}
+.form__label {
+	&.form__label--fs-13 {
+		font-size: 13px;
+	}
+}
+.git_impt {
+	border: solid 1px #c5bbfa;
+}
+.config_failure {
+	border-bottom: 0px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+.config_failure-actions {
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
+}
+.onlink {
+	color: var(--B500);
+	&:hover {
+		color: var(--B500);
+	}
+}
+.stroke_width {
+	stroke-width: 2px;
+}

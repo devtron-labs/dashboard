@@ -11,11 +11,11 @@ import {
 } from '../Types'
 import { AggregationKeys, Nodes } from '../../app/types'
 import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
-import { Progressing } from '../../common'
 import ReactSelect, { GroupBase, InputActionMeta } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/dist/declarations/src/Select'
 import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
 import { withShortcut, IWithShortcut } from 'react-keybind'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 function Sidebar({
     k8SObjectMap,

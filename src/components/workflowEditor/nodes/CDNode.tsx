@@ -5,7 +5,7 @@ import Tippy from '@tippyjs/react'
 import { CDNodeProps, CDNodeState } from '../types'
 import { toast } from 'react-toastify'
 import {BUTTON_TEXT, CONFIRMATION_DIALOG_MESSAGING, ERR_MESSAGE_ARGOCD, VIEW_DELETION_STATUS} from '../../../config/constantMessaging'
-import { ConfirmationDialog } from '../../common'
+import { ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import warningIconSrc from '../../../assets/icons/info-filled.svg'
 import { URLS } from '../../../config'
 

@@ -1,6 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
-import EmptyState from '../EmptyState/EmptyState'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as LinkIcon } from '../../assets/icons/ic-link.svg'
@@ -23,8 +22,7 @@ import {
     onImageLoadError,
 } from './ExternalLinks.utils'
 import { UserRoleType } from '../userGroups/userGroups.types'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
+import { TippyCustomized, TippyTheme, InfoColourBar, EmptyState } from  '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../common'
 import './externalLinks.component.scss'
 

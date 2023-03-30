@@ -1,7 +1,8 @@
 import React, { Fragment, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { OptionType } from '../../app/types'
-import { createGroupedItemsByKey, Drawer, Progressing, showError } from '../../common'
+import { createGroupedItemsByKey } from '../../common'
+import { showError, Progressing, Drawer } from '@devtron-labs/devtron-fe-common-lib'
 import ConfigureLinkAction from './ConfigureLinkAction'
 import { getExternalLinks, saveExternalLinks, updateExternalLink } from '../ExternalLinks.service'
 import {

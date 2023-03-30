@@ -29,24 +29,36 @@
             }
         }
 
+        &.job-compose__side-nav {
+            grid-template-rows: 110px repeat(2, 36px) 1fr;
+
+            &.hide-app-config-help {
+                grid-template-rows: repeat(2, 36px) 1fr;
+            }
+        }
+
         .help-container {
             background-color: #f3f0ff;
             padding: 8px 12px;
             border-radius: 4px;
             height: 100px;
+
             .progress-container {
                 background-color: #ffffff;
                 margin: 5px 0 10px 0;
                 font-size: 12px;
+
                 .progress-tracker {
                     background-color: #1dad70;
                     height: 4px;
                     width: 1%;
                 }
             }
+
             .font-weight-600 {
                 font-weight: 600;
             }
+
             .need-help {
                 color: var(--B500);
             }
@@ -101,7 +113,7 @@
         }
 
         .nav-text {
-          max-width: 192px;
+            max-width: 192px;
         }
     }
 
@@ -169,7 +181,7 @@
         height: calc(100% - 60px);
         overflow: hidden;
 
-        & > .app-compose__nav-item {
+        &>.app-compose__nav-item {
             height: 40px;
             line-height: 40px;
             width: 100%;

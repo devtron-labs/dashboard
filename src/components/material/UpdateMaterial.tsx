@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { updateMaterial } from './material.service'
 import { GitMaterialType, UpdateMaterialState } from './material.types'
 import { toast } from 'react-toastify'
-import { showError } from '../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { MaterialView } from './MaterialView'
 
 interface UpdateMaterialProps {
@@ -18,6 +18,7 @@ interface UpdateMaterialProps {
     reload: () => void
     toggleRepoSelectionTippy: () => void
     setRepo?: React.Dispatch<React.SetStateAction<string>>
+    isJobView?: boolean
 }
 export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMaterialState> {
     constructor(props) {
@@ -229,6 +230,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 preventRepoDelete={this.props.preventRepoDelete}
                 toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
                 setRepo={this.props.setRepo}
+                isJobView={this.props.isJobView}
             />
         )
     }

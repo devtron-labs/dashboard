@@ -1,14 +1,15 @@
 import React, { Component } from 'react'
+import { showError, Progressing, VisibleModal, ServerErrors, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import { VisibleModal, ButtonWithLoader, Checkbox, showError, Progressing, sortCallback } from '../../../common'
+import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-media.svg'
+import { ButtonWithLoader } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED } from '../../../../config'
-import { ServerErrors } from '../../../../modals/commonTypes'
 import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
@@ -117,7 +118,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     renderMaterialStartBuild = (canTrigger) => {
         return (
             <div className="trigger-modal__trigger">
-                {this.renderIgnoreCache()}
+                {!this.props.isJobView && this.renderIgnoreCache()}
                 <ButtonWithLoader
                     rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
                     loaderColor="#ffffff"
@@ -125,8 +126,17 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     isLoading={this.props.isLoading}
                     onClick={this.handleStartBuildAction}
                 >
-                    <Play className="trigger-btn__icon" />
-                    Start Build
+                    {this.props.isJobView ? (
+                        <>
+                            <RunIcon className="trigger-job-btn__icon" />
+                            Run Job
+                        </>
+                    ) : (
+                        <>
+                            <Play className="trigger-btn__icon" />
+                            Start Build
+                        </>
+                    )}
                 </ButtonWithLoader>
             </div>
         )
@@ -162,6 +172,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         appId={this.props.appId}
                         fromBulkCITrigger={false}
                         hideSearchHeader={false}
+                        isJobView={this.props.isJobView}
                     />
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(canTrigger)}
                 </>

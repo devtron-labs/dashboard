@@ -1,8 +1,15 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react'
+import {
+    showError,
+    Progressing,
+    ConfirmationDialog,
+    Host,
+    stopPropagation,
+    multiSelectStyles,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime } from '../../service'
 import {
     URLS,
-    Host,
     getAppDetailsURL,
     getAppTriggerURL,
     DOCUMENTATION,
@@ -14,15 +21,11 @@ import {
 import {
     NavigationArrow,
     useEffectAfterMount,
-    showError,
-    Progressing,
-    ConfirmationDialog,
     useAppContext,
     noop,
     useEventSource,
     FragmentHOC,
     useSearchString,
-    multiSelectStyles,
     useAsync,
     ScanDetailsModal,
 } from '../../../common'
@@ -63,7 +66,7 @@ import {
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
 import { TriggerInfoModal } from '../../list/TriggerInfo'
-import { sortObjectArrayAlphabetically, sortOptionsByValue, stopPropagation } from '../../../common/helpers/Helpers'
+import { sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
@@ -1069,21 +1072,24 @@ export function AppNotConfigured({
     buttonTitle,
     appConfigTabs = '',
     style,
+    isJobView,
 }: {
     image?: any
     title?: string
-    subtitle?: string
+    subtitle?: React.ReactNode
     buttonTitle?: string
     appConfigTabs?: string
     style?: React.CSSProperties
+    isJobView?: boolean
 }) {
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
     function handleEditApp(e) {
         getAppConfigStatus(+appId).then((response) => {
-            let url = `/app/${appId}/edit`
+            const _urlPrefix = `/${isJobView ? 'job' : 'app'}/${appId}`
+            let url = `${_urlPrefix}/edit`
             if (appConfigTabs) {
-                url = `/app/${appId}/${appConfigTabs}`
+                url = `${_urlPrefix}/${appConfigTabs}`
             }
             push(url)
         })
@@ -1098,7 +1104,7 @@ export function AppNotConfigured({
                     subtitle
                 ) : (
                     <>
-                        {APP_DETAILS.APP_FULLY_NOT_CONFIGURED}
+                        {APP_DETAILS.APP_FULLY_NOT_CONFIGURED}&nbsp;
                         <a href={DOCUMENTATION.APP_CREATE} target="_blank">
                             {APP_DETAILS.NEED_HELP}
                         </a>

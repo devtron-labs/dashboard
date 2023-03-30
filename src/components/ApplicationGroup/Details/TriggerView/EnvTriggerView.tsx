@@ -2,7 +2,17 @@ import React, { useState, useEffect } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, SourceTypeMap, ViewType } from '../../../../config'
-import { ServerErrors } from '../../../../modals/commonTypes'
+import {
+    ServerErrors,
+    ErrorScreenManager,
+    PopupMenu,
+    Progressing,
+    showError,
+    stopPropagation,
+    sortCallback,
+    Checkbox,
+    CHECKBOX_VALUE,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
 import { CIMaterial } from '../../../app/details/triggerView/ciMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
@@ -26,20 +36,7 @@ import {
     triggerCDNode,
     triggerCINode,
 } from '../../../app/service'
-import {
-    Checkbox,
-    CHECKBOX_VALUE,
-    createGitCommitUrl,
-    ErrorScreenManager,
-    ISTTimeModal,
-    PopupMenu,
-    preventBodyScroll,
-    Progressing,
-    showError,
-    sortCallback,
-    sortObjectArrayAlphabetically,
-    stopPropagation,
-} from '../../../common'
+import { createGitCommitUrl, ISTTimeModal, preventBodyScroll, sortObjectArrayAlphabetically } from '../../../common'
 import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING, TIME_STAMP_ORDER } from '../../../app/details/triggerView/Constants'
 import { toast } from 'react-toastify'
@@ -162,7 +159,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             .catch((errors: ServerErrors) => {
                 showError(errors)
                 // If ci cd is in progress then call the api after every 10sec
-                pollWorkflowStatus({cicdInProgress: true, workflows: workflowsList})
+                pollWorkflowStatus({ cicdInProgress: true, workflows: workflowsList })
             })
     }
 
@@ -215,7 +212,11 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             setShowPostDeployment(_postNodeExist)
             setSelectedAppList(_selectedAppList)
             setSelectAll(_selectedAppList.length !== 0)
-            setSelectAllValue(_filteredWorkflows.length === _selectedAppList.length ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE)
+            setSelectAllValue(
+                _filteredWorkflows.length === _selectedAppList.length
+                    ? CHECKBOX_VALUE.CHECKED
+                    : CHECKBOX_VALUE.INTERMEDIATE,
+            )
             _filteredWorkflows.sort((a, b) => sortCallback('name', a, b))
             setFilteredWorkflows(_filteredWorkflows)
         }
@@ -311,7 +312,9 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         setFilteredWorkflows(_workflows)
         setSelectedAppList(_selectedAppList)
         setSelectAll(_selectedAppList.length !== 0)
-        setSelectAllValue(_workflows.length === _selectedAppList.length ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE)
+        setSelectAllValue(
+            _workflows.length === _selectedAppList.length ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE,
+        )
     }
 
     const getCommitHistory = (
@@ -988,6 +991,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     const onShowBulkCDModal = (e) => {
         setCDLoading(true)
         setBulkTriggerType(e.currentTarget.dataset.triggerType)
+        setMaterialType(MATERIAL_TYPE.inputMaterialList)
         setTimeout(() => {
             setShowBulkCDModal(true)
         }, 100)

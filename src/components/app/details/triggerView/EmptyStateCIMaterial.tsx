@@ -1,12 +1,12 @@
 import React from 'react'
 import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.png'
-import EmptyState from '../../../EmptyState/EmptyState'
 import NoResults from '../../../../assets/img/empty-noresult@2x.png'
 import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-right.svg'
 import { EmptyStateCIMaterialProps } from './types'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
 import { DOCKER_FILE_ERROR_MESSAGE, SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
+import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function EmptyStateCIMaterial({
     isRepoError,

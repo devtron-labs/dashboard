@@ -1,6 +1,5 @@
-import { getAppListMin, getTeamListMin, getEnvironmentListMin } from '../../services/service'
-import { get, post, put, trash } from '../../services/api'
-import { APIOptions, ResponseType } from '../../services/service.types'
+import { getAppListMin, getEnvironmentListMin } from '../../services/service'
+import { get, post, put, trash, ResponseType, getTeamListMin, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
 import { CreateGroup, CreateUser } from './userGroups.types'
 import { Routes} from '../../config'
 
@@ -78,9 +77,9 @@ export function saveGroup(request: CreateGroup) {
         timeout: window._env_.CONFIGURABLE_TIMEOUT ? parseInt(window._env_.CONFIGURABLE_TIMEOUT, 10) : 30,
     }
     if (window._env_.CONFIGURABLE_TIMEOUT) {
-        return request.id ? put(Routes.USER_ROLE_GROUP_URL, request, options) : post('user/role/group', request, options)
+        return request.id ? put(Routes.USER_ROLE_GROUP, request, options) : post('user/role/group', request, options)
     } else {
-        return request.id ? put(Routes.USER_ROLE_GROUP_URL, request) : post('user/role/group', request)
+        return request.id ? put(Routes.USER_ROLE_GROUP, request) : post('user/role/group', request)
     }
 }
 

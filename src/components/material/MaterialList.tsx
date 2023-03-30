@@ -1,15 +1,15 @@
-import React, { Component } from 'react';
-import { getGitProviderListAuth, getSourceConfig } from '../../services/service';
-import { ErrorScreenManager, Progressing, showError, sortCallback } from '../common';
-import { AppConfigStatus, ViewType, DOCUMENTATION, AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config';
-import { withRouter } from 'react-router';
-import { CreateMaterial } from './CreateMaterial';
-import { UpdateMaterial } from './UpdateMaterial';
-import { MaterialListProps, MaterialListState } from './material.types';
-import { ReactComponent as GitHub } from '../../assets/icons/ic-sample-app.svg';
+import React, { Component } from 'react'
+import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
+import { showError, Progressing, ErrorScreenManager, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigStatus, ViewType, DOCUMENTATION, AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
+import { withRouter } from 'react-router'
+import { CreateMaterial } from './CreateMaterial'
+import { UpdateMaterial } from './UpdateMaterial'
+import { MaterialListProps, MaterialListState } from './material.types'
+import { ReactComponent as GitHub } from '../../assets/icons/ic-sample-app.svg'
 import { ReactComponent as PlayMedia } from '../../assets/icons/ic-play-media.svg'
 import { ReactComponent as Folder } from '../../assets/icons/ic-folder-filled.svg'
-import './material.css';
+import './material.scss'
 
 class MaterialList extends Component<MaterialListProps, MaterialListState> {
     constructor(props) {
@@ -110,14 +110,16 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     renderPageHeader() {
         return (
             <>
-                <h2 className="form__title form__title--artifacts">Git Repositories</h2>
+                <h2 className="form__title form__title--artifacts">
+                    {this.props.isJobView ? 'Source code' : 'Git Repositories'}
+                </h2>
                 <p className="form__subtitle form__subtitle--artifacts">
-                    Manage source code repositories for this application.&nbsp;
+                    Manage source code repositories for this {this.props.isJobView ? 'job' : 'application'}.&nbsp;
                     <a
                         rel="noreferrer noopener"
                         target="_blank"
                         className="dc__link"
-                        href={DOCUMENTATION.GLOBAL_CONFIG_GIT}
+                        href={this.props.isJobView ? DOCUMENTATION.JOB_SOURCE_CODE : DOCUMENTATION.GLOBAL_CONFIG_GIT}
                     >
                         Learn more
                     </a>
@@ -167,7 +169,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             return (
                 <div className="form__app-compose">
                     {this.renderPageHeader()}
-                    {!this.state.materials.length && this.renderSampleApp()}
+                    {!this.props.isJobView && !this.state.materials.length && this.renderSampleApp()}
                     <CreateMaterial
                         key={this.state.materials.length}
                         appId={Number(this.props.match.params.appId)}
@@ -178,6 +180,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         isCheckoutPathValid={this.isCheckoutPathValid}
                         isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
                         reload={this.getGitProviderConfig}
+                        isJobView={this.props.isJobView}
                     />
                     {this.state.materials.map((mat) => {
                         return (
@@ -195,6 +198,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                                 reload={this.getGitProviderConfig}
                                 toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
                                 setRepo={this.props.setRepo}
+                                isJobView={this.props.isJobView}
                             />
                         )
                     })}

@@ -456,6 +456,11 @@ export interface ResourceInfoActionPropsType {
     selectedResource?: SelectedResourceType
 }
 
+export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
+    hideManagedFields: boolean
+    toggleManagedFields: (managedFieldsExist: boolean) => void
+}
+
 export interface NodeTreeDetailTabProps {
     appDetails: AppDetails
     externalLinks: ExternalLink[]

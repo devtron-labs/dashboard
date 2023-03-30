@@ -4,12 +4,12 @@ import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import { Switch, Redirect, NavLink } from 'react-router-dom'
 import { Route } from 'react-router'
 import { toast } from 'react-toastify'
-import { ServerErrors } from '../../modals/commonTypes'
-import { URLS, Host, DOCUMENTATION, TOKEN_COOKIE_NAME} from '../../config'
-import { Progressing, showError , getCookie} from '../common'
+import { ServerErrors, Host, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME} from '../../config'
+import { getCookie } from '../common'
 import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
-import './login.css'
+import './login.scss'
 import { dashboardAccessed } from '../../services/service'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
@@ -29,19 +29,19 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         this.login = this.login.bind(this)
         this.isFormNotValid = this.isFormNotValid.bind(this)
     }
-
     componentDidMount() {
         let queryString = new URLSearchParams(this.props.location.search)
-        let queryParam = queryString.get('continue')       
-        
+        let queryParam = queryString.get('continue')
+
         //1. TOKEN_COOKIE_NAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
-            //If a user is still at login page for the first time and getCookie(TOKEN_COOKIE_NAME) becomes false.
-            //queryParam is '/' for first time login, queryParam != "/" becomes false at login page. Hence toast won't appear 
-            //at the time of first login.
+        //If a user is still at login page for the first time and getCookie(TOKEN_COOKIE_NAME) becomes false.
+        //queryParam is '/' for first time login, queryParam != "/" becomes false at login page. Hence toast won't appear
+        //at the time of first login.
         //2. Also if the cookie is deleted/changed after some time from the database at backend then getCookie(TOKEN_COOKIE_NAME)
-            //becomes false but queryParam != "/" will be true and queryParam is also not null hence redirecting users to the 
-            //login page with Please login again toast appearing.
-        if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != "/")) {
+        //becomes false but queryParam != "/" will be true and queryParam is also not null hence redirecting users to the
+        //login page with Please login again toast appearing.
+
+        if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != '/')) {
             toast.error('Please login again')
         }
         if (queryParam && queryParam.includes('login')) {
@@ -69,7 +69,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 })
                 .catch((errors) => {})
         }
-
     }
 
     handleChange(e: React.ChangeEvent<HTMLInputElement>): void {
@@ -126,7 +125,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
     }
 
     renderSSOLoginPage() {
-        let search = this.props.location.search
+        const search = this.props.location.search
 
         return (
             <div className="login__control">

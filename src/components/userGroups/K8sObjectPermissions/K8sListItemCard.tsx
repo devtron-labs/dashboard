@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import {
-    ClearIndicator,
-    convertToOptionsList,
-    Option,
-    MultiValueRemove,
     processK8SObjects,
-    showError,
-    MultiValueChipContainer,
+    convertToOptionsList,
     sortObjectArrayAlphabetically,
     sortOptionsByLabel,
 } from '../../common'
+import {
+    showError,
+    InfoColourBar,
+    ClearIndicator,
+    Option,
+    MultiValueRemove,
+    MultiValueChipContainer,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     getClusterList,
     getResourceGroupList,
@@ -36,7 +39,6 @@ import {
     multiSelectAllState,
     resourceMultiSelectstyles,
 } from './K8sPermissions.utils'
-import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import Tippy from '@tippyjs/react'
 import { resourceKindOptionLabel } from './K8sPermission.component'
 
