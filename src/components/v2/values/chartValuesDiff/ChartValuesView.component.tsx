@@ -1,11 +1,19 @@
 import React from 'react'
 import { useParams } from 'react-router'
 import ReactSelect from 'react-select'
-import { DropdownIndicator, EnvFormatOptions, formatHighlightedText, getCommonSelectStyle, GroupHeading, Option } from '../../common/ReactSelect.utils'
+import {
+    DropdownIndicator,
+    EnvFormatOptions,
+    formatHighlightedText,
+    getCommonSelectStyle,
+    GroupHeading,
+    Option,
+} from '../../common/ReactSelect.utils'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
-import { DeleteDialog, Progressing, Select } from '../../../common'
+import { Select } from '../../../common'
+import { Progressing, DeleteDialog, EmptyState, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
     AppNameInputType,
@@ -24,15 +32,12 @@ import {
     ValueNameInputType,
 } from './ChartValuesView.type'
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails'
-import EmptyState from '../../../EmptyState/EmptyState'
 import {
-    CONNECT_TO_HELM_CHART_TEXTS,
     DELETE_CHART_APP_DESCRIPTION_LINES,
     DELETE_PRESET_VALUE_DESCRIPTION_LINES,
     UPDATE_APP_BUTTON_TEXTS,
 } from './ChartValuesView.constants'
 import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
-import { RadioGroup, RadioGroupItem } from '../../../common/formFields/RadioGroup'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
@@ -48,7 +53,6 @@ export const ChartEnvironmentSelector = ({
     environments,
     invalidaEnvironment,
 }: ChartEnvironmentSelectorType): JSX.Element => {
-
     const singleOption = (props) => {
         return <EnvFormatOptions {...props} environmentfieldName="label" />
     }
@@ -147,8 +151,7 @@ export const ChartProjectSelector = ({
     projects,
     invalidProject,
 }: ChartProjectSelectorType): JSX.Element => {
-    return  (
-
+    return (
         <label className="form__row form__row--w-100 fw-4">
             <span className="form__label required-field">Project</span>
             <ReactSelect
@@ -165,8 +168,7 @@ export const ChartProjectSelector = ({
             />
             {invalidProject && renderValidationErrorLabel()}
         </label>
-        )
-
+    )
 }
 
 export const ChartVersionSelector = ({

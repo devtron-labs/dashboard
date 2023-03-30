@@ -1,4 +1,4 @@
-import { get, post, trash } from '../../services/api';
+import { get, post, trash } from '@devtron-labs/devtron-fe-common-lib';
 import { Routes } from '../../config';
 
 export function createProject(project) {

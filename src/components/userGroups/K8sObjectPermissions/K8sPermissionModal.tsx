@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { Drawer, stopPropagation } from '../../common'
 import { K8sPermissionModalType, OptionType } from '../userGroups.types'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 import K8sListItemCard from './K8sListItemCard'
 import { getPermissionObject } from './K8sPermissions.utils'
 import { toast } from 'react-toastify'
+import { Drawer, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function K8sPermissionModal({
     selectedPermissionAction,

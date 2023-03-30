@@ -1,5 +1,5 @@
 import { Routes } from '../../config'
-import { get, post, put, trash } from '../../services/api'
+import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ExternalLink,
     ExternalLinkIdentifierType,

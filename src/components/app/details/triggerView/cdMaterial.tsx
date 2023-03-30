@@ -4,6 +4,7 @@ import {
     CDMaterialProps,
     CDMaterialState,
     CDMaterialType,
+    DeploymentNodeType,
     DeploymentWithConfigType,
     MaterialInfo,
     MATERIAL_TYPE,
@@ -21,16 +22,14 @@ import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
+import { ScanVulnerabilitiesTable, getRandomColor, noop } from '../../../common'
 import {
-    VisibleModal,
-    ScanVulnerabilitiesTable,
-    Progressing,
-    getRandomColor,
     showError,
+    Progressing,
     ConditionalWrap,
     stopPropagation,
-    noop,
-} from '../../../common'
+    VisibleModal,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { EmptyStateCdMaterial } from './EmptyStateCdMaterial'
 import { CDButtonLabelMap, getCommonConfigSelectStyles } from './config'
 import {
@@ -713,7 +712,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     renderTriggerModalCTA() {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
-
         return (
             <div
                 className={`trigger-modal__trigger ${
@@ -722,7 +720,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         : ''
                 }`}
             >
-                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) && !this.state.showConfigDiffView && (
+                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) && !this.state.showConfigDiffView && this.props.stageType === DeploymentNodeType.CD &&(
                     <div className="flex left dc__border br-4 h-42">
                         <div className="flex">
                             <ReactSelect
@@ -785,7 +783,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     )}
                 >
                     <button
-                        className={`cta flex h-36 ${this.isDeployButtonDisabled() ? 'disabled-opacity' : ''}`}
+                        className={`cta flex ml-auto h-36 ${this.isDeployButtonDisabled() ? 'disabled-opacity' : ''}`}
                         onClick={this.deployTrigger}
                     >
                         {this.props.isLoading ? (

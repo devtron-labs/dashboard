@@ -1,9 +1,23 @@
 import React, { Component } from 'react'
-import { Progressing, showError, sortObjectArrayAlphabetically, multiSelectStyles, Drawer } from '../../common'
+import { sortObjectArrayAlphabetically, importComponentFromFELibrary } from '../../common'
+import {
+    ServerErrors,
+    showError,
+    Progressing,
+    Drawer,
+    TagType,
+    TagLabelSelect,
+    getTeamListMin,
+    DEFAULT_TAG_DATA,
+    multiSelectStyles,
+    Reload,
+    RadioGroup,
+    RadioGroupItem,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { AddNewAppProps, AddNewAppState } from '../types'
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config'
 import { ValidationRules } from './validationRules'
-import { getHostURLConfiguration, getTeamListMin } from '../../../services/service'
+import { getHostURLConfiguration } from '../../../services/service'
 import { createApp } from './service'
 import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
@@ -11,17 +25,12 @@ import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import ReactSelect from 'react-select'
 import AsyncSelect from 'react-select/async'
-import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup'
 import { appListOptions, noOptionsMessage } from '../../AppSelector/AppSelectorUtil'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
-import Reload from '../../Reload/Reload'
-import TagLabelSelect from '../details/TagLabelSelect'
-import { ServerErrors } from '../../../modals/commonTypes'
-import { DEFAULT_TAG_DATA } from '../config'
 import { createJob } from '../../Jobs/Service'
 import './createApp.scss'
-
+const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
     _inputAppName: HTMLInputElement
@@ -233,7 +242,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.setState({ form, isValid })
     }
 
-    setTags = (tags): void => {
+    setTags = (tags: TagType[]): void => {
         this.setState({ tags })
     }
 
@@ -414,11 +423,12 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         ) : null}
                     </span>
                 </div>
-                <TagLabelSelect
+                <TagsContainer
                     isCreateApp={true}
                     labelTags={this.state.tags}
                     setLabelTags={this.setTags}
                     tabIndex={5}
+                    selectedProjectId={this.state.form.projectId}
                 />
             </div>
         )

@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { Modal } from '@devtron-labs/devtron-fe-common-lib'
 import PageHeader from '../PageHeader'
 import { ReactComponent as DropDown } from '../../../../assets/icons/ic-dropdown-filled.svg'
 import { ReactComponent as ChartIcon } from '../../../../assets/icons/ic-charts.svg'
 import { ReactComponent as AddIcon } from '../../../../assets/icons/ic-add.svg'
 import { ReactComponent as JobIcon } from '../../../../assets/icons/ic-k8s-job.svg'
 import { AppListConstants, SERVER_MODE, URLS } from '../../../../config'
-import { Modal } from '../../modals/Modal'
 import './HeaderWithCreateButton.scss'
 import { mainContext } from '../../navigation/NavigationRoutes'
 

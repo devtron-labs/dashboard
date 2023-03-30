@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { VisibleModal } from '../common';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { VulnerabilityAction, Severity } from './security.types';
 import { styles, DropdownIndicator } from './security.util';
 import ReactSelect from 'react-select';
+import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib';
 
 export interface UpdateSeverityModalProps {
     name: string;

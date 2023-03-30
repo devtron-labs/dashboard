@@ -5,8 +5,8 @@ import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
 import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import ResourceFilterOptions from './ResourceFilterOptions'
-import EmptyState from '../../EmptyState/EmptyState'
 import { useParams } from 'react-router-dom'
+import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function ConnectingToClusterState({
     loader,

@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import ReactGA from 'react-ga4';
-import { DropdownIcon, Page, Progressing } from '../../../common';
+import { DropdownIcon, Page } from '../../../common';
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { MarkDown } from '../../../charts/discoverChartDetail/DiscoverChartDetails';
 import '../../../charts/modal/DeployChart.scss';
 import MessageUI, { MsgUIType } from '../../common/message.ui';
