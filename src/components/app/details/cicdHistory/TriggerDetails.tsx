@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { Progressing, showError, createGitCommitUrl, asyncWrap, ConfirmationDialog, not, formatDurationDiff } from '../../../common'
+import { showError, Progressing, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { createGitCommitUrl, asyncWrap, not, formatDurationDiff } from '../../../common'
 import { toast } from 'react-toastify'
 import { useRouteMatch, useLocation, useParams } from 'react-router'
 import { statusColor as colorMap } from '../../config'
@@ -7,7 +8,6 @@ import { Moment12HourFormat, ZERO_TIME_STRING } from '../../../../config'
 import moment from 'moment'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import { ReactComponent as TimerIcon } from '../../../../assets/icons/ic-timer.svg'
-
 import warn from '../../../../assets/icons/ic-warning.svg'
 import '../cIDetails/ciDetails.scss'
 import {
@@ -95,15 +95,15 @@ const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: Finish
         <div className="flex column left dc__min-width-fit-content">
             <div className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`}>
                 {status && status.toLowerCase() === 'cancelled' ? 'ABORTED' : status}
-            </div>            
+            </div>
             <div className="flex left">
                 {finishedOn && finishedOn !== ZERO_TIME_STRING && (
-                    <>            
+                    <>
                         <time className="dc__vertical-align-middle">
                             {moment(finishedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
                         </time>
                         {artifact && <div className="dc__bullet mr-6 ml-6"/>}
-                    </>           
+                    </>
                 )}
                 {artifact && (
                     <div className="dc__app-commit__hash ">
@@ -113,7 +113,7 @@ const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: Finish
                 )}
             </div>
         </div>
-        
+
     )
 })
 
@@ -176,7 +176,7 @@ const ProgressingStatus = React.memo(
                             In progress
                         </div>
                     </div>
-                    
+
                     {abort && (
                         <button
                             className="flex cta delete er-5 bw-1 fw-6 fs-13 h-28 ml-16"

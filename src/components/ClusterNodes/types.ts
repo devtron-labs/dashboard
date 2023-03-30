@@ -1,6 +1,6 @@
 import React from 'react'
 import { MultiValue } from 'react-select'
-import { ResponseType } from '../../services/service.types'
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
 
 export enum ERROR_TYPE {

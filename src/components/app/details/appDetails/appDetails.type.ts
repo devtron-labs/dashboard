@@ -1,4 +1,4 @@
-import { ResponseType } from '../../../../services/service.types'
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { AggregatedNodes, AppStreamData, OptionType } from '../../types'
 
 export enum AppMetricsTab {

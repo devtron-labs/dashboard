@@ -97,6 +97,17 @@
     display: block;
     width: 100%;
     font-weight: 500;
+    &.tag-input {
+      &.form__input--error {
+        border: solid 1px var(--R500) !important;
+      }
+      &:not(.form__input--error):focus{
+        border: 1px solid var(--B500) !important;
+      }
+      &:not(.form__input--error):hover{
+        border: 1px solid var(--N400) !important;
+      }
+    }
 }
 
 .form__textarea {
@@ -268,8 +279,8 @@ p.sentence-case:first-letter {
 }
 
 .form__checkbox-container {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     position: absolute;
     left: 0;
     background-size: contain;

@@ -11,7 +11,7 @@ import {
     CMandSecretImpactedObjects,
 } from './bulkEdits.type'
 import yamlJsParser from 'yaml'
-import { Progressing, showError, ErrorScreenManager } from '../common'
+import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg'

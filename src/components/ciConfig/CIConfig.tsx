@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Progressing, showError, sortObjectArrayAlphabetically } from '../common'
+import { sortObjectArrayAlphabetically } from '../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getDockerRegistryMinAuth } from './service'
 import { getSourceConfig, getCIConfig, getConfigOverrideWorkflowDetails, getWorkflowList } from '../../services/service'
 import { useParams } from 'react-router-dom'

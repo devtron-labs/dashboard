@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
+import { Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { AppListViewType } from '../config'
-import { ErrorScreenManager, Pagination, Progressing, handleUTCTime } from '../../common'
+import { Pagination, handleUTCTime } from '../../common'
 import { Link } from 'react-router-dom'
 import { ExpandedRow } from './expandedRow/ExpandedRow'
 import { Empty } from './emptyView/Empty'
