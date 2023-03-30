@@ -52,6 +52,7 @@ import { handleSourceNotConfigured, processWorkflowStatuses } from '../../../App
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
     inprogressStatusTimer
+    abortController: AbortController
 
     constructor(props: TriggerViewProps) {
         super(props)
@@ -239,9 +240,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     workflows: workflows,
                 },
                 () => {
-                    this.updateCIMaterialList(ciNodeId.toString(), pipelineName, true).catch((errors: ServerErrors) => {
-                        showError(errors)
-                        this.setState({ code: errors.code })
+                    this.abortController = new AbortController()
+                    this.updateCIMaterialList(
+                        ciNodeId.toString(),
+                        pipelineName,
+                        true,
+                        this.abortController.signal,
+                    ).catch((errors: ServerErrors) => {
+                        if (!this.abortController.signal.aborted) {
+                            showError(errors)
+                            this.setState({ code: errors.code })
+                        }
                     })
                 },
             )
@@ -265,15 +274,22 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             return wf
         })
         this.setState({ workflows })
-        refreshGitMaterial(gitMaterialId.toString())
+        this.abortController = new AbortController()
+        refreshGitMaterial(gitMaterialId.toString(), this.abortController.signal)
             .then((response) => {
-                this.updateCIMaterialList(ciNodeId.toString(), pipelineName, true).catch((errors: ServerErrors) => {
-                    showError(errors)
-                    this.setState({ code: errors.code })
-                })
+                this.updateCIMaterialList(ciNodeId.toString(), pipelineName, true, this.abortController.signal).catch(
+                    (errors: ServerErrors) => {
+                        if (!this.abortController.signal.aborted) {
+                            showError(errors)
+                            this.setState({ code: errors.code })
+                        }
+                    },
+                )
             })
             .catch((error: ServerErrors) => {
-                showError(error)
+                if (!this.abortController.signal.aborted) {
+                    showError(error)
+                }
             })
     }
 
@@ -298,12 +314,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    async updateCIMaterialList(ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) {
+    async updateCIMaterialList(
+        ciNodeId: string,
+        ciPipelineName: string,
+        preserveMaterialSelection: boolean,
+        abortSignal: AbortSignal,
+    ) {
         const params = {
             appId: this.props.match.params.appId,
             pipelineId: ciNodeId,
         }
-        return getCIMaterialList(params).then((response) => {
+        return getCIMaterialList(params, abortSignal).then((response) => {
             let workflowId
             const workflows = [...this.state.workflows].map((workflow) => {
                 workflow.nodes.map((node) => {
@@ -371,7 +392,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     onClickCIMaterial(ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) {
         this.setState({ loader: true, showCIModal: true })
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
-        this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection)
+        this.abortController = new AbortController()
+        this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection, this.abortController.signal)
+            .catch((errors: ServerErrors) => {
+                if (!this.abortController.signal.aborted) {
+                    showError(errors)
+                    this.setState({ code: errors.code })
+                }
+            })
             .catch((errors: ServerErrors) => {
                 showError(errors)
                 this.setState({ code: errors.code })
@@ -775,6 +803,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     closeCIModal = (): void => {
         preventBodyScroll(false)
+        this.abortController.abort()
         this.setState({ showCIModal: false, showMaterialRegexModal: false })
     }
 

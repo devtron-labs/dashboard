@@ -170,8 +170,10 @@ const gitTriggersModal = (triggers, materials) => {
     })
 }
 
-export const getCIMaterialList = (params) => {
-    return get(`${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`).then((response) => {
+export const getCIMaterialList = (params, abortSignal?: AbortSignal) => {
+    return get(`${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`, {
+        signal: abortSignal,
+    }).then((response) => {
         const materials = Array.isArray(response?.result)
             ? response.result
                   .sort((a, b) => sortCallback('id', a, b))
@@ -240,7 +242,7 @@ export function getRollbackMaterialList(cdMaterialId, offset: number, size: numb
 }
 
 export function extractImage(image: string): string {
-    return image? image.split(':').pop() : ''
+    return image ? image.split(':').pop() : ''
 }
 
 function cdMaterialListModal(
@@ -290,8 +292,11 @@ function cdMaterialListModal(
                           tag: mat.tag || '',
                           webhookData: mat.webhookData || '',
                           url: mat.url || '',
-                          branch: (material.ciConfigureSourceType === SourceTypeMap.WEBHOOK ? material.ciConfigureSourceValue : mat.branch) || '',
-                          type: material.ciConfigureSourceType || ''
+                          branch:
+                              (material.ciConfigureSourceType === SourceTypeMap.WEBHOOK
+                                  ? material.ciConfigureSourceValue
+                                  : mat.branch) || '',
+                          type: material.ciConfigureSourceType || '',
                       }
                   })
                 : [],
@@ -370,9 +375,11 @@ export const getCIPipelines = (appId) => {
     return get(URL)
 }
 
-export function refreshGitMaterial(gitMaterialId: string) {
+export function refreshGitMaterial(gitMaterialId: string, abortSignal?: AbortSignal) {
     const URL = `${Routes.REFRESH_MATERIAL}/${gitMaterialId}`
-    return get(URL).then((response) => {
+    return get(URL, {
+        signal: abortSignal,
+    }).then((response) => {
         return {
             code: response.code,
             result: {
@@ -458,7 +465,7 @@ export function getAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
     return get(`${Routes.APP_META_INFO}/${appId}`)
 }
 
-export function getHelmAppMetaInfo(appId: string): Promise<AppMetaInfoResponse>{
+export function getHelmAppMetaInfo(appId: string): Promise<AppMetaInfoResponse> {
     return get(`${Routes.HELM_APP_META_INFO}/${appId}`)
 }
 
