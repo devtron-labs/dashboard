@@ -193,7 +193,7 @@ export default function NavigationRoutes() {
 
     async function getServerMode() {
         try {
-            const response = getAllModulesInfo()
+            const response = await getAllModulesInfo()
             let _serverMode = SERVER_MODE.EA_ONLY
             if (response[ModuleNameMap.CICD] && response[ModuleNameMap.CICD].status === ModuleStatus.INSTALLED) {
                 _serverMode = SERVER_MODE.FULL
