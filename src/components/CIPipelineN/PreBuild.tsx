@@ -137,6 +137,7 @@ export function PreBuild({
                     />
                 </div>
                 <PluginCardListContainer
+                    data-test-id="preset-plugin-heading"
                     setPluginType={setPluginType}
                     pluginListTitle="PRESET PLUGINS"
                     pluginList={presetPlugins}
@@ -171,6 +172,7 @@ export function PreBuild({
 
             return (
                 <CDEmptyState
+                    dataTestId="pre-build-button"
                     imgSource={getImgSource()}
                     title={_title}
                     subtitle={_subtitle}

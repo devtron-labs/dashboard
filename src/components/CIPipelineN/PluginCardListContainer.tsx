@@ -15,11 +15,13 @@ export function PluginCardListContainer({
         pluginList.length > 0 && (
             <div className="plugin-container">
                 <div className="cn-5 fw-6 fs-13 mt-20 mb-8">{pluginListTitle}</div>
-                {pluginList.map((pluginDetails) => (
+                {pluginList.map((pluginDetails,index) => (
                     <div
+                     data-testid = {`plugin-container-sonarqube-${index}`}
                         key={pluginDetails.id}
                         onClick={() =>
                             setPluginType(
+                                
                                 PluginType.PLUGIN_REF,
                                 pluginDetails.id,
                                 pluginDetails.name,

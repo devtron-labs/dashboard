@@ -116,7 +116,7 @@ export function TaskList() {
 
     return (
         <>
-            <div className="task-container pr-20">
+            <div data-testid="delete-container-task" className="task-container pr-20">
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
                     <Fragment key={`task-item-${index}`}>
                         <div
@@ -144,7 +144,7 @@ export function TaskList() {
                                     />
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
-                                    <div className="flex left p-10 pointer" onClick={(e) => deleteTask(index)}>
+                                    <div data-testid="delete-task" className="flex left p-10 pointer" onClick={(e) => deleteTask(index)}>
                                         <Trash className="icon-dim-16 mr-10" />
                                         Delete
                                     </div>

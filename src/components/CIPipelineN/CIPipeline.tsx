@@ -692,6 +692,7 @@ export default function CIPipeline({
         return (
             <li className="tab-list__tab">
                 <NavLink
+                    data-testid={`build-stage-button-` + toLink}
                     replace
                     className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                     activeClassName="active"
@@ -810,6 +811,7 @@ export default function CIPipeline({
                             {renderSecondaryButtton()}
                             {formData.ciPipelineEditable && (
                                 <ButtonWithLoader
+                                    data-testId="save-pipline" 
                                     rootClassName="cta cta--workflow"
                                     loaderColor="white"
                                     dataTestId="build-pipeline-button"

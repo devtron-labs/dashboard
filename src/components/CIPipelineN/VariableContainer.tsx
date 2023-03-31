@@ -47,6 +47,7 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                 </span>
                 {variableLength > 0 ? (
                     <Dropdown
+                        data-testid="variable-value-dropdown"
                         className="pointer"
                         style={{ transform: collapsedSection ? 'rotate(0)' : 'rotate(180deg)' }}
                         onClick={(event) => {
@@ -96,7 +97,7 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
 
                                 <div className="fs-13 fw-4 lh-28">{variable.format}</div>
                                 {type === PluginVariableType.INPUT ? (
-                                    <div className="fs-14">
+                                    <div data-testId = "input-varaible-value-dropdown" className="fs-14">
                                         <CustomInputVariableSelect selectedVariableIndex={index} />
                                         {errorObj && !errorObj.isValid && (
                                             <span className="flexbox cr-5 mt-4 fw-5 fs-11 flexbox">

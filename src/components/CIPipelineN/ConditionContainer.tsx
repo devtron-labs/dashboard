@@ -327,7 +327,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                     <div className="tp-4 fs-13 lh-32 fw-4 dc__uppercase mr-10">
                                         {conditionDetail.conditionType} If
                                     </div>
-                                    <div className="tp-4 fs-13 fw-4 mr-10">
+                                    <div data-testId="select-variable-type" className="tp-4 fs-13 fw-4 mr-10">
                                         <ReactSelect
                                             autoFocus
                                             value={
@@ -361,7 +361,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                             }}
                                         />
                                     </div>
-                                    <div className="fw-4 mr-10">
+                                    <div data-testid = "condition-values" className="fw-4 mr-10">
                                         <ReactSelect
                                             defaultValue={
                                                 conditionDetail.conditionOperator
@@ -386,7 +386,7 @@ export function ConditionContainer({ type }: { type: ConditionContainerType }) {
                                             }}
                                         />
                                     </div>
-                                    <div className="fs-13 mr-10">
+                                    <div data-testId = "set-trigger-input-test" className="fs-13 mr-10">
                                         <input
                                             className="w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 br-4 h-32"
                                             type="text"
