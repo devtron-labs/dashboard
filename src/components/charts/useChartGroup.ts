@@ -14,6 +14,7 @@ import {
     getTeamList,
     getEnvironmentListMin,
     isGitOpsModuleInstalledAndConfigured,
+    getChartRepoListMin,
 } from '../../services/service'
 import { mapByKey, showError, sortOptionsByLabel } from '../common'
 import { toast } from 'react-toastify'
@@ -59,7 +60,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         async function populateCharts() {
             try {
                 await Promise.allSettled([
-                    getChartRepoList(),
+                    getChartRepoListMin(),
                     serverMode == SERVER_MODE.FULL
                         ? getChartGroups()
                         : { value: { status: 'fulfilled', result: undefined } },

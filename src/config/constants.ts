@@ -80,6 +80,7 @@ export const Routes = {
     GIT_PROVIDER: 'git/provider',
     GIT_HOST: 'git/host',
     CHART_LIST_SUBPATH: 'list',
+    CHART_LIST_SUBPATH_MIN: 'list/min',
     GIT_PROVIDER_MIN: 'git/provider/autocomplete',
     MIGRATION_TOOLS: 'config/mig-tools',
     DATABASE: 'config/databases',

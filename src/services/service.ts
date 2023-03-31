@@ -300,6 +300,11 @@ export function getChartRepoList(): Promise<ResponseType> {
     return get(URL);
 }
 
+export function getChartRepoListMin(): Promise<ResponseType> {
+    const URL = `${Routes.CHART_REPO}/${Routes.CHART_LIST_SUBPATH_MIN}`;
+    return get(URL);
+}
+
 export function getHostURLConfiguration(key: string = 'url'): Promise<ResponseType> {
     const URL = `${Routes.HOST_URL}?key=${key}`;
     return get(URL);
