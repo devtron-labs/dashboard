@@ -565,9 +565,9 @@ function DropDown({ className = '', style = {}, src = null, ...props }) {
     return <img {...props} src={src || arrowTriangle} alt="" className={`list__arrow ${className}`} style={style} />
 }
 
-export function List({ children = null, className = '', ...props }) {
+export function List({ dataTestId='' ,children = null, className = '', ...props }) {
     return (
-        <div className={`list ${className}`} {...props}>
+        <div className={`list ${className}`} {...props} data-testid = {dataTestId}>
             {children}
         </div>
     )
@@ -599,11 +599,13 @@ export function CustomInput({
     labelClassName = '',
     placeholder = '',
     tabIndex = 1,
+    dataTestid = ""
 }) {
     return (
         <div className="flex column left top">
             <label className={`form__label ${labelClassName}`}>{label}</label>
             <input
+                data-testid= {dataTestid}
                 type={type}
                 name={name}
                 autoComplete="off"

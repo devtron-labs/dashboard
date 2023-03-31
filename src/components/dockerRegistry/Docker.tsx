@@ -91,7 +91,7 @@ useEffect(() => {
     dockerRegistryList = dockerRegistryList.sort((a, b) => sortCallback('id', a, b))
     dockerRegistryList = [{ id: null }].concat(dockerRegistryList)
     return (
-        <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+        <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1" data-testid="select-existing-container-registry-list">
             <h2 className="form__title">Container Registries</h2>
             <p className="form__subtitle">
                 Manage your organization’s container registries.&nbsp;
@@ -104,8 +104,9 @@ useEffect(() => {
                     Learn more
                 </a>
             </p>
-            {dockerRegistryList.map((docker) => (
+            {dockerRegistryList.map((docker,index) => (
                 <CollapsedList
+                    dataTestId = {docker.id || "Add"}
                     reload={reload}
                     {...docker}
                     clusterOption={clusterOption}
@@ -117,6 +118,7 @@ useEffect(() => {
 }
 
 function CollapsedList({
+    dataTestId = "",
     id = '',
     pluginId = null,
     registryUrl = '',
@@ -145,6 +147,7 @@ function CollapsedList({
     const history = useHistory()
     const { url, path } = useRouteMatch()
     const params = useParams<{ id: string }>()
+    
 
     const setToggleCollapse = () => {
         if (id === null && params.id !== '0') {
@@ -158,7 +161,7 @@ function CollapsedList({
 
     return (
         <article className={`collapsed-list collapsed-list--docker collapsed-list--${id ? 'update' : 'create dashed'}`}>
-            <List onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column' : ''}`}>
+            <List dataTestId = {dataTestId} onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column' : ''}`}>
                 {id && (
                     <List.Logo>
                         <div className={'dc__registry-icon ' + registryType}></div>
@@ -647,6 +650,7 @@ function DockerForm({
         <form onSubmit={(e) => handleOnSubmit(e)} className="docker-form" autoComplete="off">
             <div className="form__row">
                 <CustomInput
+                    dataTestid="container-registry-name"
                     name="id"
                     autoFocus={true}
                     value={state.id.value}
@@ -664,6 +668,7 @@ function DockerForm({
                         Registry Type*
                     </label>
                     <ReactSelect
+                        classNamePrefix= "select-container-registry-type"
                         className="m-0 w-100"
                         tabIndex={1}
                         isMulti={false}
@@ -701,6 +706,7 @@ function DockerForm({
             </div>
             <div className="form__row">
                 <CustomInput
+                    dataTestid="container-registry-url-textbox"
                     name="registryUrl"
                     tabIndex={3}
                     label={selectedDockerRegistryType.registryURL.label}
@@ -761,6 +767,7 @@ function DockerForm({
                 <>
                     <div className="form__row">
                         <CustomInput
+                            dataTestid="container-registry-username-textbox"
                             name="username"
                             tabIndex={5}
                             value={customState.username.value || selectedDockerRegistryType.id.defaultValue}
@@ -778,6 +785,7 @@ function DockerForm({
                             selectedDockerRegistryType.value === 'quay' ||
                             selectedDockerRegistryType.value === 'other') && (
                             <CustomInput
+                            dataTestid="container-registry-password-textbox"
                                 name="password"
                                 tabIndex={6}
                                 value={customState.password.value}
@@ -799,6 +807,7 @@ function DockerForm({
                                 <textarea
                                     name="password"
                                     tabIndex={6}
+                                    data-testid="artifact-service-account-textbox"
                                     value={customState.password.value}
                                     className="w-100 p-10"
                                     rows={3}
@@ -968,6 +977,7 @@ function DockerForm({
                 {id && (
                     <button
                         className="cta delete dc__m-auto ml-0"
+                        data-testid = "delete-container-registry"
                         type="button"
                         onClick={() => toggleConfirmation(true)}
                     >
@@ -977,7 +987,7 @@ function DockerForm({
                 <button className="cta mr-16 cancel" type="button" onClick={setToggleCollapse}>
                     Cancel
                 </button>
-                <button className="cta" type="submit" disabled={loading}>
+                <button className="cta" type="submit" disabled={loading} data-testid="container-registry-save-button">
                     {loading ? <Progressing /> : 'Save'}
                 </button>
             </div>
