@@ -156,6 +156,11 @@ export function getDockerRegistryList(): Promise<ResponseType> {
     return get(URL)
 }
 
+export function getAppOtherEnvironmentMin(appId): Promise<AppOtherEnvironment> {
+    const URL = `${Routes.APP_OTHER_ENVIRONMENT_MIN}?app-id=${appId}`
+    return get(URL)
+}
+
 export function getAppOtherEnvironment(appId): Promise<AppOtherEnvironment> {
     const URL = `${Routes.APP_OTHER_ENVIRONMENT}?app-id=${appId}`
     return get(URL)

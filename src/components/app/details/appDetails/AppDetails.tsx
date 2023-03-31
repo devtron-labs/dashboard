@@ -32,7 +32,7 @@ import {
 import { CustomValueContainer, Option } from './../../../v2/common/ReactSelect.utils'
 import {
     getAppConfigStatus,
-    getAppOtherEnvironment,
+    getAppOtherEnvironmentMin,
     stopStartApp,
     getLastExecutionMinByAppAndEnv,
 } from '../../../../services/service'
@@ -94,7 +94,7 @@ export default function AppDetail() {
     const { path } = useRouteMatch()
     const { environmentId, setEnvironmentId } = useAppContext() // global state for app to synchronise environments
     const [isAppDeleted, setIsAppDeleted] = useState(false)
-    const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironment(params.appId), [params.appId])
+    const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironmentMin(params.appId), [params.appId])
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
 
     useEffect(() => {
