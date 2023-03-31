@@ -1,6 +1,4 @@
 .k8-resources-node-tree {
-    width: 270px;
-    min-width: 260px;
     min-height: 532px;
     overflow-y: auto;
 }
@@ -8,6 +6,18 @@
 .resource-node-wrapper {
     min-height: 600px;
     height: calc(100vh - 288px);
+    display: grid;
+    grid-template-columns: 270px auto;
+}
+
+.resource__title-name{
+  display: grid;
+  grid-template-columns: auto 256px;
+}
+
+.resource__title-name__no-logs{
+  display: grid;
+  grid-template-columns: auto 146px;
 }
 
 .node-container-fluid {
