@@ -864,8 +864,8 @@ export function ConfigMapForm({
                         disabled={false}
                         onChange={changeEditorMode}
                     >
-                        <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
-                        <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
+                        <RadioGroup.Radio value="gui" dataTestId="GUI">GUI</RadioGroup.Radio>
+                        <RadioGroup.Radio value="yaml" dataTestId="YAML">YAML</RadioGroup.Radio>
                     </RadioGroup>
                 </div>
             )}
