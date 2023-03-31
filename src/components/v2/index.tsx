@@ -1,45 +1,53 @@
-import React, { Suspense, useEffect, useState } from 'react';
-import { useRouteMatch, useParams, Redirect,useLocation, useHistory } from 'react-router';
-import { Switch, Route } from 'react-router-dom';
-import { URLS } from '../../config';
-import { sortOptionsByValue } from '../common';
+import React, { Suspense, useEffect, useRef, useState } from 'react'
+import { useRouteMatch, useParams, Redirect, useLocation, useHistory } from 'react-router'
+import { Switch, Route } from 'react-router-dom'
+import { URLS } from '../../config'
+import { sortOptionsByValue } from '../common'
 import { ErrorScreenManager, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
-import ValuesComponent from './values/ChartValues.component';
-import AppHeaderComponent from './headers/AppHeader.component';
-import ChartHeaderComponent from './headers/ChartHeader.component';
-import { getInstalledAppDetail, getInstalledChartDetail } from './appDetails/appDetails.api';
-import AppDetailsComponent from './appDetails/AppDetails.component';
-import { AppType, EnvType } from './appDetails/appDetails.type';
-import IndexStore from './appDetails/index.store';
-import ErrorImage from './assets/icons/ic-404-error.png';
-import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil';
-import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component';
-import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type';
-import { getExternalLinks, getMonitoringTools } from '../externalLinks/ExternalLinks.service';
-import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils';
-import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState';
+import ValuesComponent from './values/ChartValues.component'
+import AppHeaderComponent from './headers/AppHeader.component'
+import ChartHeaderComponent from './headers/ChartHeader.component'
+import {
+    getInstalledAppDetail,
+    getInstalledChartDetail,
+    getInstalledChartResourceTree,
+} from './appDetails/appDetails.api'
+import AppDetailsComponent from './appDetails/AppDetails.component'
+import { AppDetails, AppType, EnvType } from './appDetails/appDetails.type'
+import IndexStore from './appDetails/index.store'
+import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
+import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component'
+import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type'
+import { getExternalLinks, getMonitoringTools } from '../externalLinks/ExternalLinks.service'
+import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
+import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState'
 
-let initTimer = null;
+let initTimer = null
 
 function RouterComponent({ envType }) {
-    const [isLoading, setIsLoading] = useState(true);
-    const params = useParams<{ appId: string; envId: string; nodeType: string }>();
-    const { path } = useRouteMatch();
-    const location = useLocation();
-    const history = useHistory();
-    const [errorResponseCode, setErrorResponseCode] = useState(undefined);
+    const [isLoading, setIsLoading] = useState(true)
+    const params = useParams<{ appId: string; envId: string; nodeType: string }>()
+    const { path } = useRouteMatch()
+    const location = useLocation()
+    const history = useHistory()
+    const [errorResponseCode, setErrorResponseCode] = useState(undefined)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         externalLinks: [],
         monitoringTools: [],
     })
+    const [loadingDetails, setLoadingDetails] = useState(false)
+    const [loadingResourceTree, setLoadingResourceTree] = useState(false)
+    const appDetailsRef = useRef({} as AppDetails)
 
     useEffect(() => {
-        IndexStore.setEnvDetails(envType, +params.appId, +params.envId);
+        IndexStore.setEnvDetails(envType, +params.appId, +params.envId)
 
-        setIsLoading(true);
+        setIsLoading(true)
+        setLoadingDetails(true)
+        setLoadingResourceTree(true)
 
         if (initTimer) {
-            clearTimeout(initTimer);
+            clearTimeout(initTimer)
         }
         if (location.search.includes('newDeployment')) {
             setTimeout(() => {
@@ -48,102 +56,103 @@ function RouterComponent({ envType }) {
         } else {
             _init()
         }
-    }, [params.appId, params.envId]);
+    }, [params.appId, params.envId])
 
     // clearing the timer on component unmount
     useEffect(() => {
         return (): void => {
             if (initTimer) {
-                clearTimeout(initTimer);
+                clearTimeout(initTimer)
             }
-        };
-    }, []);
+        }
+    }, [])
 
     useEffect(() => {
         if (checkIfToRefetchData(location)) {
             setTimeout(() => {
-                _getAndSetAppDetail();
-                deleteRefetchDataFromUrl(history, location);
-            }, 5000);
+                _getAndSetAppDetail()
+                deleteRefetchDataFromUrl(history, location)
+            }, 5000)
         }
-    }, [location.search]);
-
+    }, [location.search])
 
     const _init = () => {
-        _getAndSetAppDetail();
+        _getAndSetAppDetail()
         initTimer = setTimeout(() => {
-            _init();
-        }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL ||30000);
+            _init()
+        }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL || 30000)
     }
 
     const _getAndSetAppDetail = async () => {
         try {
-            let response = null;
-
             if (envType === EnvType.CHART) {
-                response = await getInstalledChartDetail(+params.appId, +params.envId);
-                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART);
-            } else {
-                response = await getInstalledAppDetail(+params.appId, +params.envId);
-                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP);
-            }
-
-            if (response.result?.clusterId) {
-                Promise.all([
-                    getMonitoringTools(),
-                    getExternalLinks(
-                        response.result.clusterId,
-                        params.appId,
-                        ExternalLinkIdentifierType.DevtronInstalledApp,
-                    ),
-                ])
-                    .then(([monitoringToolsRes, externalLinksRes]) => {
-                        setExternalLinksAndTools({
-                            externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
-                            monitoringTools:
-                                monitoringToolsRes.result
-                                    ?.map((tool) => ({
-                                        label: tool.name,
-                                        value: tool.id,
-                                        icon: tool.icon,
-                                    }))
-                                    .sort(sortOptionsByValue) || [],
-                        })
-                        setIsLoading(false)
+                // Get App Details
+                getInstalledChartDetail(+params.appId, +params.envId)
+                    .then((response) => {
+                        appDetailsRef.current = {
+                            ...appDetailsRef.current,
+                            ...response.result,
+                        }
+                        IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_HELM_CHART)
+                        getExternalLinksAndTools(response.result?.clusterId)
                     })
-                    .catch((e) => {
-                        setExternalLinksAndTools(externalLinksAndTools)
-                        setIsLoading(false)
+                    .finally(() => {
+                        setLoadingDetails(false)
+                    })
+                // Get App Resource Tree
+                getInstalledChartResourceTree(+params.appId, +params.envId)
+                    .then((response) => {
+                        appDetailsRef.current = {
+                            ...appDetailsRef.current,
+                            ...response.result,
+                        }
+                        IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_HELM_CHART)
+                    })
+                    .finally(() => {
+                        setLoadingResourceTree(false)
                     })
             } else {
-                setIsLoading(false)
+                // Sohel: Revisit this flow
+                const response = await getInstalledAppDetail(+params.appId, +params.envId)
+                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
             }
 
-            setErrorResponseCode(undefined);
+            setErrorResponseCode(undefined)
         } catch (e: any) {
-            if(e?.code){
-                setErrorResponseCode(e.code);
+            if (e?.code) {
+                setErrorResponseCode(e.code)
             }
-            setIsLoading(false);
+        } finally {
+            setIsLoading(false)
         }
-    };
+    }
 
-    const redirectToHomePage = () => {};
-
-    const PageNotFound = () => {
-        return (
-            <section className="app-not-configured w-100">
-                <img src={ErrorImage} />
-                <div className="w-250 flex column">
-                    <h4 className="fw-6">This app does not exist</h4>
-                    <div className="mb-20 flex dc__align-center">We could not find and connect to this application.</div>
-                    <div className="cta" onClick={redirectToHomePage}>
-                        Go back to home page
-                    </div>
-                </div>
-            </section>
-        );
-    };
+    const getExternalLinksAndTools = (clusterId) => {
+        if (clusterId) {
+            Promise.all([
+                getMonitoringTools(),
+                getExternalLinks(clusterId, params.appId, ExternalLinkIdentifierType.DevtronInstalledApp),
+            ])
+                .then(([monitoringToolsRes, externalLinksRes]) => {
+                    setExternalLinksAndTools({
+                        externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
+                        monitoringTools:
+                            monitoringToolsRes.result
+                                ?.map((tool) => ({
+                                    label: tool.name,
+                                    value: tool.id,
+                                    icon: tool.icon,
+                                }))
+                                .sort(sortOptionsByValue) || [],
+                    })
+                })
+                .catch((e) => {
+                    setExternalLinksAndTools(externalLinksAndTools)
+                })
+        } else {
+            setIsLoading(false)
+        }
+    }
 
     const renderErrorScreen = () => {
         if (errorResponseCode === 404) {
@@ -154,7 +163,7 @@ function RouterComponent({ envType }) {
                     ) : (
                         <ChartHeaderComponent errorResponseCode={errorResponseCode} />
                     )}
-                    <AppDetailsEmptyState envType = { EnvType.CHART}/>
+                    <AppDetailsEmptyState envType={EnvType.CHART} />
                 </div>
             )
         } else if (errorResponseCode) {
@@ -171,8 +180,7 @@ function RouterComponent({ envType }) {
     return (
         <React.Fragment>
             {isLoading && <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />}
-          {renderErrorScreen()}
-
+            {renderErrorScreen()}
             {!isLoading && !errorResponseCode && (
                 <>
                     {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
@@ -184,6 +192,8 @@ function RouterComponent({ envType }) {
                                     monitoringTools={externalLinksAndTools.monitoringTools}
                                     isExternalApp={false}
                                     _init={_init}
+                                    loadingDetails={loadingDetails}
+                                    loadingResourceTree={loadingResourceTree}
                                 />
                             </Route>
                             <Route path={`${path}/${URLS.APP_VALUES}`}>
@@ -201,4 +211,4 @@ function RouterComponent({ envType }) {
     )
 }
 
-export default RouterComponent;
+export default RouterComponent
