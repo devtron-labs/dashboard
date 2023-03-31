@@ -66,6 +66,7 @@ interface CodeEditorInterface {
     validatorSchema?: any;
     isKubernetes?: boolean;
     cleanData?: boolean;
+    dataTestId?: string
 }
 
 interface CodeEditorHeaderInterface {
@@ -114,7 +115,7 @@ interface CodeEditorState {
     code: string;
     noParsing: boolean;
 }
-const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernetes = true, cleanData = false, onBlur, onFocus}) {
+const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernetes = true, cleanData = false, onBlur, onFocus, dataTestId}) {
     if (cleanData) {
         value = cleanKubeManifest(value);
         defaultValue = cleanKubeManifest(defaultValue);
@@ -160,7 +161,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             'editor.background': '#0B0F22',
         }
     });
-    
+
     function editorDidMount(editor, monaco) {
         if (
             mode === 'yaml' &&
@@ -183,7 +184,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
 
         editorRef.current = editor
         monacoRef.current = monaco
-        
+
     }
 
     useEffect(() => {
@@ -302,6 +303,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             editorDidMount={editorDidMount}
                             height={height}
                             width="100%"
+                            data-testid={dataTestId}
                         />
                         :
                         <MonacoEditor
@@ -313,7 +315,7 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             editorDidMount={editorDidMount}
                             height={height}
                             width="100%"
-
+                            data-testid={dataTestId}
                         />
                     }
                 </>

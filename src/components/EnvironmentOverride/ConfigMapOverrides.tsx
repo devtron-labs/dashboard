@@ -125,7 +125,7 @@ export function ListComponent({ name = '', type, label = '', appChartRef }: List
 
     return (
         <div className={`white-card white-card--list ${name ? '' : 'en-3 bw-1 dashed'}`}>
-            <div className="environment-override-list pointer left flex" onClick={handleOverrideListClick}>
+            <div className="environment-override-list pointer left flex" onClick={handleOverrideListClick} data-testid="click-to-add-configmaps-secret">
                 {name ? (
                     type === 'config-map' ? (
                         <FileIcon className="icon-dim-24" />
@@ -724,7 +724,7 @@ export function Override({ external, overridden, onClick, loading = false, type 
         <div className={`override-container mb-24 ${overridden ? 'override-warning' : ''}`}>
             {overridden ? <WarningIcon className="icon-dim-20" /> : <InfoIcon className="icon-dim-20" />}
             <div className="flex column left">
-                <div className="override-title">
+                <div className="override-title" data-testid="deployment_template_on_header">
                     {external
                         ? 'Nothing to override'
                         : overridden

@@ -729,6 +729,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <div className="form-row__select-external-type flex">
                     <ReactSelect
                         placeholder="Select Secret Type"
+                        data-testid="secrets-data-type-select-dropdown"
                         options={getTypeGroups()}
                         defaultValue={
                             externalType && externalType !== ''
@@ -779,6 +780,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     className={`form__input`}
                     placeholder={`random-secret`}
                     disabled={props.isUpdate}
+                    ata-testid="create-secrets-name-input"
                 />
                 {configName.error && <label className="form__error">{configName.error}</label>}
             </div>
@@ -952,6 +954,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     {yamlMode ? (
                         <div className="yaml-container">
                             <CodeEditor
+                                dataTestId="code-editor-key-value"
                                 value={secretMode ? lockedYaml : yaml}
                                 mode={MODES.YAML}
                                 inline
@@ -1078,7 +1081,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 </div>
             )}
             <div className="form__buttons">
-                <button type="button" className="cta" onClick={handleSubmit}>
+                <button type="button" className="cta" onClick={handleSubmit} data-testid="click-save-secrets">
                     {loading ? <Progressing /> : `${props.name ? 'Update' : 'Save'} Secret`}
                 </button>
             </div>

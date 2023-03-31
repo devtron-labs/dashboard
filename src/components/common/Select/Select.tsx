@@ -27,7 +27,8 @@ const Select: React.FC<SelectProps> & SelectComposition = function ({
     valueComparator,
     rootClassName = "",
     disabled = false, tabIndex = 0, name = "select",
-    autoWidth = true, isKebab = false
+    autoWidth = true, isKebab = false,
+    dataTestId=""
 }) {
     const [selected, select] = React.useState(value);
     const [popupOpen, togglePopup] = React.useState(false)
@@ -70,12 +71,12 @@ const Select: React.FC<SelectProps> & SelectComposition = function ({
     }, { button: null, body: [], optionLength: 0, AsyncComponent: null })
 
     return <SelectContext.Provider value={{ selected, select, popupOpen, valueComparator, searchString, search, handleClick, disabled, loading, setLoading }}>
-        <PopupMenu onToggleCallback={isOpen => togglePopup(isOpen)} autoClose={popupOpen}>
-            <PopupMenu.Button isKebab={isKebab} disabled={disabled} tabIndex={tabIndex} rootClassName={rootClassName}>
+        <PopupMenu onToggleCallback={isOpen => togglePopup(isOpen)} autoClose={popupOpen} dataTestId={dataTestId}>
+            <PopupMenu.Button isKebab={isKebab} disabled={disabled} tabIndex={tabIndex} rootClassName={rootClassName} dataTestId={dataTestId}>
                 {button}
             </PopupMenu.Button>
             {popupOpen && AsyncComponent}
-            <PopupMenu.Body rootClassName={`select-popup ${rootClassName || ""}`} autoWidth={autoWidth}>
+            <PopupMenu.Body rootClassName={`select-popup ${rootClassName || ""}`} autoWidth={autoWidth} rootClassName="" bodyDataTestId="">
                 {loading ? null : <>
                     {optionLength === 0 && < div className={`${rootClassName} no-option-found flex`}>No results found</div>}
                     {body}
@@ -106,9 +107,9 @@ const OptionGroup: React.SFC<OptionGroupProps> = function ({ children, label, ro
     </div>
 }
 
-function Button({ children, style = {}, rootClassName = "", arrowAsset = "" }) {
+function Button({ children, style = {}, rootClassName = "", arrowAsset = "", dataTestId="" }) {
     const { popupOpen, loading } = useSelectContext()
-    return <div className={`select-button flex ${rootClassName} ${popupOpen ? 'focused' : ''}`} style={{ ...style }}>
+    return <div className={`select-button flex ${rootClassName} ${popupOpen ? 'focused' : ''}`} style={{ ...style }} dataTestId={dataTestId}>
         {children}
         {loading ? <div><Progressing /></div> : <img src={arrowAsset || arrowTriangle} className="rotate select-button-sort-image" style={{ ['--rotateBy' as any]: popupOpen ? '180deg' : '0deg' }} />}
     </div>
