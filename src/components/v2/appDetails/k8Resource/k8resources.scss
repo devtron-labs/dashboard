@@ -6,18 +6,18 @@
 .resource-node-wrapper {
     min-height: 600px;
     height: calc(100vh - 288px);
-    display: grid;
+}
+
+.resource-node-tree-wrapper {
     grid-template-columns: 270px auto;
 }
 
-.resource__title-name{
-  display: grid;
-  grid-template-columns: auto 256px;
+.resource__title-name {
+    grid-template-columns: auto 256px;
 }
 
-.resource__title-name__no-logs{
-  display: grid;
-  grid-template-columns: auto 146px;
+.resource__title-name__no-logs {
+    grid-template-columns: auto 146px;
 }
 
 .node-container-fluid {

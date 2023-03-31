@@ -28,7 +28,7 @@ export default function K8ResourceComponent({
                 <FilterResource nodes={nodes} />
             </div>
             {nodes.length > 0 ? (
-                <div className="resource-node-wrapper">
+                <div className="resource-node-tree-wrapper display-grid">
                     <div className="k8-resources-node-tree pt-8 pl-16 dc__border-right">
                         <NodeTreeComponent
                             clickedNodes={clickedNodes}
@@ -36,7 +36,7 @@ export default function K8ResourceComponent({
                             isDevtronApp={isDevtronApp}
                         />
                     </div>
-                    <div className="flex-grow-1-imp dc__overflow-y-auto p-0">
+                    <div className="dc__overflow-y-auto p-0">
                         <NodeComponent
                             handleFocusTabs={handleFocusTabs}
                             externalLinks={externalLinks}

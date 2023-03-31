@@ -298,7 +298,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                         <span className="pl-12 pr-12"></span>
                                     )}
                                     <div>
-                                        <div className={`${getResourceNameClassName()}  flex left dc__align-start`}>
+                                        <div className={`${getResourceNameClassName()} display-grid dc__align-start`}>
                                             <span className="fs-13 dc__word-break">{node.name}</span>
                                             <div
                                                 className={`flex left ${
