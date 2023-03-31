@@ -2844,3 +2844,24 @@ textarea::placeholder {
 .dc__zi-4 {
     z-index: 4;
 }
+
+.shimmer-loading {
+  animation-duration: 2s;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+  animation-name: shimmer-loading;
+  animation-timing-function: linear;
+  background-color: #f6f7f8;
+  background: linear-gradient(90deg, #EDF1F5 30%, #FFFFFF 60%, #EDF1F5 100%);
+  background-size: 800px 104px;
+  position: relative;
+}
+
+@keyframes shimmer-loading {
+  0% {
+      background-position: -800px 0
+    }
+    100% {
+      background-position: 800px 0
+    }
+}
