@@ -155,7 +155,7 @@ export default function CIAdvancedConfig({
         renderBuildArgs()
     ) : (
         <>
-            <div onClick={toggleCollapse} className="flex left cursor mb-20">
+            <div onClick={toggleCollapse} className="flex left cursor mb-20" data-testid="advanced-option-drop-down-button">
                 <div className="icon-dim-40 mr-16">
                     <PluginIcon />
                 </div>

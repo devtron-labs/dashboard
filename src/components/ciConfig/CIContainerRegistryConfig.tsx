@@ -100,6 +100,7 @@ export default function CIContainerRegistryConfig({
                         to={`${URLS.GLOBAL_CONFIG_DOCKER}`}
                         className="cb-5 select__sticky-bottom dc__block fw-5 anchor w-100 cursor dc__no-decor bottom-0"
                         style={{ backgroundColor: '#FFF' }}
+                        data-testid = "add-container-registry-button"
                     >
                         <Add className="icon-dim-20 mr-5 fcb-5 mr-12 dc__vertical-align-bottom " />
                         Add Container Registry
@@ -124,7 +125,7 @@ export default function CIContainerRegistryConfig({
 
     return (
         <div className="white-card white-card__docker-config dc__position-rel mb-12">
-            <h3 className="fs-14 fw-6 lh-20 m-0 pb-16">Store container image at</h3>
+            <h3 className="fs-14 fw-6 lh-20 m-0 pb-16" data-testid="store-container-image-heading">Store container image at</h3>
             <div className="mb-4 form-row__docker">
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                     <label htmlFor="" className="form__label dc__required-field">
@@ -138,6 +139,7 @@ export default function CIContainerRegistryConfig({
                     ) : (
                         <ReactSelect
                             className="m-0"
+                            classNamePrefix="build-config__select-container-registry"
                             tabIndex={1}
                             isMulti={false}
                             isClearable={false}
@@ -185,6 +187,7 @@ export default function CIContainerRegistryConfig({
                             autoFocus={!configOverrideView}
                             autoComplete={'off'}
                             disabled={configOverrideView && !allowOverride}
+                            data-testid="container-repository-textbox"
                         />
                     )}
                     {repository_name.error && <label className="form__error">{repository_name.error}</label>}

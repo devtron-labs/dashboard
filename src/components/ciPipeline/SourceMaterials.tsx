@@ -154,6 +154,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                         <ReactSelect
                                             className="workflow-ci__source"
                                             placeholder="Source Type"
+                                            classNamePrefix={`select-build-pipeline-sourcetype-${index}`}
                                             isSearchable={false}
                                             classNamePrefix={`select-build-pipeline-sourcetype-${index}`}
                                             menuPortalTarget={document.getElementById('visible-modal')}
