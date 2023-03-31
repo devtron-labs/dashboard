@@ -798,7 +798,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     Add one or more deployment strategies. You can choose from selected strategy while deploying
                     manually to this environment.
                 </p>
-                <Select rootClassName="mb-16" onChange={(e) => this.selectStrategy(e.target.value)}>
+                <Select rootClassName="mb-16"  onChange={(e) => this.selectStrategy(e.target.value)}>
                     <Select.Button rootClassName="select-button--deployment-strategy">
                         <span>
                             <Add className="icon-dim-24 mr-16 fcb-5 dc__vertical-align-middle" />
@@ -1035,8 +1035,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     onChange={this.handleDeploymentAppTypeChange}
                     disabled={!!this.props.match.params.cdPipelineId}
                 >
-                    <RadioGroupItem value={DeploymentAppType.Helm}> Helm </RadioGroupItem>
-                    <RadioGroupItem value={DeploymentAppType.GitOps}> GitOps </RadioGroupItem>
+                    <RadioGroupItem data-testid="helm-deployment-type-button" value={DeploymentAppType.Helm}> Helm </RadioGroupItem>
+                    <RadioGroupItem data-testid="gitOps-deployment-type-button" value={DeploymentAppType.GitOps}> GitOps </RadioGroupItem>
                 </RadioGroup>
             </div>
         )
@@ -1114,6 +1114,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     !this.isWebhookCD && (
                         <button
                             type="button"
+                            data-testid="cd-build-pipeline-advanced-options-button"
                             className="cta cta--workflow cancel mr-16"
                             onClick={() => {
                                 this.handleAdvanceClick()
@@ -1150,6 +1151,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             menuPortalTarget={this.state.isAdvanced ? null : document.getElementById('visible-modal')}
                             closeMenuOnScroll={true}
                             isDisabled={!!this.props.match.params.cdPipelineId}
+                            classNamePrefix="cd-pipeline-environment-dropdown"
                             placeholder="Select Environment"
                             options={envList}
                             value={selectedEnv}
@@ -1182,6 +1184,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             className="form__input"
                             autoComplete="off"
                             placeholder="Namespace"
+                            data-testid="cd-pipeline-namespace-textbox"
                             type="text"
                             disabled={!namespaceEditable}
                             value={
@@ -1216,6 +1219,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <div
                         className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 mr-8 bw-1${this.state.pipelineConfig.triggerType === TriggerType.Auto ? ' bcb-1 eb-2' : ' bcn-0 en-2'
                             }`}
+                        data-testid="cd-auto-mode-button"
                         onClick={() => this.handleTriggerTypeChange(TriggerType.Auto)}
                     >
                         <BotIcon className="icon-dim-20 mr-12" />
@@ -1227,6 +1231,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <div
                         className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 ml-8 bw-1${this.state.pipelineConfig.triggerType === TriggerType.Manual ? ' bcb-1 eb-2' : ' bcn-0 en-2'
                             }`}
+                        data-testid="cd-manual-mode-button"
                         onClick={() => this.handleTriggerTypeChange(TriggerType.Manual)}
                     >
                         <PersonIcon className="icon-dim-20 mr-12" />
@@ -1265,6 +1270,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         className="form__input"
                         autoComplete="off"
                         disabled={!!this.state.pipelineConfig.id}
+                        data-testid="advance-pipeline-name-textbox"
                         placeholder="Pipeline name"
                         type="text"
                         value={this.state.pipelineConfig.name}
@@ -1390,6 +1396,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <ReactSelect
                             menuPortalTarget={document.getElementById('visible-modal')}
                             closeMenuOnScroll={true}
+                            classNamePrefix="deployment-strategy-dropdown"
                             isSearchable={false}
                             isClearable={false}
                             isMulti={false}
@@ -1461,6 +1468,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         {this.renderSecondaryButton()}
                         <ButtonWithLoader
                             rootClassName="cta cta--workflow"
+                            dataTestId="create-update-pipeline-button"
                             onClick={this.savePipeline}
                             isLoading={this.state.loadingData}
                             loaderColor="white"
