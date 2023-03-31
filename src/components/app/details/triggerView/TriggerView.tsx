@@ -97,7 +97,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     getWorkflows = () => {
-        getTriggerWorkflows(this.props.match.params.appId, !this.props.isJobView)
+        getTriggerWorkflows(this.props.match.params.appId, !this.props.isJobView, this.props.isJobView)
             .then((result) => {
                 const _filteredCIPipelines = result.filteredCIPipelines || []
                 const wf = result.workflows || []

@@ -19,13 +19,17 @@ import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
 
 export const getTriggerWorkflows = (
     appId,
-    useAppWfViewAPI,
+    useAppWfViewAPI: boolean,
+    isJobView: boolean,
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, useAppWfViewAPI)
+    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, useAppWfViewAPI, isJobView)
 }
 
-export const getCreateWorkflows = (appId): Promise<{ appName: string; workflows: WorkflowType[] }> => {
-    return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow)
+export const getCreateWorkflows = (
+    appId,
+    isJobView: boolean,
+): Promise<{ appName: string; workflows: WorkflowType[] }> => {
+    return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView)
 }
 
 const getInitialWorkflows = (
@@ -33,41 +37,55 @@ const getInitialWorkflows = (
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
     useAppWfViewAPI?: boolean,
+    isJobView?: boolean,
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return useAppWfViewAPI
-        ? getWorkflowViewList(id).then((response) => {
-              const workflows = {
-                  appId: id,
-                  workflows: response.result?.workflows as Workflow[],
-              } as WorkflowResult
+    if (useAppWfViewAPI) {
+        return getWorkflowViewList(id).then((response) => {
+            const workflows = {
+                appId: id,
+                workflows: response.result?.workflows as Workflow[],
+            } as WorkflowResult
 
-              const ciConfig: CiPipelineResult = {
-                  appId: id,
-                  ...response.result?.ciConfig,
-              }
-              return processWorkflow(
-                  workflows,
-                  ciConfig,
-                  response.result?.cdConfig as CdPipelineResult,
-                  response.result?.externalCiConfig as WebhookDetailsType[],
-                  dimensions,
-                  workflowOffset,
-                  null,
-                  true,
-              )
-          })
-        : Promise.all([getWorkflowList(id), getCIConfig(id), getCDConfig(id), getExternalCIList(id)]).then(
-              ([workflow, ciConfig, cdConfig, externalCIConfig]) => {
-                  return processWorkflow(
-                      workflow.result as WorkflowResult,
-                      ciConfig.result as CiPipelineResult,
-                      cdConfig as CdPipelineResult,
-                      externalCIConfig.result as WebhookDetailsType[],
-                      dimensions,
-                      workflowOffset,
-                  )
-              },
-          )
+            const ciConfig: CiPipelineResult = {
+                appId: id,
+                ...response.result?.ciConfig,
+            }
+            return processWorkflow(
+                workflows,
+                ciConfig,
+                response.result?.cdConfig as CdPipelineResult,
+                response.result?.externalCiConfig as WebhookDetailsType[],
+                dimensions,
+                workflowOffset,
+                null,
+                true,
+            )
+        })
+    } else if (isJobView) {
+        return Promise.all([getWorkflowList(id), getCIConfig(id)]).then(([workflow, ciConfig]) => {
+            return processWorkflow(
+                workflow.result as WorkflowResult,
+                ciConfig.result as CiPipelineResult,
+                null,
+                null,
+                dimensions,
+                workflowOffset,
+            )
+        })
+    } else {
+        return Promise.all([getWorkflowList(id), getCIConfig(id), getCDConfig(id), getExternalCIList(id)]).then(
+            ([workflow, ciConfig, cdConfig, externalCIConfig]) => {
+                return processWorkflow(
+                    workflow.result as WorkflowResult,
+                    ciConfig.result as CiPipelineResult,
+                    cdConfig as CdPipelineResult,
+                    externalCIConfig.result as WebhookDetailsType[],
+                    dimensions,
+                    workflowOffset,
+                )
+            },
+        )
+    }
 }
 
 function handleSourceNotConfigured(filteredCIPipelines: CiPipeline[], ciResponse: CiPipelineResult) {
