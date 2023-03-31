@@ -414,7 +414,7 @@ function DeploymentTemplateOverrideForm({
                 editorOnChange(YAML.stringify(envOverrideValuesWithBasic, { indent: 2 }), true)
             }
             toast.success(
-                <div className="toast">
+                <div className="toast" >
                     <div className="toast__title">
                         {state.data.environmentConfig && state.data.environmentConfig.id > 0
                             ? 'Updated override'
