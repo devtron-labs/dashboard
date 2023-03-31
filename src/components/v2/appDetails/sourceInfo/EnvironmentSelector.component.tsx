@@ -37,7 +37,7 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
     const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
 
     useEffect(() => {
-        if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
+        if (appDetails.appType === AppType.DEVTRON_APP) {
             getAppOtherEnvironmentMin(params.appId)
                 .then((response) => {
                     setEnvironments(response.result || []);
