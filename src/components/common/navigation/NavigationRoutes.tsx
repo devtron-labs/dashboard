@@ -213,7 +213,7 @@ export default function NavigationRoutes() {
             setServerMode(SERVER_MODE.EA_ONLY)
         } else {
             getServerMode()
-            getCurrentServerInfo(null, true)
+            getCurrentServerInfo()
         }
     }, [])
 
@@ -234,7 +234,7 @@ export default function NavigationRoutes() {
         }
     }, [location.pathname])
 
-    const getCurrentServerInfo = async (section?: string, withoutStatus?: boolean) => {
+    const getCurrentServerInfo = async (section?: string) => {
         if (
             currentServerInfo.fetchingServerInfo ||
             (section === 'navigation' && currentServerInfo.serverInfo && location.pathname.includes('/stack-manager'))

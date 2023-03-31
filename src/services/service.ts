@@ -336,7 +336,7 @@ export function isGitopsConfigured(): Promise<ResponseType> {
 export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
     return getModuleInfo(ModuleNameMap.ARGO_CD)
         .then((response) => {
-            if (response?.status === ModuleStatus.INSTALLED) {
+            if (response.result?.status === ModuleStatus.INSTALLED) {
                 return isGitopsConfigured()
             } else {
                 return {

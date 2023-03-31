@@ -52,7 +52,7 @@ function PageHeader({
 
     const getCurrentServerInfo = async () => {
         try {
-            const { result } = await getServerInfo()
+            const { result } = await getServerInfo(true)
             setCurrentServerInfo({
                 serverInfo: result,
                 fetchingServerInfo: false,

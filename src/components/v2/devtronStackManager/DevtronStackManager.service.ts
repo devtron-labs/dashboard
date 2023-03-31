@@ -14,8 +14,9 @@ import {
 import { reloadToastBody } from '../../common'
 import { toast } from 'react-toastify'
 
-let moduleStatusMap: Record<string, ModuleInfo> = {}
-let isReloadToastShown = false
+let moduleStatusMap: Record<string, ModuleInfo> = {},
+    serverInfo: ServerInfoResponse,
+    isReloadToastShown = false
 
 const getSavedModuleStatus = (): Record<string, ModuleInfo> => {
     let _moduleStatusMaps = moduleStatusMap
@@ -58,7 +59,7 @@ export const getModuleInfo = async (moduleName: string): Promise<ModuleInfoRespo
             toast.info(reloadToastBody(), { autoClose: false, closeButton: false })
             isReloadToastShown = true
         }
-        _savedModuleStatusMap[moduleName] = {...result, moduleResourcesStatus: null}
+        _savedModuleStatusMap[moduleName] = { ...result, moduleResourcesStatus: null }
         if (typeof Storage !== 'undefined') {
             localStorage.moduleStatusMap = JSON.stringify(_savedModuleStatusMap)
         }
@@ -74,8 +75,41 @@ export const executeModuleAction = (
     return post(`${Routes.MODULE_INFO_API}?name=${moduleName}`, moduleActionRequest)
 }
 
-export const getServerInfo = (withoutStatus?: boolean): Promise<ServerInfoResponse> => {
-    return get(`${Routes.SERVER_INFO_API}${withoutStatus ? '?showServerStatus=false' : ''}`)
+const isValidServerInfo = (_serverInfo: ServerInfoResponse): boolean => {
+    return !!(
+        _serverInfo?.result &&
+        _serverInfo.result.releaseName &&
+        _serverInfo.result.installationType
+    )
+}
+
+const getSavedServerInfo = (): ServerInfoResponse => {
+    let _serverInfo = serverInfo
+    if (!isValidServerInfo(_serverInfo)) {
+        if (typeof Storage !== 'undefined' && localStorage.serverInfo) {
+            const _serverInfoFromLS = JSON.parse(localStorage.serverInfo)
+            if (isValidServerInfo(_serverInfoFromLS)) {
+                _serverInfo = _serverInfoFromLS
+                serverInfo = _serverInfoFromLS
+            }
+        }
+    }
+    return _serverInfo
+}
+
+export const getServerInfo = async (withoutStatus?: boolean): Promise<ServerInfoResponse> => {
+    if (withoutStatus) {
+        const _serverInfo = getSavedServerInfo()
+        if (_serverInfo) {
+            return Promise.resolve(_serverInfo)
+        }
+    }
+    const response = await get(`${Routes.SERVER_INFO_API}${withoutStatus ? '?showServerStatus=false' : ''}`)
+    serverInfo = response
+    if (typeof Storage !== 'undefined') {
+        localStorage.serverInfo = JSON.stringify(serverInfo)
+    }
+    Promise.resolve(response)
 }
 
 export const executeServerAction = (serverActionRequest: ModuleActionRequest): Promise<ModuleActionResponse> => {
