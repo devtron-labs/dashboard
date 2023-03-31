@@ -1,14 +1,9 @@
 import React, { useState, useEffect, useRef, useContext } from 'react'
 import {
-    Progressing,
     Select,
     mapByKey,
-    showError,
-    BreadCrumb,
-    useBreadcrumb,
-    ConditionalWrap,
-    ConfirmationDialog,
 } from '../../common'
+import { showError, Progressing, ConditionalWrap, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink } from 'react-router-dom'
 import { useHistory, useLocation, useRouteMatch } from 'react-router'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
@@ -18,7 +13,6 @@ import ChartGroupCard from '../util/ChartGroupCard'
 import DiscoverChartDetails from '../discoverChartDetail/DiscoverChartDetails'
 import MultiChartSummary from '../MultiChartSummary'
 import AdvancedConfig from '../AdvancedConfig'
-import { ChartDetailNavigator } from '../Charts'
 import useChartGroup from '../useChartGroup'
 import { DeployableCharts, deployChartGroup } from '../charts.service'
 import { ChartGroupEntry, Chart, EmptyCharts } from '../charts.types'
@@ -29,22 +23,18 @@ import { DOCUMENTATION, URLS, SERVER_MODE } from '../../../config'
 import { Prompt } from 'react-router'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
 import Tippy from '@tippyjs/react'
-import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
-import warn from '../../../assets/icons/ic-warning.svg'
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.jpg'
 import ChartHeaderFilter from '../ChartHeaderFilters'
 import { QueryParams } from '../charts.util'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
 import PageHeader from '../../common/header/PageHeader'
-import emptyImage from '../../../assets/img/empty-noresult@2x.png'
 import SavedValuesList from '../SavedValues/SavedValuesList'
 import ChartValues from '../chartValues/ChartValues'
 import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.svg'
 import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWarning'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
-import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import DetectBottom from '../../common/DetectBottom'
 
 //TODO: move to service

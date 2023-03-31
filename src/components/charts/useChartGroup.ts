@@ -16,7 +16,8 @@ import {
     isGitOpsModuleInstalledAndConfigured,
     getChartRepoListMin,
 } from '../../services/service'
-import { mapByKey, showError, sortOptionsByLabel } from '../common'
+import {mapByKey, sortOptionsByLabel} from '../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { getChartGroups } from './charts.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'

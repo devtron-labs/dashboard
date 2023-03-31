@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Drawer } from '../../../../common'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import IndexStore from '../../index.store'
 import { AggregatedNodes } from '../../../../app/types'
@@ -11,6 +10,7 @@ import ErrorBar from '../../../../common/error/ErrorBar'
 import { NodeStreamMap } from '../environment.type'
 import { STATUS_SORTING_ORDER } from './constants'
 import AppStatusDetailsChart from './AppStatusDetailsChart'
+import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
 
 function AppStatusDetailModal({
     close,

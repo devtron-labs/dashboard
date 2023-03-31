@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useContext } from 'react';
+import { mapByKey, validateEmail, deepEqual } from '../common'
 import {
     showError,
     Progressing,
-    mapByKey,
-    validateEmail,
+    DeleteDialog,
     Option,
     ClearIndicator,
     MultiValueRemove,
     multiSelectStyles,
-    DeleteDialog,
     MultiValueChipContainer,
-    deepEqual,
-} from '../common';
+    RadioGroup,
+    RadioGroupItem,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { saveUser, deleteUser } from './userGroup.service';
 import Creatable from 'react-select/creatable';
 import Select from 'react-select';
@@ -22,7 +22,6 @@ import {
     ActionTypes,
     CreateUser,
     OptionType,
-    K8sPermissionFilter,
 } from './userGroups.types';
 import { toast } from 'react-toastify';
 import { useUserGroupContext } from './UserGroup';
@@ -31,7 +30,6 @@ import AppPermissions from './AppPermissions';
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
 import { mainContext } from '../common/navigation/NavigationRoutes';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { PermissionType } from '../apiTokens/authorization.utils';
 import { excludeKeyAndClusterValue } from './K8sObjectPermissions/K8sPermissions.utils';
 
@@ -195,7 +193,7 @@ export default function UserForm({
                         entity: EntityTypes.CLUSTER,
                         action: permission.action.value,
                         cluster: permission.cluster.label,
-                        group: permission.group.value === '*' ? '' : permission.group.value, 
+                        group: permission.group.value === '*' ? '' : permission.group.value,
                         kind: permission.kind.value === '*' ? '' : permission.kind.label,
                         namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
                         resource: permission.resource.find((entity) => entity.value === '*')

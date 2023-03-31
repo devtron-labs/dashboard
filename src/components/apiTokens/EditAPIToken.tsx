@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import { showError, Progressing, InfoColourBar, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
 import { EditDataType, EditTokenType } from './authorization.type'
@@ -11,7 +11,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom'
 import { useParams } from 'react-router'
 import moment from 'moment'
 import {  MomentDateFormat } from '../../config'
-import { ButtonWithLoader, copyToClipboard, Progressing, showError } from '../common'
+import { ButtonWithLoader, copyToClipboard } from '../common'
 import { deleteGeneratedAPIToken, updateGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -24,7 +24,6 @@ import {
     EntityTypes,
     OptionType,
 } from '../userGroups/userGroups.types'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { getUserId, saveUser } from '../userGroups/userGroup.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import DeleteAPITokenModal from './DeleteAPITokenModal'

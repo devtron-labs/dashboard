@@ -1,23 +1,24 @@
-.deployment-page{
+.deployment-page {
     height: 100%;
-    width:clamp(100%, 100%, 100%);
+    width: clamp(100%, 100%, 100%);
     display: grid;
     height: 100%;
     grid-template-rows: 80px 1fr;
     overflow: hidden;
 
-    .deployment-page__body{
+    .deployment-page__body {
         max-width: 100%;
-        overflow:auto;
+        overflow: auto;
     }
-    .app-details{
+
+    .app-details {
         max-width: 100%;
     }
 }
 
 .deployment-detail-page {
     display: flex;
-    height: calc( 100vh - 32px);
+    height: calc(100vh - 32px);
     grid-template-rows: 80px 1fr;
     grid-row-gap: 2px;
 }
@@ -29,9 +30,6 @@
     grid-template-rows: 1fr;
     grid-row-gap: 24px;
 }
-
-
-
 
 .cd-trigger-status--deployment-summary {
     display: unset;
@@ -86,8 +84,10 @@
     color: var(--B500);
 }
 
-.full-screen-modal.deploy-update {
-    background: white;
+.full-screen-modal {
+    &.deploy-update {
+        background: white;
+    }
 }
 
 .update-chart-button {
