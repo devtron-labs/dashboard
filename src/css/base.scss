@@ -857,7 +857,6 @@ button.anchor {
 }
 
 .override-button.cta {
-
     &.ghosted,
     &.delete {
         height: 32px;
@@ -2846,22 +2845,27 @@ textarea::placeholder {
 }
 
 .shimmer-loading {
-  animation-duration: 2s;
-  animation-fill-mode: forwards;
-  animation-iteration-count: infinite;
-  animation-name: shimmer-loading;
-  animation-timing-function: linear;
-  background-color: #f6f7f8;
-  background: linear-gradient(90deg, #EDF1F5 30%, #FFFFFF 60%, #EDF1F5 100%);
-  background-size: 800px 104px;
-  position: relative;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: shimmer-loading;
+    animation-timing-function: linear;
+    background-color: #f6f7f8;
+    background: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
+    background-size: 800px 104px;
+    position: relative;
 }
 
 @keyframes shimmer-loading {
-  0% {
-      background-position: -800px 0
+    0% {
+        background-position: -800px 0;
     }
     100% {
-      background-position: 800px 0
+        background-position: 800px 0;
     }
+}
+
+.full-height-width {
+    height: 100vh;
+    width: 100vw;
 }

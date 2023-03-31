@@ -206,13 +206,13 @@ export default function App() {
     return (
         <Suspense fallback={null}>
             {validating ? (
-                <div style={{ height: '100vh', width: '100vw' }}>
+                <div className="full-height-width">
                     <Progressing pageLoader />
                 </div>
             ) : (
                 <>
                     {errorPage ? (
-                        <div style={{ height: '100vh', width: '100vw' }}>
+                        <div className="full-height-width">
                             <Reload />
                         </div>
                     ) : (
