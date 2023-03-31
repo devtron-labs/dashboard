@@ -3,7 +3,8 @@ import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 import { MODES } from '../../config'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { copyToClipboard, Progressing, showError } from '../common'
+import { copyToClipboard } from '../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DropdownIndicator,
     getCommonSelectStyle,

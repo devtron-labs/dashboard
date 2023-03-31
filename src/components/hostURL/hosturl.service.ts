@@ -1,4 +1,4 @@
-import { post, put } from '../../services/api';
+import { post, put } from '@devtron-labs/devtron-fe-common-lib';
 import { Routes } from '../../config';
 
 

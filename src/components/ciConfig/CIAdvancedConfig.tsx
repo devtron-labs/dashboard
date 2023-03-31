@@ -5,7 +5,7 @@ import { ReactComponent as Cross } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { CIAdvancedConfigProps } from './types'
-import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
+import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import TargetPlatformSelector from './TargetPlatformSelector'
 
 export default function CIAdvancedConfig({
@@ -155,7 +155,7 @@ export default function CIAdvancedConfig({
         renderBuildArgs()
     ) : (
         <>
-            <div onClick={toggleCollapse} className="flex left cursor mb-20">
+            <div onClick={toggleCollapse} className="flex left cursor mb-20" data-testid="advanced-option-drop-down-button">
                 <div className="icon-dim-40 mr-16">
                     <PluginIcon />
                 </div>

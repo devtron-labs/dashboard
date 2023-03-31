@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { BuildStageVariable, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
+import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskList } from './TaskList'
 import { ciPipelineContext } from './CIPipeline'
 import { FormType } from '../ciPipeline/types'

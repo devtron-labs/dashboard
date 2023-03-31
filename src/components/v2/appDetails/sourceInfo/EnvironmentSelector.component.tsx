@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select';
-import { multiSelectStyles, PopupMenu, showError } from '../../../common';
+import { showError, PopupMenu, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css';
 import IndexStore from '../index.store';
 import { AppEnvironment } from './environment.type';
@@ -33,7 +33,6 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
     const [showWorkloadsModal, setWorkloadsModal] = useState(false);
     const [environments, setEnvironments] = useState<Array<AppEnvironment>>();
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
-    const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
     const [urlInfo, showUrlInfo] = useState<boolean>(false)
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
@@ -56,16 +55,6 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
             handleEnvironmentChange(appDetails.environmentId);
         }
     }, [appDetails.environmentId]);
-
-    useEffect(() => {
-        if (appDetails.appType === AppType.EXTERNAL_HELM_CHART && appDetails.resourceTree?.nodes) {
-            setCanScaleWorkloads(
-                appDetails.resourceTree.nodes.some(
-                    (node) => node.canBeHibernated && node.health?.status?.toLowerCase() !== 'missing',
-                ),
-            )
-        }
-    }, [appDetails])
 
     const handleEnvironmentChange = (envId: number) => {
         history.push(`${url}/${envId}`);
@@ -233,28 +222,13 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
                         Urls
                     </button>
                 )}
-                {appDetails.appType === AppType.EXTERNAL_HELM_CHART && !showWorkloadsModal && (
-                    <>
-                        {canScaleWorkloads ? (
-                            <button
-                                className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
-                                onClick={() => setWorkloadsModal(true)}
-                            >
-                                <ScaleObjects className="mr-4" /> Scale workloads
-                            </button>
-                        ) : (
-                            <Tippy
-                                placement="top"
-                                arrow={false}
-                                className="default-tt"
-                                content={'No scalable workloads available'}
-                            >
-                                <button className="scale-workload__btn flex left cta pb-6 pt-6 pl-12 pr-12 not-allowed">
-                                    <ScaleObjects className="scale-workload-icon mr-4" /> Scale workloads
-                                </button>
-                            </Tippy>
-                        )}
-                    </>
+                {!showWorkloadsModal && (
+                    <button
+                        className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
+                        onClick={() => setWorkloadsModal(true)}
+                    >
+                        <ScaleObjects className="mr-4" /> Scale workloads
+                    </button>    
                 )}
 
                 {!(

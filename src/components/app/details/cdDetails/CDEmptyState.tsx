@@ -1,5 +1,5 @@
+import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import React, { CSSProperties } from 'react'
-import EmptyState from '../../../EmptyState/EmptyState'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 
 export default function CDEmptyState({

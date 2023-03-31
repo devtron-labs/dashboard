@@ -2,14 +2,13 @@ import React, { lazy, useState, useEffect, Suspense, useContext } from 'react'
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
 import { URLS } from '../../config'
-import { Toggle, Progressing, ErrorBoundary } from '../common'
+import { Toggle, ErrorBoundary, importComponentFromFELibrary } from '../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { AddNotification } from '../notifications/AddNotification'
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { getHostURLConfiguration } from '../../services/service'
 import { getAppCheckList } from '../../services/service'
-import { showError } from '../common'
 import './globalConfigurations.scss'
 import {
     ModuleNameMap,
@@ -37,6 +36,7 @@ const Project = lazy(() => import('../project/ProjectList'))
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
+const TagListContainer = importComponentFromFELibrary('TagListContainer')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -375,6 +375,15 @@ function NavItem({ serverMode }) {
                     >
                         <div className="flexbox flex-justify">External Links</div>
                     </NavLink>
+                    {TagListContainer && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_TAGS}
+                            key={URLS.GLOBAL_CONFIG_TAGS}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Tags</div>
+                        </NavLink>
+                    )}
                 </>
             )}
         </div>
@@ -517,6 +526,11 @@ function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     <ExternalLinks />
                 </Route>,
             ]}
+            {TagListContainer && (
+                <Route path={URLS.GLOBAL_CONFIG_TAGS}>
+                    <TagListContainer />
+                </Route>
+            )}
             <Redirect to={defaultRoute()} />
         </Switch>
     )

@@ -2,7 +2,13 @@ import React, { Component } from 'react'
 import { WorkflowEditProps, WorkflowEditState } from './types'
 import { Route, Switch, withRouter, NavLink } from 'react-router-dom'
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
-import { Progressing, showError, ErrorScreenManager, DeleteDialog } from '../common'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    DeleteDialog,
+    InfoColourBar,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { Workflow } from './Workflow'
 import { getCreateWorkflows } from '../app/details/triggerView/workflow.service'
@@ -19,12 +25,11 @@ import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import { PipelineSelect } from './PipelineSelect'
-import './workflowEditor.css'
-import { NodeAttr, PipelineType, WorkflowNodeType } from '../app/details/triggerView/types'
+import './workflowEditor.scss'
+import { PipelineType, WorkflowNodeType } from '../app/details/triggerView/types'
 import CDSuccessModal from './CDSuccessModal'
 import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 

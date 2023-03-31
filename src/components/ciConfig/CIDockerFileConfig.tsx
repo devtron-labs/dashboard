@@ -14,7 +14,7 @@ import CIBuildpackBuildOptions, {
 } from './CIBuildpackBuildOptions'
 import { getBuildpackMetadata, getDockerfileTemplate } from './service'
 import CICreateDockerfileOption from './CICreateDockerfileOption'
-import { ConditionalWrap, showError } from '../common'
+import { showError, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BuildersAndFrameworksType, CIDockerFileConfigProps } from './types'
 
@@ -179,6 +179,7 @@ export default function CIDockerFileConfig({
                             >
                                 <div
                                     id={option.id}
+                                    data-testid={`${option.id}-button`}
                                     className={`flex top left flex-1 ${
                                         configOverrideView ? 'h-40' : 'h-80'
                                     } dc__position-rel pt-10 pb-10 pl-12 pr-12 br-4 cursor bw-1 ${
@@ -241,6 +242,7 @@ export default function CIDockerFileConfig({
                     ) : (
                         <ReactSelect
                             className="m-0"
+                            classNamePrefix="build-config__select-repository-containing-dockerfile"
                             tabIndex={3}
                             isMulti={false}
                             isClearable={false}
@@ -292,6 +294,7 @@ export default function CIDockerFileConfig({
                                 tabIndex={4}
                                 type="text"
                                 className="form__input file-name"
+                                data-testid="dockerfile-path-text-box"
                                 placeholder="Dockerfile"
                                 name="dockerfile"
                                 value={

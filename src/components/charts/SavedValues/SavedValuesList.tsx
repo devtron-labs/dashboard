@@ -9,9 +9,16 @@ import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Launch } from '../../../assets/icons/ic-nav-rocket.svg'
-import { BreadCrumb, ErrorScreenManager, Progressing, showError, useBreadcrumb, DeleteDialog } from '../../common'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    BreadCrumb,
+    useBreadcrumb,
+    DeleteDialog,
+    EmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { SavedValueType } from './types'
-import EmptyState from '../../EmptyState/EmptyState'
 import {
     deleteChartValues,
     getChartValuesTemplateList,
