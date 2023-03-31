@@ -1,4 +1,4 @@
-import { getWorkflowViewList } from '../../../../services/service'
+import { getCDConfig, getCIConfig, getWorkflowList, getWorkflowViewList } from '../../../../services/service'
 import {
     WorkflowType,
     NodeAttr,
@@ -15,11 +15,13 @@ import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDi
 import { TriggerType, TriggerTypeMap, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
 import { isEmpty } from '../../../common'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
+import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
 
 export const getTriggerWorkflows = (
     appId,
+    useAppWfViewAPI,
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow)
+    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, useAppWfViewAPI)
 }
 
 export const getCreateWorkflows = (appId): Promise<{ appName: string; workflows: WorkflowType[] }> => {
@@ -30,26 +32,42 @@ const getInitialWorkflows = (
     id,
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
+    useAppWfViewAPI?: boolean,
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return getWorkflowViewList(id).then((response) => {
-        const workflows = {
-            appId: id,
-            workflows: response.result?.workflows as Workflow[],
-        } as WorkflowResult
+    return useAppWfViewAPI
+        ? getWorkflowViewList(id).then((response) => {
+              const workflows = {
+                  appId: id,
+                  workflows: response.result?.workflows as Workflow[],
+              } as WorkflowResult
 
-        const ciConfig: CiPipelineResult = {
-            appId: id,
-            ...response.result?.ciConfig,
-        }
-        return processWorkflow(
-            workflows,
-            ciConfig,
-            response.result?.cdConfig as CdPipelineResult,
-            response.result?.externalCiConfig as WebhookDetailsType[],
-            dimensions,
-            workflowOffset,
-        )
-    })
+              const ciConfig: CiPipelineResult = {
+                  appId: id,
+                  ...response.result?.ciConfig,
+              }
+              return processWorkflow(
+                  workflows,
+                  ciConfig,
+                  response.result?.cdConfig as CdPipelineResult,
+                  response.result?.externalCiConfig as WebhookDetailsType[],
+                  dimensions,
+                  workflowOffset,
+                  null,
+                  true,
+              )
+          })
+        : Promise.all([getWorkflowList(id), getCIConfig(id), getCDConfig(id), getExternalCIList(id)]).then(
+              ([workflow, ciConfig, cdConfig, externalCIConfig]) => {
+                  return processWorkflow(
+                      workflow.result as WorkflowResult,
+                      ciConfig.result as CiPipelineResult,
+                      cdConfig as CdPipelineResult,
+                      externalCIConfig.result as WebhookDetailsType[],
+                      dimensions,
+                      workflowOffset,
+                  )
+              },
+          )
 }
 
 function handleSourceNotConfigured(filteredCIPipelines: CiPipeline[], ciResponse: CiPipelineResult) {
@@ -95,6 +113,7 @@ export function processWorkflow(
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
     filter?: (workflows: WorkflowType[]) => WorkflowType[],
+    useParentRefFromWorkflow?: boolean,
 ): { appName: string; workflows: Array<WorkflowType>; filteredCIPipelines } {
     let ciPipelineToNodeWithDimension = (ciPipeline: CiPipeline) => ciPipelineToNode(ciPipeline, dimensions)
     const filteredCIPipelines =
@@ -147,9 +166,11 @@ export function processWorkflow(
                             return
                         }
 
-                        // Using parentId & parentType from workflow tree
-                        cdPipeline.parentPipelineId = branch.parentId
-                        cdPipeline.parentPipelineType = branch.parentType
+                        if (useParentRefFromWorkflow) {
+                            // Using parentId & parentType from workflow tree
+                            cdPipeline.parentPipelineId = branch.parentId
+                            cdPipeline.parentPipelineType = branch.parentType
+                        }
 
                         const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId)
                         wf.nodes.push(cdNode)
