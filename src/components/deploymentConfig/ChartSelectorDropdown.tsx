@@ -64,7 +64,7 @@ export default function ChartSelectorDropdown({
     } else {
         return (
             <PopupMenu onToggleCallback={setPopupState} autoClose>
-                <PopupMenu.Button isKebab data-testid="select-charttype-dropdown">
+                <PopupMenu.Button isKebab dataTestId="select-charttype-dropdown">
                     <span className="fs-13 fw-6 cn-9 flex pointer">
                         {selectedChart?.name || 'Select Chart'}
                         <Dropdown
