@@ -54,8 +54,3 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
         `${Routes.APPLICATIONS}/${appDetails.appName}-${appDetails.environmentName}/resource?name=${nodeDetails.name}&namespace=${nodeDetails.namespace}&resourceName=${nodeDetails.name}&version=${nodeDetails.version}&group=${nodeDetails.group}&kind=${nodeDetails.kind}&force=${forceDelete}&appId=${appDetails.appId}&envId=${envId}`,
     )
 }
-
-export const getAppOtherEnvironment = (appId) => {
-    const URL = `${Routes.APP_OTHER_ENVIRONMENT}?app-id=${appId}`
-    return get(URL)
-}
