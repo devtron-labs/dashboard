@@ -249,6 +249,20 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                 return _classname
             }
 
+            const getResourceNameClassName = (): string => {
+              let _resourceNameClassName = ''
+              if (
+                  node.kind.toLowerCase() === NodeType.Pod.toLowerCase() ||
+                  node.kind.toLowerCase() === NodeType.Containers.toLowerCase()
+              ) {
+                  _resourceNameClassName = 'resource__title-name'
+              } else {
+                  _resourceNameClassName = 'resource__title-name__no-logs'
+              }
+              return _resourceNameClassName
+          }
+
+
             return (
                 <React.Fragment key={'grt' + index}>
                     {showHeader && !!_currentNodeHeader && (
@@ -266,7 +280,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         <div className={`resource-row__content ${firstColWidth} pt-9 pb-9`}>
                             <div className="flex left">
                                 <div
-                                    className="flex left top ml-2"
+                                    className="flex left top"
                                     onClick={() => {
                                         markNodeSelected(selectedNodes, node.name)
                                     }}
@@ -284,8 +298,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                         <span className="pl-12 pr-12"></span>
                                     )}
                                     <div>
-                                        <div className="resource__title-name flex left dc__align-start">
-                                            <span className="fs-13">{node.name}</span>
+                                      {console.log(node.kind, NodeType.Containers)}
+                                        <div className={`${getResourceNameClassName()}  flex left dc__align-start`}>
+                                            <span className="fs-13 dc__word-break">{node.name}</span>
                                             <div
                                                 className={`flex left ${
                                                     node.kind.toLowerCase() == NodeType.Pod.toLowerCase()
