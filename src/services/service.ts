@@ -171,6 +171,10 @@ export function getWorkflowList(appId) {
     return get(URL);
 }
 
+export function getWorkflowViewList(appId) {
+    return get(`${Routes.WORKFLOW}/view/${appId}`);
+}
+
 export function stopStartApp(AppId, EnvironmentId, RequestType) {
     return post(`app/stop-start-app`, { AppId, EnvironmentId, RequestType });
 }
