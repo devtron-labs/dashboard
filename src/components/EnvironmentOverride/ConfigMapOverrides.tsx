@@ -604,8 +604,8 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                                 disabled={false}
                                 onChange={changeEditorMode}
                             >
-                                <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
-                                <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
+                                <RadioGroup.Radio value="gui" dataTestId="GUI-from-config-map">GUI</RadioGroup.Radio>
+                                <RadioGroup.Radio value="yaml" dataTestId="YAML-from-config-map">YAML</RadioGroup.Radio>
                             </RadioGroup>
                         </div>
                     )}
