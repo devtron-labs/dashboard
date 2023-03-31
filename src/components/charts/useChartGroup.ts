@@ -15,6 +15,7 @@ import {
     getEnvironmentListMin,
     isGitOpsModuleInstalledAndConfigured,
     getChartRepoListMin,
+    getTeamListMin,
 } from '../../services/service'
 import {mapByKey, sortOptionsByLabel} from '../common'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
@@ -65,7 +66,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                     serverMode == SERVER_MODE.FULL
                         ? getChartGroups()
                         : { value: { status: 'fulfilled', result: undefined } },
-                    getTeamList(),
+                    getTeamListMin(),
                     getEnvironmentListMin(),
                     isGitOpsModuleInstalledAndConfigured(),
                 ]).then((responses: { status: string; value?: any; reason?: any }[]) => {
