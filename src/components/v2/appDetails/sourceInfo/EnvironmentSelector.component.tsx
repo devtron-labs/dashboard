@@ -5,8 +5,6 @@ import './sourceInfo.css';
 import IndexStore from '../index.store';
 import { AppEnvironment } from './environment.type';
 import { useParams, useHistory, useRouteMatch } from 'react-router';
-
-import { getAppOtherEnvironment } from '../appDetails.api';
 import { useSharedState } from '../../utils/useSharedState';
 import { AppType, DeploymentAppType } from "../appDetails.type";
 import { ReactComponent as ScaleObjects } from '../../../../assets/icons/ic-scale-objects.svg';
@@ -25,6 +23,7 @@ import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.
 import { checkIfDevtronOperatorHelmRelease } from '../../../../config';
 import { ReactComponent as BinWithDots} from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging';
+import { getAppOtherEnvironmentMin } from '../../../../services/service';
 
 function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: boolean; _init?: () => void}) {
     const params = useParams<{ appId: string; envId?: string }>();
@@ -39,7 +38,7 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
 
     useEffect(() => {
         if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
-            getAppOtherEnvironment(params.appId)
+            getAppOtherEnvironmentMin(params.appId)
                 .then((response) => {
                     setEnvironments(response.result || []);
                 })
@@ -228,7 +227,7 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
                         onClick={() => setWorkloadsModal(true)}
                     >
                         <ScaleObjects className="mr-4" /> Scale workloads
-                    </button>    
+                    </button>
                 )}
 
                 {!(

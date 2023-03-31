@@ -1,4 +1,4 @@
-import { getAppListMin, getAppOtherEnvironment, getAvailableCharts } from '../../services/service'
+import { getAppListMin, getAppOtherEnvironmentMin, getAvailableCharts } from '../../services/service'
 import { CommandSuggestionType, COMMAND, COMMAND_REV } from './command.types'
 import { APIOptions } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
@@ -106,7 +106,7 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
         })
     } else if (args[1] && args.length === 2) {
         // args[1] --> appName
-        return getAppOtherEnvironment(args[1].data.value).then((response) => {
+        return getAppOtherEnvironmentMin(args[1].data.value).then((response) => {
             let list
             list = response?.result?.map((a) => {
                 return {
@@ -253,7 +253,7 @@ function getAppArguments(args, options): Promise<CommandSuggestionType> {
     } else if (args[3] && args.length === 4) {
         // args[3] --> pod
         if (args[3].value === 'env-override')
-            return getAppOtherEnvironment(args[1].data.value).then((response) => {
+            return getAppOtherEnvironmentMin(args[1].data.value).then((response) => {
                 let list = response?.result?.map((a) => {
                     return {
                         value: a.environmentName,

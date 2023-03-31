@@ -157,6 +157,9 @@ export default function App() {
                 updateToastRef.current = toast.info(updateToastBody, { autoClose: false, closeButton: false })
             }
             setForceUpdateOnLocationChange(true)
+            if (typeof Storage !== 'undefined') {
+                localStorage.removeItem('serverInfo')
+            }
         }
         function onSuccess(reg) {
             console.log('successfully installed')

@@ -54,7 +54,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         [appId],
         !isJobOverview,
     )
-    const isAgroInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
+    const isArgoInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
 
@@ -259,7 +259,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 <div className="env-deployments-info-wrapper w-100">
                     <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
                         <span>Environment</span>
-                        {isAgroInstalled && <span>App status</span>}
+                        {isArgoInstalled && <span>App status</span>}
                         <span>Last deployed</span>
                     </div>
                     <div className="env-deployments-info-body">
@@ -276,7 +276,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                         >
                                             {_env.environmentName}
                                         </Link>
-                                        {isAgroInstalled && (
+                                        {isArgoInstalled && (
                                             <AppStatus
                                                 appStatus={
                                                     _env.lastDeployed
@@ -286,7 +286,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                             />
                                         )}
                                         <span className="fs-13 fw-4 cn-7">
-                                            {processDeployedTime(_env.lastDeployed, isAgroInstalled)}
+                                            {processDeployedTime(_env.lastDeployed, isArgoInstalled)}
                                         </span>
                                     </div>
                                 ),
