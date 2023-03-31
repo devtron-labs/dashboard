@@ -71,6 +71,7 @@
         "not op_mini all"
     ],
     "devDependencies": {
+        "@playwright/test": "^1.32.1",
         "@sentry/cli": "^2.2.0",
         "@testing-library/jest-dom": "^5.16.2",
         "@testing-library/react": "^12.1.4",
@@ -124,8 +125,8 @@
             "pre-commit": "yarn eslint"
         }
     },
-    "resolutions": {
-        "**/@typescript-eslint/eslint-plugin": "^5.15.0",
-        "**/@typescript-eslint/parser": "^5.15.0"
-    }
+  "resolutions": {
+    "**/@typescript-eslint/eslint-plugin": "^5.15.0",
+    "**/@typescript-eslint/parser": "^5.15.0"
+  }
 }
