@@ -59,6 +59,7 @@
     background-color: var(--N50);
     .node__tabs{
       width: 100%;
+      min-width: max-content;
     }
 
     .node-empty{
