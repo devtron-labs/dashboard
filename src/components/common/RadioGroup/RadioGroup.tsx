@@ -67,8 +67,8 @@ function Radio({ value, children, className = '', showTippy = false, tippyConten
                     type="checkbox"
                     value={value}
                     name={name}
+                    
                     checked={value === selected}
-                    data-testid={dataTestId}
                     onChange={(e) => {
                         e.persist()
                         if (canSelect) {

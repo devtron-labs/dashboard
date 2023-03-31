@@ -95,6 +95,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                     </button>
                                 </Tippy>
                                 <button
+                                    data-testid = "cd-trigger-select-image"
                                     className="workflow-node__deploy-btn"
                                     onClick={(event) => {
                                         event.stopPropagation()

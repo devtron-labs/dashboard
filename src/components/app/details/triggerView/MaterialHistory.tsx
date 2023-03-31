@@ -63,7 +63,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
     render() {
         return (
             <>
-                {this.props.material.history.map((history) => {
+                {this.props.material.history.map((history,index) => {
                     let classes = `material-history mt-12 ${history.isSelected ? 'material-history-selected' : ''}`
                     if (this.props.selectCommit) {
                         classes = `${classes}`
@@ -74,6 +74,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                             : history.commit
                     return (
                         <div
+                            data-setid = {`material-history-${index}`}
                             key={_commitId}
                             className={`${classes} `}
                             onClick={(e) => this.onClickMaterialHistory(e, _commitId)}

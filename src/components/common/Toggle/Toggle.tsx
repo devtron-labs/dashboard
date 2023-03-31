@@ -26,7 +26,7 @@ const Toggle = ({selected=false, onSelect=null, color="#36b37e", rootClassName="
     return(
     <label {...props} className={`${rootClassName} toggle__switch ${disabled ? 'disabled' : ''}`} style={{ ['--color' as any]: color }}>
         <input type="checkbox" checked={!!active} onChange={handleClick} className="toggle__input" data-testid={dataTestId}/>
-        <span className="toggle__slider round" data-testid = "toggle-button"></span>
+        <span className="toggle__slider round"></span>
     </label>
     )
 }
