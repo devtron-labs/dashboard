@@ -97,7 +97,7 @@ export class CINode extends Component<CINodeProps> {
                     </div>
                 </Link>
                 {!this.props.isJobView && (
-                    <button className="workflow-node__add-cd-btn">
+                    <button className="workflow-node__add-cd-btn" data-testid={`ci-add-deployment-pipeline-button-${this.props.title}`}>
                         <Tippy
                             className="default-tt"
                             arrow={false}

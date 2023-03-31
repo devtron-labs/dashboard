@@ -585,7 +585,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             )
         } else {
             return (
-                <div className="workflow-editor">
+                <div className="workflow-editor" data-testid="workflow-editor-page">
                     <h1 className="form__title form__title--artifacts">Workflow Editor</h1>
                     <p>
                         {this.props.isJobView

@@ -447,6 +447,7 @@ export interface JobPipeline {
     ci_pipeline_name: string
     started_on: string
     status: string
+    dataTestId?: string
 }
 
 export interface TagChipsContainerType {
