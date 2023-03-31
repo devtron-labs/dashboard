@@ -979,7 +979,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             )}
             {dataStateType === AppListViewType.LIST && (
                 <>
-                    <HeaderWithCreateButton headerName="Applications" />
+                    <HeaderWithCreateButton headerName="Applications" isSuperAdmin={isSuperAdmin} />
                     {renderMasterFilters()}
                     {renderAppliedFilters()}
                     {renderAppTabs()}

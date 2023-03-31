@@ -49,7 +49,11 @@ export default function MaterialSource({
 
     const handleRefreshAction = (e) => {
         e.stopPropagation()
-        refreshMaterial.refresh(refreshMaterial.pipelineId, refreshMaterial.title, Number(e.currentTarget.dataset.id))
+        refreshMaterial.refresh(
+            refreshMaterial.pipelineId,
+            refreshMaterial.title,
+            Number(e.currentTarget.dataset.id),
+        )
     }
 
     const renderRefreshButton = (mat: CIMaterialType) => {
@@ -78,7 +82,7 @@ export default function MaterialSource({
                     <div
                         key={index}
                         data-id={mat.id}
-                        className={`material-list__item ${mat.isSelected ? "material-selected" : ''}`}
+                        className={`material-list__item ${mat.isSelected ? 'material-selected' : ''}`}
                         onClick={handleSelectMaterialAction}
                     >
                         <div className="material-info">
