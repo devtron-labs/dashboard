@@ -63,7 +63,7 @@ const GitProviderTab: React.FC<{
                 checked={providerTab === provider}
                 onChange={!saveLoading && handleGitopsTab}
             />
-            <span className="dc__tertiary-tab sso-icons">
+            <span data-testid={`gitops-${gitops}-button`} className="dc__tertiary-tab sso-icons">
                 <aside className="login__icon-alignment">
                     <GitProviderTabIcons gitops={gitops} />
                 </aside>
@@ -453,7 +453,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
         return (
             <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
-                <h2 className="form__title">GitOps</h2>
+                <h2 className="form__title" data-testid="gitops-heading">GitOps</h2>
                 <p className="form__subtitle">
                     Devtron uses GitOps configuration to store kubernetes configuration files of applications.
                     <span>
@@ -558,6 +558,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         }
                         tabIndex={1}
                         labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
+                        
                     />
                     {this.state.isUrlValidationError && this.state.form.host.length ? (
                         <div className="flex fs-12 left pt-4">
