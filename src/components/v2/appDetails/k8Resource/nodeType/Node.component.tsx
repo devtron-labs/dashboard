@@ -298,7 +298,6 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                         <span className="pl-12 pr-12"></span>
                                     )}
                                     <div>
-                                      {console.log(node.kind, NodeType.Containers)}
                                         <div className={`${getResourceNameClassName()}  flex left dc__align-start`}>
                                             <span className="fs-13 dc__word-break">{node.name}</span>
                                             <div
