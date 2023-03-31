@@ -15,8 +15,8 @@ import {
     getEnvironmentListMin,
     isGitOpsModuleInstalledAndConfigured,
     getChartRepoListMin,
-    getTeamListMin,
 } from '../../services/service'
+import {getTeamListMin} from '@devtron-labs/devtron-fe-common-lib'
 import {mapByKey, sortOptionsByLabel} from '../common'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
