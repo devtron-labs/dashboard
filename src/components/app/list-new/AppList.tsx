@@ -734,7 +734,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 buttonText={APP_LIST_HEADERS.AppStatus}
                                 placeholder={APP_LIST_HEADERS.SearchAppStatus}
                                 isDisabled={dataStateType === AppListViewType.LOADING}
-                                disableTooltipMessage={' '}
                                 searchable
                                 multi
                                 type={AppListConstants.FilterType.APP_STATUS}
@@ -751,7 +750,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         buttonText="Projects"
                         placeholder="Search Project"
                         isDisabled={dataStateType === AppListViewType.LOADING}
-                        disableTooltipMessage={' '}
                         searchable
                         multi
                         type={AppListConstants.FilterType.PROJECT}
@@ -764,7 +762,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             <Filter
                                 list={masterFilters.environments}
                                 isDisabled={dataStateType === AppListViewType.LOADING}
-                                disableTooltipMessage={' '}
                                 labelKey="label"
                                 buttonText="Environment"
                                 searchable
@@ -785,7 +782,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         multi
                         placeholder="Search Cluster"
                         isDisabled={dataStateType === AppListViewType.LOADING}
-                        disableTooltipMessage={' '}
                         type={AppListConstants.FilterType.CLUTSER}
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
@@ -977,11 +973,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
     return (
         <div>
-            {/* {dataStateType === AppListViewType.LOADING && (
-                <div className="dc__loading-wrapper">
-                    <Progressing pageLoader />
-                </div>
-            )} */}
             {dataStateType === AppListViewType.ERROR && (
                 <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
