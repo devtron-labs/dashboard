@@ -14,7 +14,9 @@ import {
     getTeamList,
     getEnvironmentListMin,
     isGitOpsModuleInstalledAndConfigured,
+    getChartRepoListMin,
 } from '../../services/service'
+import {getTeamListMin} from '@devtron-labs/devtron-fe-common-lib'
 import {mapByKey, sortOptionsByLabel} from '../common'
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
@@ -60,15 +62,13 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         async function populateCharts() {
             try {
                 await Promise.allSettled([
-                    getChartRepoList(),
+                    getChartRepoListMin(),
                     serverMode == SERVER_MODE.FULL
                         ? getChartGroups()
                         : { value: { status: 'fulfilled', result: undefined } },
-                    getTeamList(),
-                    getEnvironmentListMin(),
-                    isGitOpsModuleInstalledAndConfigured(),
+                    getTeamListMin()
                 ]).then((responses: { status: string; value?: any; reason?: any }[]) => {
-                    const [chartRepoList, chartGroup, projects, environments, gitOpsModuleInstalledAndConfigured] =
+                    const [chartRepoList, chartGroup, projects] =
                         responses.map((response) => response?.value?.result || [])
 
                     let chartRepos = chartRepoList
@@ -86,10 +86,6 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
                         chartRepos,
                         chartGroups: chartGroup?.groups || [],
                         projects,
-                        environments,
-                        noGitOpsConfigAvailable:
-                            gitOpsModuleInstalledAndConfigured.isInstalled &&
-                            !gitOpsModuleInstalledAndConfigured.isConfigured,
                     }))
                 })
             } catch (err) {
@@ -564,6 +560,14 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         return setState((state) => ({ ...state, name, description }))
     }
 
+    function setGitOpsConfigAvailable(isGitOpsConfigAvailable: boolean): void {
+        setState((state) => ({ ...state, noGitOpsConfigAvailable: isGitOpsConfigAvailable }))
+    }
+
+    function setEnvironmentList(envList): void{
+        setState((state) => ({...state, environments: envList}))
+    }
+
     return {
         state,
         // getChartVersions,
@@ -591,5 +595,7 @@ export default function useChartGroup(chartGroupId = null): ChartGroupExports {
         updateChartGroupNameAndDescription,
         reloadState,
         setCharts,
+        setGitOpsConfigAvailable,
+        setEnvironmentList,
     }
 }
