@@ -25,13 +25,13 @@ export default function DeleteExternalLinkDialog({
                 if (isAppConfigView) {
                     const { result } = await getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
                     setExternalLinks(
-                        result
-                            ?.filter((_link) => _link.isEditable && _link.type === ExternalLinkScopeType.AppLevel)
-                            .sort(sortByUpdatedOn) || [],
+                        result?.ExternalLinks?.filter(
+                            (_link) => _link.isEditable && _link.type === ExternalLinkScopeType.AppLevel,
+                        ).sort(sortByUpdatedOn) || [],
                     )
                 } else {
                     const { result } = await getExternalLinks()
-                    setExternalLinks(result?.sort(sortByUpdatedOn) || [])
+                    setExternalLinks(result?.ExternalLinks?.sort(sortByUpdatedOn) || [])
                 }
             }
         } catch (e) {

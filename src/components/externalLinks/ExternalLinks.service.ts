@@ -6,12 +6,7 @@ import {
     ExternalLinkResponse,
     ExternalLinkUpdateResponse,
     GetAllAppResponseType,
-    MonitoringToolResponse,
 } from './ExternalLinks.type'
-
-export const getMonitoringTools = (): Promise<MonitoringToolResponse> => {
-    return get(`${Routes.EXTERNAL_LINKS_API}/tools`)
-}
 
 const getURLWithQueryParams = (clusterId?: number, identifier?: string, type?: ExternalLinkIdentifierType) => {
     let _url = Routes.EXTERNAL_LINKS_API

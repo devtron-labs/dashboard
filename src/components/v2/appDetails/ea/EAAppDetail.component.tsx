@@ -12,7 +12,7 @@ import { AppDetails, AppType } from '../appDetails.type'
 import AppDetailsComponent from '../AppDetails.component'
 import moment from 'moment'
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../../../util/URLUtil'
-import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service'
+import { getExternalLinks } from '../../../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 
@@ -103,25 +103,20 @@ function ExternalAppDetail({ appId, appName, isExternalApp }) {
                 )
 
                 if (appDetailResponse.result?.appDetail.environmentDetails.clusterId) {
-                    Promise.all([
-                        getMonitoringTools(),
-                        getExternalLinks(
-                            appDetailResponse.result.appDetail.environmentDetails.clusterId,
-                            appName,
-                            ExternalLinkIdentifierType.ExternalHelmApp,
-                        ),
-                    ])
-                        .then(([monitoringToolsRes, externalLinksRes]) => {
+                    getExternalLinks(
+                        appDetailResponse.result.appDetail.environmentDetails.clusterId,
+                        appName,
+                        ExternalLinkIdentifierType.ExternalHelmApp,
+                    )
+                        .then((externalLinksRes) => {
                             setExternalLinksAndTools({
-                                externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
+                                externalLinks: externalLinksRes.result?.ExternalLinks?.sort(sortByUpdatedOn) || [],
                                 monitoringTools:
-                                    monitoringToolsRes.result
-                                        ?.map((tool) => ({
-                                            label: tool.name,
-                                            value: tool.id,
-                                            icon: tool.icon,
-                                        }))
-                                        .sort(sortOptionsByValue) || [],
+                                    externalLinksRes.result?.Tools?.map((tool) => ({
+                                        label: tool.name,
+                                        value: tool.id,
+                                        icon: tool.icon,
+                                    })).sort(sortOptionsByValue) || [],
                             })
                             setIsLoading(false)
                             isAPICallInProgress = false

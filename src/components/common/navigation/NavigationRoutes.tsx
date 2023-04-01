@@ -18,7 +18,11 @@ import {
 } from '../../../services/service'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import { ModuleStatus, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
-import { getAllModulesInfo, getModuleInfo, getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import {
+    getAllModulesInfo,
+    getModuleInfo,
+    getServerInfo,
+} from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { useAsync } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
 import { getUserRole } from '../../userGroups/userGroup.service'
@@ -268,7 +272,11 @@ export default function NavigationRoutes() {
     }
 
     if (pageState === ViewType.LOADING || loginLoader) {
-        return <Progressing pageLoader />
+        return (
+            <div className="full-height-width">
+                <Progressing pageLoader />
+            </div>
+        )
     } else if (pageState === ViewType.ERROR) {
         return <Reload />
     } else {

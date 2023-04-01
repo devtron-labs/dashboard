@@ -107,6 +107,14 @@ export function fetchAppDetailsInTime(
     return get(`${Routes.APP_DETAIL}?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
 }
 
+export function fetchResourceTreeInTime(
+    appId: number | string,
+    envId: number | string,
+    reloadTimeOut: number,
+): Promise<AppDetailsResponse> {
+    return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
+}
+
 export function getEvents(pathParams) {
     const URL = `${Routes.APPLICATIONS}/${pathParams.appName}-${pathParams.env}/events?resourceNamespace=${pathParams.resourceNamespace}&resourceUID=${pathParams.uid}&resourceName=${pathParams.resourceName}`
     return URL

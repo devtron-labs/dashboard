@@ -7,7 +7,7 @@ import {
     stopPropagation,
     multiSelectStyles,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { fetchAppDetailsInTime } from '../../service'
+import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
     URLS,
     getAppDetailsURL,
@@ -68,7 +68,7 @@ import IndexStore from '../../../v2/appDetails/index.store'
 import { TriggerInfoModal } from '../../list/TriggerInfo'
 import { sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
-import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service'
+import { getExternalLinks } from '../../../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab'
@@ -186,15 +186,18 @@ export const Details: React.FC<DetailsType> = ({
         severityCount: { critical: 0, moderate: 0, low: 0 },
         isError: false,
     })
-    const [appDetailsLoading, setAppDetailsLoading] = useState(true)
+    // const [appDetailsLoading, setAppDetailsLoading] = useState(true)
     const [appDetailsError, setAppDetailsError] = useState(undefined)
-    const [appDetailsResult, setAppDetailsResult] = useState(undefined)
+    const [appDetails, setAppDetails] = useState(undefined)
     const [pollingIntervalID, setPollingIntervalID] = useState(null)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         externalLinks: [],
         monitoringTools: [],
     })
+    const [loadingDetails, setLoadingDetails] = useState(true)
+    const [loadingResourceTree, setLoadingResourceTree] = useState(true)
     const appDetailsRef = useRef(null)
+    const appDetailsRequestRef = useRef(null)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -206,8 +209,7 @@ export const Details: React.FC<DetailsType> = ({
     const isExternalToolAvailable: boolean =
         externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL || 30000
-    const appDetails = appDetailsResult?.result
-    appDetailsRef.current = appDetails?.deploymentAppDeleteRequest
+    appDetailsRequestRef.current = appDetails?.deploymentAppDeleteRequest
 
     const syncSSE = useEventSource(
         `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
@@ -249,68 +251,87 @@ export const Details: React.FC<DetailsType> = ({
         }
     }, [])
 
-    async function callAppDetailsAPI() {
-        try {
-            const response = await appDetailsAPI(params.appId, params.envId, 25000)
-            IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
-            setAppDetailsResult(response)
-            if (response.result?.clusterId) {
-                Promise.all([
-                    getMonitoringTools(),
-                    getExternalLinks(response.result.clusterId, params.appId, ExternalLinkIdentifierType.DevtronApp),
-                    getDeploymentStatusDetail(params.appId, params.envId),
-                ])
-                    .then(([monitoringToolsRes, externalLinksRes, deploymentStatusDetailRes]) => {
-                        setExternalLinksAndTools({
-                            externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
-                            monitoringTools:
-                                monitoringToolsRes.result
-                                    ?.map((tool) => ({
-                                        label: tool.name,
-                                        value: tool.id,
-                                        icon: tool.icon,
-                                    }))
-                                    .sort(sortOptionsByValue) || [],
-                        })
-
-                        if (deploymentStatusDetailRes.result) {
-                            if (response.result?.deploymentAppType === DeploymentAppType.helm) {
-                                setDeploymentStatusDetailsBreakdownData({
-                                    ...deploymentStatusDetailsBreakdownData,
-                                    deploymentStatus:
-                                        DEPLOYMENT_STATUS[deploymentStatusDetailRes.result.wfrStatus?.toUpperCase()],
-                                    deploymentStatusText:
-                                        deploymentStatusDetailRes.result.wfrStatus ===
-                                        HELM_DEPLOYMENT_STATUS_TEXT.PROGRESSING
-                                            ? HELM_DEPLOYMENT_STATUS_TEXT.INPROGRESS
-                                            : deploymentStatusDetailRes.result.wfrStatus,
-                                    deploymentTriggerTime: deploymentStatusDetailRes.result.deploymentStartedOn,
-                                    deploymentEndTime: deploymentStatusDetailRes.result.deploymentFinishedOn,
-                                    triggeredBy: deploymentStatusDetailRes.result.triggeredBy,
-                                })
-                            } else {
-                                processDeploymentStatusData(deploymentStatusDetailRes.result)
-                            }
-                        }
-                        setAppDetailsLoading(false)
-                    })
-                    .catch((e) => {
-                        setExternalLinksAndTools(externalLinksAndTools)
-                        setAppDetailsLoading(false)
-                    })
-            } else {
-                setAppDetailsLoading(false)
-            }
-        } catch (error) {
-            if (error['code'] === 404 || appDetailsRef.current) {
+    const handleAppDetailsCallError = (error) => {
+        if (error['code'] === 404 || appDetailsRequestRef.current) {
+            if (setIsAppDeleted) {
                 setIsAppDeleted(true)
-                setAppDetailsLoading(false)
-                setAppDetailsResult(null)
-            } else if (!appDetailsResult) {
-                setAppDetailsError(error)
-                setAppDetailsLoading(false)
             }
+            setAppDetails(null)
+        } else if (!appDetails) {
+            setAppDetailsError(error)
         }
+    }
+
+    async function callAppDetailsAPI() {
+        appDetailsAPI(params.appId, params.envId, 25000)
+            .then((response) => {
+                appDetailsRef.current = {
+                    ...appDetailsRef.current,
+                    ...response.result,
+                }
+                IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
+                setAppDetails(appDetailsRef.current)
+
+                if (response.result?.clusterId) {
+                    getExternalLinksAndTools(response.result.clusterId, response.result.deploymentAppType)
+                }
+            })
+            .catch(handleAppDetailsCallError)
+            .finally(() => {
+                setLoadingDetails(false)
+            })
+        fetchResourceTreeInTime(params.appId, params.envId, 25000)
+            .then((response) => {
+                appDetailsRef.current = {
+                    ...appDetailsRef.current,
+                    resourceTree: response.result,
+                }
+                IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
+                setAppDetails(appDetailsRef.current)
+            })
+            .catch(handleAppDetailsCallError)
+            .finally(() => {
+                setLoadingResourceTree(false)
+            })
+    }
+
+    function getExternalLinksAndTools(clusterId, deploymentAppType) {
+        Promise.all([
+            getExternalLinks(clusterId, params.appId, ExternalLinkIdentifierType.DevtronApp),
+            getDeploymentStatusDetail(params.appId, params.envId),
+        ])
+            .then(([externalLinksRes, deploymentStatusDetailRes]) => {
+                setExternalLinksAndTools({
+                    externalLinks: externalLinksRes.result?.ExternalLinks?.sort(sortByUpdatedOn) || [],
+                    monitoringTools:
+                        externalLinksRes.result?.Tools?.map((tool) => ({
+                            label: tool.name,
+                            value: tool.id,
+                            icon: tool.icon,
+                        })).sort(sortOptionsByValue) || [],
+                })
+                if (deploymentStatusDetailRes.result) {
+                    if (deploymentAppType === DeploymentAppType.helm) {
+                        setDeploymentStatusDetailsBreakdownData({
+                            ...deploymentStatusDetailsBreakdownData,
+                            deploymentStatus:
+                                DEPLOYMENT_STATUS[deploymentStatusDetailRes.result.wfrStatus?.toUpperCase()],
+                            deploymentStatusText:
+                                deploymentStatusDetailRes.result.wfrStatus === HELM_DEPLOYMENT_STATUS_TEXT.PROGRESSING
+                                    ? HELM_DEPLOYMENT_STATUS_TEXT.INPROGRESS
+                                    : deploymentStatusDetailRes.result.wfrStatus,
+                            deploymentTriggerTime: deploymentStatusDetailRes.result.deploymentStartedOn,
+                            deploymentEndTime: deploymentStatusDetailRes.result.deploymentFinishedOn,
+                            triggeredBy: deploymentStatusDetailRes.result.triggeredBy,
+                        })
+                    } else {
+                        processDeploymentStatusData(deploymentStatusDetailRes.result)
+                    }
+                }
+            })
+            .catch((e) => {
+                setExternalLinksAndTools(externalLinksAndTools)
+            })
     }
 
     async function callLastExecutionMinAPI(appId, envId) {
@@ -339,14 +360,14 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     useEffect(() => {
-        if (appDetailsResult && setAppDetailResultInParent) {
-            setAppDetailResultInParent(appDetailsResult?.result)
+        if (appDetails && setAppDetailResultInParent) {
+            setAppDetailResultInParent(appDetails)
         }
 
         if (!lastExecutionDetail.imageScanDeployInfoId && !lastExecutionDetail.isError) {
-            callLastExecutionMinAPI(appDetailsResult?.result?.appId, appDetailsResult?.result?.environmentId)
+            callLastExecutionMinAPI(appDetails?.appId, appDetails?.environmentId)
         }
-    }, [appDetailsResult])
+    }, [appDetails])
 
     useEffect(() => {
         if (appDetailsError) {
@@ -372,13 +393,13 @@ export const Details: React.FC<DetailsType> = ({
         }
     }, [pollingIntervalID])
 
-    if (appDetailsLoading && !appDetails) {
-        return (
-            <div className="w-100 flex" style={{ height: 'calc(100vh - 80px)' }}>
-                <Progressing pageLoader />
-            </div>
-        )
-    }
+    // if (appDetailsLoading && !appDetails) {
+    //     return (
+    //         <div className="w-100 flex" style={{ height: 'calc(100vh - 80px)' }}>
+    //             <Progressing pageLoader />
+    //         </div>
+    //     )
+    // }
 
     async function handleHibernate(e) {
         try {
@@ -401,7 +422,7 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(false)
     }
 
-    if (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0) {
+    if (!loadingResourceTree && (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0)) {
         return (
             <>
                 {environments?.length > 0 && (
@@ -448,6 +469,8 @@ export const Details: React.FC<DetailsType> = ({
                     deploymentStatusText={deploymentStatusDetailsBreakdownData.deploymentStatusText}
                     deploymentTriggerTime={deploymentStatusDetailsBreakdownData.deploymentTriggerTime}
                     triggeredBy={deploymentStatusDetailsBreakdownData.triggeredBy}
+                    loadingDetails={loadingDetails}
+                    loadingResourceTree={loadingResourceTree}
                 />
             </div>
             <SyncErrorComponent
@@ -455,7 +478,7 @@ export const Details: React.FC<DetailsType> = ({
                 appStreamData={streamData}
             />
 
-            {!appDetails?.deploymentAppDeleteRequest && (
+            {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && (
                 <>
                     <SecurityVulnerabilitites
                         imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
@@ -482,12 +505,18 @@ export const Details: React.FC<DetailsType> = ({
                     )}
                 </>
             )}
-            <NodeTreeDetailTab
-                appDetails={appDetails}
-                externalLinks={externalLinksAndTools.externalLinks}
-                monitoringTools={externalLinksAndTools.monitoringTools}
-                isDevtronApp={true}
-            />
+            {loadingResourceTree ? (
+                <div className="bcn-0 dc__border-top h-100">
+                    <Progressing pageLoader fullHeight size={32} />
+                </div>
+            ) : (
+                <NodeTreeDetailTab
+                    appDetails={appDetails}
+                    externalLinks={externalLinksAndTools.externalLinks}
+                    monitoringTools={externalLinksAndTools.monitoringTools}
+                    isDevtronApp={true}
+                />
+            )}
             {detailedStatus && (
                 <AppStatusDetailModal
                     close={hideAppDetailsStatus}

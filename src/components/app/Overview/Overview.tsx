@@ -3,7 +3,13 @@ import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getAppOtherEnvironment, getJobCIPipeline, getTeamList } from '../../../services/service'
-import { handleUTCTime, importComponentFromFELibrary, processDeployedTime, sortOptionsByValue, useAsync } from '../../common'
+import {
+    handleUTCTime,
+    importComponentFromFELibrary,
+    processDeployedTime,
+    sortOptionsByValue,
+    useAsync,
+} from '../../common'
 import { showError, Progressing, TagType, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails, AppOverviewProps, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
@@ -22,7 +28,7 @@ import {
     ExternalLinksAndToolsType,
     ExternalLinkScopeType,
 } from '../../externalLinks/ExternalLinks.type'
-import { getExternalLinks, getMonitoringTools } from '../../externalLinks/ExternalLinks.service'
+import { getExternalLinks } from '../../externalLinks/ExternalLinks.service'
 import { sortByUpdatedOn } from '../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import AboutTagEditModal from '../details/AboutTagEditModal'
@@ -75,22 +81,20 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     }, [appId])
 
     const getExternalLinksDetails = (): void => {
-        Promise.all([getMonitoringTools(), getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)])
-            .then(([monitoringToolsRes, externalLinksRes]) => {
+        getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
+            .then((externalLinksRes) => {
                 setExternalLinksAndTools({
                     fetchingExternalLinks: false,
                     externalLinks:
-                        externalLinksRes.result
-                            ?.filter((_link) => _link.type === ExternalLinkScopeType.AppLevel)
-                            ?.sort(sortByUpdatedOn) || [],
+                        externalLinksRes.result?.ExternalLinks?.filter(
+                            (_link) => _link.type === ExternalLinkScopeType.AppLevel,
+                        )?.sort(sortByUpdatedOn) || [],
                     monitoringTools:
-                        monitoringToolsRes.result
-                            ?.map((tool) => ({
-                                label: tool.name,
-                                value: tool.id,
-                                icon: tool.icon,
-                            }))
-                            .sort(sortOptionsByValue) || [],
+                        externalLinksRes.result?.Tools?.map((tool) => ({
+                            label: tool.name,
+                            value: tool.id,
+                            icon: tool.icon,
+                        })).sort(sortOptionsByValue) || [],
                 })
             })
             .catch((e) => {
@@ -121,8 +125,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const toggleTagsUpdateModal = (e) => {
         stopPropagation(e)
         setShowUpdateTagModal(!showUpdateTagModal)
-        if(showUpdateTagModal){
-          setReloadMandatoryProjects(!reloadMandatoryProjects)
+        if (showUpdateTagModal) {
+            setReloadMandatoryProjects(!reloadMandatoryProjects)
         }
     }
 
@@ -161,7 +165,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             const payload = {
                 id: parseInt(appId),
                 description: newDescription,
-                labels: appMetaInfo.labels
+                labels: appMetaInfo.labels,
             }
 
             const appLabel = await createAppLabels(payload)

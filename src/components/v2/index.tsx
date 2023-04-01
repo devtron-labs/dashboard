@@ -18,14 +18,13 @@ import IndexStore from './appDetails/index.store'
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
 import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type'
-import { getExternalLinks, getMonitoringTools } from '../externalLinks/ExternalLinks.service'
+import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
 import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState'
 
 let initTimer = null
 
 function RouterComponent({ envType }) {
-    const [isLoading, setIsLoading] = useState(true)
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const { path } = useRouteMatch()
     const location = useLocation()
@@ -41,8 +40,6 @@ function RouterComponent({ envType }) {
 
     useEffect(() => {
         IndexStore.setEnvDetails(envType, +params.appId, +params.envId)
-
-        setIsLoading(true)
         setLoadingDetails(true)
         setLoadingResourceTree(true)
 
@@ -83,74 +80,66 @@ function RouterComponent({ envType }) {
         }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL || 30000)
     }
 
-    const _getAndSetAppDetail = async () => {
-        try {
-            if (envType === EnvType.CHART) {
-                // Get App Details
-                getInstalledChartDetail(+params.appId, +params.envId)
-                    .then((response) => {
-                        appDetailsRef.current = {
-                            ...appDetailsRef.current,
-                            ...response.result,
-                        }
-                        IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_HELM_CHART)
-                        getExternalLinksAndTools(response.result?.clusterId)
-                    })
-                    .finally(() => {
-                        setLoadingDetails(false)
-                    })
-                // Get App Resource Tree
-                getInstalledChartResourceTree(+params.appId, +params.envId)
-                    .then((response) => {
-                        appDetailsRef.current = {
-                            ...appDetailsRef.current,
-                            ...response.result,
-                        }
-                        IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_HELM_CHART)
-                    })
-                    .finally(() => {
-                        setLoadingResourceTree(false)
-                    })
-            } else {
-                // Sohel: Revisit this flow
-                const response = await getInstalledAppDetail(+params.appId, +params.envId)
-                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
-            }
-
-            setErrorResponseCode(undefined)
-        } catch (e: any) {
-            if (e?.code) {
-                setErrorResponseCode(e.code)
-            }
-        } finally {
-            setIsLoading(false)
+    const handleAppDetailsCallError = (e: any) => {
+        if (e?.code) {
+            setErrorResponseCode(e.code)
         }
+    }
+
+    const handlePublishAppDetails = (response) => {
+        appDetailsRef.current = {
+            ...appDetailsRef.current,
+            ...response.result,
+        }
+        IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_HELM_CHART)
+    }
+
+    const _getAndSetAppDetail = async () => {
+        if (envType === EnvType.CHART) {
+            // Get App Details
+            getInstalledChartDetail(+params.appId, +params.envId)
+                .then((response) => {
+                    handlePublishAppDetails(response)
+                    getExternalLinksAndTools(response.result?.clusterId)
+                })
+                .catch(handleAppDetailsCallError)
+                .finally(() => {
+                    setLoadingDetails(false)
+                })
+
+            // Get App Resource Tree
+            getInstalledChartResourceTree(+params.appId, +params.envId)
+                .then(handlePublishAppDetails)
+                .catch(handleAppDetailsCallError)
+                .finally(() => {
+                    setLoadingResourceTree(false)
+                })
+        } else {
+            // Sohel: Revisit this flow
+            const response = await getInstalledAppDetail(+params.appId, +params.envId)
+            IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
+        }
+
+        setErrorResponseCode(undefined)
     }
 
     const getExternalLinksAndTools = (clusterId) => {
         if (clusterId) {
-            Promise.all([
-                getMonitoringTools(),
-                getExternalLinks(clusterId, params.appId, ExternalLinkIdentifierType.DevtronInstalledApp),
-            ])
-                .then(([monitoringToolsRes, externalLinksRes]) => {
+            getExternalLinks(clusterId, params.appId, ExternalLinkIdentifierType.DevtronInstalledApp)
+                .then((externalLinksRes) => {
                     setExternalLinksAndTools({
-                        externalLinks: externalLinksRes.result?.sort(sortByUpdatedOn) || [],
+                        externalLinks: externalLinksRes.result?.ExternalLinks?.sort(sortByUpdatedOn) || [],
                         monitoringTools:
-                            monitoringToolsRes.result
-                                ?.map((tool) => ({
-                                    label: tool.name,
-                                    value: tool.id,
-                                    icon: tool.icon,
-                                }))
-                                .sort(sortOptionsByValue) || [],
+                            externalLinksRes.result?.Tools?.map((tool) => ({
+                                label: tool.name,
+                                value: tool.id,
+                                icon: tool.icon,
+                            })).sort(sortOptionsByValue) || [],
                     })
                 })
                 .catch((e) => {
                     setExternalLinksAndTools(externalLinksAndTools)
                 })
-        } else {
-            setIsLoading(false)
         }
     }
 
@@ -179,9 +168,9 @@ function RouterComponent({ envType }) {
 
     return (
         <React.Fragment>
-            {isLoading && <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />}
+            {/* {isLoading && <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />} */}
             {renderErrorScreen()}
-            {!isLoading && !errorResponseCode && (
+            {!errorResponseCode && (
                 <>
                     {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
                     <Suspense fallback={<DetailsProgressing loadingText="Please wait…" size={24} />}>
