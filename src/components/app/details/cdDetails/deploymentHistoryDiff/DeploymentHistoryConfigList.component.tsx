@@ -32,7 +32,7 @@ export default function DeploymentHistoryConfigList({
         })
     }, [triggerId])
 
-    const getNavLink = (componentId: number, componentName: string, key: string, childComponentName?: string) => {
+    const getNavLink = (index:number , componentId: number, componentName: string, key: string, childComponentName?: string) => {
         const currentComponent = DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP[componentName]
         const configURL = `${match.url}/${currentComponent.VALUE}/${componentId}${
             childComponentName ? `/${childComponentName}` : ''
@@ -45,6 +45,8 @@ export default function DeploymentHistoryConfigList({
                 onClick={() => {
                   setFullScreenView(false)
                 }}
+                data-testid = {`configuration-deployment-template-option-${index}`}
+
                 className="bcb-1 dc__no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-12 flex dc__content-space cursor lh-20"
             >
                 {childComponentName ? childComponentName : currentComponent.DISPLAY_NAME}
@@ -74,6 +76,7 @@ export default function DeploymentHistoryConfigList({
                                     </div>
                                     {historicalComponent.childList.map((historicalComponentName, childIndex) =>
                                         getNavLink(
+                                            index,
                                             historicalComponent.id,
                                             historicalComponent.name,
                                             `config-${index}-${childIndex}`,
@@ -82,7 +85,7 @@ export default function DeploymentHistoryConfigList({
                                     )}
                                 </>
                             ) : (
-                                getNavLink(historicalComponent.id, historicalComponent.name, `config-${index}`)
+                                getNavLink(index , historicalComponent.id, historicalComponent.name, `config-${index}`)
                             )}
                         </div>
                     )

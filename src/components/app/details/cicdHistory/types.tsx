@@ -106,6 +106,7 @@ export interface EmptyViewType {
     subTitle: string
     link?: string
     linkText?: string
+    dataTestId?: string
 }
 
 export interface SidebarType {
@@ -127,6 +128,7 @@ export interface HistorySummaryCardType {
     artifact: string
     type: HistoryComponentType
     stage: DeploymentStageType
+    dataTestId?: string
 }
 
 export interface SummaryTooltipCardType {
