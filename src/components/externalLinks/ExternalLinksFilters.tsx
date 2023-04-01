@@ -13,8 +13,8 @@ import {
 } from '../externalLinks/ExternalLinks.type'
 import { OptionType } from '../app/types'
 import { FilterMenuList, ValueContainer } from './ExternalLinks.component'
-import { Option } from '../common'
 import { customMultiSelectStyles } from './ExternalLinks.utils'
+import { Option } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ClusterFilter = ({
     clusters,

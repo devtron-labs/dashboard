@@ -1,5 +1,5 @@
 import { Routes } from '../../config'
-import { get, post } from '../../services/api'
+import { get, post } from '@devtron-labs/devtron-fe-common-lib'
 
 export function saveCIConfig(request) {
     return post(Routes.CI_CONFIG_GET, request)

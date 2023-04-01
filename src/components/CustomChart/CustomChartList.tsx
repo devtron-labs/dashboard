@@ -7,9 +7,9 @@ import { ReactComponent as Upload } from '../../assets/icons/ic-arrow-line-up.sv
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getChartList } from './customChart.service'
-import { ErrorScreenManager, Progressing, showError, sortObjectArrayAlphabetically } from '../common'
+import { sortObjectArrayAlphabetically } from '../common'
+import { showError, Progressing, ErrorScreenManager, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDetailType, ChartListResponse } from './types'
-import EmptyState from '../EmptyState/EmptyState'
 import Tippy from '@tippyjs/react'
 
 export default function CustomChartList() {

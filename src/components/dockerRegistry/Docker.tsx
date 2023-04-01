@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react'
+import { useForm, useAsync, CustomInput, not, handleOnBlur, handleOnFocus, parsePassword } from '../common'
 import {
     showError,
-    useForm,
-    Select,
     Progressing,
-    useAsync,
+    TippyCustomized,
+    TippyTheme,
     sortCallback,
-    CustomInput,
-    not,
-    multiSelectStyles,
-    handleOnBlur,
-    handleOnFocus,
-    parsePassword,
     ErrorScreenNotAuthorized,
-} from '../common'
+    multiSelectStyles,
+    Reload,
+    RadioGroup,
+    RadioGroupItem,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { getClusterListMinWithoutAuth, getDockerRegistryList } from '../../services/service'
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'
@@ -30,14 +28,11 @@ import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import ReactSelect, { components } from 'react-select'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type'
 import ManageRegistry from './ManageRegistry'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { CredentialType, CustomCredential } from './dockerType'
-import Reload from '../Reload/Reload'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
-import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 
 enum CERTTYPE {
     SECURE = 'secure',
@@ -345,7 +340,7 @@ function DockerForm({
         setCustomState((st) => ({ ...st, [e.target.name]: { value: e.target.value, error: '' } }))
     }
 
-    
+
 
     const handleRegistryTypeChange = (selectedRegistry) => {
         setSelectedDockerRegistryType(selectedRegistry)

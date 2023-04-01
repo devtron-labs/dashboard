@@ -1,10 +1,9 @@
 import { Routes } from '../../config';
-import { get, post, put, trash } from '../../services/api';
-import { ResponseType } from '../../services/service.types';
+import { get, post, put, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib';
 
 export function getClusterList(): Promise<any> {
     const URL = `${Routes.CLUSTER}`;
-    return get(URL); 
+    return get(URL);
     // return new Promise((resolve, reject) => {
     //     resolve(
     //         {
@@ -64,6 +63,6 @@ export function deleteCluster(request): Promise<any> {
     return trash(Routes.CLUSTER, request);
 }
 
-export function deleteEnvironment(request): Promise<any> {
-    return trash(Routes.ENVIRONMENT, request)
+export function deleteEnvironment(request): Promise<any>{
+    return trash(Routes.ENVIRONMENT, request);
 }

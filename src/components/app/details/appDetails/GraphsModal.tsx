@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
-import { VisibleModal, DatePickerType2 as DateRangePicker } from '../../../common';
+import { DatePickerType2 as DateRangePicker } from '../../../common';
 import { AppMetricsTabType, ChartType, StatusType, ChartTypes, StatusTypes, AppMetricsTab } from './appDetails.type';
 import { getIframeSrc, isK8sVersionValid, ThroughputSelect, getCalendarValue, LatencySelect } from './utils';
 import { Moment } from 'moment';
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg';
 import { DEFAULTK8SVERSION } from '../../../../config';
+import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib';
 
 export const ChartNames = {
     'cpu': 'CPU Usage',

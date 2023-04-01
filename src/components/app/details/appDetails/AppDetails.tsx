@@ -1,8 +1,15 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react'
+import {
+    showError,
+    Progressing,
+    ConfirmationDialog,
+    Host,
+    stopPropagation,
+    multiSelectStyles,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime } from '../../service'
 import {
     URLS,
-    Host,
     getAppDetailsURL,
     getAppTriggerURL,
     DOCUMENTATION,
@@ -14,15 +21,11 @@ import {
 import {
     NavigationArrow,
     useEffectAfterMount,
-    showError,
-    Progressing,
-    ConfirmationDialog,
     useAppContext,
     noop,
     useEventSource,
     FragmentHOC,
     useSearchString,
-    multiSelectStyles,
     useAsync,
     ScanDetailsModal,
 } from '../../../common'
@@ -63,7 +66,7 @@ import {
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
 import { TriggerInfoModal } from '../../list/TriggerInfo'
-import { sortObjectArrayAlphabetically, sortOptionsByValue, stopPropagation } from '../../../common/helpers/Helpers'
+import { sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'

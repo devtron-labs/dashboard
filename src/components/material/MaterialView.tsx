@@ -1,13 +1,12 @@
 import React, { Component } from 'react'
 import ReactSelect, { components } from 'react-select'
-import { Progressing, Checkbox, multiSelectStyles } from '../common'
+import { Progressing, ConditionalWrap, Checkbox, InfoColourBar, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 import { MaterialViewProps, MaterialViewState } from './material.types'
 import { NavLink } from 'react-router-dom'
 import { URLS } from '../../config'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Down } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
@@ -15,7 +14,7 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap, sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
+import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
 import DeleteComponent from '../../util/DeleteComponent'
 import { deleteMaterial } from './material.service'
 import {
@@ -25,8 +24,7 @@ import {
 } from '../../config/constantMessaging'
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import { AuthenticationType } from '../cluster/cluster.type'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import { timeStamp } from 'console'
+
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
     constructor(props) {
         super(props)

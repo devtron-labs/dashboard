@@ -1,25 +1,30 @@
 import React, { Component } from 'react'
 import { SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { ServerErrors } from '../../modals/commonTypes'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import {
-    VisibleModal,
     Select,
-    Progressing,
     ButtonWithLoader,
-    showError,
     isEmpty,
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
-    Checkbox,
-    DeleteDialog,
-    CHECKBOX_VALUE,
-    sortObjectArrayAlphabetically,
-    Drawer,
+    sortObjectArrayAlphabetically
 } from '../common'
 import { toast } from 'react-toastify'
 import { Info } from '../common/icons/Icons'
-import { ErrorScreenManager } from '../common'
+import {
+    ErrorScreenManager,
+    Progressing,
+    showError,
+    VisibleModal,
+    Drawer,
+    DeleteDialog,
+    ForceDeleteDialog,
+    ServerErrors,
+    Checkbox,
+    CHECKBOX_VALUE,
+    InfoColourBar,
+    RadioGroup,
+    RadioGroupItem,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,
     saveCDPipeline,
@@ -50,12 +55,10 @@ import config from './sampleConfig.json'
 import ReactSelect from 'react-select'
 import { styles, DropdownIndicator, Option } from './cdpipeline.util'
 import { EnvFormatOptions, formatHighlightedTextDescription, GroupHeading } from '../v2/common/ReactSelect.utils'
-import './cdPipeline.css'
+import './cdPipeline.scss'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog'
 import { ConditionalWrap, createClusterEnvGroup } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { PipelineType } from '../app/details/triggerView/types'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
 import { groupStyle } from '../secrets/secret.utils'
