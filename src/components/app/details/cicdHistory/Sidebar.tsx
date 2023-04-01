@@ -80,10 +80,10 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
     return (
         <>
             <div className="select-pipeline-wrapper w-100 pl-16 pr-16 dc__overflow-hidden">
-                <label className="form__label" data-testid = "deployment-history-environment-heading">Select {selectLabel()}</label>
+                <label className="form__label" data-testid={`Select ${selectLabel()}`}>Select {selectLabel()}</label>
                 <ReactSelect
-                    value={selectedFilter}
                     classNamePrefix="history-pipeline-dropdown"
+                    value={selectedFilter}
                     options={
                         type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI
                             ? filterOptions

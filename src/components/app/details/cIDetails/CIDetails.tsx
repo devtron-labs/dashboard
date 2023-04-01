@@ -251,7 +251,13 @@ export const Details = ({
                         />
                         <ul className="tab-list dc__border-bottom pl-20 pr-20">
                             <li className="tab-list__tab">
-                                <NavLink replace className="tab-list__tab-link" activeClassName="active" to={`logs`}>
+                                <NavLink
+                                    replace
+                                    className="tab-list__tab-link"
+                                    activeClassName="active"
+                                    to={`logs`}
+                                    data-testid="logs-link"
+                                >
                                     Logs
                                 </NavLink>
                             </li>
@@ -261,6 +267,7 @@ export const Details = ({
                                     className="tab-list__tab-link"
                                     activeClassName="active"
                                     to={`source-code`}
+                                    data-testid="source-code-link"
                                 >
                                     Source code
                                 </NavLink>
@@ -271,6 +278,7 @@ export const Details = ({
                                     className="tab-list__tab-link"
                                     activeClassName="active"
                                     to={`artifacts`}
+                                    data-testid="artifacts-link"
                                 >
                                     Artifacts
                                 </NavLink>
@@ -282,6 +290,7 @@ export const Details = ({
                                         className="tab-list__tab-link"
                                         activeClassName="active"
                                         to={`security`}
+                                        data-testid="security_link"
                                     >
                                         Security
                                     </NavLink>
@@ -440,7 +449,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status }: SecurityTabType) => {
 
     return (
         <>
-            <div className="security__top">Latest Scan Execution</div>
+            <div className="security__top" data-testid="security-scan-execution-heading">Latest Scan Execution</div>
             <div className="white-card white-card--ci-scan">
                 <div className="security-scan__header" onClick={toggleCollapse}>
                     <Down
