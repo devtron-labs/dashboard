@@ -583,7 +583,6 @@ button.anchor {
 }
 
 .app-summary__status-name {
-
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,
@@ -1152,12 +1151,12 @@ button.anchor {
     overflow: hidden;
     border-radius: 4px;
 
-    input+.radio__item-label {
+    input + .radio__item-label {
         border-radius: 0;
         border: 1px solid var(--N200);
     }
 
-    input[type='checkbox']:checked+.radio__item-label {
+    input[type='checkbox']:checked + .radio__item-label {
         border-radius: 0;
         background-color: var(--N100);
         color: var(--N900);
@@ -1186,12 +1185,12 @@ button.anchor {
             border-right: unset;
         }
 
-        &:first-child input+.radio__item-label {
+        &:first-child input + .radio__item-label {
             border-top-left-radius: 4px;
             border-bottom-left-radius: 4px;
         }
 
-        &:last-child input+.radio__item-label {
+        &:last-child input + .radio__item-label {
             border-top-right-radius: 4px;
             border-bottom-right-radius: 4px;
             border: 1px solid var(--N200);
@@ -1482,7 +1481,7 @@ button.anchor {
     vertical-align: bottom;
 }
 
-.dc__tertiary-tab__radio input:checked~.dc__tertiary-tab {
+.dc__tertiary-tab__radio input:checked ~ .dc__tertiary-tab {
     border: solid 1px var(--B500);
     background-color: var(--B100);
 }
@@ -2061,7 +2060,7 @@ textarea,
     }
 }
 
-.basic-multi-select>.select__control--is-disabled {
+.basic-multi-select > .select__control--is-disabled {
     background-color: var(--N100) !important;
 }
 
@@ -2897,18 +2896,18 @@ textarea::placeholder {
     animation-name: shimmer-loading;
     animation-timing-function: linear;
     background-color: #f6f7f8;
-    background: linear-gradient(90deg, #EDF1F5 30%, #FFFFFF 60%, #EDF1F5 100%);
+    background: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
     background-size: 800px 104px;
     position: relative;
 }
 
 @keyframes shimmer-loading {
     0% {
-        background-position: -800px 0
+        background-position: -800px 0;
     }
 
     100% {
-        background-position: 800px 0
+        background-position: 800px 0;
     }
 }
 
@@ -2918,4 +2917,9 @@ textarea::placeholder {
     left: 50%;
     transform: translate(-50%, -50%);
     width: 85%;
+}
+
+.full-height-width {
+    height: 100vh;
+    width: 100vw;
 }
