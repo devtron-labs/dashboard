@@ -47,8 +47,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [syncListData, setSyncListData] = useState<boolean>()
 
     // API master data
-    const [projectListRes, setProjectListRes] = useState({ result: [] })
-    const [environmentListRes, setEnvironmentListRes] = useState({ result: [] })
+    const [projectListRes, setProjectListRes] = useState([])
+    const [environmentListRes, setEnvironmentListRes] = useState([])
 
     // search
     const [searchString, setSearchString] = useState(undefined)
@@ -733,6 +733,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 labelKey="label"
                                 buttonText={APP_LIST_HEADERS.AppStatus}
                                 placeholder={APP_LIST_HEADERS.SearchAppStatus}
+                                isDisabled={dataStateType === AppListViewType.LOADING}
+                                disableTooltipMessage={' '}
                                 searchable
                                 multi
                                 type={AppListConstants.FilterType.APP_STATUS}
@@ -748,6 +750,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         labelKey="label"
                         buttonText="Projects"
                         placeholder="Search Project"
+                        isDisabled={dataStateType === AppListViewType.LOADING}
+                        disableTooltipMessage={' '}
                         searchable
                         multi
                         type={AppListConstants.FilterType.PROJECT}
@@ -759,6 +763,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             <span className="filter-divider"></span>
                             <Filter
                                 list={masterFilters.environments}
+                                isDisabled={dataStateType === AppListViewType.LOADING}
+                                disableTooltipMessage={' '}
                                 labelKey="label"
                                 buttonText="Environment"
                                 searchable
@@ -778,6 +784,8 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         searchable
                         multi
                         placeholder="Search Cluster"
+                        isDisabled={dataStateType === AppListViewType.LOADING}
+                        disableTooltipMessage={' '}
                         type={AppListConstants.FilterType.CLUTSER}
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
@@ -969,24 +977,24 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
     return (
         <div>
-            {dataStateType === AppListViewType.LOADING && (
+            {/* {dataStateType === AppListViewType.LOADING && (
                 <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>
-            )}
+            )} */}
             {dataStateType === AppListViewType.ERROR && (
                 <div className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )}
-            {dataStateType === AppListViewType.LIST && (
+            {(
                 <>
                     <HeaderWithCreateButton headerName="Applications" isSuperAdmin={isSuperAdmin} />
                     {renderMasterFilters()}
                     {renderAppliedFilters()}
                     {renderAppTabs()}
                     {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
-                    <>
+                    {dataStateType === AppListViewType.LIST && <>
                         {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
                             serverMode === SERVER_MODE.FULL && (
                                 <DevtronAppListContainer
@@ -1034,7 +1042,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 )}
                             </>
                         )}
-                    </>
+                    </>}
                 </>
             )}
         </div>
