@@ -2244,8 +2244,16 @@ textarea,
     min-width: 385px;
 }
 
+.w-54 {
+    width: 54px;
+}
+
 .w-60 {
     width: 60px;
+}
+
+.w-64 {
+    width: 64px;
 }
 
 .w-80 {
@@ -2286,6 +2294,10 @@ textarea,
 
 .w-280 {
     width: 280px;
+}
+
+.w-296 {
+    width: 296px;
 }
 
 .w-300 {
@@ -2915,7 +2927,7 @@ textarea::placeholder {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-52%, -50%);
     width: 85%;
 }
 

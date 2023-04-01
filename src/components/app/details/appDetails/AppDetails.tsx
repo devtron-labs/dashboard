@@ -393,14 +393,6 @@ export const Details: React.FC<DetailsType> = ({
         }
     }, [pollingIntervalID])
 
-    // if (appDetailsLoading && !appDetails) {
-    //     return (
-    //         <div className="w-100 flex" style={{ height: 'calc(100vh - 80px)' }}>
-    //             <Progressing pageLoader />
-    //         </div>
-    //     )
-    // }
-
     async function handleHibernate(e) {
         try {
             setHibernating(true)
@@ -507,7 +499,7 @@ export const Details: React.FC<DetailsType> = ({
             )}
             {loadingResourceTree ? (
                 <div className="bcn-0 dc__border-top h-100">
-                    <Progressing pageLoader fullHeight size={32} />
+                    <Progressing pageLoader fullHeight size={32} fillColor="var(--N500)" />
                 </div>
             ) : (
                 <NodeTreeDetailTab

@@ -20,6 +20,8 @@ import ReactGA from 'react-ga4'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
+import { noop } from '../../../common'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 export function SourceInfo({
     appDetails,
@@ -151,16 +153,29 @@ export function SourceInfo({
     const shimmerLoaderBlocks = () => {
         return (
             <div className="flex left mb-16">
-                <div className="bcn-0 w-150 mh-92 mr-12 br-8 dc__position-rel">
-                    <div className="flex left column mt-6 w-85 dc__place-abs-shimmer-center">
-                        <div className="shimmer-loading w-80 h-24 br-2 mb-6" />
-                        <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
+                <div className="bcn-0 w-296 mh-92 mr-12 br-8 dc__position-rel">
+                    <div className="flex left w-85 dc__place-abs-shimmer-center">
+                        <div className="shimmer-loading icon-dim-48 br-4 mr-16" />
+                        <div>
+                            <div className="shimmer-loading w-150 h-16 br-2 mb-6" />
+                            <div className="shimmer-loading w-64 h-12 br-2 mb-6" />
+                        </div>
                     </div>
                 </div>
-                <div className="bcn-0 w-150 mh-92 mr-12 br-8 dc__position-rel">
-                    <div className="flex left column mt-6 w-85 dc__place-abs-shimmer-center">
-                        <div className="shimmer-loading w-80 h-24 br-2 mb-6" />
-                        <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
+                <div className="bcn-0 w-400 mh-92 mr-12 br-8 dc__position-rel">
+                    <div className="flex left w-85 dc__place-abs-shimmer-center">
+                        <div className="flex left">
+                            <div className="shimmer-loading icon-dim-48 br-4 mr-16" />
+                            <div>
+                                <div className="shimmer-loading w-150 h-16 br-2 mb-6" />
+                                <div className="shimmer-loading w-64 h-12 br-2 mb-6" />
+                            </div>
+                        </div>
+                        <div className="dc__border-right-n1 ml-12 mr-12 h-60" />
+                        <div>
+                            <div className="shimmer-loading w-120 h-16 br-2 mb-6" />
+                            <div className="shimmer-loading w-54 h-12 br-2 mb-6" />
+                        </div>
                     </div>
                 </div>
             </div>
@@ -177,31 +192,40 @@ export function SourceInfo({
                 <>
                     {!appDetails?.deploymentAppDeleteRequest && (
                         <div className="flex left w-100">
-                            {appDetails?.resourceTree && (
-                                <>
-                                    <div
-                                        onClick={showApplicationDetailedModal}
-                                        className="pointer flex left bcn-0 p-16 br-4 mw-340 mr-12 en-2 bw-1"
-                                    >
-                                        <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
-                                            <figure
-                                                className={`${status.toLowerCase()} dc__app-summary__icon mr-8 h-32 w-32`}
-                                                style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
-                                            ></figure>
-                                        </div>
-                                        <div className="flex left column">
-                                            <div className="flexbox">
-                                                <span className="fs-12 mr-5 fw-4 cn-9">Application status</span>
+                            <div
+                                onClick={loadingResourceTree ? noop : showApplicationDetailedModal}
+                                className="pointer flex left bcn-0 p-16 br-4 mw-340 mr-12 en-2 bw-1"
+                            >
+                                <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
+                                    {loadingResourceTree ? (
+                                        <Progressing size={32} fillColor="var(--N500)" />
+                                    ) : (
+                                        <figure
+                                            className={`${status.toLowerCase()} dc__app-summary__icon mr-8 h-32 w-32`}
+                                            style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
+                                        ></figure>
+                                    )}
+                                </div>
+                                <div className="flex left column">
+                                    <div className="flexbox">
+                                        <span className="fs-12 mr-5 fw-4 cn-9">Application status</span>
 
-                                                <Tippy
-                                                    className="default-tt"
-                                                    arrow={false}
-                                                    placement="top"
-                                                    content="The health status of your app"
-                                                >
-                                                    <Question className="icon-dim-16 mt-2" />
-                                                </Tippy>
-                                            </div>
+                                        <Tippy
+                                            className="default-tt"
+                                            arrow={false}
+                                            placement="top"
+                                            content="The health status of your app"
+                                        >
+                                            <Question className="icon-dim-16 mt-2" />
+                                        </Tippy>
+                                    </div>
+                                    {loadingResourceTree ? (
+                                        <div className="flex left column mt-6">
+                                            <div className="shimmer-loading w-120 h-16 br-2 mb-6" />
+                                            <div className="shimmer-loading w-54 h-12 br-2" />
+                                        </div>
+                                    ) : (
+                                        <>
                                             <div>
                                                 <span
                                                     className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}
@@ -229,73 +253,67 @@ export function SourceInfo({
                                                     </>
                                                 )}
                                             </div>
-                                        </div>
-                                    </div>
-                                    <div
-                                        onClick={showDeploymentDetailedStatus}
-                                        className={`flex left bcn-0 p-16 br-4 mw-382 en-2 bw-1 ${
-                                            appDetails?.deploymentAppType === DeploymentAppType.helm ? '' : 'cursor'
-                                        }`}
-                                    >
-                                        <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
-                                            <CD className="icon-dim-32" />
-                                        </div>
-                                        <div className="flex left column pr-16 dc__border-right-n1 mr-16">
-                                            <div className="flexbox">
-                                                <span className="fs-12 mr-5 fw-4 cn-9">Deployment status</span>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                            <div
+                                onClick={showDeploymentDetailedStatus}
+                                className={`flex left bcn-0 p-16 br-4 mw-382 en-2 bw-1 ${
+                                    appDetails?.deploymentAppType === DeploymentAppType.helm ? '' : 'cursor'
+                                }`}
+                            >
+                                <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
+                                    <CD className="icon-dim-32" />
+                                </div>
+                                <div className="flex left column pr-16 dc__border-right-n1 mr-16">
+                                    <div className="flexbox">
+                                        <span className="fs-12 mr-5 fw-4 cn-9">Deployment status</span>
 
-                                                <Tippy
-                                                    className="default-tt"
-                                                    arrow={false}
-                                                    placement="top"
-                                                    content="Status of last triggered deployment"
-                                                >
-                                                    <Question className="icon-dim-16 mt-2" />
-                                                </Tippy>
-                                            </div>
-                                            <div className="flexbox">
-                                                <span
-                                                    className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus} ${
-                                                        deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS
-                                                            ? 'dc__loading-dots'
-                                                            : ''
-                                                    }`}
-                                                >
-                                                    {deploymentStatusText}
-                                                </span>
-                                                <div className={`${deploymentStatus} icon-dim-20 mt-2`}></div>
-                                            </div>
-                                            {appDetails?.deploymentAppType !== DeploymentAppType.helm && (
-                                                <div>
-                                                    <span className="cb-5 fw-6 pointer">Details</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="flex left column mw-140">
-                                            <div className="fs-12 fw-4 cn-9">Deployment triggered</div>
-                                            <div className="flexbox">
-                                                <span className="fs-13 mr-5 fw-6 cn-9">
-                                                    {deploymentTriggerTime
-                                                        ? moment(
-                                                              deploymentTriggerTime,
-                                                              'YYYY-MM-DDTHH:mm:ssZ',
-                                                          ).fromNow()
-                                                        : '-'}
-                                                </span>
-                                                {deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS && (
-                                                    <Timer className="icon-dim-16 mt-4" />
-                                                )}
-                                            </div>
-                                            <div
-                                                className="fw-4 fs-12 cn-9 dc__ellipsis-right"
-                                                style={{ maxWidth: 'inherit' }}
-                                            >
-                                                by {triggeredBy || '-'}
-                                            </div>
-                                        </div>
+                                        <Tippy
+                                            className="default-tt"
+                                            arrow={false}
+                                            placement="top"
+                                            content="Status of last triggered deployment"
+                                        >
+                                            <Question className="icon-dim-16 mt-2" />
+                                        </Tippy>
                                     </div>
-                                </>
-                            )}
+                                    <div className="flexbox">
+                                        <span
+                                            className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus} ${
+                                                deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS
+                                                    ? 'dc__loading-dots'
+                                                    : ''
+                                            }`}
+                                        >
+                                            {deploymentStatusText}
+                                        </span>
+                                        <div className={`${deploymentStatus} icon-dim-20 mt-2`}></div>
+                                    </div>
+                                    {appDetails?.deploymentAppType !== DeploymentAppType.helm && (
+                                        <div>
+                                            <span className="cb-5 fw-6 pointer">Details</span>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex left column mw-140">
+                                    <div className="fs-12 fw-4 cn-9">Deployment triggered</div>
+                                    <div className="flexbox">
+                                        <span className="fs-13 mr-5 fw-6 cn-9">
+                                            {deploymentTriggerTime
+                                                ? moment(deploymentTriggerTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
+                                                : '-'}
+                                        </span>
+                                        {deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS && (
+                                            <Timer className="icon-dim-16 mt-4" />
+                                        )}
+                                    </div>
+                                    <div className="fw-4 fs-12 cn-9 dc__ellipsis-right" style={{ maxWidth: 'inherit' }}>
+                                        by {triggeredBy || '-'}
+                                    </div>
+                                </div>
+                            </div>
                             <div style={{ marginLeft: 'auto' }} className="flex right">
                                 {appDetails?.appStoreChartId && (
                                     <>
