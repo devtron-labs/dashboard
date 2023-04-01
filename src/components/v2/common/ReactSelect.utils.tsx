@@ -96,7 +96,7 @@ export const styles = {
 }
 
 export function Option(props) {
-    const { selectProps, data, showTippy, style, placement, tippyContent, tippyClass } = props
+    const { selectProps, data, showTippy, style, placement, tippyContent, tippyClass, showCheckBox } = props
     selectProps.styles.option = getCustomOptionSelectionStyle(style)
     const getOption = () => {
         return (
@@ -105,7 +105,20 @@ export function Option(props) {
             </div>
         )
     }
-
+    if (showCheckBox){
+        return (
+            <div>
+                <components.Option {...props}>
+                    <input
+                        type="checkbox"
+                        checked={props.isSelected}
+                        onChange={() => null}
+                    />{" "}
+                    <label>{props.label}</label>
+                </components.Option>
+        </div>
+        );
+    }
     return showTippy ? (
         <Tippy
             className={tippyClass || 'default-white'}
