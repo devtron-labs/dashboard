@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { DialogForm, DialogFormSubmit } from '@devtron-labs/devtron-fe-common-lib'
+import { DialogForm, DialogFormSubmit, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ProjectType, ChartGroupEntry } from '../charts.types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
@@ -7,6 +7,7 @@ import { styles, smallMenuList, menuList, DropdownIndicator } from '../charts.ut
 import { Option } from '../../v2/common/ReactSelect.utils';
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg';
 import ReactSelect from 'react-select';
+import { getEnvironmentListMin } from '../../../services/service';
 
 interface ChartGroupBasicDeployProps {
     projects: ProjectType[];
@@ -21,6 +22,7 @@ interface ChartGroupBasicDeployProps {
     closeDeployModal: () => void;
     redirectToAdvancedOptions: () => void;
     validateData: () => any;
+    setEnvironments: (envList) => void
 }
 
 interface ChartGroupBasicDeployState {
@@ -39,6 +41,17 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
         }
         this.toggleShowAppName = this.toggleShowAppName.bind(this);
         this.deployChartGroup = this.deployChartGroup.bind(this);
+    }
+
+    async componentDidMount() {
+        if(this.props.environments?.length) return
+        try {
+            const { result } = await getEnvironmentListMin()
+            this.props.setEnvironments(result);
+            
+        } catch (error) {
+            showError(error)
+        }
     }
 
     toggleShowAppName(event): void {

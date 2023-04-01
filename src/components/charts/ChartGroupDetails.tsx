@@ -38,6 +38,7 @@ export default function ChartGroupDetails() {
         handleChartVersionChange,
         handleChartValueChange,
         handleEnvironmentChangeOfAllCharts,
+        setEnvironmentList
     } = useChartGroup(groupId)
     const { breadcrumbs } = useBreadcrumb(
         {
@@ -302,8 +303,8 @@ export default function ChartGroupDetails() {
                     redirectToAdvancedOptions={() => {
                         toggleDeployModal(false)
                         push(`${url}/deploy`, { charts: state.charts, projectId })
-                    }}
-                />
+                    } } 
+                    setEnvironments={setEnvironmentList}                />
             ) : null}
             {showGitOpsWarningModal && <NoGitOpsConfiguredWarning closePopup={hideNoGitOpsWarning} />}
         </div>
