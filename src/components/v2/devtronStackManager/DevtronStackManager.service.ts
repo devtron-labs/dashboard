@@ -97,8 +97,8 @@ const getSavedServerInfo = (): ServerInfoResponse => {
     return _serverInfo
 }
 
-export const getServerInfo = async (withoutStatus?: boolean): Promise<ServerInfoResponse> => {
-    if (withoutStatus) {
+export const getServerInfo = async (withoutStatus: boolean, isFormHeader: boolean): Promise<ServerInfoResponse> => {
+    if (withoutStatus && !isFormHeader) {
         const _serverInfo = getSavedServerInfo()
         if (_serverInfo) {
             return Promise.resolve(_serverInfo)
