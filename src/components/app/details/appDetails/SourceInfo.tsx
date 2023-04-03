@@ -96,11 +96,11 @@ export function SourceInfo({
                     </Tippy>
                 )}
                 {appDetails?.deploymentAppDeleteRequest && (
-                    <>
+                    <div data-testid="deleteing-argocd-pipeline">
                         <Trash className="icon-dim-16 mr-8 ml-12" />
                         <span className="cr-5 fw-6">Deleting deployment pipeline </span>
                         <span className="dc__loading-dots cr-5" />
-                    </>
+                    </div>
                 )}
 
                 {!appDetails?.deploymentAppDeleteRequest && (
@@ -109,6 +109,7 @@ export function SourceInfo({
                             <button
                                 className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                 onClick={(e) => showUrlInfo(true)}
+                                data-testid="app-details-urls"
                             >
                                 <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
                                 URLs
@@ -118,6 +119,7 @@ export function SourceInfo({
                             <button
                                 className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                 onClick={(e) => showCommitInfo(true)}
+                                data-testid="app-details-commit-info"
                             >
                                 <CommitIcon className="icon-dim-16 mr-6" />
                                 commit info
@@ -127,6 +129,7 @@ export function SourceInfo({
                             <button
                                 className="cta cta-with-img small cancel fs-12 fw-6"
                                 onClick={(e) => showHibernateModal(isHibernated ? 'resume' : 'hibernate')}
+                                data-testid="app-details-hibernate"
                             >
                                 <ScaleDown
                                     className={`icon-dim-16 mr-6 rotate`}
@@ -152,6 +155,7 @@ export function SourceInfo({
                     {appDetails?.resourceTree && (
                         <>
                             <div
+                                data-testid="app-status-card"
                                 onClick={showApplicationDetailedModal}
                                 className="pointer flex left bcn-0 p-16 br-4 mw-340 mr-12 en-2 bw-1"
                             >
@@ -181,7 +185,7 @@ export function SourceInfo({
                                             {isHibernated ? 'Hibernating' : status}
                                         </span>
                                     </div>
-                                    <div className="flex left">
+                                    <div className="flex left" data-testid="app-status-details">
                                         {appDetails?.deploymentAppType === DeploymentAppType.helm ? (
                                             <span className="cb-5 fw-6">Details</span>
                                         ) : (
@@ -205,6 +209,7 @@ export function SourceInfo({
                             </div>
                             <div
                                 onClick={showDeploymentDetailedStatus}
+                                data-testid="deployment-status-card"
                                 className={`flex left bcn-0 p-16 br-4 mw-382 en-2 bw-1 ${
                                     appDetails?.deploymentAppType === DeploymentAppType.helm ? '' : 'cursor'
                                 }`}

@@ -262,7 +262,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             )}
                         </div>
                     )}
-                    <div className="node-row m-0 resource-row">
+                    <div className="node-row m-0 resource-row" data-testid="">
                         <div className={`resource-row__content ${firstColWidth} pt-9 pb-9`}>
                             <div className="flex left">
                                 <div
@@ -304,6 +304,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                                             <div
                                                                 key={'tab__' + index}
                                                                 data-name={kind}
+                                                                data-testid={kind}
                                                                 onClick={onClickNodeDetailsTab}
                                                                 className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
                                                                     node.kind === NodeType.Containers

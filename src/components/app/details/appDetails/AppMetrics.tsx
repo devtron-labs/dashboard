@@ -403,7 +403,7 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfi
     }
     return (
         <div className={`app-metrics-graph__empty-state-wrapper bcn-0 w-100 pt-18 pb-18 pl-20 pr-20 cursor ${addSpace}`}>
-            <div  onClick={toggleHeader} className="flex left w-100 lh-20">
+            <div data-testid="app-metrices-wrapper" onClick={toggleHeader} className="flex left w-100 lh-20">
                 <span className="fs-14 fw-6 cn-7 flex left mr-16">
                     <GraphIcon className="mr-8 fcn-7 icon-dim-20" />
                     APPLICATION METRICS
