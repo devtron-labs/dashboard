@@ -17,7 +17,7 @@ import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
 import * as queryString from 'query-string'
-import { AppListPropType, OrderBy, SortBy } from '../list/types'
+import { AppListPropType, EnvironmentClusterList, OrderBy, SortBy } from '../list/types'
 import { AddNewApp } from '../create/CreateApp'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import '../list/list.scss'
@@ -48,7 +48,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
 
     // API master data
     const [projectListRes, setProjectListRes] = useState([])
-    const [environmentListRes, setEnvironmentListRes] = useState([])
+    const [environmentClusterListRes, setEnvironmentClusterListRes] = useState<EnvironmentClusterList>()
 
     // search
     const [searchString, setSearchString] = useState(undefined)
@@ -91,7 +91,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         getInitData(payloadParsedFromUrl, serverMode)
             .then((initData) => {
                 setProjectListRes(initData.projectsRes)
-                setEnvironmentListRes(initData.environmentListRes)
+                setEnvironmentClusterListRes(initData.environmentClusterAppListData)
                 setMasterFilters(initData.filters)
                 setDataStateType(AppListViewType.LIST)
                 if (serverMode === SERVER_MODE.EA_ONLY) {
@@ -990,6 +990,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             serverMode === SERVER_MODE.FULL && (
                                 <DevtronAppListContainer
                                     payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                                    environmentClusterList={environmentClusterListRes}
                                     clearAllFilters={removeAllFilters}
                                     sortApplicationList={sortApplicationList}
                                     appListCount={appListCount}

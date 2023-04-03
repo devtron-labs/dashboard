@@ -129,7 +129,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
         }
 
         this.abortController = new AbortController();
-
+        
         getAppList(request, { signal: this.abortController.signal }).then((response) => {
             let view = AppListViewType.LIST;
             if (response.result.appCount === 0) {
@@ -137,7 +137,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
                 else view = AppListViewType.EMPTY;
             }
             let state = { ...this.state };
-            const apps = (response.result && !!response.result.appContainers) ? appListModal(response.result.appContainers) : []
+            const apps = (response.result && !!response.result.appContainers) ? appListModal(response.result.appContainers,this.props.environmentClusterList) : []
             state.code = response.code;
             state.apps = apps;
             state.isAllExpandable = apps.filter((app) => app.environments.length > 1).length > 0
@@ -169,7 +169,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
         }
         return `/app/${app.id}/trigger`;
     }
-
+    
 
     render() {
         return <AppListView

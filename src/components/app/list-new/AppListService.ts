@@ -130,9 +130,27 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
 
         ////// set master filters data ends (check/uncheck)
 
+        // set list data for env cluster & namespace
+        const environmentClusterAppListData = new Map()
+        const clusterMap = new Map()
+        clusterList.map((item) => {
+            clusterMap.set(item.id, item.cluster_name)
+        })
+
+        environmentList.map((env) => {
+            const envData = {
+                environmentName: env.environment_name,
+                namespace: env.namespace,
+                clusterName: clusterMap.get(env.cluster_id)
+            }
+            environmentClusterAppListData.set(env.id,envData)
+        })
+
+        // end
+
         return {
             projectsRes: projectList,
-            environmentListRes: environmentList,
+            environmentClusterAppListData: environmentClusterAppListData,
             filters : filters
         };
     })
