@@ -4,10 +4,7 @@
     margin: 0 auto;
     height: 100%;
     .cluster-list {
-        // height: calc(100vh - 194px);
         overflow: hidden;
-        // min-height: 500px;
-        // display: flex;
         .cluster-list__enviroment_name {
             height: 'fit-content';
             padding-top: 5px;
@@ -15,27 +12,23 @@
             text-align: left;
             width: 170px;
             display: flex;
-            // color: #0066CC;
-            // padding-right: 2px;
             .cluster-list__prod {
                 margin-left: 5px;
                 background: #f7fafc;
                 border: 1px solid #d0d4d9;
                 border-radius: 4px;
                 height: 20px;
-                font-family: 'Open Sans';
+                font-family: 'Open Sans', sans-serif;
                 font-style: normal;
                 font-weight: 400;
                 font-size: 12px;
                 width: 39px;
                 left: 125px;
                 top: 0px;
-                border-radius: 4px;
                 padding: 0px 2px 0px 4px;
             }
         }
         .cluster-list__name_space {
-            // color: #3B444C;
             height: 'fit-content';
             padding-top: 5px;
             padding-bottom: 5px;
@@ -181,7 +174,7 @@
 }
 
 
-.environment-type pointer {
+.environment-type {
     display: grid;
 }
 
