@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib';
-import { buildInitState, appListModal } from './appList.modal';
+import { buildInitState, appListModal, createAppListPayload } from './appList.modal';
 import { AppListProps, AppListState, OrderBy, SortBy } from './types';
 import { URLS, ViewType } from '../../../config';
 import { AppListView } from './AppListView';
@@ -48,7 +48,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
                 },
             });
         }).then(() => {
-          this.getAppList(this.props.payloadParsedFromUrl);
+          this.getAppList(createAppListPayload(this.props.payloadParsedFromUrl, this.props.environmentClusterList));
         }).catch((errors: ServerErrors) => {
             showError(errors);
             this.setState({ view: AppListViewType.ERROR, code: errors.code });
@@ -57,7 +57,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
 
     componentDidUpdate(prevProps) {
         if(prevProps.payloadParsedFromUrl !=  this.props.payloadParsedFromUrl){
-            this.getAppList(this.props.payloadParsedFromUrl);
+            this.getAppList(createAppListPayload(this.props.payloadParsedFromUrl, this.props.environmentClusterList));
         }
     }
 
@@ -130,7 +130,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
 
         this.abortController = new AbortController();
         
-        getAppList(request, { signal: this.abortController.signal }).then((response) => {
+        getAppList(request, { signal: this.abortController.signal }, true).then((response) => {
             let view = AppListViewType.LIST;
             if (response.result.appCount === 0) {
                 if (isSearchOrFilterApplied) view = AppListViewType.NO_RESULT;

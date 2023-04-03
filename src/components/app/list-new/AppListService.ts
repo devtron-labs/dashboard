@@ -141,7 +141,8 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
             const envData = {
                 environmentName: env.environment_name,
                 namespace: env.namespace,
-                clusterName: clusterMap.get(env.cluster_id)
+                clusterName: clusterMap.get(env.cluster_id),
+                clusterId: env.cluster_id
             }
             environmentClusterAppListData.set(env.id,envData)
         })
