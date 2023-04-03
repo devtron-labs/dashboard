@@ -215,7 +215,10 @@ export const Details: React.FC<DetailsType> = ({
     const syncSSE = useEventSource(
         `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
         [params.appId, params.envId],
-        !!appDetails?.appName && !!appDetails?.environmentName,
+        appDetails &&
+            !!appDetails.appName &&
+            !!appDetails.environmentName &&
+            appDetails.deploymentAppType !== DeploymentAppType.helm,
         (event) => setStreamData(JSON.parse(event.data)),
     )
 
