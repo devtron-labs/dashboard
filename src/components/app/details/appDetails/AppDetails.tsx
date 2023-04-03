@@ -266,7 +266,7 @@ export const Details: React.FC<DetailsType> = ({
         }
     }
 
-    async function callAppDetailsAPI() {
+    async function callAppDetailsAPI(fetchExternalLinks?: boolean) {
         appDetailsAPI(params.appId, params.envId, 25000)
             .then((response) => {
                 appDetailsRef.current = {
@@ -275,9 +275,10 @@ export const Details: React.FC<DetailsType> = ({
                 }
                 IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
                 setAppDetails(appDetailsRef.current)
+                _getDeploymentStatusDetail(appDetailsRef.current.deploymentAppType)
 
-                if (response.result?.clusterId) {
-                    getExternalLinksAndTools(response.result.clusterId, response.result.deploymentAppType)
+                if (fetchExternalLinks && response.result?.clusterId) {
+                    getExternalLinksAndTools(response.result.clusterId)
                 }
             })
             .catch(handleAppDetailsCallError)
@@ -299,21 +300,9 @@ export const Details: React.FC<DetailsType> = ({
             })
     }
 
-    function getExternalLinksAndTools(clusterId, deploymentAppType) {
-        Promise.all([
-            getExternalLinks(clusterId, params.appId, ExternalLinkIdentifierType.DevtronApp),
-            getDeploymentStatusDetail(params.appId, params.envId),
-        ])
-            .then(([externalLinksRes, deploymentStatusDetailRes]) => {
-                setExternalLinksAndTools({
-                    externalLinks: externalLinksRes.result?.ExternalLinks?.sort(sortByUpdatedOn) || [],
-                    monitoringTools:
-                        externalLinksRes.result?.Tools?.map((tool) => ({
-                            label: tool.name,
-                            value: tool.id,
-                            icon: tool.icon,
-                        })).sort(sortOptionsByValue) || [],
-                })
+    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppType) {
+        getDeploymentStatusDetail(params.appId, params.envId)
+            .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
                     if (deploymentAppType === DeploymentAppType.helm) {
                         setDeploymentStatusDetailsBreakdownData({
@@ -332,6 +321,22 @@ export const Details: React.FC<DetailsType> = ({
                         processDeploymentStatusData(deploymentStatusDetailRes.result)
                     }
                 }
+            })
+            .catch(noop)
+    }
+
+    function getExternalLinksAndTools(clusterId) {
+        getExternalLinks(clusterId, params.appId, ExternalLinkIdentifierType.DevtronApp)
+            .then((externalLinksRes) => {
+                setExternalLinksAndTools({
+                    externalLinks: externalLinksRes.result?.ExternalLinks?.sort(sortByUpdatedOn) || [],
+                    monitoringTools:
+                        externalLinksRes.result?.Tools?.map((tool) => ({
+                            label: tool.name,
+                            value: tool.id,
+                            icon: tool.icon,
+                        })).sort(sortOptionsByValue) || [],
+                })
             })
             .catch((e) => {
                 setExternalLinksAndTools(externalLinksAndTools)
@@ -383,7 +388,7 @@ export const Details: React.FC<DetailsType> = ({
     // useInterval(polling, interval);
     useEffect(() => {
         if (isPollingRequired) {
-            callAppDetailsAPI()
+            callAppDetailsAPI(true)
             const intervalID = setInterval(callAppDetailsAPI, interval)
             setPollingIntervalID(intervalID)
         } else {

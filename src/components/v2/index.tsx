@@ -48,10 +48,10 @@ function RouterComponent({ envType }) {
         }
         if (location.search.includes('newDeployment')) {
             setTimeout(() => {
-                _init()
+                _init(true)
             }, 30000)
         } else {
-            _init()
+            _init(true)
         }
     }, [params.appId, params.envId])
 
@@ -67,14 +67,14 @@ function RouterComponent({ envType }) {
     useEffect(() => {
         if (checkIfToRefetchData(location)) {
             setTimeout(() => {
-                _getAndSetAppDetail()
+                _getAndSetAppDetail(true)
                 deleteRefetchDataFromUrl(history, location)
             }, 5000)
         }
     }, [location.search])
 
-    const _init = () => {
-        _getAndSetAppDetail()
+    const _init = (fetchExternalLinks?: boolean) => {
+        _getAndSetAppDetail(fetchExternalLinks)
         initTimer = setTimeout(() => {
             _init()
         }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL || 30000)
@@ -94,13 +94,16 @@ function RouterComponent({ envType }) {
         IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_HELM_CHART)
     }
 
-    const _getAndSetAppDetail = async () => {
+    const _getAndSetAppDetail = async (fetchExternalLinks: boolean) => {
         if (envType === EnvType.CHART) {
             // Get App Details
             getInstalledChartDetail(+params.appId, +params.envId)
                 .then((response) => {
                     handlePublishAppDetails(response)
-                    getExternalLinksAndTools(response.result?.clusterId)
+
+                    if (fetchExternalLinks) {
+                        getExternalLinksAndTools(response.result?.clusterId)
+                    }
                 })
                 .catch(handleAppDetailsCallError)
                 .finally(() => {
@@ -115,7 +118,7 @@ function RouterComponent({ envType }) {
                     setLoadingResourceTree(false)
                 })
         } else {
-            // Sohel: Revisit this flow
+            // Revisit this flow
             const response = await getInstalledAppDetail(+params.appId, +params.envId)
             IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
         }
@@ -168,7 +171,6 @@ function RouterComponent({ envType }) {
 
     return (
         <React.Fragment>
-            {/* {isLoading && <DetailsProgressing loadingText="Please wait…" size={24} fullHeight />} */}
             {renderErrorScreen()}
             {!errorResponseCode && (
                 <>
