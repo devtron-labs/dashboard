@@ -1158,8 +1158,8 @@ function Environment({
         <div>
             {/* <form onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit} className="h-100 bcn-0 pt-0 pb-12"> */}
             <div className="form__row bcn-0 pt-0 pr-20 pb-12 pl-20">
-                <div className="h-48 flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12">
-                    <div className="form__title fw-6 ml-8">{id ? 'Edit Environment' : 'Add Environment'}</div>
+                <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12">
+                    <div className="fs-16 fw-6 lh-1-43 ml-20 title-padding">{id ? 'Edit Environment' : 'Add Environment'}</div>
                     {/* <Close className="icon-dim-24 dc__align-right cursor" onClick={hideClusterDrawer} /> */}
                     <button type="button" className="dc__transparent flex icon-dim-24" onClick={hideClusterDrawer}>
                         <Close className="icon-dim-24 dc__align-right cursor" />
