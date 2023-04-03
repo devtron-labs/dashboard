@@ -17,7 +17,7 @@ import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { AppType, DeploymentAppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
-import { showError, ToastBody } from '../../../../../common'
+import { showError, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
 import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,

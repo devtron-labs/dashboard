@@ -4,7 +4,8 @@ import { useRouteMatch } from 'react-router'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getClusterList } from './clusterNodes.service'
-import { handleUTCTime, Progressing, filterImageList, showError, createGroupSelectList } from '../common'
+import { handleUTCTime, filterImageList, createGroupSelectList } from '../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterDetail, ClusterListResponse, ClusterListType } from './types'
 import PageHeader from '../common/header/PageHeader'
 import { toast } from 'react-toastify'
@@ -31,7 +32,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     const [searchApplied, setSearchApplied] = useState(false)
     const [showTerminalModal, setShowTerminal] = useState(false)
     const [terminalclusterData, setTerminalCluster] = useState<ClusterDetail>()
-    
+
     const getData = () => {
         setLoader(true)
         getClusterList()

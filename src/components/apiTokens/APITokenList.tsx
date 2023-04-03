@@ -10,10 +10,9 @@ import { isTokenExpired } from './authorization.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import './apiToken.scss'
-import EmptyState from '../EmptyState/EmptyState'
+import { TippyCustomized, TippyTheme, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
-import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 
 function NoMatchingResults() {
     return (
@@ -59,9 +58,9 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                 documentationLinkText="View Documentation"
             >
                 <div className="icon-dim-16 fcn-9 ml-8 cursor">
-                    <Question />    
+                    <Question />
                 </div>
-                
+
             </TippyCustomized>
         )
     }

@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ToastBody, ErrorScreenNotAuthorized } from '../common'
+import { useForm, useEffectAfterMount, useAsync } from '../common'
+import { showError, Progressing, ToastBody, ErrorScreenNotAuthorized } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
-import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
+import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
 import { saveChartProviderConfig, updateChartProviderConfig, validateChartRepoConfiguration, reSyncChartRepo, deleteChartRepo } from './chartRepo.service';
 import { getChartRepoList } from '../../services/service'

@@ -1,4 +1,4 @@
-import { post, trash } from '../../services/api'
+import { post, trash } from '@devtron-labs/devtron-fe-common-lib'
 import {  Routes } from '../../config'
 
 export function updateConfig(id, appId, configData) {

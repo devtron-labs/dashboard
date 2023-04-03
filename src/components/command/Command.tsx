@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Progressing } from '../common';
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-forward.svg';
 import { getArgumentSuggestions, AllSuggestedArguments } from './command.util';
 import { COMMAND_REV, CommandProps, CommandState, ArgumentType, PlaceholderText } from './command.types';

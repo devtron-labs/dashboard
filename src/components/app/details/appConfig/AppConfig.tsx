@@ -11,15 +11,20 @@ import {
 } from '../../../../config'
 import {
     ErrorBoundary,
-    Progressing,
     usePrevious,
-    showError,
-    DeleteDialog,
-    ConfirmationDialog,
     useAsync,
-    ErrorScreenManager,
     ConditionalWrap,
 } from '../../../common'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    DeleteDialog,
+    ConfirmationDialog,
+    TippyCustomized,
+    TippyTheme,
+    InfoColourBar,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getAppConfigStatus, getAppOtherEnvironment, getWorkflowList } from '../../../../services/service'
 import { deleteApp } from './appConfig.service'
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg'
@@ -32,7 +37,6 @@ import { toast } from 'react-toastify'
 import './appConfig.scss'
 import { DOCUMENTATION } from '../../../../config'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
-import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 import {
     AppComposeRouterProps,
     AppConfigNavigationProps,
@@ -49,7 +53,6 @@ import {
 import { getUserRole } from '../../../userGroups/userGroup.service'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
-import TippyCustomized, { TippyTheme } from '../../../common/TippyCustomized'
 import { DeleteComponentsName } from '../../../../config/constantMessaging'
 import { DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE } from '../../../../config/constantMessaging'
 

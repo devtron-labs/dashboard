@@ -3,7 +3,8 @@ import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
 import { getAppOtherEnvironment, getChartReferences } from '../../services/service'
-import { Progressing, ConfirmationDialog, useJsonYaml, useEffectAfterMount, showError, useAsync, not } from '../common'
+import { useJsonYaml, useEffectAfterMount, useAsync, not } from '../common'
+import { showError, Progressing, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
 import {
     DeploymentConfigFormCTA,

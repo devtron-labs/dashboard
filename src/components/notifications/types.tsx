@@ -1,6 +1,5 @@
 import { RouteComponentProps } from 'react-router'
-import { ServerError } from '../../modals/commonTypes'
-import { ResponseType } from '../../services/service.types'
+import { ServerError, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface NotifierProps extends RouteComponentProps<{ id: string }> {}
 
