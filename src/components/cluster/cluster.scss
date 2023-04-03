@@ -1,4 +1,4 @@
-.api-token-container {
+.cluster-token-container {
     max-width: 1024px;
     min-width: 960px;
     margin: 0 auto;
@@ -51,12 +51,12 @@
         }
     }
 
-    .api-list-row {
+    .cluster-list-row {
         display: grid;
         grid-template-columns: 24px 170px 328px auto minmax(80px, 90px);
         grid-column-gap: 10px;
 
-        .api-key-expired-icon {
+        .cluster-key-expired-icon {
             path:first-of-type {
                 stroke: var(--R500);
             }
@@ -67,15 +67,15 @@
         }
     }
 
-    .api__row-actions {
+    .cluster__row-actions {
         display: none;
     }
 
-    .api-list-row {
+    .cluster-list-row {
         &:hover:not(:first-of-type) {
             background-color: var(--N50);
 
-            .api__row-actions {
+            .cluster__row-actions {
                 display: flex;
 
                 button {
@@ -150,7 +150,7 @@
 }
 
 .generate-token-modal {
-    .api-token-icon {
+    .cluster-token-icon {
         path:first-of-type {
             stroke: var(--G500);
         }
@@ -160,7 +160,7 @@
         }
     }
 
-    .api-token-text {
+    .cluster-token-text {
         width: 94%;
     }
 }

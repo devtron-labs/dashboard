@@ -495,9 +495,9 @@ function Cluster(
                                 //     )}
                                 // </div>
 
-                                <div className="api-token-container">
-                                    <div className="cluster-list">
-                                        <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-6 pb-6 pr-20 pl-10 dc__uppercase">
+                                <div className="cluster-token-container">
+                                    <div className="cluster-list" style={{border:0}}>
+                                        <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-6 pb-6 pr-20 pl-10 dc__uppercase">
                                             <div></div>
                                             <div className="cluster-list__enviroment_name">ENVIRONMENT</div>
                                             <div className="cluster-list__name_space">NAMESPACE</div>
@@ -518,7 +518,7 @@ function Cluster(
                                             }) =>
                                                 environment_name ? (
                                                     <div
-                                                        className="api-list-row flex-align-center fw-4 cn-9 fs-13 pl-10"
+                                                        className="cluster-list-row flex-align-center fw-4 cn-9 fs-13 pl-10"
                                                         style={{ height: 'fit-content' }}
                                                     >
                                                         <div className="dc__transparent cursor flex">
@@ -535,7 +535,7 @@ function Cluster(
                                                         </div>
                                                         <div className="cluster-list__name_space">{namespace}</div>
                                                         <div className="cluster-list__description">{description}</div>
-                                                        <div className="api__row-actions flex right mr-12">
+                                                        <div className="cluster__row-actions flex right mr-12">
                                                             {/* <button
                                         type="button"
                                         className="dc__transparent mr-18"
