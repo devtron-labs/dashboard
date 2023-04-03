@@ -54,7 +54,7 @@ export const deleteResource = (nodeDetails: any, appDetails: any, envId: string,
         ClusterId: clusterId,
         acdAppIdentifier: deploymentAppType === DeploymentAppType.argo_cd ? {
             appId,
-            envId
+            envId: Number(envId),
         } : undefined,
     }
     return post(Routes.DELETE_RESOURCE, data)
