@@ -134,11 +134,12 @@ export default function AppDetail() {
         )
     }
 
+    const environment = otherEnvsResult?.result?.find((env) => env.environmentId === +params.envId)
     return (
         <div className="app-details-page-wrapper">
             {!params.envId && otherEnvsResult?.result?.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
-                    <SourceInfo appDetails={null} environments={otherEnvsResult?.result} />
+                    <SourceInfo appDetails={null} environments={otherEnvsResult?.result} environment={environment} />
                 </div>
             )}
 
@@ -147,7 +148,7 @@ export default function AppDetail() {
                     key={params.appId + '-' + params.envId}
                     appDetailsAPI={fetchAppDetailsInTime}
                     isAppDeployment
-                    environment={otherEnvsResult?.result?.find((env) => env.environmentId === +params.envId)}
+                    environment={environment}
                     environments={otherEnvsResult?.result}
                     setIsAppDeleted={setIsAppDeleted}
                     commitInfo={commitInfo}
@@ -214,7 +215,10 @@ export const Details: React.FC<DetailsType> = ({
     const syncSSE = useEventSource(
         `${Host}/api/v1/applications/stream?name=${appDetails?.appName}-${appDetails?.environmentName}`,
         [params.appId, params.envId],
-        !!appDetails?.appName && !!appDetails?.environmentName,
+        appDetails &&
+            !!appDetails.appName &&
+            !!appDetails.environmentName &&
+            appDetails.deploymentAppType !== DeploymentAppType.helm,
         (event) => setStreamData(JSON.parse(event.data)),
     )
 
@@ -453,6 +457,7 @@ export const Details: React.FC<DetailsType> = ({
                 <SourceInfo
                     appDetails={appDetails}
                     setDetailed={toggleDetailedStatus}
+                    environment={environment}
                     environments={environments}
                     showCommitInfo={isAppDeployment && appDetails?.dataSource !== 'EXTERNAL' ? showCommitInfo : null}
                     showUrlInfo={isAppDeployment ? setUrlInfo : null}

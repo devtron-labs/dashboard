@@ -48,15 +48,17 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
         this.props.history.push(this.getCIDetailsURL())
     }
 
+    hideDetails(status: string = '') {
+      return status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed' || status ===''
+    }
+
     renderStatus() {
         let url = this.getCIDetailsURL()
         let status = this.props.status ? this.props.status.toLowerCase() : ''
-        let hideDetails =
-            status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
-        if (hideDetails)
+        if (this.hideDetails(status))
             return (
                 <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
-                    {this.props.status}
+                    {this.props.status ? this.props.status : 'not triggered'}
                 </div>
             )
         else
@@ -74,9 +76,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
     }
 
     renderCardContent(context) {
-        let status = this.props.status ? this.props.status.toLowerCase() : ''
-        let hideDetails =
-            status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
+        let hideDetails = this.hideDetails(this.props.status?.toLowerCase())
 
         return (
             <div

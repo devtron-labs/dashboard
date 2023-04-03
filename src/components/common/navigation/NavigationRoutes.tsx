@@ -252,7 +252,7 @@ export default function NavigationRoutes() {
         })
 
         try {
-            const { result } = await getServerInfo(!location.pathname.includes('/stack-manager'))
+            const { result } = await getServerInfo(!location.pathname.includes('/stack-manager'), false)
             setCurrentServerInfo({
                 serverInfo: result,
                 fetchingServerInfo: false,
