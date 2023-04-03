@@ -109,7 +109,7 @@ export const getServerInfo = async (withoutStatus: boolean, isFormHeader: boolea
     if (typeof Storage !== 'undefined') {
         localStorage.serverInfo = JSON.stringify(serverInfo)
     }
-    Promise.resolve(response)
+    return Promise.resolve(response)
 }
 
 export const executeServerAction = (serverActionRequest: ModuleActionRequest): Promise<ModuleActionResponse> => {
