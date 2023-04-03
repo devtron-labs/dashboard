@@ -559,14 +559,26 @@ function Cluster(
                                                             />
                                                             <DeleteInvolvement
                                                                 className="cursor"
-                                                                onClick={() => toggleConfirmation(true)}
+                                                                onClick={() => {
+                                                                    setEnvironment({
+                                                                        id,
+                                                                        environment_name,
+                                                                        cluster_id: clusterId,
+                                                                        namespace,
+                                                                        prometheus_url,
+                                                                        isProduction,
+                                                                        description,
+                                                                    })
+                                                                    toggleConfirmation(true)
+                                                                }}
+                                                                //onClick={() => toggleConfirmation(true)}
                                                             />
                                                             {confirmation && (
                                                                 <DeleteComponent
                                                                     setDeleting={() => {}}
                                                                     deleteComponent={deleteEnvironment}
                                                                     payload={getEnvironmentPayload()}
-                                                                    title={'jh'}
+                                                                    title={environment.environment_name}
                                                                     toggleConfirmation={toggleConfirmation}
                                                                     component={DeleteComponentsName.Environment}
                                                                     confirmationDialogDescription={
