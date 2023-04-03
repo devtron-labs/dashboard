@@ -86,6 +86,13 @@ export default function CDDetails() {
     }, [deploymentHistoryResult, loading])
 
     useEffect(() => {
+        if (result && result[1]) {
+            setDeploymentAppType(
+                result[1]['value']?.pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))
+                    ?.deploymentAppType,
+            )
+        }
+
         return () => {
             setTriggerHistory(new Map())
             setHasMoreLoading(false)

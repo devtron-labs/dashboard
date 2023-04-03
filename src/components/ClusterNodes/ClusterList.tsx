@@ -210,7 +210,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                 key={`cluster-${clusterData.id}`}
                 className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover ${
                     clusterData.nodeCount && isSuperAdmin ? 'dc__visible-hover--parent' : ''
-                }`}
+                } ${loader ? 'show-shimmer-loading' : ''}`}
             >
                 <div className="cb-5 dc__ellipsis-right flex left">
                     <NavLink
@@ -241,8 +241,8 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                         </div>
                     )}
                 </div>
-                <div className={`${loader ? 'shimmer-loading' : ''}`}>{clusterData.nodeCount}</div>
-                <div className={`${loader ? 'shimmer-loading' : ''}`}>
+                <div className="child-shimmer-loading">{clusterData.nodeCount}</div>
+                <div  className="child-shimmer-loading">
                     {errorCount > 0 && (
                         <>
                             <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
@@ -250,13 +250,13 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                         </>
                     )}
                 </div>
-                <div className={`dc__ellipsis-right ${loader ? 'shimmer-loading' : ''}`}>
+                <div className="dc__ellipsis-right child-shimmer-loading">
                     <Tippy className="default-tt" arrow={false} content={clusterData.serverVersion}>
                         <span>{clusterData.serverVersion}</span>
                     </Tippy>
                 </div>
-                <div className={`${loader ? 'shimmer-loading' : ''}`}>{clusterData.cpu?.capacity}</div>
-                <div className={`${loader ? 'shimmer-loading' : ''}`}>{clusterData.memory?.capacity}</div>
+                <div  className="child-shimmer-loading">{clusterData.cpu?.capacity}</div>
+                <div  className="child-shimmer-loading">{clusterData.memory?.capacity}</div>
             </div>
         )
     }

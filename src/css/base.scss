@@ -2901,6 +2901,22 @@ textarea::placeholder {
     z-index: 4;
 }
 
+.show-shimmer-loading {
+    .child-shimmer-loading {
+        animation-duration: 2s;
+        animation-fill-mode: forwards;
+        animation-iteration-count: infinite;
+        animation-name: shimmer-loading;
+        animation-timing-function: linear;
+        background-color: #f6f7f8;
+        background: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
+        background-size: 800px 104px;
+        position: relative;
+        height: 16px;
+        border-radius: 2px;
+        margin-top: 4px;
+    }
+}
 .shimmer-loading {
     animation-duration: 2s;
     animation-fill-mode: forwards;
