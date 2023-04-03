@@ -519,7 +519,7 @@ function Cluster(
                                                 environment_name ? (
                                                     <div
                                                         className="cluster-list-row flex-align-center fw-4 cn-9 fs-13 pl-10"
-                                                        style={{ height: 'fit-content' }}
+                                                        style={{ height: '36px' }}
                                                     >
                                                         <div className="dc__transparent cursor flex">
                                                             {environment_name && <Database className="icon-dim-24" />}
@@ -1251,7 +1251,7 @@ function Environment({
                 <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
                     {id && (
                         <button
-                            style={{ marginLeft: '20px', marginRight: 'auto' }}
+                            style={{ marginLeft: '20px', marginRight: 'auto', height: '36px' }}
                             className="cta override-button delete scr-5"
                             type="button"
                             onClick={() => toggleConfirmation(true)}
@@ -1260,10 +1260,20 @@ function Environment({
                             {deleting ? <Progressing /> : 'Delete Environment'}
                         </button>
                     )}
-                    <button className="cta cancel mt-8" type="button" onClick={hideClusterDrawer}>
+                    <button
+                        style={{ height: '36px' }}
+                        className="cta cancel mt-8 mb-8"
+                        type="button"
+                        onClick={hideClusterDrawer}
+                    >
                         Cancel
                     </button>
-                    <button className="cta ml-8 mr-20 mt-8" type="submit" disabled={loading}>
+                    <button
+                        style={{ height: '36px' }}
+                        className="cta ml-8 mr-20 mt-8 mb-8"
+                        type="submit"
+                        disabled={loading}
+                    >
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}
                     </button>
                 </div>
