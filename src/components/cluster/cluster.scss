@@ -195,3 +195,8 @@
     width: 239px;
     height: 40px;
 }
+.app-status-card__list-item {
+    display: flex;
+    flex-direction: row;
+    grid-column-gap: 0;
+}

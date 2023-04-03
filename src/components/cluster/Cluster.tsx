@@ -383,22 +383,23 @@ function Cluster(
                             </div>
                             {clusterId && (
                                 <div className="flex right">
-                                    <List
-                                        onClick={() => {
-                                            setEnvironment({
-                                                id: null,
-                                                environment_name: null,
-                                                cluster_id: clusterId,
-                                                namespace: null,
-                                                prometheus_url,
-                                                isProduction: null,
-                                                description: null,
-                                            })
-                                            setShowWindow(true)
-                                        }}
-                                    >
-                                        <List.Logo>{<Add className="icon-dim-24 fcb-5" />}</List.Logo>
-                                        <div className="flex left fcb-5">
+                                    <List className="app-status-card__list-item">
+                                        <div
+                                            onClick={() => {
+                                                setEnvironment({
+                                                    id: null,
+                                                    environment_name: null,
+                                                    cluster_id: clusterId,
+                                                    namespace: null,
+                                                    prometheus_url,
+                                                    isProduction: null,
+                                                    description: null,
+                                                })
+                                                setShowWindow(true)
+                                            }}
+                                            className="flex"
+                                        >
+                                            <List.Logo>{<Add className="icon-dim-24 fcb-5 mr-11" />}</List.Logo>
                                             <List.Title
                                                 style={{
                                                     fontSize: '13px',
@@ -412,11 +413,10 @@ function Cluster(
                                                 tag={null}
                                             />
                                         </div>
-                                    </List>
+                                        <div className="app-status-card__divider" />
 
-                                    <div className="app-status-card__divider">
                                         <List.DropDown src={<PencilEdit onClick={handleEdit} />} />
-                                    </div>
+                                    </List>
                                 </div>
                             )}
                         </List>
@@ -496,7 +496,7 @@ function Cluster(
                                 // </div>
 
                                 <div className="cluster-token-container">
-                                    <div className="cluster-list" style={{border:0}}>
+                                    <div className="cluster-list" style={{ border: 0 }}>
                                         <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-6 pb-6 pr-20 pl-10 dc__uppercase">
                                             <div></div>
                                             <div className="cluster-list__enviroment_name">ENVIRONMENT</div>
