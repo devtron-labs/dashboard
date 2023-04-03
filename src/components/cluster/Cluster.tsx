@@ -33,7 +33,6 @@ import { ReactComponent as PencilEdit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as DeleteInvolvement } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as DeleteEnvironment } from '../../assets/icons/ic-delete-interactive.svg'
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
@@ -325,6 +324,10 @@ function Cluster(
     const hideClusterDrawer = (e) => {
         setShowWindow(false)
     }
+    const deleteEnv = (): void => {
+        reload()
+    }
+    
 
     const getEnvironmentPayload = () => {
         console.log(environment)
@@ -557,7 +560,7 @@ function Cluster(
                                                                     setShowWindow(true)
                                                                 }}
                                                             />
-                                                            <DeleteInvolvement
+                                                            <DeleteEnvironment
                                                                 className="cursor"
                                                                 onClick={() => {
                                                                     setEnvironment({
@@ -584,6 +587,7 @@ function Cluster(
                                                                     confirmationDialogDescription={
                                                                         DC_ENVIRONMENT_CONFIRMATION_MESSAGE
                                                                     }
+                                                                    reload={deleteEnv}
                                                                     //reload={()=> {}}
                                                                 />
                                                             )}
