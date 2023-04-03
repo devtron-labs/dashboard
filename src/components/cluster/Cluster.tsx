@@ -1171,7 +1171,9 @@ function Environment({
             {/* <form onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit} className="h-100 bcn-0 pt-0 pb-12"> */}
             <div className="form__row bcn-0 pt-0 pr-20 pb-12 pl-20">
                 <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12">
-                    <div className="fs-16 fw-6 lh-1-43 ml-20 title-padding">{id ? 'Edit Environment' : 'Add Environment'}</div>
+                    <div className="fs-16 fw-6 lh-1-43 ml-20 title-padding">
+                        {id ? 'Edit Environment' : 'Add Environment'}
+                    </div>
                     {/* <Close className="icon-dim-24 dc__align-right cursor" onClick={hideClusterDrawer} /> */}
                     <button type="button" className="dc__transparent flex icon-dim-24" onClick={hideClusterDrawer}>
                         <Close className="icon-dim-24 dc__align-right cursor" />
@@ -1246,10 +1248,11 @@ function Environment({
                     />
                 </div>
 
-                    <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
                     {id && (
                         <button
-                            className= "cta override-button delete scr-5"
+                            style={{ marginLeft: '20px', marginRight: 'auto' }}
+                            className="cta override-button delete scr-5"
                             type="button"
                             onClick={() => toggleConfirmation(true)}
                         >
@@ -1257,19 +1260,14 @@ function Environment({
                             {deleting ? <Progressing /> : 'Delete Environment'}
                         </button>
                     )}
-                    
-                        <button
-                            className="cta cancel mt-8"
-                            type="button"
-                            onClick={hideClusterDrawer}
-                        >
-                            Cancel
-                        </button>
-                        <button className="cta ml-8 mr-20 mt-8" type="submit" disabled={loading}>
-                            {loading ? <Progressing /> : id ? 'Update' : 'Save'}
-                        </button>
-                    </div>
-                
+                    <button className="cta cancel mt-8" type="button" onClick={hideClusterDrawer}>
+                        Cancel
+                    </button>
+                    <button className="cta ml-8 mr-20 mt-8" type="submit" disabled={loading}>
+                        {loading ? <Progressing /> : id ? 'Update' : 'Save'}
+                    </button>
+                </div>
+
                 {confirmation && (
                     <DeleteComponent
                         setDeleting={clusterDelete}
