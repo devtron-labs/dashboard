@@ -626,6 +626,7 @@ export function EnvSelector({
             backgroundColor: 'white',
             minHeight: '32px',
             height: '32px',
+            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
             ...controlStyleOverrides,
         }),
         singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: 'var(--B500)' }),

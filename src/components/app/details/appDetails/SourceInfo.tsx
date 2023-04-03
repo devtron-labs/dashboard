@@ -77,7 +77,7 @@ export function SourceInfo({
         })
     }
 
-    const renderDevtronAppsEnvironmentSelector = () => {
+    const renderDevtronAppsEnvironmentSelector = (envSelected) => {
         return (
             <div className="flex left w-100 mb-16">
                 <EnvSelector
@@ -109,7 +109,7 @@ export function SourceInfo({
                         <span className="dc__loading-dots cr-5" />
                     </>
                 )}
-                {!loadingResourceTree && (
+                {!loadingResourceTree && envSelected && (
                     <>
                         {!appDetails?.deploymentAppDeleteRequest && (
                             <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
@@ -186,14 +186,15 @@ export function SourceInfo({
     }
 
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
+    const envSelected = environments?.result?.some((env) => env.environmentId === +params.envId)
     return (
         <div className="flex left w-100 column source-info-container">
-            {renderDevtronAppsEnvironmentSelector()}
+            {renderDevtronAppsEnvironmentSelector(envSelected)}
             {loadingDetails ? (
                 shimmerLoaderBlocks()
             ) : (
                 <>
-                    {!appDetails?.deploymentAppDeleteRequest && (
+                    {!loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && envSelected && (
                         <div className="flex left w-100">
                             <div
                                 onClick={loadingResourceTree ? noop : showApplicationDetailedModal}
