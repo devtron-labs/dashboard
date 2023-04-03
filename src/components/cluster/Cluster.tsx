@@ -223,7 +223,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     toggleCheckTlsConnection() {
-        console.log(this.state.isTlsConnection)
         this.setState({ isTlsConnection: !this.state.isTlsConnection })
     }
 
@@ -783,25 +782,33 @@ function ClusterForm({
         )
     }
 
+    const clusterTable = () => {
+        return {}
+    }
+
     const onFileChange = (e): void => {
         setUploadState(UPLOAD_STATE.UPLOADING)
         let formData = new FormData()
         formData.append('file', e.target.files[0])
-        validateChart(formData)
-            .then((response: ChartUploadResponse) => {
-                setUploadState(UPLOAD_STATE.SUCCESS)
-            })
-            .catch((error) => {
-                setUploadState(UPLOAD_STATE.ERROR)
-            })
     }
 
     const handleSuccessButton = (): void => {
         if (uploadState === UPLOAD_STATE.SUCCESS) {
-            
+            clusterTable()
         } else if (uploadState === UPLOAD_STATE.UPLOAD) {
+            setUploadState(UPLOAD_STATE.SUCCESS)
             inputFileRef.current.click()
         }
+    }
+
+    const handleCloseButton = () => {
+        if (isKubeConfigFile) {
+            toggleKubeConfigFile()
+        }
+        if (getCluster) {
+            toggleGetCluster()
+        }
+        toggleShowAddCluster()
     }
 
     const renderUrlAndBearerToken = () => {
@@ -919,7 +926,7 @@ function ClusterForm({
                 )}
                 {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheus_url && <PrometheusWarningInfo />}
                 {isGrafanaModuleInstalled && prometheusToggleEnabled && (
-                    <div className="">
+                    <div>
                         {(state.userName.error || state.password.error || state.endpoint.error) && (
                             <PrometheusRequiredFieldInfo />
                         )}
@@ -990,27 +997,14 @@ function ClusterForm({
             <>
                 <hr />
                 <div className="code-editor-container">
-                    <CodeEditor value={''} height={650} diffView={false} readOnly={false} mode={MODES.YAML} noParsing>
+                    <CodeEditor value={''} height={514} diffView={false} readOnly={false} mode={MODES.YAML} noParsing>
                         <CodeEditor.Header>
                             <div className="user-list__subtitle flex p-8">
                                 <span className="flex left">Paste the contents of kubeconfig file here</span>
                                 <div className="dc__link ml-auto cursor">
-                                    {uploadState !== UPLOAD_STATE.UPLOAD && (
-                                        <button
-                                            className={` dc__no-text-transform ${
-                                                uploadState === UPLOAD_STATE.UPLOADING ? '  mr-20' : '  ml-20'
-                                            }`}
-                                        >
-                                            Cancel upload
-                                        </button>
-                                    )}
                                     {uploadState !== UPLOAD_STATE.UPLOADING && (
                                         <div onClick={handleSuccessButton} className="flex">
-                                            {uploadState === UPLOAD_STATE.UPLOAD
-                                                ? 'Browse file...'
-                                                : uploadState === UPLOAD_STATE.ERROR
-                                                ? 'Upload another chart'
-                                                : 'Save'}
+                                            {uploadState === UPLOAD_STATE.UPLOAD ? 'Browse file...' : 'save'}
                                         </div>
                                     )}
                                 </div>
@@ -1028,11 +1022,11 @@ function ClusterForm({
                 </div>
 
                 <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
-                    <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
+                    <button className="cta cancel" type="button" onClick={handleCloseButton}>
                         Cancel
                     </button>
                     <button
-                        className="cta mr-20 ml-20"
+                        className="cta mr-32 ml-20"
                         type="button"
                         onClick={toggleGetCluster}
                         disabled={uploadState !== UPLOAD_STATE.SUCCESS ? false : true}
@@ -1060,18 +1054,39 @@ function ClusterForm({
         )
     }
 
-    // const displayClusterDetails = () => {
-    //     return
-    //     (<div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-20 dc__uppercase">
-    //         <div></div>
-    //         <div>Cluster Name</div>
-    //         <div>User</div>
-    //         <div>Message </div>
-    //         <div></div>
-    //     </div>)
-    // }
+    const displayClusterDetails = () => {
+        return (
+            <>
+                <div className="cluster-form dc__position-rel h-100 bcn-0">
+                    <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
+                        <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Add Cluster</h2>
+                        <button
+                            type="button"
+                            className="dc__transparent flex icon-dim-24 mr-24"
+                            onClick={handleCloseButton}
+                        >
+                            <Close className="icon-dim-24" />
+                        </button>
+                    </div>
 
-    return (
+                    <div className="api-token-container">
+                        <div className="api-list__row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pl-20 pr-20 dc__uppercase">
+                            <div></div>
+                            <div>Cluster Name</div>
+                            <div>User</div>
+                            <div>Message </div>
+                            <div></div>
+                        </div>
+                    </div>
+
+                </div>
+            </>
+        )
+    }
+
+    return getCluster ? (
+        displayClusterDetails()
+    ) : (
         <>
             <div
                 className="cluster-form dc__position-rel h-100 bcn-0"
@@ -1080,7 +1095,11 @@ function ClusterForm({
             >
                 <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Add Cluster</h2>
-                    <button type="button" className="dc__transparent flex icon-dim-24 mr-24" onClick={toggleShowAddCluster}>
+                    <button
+                        type="button"
+                        className="dc__transparent flex icon-dim-24 mr-24"
+                        onClick={handleCloseButton}
+                    >
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
@@ -1108,7 +1127,6 @@ function ClusterForm({
                         <button className="cta mr-20 ml-20">{loading ? <Progressing /> : 'Save'}</button>
                     </div>
                 )}
-
                 {confirmation && (
                     <DeleteComponent
                         setDeleting={setDeleting}
