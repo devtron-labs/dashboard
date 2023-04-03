@@ -80,7 +80,10 @@ export function SourceInfo({
     const renderDevtronAppsEnvironmentSelector = () => {
         return (
             <div className="flex left w-100 mb-16">
-                <EnvSelector environments={environments} disabled={params.envId && !showCommitInfo} />
+                <EnvSelector
+                    environments={environments}
+                    disabled={loadingDetails || loadingResourceTree || (params.envId && !showCommitInfo)}
+                />
                 {appDetails?.deploymentAppType && (
                     <Tippy
                         className="default-tt"
@@ -153,17 +156,17 @@ export function SourceInfo({
     const shimmerLoaderBlocks = () => {
         return (
             <div className="flex left mb-16">
-                <div className="bcn-0 w-296 mh-92 mr-12 br-8 dc__position-rel">
-                    <div className="flex left w-85 dc__place-abs-shimmer-center">
+                <div className="bcn-0 w-220 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
+                    <div className="flex left w-85 dc__place-abs-shimmer-center ml-16">
                         <div className="shimmer-loading icon-dim-48 br-4 mr-16" />
                         <div>
-                            <div className="shimmer-loading w-150 h-16 br-2 mb-6" />
+                            <div className="shimmer-loading w-120 h-16 br-2 mb-6" />
                             <div className="shimmer-loading w-64 h-12 br-2 mb-6" />
                         </div>
                     </div>
                 </div>
-                <div className="bcn-0 w-400 mh-92 mr-12 br-8 dc__position-rel">
-                    <div className="flex left w-85 dc__place-abs-shimmer-center">
+                <div className="bcn-0 w-400 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
+                    <div className="flex left w-85 dc__place-abs-shimmer-center ml-16">
                         <div className="flex left">
                             <div className="shimmer-loading icon-dim-48 br-4 mr-16" />
                             <div>
@@ -194,11 +197,11 @@ export function SourceInfo({
                         <div className="flex left w-100">
                             <div
                                 onClick={loadingResourceTree ? noop : showApplicationDetailedModal}
-                                className="pointer flex left bcn-0 p-16 br-4 mw-340 mr-12 en-2 bw-1"
+                                className="pointer flex left bcn-0 p-16 br-8 mw-340 mr-12 en-2 bw-1 lh-20"
                             >
                                 <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
                                     {loadingResourceTree ? (
-                                        <Progressing size={32} fillColor="var(--N500)" />
+                                        <div className="icon-dim-32 shimmer-loading" />
                                     ) : (
                                         <figure
                                             className={`${status.toLowerCase()} dc__app-summary__icon mr-8 h-32 w-32`}
@@ -226,12 +229,10 @@ export function SourceInfo({
                                         </div>
                                     ) : (
                                         <>
-                                            <div>
-                                                <span
-                                                    className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}
-                                                >
-                                                    {isHibernated ? 'Hibernating' : status}
-                                                </span>
+                                            <div
+                                                className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}
+                                            >
+                                                {isHibernated ? 'Hibernating' : status}
                                             </div>
                                             <div className="flex left">
                                                 {appDetails?.deploymentAppType === DeploymentAppType.helm ? (
@@ -258,8 +259,8 @@ export function SourceInfo({
                                 </div>
                             </div>
                             <div
-                                onClick={showDeploymentDetailedStatus}
-                                className={`flex left bcn-0 p-16 br-4 mw-382 en-2 bw-1 ${
+                                onClick={loadingResourceTree ? noop : showDeploymentDetailedStatus}
+                                className={`flex left bcn-0 p-16 br-8 mw-382 en-2 bw-1 ${
                                     appDetails?.deploymentAppType === DeploymentAppType.helm ? '' : 'cursor'
                                 }`}
                             >
@@ -279,7 +280,7 @@ export function SourceInfo({
                                             <Question className="icon-dim-16 mt-2" />
                                         </Tippy>
                                     </div>
-                                    <div className="flexbox">
+                                    <div className="flexbox h-20">
                                         <span
                                             className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus} ${
                                                 deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS
@@ -299,7 +300,7 @@ export function SourceInfo({
                                 </div>
                                 <div className="flex left column mw-140">
                                     <div className="fs-12 fw-4 cn-9">Deployment triggered</div>
-                                    <div className="flexbox">
+                                    <div className="flex left h-20">
                                         <span className="fs-13 mr-5 fw-6 cn-9">
                                             {deploymentTriggerTime
                                                 ? moment(deploymentTriggerTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()

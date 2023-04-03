@@ -49,21 +49,21 @@ function EnvironmentStatusComponent({
     const shimmerLoaderBlocks = () => {
         return (
             <div className="flex left ml-20 mb-16">
-                <div className="bcn-0 w-150 mh-92 mr-12 br-8 dc__position-rel">
-                    <div className="flex left column mt-6 w-85 dc__place-abs-shimmer-center">
-                        <div className="shimmer-loading w-80 h-24 br-2 mb-6" />
+                <div className="bcn-0 w-150 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
+                    <div className="flex left column mt-6 w-85 ml-16 dc__place-abs-shimmer-center">
+                        <div className="shimmer-loading w-80 h-20 br-2 mb-6" />
                         <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
                     </div>
                 </div>
-                <div className="bcn-0 w-150 mh-92 mr-12 br-8 dc__position-rel">
-                    <div className="flex left column mt-6 w-85 dc__place-abs-shimmer-center">
-                        <div className="shimmer-loading w-80 h-24 br-2 mb-6" />
+                <div className="bcn-0 w-150 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
+                    <div className="flex left column mt-6 w-85 ml-16 dc__place-abs-shimmer-center">
+                        <div className="shimmer-loading w-80 h-20 br-2 mb-6" />
                         <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
                     </div>
                 </div>
-                <div className="bcn-0 w-150 mh-92 mr-12 br-8 dc__position-rel">
-                    <div className="flex left column mt-6 w-85 dc__place-abs-shimmer-center">
-                        <div className="shimmer-loading w-80 h-24 br-2 mb-6" />
+                <div className="bcn-0 w-150 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
+                    <div className="flex left column mt-6 w-85 ml-16 dc__place-abs-shimmer-center">
+                        <div className="shimmer-loading w-80 h-20 br-2 mb-6" />
                         <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
                     </div>
                 </div>
@@ -74,16 +74,15 @@ function EnvironmentStatusComponent({
     const renderStatusBlock = () => {
         return (
             <div
-                className="app-status-card bcn-0 mr-12 br-8 p-16 cursor"
+                className="app-status-card bcn-0 mr-12 br-8 p-16 cursor en-2 bw-1"
                 onClick={loadingResourceTree ? noop : handleShowAppStatusDetail}
             >
-                <div className="lh-1-33 cn-9 flex left">
+                <div className="cn-9 flex left">
                     <span>Application status</span>
                     <Tippy className="default-tt cursor" arrow={false} content={'The health status of your app'}>
                         <Question className="cursor icon-dim-16 ml-4" />
                     </Tippy>
                 </div>
-
                 {loadingResourceTree ? (
                     <div className="flex left column mt-6">
                         <div className="shimmer-loading w-80 h-16 br-2 mb-6" />
@@ -113,11 +112,11 @@ function EnvironmentStatusComponent({
             {loadingDetails ? (
                 shimmerLoaderBlocks()
             ) : (
-                <div className="flex left ml-20 mb-16">
+                <div className="flex left ml-20 mb-16 lh-20">
                     {renderStatusBlock()}
                     {appDetails?.appType == AppType.EXTERNAL_HELM_CHART && (
-                        <div className="app-status-card bcn-0 mr-12 br-8 p-16">
-                            <div className="lh-1-33 cn-9 flex left">
+                        <div className="app-status-card bcn-0 mr-12 br-8 p-16 en-2 bw-1">
+                            <div className="cn-9 flex left">
                                 <span>Config apply status</span>
                                 <Tippy
                                     className="default-tt cursor"
@@ -139,15 +138,15 @@ function EnvironmentStatusComponent({
                                     ].toLowerCase()} dc__app-summary__icon ml-8 icon-dim-20`}
                                 ></figure>
                             </div>
-                            <div className="lh-1-33 cn-9 flex left">
+                            <div className="cn-9 flex left">
                                 <span>{appDetails.additionalData['message']}</span>
                             </div>
                         </div>
                     )}
 
                     {appDetails?.lastDeployedTime && (
-                        <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
-                            <div className="cn-9 lh-1-33 flex left">
+                        <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12 en-2 bw-1">
+                            <div className="cn-9 flex left">
                                 <span>Last updated</span>
                                 <Tippy
                                     className="default-tt cursor"
@@ -175,8 +174,8 @@ function EnvironmentStatusComponent({
                     )}
 
                     {appDetails?.appStoreAppName && (
-                        <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
-                            <div className="cn-9 lh-1-33 flex left">
+                        <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12 en-2 bw-1">
+                            <div className="cn-9 flex left">
                                 <span>Chart used</span>
                                 <Tippy
                                     className="default-tt cursor"
@@ -217,8 +216,8 @@ function EnvironmentStatusComponent({
                     )}
 
                     {appDetails?.deprecated && (
-                        <div className="app-status-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
-                            <div className="cn-9 lh-1-33 flex left">
+                        <div className="app-status-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12 en-2 bw-1">
+                            <div className="cn-9 flex left">
                                 <span>Chart deprecated</span>
                                 <Alert className="icon-dim-16 ml-4" />
                             </div>
