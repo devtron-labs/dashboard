@@ -396,7 +396,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     <span className="form__label dc__required-field">Project</span>
                     <ReactSelect
                         classNamePrefix="create-app__select-project"
-                        
                         className="m-0"
                         tabIndex={4}
                         isMulti={false}

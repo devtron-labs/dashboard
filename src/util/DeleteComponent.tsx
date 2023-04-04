@@ -67,6 +67,7 @@ function DeleteComponent({
                 title={`Delete ${component} '${title}'`}
                 delete={handleDelete}
                 closeDelete={() => toggleConfirmation(false)}
+                dataTestId="delete-dialog"
             >
                 <DeleteDialog.Description>
                     <p>Are you sure you want to delete this {configuration ? configuration : component}? </p>

@@ -121,6 +121,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 {!this.props.isJobView && this.renderIgnoreCache()}
                 <ButtonWithLoader
                     rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
+                    dataTestId = "ci-trigger-start-build-button"
                     loaderColor="#ffffff"
                     disabled={!canTrigger}
                     isLoading={this.props.isLoading}

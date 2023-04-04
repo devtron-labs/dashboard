@@ -35,13 +35,13 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
             status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
         if (hideDetails)
             return (
-                <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
+                <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }} data-testid="cd-trigger-status">
                     <span>{statusText}</span>
                 </div>
             )
         else
             return (
-                <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
+                <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }} data-testid="cd-trigger-status">
                     <span>
                         <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
                     </span>
@@ -95,6 +95,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                     </button>
                                 </Tippy>
                                 <button
+                                    data-testid = "cd-trigger-select-image"
                                     className="workflow-node__deploy-btn"
                                     onClick={(event) => {
                                         event.stopPropagation()

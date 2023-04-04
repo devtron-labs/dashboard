@@ -29,7 +29,7 @@ export function GitMaterialInfoHeader({ repoUrl = "", materialType = "",  materi
             <div className={getGitIcon(repoUrl)}>
             </div>
             <div className="flex column left">
-                <div className="repo fs-12 cn-9 fw-6">
+                <div className="repo fs-12 cn-9 fw-6" data-testid = "deployment-history-source-code-repo">
                     /{repo}
                 </div>
                 <div className="branch flex left fs-14 cn-7">

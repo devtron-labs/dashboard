@@ -176,6 +176,8 @@ export default function GitCommitInfoGeneric({
                                 rel="noopener"
                                 className="commit-hash"
                                 onClick={(e) => e.stopPropagation()}
+                                data-testid = "deployment-history-source-code-material-history"
+
                             >
                                 <div className="material-history__header">
                                     {' '}
