@@ -5,7 +5,7 @@ import { BrowserRouter, Router } from 'react-router-dom'
 import ApplicationRoutes from '../ApplicationRoutes'
 import { createMemoryHistory } from 'history'
 
-export function renderWithRouter(ui, { route = '/', history = createMemoryHistory({ initialEntries: [route] }) } = {}) {
+export function renderWithRouter(ui: any, { route = '/', history = createMemoryHistory({ initialEntries: [route] }) }: {route: string, history?: any }) {
     return {
         ...render(<Router history={history}>{ui}</Router>),
         history,
