@@ -21,7 +21,6 @@ import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import { noop } from '../../../common'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 export function SourceInfo({
     appDetails,
@@ -194,7 +193,7 @@ export function SourceInfo({
                 shimmerLoaderBlocks()
             ) : (
                 <>
-                    {!loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && environment && (
+                    {!appDetails?.deploymentAppDeleteRequest && environment && (
                         <div className="flex left w-100">
                             <div
                                 onClick={loadingResourceTree ? noop : showApplicationDetailedModal}

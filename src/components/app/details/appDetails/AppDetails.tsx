@@ -187,7 +187,6 @@ export const Details: React.FC<DetailsType> = ({
         severityCount: { critical: 0, moderate: 0, low: 0 },
         isError: false,
     })
-    // const [appDetailsLoading, setAppDetailsLoading] = useState(true)
     const [appDetailsError, setAppDetailsError] = useState(undefined)
     const [appDetails, setAppDetails] = useState(undefined)
     const [pollingIntervalID, setPollingIntervalID] = useState(null)
