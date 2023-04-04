@@ -33,6 +33,7 @@ interface customEnv {
     CONFIGURABLE_TIMEOUT?: string
     HIDE_APPLICATION_GROUPS?: boolean
     K8S_CLIENT?: boolean
+    CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL?: number
 }
 declare global {
     interface Window {
@@ -123,7 +124,8 @@ if (!window || !window._env_) {
         HIDE_DEPLOYMENT_GROUPS: true,
         HIDE_GITOPS_OR_HELM_OPTION: false,
         HIDE_APPLICATION_GROUPS: true,
-        K8S_CLIENT: process.env.REACT_APP_K8S_CLIENT === 'true'
+        K8S_CLIENT: process.env.REACT_APP_K8S_CLIENT === 'true',
+        CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000
     }
 }
 

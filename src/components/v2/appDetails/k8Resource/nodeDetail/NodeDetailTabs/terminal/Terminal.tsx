@@ -392,7 +392,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     preFetchData(status)
                     clusterTimeOut = setTimeout(() => {
                         getClusterData(url, count - 1)
-                    }, 5000)
+                    }, window?._env_?.CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL)
                 } else if (sessionId) {
                     const _nodeName = response.result?.nodeName
                     if(terminalViewProps.nodeName === TERMINAL_STATUS.AUTO_SELECT_NODE){
