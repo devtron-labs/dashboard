@@ -407,7 +407,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 <div className="code-editor-container">
                     <CodeEditor
                         value={codeEditorBody}
-                        dataTestId="sso-config-input"
                         height={300}
                         mode="yaml"
                         lineDecorationsWidth={this.state.configMap === SwitchItemValues.Configuration ? 50 : 0}
