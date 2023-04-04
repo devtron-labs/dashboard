@@ -205,6 +205,9 @@ export interface NodeAttr {
     primaryBranchAfterRegex?: string
     storageConfigured?: boolean
     deploymentAppDeleteRequest?: boolean
+    preLatestImageStatus?: string
+    cdLatestImageStatus?: string
+    postLatestImageStatus?: string
 }
 
 export interface DownStreams {
@@ -242,13 +245,6 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     parentEnvironmentName?: string
     fromAppGrouping: boolean
 }
-export interface TriggerCDNodeState {
-    ci_artifacts: any[]
-    latest_ci_artifact_id: number
-    latest_ci_artifact_status: boolean
-    status: string
-    latest_wf_artifact_id: number
-}
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
     x: number
@@ -267,13 +263,6 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     inputMaterialList: InputMaterials[]
     rollbackMaterialList: InputMaterials[]
     fromAppGrouping: boolean
-}
-export interface TriggerPrePostCDNodeState {
-    ci_artifacts: any[]
-    latest_ci_artifact_id: number
-    latest_ci_artifact_status: boolean
-    status: string
-    latest_wf_artifact_id: number
 }
 
 export interface TriggerEdgeType {

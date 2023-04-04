@@ -6,6 +6,7 @@ import {
     getCIMaterialList,
     triggerCINode,
     getWorkflowStatus,
+    getLatestImageStatus,
     refreshGitMaterial,
     CDModalTab,
     getGitMaterialByCommitHash,
@@ -92,6 +93,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     componentDidMount() {
         this.getHostURLConfig()
         this.getWorkflows()
+        // getLatestImageStatus(this.props.match.params.appId)
     }
 
     getWorkflows = () => {
@@ -127,7 +129,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 this.setState({ code: errors.code, view: ViewType.ERROR })
             })
     }
-
     getHostURLConfig() {
         getHostURLConfiguration()
             .then((response) => {
@@ -275,11 +276,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     getWorkflowStatus() {
-        getWorkflowStatus(this.props.match.params.appId)
-            .then((response) => {
+        Promise.all([
+            getWorkflowStatus(this.props.match.params.appId),
+            getLatestImageStatus(this.props.match.params.appId),
+        ])
+            .then(([workflowstatus, latestimagestatus]) => {
                 const _processedWorkflowsData = processWorkflowStatuses(
-                    response?.result?.ciWorkflowStatus ?? [],
-                    response?.result?.cdWorkflowStatus ?? [],
+                    workflowstatus?.result?.ciWorkflowStatus ?? [],
+                    workflowstatus?.result?.cdWorkflowStatus ?? [],
                     this.state.workflows,
                 )
                 this.inprogressStatusTimer && clearTimeout(this.inprogressStatusTimer)
@@ -288,12 +292,50 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         this.getWorkflowStatus()
                     }, 10000)
                 }
+                this.state.workflows.forEach((sw) =>
+                    sw.nodes.forEach((sn) => {
+                        if (+sn.id === this.state.ciNodeId) {
+                            n.inputMaterialList = sn.inputMaterialList
+                        }
+                    }),
+                )
                 this.setState({ workflows: _processedWorkflowsData.workflows })
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
             })
     }
+    // getWorkflowStatus() {
+    //     getWorkflowStatus(this.props.match.params.appId)
+    //         .then((response) => {
+    //             const _processedWorkflowsData = processWorkflowStatuses(
+    //                 response?.result?.ciWorkflowStatus ?? [],
+    //                 response?.result?.cdWorkflowStatus ?? [],
+    //                 this.state.workflows,
+    //             )
+    //             this.inprogressStatusTimer && clearTimeout(this.inprogressStatusTimer)
+    //             if (_processedWorkflowsData.cicdInProgress) {
+    //                 this.inprogressStatusTimer = setTimeout(() => {
+    //                     this.getWorkflowStatus()
+    //                 }, 10000)
+    //             }
+    //             this.setState({ workflows: _processedWorkflowsData.workflows })
+    //         })
+    //         .catch((errors: ServerErrors) => {
+    //             showError(errors)
+    //         })
+    // }
+    // getLatestImageStatus() {
+    //     getLatestImageStatus(this.props.match.params.appId)
+    //         .then((response) => {
+    //             this.inprogressStatusTimer = setTimeout(() => {
+    //                 this.getLatestImageStatus()
+    //             }, 10000)
+    //         })
+    //         .catch((errors: ServerErrors) => {
+    //             showError(errors)
+    //         })
+    // }
 
     async updateCIMaterialList(ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) {
         const params = {

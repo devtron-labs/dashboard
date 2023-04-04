@@ -1,74 +1,15 @@
 import React, { Component } from 'react'
-import { DeploymentNodeType, TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState } from '../../types'
+import { TriggerPrePostCDNodeProps } from '../../types'
 import { TriggerStatus } from '../../../../config'
-import { Routes, URLS } from './../../../../../../config'
+import { URLS } from './../../../../../../config'
 import { Link } from 'react-router-dom'
 import { DEFAULT_STATUS } from '../../../../../../config'
 import { TriggerViewContext } from '../../config'
-import { get } from '../../../../../../services/api'
-import { ConditionalWrap } from '../../../../../common'
-import Tippy from '@tippyjs/react'
-let stageMap = {
-    PRECD: 'PRE',
-    CD: 'DEPLOY',
-    POSTCD: 'POST',
-}
-let statusArray = ['progressing', 'running', 'starting', 'Succeeded']
 
-export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState> {
+export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps> {
     constructor(props) {
         super(props)
         this.redirectToCDDetails = this.redirectToCDDetails.bind(this)
-        this.state = {
-            ci_artifacts: [],
-            latest_ci_artifact_id: 0,
-            latest_ci_artifact_status: true,
-            status: this.props.status,
-            latest_wf_artifact_id: 0,
-        }
-    }
-    getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType) {
-        let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${stageMap[stageType]}`
-        return get(URL).then((response) => {
-            // return {
-            //     ci_artifacts: response.result.ci_artifacts,
-            //     latest_ci_artifact_id: response.result.latest_wf_artifact_id,
-            //     latest_wf_artifact_status: response.result.latest_wf_artifact_status,
-            // }
-            let ci_artifacts = response.result.ci_artifacts
-            let latest_ci_artifact_condition = true
-            if (ci_artifacts.length > 0 && ci_artifacts[0].id === response.result.latest_wf_artifact_id) {
-                latest_ci_artifact_condition = ci_artifacts[0].deployed || statusArray.includes(this.props.status)
-            } else {
-                latest_ci_artifact_condition = ci_artifacts.length > 0 ? ci_artifacts[0].deployed : true
-            }
-
-            this.setState({
-                ci_artifacts: ci_artifacts,
-                latest_ci_artifact_id: ci_artifacts.length > 1 ? ci_artifacts[0].id : 0,
-                latest_ci_artifact_status: latest_ci_artifact_condition,
-                status: response.result.latest_wf_artifact_status,
-                latest_wf_artifact_id: response.result.latest_wf_artifact_id,
-            })
-        })
-    }
-    componentDidMount() {
-        this.getCDMaterialList(this.props.id, DeploymentNodeType[this.props.type])
-    }
-    componentDidUpdate(
-        prevProps: Readonly<TriggerPrePostCDNodeProps>,
-        prevState: Readonly<TriggerPrePostCDNodeState>,
-        snapshot?: any,
-    ) {
-        if (
-            this.state.ci_artifacts.length > 0 &&
-            this.state.latest_ci_artifact_id === this.state.latest_wf_artifact_id
-        ) {
-            this.setState({
-                ...prevState,
-                latest_ci_artifact_status: statusArray.includes(this.props.status),
-            })
-        }
     }
 
     getCDDetailsURL(): string {
@@ -107,13 +48,6 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                 </div>
             )
     }
-    renderMessageContent() {
-        return (
-            <>
-                <span className="dot mr-4"></span> Latest image is not run
-            </>
-        )
-    }
 
     renderCardContent() {
         let status = this.props.status ? this.props.status.toLocaleLowerCase() : ''
@@ -145,28 +79,15 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                             </div>
                             {this.renderStatus(isClickable, status)}
                             <div className="workflow-node__btn-grp">
-                                <ConditionalWrap
-                                    condition={!this.state.latest_ci_artifact_status}
-                                    wrap={(children) => <Tippy content={this.renderMessageContent()}>{children}</Tippy>}
+                                <button
+                                    className="workflow-node__deploy-btn"
+                                    onClick={(event) => {
+                                        event.stopPropagation()
+                                        context.onClickCDMaterial(this.props.id, this.props.type)
+                                    }}
                                 >
-                                    <button
-                                        className="workflow-node__deploy-btn"
-                                        onClick={(event) => {
-                                            event.stopPropagation()
-                                            context.onClickCDMaterial(
-                                                this.props.id,
-                                                DeploymentNodeType[this.props.type],
-                                            )
-                                        }}
-                                    >
-                                        Select Image
-                                        {!this.state.latest_ci_artifact_status && (
-                                            <span className="ml-8">
-                                                <span className="dot"></span>
-                                            </span>
-                                        )}
-                                    </button>
-                                </ConditionalWrap>
+                                    Select Image
+                                </button>
                             </div>
                         </div>
                     )

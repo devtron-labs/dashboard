@@ -53,8 +53,8 @@ export const Routes = {
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/edit',
-    
-    JOB_CI_DETAIL:'job/ci-pipeline/list',
+
+    JOB_CI_DETAIL: 'job/ci-pipeline/list',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
@@ -133,6 +133,7 @@ export const Routes = {
     WORKFLOW_STATUS: 'workflow/status',
     ATTRIBUTES_USER: 'attributes/user',
     APP_WORKFLOW_STATUS: 'app/workflow/status',
+    LATEST_IMAGE_STATUS: 'app/workflow/latest-image-status',
     APP_CREATE_ENV_SECRET: 'config/environment/cs',
     APP_CREATE_ENV_CONFIG_MAP: 'config/environment/cm',
     APP_META_INFO: 'app/meta/info',
@@ -246,12 +247,13 @@ export const PATTERNS = {
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
     NAMESPACE: '^[a-z0-9]+([a-z0-9-?]*[a-z0-9])?$',
     URL: /^(http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/,
-    KUBERNETES_KEY: /^((http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}\/?)*[A-Za-z0-9][A-Za-z0-9-._]{0,253}$/,
+    KUBERNETES_KEY:
+        /^((http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}\/?)*[A-Za-z0-9][A-Za-z0-9-._]{0,253}$/,
     KUBERNETES_VALUE: /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/,
     KUBERNETES_KEY_PREFIX: /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/,
     KUBERNETES_KEY_NAME: /^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$/,
     START_END_ALPHANUMERIC: /^([A-Za-z0-9]).*[A-Za-z0-9]$|^[A-Za-z0-9]{1}$/,
-    ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/ // allow alphanumeric,(.) ,(-),(_)
+    ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/, // allow alphanumeric,(.) ,(-),(_)
 }
 
 export const TriggerType = {
@@ -361,7 +363,7 @@ export const AppListConstants = {
         CLUTSER: 'cluster',
         NAMESPACE: 'namespace',
         ENVIRONMENT: 'environment',
-        APP_STATUS: 'appStatus'
+        APP_STATUS: 'appStatus',
     },
 }
 // APP LIST ENDS
@@ -770,7 +772,7 @@ export const DEPLOYMENT_STATUS = {
 
 export const HELM_DEPLOYMENT_STATUS_TEXT = {
     PROGRESSING: 'Progressing',
-    INPROGRESS: 'In progress'
+    INPROGRESS: 'In progress',
 }
 
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
@@ -780,14 +782,15 @@ export const SOURCE_NOT_CONFIGURED = 'Source not configured'
 export const DOCKER_FILE_ERROR_TITLE = 'Unable to locate Dockerfile as source is not configured for this repository'
 export const DOCKER_FILE_ERROR_MESSAGE = 'Unable to locate Dockerfile as source is not configured for this repository'
 export const DEFAULT_GIT_BRANCH_VALUE = '--'
-export const SOURCE_NOT_CONFIGURED_MESSAGE= 'Source is not configured for one or more git repositories. Please configure and try again.'
+export const SOURCE_NOT_CONFIGURED_MESSAGE =
+    'Source is not configured for one or more git repositories. Please configure and try again.'
 
 export enum MANIFEST_KEY_FIELDS {
-    METADATA= 'metadata',
-    MANAGED_FIELDS= 'managedFields'
+    METADATA = 'metadata',
+    MANAGED_FIELDS = 'managedFields',
 }
 
 export enum KEY_VALUE {
-  KEY= 'key',
-  VALUE= 'value'
+    KEY = 'key',
+    VALUE = 'value',
 }

@@ -240,7 +240,7 @@ export function getRollbackMaterialList(cdMaterialId, offset: number, size: numb
 }
 
 export function extractImage(image: string): string {
-    return image? image.split(':').pop() : ''
+    return image ? image.split(':').pop() : ''
 }
 
 function cdMaterialListModal(
@@ -290,8 +290,11 @@ function cdMaterialListModal(
                           tag: mat.tag || '',
                           webhookData: mat.webhookData || '',
                           url: mat.url || '',
-                          branch: (material.ciConfigureSourceType === SourceTypeMap.WEBHOOK ? material.ciConfigureSourceValue : mat.branch) || '',
-                          type: material.ciConfigureSourceType || ''
+                          branch:
+                              (material.ciConfigureSourceType === SourceTypeMap.WEBHOOK
+                                  ? material.ciConfigureSourceValue
+                                  : mat.branch) || '',
+                          type: material.ciConfigureSourceType || '',
                       }
                   })
                 : [],
@@ -362,6 +365,11 @@ export const getPrePostCDTriggerStatus = (params) => {
 
 export const getWorkflowStatus = (appId: string) => {
     const URL = `${Routes.APP_WORKFLOW_STATUS}/${appId}`
+    return get(URL)
+}
+
+export const getLatestImageStatus = (appId: string) => {
+    const URL = `${Routes.LATEST_IMAGE_STATUS}/${appId}`
     return get(URL)
 }
 
@@ -458,7 +466,7 @@ export function getAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
     return get(`${Routes.APP_META_INFO}/${appId}`)
 }
 
-export function getHelmAppMetaInfo(appId: string): Promise<AppMetaInfoResponse>{
+export function getHelmAppMetaInfo(appId: string): Promise<AppMetaInfoResponse> {
     return get(`${Routes.HELM_APP_META_INFO}/${appId}`)
 }
 

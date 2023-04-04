@@ -1,66 +1,25 @@
 import React, { Component } from 'react'
-import { DeploymentNodeType, TriggerCDNodeProps, TriggerCDNodeState } from '../../types'
+import { DeploymentNodeType, TriggerCDNodeProps } from '../../types'
 import { statusColor, statusIcon } from '../../../../config'
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
-import { URLS, DEFAULT_STATUS, Routes } from '../../../../../../config'
+import { URLS, DEFAULT_STATUS } from '../../../../../../config'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
 import { TriggerViewContext } from '../../config'
 import { triggerStatus } from '../../../cicdHistory/History.components'
-import { get } from '../../../../../../services/api'
-// import { cdMaterialListModal } from '../../../../service'
-import { getCDMaterialList } from '../../../../service'
-import { ConditionalWrap } from '../../../../../common'
-let stageMap = {
-    PRECD: 'PRE',
-    CD: 'DEPLOY',
-    POSTCD: 'POST',
-}
-let statusArray = ['progressing', 'running', 'starting', 'Succeeded']
 
-export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeState> {
+export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     constructor(props) {
         super(props)
         this.redirectToCDDetails = this.redirectToCDDetails.bind(this)
-        this.state = {
-            ci_artifacts: [],
-            latest_ci_artifact_id: 0,
-            latest_ci_artifact_status: true,
-            status: this.props.status,
-            latest_wf_artifact_id: 0,
-        }
     }
+
     getCDNodeDetailsURL(): string {
         return `${this.props.match.url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}/${
             this.props.environmentId
         }`
     }
 
-    getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType) {
-        let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${stageMap[stageType]}`
-        return get(URL).then((response) => {
-            // return {
-            //     ci_artifacts: response.result.ci_artifacts,
-            //     latest_ci_artifact_id: response.result.latest_wf_artifact_id,
-            //     latest_wf_artifact_status: response.result.latest_wf_artifact_status,
-            // }
-            let ci_artifacts = response.result.ci_artifacts
-            let latest_ci_artifact_condition = true
-            if (ci_artifacts.length > 0 && ci_artifacts[0].id === response.result.latest_wf_artifact_id) {
-                latest_ci_artifact_condition = ci_artifacts[0].deployed || statusArray.includes(this.props.status)
-            } else {
-                latest_ci_artifact_condition = ci_artifacts.length > 0 ? ci_artifacts[0].deployed : true
-            }
-
-            this.setState({
-                ci_artifacts: ci_artifacts,
-                latest_ci_artifact_id: ci_artifacts.length > 1 ? ci_artifacts[0].id : 0,
-                latest_ci_artifact_status: latest_ci_artifact_condition,
-                status: response.result.latest_wf_artifact_status,
-                latest_wf_artifact_id: response.result.latest_wf_artifact_id,
-            })
-        })
-    }
     redirectToCDDetails() {
         if (this.props.fromAppGrouping) {
             return
@@ -68,24 +27,6 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
         this.props.history.push(this.getCDNodeDetailsURL())
     }
 
-    componentDidMount() {
-        this.getCDMaterialList(this.props.id, DeploymentNodeType[this.props.type])
-    }
-    componentDidUpdate(
-        prevProps: Readonly<TriggerCDNodeProps>,
-        prevState: Readonly<TriggerCDNodeState>,
-        snapshot?: any,
-    ) {
-        if (
-            this.state.ci_artifacts.length > 0 &&
-            this.state.latest_ci_artifact_id === this.state.latest_wf_artifact_id
-        ) {
-            this.setState({
-                ...prevState,
-                latest_ci_artifact_status: statusArray.includes(this.props.status),
-            })
-        }
-    }
     renderStatus() {
         const url = this.getCDNodeDetailsURL()
         let statusText = this.props.status ? triggerStatus(this.props.status) : ''
@@ -115,13 +56,6 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                     )}
                 </div>
             )
-    }
-    renderMessageContent() {
-        return (
-            <>
-                <span className="dot mr-4"></span> Latest image is not deployed
-            </>
-        )
     }
 
     renderCardContent() {
@@ -160,24 +94,15 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                                         <Rollback className="icon-dim-20 dc__vertical-align-middle" />
                                     </button>
                                 </Tippy>
-                                <ConditionalWrap
-                                    condition={!this.state.latest_ci_artifact_status}
-                                    wrap={(children) => <Tippy content={this.renderMessageContent()}>{children}</Tippy>}
+                                <button
+                                    className="workflow-node__deploy-btn"
+                                    onClick={(event) => {
+                                        event.stopPropagation()
+                                        context.onClickCDMaterial(this.props.id, DeploymentNodeType[this.props.type])
+                                    }}
                                 >
-                                    <button
-                                        className="workflow-node__deploy-btn"
-                                        onClick={(event) => {
-                                            event.stopPropagation()
-                                            context.onClickCDMaterial(
-                                                this.props.id,
-                                                DeploymentNodeType[this.props.type],
-                                            )
-                                        }}
-                                    >
-                                        Select Image
-                                        {!this.state.latest_ci_artifact_status && <span className="dot ml-12"></span>}
-                                    </button>
-                                </ConditionalWrap>
+                                    Select Image
+                                </button>
                             </div>
                         </div>
                     )
