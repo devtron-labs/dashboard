@@ -1068,8 +1068,7 @@ function ClusterForm({
                             <Close className="icon-dim-24" />
                         </button>
                     </div>
-
-                    <div className="api-token-container">
+                    <div className="api-token__list">
                         <div className="api-list__row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pl-20 pr-20 dc__uppercase">
                             <div></div>
                             <div>Cluster Name</div>
@@ -1078,7 +1077,7 @@ function ClusterForm({
                             <div></div>
                         </div>
                     </div>
-
+                    
                 </div>
             </>
         )
