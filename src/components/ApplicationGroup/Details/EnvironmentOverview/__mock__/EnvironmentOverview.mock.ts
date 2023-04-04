@@ -64,11 +64,11 @@ const appListResult = () => {
                         "deleted": false,
                         "materialInfo": [
                             {
-                                "author": "Deepak Panwar <97603455+deepak-devtron@users.noreply.github.com>",
+                                "author": "test <97603455+test-devtron@users.noreply.github.com>",
                                 "branch": "main",
                                 "message": "Update hello.py\n\nfor testing",
                                 "modifiedTime": "2022-11-11T17:54:21+05:30",
-                                "revision": "b08dbe27efb2a5a90c535a9efe7fb6a5dd1184e8",
+                                "revision": "b08dbe27efb2a5a9sss35a9efe7fb6a5dd1184e8",
                                 "url": "https://github.com/devtron-labs/sample-go-app.git",
                                 "webhookData": "{\"Id\":0,\"EventActionType\":\"\",\"Data\":null}"
                             }
@@ -132,8 +132,8 @@ const appListResult = () => {
                                 "branch": "main",
                                 "message": "fun commit\n",
                                 "modifiedTime": "2022-09-03T15:39:38+05:30",
-                                "revision": "a8ee01b506369be47e8bff86f13721d5202190e5",
-                                "url": "https://github.com/ghgsnaidu/go-db-demo.git",
+                                "revision": "a8ee01b506369be47e8bf886f13721d5202190e5",
+                                "url": "https://github.com/test/go-db-demo.git",
                                 "webhookData": "{\"Id\":0,\"EventActionType\":\"\",\"Data\":null}"
                             }
                         ],
@@ -166,12 +166,12 @@ const appListResult = () => {
                         "deleted": false,
                         "materialInfo": [
                             {
-                                "author": "jatin-jangir <79351203+jatin-jangir@users.noreply.github.com>",
+                                "author": "test-test <79351203+test-test@users.noreply.github.com>",
                                 "branch": "main",
                                 "message": "Update requirements.txt",
                                 "modifiedTime": "2023-02-08T15:51:21+05:30",
                                 "revision": "13f2a9ee04478da10ee83bd8c73a60f588503102",
-                                "url": "https://github.com/jatin-jangir/Docker_examples.git",
+                                "url": "https://github.com/test-test/Docker_examples.git",
                                 "webhookData": "{\"Id\":0,\"EventActionType\":\"\",\"Data\":null}"
                             }
                         ],
@@ -230,12 +230,12 @@ const appListResult = () => {
                         "deleted": false,
                         "materialInfo": [
                             {
-                                "author": "ghgsnaidu <smartcoder06@gmail.com>",
+                                "author": "test <smartcoder06@gmail.com>",
                                 "branch": "main",
                                 "message": "fun commit\n",
                                 "modifiedTime": "2022-09-03T15:39:38+05:30",
-                                "revision": "a8ee01b506369be47e8bff86f13721d5202190e5",
-                                "url": "https://github.com/ghgsnaidu/go-db-demo.git",
+                                "revision": "a8ee01b506369be47e8bff86003721d5202190e5",
+                                "url": "https://github.com/test/go-db-demo.git",
                                 "webhookData": "{\"Id\":0,\"EventActionType\":\"\",\"Data\":null}"
                             }
                         ],
