@@ -437,7 +437,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (terminalViewProps.isClusterTerminal) {
             if (!terminalViewProps.terminalId) return
             terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING)
-            getClusterData(`user/terminal/get?namespace=${terminalViewProps.selectedNamespace}&shellName=${terminalViewProps.shell.value}&terminalAccessId=${terminalViewProps.terminalId}`, 7)
+            getClusterData(
+                `user/terminal/get?namespace=${terminalViewProps.selectedNamespace}&shellName=${terminalViewProps.shell.value}&terminalAccessId=${terminalViewProps.terminalId}`,
+                window?._env_?.CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT,
+            )
         } else {
             if (
                 !terminalViewProps.nodeName ||
