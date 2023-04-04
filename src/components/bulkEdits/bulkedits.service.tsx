@@ -1,4 +1,4 @@
-import { get, post } from '../../services/api';
+import { get, post } from '@devtron-labs/devtron-fe-common-lib';
 import { Routes } from '../../config';
 
 export function updateBulkList(request): Promise<any> {
@@ -9,7 +9,7 @@ export function updateBulkList(request): Promise<any> {
 }
 
 export function updateImpactedObjectsList(request): Promise<any> {
-   
+
     let apiVersion= request.apiVersion
     let kind = request.kind.toLocaleLowerCase()
     const URL = `${apiVersion}/${kind}/dryrun `;

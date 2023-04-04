@@ -3,7 +3,8 @@ import { SourceTypeMap, ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials } from '../ciPipeline/SourceMaterials'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { Progressing, Toggle } from '../common'
+import { Toggle } from '../common'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ciPipelineContext } from './CIPipeline'
 import {
     BuildType,
