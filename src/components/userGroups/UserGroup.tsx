@@ -19,6 +19,8 @@ import {
 import {
     showError,
     Progressing,
+    Checkbox,
+    CHECKBOX_VALUE,
     ConditionalWrap,
     ErrorScreenNotAuthorized,
     get,
@@ -72,7 +74,12 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
 import { getSSOConfigList } from '../login/login.service'
-import { ERROR_EMPTY_SCREEN, SSO_NOT_CONFIGURED_STATE_TEXTS, TOAST_ACCESS_DENIED, USER_NOT_EDITABLE } from '../../config/constantMessaging'
+import {
+    ERROR_EMPTY_SCREEN,
+    SSO_NOT_CONFIGURED_STATE_TEXTS,
+    TOAST_ACCESS_DENIED,
+    USER_NOT_EDITABLE,
+} from '../../config/constantMessaging'
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -128,7 +135,8 @@ const possibleRolesMeta = {
     },
     [ActionTypes.APPROVER]: {
         value: 'Approver',
-        description: 'Can approve images to be deployed. The user must be added as an approver for a deployment pipeline.',
+        description:
+            'Can approve images to be deployed. The user must be added as an approver for a deployment pipeline.',
     },
 }
 
@@ -236,7 +244,7 @@ export default function UserGroupRoute() {
             }, appList)
         })
         try {
-            const { result } = await getProjectFilteredApps(missingProjects,ACCESS_TYPE_MAP.DEVTRON_APPS)
+            const { result } = await getProjectFilteredApps(missingProjects, ACCESS_TYPE_MAP.DEVTRON_APPS)
             const projectsMap = mapByKey(result || [], 'projectId')
             setAppsList((appList) => {
                 return new Map(
@@ -262,7 +270,7 @@ export default function UserGroupRoute() {
     }
 
     async function fetchAppListHelmApps(projectIds: number[]) {
-            const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
+        const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
         if (missingProjects.length === 0) return
         setAppsListHelmApps((appListHelmApps) => {
             return missingProjects.reduce((appListHelmApps, projectId) => {
@@ -804,6 +812,9 @@ const allEnvironmentsOption = {
     label: 'All environments',
     value: '*',
 }
+
+export const APPROVER_ACTION = { label: 'approver', value: 'approver' }
+
 interface DirectPermissionRow {
     permission: DirectPermissionsRoleFilter
     handleDirectPermissionChange: (...rest) => void
@@ -824,7 +835,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             ? projectsList.find((project) => project.name === permission.team.value)?.id
             : null
 
-    const possibleRoles = [ActionTypes.VIEW, ActionTypes.TRIGGER, ActionTypes.ADMIN, ActionTypes.MANAGER, ActionTypes.APPROVER]
+    const possibleRoles = [ActionTypes.VIEW, ActionTypes.TRIGGER, ActionTypes.ADMIN, ActionTypes.MANAGER]
     const possibleRolesHelmApps = [ActionTypes.VIEW, ActionTypes.EDIT, ActionTypes.ADMIN]
     const [openMenu, changeOpenMenu] = useState<'entityName' | 'environment' | ''>('')
     const [environments, setEnvironments] = useState([])
@@ -877,8 +888,28 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                     ? possibleRolesMetaHelmApps[value].value
                     : possibleRolesMeta[value].value}
+                {permission.approver && ', Approver'}
                 {React.cloneElement(children[1])}
             </components.ValueContainer>
+        )
+    }
+
+    const handleApproverChange = () => {
+        handleDirectPermissionChange(APPROVER_ACTION, { name: APPROVER_ACTION.label })
+    }
+
+    const RoleMenuList = (props) => {
+        return (
+            <components.MenuList {...props}>
+                {props.children}
+                <div className="w-100 dc__border-top-n1" />
+                <components.Option {...props}>
+                    <div className="flex left top cursor" onClick={handleApproverChange}>
+                        <Checkbox isChecked={permission.approver} value={CHECKBOX_VALUE.CHECKED} onChange={noop} />
+                        {formatOptionLabel(APPROVER_ACTION)}
+                    </div>
+                </components.Option>
+            </components.MenuList>
         )
     }
 
@@ -1225,7 +1256,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : possibleRoles
                 ).map((role) => ({
                     label: role as string,
-                    value: role as ActionRoleType
+                    value: role as ActionRoleType,
                 }))}
                 className="basic-multi-select"
                 classNamePrefix="select"
@@ -1241,6 +1272,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
                         backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N100)' : 'white',
                         fontWeight: state.isSelected ? 600 : 'normal',
+                        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
                         marginRight: '8px',
                     }),
                     valueContainer: (base, state) => ({
@@ -1252,6 +1284,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     ClearIndicator: null,
                     IndicatorSeparator: null,
                     ValueContainer: RoleValueContainer,
+                    MenuList: RoleMenuList,
                 }}
             />
             <CloseIcon className="pointer margin-top-6px" onClick={(e) => removeRow(index)} />

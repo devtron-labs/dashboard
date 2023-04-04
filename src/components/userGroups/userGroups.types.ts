@@ -21,7 +21,7 @@ export enum ActionTypes {
     APPROVER = 'approver'
 }
 
-export type ActionRoleType = ActionTypes.MANAGER | ActionTypes.VIEW | ActionTypes.TRIGGER | ActionTypes.ADMIN | ActionTypes.APPROVER
+export type ActionRoleType = ActionTypes.MANAGER | ActionTypes.VIEW | ActionTypes.TRIGGER | ActionTypes.ADMIN
 
 export enum DefaultUserKey {
     SYSTEM = 'system',
@@ -74,7 +74,8 @@ export interface DirectPermissionsRoleFilter extends RoleFilter {
         label: string
         value: ActionRoleType
     }
-    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
+    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS,
+    approver?: boolean
 }
 
 export interface ChartGroupPermissionsFilter extends RoleFilter {
