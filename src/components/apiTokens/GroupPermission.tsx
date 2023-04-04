@@ -4,12 +4,11 @@ import {
     multiSelectStyles,
     MultiValueChipContainer,
     MultiValueRemove,
-    removeItemsFromArray,
     Option,
-    mapByKey,
-} from '../common'
+} from '@devtron-labs/devtron-fe-common-lib'
+import { mapByKey } from '../common'
 import AppPermissions from '../userGroups/AppPermissions'
-import { GroupRow, useUserGroupContext } from '../userGroups/UserGroup'
+import { useUserGroupContext } from '../userGroups/UserGroup'
 import Select from 'react-select'
 import { OptionType } from '../app/types'
 import { ChartGroupPermissionsFilter, CreateUser, DirectPermissionsRoleFilter, K8sPermissionFilter } from '../userGroups/userGroups.types'

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { getChartVersionDetailsV2 } from '../../charts/charts.service'
-import { DetailsProgressing } from '../../common'
+import { DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import IndexStore from '../appDetails/index.store'
 import ChartValuesView from './chartValuesDiff/ChartValuesView'
 // TODO: appDetails from useSharedState

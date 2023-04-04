@@ -1,4 +1,4 @@
-import { get } from '../../../../services/api';
+import { get } from '@devtron-labs/devtron-fe-common-lib';
 import { Routes } from '../../../../config'
 import moment from 'moment-timezone';
 import metrics from './deploymentMetrics.data.json';

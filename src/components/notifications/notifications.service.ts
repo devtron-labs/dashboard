@@ -1,9 +1,7 @@
 import { Routes } from '../../config/constants'
-import { get, post, trash, put } from '../../services/api'
-import { sortCallback } from '../common'
+import { get, post, trash, put, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { NotificationConfiguration } from './NotificationTab'
 import { PipelineType } from './AddNotification'
-import { ResponseType } from '../../services/service.types'
 import { SMTPConfigResponseType } from './types'
 
 interface UpdateNotificationEvent {

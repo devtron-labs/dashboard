@@ -1,17 +1,15 @@
 import React, { Component } from 'react'
 import { saveLinkedCIPipeline } from './ciPipeline.service'
 import { ViewType } from '../../config'
-import { ServerErrors } from '../../modals/commonTypes'
-import { CIPipelineProps, LinkedCIPipelineState } from './types'
 import {
-    Progressing,
-    Typeahead,
-    TypeaheadOption,
-    TypeaheadErrorOption,
-    showError,
+    ServerErrors,
     VisibleModal,
+    showError,
+    Progressing,
     multiSelectStyles,
-} from '../common'
+} from '@devtron-labs/devtron-fe-common-lib'
+import { CIPipelineProps, LinkedCIPipelineState } from './types'
+import { Typeahead, TypeaheadOption, TypeaheadErrorOption } from '../common'
 import { toast } from 'react-toastify'
 import { ValidationRules } from './validationRules'
 import { ButtonWithLoader } from '../common/formFields/ButtonWithLoader'
@@ -19,7 +17,7 @@ import { Info } from '../common/icons/Icons'
 import { getAppListMin, getCIConfig } from '../../services/service'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import './ciPipeline.css'
+import './ciPipeline.scss'
 import { appListOptions, noOptionsMessage } from '../AppSelector/AppSelectorUtil'
 import AsyncSelect from 'react-select/async'
 

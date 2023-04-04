@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
 import { URLS } from '../../config';
 import img from '../../assets/img/ic-checklist-chart@2x.png';
-import './checklist.css';
+import './checklist.scss';
 
 export class AllChartsCheck extends Component<{}, {}> {
     render() {

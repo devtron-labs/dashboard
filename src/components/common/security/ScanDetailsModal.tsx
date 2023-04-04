@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { VisibleModal, showError, Progressing, VulnerabilityType, ScanVulnerabilitiesTable } from '../index';
+import { VulnerabilityType, ScanVulnerabilitiesTable } from '../index';
+import { showError, Progressing, VisibleModal, EmptyState, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import { ViewType, URLS } from '../../../config';
 import { getLastExecutionByImageScanDeploy } from '../../../services/service';
-import EmptyState from '../../EmptyState/EmptyState';
 import NoVulnerabilities from '../../../assets/img/ic-vulnerability-not-found.svg'
-import Reload from '../../Reload/Reload';
 import { Link } from 'react-router-dom';
 
 interface ScanDetailsModalProps {

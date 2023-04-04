@@ -1,23 +1,20 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { TOKEN_COOKIE_NAME } from '../../../config'
-import { toast } from 'react-toastify'
-import { ServerErrors } from '../../../modals/commonTypes'
-import * as Sentry from '@sentry/browser'
+import { showError, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib';
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
 import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
-import { toastAccessDenied } from '../ToastBody'
-import { AggregationKeys, OptionType } from '../../app/types'
+import { OptionType } from '../../app/types'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
-import { ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
+
 const commandLineParser = require('command-line-parser')
 
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -185,35 +182,6 @@ export function getRandomColor(email: string): string {
         sum += email.charCodeAt(i)
     }
     return colors[sum % colors.length]
-}
-
-export function showError(serverError, showToastOnUnknownError = true, hideAccessError = false) {
-    if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
-        serverError.errors.map(({ userMessage, internalMessage }) => {
-            if (
-                serverError.code === 403 &&
-                (userMessage === ERROR_EMPTY_SCREEN.UNAUTHORIZED || userMessage === ERROR_EMPTY_SCREEN.FORBIDDEN)
-            ) {
-                if (!hideAccessError) {
-                    toastAccessDenied()
-                }
-            } else {
-                toast.error(userMessage || internalMessage)
-            }
-        })
-    } else {
-        if (serverError.code !== 403 && serverError.code !== 408) {
-            Sentry.captureException(serverError)
-        }
-
-        if (showToastOnUnknownError) {
-            if (serverError.message) {
-                toast.error(serverError.message)
-            } else {
-                toast.error('Some Error Occurred')
-            }
-        }
-    }
 }
 
 export function noop(...args): any {}
@@ -817,24 +785,6 @@ export function useDebouncedEffect(callback, delay, deps = []) {
     }, [delay, ...deps])
 }
 
-export function useThrottledEffect(callback, delay, deps = []) {
-    //function will be executed only once in a given time interval.
-    const lastRan = useRef(Date.now())
-
-    useEffect(() => {
-        const handler = setTimeout(function () {
-            if (Date.now() - lastRan.current >= delay) {
-                callback()
-                lastRan.current = Date.now()
-            }
-        }, delay - (Date.now() - lastRan.current))
-
-        return () => {
-            clearTimeout(handler)
-        }
-    }, [delay, ...deps])
-}
-
 interface UseSize {
     x: number
     y: number
@@ -1029,10 +979,6 @@ export const setActionWithExpiry = (key: string, days: number): void => {
     localStorage.setItem(key, `${getDateInMilliseconds(days)}`)
 }
 
-export const stopPropagation = (event): void => {
-    event.stopPropagation()
-}
-
 export const preventBodyScroll = (lock: boolean): void => {
     if (lock) {
         document.body.style.overflowY = 'hidden'
@@ -1088,6 +1034,18 @@ export const convertToOptionsList = (
 
         return _option
     })
+}
+
+export const importComponentFromFELibrary =(componentName: string, defaultComponent?)=>{
+  try {
+    const module = require('@devtron-labs/devtron-fe-lib')
+    return module[componentName]?.default || defaultComponent || null;
+  } catch (e) {
+      if (e['code'] !== 'MODULE_NOT_FOUND') {
+          throw e;
+      }
+      return defaultComponent || null
+  }
 }
 
 export const getElapsedTime = (createdAt: Date) => {

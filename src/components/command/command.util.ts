@@ -1,6 +1,6 @@
 import { getAppListMin, getAppOtherEnvironment, getAvailableCharts } from '../../services/service'
 import { CommandSuggestionType, COMMAND, COMMAND_REV } from './command.types'
-import { APIOptions } from '../../services/service.types'
+import { APIOptions } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 
 export const AllSuggestedArguments = [

@@ -1,5 +1,5 @@
 import { Routes } from '../../../../config';
-import { get } from '../../../../services/api';
+import { get } from '@devtron-labs/devtron-fe-common-lib';
 import { fetchWithFullRoute } from '../../../../services/fetchWithFullRoute';
 import { DeploymentStatusDetailsResponse, ModuleConfigResponse } from './appDetails.type';
 

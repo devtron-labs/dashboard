@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { showError } from '../common'
 import { FormType, GenerateTokenType } from './authorization.type'
 import { createGeneratedAPIToken } from './service'
 import GenerateModal from './GenerateModal'
@@ -24,13 +23,11 @@ import {
 } from '../userGroups/userGroups.types'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 import GroupPermission from './GroupPermission'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExpirationDate from './ExpirationDate'
 import { Moment } from 'moment'
 import { toast } from 'react-toastify'
-import { ServerErrors } from '../../modals/commonTypes'
-import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
+import { ServerErrors, showError, RadioGroup, RadioGroupItem, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import { API_COMPONENTS } from '../../config/constantMessaging'
 
@@ -50,7 +47,7 @@ export const renderQuestionwithTippy = () => {
             documentationLinkText="View Documentation"
         >
             <div className="icon-dim-20 fcn-9 ml-8 cursor">
-                <Question />    
+                <Question />
             </div>
 
         </TippyCustomized>

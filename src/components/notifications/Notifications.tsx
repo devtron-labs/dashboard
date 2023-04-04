@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import { Switch, NavLink, Route, Redirect } from 'react-router-dom'
 import { RouteComponentProps } from 'react-router'
+import { ErrorScreenNotAuthorized } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationTab } from './ConfigurationTab'
 import { NotificationTab } from './NotificationTab'
-import { ErrorBoundary, ErrorScreenNotAuthorized } from '../common'
+import { ErrorBoundary } from '../common'
 import { DOCUMENTATION } from '../../config'
-import './notifications.css'
+import './notifications.scss'
 
 interface NotificationsProps extends RouteComponentProps<{}> {
     isSuperAdmin: boolean
