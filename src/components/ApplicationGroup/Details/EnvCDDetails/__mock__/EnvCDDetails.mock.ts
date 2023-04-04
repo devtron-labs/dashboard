@@ -1,7 +1,7 @@
 import { MultiValue } from "react-select"
 import { ModuleConfigResponse } from "../../../../app/details/appDetails/appDetails.type"
 import { OptionType } from "../../../../app/types"
-import { ResponseType } from '../../../../../services/service.types'
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
 export async function mockCDList(): Promise<ResponseType> {
     const response = {

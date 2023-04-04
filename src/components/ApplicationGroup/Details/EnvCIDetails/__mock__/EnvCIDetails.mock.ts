@@ -1,5 +1,5 @@
-import { MultiValue } from 'react-select'
-import { ResponseType } from '../../../../../services/service.types'
+import { MultiValue } from 'react-select' 
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { OptionType } from '../../../../app/types'
 import { CIConfigListType } from '../../../AppGroup.types'
 
