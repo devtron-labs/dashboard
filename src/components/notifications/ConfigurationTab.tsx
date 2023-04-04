@@ -3,10 +3,9 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { SlackConfigModal } from './SlackConfigModal'
 import { SESConfigModal } from './SESConfigModal'
 import { ReactComponent as Edit } from '../../assets/icons/ic-edit.svg'
-import { showError, Progressing, ErrorScreenNotAuthorized } from '../common'
+import { showError, Progressing, ErrorScreenNotAuthorized, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import {
     deleteNotification,
-    getChannelConfigs,
     getSESConfiguration,
     getConfigs,
     getSlackConfiguration,
@@ -16,7 +15,6 @@ import slack from '../../assets/img/slack-logo.svg'
 import ses from '../../assets/icons/ic-aws-ses.svg'
 import { ReactComponent as SMTP } from '../../assets/icons/ic-smtp.svg'
 import { ViewType } from '../../config/constants'
-import EmptyState from '../EmptyState/EmptyState'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CONFIGURATION_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
@@ -94,8 +92,8 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                 this.setState(state)
             })
             .catch((error) => {
-                showError(error,true,true)
-                this.setState({view: ViewType.ERROR})
+                showError(error, true, true)
+                this.setState({ view: ViewType.ERROR })
             })
     }
 
@@ -348,7 +346,9 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                         <div className="ses-config-table__access-key dc__truncate-text ">
                                             {sesConfig.accessKeyId}
                                         </div>
-                                        <div className="ses-config-table__email dc__truncate-text ">{sesConfig.email}</div>
+                                        <div className="ses-config-table__email dc__truncate-text ">
+                                            {sesConfig.email}
+                                        </div>
                                         <div className="ses-config-table__action">
                                             <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
                                                 <button
@@ -433,9 +433,15 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                 <span className="dc__ses_config-table__tag">Default</span>
                                             ) : null}
                                         </div>
-                                        <div className="smtp-config-table__host dc__truncate-text ">{smtpConfig.host}</div>
-                                        <div className="smtp-config-table__port dc__truncate-text ">{smtpConfig.port}</div>
-                                        <div className="smtp-config-table__email dc__truncate-text ">{smtpConfig.email}</div>
+                                        <div className="smtp-config-table__host dc__truncate-text ">
+                                            {smtpConfig.host}
+                                        </div>
+                                        <div className="smtp-config-table__port dc__truncate-text ">
+                                            {smtpConfig.port}
+                                        </div>
+                                        <div className="smtp-config-table__email dc__truncate-text ">
+                                            {smtpConfig.email}
+                                        </div>
                                         <div className="ses-config-table__action">
                                             <Tippy className="default-tt" arrow={false} placement="top" content="Edit">
                                                 <button
@@ -540,8 +546,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                     <Progressing pageLoader />
                 </div>
             )
-        }
-        else if (this.state.view === ViewType.ERROR) {
+        } else if (this.state.view === ViewType.ERROR) {
             return (
                 <div className="dc__height-reduce-172">
                     <ErrorScreenNotAuthorized />

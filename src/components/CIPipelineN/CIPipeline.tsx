@@ -1,6 +1,14 @@
 import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
-import { ButtonWithLoader, ConditionalWrap, DeleteDialog, Drawer, showError, VisibleModal } from '../common'
+import { ButtonWithLoader } from '../common'
+import {
+    ServerErrors,
+    showError,
+    ConditionalWrap,
+    VisibleModal,
+    Drawer,
+    DeleteDialog,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
 import {
     BuildStageVariable,
@@ -21,7 +29,6 @@ import {
     saveCIPipeline,
 } from '../ciPipeline/ciPipeline.service'
 import { toast } from 'react-toastify'
-import { ServerErrors } from '../../modals/commonTypes'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import {
     CIPipelineDataType,
@@ -407,7 +414,12 @@ export default function CIPipeline({
         //in that case we only send the webhook data not the other one.
         let _materials = formData.materials
         if (formData.materials.length > 1) {
-            _materials = formData.materials.filter((material) => material.type === SourceTypeMap.WEBHOOK)
+            for (let material of formData.materials) {
+                if (material.type === SourceTypeMap.WEBHOOK) {
+                    _materials = [material]
+                    break
+                }
+            }
         }
 
         saveCIPipeline(

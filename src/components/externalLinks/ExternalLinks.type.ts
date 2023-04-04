@@ -1,5 +1,5 @@
 import React from 'react'
-import { ResponseType } from '../../services/service.types'
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails } from '../app/types'
 import { ActionResponse } from '../external-apps/ExternalAppService'
 import { UserRoleType } from '../userGroups/userGroups.types'

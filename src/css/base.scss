@@ -1,10 +1,9 @@
-@import url('./modal.css');
-@import url('./whiteCard.css');
-@import url('./workflow.css');
-@import url('./workflow.css');
-@import url('./icons.css');
-@import url('./colorPalette.css');
-@import url('./triggerView.css');
+@import './modal.scss';
+@import './whiteCard.scss';
+@import './workflow.scss';
+@import './icons.scss';
+@import './colorPalette.scss';
+@import './triggerView.scss';
 
 :root {
     --modal-index: 20;
@@ -874,16 +873,11 @@ button.anchor {
             stroke: var(--R500);
         }
 
-        &:hover {
-            svg path {
-                fill: var(--R500);
-                stroke: white;
-            }
-        }
-
+        &:hover,
         &:active,
         &:focus {
             svg path {
+                fill: var(--R500);
                 stroke: white;
             }
         }
@@ -1502,6 +1496,10 @@ button.anchor {
     text-decoration: underline;
 }
 
+.dc__strike-through {
+    text-decoration: line-through;
+}
+
 .dc__underline-onhover {
     text-decoration: none;
 
@@ -1868,11 +1866,11 @@ button.anchor {
     border-right: solid 1px var(--N100);
 }
 
-.dc__border-bottom-r2 {
-    border-bottom: solid 1px var(--R200);
+.dc__no-border {
+    border: none;
 }
 
-.dc__no-border {
+.dc__no-border-imp {
     border: none !important;
 }
 
@@ -2131,6 +2129,20 @@ textarea,
     fill: var(--Y700);
 }
 
+.warning-icon-y7-imp {
+    path {
+        &:nth-child(1) {
+            fill: var(--N0) !important;
+        }
+        &:nth-child(2) {
+            fill: var(--Y700) !important;
+        }
+        &:nth-child(3) {
+            fill: var(--N0) !important;
+        }
+    }
+}
+
 .icon-color-n9 {
     path:nth-child(2) {
         fill: var(--N900);
@@ -2164,6 +2176,12 @@ textarea,
 .info-icon-n6 {
     circle {
         fill: var(--N600);
+    }
+}
+
+.icon-fill-n4 {
+    rect {
+        fill: var(--N400);
     }
 }
 
@@ -2518,6 +2536,10 @@ textarea,
     min-height: 600px;
 }
 
+.mxh-210 {
+    max-height: 210px;
+}
+
 // Height in percentage
 .h-100 {
     height: 100%;
@@ -2623,6 +2645,14 @@ textarea,
     padding-top: 4px !important;
 }
 
+.pb-6-imp {
+    padding-bottom: 6px !important;
+}
+
+.pt-6-imp {
+    padding-top: 6px !important;
+}
+
 .pl-8-imp {
     padding-left: 8px !important;
 }
@@ -2673,6 +2703,10 @@ textarea,
 
 .mr-0-imp {
     margin-right: 0px !important;
+}
+
+.mr-8-imp {
+    margin-right: 8px !important;
 }
 
 .mb-0-imp {

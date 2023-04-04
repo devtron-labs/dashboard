@@ -1,9 +1,9 @@
 import { Routes } from '../../config';
-import { post, put, get, trash } from '../../services/api';
+import { post, put, get, trash } from '@devtron-labs/devtron-fe-common-lib';
 
 export function getDockerRegistryConfig(id: string): Promise<any> {
     const URL = `${Routes.DOCKER_REGISTRY_CONFIG}/${id}`;
-    return get(URL);    
+    return get(URL);
 }
 
 export function saveRegistryConfig(request, id): Promise<any> {

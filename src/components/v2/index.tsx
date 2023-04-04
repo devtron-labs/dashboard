@@ -2,7 +2,8 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { useRouteMatch, useParams, Redirect,useLocation, useHistory } from 'react-router';
 import { Switch, Route } from 'react-router-dom';
 import { URLS } from '../../config';
-import { DetailsProgressing, ErrorScreenManager, sortOptionsByValue } from '../common';
+import { sortOptionsByValue } from '../common';
+import { ErrorScreenManager, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import ValuesComponent from './values/ChartValues.component';
 import AppHeaderComponent from './headers/AppHeader.component';
 import ChartHeaderComponent from './headers/ChartHeader.component';

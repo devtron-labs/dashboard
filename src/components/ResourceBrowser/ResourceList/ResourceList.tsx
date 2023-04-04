@@ -2,13 +2,11 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import {
     convertToOptionsList,
-    ErrorScreenManager,
     handleUTCTime,
     processK8SObjects,
-    Progressing,
-    showError,
     sortObjectArrayAlphabetically,
 } from '../../common'
+import { showError, Progressing, ErrorScreenManager, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import PageHeader from '../../common/header/PageHeader'
 import {
     ApiResourceGroupType,
@@ -51,7 +49,6 @@ import { SelectedResourceType } from '../../v2/appDetails/appDetails.type'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import ConnectingToClusterState from './ConnectingToClusterState'
-import { ServerErrors } from '../../../modals/commonTypes'
 import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
 import searchWorker from '../../../config/searchWorker'
 import WebWorker from '../../app/WebWorker'
