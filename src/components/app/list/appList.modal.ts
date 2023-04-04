@@ -35,6 +35,8 @@ export const createAppListPayload = (payloadParsedFromUrl, environmentClusterLis
         }
     }
 
+    environments.push(...payloadParsedFromUrl.environments)
+
     payloadParsedFromUrl.namespaces.forEach((item) => {
         const [cluster, namespace] = item.split('_')
 
