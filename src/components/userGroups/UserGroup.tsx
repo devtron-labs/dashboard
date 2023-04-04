@@ -9,21 +9,26 @@ import {
     not,
     useKeyDown,
     noop,
-    ConditionalWrap,
-    Progressing,
-    showError,
     removeItemsFromArray,
     getRandomString,
-    Option,
-    MultiValueContainer,
-    MultiValueRemove,
-    multiSelectStyles,
     sortBySelected,
     mapByKey,
     useEffectAfterMount,
     sortObjectArrayAlphabetically,
-    ErrorScreenNotAuthorized,
 } from '../common'
+import {
+    showError,
+    Progressing,
+    ConditionalWrap,
+    ErrorScreenNotAuthorized,
+    get,
+    InfoColourBar,
+    EmptyState,
+    Option,
+    MultiValueContainer,
+    MultiValueRemove,
+    multiSelectStyles,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     getUserList,
     getGroupList,
@@ -34,7 +39,6 @@ import {
     getGroupsDataToExport,
     getUserRole,
 } from './userGroup.service'
-import { get } from '../../services/api'
 import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/service'
 import { getChartGroups } from '../charts/charts.service'
 import { ChartGroup } from '../charts/charts.types'
@@ -57,7 +61,6 @@ import Select, { components } from 'react-select'
 import UserForm from './User'
 import GroupForm from './Group'
 import Tippy from '@tippyjs/react'
-import EmptyState from '../EmptyState/EmptyState'
 import EmptyImage from '../../assets/img/empty-applist@2x.png'
 import EmptySearch from '../../assets/img/empty-noresult@2x.png'
 import './UserGroup.scss'
@@ -68,7 +71,6 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
 import { getSSOConfigList } from '../login/login.service'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ERROR_EMPTY_SCREEN, SSO_NOT_CONFIGURED_STATE_TEXTS, TOAST_ACCESS_DENIED, USER_NOT_EDITABLE } from '../../config/constantMessaging'
 
 interface UserGroup {
@@ -170,7 +172,7 @@ function HeaderSection(type: string) {
     const isUserPremissions = type === 'user'
 
     return (
-        <div className="auth-page__header">
+        <div className="auth-page__header pt-20">
             <h2 className="auth-page__header-title form__title">
                 {isUserPremissions ? 'User permissions' : 'Permission groups'}
             </h2>
@@ -229,7 +231,7 @@ export default function UserGroupRoute() {
             }, appList)
         })
         try {
-            const { result } = await getProjectFilteredApps(missingProjects)
+            const { result } = await getProjectFilteredApps(missingProjects,ACCESS_TYPE_MAP.DEVTRON_APPS)
             const projectsMap = mapByKey(result || [], 'projectId')
             setAppsList((appList) => {
                 return new Map(
@@ -255,7 +257,7 @@ export default function UserGroupRoute() {
     }
 
     async function fetchAppListHelmApps(projectIds: number[]) {
-        const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
+            const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
         if (missingProjects.length === 0) return
         setAppsListHelmApps((appListHelmApps) => {
             return missingProjects.reduce((appListHelmApps, projectId) => {
@@ -653,7 +655,7 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
         }
         return ''
     }
-    
+
     const onClickUserDropdownHandler = () => {
         if (isAdminOrSystemUser) {
             noop()

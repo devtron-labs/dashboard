@@ -17,6 +17,7 @@ export type StageNames = keyof typeof STAGE_NAME | 'WORKFLOW' | 'CONFIGMAP' | 'S
 
 export interface AppConfigProps {
     appName: string
+    isJobView?: boolean
 }
 export interface AppConfigState {
     view: string
@@ -56,11 +57,12 @@ export interface CustomNavItemsType {
 export interface AppConfigNavigationProps {
     navItems: CustomNavItemsType[]
     deleteApp: () => void
-    isCDPipeline: boolean
     canShowExternalLinks: boolean
     showCannotDeleteTooltip: boolean
     toggleRepoSelectionTippy: () => void
     getRepo: string
+    isJobView: boolean
+    hideConfigHelp: boolean
 }
 
 export interface AppComposeRouterProps {
@@ -78,6 +80,7 @@ export interface AppComposeRouterProps {
     canShowExternalLinks: boolean
     toggleRepoSelectionTippy: () => void
     setRepoState: React.Dispatch<React.SetStateAction<string>>
+    isJobView: boolean
 }
 
 export interface EnvironmentOverridesProps {

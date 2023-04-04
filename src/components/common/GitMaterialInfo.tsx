@@ -20,7 +20,7 @@ function getGitIcon(repoUrl) {
     return 'git'
 }
 
-export function GitMaterialInfo({ repoUrl = "", materialType = "",  materialValue = "",  style = {}, ...props }) {
+export function GitMaterialInfoHeader({ repoUrl = "", materialType = "",  materialValue = "",  style = {}, ...props }) {
     repoUrl = repoUrl.replace(".git", "")
     const tokens = repoUrl.split("/")
     const { length, [length - 1]: repo } = tokens

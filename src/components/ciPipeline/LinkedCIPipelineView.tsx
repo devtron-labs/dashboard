@@ -1,10 +1,18 @@
 import React, { Component } from 'react';
 import { getInitDataWithCIPipeline, deleteCIPipeline } from './ciPipeline.service';
 import { TriggerType, ViewType, URLS } from '../../config';
-import { ServerErrors } from '../../modals/commonTypes';
 import { CIPipelineProps, CIPipelineState } from './types';
-import { Progressing, showError, getCIPipelineURL, ConditionalWrap, DeleteDialog, VisibleModal } from '../common';
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
+import { getCIPipelineURL } from '../common';
+import {
+    showError,
+    Progressing,
+    ConditionalWrap,
+    VisibleModal,
+    DeleteDialog,
+    ServerErrors,
+    RadioGroup,
+    RadioGroupItem,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import { Info } from '../common';
@@ -12,7 +20,7 @@ import { getWorkflowList } from './../../services/service';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
 import { SourceMaterials } from './SourceMaterials';
 import Tippy from '@tippyjs/react';
-import './ciPipeline.css';
+import './ciPipeline.scss';
 
 export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIPipelineState> {
 
@@ -97,7 +105,13 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 }
                 if (wf) break;
             }
-            let url = getCIPipelineURL(this.state.ciPipeline.parentAppId.toString(), wf.appWorkflowId, false, parentCiPipelineId);
+            let url = getCIPipelineURL(
+                this.state.ciPipeline.parentAppId.toString(),
+                wf.appWorkflowId,
+                false,
+                parentCiPipelineId,
+                false,
+            )
             this.setState({ sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${url}` });
         }
     }

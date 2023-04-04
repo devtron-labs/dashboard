@@ -13,7 +13,7 @@ import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
-import { Checkbox, CHECKBOX_VALUE, showError } from '../../../../common'
+import { showError, Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
 import './nodeDetail.css'
@@ -54,7 +54,7 @@ function NodeDetailComponent({
     }
 
     useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
-    
+
     useEffect(() => {
         if (params.nodeType) {
             const _tabs = getNodeDetailTabs(params.nodeType as NodeType)

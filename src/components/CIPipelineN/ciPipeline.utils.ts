@@ -187,6 +187,8 @@ export const containerImageSelectStyles = {
         borderRadius: '4px',
         height: '32px',
         fontSize: '12px',
+        pointerEvents: 'auto',
+        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
     }),
     valueContainer: (base, state) => ({
         ...base,

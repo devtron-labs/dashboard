@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
+import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { SourceTypeMap } from '../../config'
 import { MaterialHistory, CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import MaterialSource from '../app/details/triggerView/MaterialSource'
@@ -13,7 +14,7 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
 import Tippy from '@tippyjs/react'
-import { getCIPipelineURL, stopPropagation } from '../common'
+import { getCIPipelineURL } from '../common'
 import { useHistory } from 'react-router'
 import { useLocation } from 'react-router-dom'
 import { TriggerViewContext } from '../app/details/triggerView/config'
@@ -35,6 +36,7 @@ export default function GitInfoMaterial({
     appId,
     fromBulkCITrigger,
     hideSearchHeader,
+    isJobView = false,
 }) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
@@ -171,7 +173,7 @@ export default function GitInfoMaterial({
     }
 
     const goToWorkFlowEditor = () => {
-        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId)
+        const ciPipelineURL = getCIPipelineURL(appId, workflowId, true, pipelineId, isJobView)
         if (fromAppGrouping) {
             window.open(window.location.href.replace(location.pathname, ciPipelineURL), '_blank', 'noreferrer')
         } else {
@@ -296,6 +298,7 @@ export default function GitInfoMaterial({
                     fromAppGrouping={fromAppGrouping}
                     fromBulkCITrigger={fromBulkCITrigger}
                     appId={appId}
+                    isJobView={isJobView}
                 />
             </div>
         )

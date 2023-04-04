@@ -2,7 +2,7 @@ import React from 'react'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg';
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg';
 import ReactSelect, { components } from 'react-select';
-import { multiSelectStyles, Checkbox, Option } from '../../common';
+import { Checkbox, multiSelectStyles, Option } from '@devtron-labs/devtron-fe-common-lib'
 import { DropdownIndicator, ValueContainer } from '../charts.util';
 
 export default function DeployedChartFilters({ handleFilterQueryChanges, appStoreName, searchApplied, handleCloseFilter, handleAppStoreName, selectedChartRepo, onlyDeprecated, chartRepos, environment, handleSelectedFilters, selectedEnvironment }) {

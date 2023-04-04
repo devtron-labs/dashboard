@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { VisibleModal } from '../../../common';
 import { DeploymentTable } from './DeploymentTable';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
 import { ViewType } from '../../../../config';
+import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib';
 
 export interface DeploymentTableModalProps {
     close: (event) => void;
