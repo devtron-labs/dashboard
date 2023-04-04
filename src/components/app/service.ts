@@ -18,9 +18,9 @@ export const CDModalTab = {
     Changes: <CDMdalTabType>'CHANGES',
 }
 
-export const getAppList = (request, options?, isV2 = false) => {
+export const getAppList = (request, options?) => {
     let URL = `${Routes.APP_LIST}`
-    if(isV2){
+    if(window._env_.USE_V2){
         URL+= `/${Routes.APP_LIST_V2}`
     }
     return post(URL, request, options)

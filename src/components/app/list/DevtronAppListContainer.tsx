@@ -48,7 +48,11 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
                 },
             });
         }).then(() => {
-          this.getAppList(createAppListPayload(this.props.payloadParsedFromUrl, this.props.environmentClusterList));
+          if(window._env_.USE_V2){
+            this.getAppList(createAppListPayload(this.props.payloadParsedFromUrl, this.props.environmentClusterList));
+          } else {
+            this.getAppList(this.props.payloadParsedFromUrl)
+          }
         }).catch((errors: ServerErrors) => {
             showError(errors);
             this.setState({ view: AppListViewType.ERROR, code: errors.code });
@@ -57,7 +61,11 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
 
     componentDidUpdate(prevProps) {
         if(prevProps.payloadParsedFromUrl !=  this.props.payloadParsedFromUrl){
-            this.getAppList(createAppListPayload(this.props.payloadParsedFromUrl, this.props.environmentClusterList));
+            if(window._env_.USE_V2){
+                this.getAppList(createAppListPayload(this.props.payloadParsedFromUrl, this.props.environmentClusterList));
+              } else {
+                this.getAppList(this.props.payloadParsedFromUrl)
+              }
         }
     }
 
@@ -130,7 +138,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
 
         this.abortController = new AbortController();
         
-        getAppList(request, { signal: this.abortController.signal }, true).then((response) => {
+        getAppList(request, { signal: this.abortController.signal }).then((response) => {
             let view = AppListViewType.LIST;
             if (response.result.appCount === 0) {
                 if (isSearchOrFilterApplied) view = AppListViewType.NO_RESULT;
