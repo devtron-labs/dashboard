@@ -1,10 +1,10 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { URLS } from '../../config'
-import { VisibleModal2 } from '../common'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { NoGitOpsConfiguredWarningType } from './types'
+import { VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfiguredWarningType) {
     const closePopupContinueWithHelm = (): void => {

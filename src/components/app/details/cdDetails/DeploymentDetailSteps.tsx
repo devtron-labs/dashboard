@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router'
-import { Progressing } from '../../../common'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { getDeploymentStatusDetail } from '../appDetails/appDetails.service'
 import { DeploymentStatusDetailsBreakdownDataType } from '../appDetails/appDetails.type'

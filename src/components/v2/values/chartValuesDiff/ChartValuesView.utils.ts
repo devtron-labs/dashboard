@@ -2,7 +2,7 @@ import { getGeneratedHelmManifest } from '../common/chartValues.api'
 import { ChartValuesViewAction, ChartValuesViewActionTypes, ChartValuesViewState } from './ChartValuesView.type'
 import YAML from 'yaml'
 import { Collection } from 'yaml/types'
-import { showError } from '../../../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ChartDeploymentManifestDetailResponse,
     getDeploymentManifestDetails,

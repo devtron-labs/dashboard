@@ -65,6 +65,7 @@ export const URLS = {
     GLOBAL_CONFIG_PROJECT: '/global-config/projects',
     GLOBAL_CONFIG_LOGIN: '/global-config/login-service',
     GLOBAL_CONFIG_EXTERNAL_LINKS: '/global-config/external-links',
+    GLOBAL_CONFIG_TAGS: '/global-config/tags',
     GUIDE: 'guide',
     GETTING_STARTED: 'getting-started',
     SECURITY: '/security',

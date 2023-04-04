@@ -1,5 +1,5 @@
 import { RouteComponentProps } from 'react-router-dom'
-import { ResponseType } from '../../../services/service.types'
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { ActionResponse } from '../../external-apps/ExternalAppService'
 import React from "react";
 

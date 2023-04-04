@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from 'react'
+import React, { Fragment } from 'react'
 import {
     StyledInput,
     StyledSelect,
@@ -9,8 +9,7 @@ import {
 import { UpdateApplicationButton } from './ChartValuesView.component'
 import { ChaartValuesGUIFormType, ChartValuesViewAction, ChartValuesViewActionTypes } from './ChartValuesView.type'
 import YAML from 'yaml'
-import { CHECKBOX_VALUE, Progressing } from '../../../common'
-import EmptyState from '../../../EmptyState/EmptyState'
+import { Progressing, CHECKBOX_VALUE, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { getPathAndValueToSetIn, isRequiredField } from './ChartValuesView.utils'

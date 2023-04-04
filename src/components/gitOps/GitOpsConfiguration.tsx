@@ -11,7 +11,8 @@ import {
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as Azure } from '../../assets/icons/git/azure.svg'
-import { CustomInput, ErrorScreenManager, handleOnBlur, handleOnFocus, parsePassword, Progressing, showError } from '../common'
+import { CustomInput, handleOnBlur, handleOnFocus, parsePassword } from '../common'
+import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import Check from '../../assets/icons/ic-outline-check.svg'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled-purple.svg'
 import { ReactComponent as InfoFill } from '../../assets/icons/appstatus/info-filled.svg'
@@ -22,8 +23,8 @@ import {
     getGitOpsConfigurationList,
     validateGitOpsConfiguration,
 } from './gitops.service'
-import '../login/login.css'
-import './gitops.css'
+import '../login/login.scss'
+import './gitops.scss'
 import { withRouter } from 'react-router-dom'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 import { ReactComponent as Bitbucket } from '../../assets/icons/git/bitbucket.svg'

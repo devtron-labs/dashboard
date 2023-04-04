@@ -1,8 +1,7 @@
-import { get, post } from './api';
+import { get, post, ResponseType, APIOptions, sortCallback, TeamList } from '@devtron-labs/devtron-fe-common-lib';
 import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config';
-import { sortCallback } from '../components/common/helpers/util';
 import moment from 'moment';
-import { ResponseType, CDPipelines, TeamList, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, APIOptions, ClusterEnvironmentDetailList, EnvironmentListHelmResponse, ClusterListResponse, LoginCountType, ConfigOverrideWorkflowDetailsResponse } from './service.types';
+import { CDPipelines, AppListMin, ProjectFilteredApps, AppOtherEnvironment, LastExecutionResponseType, LastExecutionMinResponseType, ClusterEnvironmentDetailList, EnvironmentListHelmResponse, ClusterListResponse, LoginCountType, ConfigOverrideWorkflowDetailsResponse } from './service.types';
 import { Chart } from '../components/charts/charts.types';
 import { fetchWithFullRoute } from './fetchWithFullRoute';
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service';
@@ -44,25 +43,8 @@ export const getTeamList = (): Promise<TeamList> => {
     return get(URL).then(response => {
         return {
             code: response.code,
+            status: response.status,
             result: response.result || [],
-        };
-    });
-};
-
-export const getTeamListMin = (): Promise<TeamList> => {
-    // ignore active field
-    const URL = `${Routes.PROJECT_LIST_MIN}`;
-    return get(URL).then(response => {
-        let list = [];
-        if (response && response.result && Array.isArray(response.result)) {
-            list = response.result;
-        }
-        list = list.sort((a, b) => {
-            return sortCallback('name', a, b);
-        });
-        return {
-            code: response.code,
-            result: list,
         };
     });
 };

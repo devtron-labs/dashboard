@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react'
-import { ButtonWithLoader, showError, VisibleModal } from '../common'
+import { ButtonWithLoader } from '../common'
+import { showError, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
 import { uploadChart, validateChart } from './customChart.service'
 import errorImage from '../../assets/img/ic_upload_chart_error.png'
