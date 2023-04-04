@@ -461,7 +461,7 @@ function Cluster(
                                             }) =>
                                                 environment_name ? (
                                                     <div
-                                                        className="cluster-list-row flex-align-center fw-4 cn-9 fs-13 pl-10"
+                                                        className="cluster-list-row flex-align-center fw-4 cn-9 fs-13 pl-20"
                                                         style={{ height: '36px' }}
                                                     >
                                                         <div className="dc__transparent cursor flex">
