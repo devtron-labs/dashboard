@@ -553,6 +553,7 @@ export interface CdPipeline {
     id: number
     environmentId: number
     environmentName?: string
+    description?: string
     ciPipelineId: number
     triggerType: 'AUTOMATIC' | 'MANUAL'
     name: string

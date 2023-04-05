@@ -123,7 +123,6 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                             <div>
                                                 <div>{this.props.environmentName}</div>
                                                 <div>{this.props.description}</div>
-                                                <div>This is a env description of max 40words</div>
                                             </div>
                                         }
                                     >
