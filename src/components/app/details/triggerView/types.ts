@@ -676,4 +676,5 @@ export interface MaterialSourceProps {
         refresh: (pipelineId: number, title: string, gitMaterialId: number) => void
     }
     ciPipelineId?: number
+    fromTriggerInfo?: boolean
 }

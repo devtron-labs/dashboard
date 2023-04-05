@@ -11,6 +11,7 @@ export default function MaterialSource({
     refreshMaterial,
     selectMaterial,
     ciPipelineId,
+    fromTriggerInfo,
 }: MaterialSourceProps) {
     const renderErrorMessage = (mat: CIMaterialType): string => {
         if (mat.isRepoError) {
@@ -76,7 +77,10 @@ export default function MaterialSource({
     }
 
     return (
-        <div className="select-material--trigger-view__sidebar dc__overflow-scroll">
+        <div
+            className="select-material--trigger-view__sidebar dc__overflow-scroll"
+            style={{ height: fromTriggerInfo ? '100%' : 'calc(100% - 44px)' }}
+        >
             {material.map((mat, index) => {
                 return (
                     <div
