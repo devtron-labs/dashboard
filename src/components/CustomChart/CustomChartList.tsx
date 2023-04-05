@@ -76,7 +76,7 @@ export default function CustomChartList() {
     const renderUploadButton = (): JSX.Element => {
         return (
             <button onClick={openUploadPopup} className="add-link cta flex">
-                <Upload className="icon-dim-16 mr-8" />
+                <Upload className="icon-dim-16 mr-8"  data-testid="upload-custom-chart-button"/>
                 Upload Chart
             </button>
         )
@@ -137,7 +137,7 @@ export default function CustomChartList() {
                     <img src={emptyCustomChart} alt="Empty external links" />
                 </EmptyState.Image>
                 <EmptyState.Title>
-                    <h4 className="title">Use custom charts in applications</h4>
+                    <h4 className="title" data-testid="use-custom-chart-in-application-heading">Use custom charts in applications</h4>
                 </EmptyState.Title>
                 <EmptyState.Subtitle>
                     Import custom charts to use them in apps instead of the default system template.&nbsp;
