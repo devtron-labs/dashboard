@@ -245,7 +245,7 @@ export function formatHighlightedTextDescription(option: Environment, inputValue
     const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
     const regex = new RegExp(inputValue, 'gi')
     return (
-        <div className="flex left column dc__highlight-text" >
+        <div className="flex left column dc__highlight-text">
             <span
                 className="w-100 dc__ellipsis-right"
                 dangerouslySetInnerHTML={{

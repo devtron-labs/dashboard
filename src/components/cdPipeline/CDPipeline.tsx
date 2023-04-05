@@ -54,7 +54,7 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import config from './sampleConfig.json'
 import ReactSelect from 'react-select'
 import { styles, DropdownIndicator, Option } from './cdpipeline.util'
-import { EnvFormatOptions, formatHighlightedTextDescription, GroupHeading } from '../v2/common/ReactSelect.utils'
+import { EnvFormatOptions, formatHighlightedTextDescription, formatHighlightedText,GroupHeading } from '../v2/common/ReactSelect.utils'
 import './cdPipeline.scss'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionalWrap, createClusterEnvGroup } from '../common/helpers/Helpers'
@@ -212,6 +212,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                             namespace: env.namespace || '',
                                             active: false,
                                             isClusterCdActive: env.isClusterCdActive,
+                                            description: env.description
                                         }
                                     })
                                     sortObjectArrayAlphabetically(list, 'name')
@@ -1133,6 +1134,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     handleFormatHighlightedText = (opt: Environment, { inputValue }) => {
         return formatHighlightedTextDescription(opt, inputValue, 'name')
+        //return formatHighlightedText(opt, inputValue, 'name')
     }
 
     renderEnvNamespaceAndTriggerType() {
