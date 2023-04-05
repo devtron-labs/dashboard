@@ -75,7 +75,8 @@ export interface CopyTippyWithTextType {
 }
 
 export interface CIListItemType {
-    type: 'report' | 'artifact'
+    type: 'report' | 'artifact' | 'approved-artifact'
+    approvedCount?: number
     children: any
 }
 
@@ -99,6 +100,7 @@ export interface ScrollerType {
 export interface GitChangesType {
     gitTriggers: Map<number, GitTriggers>
     ciMaterials: CiMaterial[]
+    triggerInfo?: any
 }
 export interface EmptyViewType {
     imgSrc?: string

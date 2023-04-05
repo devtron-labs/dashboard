@@ -2507,6 +2507,10 @@ textarea,
     height: 80px !important;
 }
 
+.h-200 {
+    height: 200px;
+}
+
 .h-300 {
     height: 300px !important;
 }
@@ -2926,6 +2930,21 @@ textarea::placeholder {
 
 .dc__list-style-disc {
     list-style-type: disc;
+}
+
+.dc__list-style-none {
+    list-style-type: none;
+}
+
+.alphabet-icon__initial {
+    font-weight: 500;
+    text-transform: uppercase;
+    line-height: 1.9;
+    text-align: center;
+    border-radius: 50%;
+    color: var(--N000);
+    user-select: none;
+    border: solid 1px transparent;
 }
 
 .dc__zi-4 {
