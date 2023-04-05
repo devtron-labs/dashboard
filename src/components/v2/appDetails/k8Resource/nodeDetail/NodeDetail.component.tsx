@@ -189,7 +189,7 @@ function NodeDetailComponent({
 
     return (
         <React.Fragment>
-            <div className="pl-20 bcn-0 flex left w-100 pr-20">
+            <div data-testid="app-resource-containor-header" className="pl-20 bcn-0 flex left w-100 pr-20">
                 {tabs &&
                     tabs.length > 0 &&
                     tabs.map((tab: string, index: number) => {
