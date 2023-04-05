@@ -7,7 +7,6 @@ import { statusColor as colorMap } from '../../config'
 import { Moment12HourFormat, ZERO_TIME_STRING } from '../../../../config'
 import moment from 'moment'
 import docker from '../../../../assets/icons/misc/docker.svg'
-import { ReactComponent as TimerIcon } from '../../../../assets/icons/ic-timer.svg'
 import warn from '../../../../assets/icons/ic-warning.svg'
 import '../cIDetails/ciDetails.scss'
 import {
@@ -256,24 +255,28 @@ const StartDetails = ({
                 <div className="trigger-details__trigger-by cn-7 fs-12 mr-12">
                     {triggeredBy === 1 ? 'auto trigger' : triggeredByEmail}
                 </div>
-                {type === HistoryComponentType.CD && artifact ? (
-                    <div className="dc__app-commit__hash ">
-                        <img src={docker} className="commit-hash__icon grayscale" />
-                        {artifact.split(':')[1]}
-                    </div>
+                {type === HistoryComponentType.CD ? (
+                    <>
+                        {artifact && (
+                            <div className="dc__app-commit__hash ">
+                                <img src={docker} className="commit-hash__icon grayscale" />
+                                {artifact.split(':')[1]}
+                            </div>
+                        )}
+                    </>
                 ) : (
                     ciMaterials?.map((ciMaterial) => {
                         const gitDetail: GitTriggers = gitTriggers[ciMaterial.id]
-                        return (
+                        return gitDetail ? (
                             <React.Fragment key={ciMaterial.id}>
                                 {ciMaterial.type != 'WEBHOOK' && (
                                     <a
                                         target="_blank"
                                         rel="noopener noreferer"
-                                        href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)}
+                                        href={createGitCommitUrl(ciMaterial.url, gitDetail.Commit)}
                                         className="dc__app-commit__hash mr-12 bcn-1 cn-7"
                                     >
-                                        {gitDetail?.Commit?.substr(0, 8)}
+                                        {gitDetail.Commit?.substr(0, 8)}
                                     </a>
                                 )}
                                 {ciMaterial.type == 'WEBHOOK' &&
@@ -286,7 +289,7 @@ const StartDetails = ({
                                         </span>
                                     )}
                             </React.Fragment>
-                        )
+                        ) : null
                     })
                 )}
                 {!pathname.includes('source-code') && (
