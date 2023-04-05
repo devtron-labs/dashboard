@@ -159,6 +159,7 @@ export class AppListView extends Component<AppListViewProps> {
                                     <Link
                                         to={this.props.redirectToAppDetails(app, app.defaultEnv.id)}
                                         className={`app-list__row ${len ? 'dc__hover-icon' : ''}`}
+                                        data-testid="app-list-row"
                                     >
                                         <div className="app-list__cell--icon">
                                             <DevtronAppIcon className="icon-dim-24 dc__show-first--icon" />
@@ -174,7 +175,7 @@ export class AppListView extends Component<AppListViewProps> {
                                             <p className="dc__truncate-text  m-0 value">{app.name}</p>
                                         </div>
                                         {this.props.isArgoInstalled && (
-                                            <div className="app-list__cell app-list__cell--app_status">
+                                            <div className="app-list__cell app-list__cell--app_status" data-testid="devtron-app-status">
                                                 <AppStatus appStatus={app.defaultEnv.appStatus} />
                                             </div>
                                         )}

@@ -175,7 +175,7 @@ function NavItem({ serverMode }) {
     ]
 
     const ConfigOptional = [
-        { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
+        { name: 'Chart Repositories',href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
         {
             name: 'Custom Charts',
             href: URLS.GLOBAL_CONFIG_CUSTOM_CHARTS,
@@ -340,6 +340,7 @@ function NavItem({ serverMode }) {
                                     <NavLink
                                         key={`nav_item_${index}`}
                                         to={route.href}
+                                        data-testid="dcdfdgffdgffsdsa"
                                         className={`cursor ${
                                             collapsedState[route.name] ? '' : 'fw-6'
                                         } flex dc__content-space`}
@@ -557,7 +558,7 @@ function Title({ title = '', subtitle = '', style = {}, className = '', tag = ''
 }
 
 function ListToggle({ onSelect, enabled = false, ...props }) {
-    return <Toggle dataTestId='chart-repo-toggle-button' {...props} onSelect={onSelect} selected={enabled} />
+    return <Toggle dataTestId="toggle-button" {...props} onSelect={onSelect} selected={enabled} />
 }
 
 function DropDown({ className = '',dataTestid='', style = {}, src = null, ...props }) {

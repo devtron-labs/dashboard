@@ -162,7 +162,7 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
                     <List.Title style={{color: !id && !collapsed ? 'var(--N900)': ''}} title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />
                     {id &&
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable chart repository' : 'Enable chart repository'}>
-                            <span style={{ marginLeft: 'auto' }}>
+                            <span data-testid= {`${name}-chart-repo-toggle-button`} style={{ marginLeft: 'auto' }}>
                                 {loading ? (
                                     <Progressing />
                                 ) : (
