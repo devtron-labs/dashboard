@@ -84,6 +84,7 @@ export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
                         style={{ width: 'min( 100%, 800px )' }}
                     >
                         <GitCommitInfoGeneric
+                            index={index}
                             materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger.GitRepoUrl : ciMaterial?.url}
                             showMaterialInfoHeader={true}
                             commitInfo={gitTrigger}
