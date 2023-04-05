@@ -44,7 +44,8 @@ function ResourceFilterOptions({
     const [showShortcutKey, setShowShortcutKey] = useState(!searchApplied)
     const searchInputRef = useRef<HTMLInputElement>(null)
     const podColumnOptions = convertToOptionsList(podColumns)
-    const [selectedColumns, setSelectedColumns] = useState<MultiValue<OptionType>>()
+    const [selectedColumns, setSelectedColumns] = useState<MultiValue<OptionType>>(podColumnOptions)
+    const [openMenu, setOpenMenu] = useState<boolean>(false)
     useEffect(() => {
         if (!isCreateModalOpen) {
             shortcut.registerShortcut(handleInputShortcut, ['r'], 'ResourceSearchFocus', 'Focus resource search')
@@ -111,16 +112,16 @@ function ResourceFilterOptions({
         if (selectedColumns?.length === 0){
             return
         }
+        setOpenMenu(false)
         let columns = selectedColumns?.map((ele)=>{
             console.log(ele.value)
             return ele.value
         })
-
+        setExtraPodColumns(columns)
     }
 
     const  podColumnOptionsMenuList = (props): JSX.Element => {
-        const { data, selectProps, menuIsOpen } = props
-
+        setOpenMenu(props.menuIsOpen)
         return <components.MenuList {...props}>
             {props.children}
             <button type="button" className="filter__apply" onClick={ handleApply } style={{position: "sticky", top: "40px"}}>
@@ -214,6 +215,8 @@ function ResourceFilterOptions({
                             closeMenuOnSelect={false}
                             hideSelectedOptions={false}
                             styles={FILTER_SELECT_COMMON_STYLES}
+                            menuIsOpen={openMenu}
+                            value={selectedColumns}
                             components={{
                                 IndicatorSeparator: null,
                                 DropdownIndicator:null,

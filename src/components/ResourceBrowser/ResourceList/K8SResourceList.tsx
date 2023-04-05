@@ -17,6 +17,7 @@ import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
+import {podColumns} from "../Utils";
 
 export function K8SResourceList({
     selectedResource,
@@ -55,6 +56,29 @@ export function K8SResourceList({
     const [pageSize, setPageSize] = useState(100)
     const resourceListRef = useRef<HTMLDivElement>(null)
     const showPaginatedView = resourceList?.data?.length >= 100
+    const [ExtraPodColumns, setExtraPodColumns] = useState<string[]>(podColumns)
+
+    const isExtraPodColumn = (column : string) : boolean =>{
+        podColumns.forEach((val)=>{
+            if(val == column){
+                return true
+            }
+        })
+        return false
+    }
+
+    const canShowColumn = (column : string) : boolean =>{
+        const flag = isExtraPodColumn(column)
+        if (!flag){
+            return true
+        }
+        ExtraPodColumns.forEach((val)=>{
+            if(val == column){
+                return true
+            }
+        })
+        return false
+    }
 
     useEffect(() => {
         if (resourceList?.headers.length) {
@@ -171,7 +195,8 @@ export function K8SResourceList({
                             </div>
                         </div>
                     ) : (
-                        <div
+                        (selectedResource?.gvk?.Kind == 'Pod' ? canShowColumn(columnName): true) && (
+                            <div
                             key={`${resourceData.name}-${idx}`}
                             className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
                                 columnName === 'status'
@@ -181,6 +206,7 @@ export function K8SResourceList({
                         >
                             {resourceData[columnName]}
                         </div>
+                        )
                     ),
                 )}
             </div>
@@ -231,7 +257,7 @@ export function K8SResourceList({
             >
                 <div className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header  bcn-0 dc__position-sticky">
                     {resourceList.headers.map((columnName) => (
-                        <div
+                        (selectedResource?.gvk?.Kind == 'Pod' ? canShowColumn(columnName) : true) && <div
                             key={columnName}
                             className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
                                 columnName === 'name'
@@ -309,6 +335,7 @@ export function K8SResourceList({
                 clearSearch={clearSearch}
                 isSearchInputDisabled={resourceListLoader}
                 isCreateModalOpen={isCreateModalOpen}
+                setExtraPodColumns={setExtraPodColumns}
             />
             {resourceListLoader ? <Progressing pageLoader /> : renderList()}
         </div>
