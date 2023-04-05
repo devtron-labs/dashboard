@@ -66,6 +66,7 @@ export interface ArtifactType {
     isArtifactUploaded?: boolean
     getArtifactPromise?: () => Promise<any>
     isJobView?: boolean
+    type: HistoryComponentType
 }
 
 export interface CopyTippyWithTextType {

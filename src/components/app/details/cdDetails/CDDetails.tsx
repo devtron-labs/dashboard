@@ -461,6 +461,7 @@ const HistoryLogs: React.FC<{
                                     artifact={triggerDetails.artifact}
                                     blobStorageEnabled={triggerDetails.blobStorageEnabled}
                                     getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
+                                    type={HistoryComponentType.CD}
                                 />
                             </Route>
                         )}

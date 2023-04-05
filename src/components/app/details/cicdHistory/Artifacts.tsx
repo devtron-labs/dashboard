@@ -13,7 +13,7 @@ import noartifact from '../../../../assets/img/no-artifact@2x.png'
 import Tippy from '@tippyjs/react'
 import { EmptyView } from './History.components'
 import '../cIDetails/ciDetails.scss'
-import { ArtifactType, CIListItemType, CopyTippyWithTextType } from './types'
+import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentType } from './types'
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { ARTIFACTS_EMPTY_STATE_TEXTS } from './Constants'
 import { extractImage } from '../../service'
@@ -25,6 +25,7 @@ export default function Artifacts({
     isArtifactUploaded,
     getArtifactPromise,
     isJobView,
+    type
 }: ArtifactType) {
     const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
     const [copied, setCopied] = useState(false)
@@ -104,7 +105,7 @@ export default function Artifacts({
                    </div>
                </CIListItem>
                 )}
-                {isArtifactUploaded && blobStorageEnabled && getArtifactPromise && (
+                {blobStorageEnabled && getArtifactPromise && (type === HistoryComponentType.CD || isArtifactUploaded) && (
                     <CIListItem type="report">
                         <div className="flex column left">
                             <div className="cn-9 fs-14">Reports.zip</div>
