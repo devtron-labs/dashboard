@@ -226,7 +226,9 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                 )}
                 {uploadState !== UPLOAD_STATE.UPLOADING && (
                     <ButtonWithLoader
-                        dataTestId={`${uploadState === UPLOAD_STATE.UPLOAD? "select-tgz-file-button" : "upload-another-chart"}`}
+                        dataTestId={`${uploadState === UPLOAD_STATE.UPLOAD ? "select-tgz-file-button" : 
+                        uploadState === UPLOAD_STATE.ERROR ? "upload-another-chart" : 
+                        uploadState === UPLOAD_STATE.SUCCESS ? "save-chart" : ""}`}
                         rootClassName="cta mr-20 dc__no-text-transform"
                         loaderColor="white"
                         onClick={handleSuccessButton}
