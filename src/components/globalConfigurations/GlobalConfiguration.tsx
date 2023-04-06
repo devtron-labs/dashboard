@@ -557,12 +557,12 @@ function Title({ title = '', subtitle = '', style = {}, className = '', tag = ''
 }
 
 function ListToggle({ onSelect, enabled = false, ...props }) {
-    return <Toggle {...props} onSelect={onSelect} selected={enabled} />
+    return <Toggle dataTestId='chart-repo-toggle-button' {...props} onSelect={onSelect} selected={enabled} />
 }
 
-function DropDown({ className = '', style = {}, src = null, ...props }) {
+function DropDown({ className = '',dataTestid='', style = {}, src = null, ...props }) {
     if (React.isValidElement(src)) return src
-    return <img {...props} src={src || arrowTriangle} alt="" className={`list__arrow ${className}`} style={style} />
+    return <img {...props} src={src || arrowTriangle} data-testid={dataTestid} alt="" className={`list__arrow ${className}`} style={style} />
 }
 
 export function List({ dataTestId='' ,children = null, className = '', ...props }) {

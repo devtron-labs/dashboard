@@ -22,7 +22,7 @@ import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
 
-export function TaskDetailComponent() {
+export function TaskDetailComponent( {dataTestId}: { dataTestId?: string}) {
     const {
         formData,
         setFormData,
@@ -171,7 +171,7 @@ export function TaskDetailComponent() {
                     <div>
                         <input
                             className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                            data-testid = "custom-script-task-name-textbox"
+                            data-testid = "preBuild-task-name-textbox"
                             type="text"
                             onChange={(e) => handleNameChange(e)}
                             value={formData[activeStageName].steps[selectedTaskIndex].name}
@@ -191,7 +191,7 @@ export function TaskDetailComponent() {
                     <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>{' '}
                     <input
                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                        data-testid = "custom-script-task-description-textbox"
+                        data-testid = "preBuild-task-description-textbox"
                         type="text"
                         onChange={(e) => handleDescriptionChange(e)}
                         value={formData[activeStageName].steps[selectedTaskIndex].description}
