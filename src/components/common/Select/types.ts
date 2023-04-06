@@ -23,6 +23,7 @@ export interface SelectProps {
     name?: string;
     autoWidth?: boolean;
     isKebab?: boolean;
+    dataTestId?: string
 }
 
 export interface SelectAsync{

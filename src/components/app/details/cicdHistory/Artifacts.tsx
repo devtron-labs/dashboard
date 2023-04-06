@@ -104,7 +104,7 @@ export default function Artifacts({
                    </div>
                </CIListItem>
                 )}
-                {isArtifactUploaded && blobStorageEnabled && getArtifactPromise && (
+                {blobStorageEnabled && getArtifactPromise && (!isJobView || isArtifactUploaded) && (
                     <CIListItem type="report">
                         <div className="flex column left">
                             <div className="cn-9 fs-14">Reports.zip</div>

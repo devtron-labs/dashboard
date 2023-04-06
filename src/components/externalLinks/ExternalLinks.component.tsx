@@ -22,13 +22,13 @@ import {
     onImageLoadError,
 } from './ExternalLinks.utils'
 import { UserRoleType } from '../userGroups/userGroups.types'
-import { TippyCustomized, TippyTheme, InfoColourBar, EmptyState } from  '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme, InfoColourBar, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../common'
 import './externalLinks.component.scss'
 
 export const AddLinkButton = ({ handleOnClick }: { handleOnClick: () => void }): JSX.Element => {
     return (
-        <button onClick={handleOnClick} className="add-link cta flex">
+        <button onClick={handleOnClick} className="add-link cta flex" data-testid="external-links-add-link">
             <AddIcon className="icon-dim-16 mr-8" />
             Add link
         </button>
@@ -173,6 +173,7 @@ export const AppLevelExternalLinks = ({
                     key={linkOption.label}
                     href={getParsedURL(true, linkOption.value, details)}
                     target="_blank"
+                    data-testid={`external-link-${idx}`}
                     className="external-link-chip flex left bc-n50 h-24 br-4 cn-7 dc__no-decor dc__border"
                 >
                     <img
@@ -197,7 +198,7 @@ export const AppLevelExternalLinks = ({
     }
 
     return (
-      appLevelExternalLinks.length > 0 && (
+        appLevelExternalLinks.length > 0 && (
             <div data-testid="external-links-wrapper" className="app-level__external-links flex left w-100 mb-14 bcn-0">
                 {!isOverviewPage && (
                     <div className="app-level__external-links-icon icon-dim-20">

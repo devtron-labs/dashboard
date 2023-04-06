@@ -137,7 +137,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
     renderBlankHostField() {
         return <div className="flex left pt-4">
             <img src={TriangleAlert} alt="" className="icon-dim-16 mr-8" />
-            <div className="dc__deprecated-warn-text fs-11">Please enter host url</div>
+            <div className="dc__deprecated-warn-text fs-11" data-testid="empty-host-url">Please enter host url</div>
         </div>
     }
 
@@ -156,12 +156,12 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
         }
         return (
             <>
-                <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component">
-                    <h2 className="form__title">Host URL</h2>
+                <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component" data-testid="section-host-url">
+                    <h2 className="form__title" data-testid="host-url-heading">Host URL</h2>
                     <p className="form__subtitle">
                         Host URL is the domain address at which your devtron dashboard can be reached. &nbsp;{' '}
                     </p>
-                    <form className="bcn-0 br-8 bw-1 en-2 pb-22 ">
+                    <form className="bcn-0 br-8 bw-1 en-2 pb-22 " data-testid="form-host-url">
                         <InfoColourBar
                             classname="hosturl__description m-20"
                             message={
@@ -190,6 +190,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                                     placeholder={'Enter Host URL'}
                                     onChange={(event) => this.handleChange(event)}
                                     autoComplete="off"
+                                    data-testid = "host-url-textbox"
                                 />
                             </div>
                             {!this.state.isHostUrlValid ? this.renderBlankHostField() : ''}
@@ -200,6 +201,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                                     type="button"
                                     onClick={(e) => this.handleHostURLLocation(window.location.origin)}
                                     className="hosturl__url fw-4 cg-5"
+                                    data-testid="clickable-url"
                                 >
                                     {window.location.origin}
                                 </button>
@@ -213,6 +215,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                                         this.onSave()
                                     }}
                                     className="cta"
+                                    data-testid ="host-url-update-button"
                                 >
                                     {this.state.saveLoading ? <Progressing /> : this.state.form.id ? 'Update' : 'Save'}
                                 </button>

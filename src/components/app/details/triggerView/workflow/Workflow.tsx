@@ -280,7 +280,7 @@ export class Workflow extends Component<WorkflowProps> {
                             {this.props.name}
                         </Checkbox>
                     ) : (
-                        <span data-testid = "workflow-heading" className="workflow__name">{this.props.name}</span>
+                        <span data-testid = {`workflow-heading${this.props.id}`} className="workflow__name">{this.props.name}</span>
                     )}
                 </div>
                 {isExternalCiWorkflow && <DeprecatedPipelineWarning />}

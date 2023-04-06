@@ -196,6 +196,8 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         className="tab-list__tab-link"
                         data-action="Build & Deploy Clicked"
                         onClick={handleEventClick}
+                        data-tesid="build-deploy-click"
+                        id="build-deploy"
                     >
                         Build & Deploy
                     </NavLink>
@@ -235,6 +237,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                 </li>
                 <li className="tab-list__tab">
                     <NavLink
+                        data-testid = "app-configuration"
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"
