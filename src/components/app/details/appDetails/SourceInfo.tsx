@@ -130,7 +130,6 @@ export function SourceInfo({
                                 data-testid="app-details-hibernate"
                                 className="cta cta-with-img small cancel fs-12 fw-6"
                                 onClick={(e) => showHibernateModal(isHibernated ? 'resume' : 'hibernate')}
-                                data-testid="app-details-hibernate"
                             >
                                 <ScaleDown
                                     className={`icon-dim-16 mr-6 rotate`}
@@ -213,7 +212,6 @@ export function SourceInfo({
                             <div
                                 data-testid="deployment-status-card"
                                 onClick={showDeploymentDetailedStatus}
-                                data-testid="deployment-status-card"
                                 className={`flex left bcn-0 p-16 br-4 mw-382 en-2 bw-1 ${
                                     appDetails?.deploymentAppType === DeploymentAppType.helm ? '' : 'cursor'
                                 }`}
