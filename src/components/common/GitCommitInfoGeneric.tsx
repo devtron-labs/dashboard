@@ -20,6 +20,7 @@ export default function GitCommitInfoGeneric({
     materialUrl,
     showMaterialInfoHeader,
     canTriggerBuild = false,
+    index
 }) {
     const [showSeeMore, setShowSeeMore] = useState(true)
     let _lowerCaseCommitInfo = _lowerCaseObject(commitInfo)
@@ -160,6 +161,7 @@ export default function GitCommitInfoGeneric({
         <>
             {showMaterialInfoHeader && (_isWebhook || _lowerCaseCommitInfo.commit) && (
                 <GitMaterialInfoHeader
+                    index={index}
                     repoUrl={materialUrl}
                     materialType={materialSourceType}
                     materialValue={materialSourceValue}
@@ -176,7 +178,7 @@ export default function GitCommitInfoGeneric({
                                 rel="noopener"
                                 className="commit-hash"
                                 onClick={(e) => e.stopPropagation()}
-                                data-testid = "deployment-history-source-code-material-history"
+                                data-testid = {`deployment-history-source-code-material-history${index}`}
 
                             >
                                 <div className="material-history__header">

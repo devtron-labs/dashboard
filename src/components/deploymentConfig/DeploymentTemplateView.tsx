@@ -861,7 +861,6 @@ export const DeploymentTemplateEditorView = ({
                                     selected={basicFieldValues?.[BASIC_FIELDS.ENABLED]}
                                     onSelect={handleIngressEnabledToggle}
                                     disabled={readOnly || basicFieldValues?.[BASIC_FIELDS.HOSTS].length === 0}
-                                    dataTestId="httprequests-routes-toggle"
                                 />
                             </div>
                         </div>

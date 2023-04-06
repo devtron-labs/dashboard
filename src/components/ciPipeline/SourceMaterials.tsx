@@ -203,7 +203,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 autoComplete="off"
                                                 placeholder="Eg. main"
                                                 type="text"
-                                                data-testid="build-pipeline-branch-name-textbox"
+                                                data-testid={_materials.length>0?`build-pipeline-branch-name-textbox${index}`:"build-pipeline-branch-name-textbox"}
                                                 disabled={!props.handleSourceChange}
                                                 value={mat.value}
                                                 onChange={(event) => {
@@ -235,7 +235,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             autoComplete="off"
                                             placeholder="Eg. feature.*"
                                             type="text"
-                                            data-testid="build-pipeline-branch-regex-textbox"
+                                            data-testid={_materials.length>0?`build-pipeline-branch-regex-textbox${index}`:"build-pipeline-branch-regex-textbox"}
                                             disabled={!props.handleSourceChange}
                                             value={mat.regex}
                                             onChange={(event) => {

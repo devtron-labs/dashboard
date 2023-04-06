@@ -86,7 +86,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
 
     renderWithBackDrop(headerDescription: string, body) {
         return <VisibleModal className="">
-            <div className={`modal__body modal__body--ci-mat-trigger-info`}>
+            <div data-testid="visible-modal-commit-info" className={`modal__body modal__body--ci-mat-trigger-info`}>
                 <div className="trigger-modal__header">
                     <div className="">
                         <h1 className="modal__title">{this.state.appName}</h1>
@@ -94,7 +94,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                             {headerDescription}
                         </p>
                     </div>
-                    <button type="button" className="dc__transparent" onClick={this.props.close}> <img src={close} alt="close" /></button>
+                    <button data-testid="visible-modal-close" type="button" className="dc__transparent" onClick={this.props.close}> <img src={close} alt="close" /></button>
                 </div>
                 {body}
             </div>
