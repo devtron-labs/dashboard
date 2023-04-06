@@ -145,7 +145,7 @@ export default function ConfigureLinkAction({
                         value={link.name}
                         onChange={onNameChange}
                         onBlur={validateAndUpdateLinksData}
-                        data-testid="external-link-name"
+                        data-testid="external-link-name-input"
                     />
                     {link.invalidName && getErrorLabel('name')}
                 </div>
@@ -155,7 +155,7 @@ export default function ConfigureLinkAction({
                         placeholder="Description"
                         value={link.description}
                         onChange={onDescriptionChange}
-                        data-testid="external-link-description"
+                        data-testid="external-link-description-input"
                     />
                 </div>
                 {!isAppConfigView && (
@@ -172,7 +172,7 @@ export default function ConfigureLinkAction({
                                     className={`dc__no-text-transform ${
                                         linkScope === ExternalLinkScopeType.ClusterLevel ? 'fw-6' : 'fw-4'
                                     }`}
-                                    data-testid="specific-clusters"
+                                    data-testid="specific-clusters-select"
                                 >
                                     All apps in specific clusters
                                 </span>
@@ -182,7 +182,7 @@ export default function ConfigureLinkAction({
                                     className={`dc__no-text-transform ${
                                         linkScope === ExternalLinkScopeType.AppLevel ? 'fw-6' : 'fw-4'
                                     }`}
-                                    data-testid="specific-applications"
+                                    data-testid="specific-applications-select"
                                 >
                                     Specific applications
                                 </span>
