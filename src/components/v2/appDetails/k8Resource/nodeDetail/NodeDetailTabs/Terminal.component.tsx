@@ -134,6 +134,7 @@ function TerminalComponent({
                 </div>
             </div>
             <div
+                data-testid="app-terminal-container"
                 className="terminal-view-wrapper"
                 style={{
                     minHeight: isResourceBrowserView ? '200px' : '',

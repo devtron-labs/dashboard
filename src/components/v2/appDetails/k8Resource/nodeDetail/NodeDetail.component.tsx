@@ -204,6 +204,7 @@ function NodeDetailComponent({
                             >
                                 <NavLink to={`${url}/${tab.toLowerCase()}`} className=" dc__no-decor flex left">
                                     <span
+                                        data-testid={`${tab.toLowerCase()}-nav-link`}
                                         className={`${
                                             tab.toLowerCase() === selectedTabName.toLowerCase() ? 'cb-5' : 'cn-9'
                                         } default-tab-cell`}

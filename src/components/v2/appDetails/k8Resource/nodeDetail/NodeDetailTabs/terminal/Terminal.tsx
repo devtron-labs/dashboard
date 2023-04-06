@@ -548,6 +548,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                         renderErrorMessageStrip(errorMessage)
                     ) : (
                         <div
+                            data-testid="terminal-strip-message"
                             className={`dc__first-letter-capitalize ${
                                 terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED &&
                                 !clusterSocketConnecting
