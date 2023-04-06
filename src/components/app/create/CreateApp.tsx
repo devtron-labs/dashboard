@@ -445,16 +445,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     rootClassName="flex cta h-36"
                     onClick={this.createApp}
                     disabled={this.state.createAppLoader}
-                    isLoading={false}
+                    isLoading={this.state.createAppLoader}
                     loaderColor="white"
                 >
-                    {this.state.createAppLoader ? (
-                        <Progressing />
-                    ) : (
-                        `${this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}${
-                            this.props.isJobView ? 'Job' : 'App'
-                        }`
-                    )}
+                    {this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}
+                    {this.props.isJobView ? 'Job' : 'App'}
                 </ButtonWithLoader>
             </div>
         )
