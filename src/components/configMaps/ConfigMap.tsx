@@ -672,11 +672,12 @@ export function ConfigMapForm({
                 <div className="form-row__select-external-type flex">
                     <Select
                         value={isExternalValues ? 'KubernetesConfigMap' : ''}
+                        dataTestId="configmaps-data-type-select-dropdown"
                         onChange={(e) => {
                             toggleExternalValues(e.target.value !== '')
                         }}
                     >
-                        <Select.Button>
+                        <Select.Button dataTestId="data-type-select-control">
                             {isExternalValues ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
                         </Select.Button>
                         {Object.entries(EXTERNAL_TYPES).map(([value, name]) => (
@@ -710,6 +711,7 @@ export function ConfigMapForm({
                     className={`form__input`}
                     placeholder={`random-configmap`}
                     disabled={isUpdate}
+                    data-testid="create-config-name-input"
                 />
                 {configName.error && <label className="form__error">{configName.error}</label>}
             </div>
@@ -862,8 +864,8 @@ export function ConfigMapForm({
                         disabled={false}
                         onChange={changeEditorMode}
                     >
-                        <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
-                        <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
+                        <RadioGroup.Radio value="gui" dataTestId="GUI">GUI</RadioGroup.Radio>
+                        <RadioGroup.Radio value="yaml" dataTestId="YAML">YAML</RadioGroup.Radio>
                     </RadioGroup>
                 </div>
             )}
@@ -934,7 +936,7 @@ export function ConfigMapForm({
                 </>
             )}
             <div className="form__buttons">
-                <button type="button" className="cta" onClick={handleSubmit}>
+                <button type="button" className="cta" onClick={handleSubmit} data-testid="click-save-config-map">
                     {loading ? <Progressing /> : `${name ? 'Update' : 'Save'} ConfigMap`}
                 </button>
             </div>

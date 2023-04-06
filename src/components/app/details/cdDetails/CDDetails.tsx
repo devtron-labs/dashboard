@@ -275,6 +275,7 @@ export const TriggerOutput: React.FC<{
                             message={triggerDetails.message}
                             podStatus={triggerDetails.podStatus}
                             stage={triggerDetails.stage}
+                            artifact={triggerDetails.artifact}
                         />
                         <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
                             {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppType.helm && (
@@ -440,6 +441,7 @@ const HistoryLogs: React.FC<{
                                     artifact={triggerDetails.artifact}
                                     blobStorageEnabled={triggerDetails.blobStorageEnabled}
                                     getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
+                                    isArtifactUploaded={triggerDetails.isArtifactUploaded}
                                 />
                             </Route>
                         )}

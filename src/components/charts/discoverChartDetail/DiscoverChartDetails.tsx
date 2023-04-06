@@ -395,7 +395,7 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
 
         return `
           <a name="${escapedText}" rel="noreferrer noopener" class="anchor" href="#${escapedText}">
-                <h${level}>
+                <h${level} data-testid = "deployment-template-readme-version">
               <span class="header-link"></span>
               ${text}
               </h${level}>

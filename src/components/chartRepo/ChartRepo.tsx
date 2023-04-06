@@ -162,7 +162,7 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
                     <List.Title style={{color: !id && !collapsed ? 'var(--N900)': ''}} title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />
                     {id &&
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable chart repository' : 'Enable chart repository'}>
-                            <span style={{ marginLeft: 'auto' }}>
+                            <span data-testid= {`${name}-chart-repo-toggle-button`} style={{ marginLeft: 'auto' }}>
                                 {loading ? (
                                     <Progressing />
                                 ) : (
@@ -345,7 +345,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             <div className="form__row form__buttons">
                    {
                        id &&
-                       <button data-testid="" className="cta delete dc__m-auto chart_repo__delete-button" type="button" onClick={() => toggleConfirmation(true)}>
+                       <button data-testid="chart-repo-delete-button" className="cta delete dc__m-auto chart_repo__delete-button" type="button" onClick={() => toggleConfirmation(true)}>
                             {deleting ? <Progressing /> : 'Delete'}
                         </button>
                    }

@@ -705,6 +705,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     <div className="search">
                         <Search className="search__icon icon-dim-18" />
                         <input
+                            data-testid="Search-by-app-name"
                             type="text"
                             name="app_search_input"
                             autoComplete="off"

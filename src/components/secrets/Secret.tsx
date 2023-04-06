@@ -779,6 +779,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     className={`form__input`}
                     placeholder={`random-secret`}
                     disabled={props.isUpdate}
+                    data-testid="create-secrets-name-input"
                 />
                 {configName.error && <label className="form__error">{configName.error}</label>}
             </div>
@@ -1078,7 +1079,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 </div>
             )}
             <div className="form__buttons">
-                <button type="button" className="cta" onClick={handleSubmit}>
+                <button type="button" className="cta" onClick={handleSubmit} data-testid="click-save-secrets">
                     {loading ? <Progressing /> : `${props.name ? 'Update' : 'Save'} Secret`}
                 </button>
             </div>

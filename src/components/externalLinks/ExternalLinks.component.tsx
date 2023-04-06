@@ -173,6 +173,7 @@ export const AppLevelExternalLinks = ({
                     key={linkOption.label}
                     href={getParsedURL(true, linkOption.value, details)}
                     target="_blank"
+                    data-testid={`external-link-${idx}`}
                     className="external-link-chip flex left bc-n50 h-24 br-4 cn-7 dc__no-decor dc__border"
                 >
                     <img
@@ -198,7 +199,7 @@ export const AppLevelExternalLinks = ({
 
     return (
         appLevelExternalLinks.length > 0 && (
-            <div className="app-level__external-links flex left w-100 mb-14 bcn-0">
+            <div data-testid="external-links-wrapper" className="app-level__external-links flex left w-100 mb-14 bcn-0">
                 {!isOverviewPage && (
                     <div className="app-level__external-links-icon icon-dim-20">
                         <LinkIcon className="external-links-icon icon-dim-20 fc-9" />
