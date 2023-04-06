@@ -585,7 +585,12 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             >
                                 Cancel
                             </button>
-                            <button type="submit" className="cta  sso__warn-button" onClick={this.saveNewSSO}>
+                            <button
+                                type="submit"
+                                className="cta  sso__warn-button"
+                                data-testid="confirm-sso-button"
+                                onClick={this.saveNewSSO}
+                            >
                                 Confirm
                             </button>
                         </ConfirmationDialog.ButtonGroup>
