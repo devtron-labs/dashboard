@@ -315,7 +315,6 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             editorDidMount={editorDidMount}
                             height={height}
                             width="100%"
-                            data-testid={dataTestId}
                         />
                     }
                 </>
