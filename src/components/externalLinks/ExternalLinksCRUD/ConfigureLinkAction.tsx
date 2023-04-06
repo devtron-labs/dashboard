@@ -244,7 +244,7 @@ export default function ConfigureLinkAction({
                 )}
             </div>
             {showDelete && (
-                <div className="link-delete icon-dim-20 cursor">
+                <div className="link-delete icon-dim-20 cursor" data-testid="close-link">
                     <CloseIcon className="icon-dim-20 fcn-6" onClick={() => deleteLinkData(index)} />
                 </div>
             )}
