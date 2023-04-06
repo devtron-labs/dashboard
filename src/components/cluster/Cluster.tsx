@@ -1,5 +1,5 @@
-import React, { useState, useMemo, Component,useRef, useEffect } from 'react'
-import { Pencil, useForm, CustomPassword, Toggle, useAsync  } from '../common'
+import React, { useState, useMemo, Component, useRef, useEffect } from 'react'
+import { Pencil, useForm, CustomPassword, Toggle, useAsync } from '../common'
 import {
     showError,
     Progressing,
@@ -206,8 +206,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     render() {
         if (!this.props.isSuperAdmin) {
             return <ErrorScreenNotAuthorized />
-        }
-        else if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
+        } else if (this.state.view === ViewType.LOADING) return <Progressing pageLoader />
         else if (this.state.view === ViewType.ERROR) return <Reload className="dc__align-reload-center" />
         else {
             const moduleBasedTitle =
@@ -392,11 +391,11 @@ function Cluster(
                                                 setShowWindow(true)
                                             }}
                                         >
-                                            <List.Logo>{<Add className="icon-dim-24 fcb-5 mr-11" />}</List.Logo>
+                                            <List.Logo>{<Add className="icon-dim-20 fcb-5 mr-8" />}</List.Logo>
                                             <List.Title
                                                 style={{
                                                     fontSize: '13px',
-                                                    width: '120px',
+                                                    minWidth: 'max-content',
                                                     color: '#0066CC',
                                                     fontWeight: '600',
                                                 }}
@@ -435,100 +434,117 @@ function Cluster(
                             />
                         ) : null}
                         {serverMode !== SERVER_MODE.EA_ONLY &&
-                            !window._env_.K8S_CLIENT &&
-                            Array.isArray(newEnvs) &&
-                            newEnvs.length > 0 && (
-                                <div className="cluster-token-container">
-                                    <div className="cluster-list" style={{ border: 0 }}>
-                                        <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-6 pb-6 pr-20 pl-10 dc__uppercase">
-                                            <div></div>
-                                            <div className="cluster-list__enviroment_name">ENVIRONMENT</div>
-                                            <div className="cluster-list__name_space">NAMESPACE</div>
-                                            <div className="cluster-list__description">DESCRIPTION</div>
-                                            <div></div>
-                                        </div>
-                                        {newEnvs.map(
-                                            ({
-                                                id,
-                                                environment_name,
-                                                cluster_id,
-                                                cluster_name,
-                                                active,
-                                                prometheus_url,
-                                                namespace,
-                                                default: isProduction,
-                                                description,
-                                            }) =>
-                                                environment_name ? (
-                                                    <div
-                                                        className="cluster-list-row flex-align-center fw-4 cn-9 fs-13 pl-20"
-                                                        style={{ height: '36px' }}
-                                                    >
-                                                        <div className="dc__transparent cursor flex">
-                                                            {environment_name && <Database className="icon-dim-24" />}
-                                                        </div>
-
-                                                        <div className="cluster-list__enviroment_name">
-                                                            {environment_name}
-
-                                                            {isProduction ? (
-                                                                <div className="cluster-list__prod">Prod</div>
-                                                            ) : null}
-                                                        </div>
-                                                        <div className="cluster-list__name_space">{namespace}</div>
-                                                        <div className="cluster-list__description">{description}</div>
-                                                        <div className="cluster__row-actions flex right mr-12">
-                                                            <PencilEdit
-                                                                className="cursor mr-12"
-                                                                onClick={() => {
-                                                                    setEnvironment({
-                                                                        id,
-                                                                        environment_name,
-                                                                        cluster_id: clusterId,
-                                                                        namespace,
-                                                                        prometheus_url,
-                                                                        isProduction,
-                                                                        description,
-                                                                    })
-                                                                    setShowWindow(true)
-                                                                }}
-                                                            />
-                                                            <DeleteEnvironment
-                                                                className="cursor"
-                                                                onClick={() => {
-                                                                    setEnvironment({
-                                                                        id,
-                                                                        environment_name,
-                                                                        cluster_id: clusterId,
-                                                                        namespace,
-                                                                        prometheus_url,
-                                                                        isProduction,
-                                                                        description,
-                                                                    })
-                                                                    toggleConfirmation(true)
-                                                                }}
-                                                            />
-                                                            {confirmation && (
-                                                                <DeleteComponent
-                                                                    setDeleting={() => {}}
-                                                                    deleteComponent={deleteEnvironment}
-                                                                    payload={getEnvironmentPayload()}
-                                                                    title={environment.environment_name}
-                                                                    toggleConfirmation={toggleConfirmation}
-                                                                    component={DeleteComponentsName.Environment}
-                                                                    confirmationDialogDescription={
-                                                                        DC_ENVIRONMENT_CONFIRMATION_MESSAGE
-                                                                    }
-                                                                    reload={deleteEnv}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                ) : null,
-                                        )}
+                        !window._env_.K8S_CLIENT &&
+                        Array.isArray(newEnvs) &&
+                        newEnvs.length > 1 ? (
+                            <div className="cluster-token-container">
+                                <div className="cluster-list" style={{ border: 0 }}>
+                                    <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-6 pb-6 pr-20 pl-20 dc__uppercase">
+                                        <div></div>
+                                        <div className="cluster-list__enviroment_name">ENVIRONMENT</div>
+                                        <div className="cluster-list__name_space">NAMESPACE</div>
+                                        <div className="cluster-list__description">DESCRIPTION</div>
+                                        <div></div>
                                     </div>
+                                    {newEnvs.map(
+                                        ({
+                                            id,
+                                            environment_name,
+                                            cluster_id,
+                                            cluster_name,
+                                            active,
+                                            prometheus_url,
+                                            namespace,
+                                            default: isProduction,
+                                            description,
+                                        }) =>
+                                            environment_name ? (
+                                                <div
+                                                    className="cluster-list-row flex-align-center fw-4 cn-9 fs-13 pl-20 pr-20 pt-6 pb-6"
+                                                    // style={{ height: '36px' }}
+                                                >
+                                                    <div className="dc__transparent cursor flex">
+                                                        {environment_name && <Database className="icon-dim-24" />}
+                                                    </div>
+
+                                                    <div className="cluster-list__enviroment_name">
+                                                        {environment_name}
+
+                                                        {isProduction ? (
+                                                            <div className="cluster-list__prod">Prod</div>
+                                                        ) : null}
+                                                    </div>
+                                                    <div className="cluster-list__name_space">{namespace}</div>
+                                                    <div className="cluster-list__description">{description}</div>
+                                                    <div className="cluster__row-actions flex right mr-12">
+                                                        <PencilEdit
+                                                            className="cursor mr-12"
+                                                            onClick={() => {
+                                                                setEnvironment({
+                                                                    id,
+                                                                    environment_name,
+                                                                    cluster_id: clusterId,
+                                                                    namespace,
+                                                                    prometheus_url,
+                                                                    isProduction,
+                                                                    description,
+                                                                })
+                                                                setShowWindow(true)
+                                                            }}
+                                                        />
+                                                        <DeleteEnvironment
+                                                            className="cursor"
+                                                            onClick={() => {
+                                                                setEnvironment({
+                                                                    id,
+                                                                    environment_name,
+                                                                    cluster_id: clusterId,
+                                                                    namespace,
+                                                                    prometheus_url,
+                                                                    isProduction,
+                                                                    description,
+                                                                })
+                                                                toggleConfirmation(true)
+                                                            }}
+                                                        />
+                                                        {confirmation && (
+                                                            <DeleteComponent
+                                                                setDeleting={() => {}}
+                                                                deleteComponent={deleteEnvironment}
+                                                                payload={getEnvironmentPayload()}
+                                                                title={environment.environment_name}
+                                                                toggleConfirmation={toggleConfirmation}
+                                                                component={DeleteComponentsName.Environment}
+                                                                confirmationDialogDescription={
+                                                                    DC_ENVIRONMENT_CONFIRMATION_MESSAGE
+                                                                }
+                                                                reload={deleteEnv}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ) : null,
+                                    )}
                                 </div>
-                            )}
+                            </div>
+                        ) : (
+                            <div
+                                className="noenv mt-16 mb-16 ml-16 mr-16"
+                                style={{
+                                    boxSizing: 'border-box',
+                                    height: '72px' 
+                                    /*,flex: 'none',
+                                    order: '0',
+                                    alignSelf: 'stretch',
+                                    flexGrow: '0'*/,
+                                }}
+                            >
+                                <div className="noenvadded">
+                                    <div className="heading">No Environments Added</div>
+                                    <div className="subheading">This cluster doesn't have any environments yet</div>
+                                </div>
+                            </div>
+                        )}
                     </>
                 ) : (
                     <>
@@ -1085,77 +1101,79 @@ function Environment({
                     </button>
                 </div>
             </div>
-            <form className="" onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit}>
-                <div className="form__row bcn-0 pt-0 pr-20 pb-12 pl-20 ml-20 mr-12">
-                    <CustomInput
-                        labelClassName="dc__required-field"
-                        autoComplete="off"
-                        disabled={!!environment_name}
-                        name="environment_name"
-                        placeholder={id ? 'sample-env-name' : 'Eg. production'}
-                        value={state.environment_name.value}
-                        error={state.environment_name.error}
-                        onChange={handleOnChange}
-                        label="Environment Name"
-                    />
-                </div>
-                <div className="form__row form__row--namespace ml-20 mr-12">
-                    <CustomInput
-                        labelClassName="dc__required-field"
-                        disabled={!!namespace}
-                        name="namespace"
-                        placeholder={id ? 'sample-namespace' : 'Eg. prod'}
-                        value={state.namespace.value}
-                        error={state.namespace.error}
-                        onChange={handleOnChange}
-                        label="Namespace"
-                    />
-                </div>
-                <div className="form__row">
-                    <div className="flex row left ml-20">
-                        <div className="flex left environment environment--production">
-                            <label className="pr-10 form__label">
-                                <input
-                                    type="radio"
-                                    name="isProduction"
-                                    checked={state.isProduction.value === 'true'}
-                                    value="true"
-                                    onChange={handleOnChange}
-                                />
-                                <span className="pl-10 cursor">Production</span>
-                            </label>
-                        </div>
-                        <div className="flex left environment environment--non-production">
-                            <label className="form__label">
-                                <input
-                                    type="radio"
-                                    name="isProduction"
-                                    checked={state.isProduction.value === 'false'}
-                                    value="false"
-                                    onChange={handleOnChange}
-                                />
-                                <span className="pl-10 cursor">Non - Production</span>
-                            </label>
+            <form onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit}>
+                <div className="description">
+                    <div className="form__row bcn-0 pt-0 pr-20 pb-12 pl-20 ml-20 mr-12">
+                        <CustomInput
+                            labelClassName="dc__required-field"
+                            autoComplete="off"
+                            disabled={!!environment_name}
+                            name="environment_name"
+                            placeholder={id ? 'sample-env-name' : 'Eg. production'}
+                            value={state.environment_name.value}
+                            error={state.environment_name.error}
+                            onChange={handleOnChange}
+                            label="Environment Name"
+                        />
+                    </div>
+                    <div className="form__row form__row--namespace ml-20 mr-12">
+                        <CustomInput
+                            labelClassName="dc__required-field"
+                            disabled={!!namespace}
+                            name="namespace"
+                            placeholder={id ? 'sample-namespace' : 'Eg. prod'}
+                            value={state.namespace.value}
+                            error={state.namespace.error}
+                            onChange={handleOnChange}
+                            label="Namespace"
+                        />
+                    </div>
+                    <div className="form__row">
+                        <div className="flex row left ml-20">
+                            <div className="flex left environment environment--production">
+                                <label className="pr-10 form__label">
+                                    <input
+                                        type="radio"
+                                        name="isProduction"
+                                        checked={state.isProduction.value === 'true'}
+                                        value="true"
+                                        onChange={handleOnChange}
+                                    />
+                                    <span className="pl-10 cursor">Production</span>
+                                </label>
+                            </div>
+                            <div className="flex left environment environment--non-production">
+                                <label className="form__label">
+                                    <input
+                                        type="radio"
+                                        name="isProduction"
+                                        checked={state.isProduction.value === 'false'}
+                                        value="false"
+                                        onChange={handleOnChange}
+                                    />
+                                    <span className="pl-10 cursor">Non - Production</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className="form__row ml-20 mr-12">
-                    <CustomInput
-                        autoComplete="off"
-                        name="description"
-                        placeholder={'Add a description for this environment'}
-                        value={state.description.value}
-                        error={state.description.error}
-                        onChange={handleOnChange}
-                        label="Description (Max 40 characters)"
-                    />
+                    <div className="form__row ml-20 mr-12">
+                        <CustomInput
+                            autoComplete="off"
+                            name="description"
+                            placeholder={'Add a description for this environment'}
+                            value={state.description.value}
+                            error={state.description.error}
+                            onChange={handleOnChange}
+                            label="Description (Maximum 40 characters allowed)"
+                        />
+                    </div>
                 </div>
 
-                <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0 bcn-0">
                     {id && (
                         <button
                             style={{ marginLeft: '20px', marginRight: 'auto', height: '36px' }}
-                            className="cta override-button delete scr-5"
+                            className="cta flex override-button delete scr-5 h-36 "
                             type="button"
                             onClick={() => toggleConfirmation(true)}
                         >
@@ -1164,8 +1182,7 @@ function Environment({
                         </button>
                     )}
                     <button
-                        style={{ height: '36px' }}
-                        className="cta cancel mt-8 mb-8"
+                        className="cta cancel flex mt-8 mb-8 h-36"
                         type="button"
                         onClick={hideClusterDrawer}
                     >
@@ -1173,7 +1190,7 @@ function Environment({
                     </button>
                     <button
                         style={{ height: '36px' }}
-                        className="cta ml-8 mr-20 mt-8 mb-8"
+                        className="cta ml-8 flex mr-20 mt-8 mb-8"
                         type="submit"
                         disabled={loading}
                     >

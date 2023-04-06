@@ -3,15 +3,16 @@
     min-width: 960px;
     margin: 0 auto;
     height: 100%;
+
     .cluster-list {
         overflow: hidden;
+
         .cluster-list__enviroment_name {
             height: 'fit-content';
-            padding-top: 5px;
-            padding-bottom: 5px;
             text-align: left;
             width: 170px;
             display: flex;
+
             .cluster-list__prod {
                 margin-left: 5px;
                 background: #f7fafc;
@@ -28,6 +29,7 @@
                 padding: 0px 2px 0px 4px;
             }
         }
+
         .cluster-list__name_space {
             height: 'fit-content';
             padding-top: 5px;
@@ -35,6 +37,7 @@
             text-align: left;
             width: 280px;
         }
+
         .cluster-list__description {
             height: 'fit-content';
             padding-top: 5px;
@@ -161,16 +164,18 @@
 .deleteIcon {
     display: none;
 }
+
 #id:hover {
     .deleteIcon {
         display: block;
     }
 }
+
 .app-status-card__divider {
     width: 1px;
-    height: 12px;
+    height: 16px;
     background-color: var(--N200);
-    margin: 0 8px;
+    margin: 0 12px;
 }
 
 
@@ -188,8 +193,61 @@
     width: 239px;
     height: 40px;
 }
+
 .app-status-card__list-item {
     display: flex;
     flex-direction: row;
     grid-column-gap: 0;
 }
+
+.description {
+    height: calc(100vh - 145px);
+    overflow: scroll;
+}
+
+.noenv {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 12px;
+    gap: 4px;
+    background: #F7FAFC;
+    border: 1px dashed #D0D4D9;
+    border-radius: 4px;
+}
+
+    .noenvadded {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0px;
+        gap: 4px;
+        width: 280px;
+        height: 40px;
+    }
+
+    .heading {
+        width: 280px;
+        height: 40px;
+        font-family: 'Open Sans';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 12px;
+        line-height: 18px;
+        text-align: center;
+        color: #3B444C;
+    }
+
+    .subheading {
+        width: 280px;
+        height: 40px;
+        font-family: 'Open Sans';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 18px;
+        text-align: center;
+        color: #3B444C;
+    }
+
