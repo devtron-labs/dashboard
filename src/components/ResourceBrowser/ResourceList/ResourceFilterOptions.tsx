@@ -1,13 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import ReactSelect, { MultiValue } from 'react-select'
-import { Option } from '../../v2/common/ReactSelect.utils'
+import {Option, PodColumnOption} from '../../v2/common/ReactSelect.utils'
 import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
 import { ClusterOptionWithIcon, ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
-import { ALL_NAMESPACE_OPTION, FILTER_SELECT_COMMON_STYLES, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
+import {
+    ALL_NAMESPACE_OPTION,
+    FILTER_MULTI_SELECT_STYLES,
+    FILTER_SELECT_COMMON_STYLES,
+    NAMESPACE_NOT_APPLICABLE_OPTION
+} from '../Constants'
 import { ConditionalWrap, convertToOptionsList } from '../../common'
 import { OptionType } from '../../app/types'
 import { withShortcut, IWithShortcut } from 'react-keybind'
@@ -215,13 +220,13 @@ function ResourceFilterOptions({
                             onChange={handlePodColumnsChange}
                             closeMenuOnSelect={false}
                             hideSelectedOptions={false}
-                            styles={FILTER_SELECT_COMMON_STYLES}
+                            styles={FILTER_MULTI_SELECT_STYLES}
                             menuIsOpen={openMenu}
                             value={selectedColumns}
                             components={{
                                 IndicatorSeparator: null,
                                 DropdownIndicator:null,
-                                Option: (props) => <Option {...props} showCheckBox={true} style={tempMultiSelectStyles}/>,
+                                Option: (props) => <PodColumnOption {...props} />,
                                 MenuList: podColumnOptionsMenuList,
                                 Control: () => <div onClick={() => setOpenMenu(!openMenu)} className="w-60 ml-8">
                                     <GlobalConfigIcon className="icon-dim-26 fcn-6"/>
