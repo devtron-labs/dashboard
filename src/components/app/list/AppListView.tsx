@@ -21,6 +21,7 @@ import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/Onboardin
 import { APPLIST_EMPTY_STATE_MESSAGING, APP_LIST_HEADERS, ClearFiltersLabel } from '../list-new/Constants'
 import AppStatus from '../AppStatus'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
+import cluster from 'cluster'
 export class AppListView extends Component<AppListViewProps> {
     expandEnv = (event): void => {
         event.stopPropagation()
@@ -44,7 +45,7 @@ export class AppListView extends Component<AppListViewProps> {
             let isEnvConfigured = app.defaultEnv && app.defaultEnv.name
             return (
                 <div className="app-list__cell app-list__cell--env">
-                    <p className={`app-list__cell--env-text ${isEnvConfigured ? '' : 'not-configured'}`}>
+                    <p data-testid={`${app.defaultEnv.name}-environment`} className={`app-list__cell--env-text ${isEnvConfigured ? '' : 'not-configured'}`}>
                         {isEnvConfigured ? app.defaultEnv.name : 'Not configured'}
                     </p>
                     {len > 1 ? (
@@ -183,12 +184,12 @@ export class AppListView extends Component<AppListViewProps> {
                                         )}
                                         {this.renderEnvironmentList(app)}
                                         <div className="app-list__cell app-list__cell--cluster">
-                                            <p className="dc__truncate-text  m-0">
+                                            <p data-testid={`${app.defaultEnv.clusterName}-cluster`} className="dc__truncate-text  m-0">
                                                 {app.defaultEnv ? app.defaultEnv.clusterName : ''}
                                             </p>
                                         </div>
                                         <div className="app-list__cell app-list__cell--namespace">
-                                            <p className="dc__truncate-text  m-0">
+                                            <p data-testid={`${app.defaultEnv.namespace}-namespace`} className="dc__truncate-text  m-0">
                                                 {app.defaultEnv ? app.defaultEnv.namespace : ''}
                                             </p>
                                         </div>
@@ -208,6 +209,7 @@ export class AppListView extends Component<AppListViewProps> {
                                         </div>
                                         <div className="app-list__cell app-list__cell--action">
                                             <button
+                                                data-testid = {`${app.id}-edit-app-button`}
                                                 type="button"
                                                 data-key={app.id}
                                                 className="button-edit"
