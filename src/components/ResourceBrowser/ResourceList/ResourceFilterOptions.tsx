@@ -127,7 +127,6 @@ function ResourceFilterOptions({
     }
 
     const  podColumnOptionsMenuList = (props): JSX.Element => {
-        console.log(props)
         return <components.MenuList {...props}>
             {props.children}
             <button type="button" className="filter__apply" onClick={ handleApply } style={{position: "sticky", top: "40px"}}>
@@ -213,7 +212,7 @@ function ResourceFilterOptions({
                     {selectedResource?.gvk?.Kind == 'Pod' && resourceList?.headers?.length > 0 &&
                         <ReactSelect
                             placeholder="Select Columns"
-                            className="w-220 ml-8"
+                            className="ml-8"
                             isMulti
                             classNamePrefix="resource-filter-select"
                             options={podColumnOptions}
@@ -228,8 +227,8 @@ function ResourceFilterOptions({
                                 DropdownIndicator:null,
                                 Option: (props) => <PodColumnOption {...props} />,
                                 MenuList: podColumnOptionsMenuList,
-                                Control: () => <div onClick={() => setOpenMenu(!openMenu)} className="w-60 ml-8">
-                                    <GlobalConfigIcon className="icon-dim-26 fcn-6"/>
+                                Control: () => <div onClick={() => setOpenMenu(!openMenu)} className="flex">
+                                    <GlobalConfigIcon className="icon-dim-24 scn-6"/>
                                 </div>
                             }}
                         />
