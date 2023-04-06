@@ -1293,10 +1293,10 @@
   resolved "https://registry.npmjs.org/@csstools/normalize.css/-/normalize.css-9.0.1.tgz"
   integrity sha512-6It2EVfGskxZCQhuykrfnALg7oVeiI6KclWSmGDqB0AiInVrTGB9Jp9i4/Ad21u9Jde/voVQz6eFX/eSg/UsPA==
 
-"@devtron-labs/devtron-fe-common-lib@0.0.7-beta-24":
-  version "0.0.7-beta-24"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.7-beta-24.tgz#e214092b6f965e8171b67306a8d6f2e450b8b288"
-  integrity sha512-FzaUMsjhRIBFof7SgBHEXoDhqShMOFlTKHV+ilkM/lKjXju/PYqePC9sWWKv47kAjC7Iymvg5uQj7TFGoDV2Sg==
+"@devtron-labs/devtron-fe-common-lib@0.0.7-beta-30":
+  version "0.0.7-beta-30"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.7-beta-30.tgz#3b081976dd4f1629b0c3044f3b86104aab405a50"
+  integrity sha512-c/lrZLiCXyaO1ZaQ8E4x+hABB8zrswed4eubnlAI6l2h6jIe3QQjweK27778BFS6FBwdHPf38IDfsDTfaWESNg==
   dependencies:
     sass "^1.56.2"
     tslib "^2.4.1"
