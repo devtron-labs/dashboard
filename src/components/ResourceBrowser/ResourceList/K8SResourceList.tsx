@@ -41,6 +41,8 @@ export function K8SResourceList({
     clearSearch,
     isCreateModalOpen,
     addTab,
+    extraPodColumns,
+    setExtraPodColumns,
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -56,14 +58,10 @@ export function K8SResourceList({
     const [pageSize, setPageSize] = useState(100)
     const resourceListRef = useRef<HTMLDivElement>(null)
     const showPaginatedView = resourceList?.data?.length >= 100
-    const [ExtraPodColumns, setExtraPodColumns] = useState<string[]>(podColumns)
-
     const isExtraPodColumn = (column : string) : boolean =>{
-        podColumns.forEach((val)=>{
-            if(val == column){
-                return true
-            }
-        })
+        for(let i=0;i<podColumns?.length;i++){
+            if(podColumns[i] === column)return true
+        }
         return false
     }
 
@@ -72,11 +70,9 @@ export function K8SResourceList({
         if (!flag){
             return true
         }
-        ExtraPodColumns.forEach((val)=>{
-            if(val == column){
-                return true
-            }
-        })
+        for(let i=0;i<extraPodColumns?.length;i++){
+            if(extraPodColumns[i] === column) return true
+        }
         return false
     }
 
@@ -96,7 +92,7 @@ export function K8SResourceList({
 
     useEffect(() => {
         resetPaginator()
-    }, [nodeType])
+    }, [nodeType,extraPodColumns])
 
     const resetPaginator = () => {
         setResourceListOffset(0)

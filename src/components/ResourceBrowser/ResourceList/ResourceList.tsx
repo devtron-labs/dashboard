@@ -61,7 +61,7 @@ import {
     getK8SObjectMapAfterGroupHeadingClick,
     getParentAndChildNodes,
     getUpdatedNodeSelectionData,
-    getUpdatedResourceSelectionData,
+    getUpdatedResourceSelectionData, podColumns,
     sortEventListData,
 } from '../Utils'
 import '../ResourceBrowser.scss'
@@ -113,6 +113,7 @@ export default function ResourceList() {
         new: new AbortController(),
     })
     const searchWorkerRef = useRef(null)
+    const [extraPodColumns, setExtraPodColumns] = useState<string[]>(podColumns)
 
     useEffect(() => {
         if (typeof window['crate']?.hide === 'function') {
@@ -630,6 +631,8 @@ export default function ResourceList() {
                     clearSearch={clearSearch}
                     isCreateModalOpen={showCreateResourceModal}
                     addTab={addTab}
+                    extraPodColumns={extraPodColumns}
+                    setExtraPodColumns={setExtraPodColumns}
                 />
             </div>
         )

@@ -215,7 +215,7 @@ function ResourceFilterOptions({
                             closeMenuOnSelect={false}
                             hideSelectedOptions={false}
                             styles={FILTER_SELECT_COMMON_STYLES}
-                            menuIsOpen={openMenu}
+                            // menuIsOpen={openMenu}
                             value={selectedColumns}
                             components={{
                                 IndicatorSeparator: null,
