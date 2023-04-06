@@ -729,7 +729,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <div className="form-row__select-external-type flex">
                     <ReactSelect
                         placeholder="Select Secret Type"
-                        data-testid="secrets-data-type-select-dropdown"
                         options={getTypeGroups()}
                         defaultValue={
                             externalType && externalType !== ''

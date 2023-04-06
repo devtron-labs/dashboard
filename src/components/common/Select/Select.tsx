@@ -71,7 +71,7 @@ const Select: React.FC<SelectProps> & SelectComposition = function ({
     }, { button: null, body: [], optionLength: 0, AsyncComponent: null })
 
     return <SelectContext.Provider value={{ selected, select, popupOpen, valueComparator, searchString, search, handleClick, disabled, loading, setLoading }}>
-        <PopupMenu onToggleCallback={isOpen => togglePopup(isOpen)} autoClose={popupOpen} dataTestId={dataTestId}>
+        <PopupMenu onToggleCallback={isOpen => togglePopup(isOpen)} autoClose={popupOpen}>
             <PopupMenu.Button isKebab={isKebab} disabled={disabled} tabIndex={tabIndex} rootClassName={rootClassName} dataTestId={dataTestId}>
                 {button}
             </PopupMenu.Button>
