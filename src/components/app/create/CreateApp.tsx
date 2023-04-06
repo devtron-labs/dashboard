@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { sortObjectArrayAlphabetically, importComponentFromFELibrary } from '../../common'
+import { sortObjectArrayAlphabetically, importComponentFromFELibrary, ButtonWithLoader } from '../../common'
 import {
     ServerErrors,
     showError,
@@ -217,10 +217,9 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     errors.errors.forEach((element) => {
                         toast.error(element.userMessage)
                     })
-                    this.setState({ code: errors.code,  createAppLoader: false })
+                    this.setState({ code: errors.code })
                 } else {
                     showError(errors)
-                    this.setState({createAppLoader: false})
                 }
                 this.setState({ disableForm: false, showErrors: false, appNameErrors: false,  createAppLoader: false })
             })
@@ -437,7 +436,13 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     renderFooterSection = (): JSX.Element => {
         return (
             <div className="w-800 dc__border-top flex right pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0">
-                <button className="cta flex h-36" onClick={this.createApp}>
+                <ButtonWithLoader
+                    rootClassName="flex cta h-36"
+                    onClick={this.createApp}
+                    disabled={this.state.createAppLoader}
+                    isLoading={false}
+                    loaderColor="white"
+                >
                     {this.state.createAppLoader ? (
                         <Progressing />
                     ) : (
@@ -445,7 +450,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             this.props.isJobView ? 'Job' : 'App'
                         }`
                     )}
-                </button>
+                </ButtonWithLoader>
             </div>
         )
     }
