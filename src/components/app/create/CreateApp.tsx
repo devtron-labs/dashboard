@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { sortObjectArrayAlphabetically, importComponentFromFELibrary, ButtonWithLoader } from '../../common'
+import { sortObjectArrayAlphabetically, importComponentFromFELibrary, ButtonWithLoader, noop } from '../../common'
 import {
     ServerErrors,
     showError,
@@ -58,7 +58,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 appName: false,
                 cloneAppId: true,
             },
-            createAppLoader: false
+            createAppLoader: false,
         }
         this.createApp = this.createApp.bind(this)
         this.handleAppname = this.handleAppname.bind(this)
@@ -89,13 +89,14 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     }
 
     escKeyPressHandler(evt): void {
-        if (evt && evt.key === 'Escape' && typeof this.props.close === 'function') {
+        if (!this.state.createAppLoader && evt && evt.key === 'Escape' && typeof this.props.close === 'function') {
             evt.preventDefault()
             this.props.close(evt)
         }
     }
     outsideClickHandler(evt): void {
         if (
+            !this.state.createAppLoader &&
             this.createAppRef.current &&
             !this.createAppRef.current.contains(evt.target) &&
             typeof this.props.close === 'function'
@@ -154,7 +155,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 labelTags.push({ key: currentTag.key, value: currentTag.value, propagate: currentTag.propagate })
             }
         }
-        this.setState({ showErrors: true, appNameErrors: true})
+        this.setState({ showErrors: true, appNameErrors: true })
         let allKeys = Object.keys(this.state.isValid)
         let isFormValid = allKeys.reduce((valid, key) => {
             valid = valid && this.state.isValid[key]
@@ -179,7 +180,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             request['description'] = this.state.form.description
         }
 
-        this.setState({ disableForm: true, createAppLoader: true  })
+        this.setState({ disableForm: true, createAppLoader: true })
         const createAPI = this.props.isJobView ? createJob : createApp
         createAPI(request)
             .then((response) => {
@@ -199,7 +200,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             showErrors: false,
                             appNameErrors: false,
                             tags: response.result?.labels?.tags,
-                            createAppLoader: false
+                            createAppLoader: false,
                         },
                         () => {
                             toast.success(
@@ -221,7 +222,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 } else {
                     showError(errors)
                 }
-                this.setState({ disableForm: false, showErrors: false, appNameErrors: false,  createAppLoader: false })
+                this.setState({ disableForm: false, showErrors: false, appNameErrors: false, createAppLoader: false })
             })
     }
 
@@ -274,7 +275,11 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                     Create {this.props.isJobView ? 'job' : 'application'}
                 </h2>
-                <button type="button" className="dc__transparent flex icon-dim-24" onClick={this.props.close}>
+                <button
+                    type="button"
+                    className="dc__transparent flex icon-dim-24"
+                    onClick={this.state.createAppLoader ? noop : this.props.close}
+                >
                     <Close className="icon-dim-24" />
                 </button>
             </div>
