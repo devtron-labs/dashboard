@@ -73,8 +73,9 @@ export default function BulkCDTrigger({
                 _unauthorizedAppList[appDetails.appId] = false
                 _CDMaterialPromiseList.push(
                     getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType)
-                        .then((r) => {
-                            return { materialList: r, appId: appDetails.appId }
+                        .then((data) => {
+                            const { materials, ...rest } = data
+                            return { materialList: data.materials, appId: appDetails.appId, ...rest }
                         })
                         .catch((e) => {
                             throw { response: e?.response, appId: appDetails.appId }

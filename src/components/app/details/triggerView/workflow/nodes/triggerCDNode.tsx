@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import { DeploymentNodeType, TriggerCDNodeProps } from '../../types';
-import { statusColor, statusIcon } from '../../../../config';
-import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg';
-import { URLS, DEFAULT_STATUS } from '../../../../../../config';
-import Tippy from '@tippyjs/react';
-import { Link } from 'react-router-dom';
-import { TriggerViewContext } from '../../config';
-import { triggerStatus } from '../../../cicdHistory/History.components';
+import React, { Component } from 'react'
+import { DeploymentNodeType, TriggerCDNodeProps } from '../../types'
+import { statusColor, statusIcon } from '../../../../config'
+import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
+import { URLS, DEFAULT_STATUS } from '../../../../../../config'
+import Tippy from '@tippyjs/react'
+import { Link } from 'react-router-dom'
+import { TriggerViewContext } from '../../config'
+import { triggerStatus } from '../../../cicdHistory/History.components'
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     constructor(props) {
@@ -21,10 +21,10 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     }
 
     redirectToCDDetails() {
-      if (this.props.fromAppGrouping) {
-          return
-      }
-      this.props.history.push(this.getCDNodeDetailsURL())
+        if (this.props.fromAppGrouping) {
+            return
+        }
+        this.props.history.push(this.getCDNodeDetailsURL())
     }
 
     renderStatus() {
@@ -86,6 +86,12 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                             </div>
                             {this.renderStatus()}
                             <div className="workflow-node__btn-grp">
+                                <button
+                                    className="workflow-node__rollback-btn"
+                                    onClick={(event) => context.onClickCDMaterial(+this.props.id, DeploymentNodeType.CD, true)}
+                                >
+                                    <Rollback className="icon-dim-20 dc__vertical-align-middle" />
+                                </button>
                                 <Tippy className="default-tt" arrow={true} placement="bottom" content={'Rollback'}>
                                     <button
                                         className="workflow-node__rollback-btn"

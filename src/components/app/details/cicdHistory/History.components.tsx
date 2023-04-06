@@ -72,7 +72,7 @@ export const Scroller = ({ scrollToTop, scrollToBottom, style }: ScrollerType): 
     )
 }
 
-export const GitChanges = ({ gitTriggers, ciMaterials, triggerInfo }: GitChangesType) => {
+export const GitChanges = ({ gitTriggers, ciMaterials, artifact, showApprovedArtifactInfo }: GitChangesType) => {
     const [copied, setCopied] = useState(false)
 
     if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
@@ -105,25 +105,29 @@ export const GitChanges = ({ gitTriggers, ciMaterials, triggerInfo }: GitChanges
                     </div>
                 ) : null
             })}
-            {/* {triggerInfo?.artifact && ( */}
-            <>
-                <div className="flex w-100 mt-8 mb-8">
-                    <div className="w-50 text-underline-dashed-200" />
-                    <ArrowIcon className="icon-dim-20 ml-8 mr-8" style={{ transform: 'rotate(-90deg)' }} />
-                    <div className="w-50 text-underline-dashed-200" />
-                </div>
-                <CIListItem type="approved-artifact" approvedCount={3}>
-                    <div className="flex column left hover-trigger">
-                        <div className="cn-9 fs-14 flex left">
-                            <CopyTippyWithText copyText={extractImage('')} copied={copied} setCopied={setCopied} />
-                        </div>
-                        <div className="cn-7 fs-12 flex left">
-                            <CopyTippyWithText copyText={''} copied={copied} setCopied={setCopied} />
-                        </div>
+            {artifact && showApprovedArtifactInfo && (
+                <>
+                    <div className="flex mt-8 mb-8" style={{ width: 'min(100%, 800px)' }}>
+                        <div className="w-50 text-underline-dashed-200" />
+                        <ArrowIcon className="icon-dim-20 ml-8 mr-8" style={{ transform: 'rotate(-90deg)' }} />
+                        <div className="w-50 text-underline-dashed-200" />
                     </div>
-                </CIListItem>
-            </>
-            {/* )} */}
+                    <CIListItem type="approved-artifact">
+                        <div className="flex column left hover-trigger">
+                            <div className="cn-9 fs-14 flex left">
+                                <CopyTippyWithText
+                                    copyText={extractImage(artifact)}
+                                    copied={copied}
+                                    setCopied={setCopied}
+                                />
+                            </div>
+                            <div className="cn-7 fs-12 flex left">
+                                <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
+                            </div>
+                        </div>
+                    </CIListItem>
+                </>
+            )}
         </div>
     )
 }

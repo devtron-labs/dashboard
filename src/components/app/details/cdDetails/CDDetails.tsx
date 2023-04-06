@@ -72,11 +72,11 @@ export default function CDDetails() {
     }, [deploymentHistoryResult, loading])
 
     useEffect(() => {
-      return () => {
-          setTriggerHistory(new Map())
-          setHasMoreLoading(false)
-      }
-  }, [envId])
+        return () => {
+            setTriggerHistory(new Map())
+            setHasMoreLoading(false)
+        }
+    }, [envId])
 
     async function pollHistory() {
         // polling
@@ -410,6 +410,8 @@ const HistoryLogs: React.FC<{
                             <GitChanges
                                 gitTriggers={triggerDetails.gitTriggers}
                                 ciMaterials={triggerDetails.ciMaterials}
+                                artifact={triggerDetails.artifact}
+                                showApprovedArtifactInfo={true}
                             />
                         </Route>
                         {triggerDetails.stage === 'DEPLOY' && (

@@ -176,6 +176,15 @@ a:focus {
             }
         }
     }
+
+    &.active-tab {
+        border-bottom: 2px solid var(--B500);
+
+        .dc__badge {
+            background-color: var(--B500);
+            color: var(--N000);
+        }
+    }
 }
 
 .tab-list__tab-link {
@@ -2134,9 +2143,11 @@ textarea,
         &:nth-child(1) {
             fill: var(--N0) !important;
         }
+
         &:nth-child(2) {
             fill: var(--Y700) !important;
         }
+
         &:nth-child(3) {
             fill: var(--N0) !important;
         }
@@ -2549,6 +2560,10 @@ textarea,
     height: 100%;
 }
 
+.h-100vh {
+    height: 100vh;
+}
+
 .dc__height-reduce-172 {
     height: 'calc(100vh - 172px)';
 }
@@ -2949,4 +2964,17 @@ textarea::placeholder {
 
 .dc__zi-4 {
     z-index: 4;
+}
+
+.dc__badge {
+    background-color: var(--N100);
+    font-style: normal;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 18px;
+    letter-spacing: normal;
+    text-align: center;
+    color: var(--N700);
+    padding: 0px 6px;
+    border-radius: 50%;
 }

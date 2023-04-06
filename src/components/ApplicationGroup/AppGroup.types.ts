@@ -1,6 +1,6 @@
 import { MultiValue } from 'react-select'
 import {
-    CDMdalTabType,
+    CDModalTabType,
     CiPipeline,
     DeploymentNodeType,
     WebhookPayloads,
@@ -75,7 +75,7 @@ export interface BulkCDTriggerType {
     changeTab: (
         materrialId: string | number,
         artifactId: number,
-        tab: CDMdalTabType,
+        tab: CDModalTabType,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
     ) => void
     toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void

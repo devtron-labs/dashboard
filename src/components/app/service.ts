@@ -4,18 +4,19 @@ import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
 import { History } from './details/cicdHistory/types'
 import { AppDetails, CreateAppLabelsRequest } from './types'
-import { CDMdalTabType, DeploymentNodeType, DeploymentWithConfigType } from './details/triggerView/types'
+import { CDModalTabType, DeploymentNodeType, DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
 
 let stageMap = {
     PRECD: 'PRE',
     CD: 'DEPLOY',
     POSTCD: 'POST',
+    APPROVAL: 'APPROVAL',
 }
 
 export const CDModalTab = {
-    Security: <CDMdalTabType>'SECURITY',
-    Changes: <CDMdalTabType>'CHANGES',
+    Security: <CDModalTabType>'SECURITY',
+    Changes: <CDModalTabType>'CHANGES',
 }
 
 export const getAppList = (request, options?) => {
@@ -214,15 +215,37 @@ export const getCIMaterialList = (params) => {
     })
 }
 
-export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType) {
-    let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${stageMap[stageType]}`
+interface CDMaterialResponseType {
+    approvalUsers: any[]
+    artifactTriggeredBy: string
+    materials: any[]
+    userApprovalConfig: any
+}
+
+export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType, isApprovalNode?: boolean): Promise<CDMaterialResponseType> {
+    const URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
+        isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
+    }`
     return get(URL).then((response) => {
-        return cdMaterialListModal(
-            response.result.ci_artifacts,
-            true,
-            response.result.latest_wf_artifact_id,
-            response.result.latest_wf_artifact_status,
-        )
+        if (!response.result) {
+            return {
+                approvalUsers: [],
+                artifactTriggeredBy: '',
+                materials: [],
+                userApprovalConfig: null,
+            }
+        }
+        return {
+            approvalUsers: response.result.approvalUsers,
+            artifactTriggeredBy: response.result.artifactTriggeredBy,
+            materials: cdMaterialListModal(
+                response.result.ci_artifacts,
+                true,
+                response.result.latest_wf_artifact_id,
+                response.result.latest_wf_artifact_status,
+            ),
+            userApprovalConfig: response.result.userApprovalConfig,
+        }
     })
 }
 
@@ -238,7 +261,7 @@ export function getRollbackMaterialList(cdMaterialId, offset: number, size: numb
 }
 
 export function extractImage(image: string): string {
-    return image? image.split(':').pop() : ''
+    return image ? image.split(':').pop() : ''
 }
 
 function cdMaterialListModal(
@@ -275,8 +298,9 @@ function cdMaterialListModal(
             scanned: material.scanned,
             scanEnabled: material.scanEnabled,
             vulnerable: material.vulnerable,
-            runningOnParentCd: material?.runningOnParentCd,
+            runningOnParentCd: material.runningOnParentCd,
             artifactStatus: artifactStatusValue,
+            userApprovalMetadata: material.userApprovalMetadata,
             materialInfo: material.material_info
                 ? material.material_info.map((mat) => {
                       return {
@@ -288,8 +312,11 @@ function cdMaterialListModal(
                           tag: mat.tag || '',
                           webhookData: mat.webhookData || '',
                           url: mat.url || '',
-                          branch: (material.ciConfigureSourceType === SourceTypeMap.WEBHOOK ? material.ciConfigureSourceValue : mat.branch) || '',
-                          type: material.ciConfigureSourceType || ''
+                          branch:
+                              (material.ciConfigureSourceType === SourceTypeMap.WEBHOOK
+                                  ? material.ciConfigureSourceValue
+                                  : mat.branch) || '',
+                          type: material.ciConfigureSourceType || '',
                       }
                   })
                 : [],
@@ -456,7 +483,7 @@ export function getAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
     return get(`${Routes.APP_META_INFO}/${appId}`)
 }
 
-export function getHelmAppMetaInfo(appId: string): Promise<AppMetaInfoResponse>{
+export function getHelmAppMetaInfo(appId: string): Promise<AppMetaInfoResponse> {
     return get(`${Routes.HELM_APP_META_INFO}/${appId}`)
 }
 

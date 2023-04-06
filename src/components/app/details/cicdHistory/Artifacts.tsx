@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { showError, EmptyState, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
-import { copyToClipboard, getRandomColor } from '../../../common'
+import { approvalMetadata, copyToClipboard, getAlphabetIcon, getRandomColor } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'
@@ -166,17 +166,6 @@ const CIProgressView = (): JSX.Element => {
     )
 }
 
-const getAlphabetIcon = (_approver) => {
-    return (
-        <span
-            className="alphabet-icon__initial fs-13 icon-dim-24 flex cn-0 mr-8"
-            style={{ backgroundColor: getRandomColor(_approver) }}
-        >
-            {_approver[0]}
-        </span>
-    )
-}
-
 const getApprovedTippyContent = (approvalRequested, approvedBy, deployedBy) => {
     return (
         <div className="pl-12 pr-12 h-200 dc__overflow-hidden">
@@ -213,10 +202,10 @@ const getApprovedTippyContent = (approvalRequested, approvedBy, deployedBy) => {
     )
 }
 
-export const CIListItem = ({ type, approvedCount, children }: CIListItemType) => {
+export const CIListItem = ({ type, children }: CIListItemType) => {
     return (
         <div className={`mb-16 ci-artifact ci-artifact--${type}`}>
-            {approvedCount ? (
+            {type === 'approved-artifact' ? (
                 <>
                     <TippyCustomized
                         theme={TippyTheme.white}
@@ -225,21 +214,21 @@ export const CIListItem = ({ type, approvedCount, children }: CIListItemType) =>
                         Icon={ApprovedIcon}
                         heading="Approved"
                         additionalContent={getApprovedTippyContent(
-                            'vivek@devtron.ai',
-                            ['kripansh@devtron.ai', 'nishant@devtron.ai', 'sohel@devtron.ai'],
-                            'vivek@devtron.ai',
+                            approvalMetadata.requestedUserData.userEmail,
+                            approvalMetadata.approvedBy.map((_approver) => _approver.userEmail),
+                            approvalMetadata.artifactTriggeredBy,
                         )}
                         showCloseButton={true}
                         trigger="click"
                         interactive={true}
                     >
-                        <div className="flex left dc__border-bottom-n1 pt-8 pb-8 pl-16 pr-16 h-36 cursor">
+                        <div className="flex left dc_width-max-content dc__border-bottom-n1 pt-8 pb-8 pl-16 pr-16 h-36 cursor">
                             <ApprovedIcon className="icon-dim-16 mr-8" />
-                            {approvedCount} Approved
+                            {approvalMetadata.approvedBy.length} Approved
                         </div>
                     </TippyCustomized>
-                    <div className="approved-artifact pt-16 pb-16 pl-16 pr-16">
-                        <div className="bcn-1 flex br-4">
+                    <div className="approved-artifact pt-16 pb-16 pl-16 pr-16 flex-align-center">
+                        <div className="bcn-1 flex br-4 icon-dim-40">
                             <img src={docker} className="icon-dim-24" />
                         </div>
                         {children}

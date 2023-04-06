@@ -62,7 +62,7 @@ import { styles, DropdownIndicator, Option, NUMBER_OF_APPROVALS } from './cdpipe
 import { EnvFormatOptions, formatHighlightedText, GroupHeading } from '../v2/common/ReactSelect.utils'
 import './cdPipeline.scss'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import { ConditionalWrap, createClusterEnvGroup } from '../common/helpers/Helpers'
+import { ConditionalWrap, createClusterEnvGroup, getEmptyArrayOfLength } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
 import { PipelineType } from '../app/details/triggerView/types'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
@@ -144,6 +144,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 parentPipelineType: parentPipelineType,
                 deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppType.Helm,
                 deploymentAppCreated: false,
+                userApprovalConfig: null,
             },
             showPreStage: false,
             showDeploymentStage: true,
@@ -330,6 +331,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             runPostStageInEnv: pipelineConfigFromRes.runPostStageInEnv || false,
             isClusterCdActive: pipelineConfigFromRes.isClusterCdActive || false,
             deploymentAppType: pipelineConfigFromRes.deploymentAppType || '',
+            showManualApproval: !!pipelineConfigFromRes.userApprovalConfig?.requiredCount,
+            requiredApprovals: `${pipelineConfigFromRes.userApprovalConfig?.requiredCount ?? '1'}`,
         }
         this.preStage = pipelineConfigFromRes.preStage.config || ''
         this.postStage = pipelineConfigFromRes.postStage.config || ''
@@ -615,8 +618,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     default: savedStrategy.default,
                 }
             }),
-            approvalConfig: {
-                requiredApprovals: this.state.requiredApprovals,
+            userApprovalConfig: {
+                requiredCount: parseInt(this.state.requiredApprovals),
             },
         }
         let request = {
@@ -1273,7 +1276,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     toggleManualApproval = (): void => {
-        this.setState({ showManualApproval: !this.state.showManualApproval })
+        this.setState({
+            showManualApproval: !this.state.showManualApproval,
+            requiredApprovals: `${this.state.pipelineConfig.userApprovalConfig?.requiredCount ?? '1'}`,
+        })
     }
 
     onChangeRequiredApprovals = (e: any): void => {
@@ -1285,28 +1291,22 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             <CommonRadioGroup
                 className="manual-approvals-switch flex left"
                 name="required-approvals"
-                initialTab="1"
+                initialTab={this.state.requiredApprovals}
                 disabled={false}
                 onChange={this.onChangeRequiredApprovals}
             >
-                <CommonRadioGroup.Radio value="1">
-                    <ApprovalIcon className="icon-dim-12 mr-6" />1
-                </CommonRadioGroup.Radio>
-                <CommonRadioGroup.Radio value="2">
-                    <MultiApprovalIcon className="icon-dim-12 mr-6" />2
-                </CommonRadioGroup.Radio>
-                <CommonRadioGroup.Radio value="3">
-                    <MultiApprovalIcon className="icon-dim-12 mr-6" />3
-                </CommonRadioGroup.Radio>
-                <CommonRadioGroup.Radio value="4">
-                    <MultiApprovalIcon className="icon-dim-12 mr-6" />4
-                </CommonRadioGroup.Radio>
-                <CommonRadioGroup.Radio value="5">
-                    <MultiApprovalIcon className="icon-dim-12 mr-6" />5
-                </CommonRadioGroup.Radio>
-                <CommonRadioGroup.Radio value="6">
-                    <MultiApprovalIcon className="icon-dim-12 mr-6" />6
-                </CommonRadioGroup.Radio>
+                {getEmptyArrayOfLength(6).map((e, idx) => {
+                    return (
+                        <CommonRadioGroup.Radio value={`${idx + 1}`}>
+                            {idx === 0 ? (
+                                <ApprovalIcon className="icon-dim-12 mr-6" />
+                            ) : (
+                                <MultiApprovalIcon className="icon-dim-12 mr-6" />
+                            )}
+                            {idx + 1}
+                        </CommonRadioGroup.Radio>
+                    )
+                })}
             </CommonRadioGroup>
         )
     }
