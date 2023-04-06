@@ -93,11 +93,12 @@ export class AppListView extends Component<AppListViewProps> {
                             <button
                                 className="app-list__cell-header flex  dc__visible-hover dc__visible-hover--parent  "
                                 onClick={this.sortByAppName}
-                                data-testid="appname"
+                                data-testid="app-name-list"
                             >
                                 {APP_LIST_HEADERS.AppName}
 
                                 <span
+                                    data-testid={"sort-app-name-list"}
                                     className={` sort ${icon} ml-4 dc__visible-hover--child ${
                                         this.props.sortRule.key === SortBy.APP_NAME ? 'dc__visible' : ''
                                     } `}
@@ -112,10 +113,11 @@ export class AppListView extends Component<AppListViewProps> {
                             </div>
                         )}
                         <div className="app-list__cell app-list__cell--env">
-                            <span className="app-list__cell-header mr-4" data-testid="env">
+                            <span className="app-list__cell-header mr-4" data-testid="environment">
                                 {APP_LIST_HEADERS.Environment}
                             </span>
                             <Tippy
+                                data-testid="env-tippy"
                                 className="default-tt"
                                 arrow={true}
                                 placement="top"

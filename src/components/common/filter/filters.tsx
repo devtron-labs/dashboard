@@ -180,7 +180,7 @@ export class Filter extends Component<FilterProps, FilterState>{
                                     <div className="filter__options" data-testid={`${this.props.dataTestId}-optionlist`}>
                                         {filterOptions}
                                     </div>
-                                    {this.props.multi && <button type="button" className="filter__apply" disabled={isDisable} onClick={() => { this.applyFilter(); }}>
+                                    {this.props.multi && <button type="button" data-testid="apply-filter-button" className="filter__apply" disabled={isDisable} onClick={() => { this.applyFilter(); }}>
                                         Apply Filter
                                     </button>}
                                 </>
