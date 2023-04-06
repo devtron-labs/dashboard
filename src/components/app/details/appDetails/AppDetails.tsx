@@ -260,6 +260,7 @@ export const Details: React.FC<DetailsType> = ({
                 setIsAppDeleted(true)
             }
             setAppDetails(null)
+            clearPollingInterval()
         } else if (!appDetails) {
             setAppDetailsError(error)
         }

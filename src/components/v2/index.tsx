@@ -81,9 +81,10 @@ function RouterComponent({ envType }) {
     }
 
     const handleAppDetailsCallError = (e: any) => {
-        if (e?.code) {
-            setErrorResponseCode(e.code)
-        }
+      setErrorResponseCode(e.code)
+      if (e.code === 404 && initTimer) {
+        clearTimeout(initTimer)
+      }
     }
 
     const handlePublishAppDetails = (response) => {
@@ -92,6 +93,7 @@ function RouterComponent({ envType }) {
             ...response.result,
         }
         IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_HELM_CHART)
+        setErrorResponseCode(undefined)
     }
 
     const _getAndSetAppDetail = async (fetchExternalLinks: boolean) => {
@@ -118,12 +120,17 @@ function RouterComponent({ envType }) {
                     setLoadingResourceTree(false)
                 })
         } else {
-            // Revisit this flow
-            const response = await getInstalledAppDetail(+params.appId, +params.envId)
-            IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
+            try {
+                // Revisit this flow
+                const response = await getInstalledAppDetail(+params.appId, +params.envId)
+                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
+                setErrorResponseCode(undefined)
+            } catch (e: any) {
+                if (e.code) {
+                    setErrorResponseCode(e.code)
+                }
+            }
         }
-
-        setErrorResponseCode(undefined)
     }
 
     const getExternalLinksAndTools = (clusterId) => {
