@@ -121,7 +121,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                     </div>
                 </Link>
 
-                <button className="workflow-node__add-cd-btn">
+                <button className="workflow-node__add-cd-btn" data-testid="cd-add-deployment-pipeline-button">
                     <Tippy
                         className="default-tt workflow-node__add-cd-btn-tippy"
                         arrow={false}
