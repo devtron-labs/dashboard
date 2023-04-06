@@ -134,11 +134,12 @@ export default function GitProvider({ ...props }) {
                     Learn more about git accounts
                 </a>
             </div>
-            {allProviders.map((provider) => {
+            {allProviders.map((provider,index) => {
                 return (
                     <>
                         {' '}
                         <CollapsedList
+                            dataTestId = {`add-git-account-button-${index}`}
                             key={provider.name || Math.random().toString(36).substr(2, 5)}
                             id={provider.id}
                             name={provider.name}
@@ -174,6 +175,7 @@ export default function GitProvider({ ...props }) {
 }
 
 function CollapsedList({
+    dataTestId = "",
     id,
     name,
     active,
@@ -242,7 +244,7 @@ function CollapsedList({
                 id ? 'update' : 'create'
             }`}
         >
-            <List onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column' : ''}`}>
+            <List dataTestId = {dataTestId} onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column' : ''}`}>
                 <List.Logo>
                     {id && (
                         <div className="">
@@ -543,6 +545,7 @@ function GitForm({
             <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
                 <div className="mb-16">
                     <CustomInput
+                        dataTestid="git-account-name-textbox"
                         autoComplete="off"
                         value={state.name.value}
                         onChange={handleOnChange}
@@ -559,6 +562,7 @@ function GitForm({
                                 name="host"
                                 value={gitHost.value}
                                 className="react-select--height-44 fs-13 bcn-0"
+                                classNamePrefix="select-git-account-host"
                                 placeholder="Select git host"
                                 isMulti={false}
                                 isSearchable
@@ -589,6 +593,7 @@ function GitForm({
                         <div className="cr-5 fs-11">{gitHost.error}</div>
                     </div>
                     <CustomInput
+                        dataTestid="git-account-host-url-textbox"
                         autoComplete="off"
                         value={state.url.value}
                         onChange={handleOnChange}
@@ -599,8 +604,9 @@ function GitForm({
                 </div>
                 <div className="form__label">Authentication type*</div>
                 <div className={` form__row--auth-type  ${!id ? 'pointer' : ''}`}>
-                    {AuthType.map(({ label: Lable, value }) => (
+                    {AuthType.map(({ label: Lable, value } , index) => (
                         <div
+                            data-testid = {`git-account-auth-type-${index}`}
                             className={` ${canSelectAuth(value) ? 'pointer' : 'wrapper-pointer-disabled'}`}
                             onChange={handleOnChange}
                             style={{ borderRight: '1px solid #d6d4d9', height: '48px' }}
@@ -644,6 +650,7 @@ function GitForm({
                 {state.auth.value === 'USERNAME_PASSWORD' && (
                     <div className="form__row form__row--two-third">
                         <CustomInput
+                            dataTestid="git-account-user-auth-username"
                             value={customState.username.value}
                             onChange={customHandleChange}
                             name="username"
@@ -652,6 +659,7 @@ function GitForm({
                         />
                         <div>
                             <CustomInput
+                            dataTestid="git-account-user-auth-password"
                                 value={customState.password.value}
                                 onChange={customHandleChange}
                                 onBlur={id&&handleOnBlur}
@@ -671,6 +679,7 @@ function GitForm({
                     <div className="form__row ">
                         <div className="form__label dc__required-field">Private SSH key</div>
                         <textarea
+                            data-testid="git-account-ssh-key-textbox"
                             placeholder="Enter key text"
                             className="form__input w-100"
                             style={{ height: '100px', backgroundColor: '#f7fafc' }}
@@ -689,10 +698,10 @@ function GitForm({
                             {deleting ? <Progressing /> : 'Delete'}
                         </button>
                     )}
-                    <button className="cta cancel" type="button" onClick={(e) => toggleCollapse((t) => !t)}>
+                    <button className="cta cancel" data-testid = "add-git-account-cancel-button" type="button" onClick={(e) => toggleCollapse((t) => !t)}>
                         Cancel
                     </button>
-                    <button className="cta" type="submit" disabled={loading}>
+                    <button className="cta" data-testid = "add-git-account-save-button" type="submit" disabled={loading}>
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}
                     </button>
                 </div>

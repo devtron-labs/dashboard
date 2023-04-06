@@ -25,7 +25,7 @@ import { OptionType } from '../app/types'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 
-function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
+function CustomInputOutputVariables({ type, preBuildAddVariableTestId, preBuildAddVariableNameTextBoxTestId, preBuildAddDescriptionTextBoxTestId }: { type: PluginVariableType, preBuildAddVariableTestId?: string, preBuildAddVariableNameTextBoxTestId?: string, preBuildAddDescriptionTextBoxTestId?: string} ) {
     const {
         formData,
         setFormData,
@@ -205,7 +205,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                     )}
                 </div>
 
-                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32" onClick={addVariable}>
+                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32" onClick={addVariable} data-testid = {preBuildAddVariableTestId}>
                     <Add className="add-icon mt-6" />
                     Add variable
                 </div>
@@ -231,6 +231,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                 }}
                                             >
                                                 <input
+                                                    data-testid = {preBuildAddVariableNameTextBoxTestId}
                                                     className={`w-100 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 dc__no-bottom-border ${
                                                         type === PluginVariableType.INPUT
                                                             ? 'dc__top-radius-4'
@@ -288,6 +289,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                 }}
                                             >
                                                 <ReactSelect
+                                                    
                                                     value={
                                                         variable.format
                                                             ? { label: variable.format, value: variable.format }
@@ -317,6 +319,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                         </div>
                                     )}
                                     <input
+                                        data-testid = {preBuildAddDescriptionTextBoxTestId}
                                         style={{ width: '80% !important' }}
                                         className={`w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__bottom-radius-4 h-32 ${
                                             type === PluginVariableType.INPUT ? 'dc__no-top-border' : ''

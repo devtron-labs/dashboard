@@ -22,7 +22,7 @@ import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
 
-export function TaskDetailComponent() {
+export function TaskDetailComponent( {dataTestId}: { dataTestId?: string}) {
     const {
         formData,
         setFormData,
@@ -171,6 +171,7 @@ export function TaskDetailComponent() {
                     <div>
                         <input
                             className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                            data-testid = "preBuild-task-name-textbox"
                             type="text"
                             onChange={(e) => handleNameChange(e)}
                             value={formData[activeStageName].steps[selectedTaskIndex].name}
@@ -190,6 +191,7 @@ export function TaskDetailComponent() {
                     <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>{' '}
                     <input
                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                        data-testid = "preBuild-task-description-textbox"
                         type="text"
                         onChange={(e) => handleDescriptionChange(e)}
                         value={formData[activeStageName].steps[selectedTaskIndex].description}
@@ -222,10 +224,10 @@ export function TaskDetailComponent() {
                             name="task-type"
                             onChange={handleTaskScriptTypeChange}
                         >
-                            <RadioGroup.Radio className="left-radius" value={ScriptType.SHELL}>
+                            <RadioGroup.Radio className="left-radius" value={ScriptType.SHELL} dataTestId = "custom-script-task-name-shell">
                                 Shell
                             </RadioGroup.Radio>
-                            <RadioGroup.Radio className="right-radius dc__no-left-border" value={ScriptType.CONTAINERIMAGE}>
+                            <RadioGroup.Radio className="right-radius dc__no-left-border" value={ScriptType.CONTAINERIMAGE} dataTestId = "custom-script-task-name-container-image">
                                 Container Image
                             </RadioGroup.Radio>
                         </RadioGroup>
@@ -236,7 +238,7 @@ export function TaskDetailComponent() {
                 <>
                     <hr />
                     {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
-                        <CustomInputOutputVariables type={PluginVariableType.INPUT} />
+                        <CustomInputOutputVariables preBuildAddVariableTestId = "custom-script-input-variable-add-variable-button" preBuildAddVariableNameTextBoxTestId = "custom-script-input-variable-add-variable-variable-name-textbox" preBuildAddDescriptionTextBoxTestId = "custom-script-input-variable-add-description-textbox" type={PluginVariableType.INPUT} />
                     ) : (
                         <VariableContainer type={PluginVariableType.INPUT} />
                     )}{' '}
@@ -253,7 +255,7 @@ export function TaskDetailComponent() {
                             <TaskTypeDetailComponent />
                             {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
                                 ScriptType.CONTAINERIMAGE && (
-                                <CustomInputOutputVariables type={PluginVariableType.OUTPUT} />
+                                <CustomInputOutputVariables preBuildAddVariableTestId = "custom-script-output-variables-add-variable-button" preBuildAddVariableNameTextBoxTestId = "custom-script-output-variable-add-variable-variable-name-textbox" preBuildAddDescriptionTextBoxTestId = "custom-script-output-variable-add-description-textbox" type={PluginVariableType.OUTPUT} />
                             )}
                         </>
                     ) : (

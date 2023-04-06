@@ -35,6 +35,7 @@ const RadioGroup: React.FC<RadioGroupInterface> & RadioGroupComposition = React.
     className = '',
     initialTab,
     disabled = false,
+    dataTestId 
 }) {
     const [selected, select] = useState(null)
 
@@ -66,8 +67,8 @@ function Radio({ value, children, className = '', showTippy = false, tippyConten
                     type="checkbox"
                     value={value}
                     name={name}
+                    
                     checked={value === selected}
-                    data-testid={dataTestId}
                     onChange={(e) => {
                         e.persist()
                         if (canSelect) {
@@ -77,7 +78,7 @@ function Radio({ value, children, className = '', showTippy = false, tippyConten
                     }}
                     disabled={isDisabled || disabled}
                 />
-                <span className="radio__item-label">{children}</span>
+                <span className="radio__item-label" data-testid={dataTestId}>{children}</span>
             </label>
         </ConditionalWrap>
     )

@@ -334,6 +334,7 @@ export function TaskTypeDetailComponent() {
                     />
                     <input
                         style={{ width: '80% !important' }}
+                        data-testid = "custom-script-container-image-command-textbox"
                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                         autoComplete="off"
                         placeholder="Eg. “echo”"
@@ -349,6 +350,7 @@ export function TaskTypeDetailComponent() {
                 <div className="row-container mb-12">
                     <TaskFieldTippyDescription taskField={'Args'} contentDescription={TaskFieldDescription.ARGS} />
                     <input
+                        data-testid = "custom-script-container-image-args-textbox"
                         style={{ width: '80% !important' }}
                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                         autoComplete="off"
@@ -381,8 +383,8 @@ export function TaskTypeDetailComponent() {
                             handleMountChange(event)
                         }}
                     >
-                        <RadioGroupItem value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
-                        <RadioGroupItem value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
+                        <RadioGroupItem dataTestId= "build-stage-script-mount-container-false" value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
+                        <RadioGroupItem dataTestId= "build-stage-script-mount-container-true" value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
                     </RadioGroup>
                 </div>
                 {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountCodeToContainer && (
@@ -393,6 +395,7 @@ export function TaskTypeDetailComponent() {
                                 style={{ width: '80% !important' }}
                                 className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                                 autoComplete="off"
+                                data-testid = "script-mount-container-textbox"
                                 placeholder="Eg file/folder"
                                 type="text"
                                 onChange={(e) => handleCustomChange(e, 'mountCodeToContainerPath')}
@@ -430,12 +433,12 @@ export function TaskTypeDetailComponent() {
                             handleMountChange(event)
                         }}
                     >
-                        <RadioGroupItem value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
-                        <RadioGroupItem value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
+                        <RadioGroupItem dataTestId= "build-stage-script-mount-host-false" value={MountPath.FALSE}> {MountPath.FALSE} </RadioGroupItem>
+                        <RadioGroupItem dataTestId= "build-stage-script-mount-host-true" value={MountPath.TRUE}> {MountPath.TRUE} </RadioGroupItem>
                     </RadioGroup>
                 </div>
                 {formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.mountDirectoryFromHost && (
-                    <MountFromHost />
+                    <MountFromHost scriptFilePathHostdataTestId = "script-mount-host-file-path-host" scriptFilePathContainerdataTestId = "script-mount-host-file-path-container" />
                 )}
                 <OutputDirectoryPath />
             </>

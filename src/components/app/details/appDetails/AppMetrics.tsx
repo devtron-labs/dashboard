@@ -222,7 +222,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
         )
     }
     else {
-        return <section className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100 ${addSpace}`}
+        return <section data-testid="app-metrices-wrapper" className={`app-summary bcn-0 pl-24 pr-24 pb-20 w-100 ${addSpace}`}
             style={{ boxShadow: 'inset 0 -1px 0 0 var(--N200)' }}>
             {(appMetrics || infraMetrics) && (
                 <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>
@@ -364,7 +364,7 @@ function EnableAppMetrics() {
 
 function MonitoringModuleNotInstalled({ addSpace }: { addSpace: string }) {
     return (
-        <div className={`app-metrics-graph__empty-state-wrapper bcv-1 w-100 pt-18 pb-18 pl-20 pr-20 ${addSpace}`}>
+        <div data-testid="app-metrices-wrapper" className={`app-metrics-graph__empty-state-wrapper bcv-1 w-100 pt-18 pb-18 pl-20 pr-20 ${addSpace}`}>
             <div className="flex left w-100 lh-20">
                 <span className="fs-14 fw-6 cv-5 flex left mr-16">
                     <GraphIcon className="mr-8 fcv-5 icon-dim-20" />
@@ -402,8 +402,8 @@ function AppMetricsEmptyState({ isLoading, isConfigured, isHealthy, hostURLConfi
         subtitle = 'Datasource configuration is incorrect or prometheus is not healthy. Please review configuration and try reloading this page.';
     }
     return (
-        <div className={`app-metrics-graph__empty-state-wrapper bcn-0 w-100 pt-18 pb-18 pl-20 pr-20 cursor ${addSpace}`}>
-            <div data-testid="app-metrices-wrapper" onClick={toggleHeader} className="flex left w-100 lh-20">
+        <div data-testid="app-metrices-wrapper" className={`app-metrics-graph__empty-state-wrapper bcn-0 w-100 pt-18 pb-18 pl-20 pr-20 cursor ${addSpace}`}>
+            <div  onClick={toggleHeader} className="flex left w-100 lh-20">
                 <span className="fs-14 fw-6 cn-7 flex left mr-16">
                     <GraphIcon className="mr-8 fcn-7 icon-dim-20" />
                     APPLICATION METRICS

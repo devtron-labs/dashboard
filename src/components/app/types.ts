@@ -435,6 +435,7 @@ export interface DeleteComponentProps {
     url?: string
     reload?: () => void
     configuration?: string
+    dataTestid?:string
 }
 
 export interface AppStatusType {
@@ -447,6 +448,7 @@ export interface JobPipeline {
     ci_pipeline_name: string
     started_on: string
     status: string
+    dataTestId?: string
 }
 
 export interface TagChipsContainerType {

@@ -320,6 +320,7 @@ function ManifestComponent({
     ) : (
         <div
             className="manifest-container"
+            data-testid="app-manifest-container"
             style={{ background: '#0B0F22', flex: 1, minHeight: isResourceBrowserView ? '200px' : '600px' }}
         >
             {error && !loading && (

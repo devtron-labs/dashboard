@@ -135,7 +135,7 @@ export default function AppDetail() {
     }
 
     return (
-      <div className="app-details-page-wrapper" data-testid="app-details-wrapper">
+        <div data-testid="app-details-wrapper"  className="app-details-page-wrapper">
             {!params.envId && otherEnvsResult?.result?.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
                     <SourceInfo appDetails={null} environments={otherEnvsResult?.result} />
@@ -557,7 +557,7 @@ export const Details: React.FC<DetailsType> = ({
                         >
                             Cancel
                         </button>
-                        <button className="cta" disabled={hibernating} onClick={handleHibernate}>
+                        <button className="cta" disabled={hibernating} data-testid={`app-details-${hibernateConfirmationModal === 'hibernate'?"hibernate":"restore"}`} onClick={handleHibernate}>
                             {hibernating ? (
                                 <Progressing />
                             ) : hibernateConfirmationModal === 'hibernate' ? (

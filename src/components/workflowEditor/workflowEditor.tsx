@@ -464,6 +464,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     {!this.props.isJobView && (
                         <a
                             className="dc__link"
+                            data-testid="learn-more-about-creating-workflow-link"
                             href={DOCUMENTATION.APP_CREATE_WORKFLOW}
                             target="blank"
                             rel="noreferrer noopener"
@@ -584,7 +585,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             )
         } else {
             return (
-                <div className="workflow-editor">
+                <div className="workflow-editor" data-testid="workflow-editor-page">
                     <h1 className="form__title form__title--artifacts">Workflow Editor</h1>
                     <p>
                         {this.props.isJobView
@@ -593,7 +594,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         &nbsp;
                         <a
                             className="dc__link"
-                            data-testid="learn-more-about-creating-workflow-link"
                             href={
                                 this.props.isJobView
                                     ? DOCUMENTATION.JOB_WORKFLOW_EDITOR
