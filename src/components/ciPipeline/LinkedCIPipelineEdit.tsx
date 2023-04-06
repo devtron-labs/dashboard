@@ -202,6 +202,8 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         return (
             <div className={`typeahead form__row`}>
                 <Typeahead
+                    dataTestIdContainer = "source-ci-pipeline-container"
+                    dataTestIdInput = "source-ci-pipeline-input"
                     labelKey={'name'}
                     name="source-ci-pipeline"
                     label={'Source CI pipeline'}
@@ -214,7 +216,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                 >
                     {this.state.ciPipelines.map((ci) => {
                         return (
-                            <TypeaheadOption key={ci.id} id={ci.id} item={ci}>
+                            <TypeaheadOption dataTestIdMenuList = {`source-ci-pipeline-menu-list-${ci.name}`} key={ci.id} id={ci.id} item={ci}>
                                 {ci.name}
                             </TypeaheadOption>
                         )
@@ -293,6 +295,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                                 type="text"
                                 value={this.state.form.name}
                                 onChange={this.handleName}
+                                data-testid="pipeline-name-for-linked"
                             />
                             {!this.state.isValid.name ? (
                                 <span className="form__error">
@@ -329,6 +332,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                                 Cancel
                             </button>
                             <ButtonWithLoader
+                                dataTestId='create-linked-ci-button'
                                 rootClassName="cta cta--workflow flex-1"
                                 loaderColor="white"
                                 onClick={this.savePipeline}

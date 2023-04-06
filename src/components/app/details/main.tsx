@@ -196,6 +196,8 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         className="tab-list__tab-link"
                         data-action="Build & Deploy Clicked"
                         onClick={handleEventClick}
+                        data-tesid="build-deploy-click"
+                        id="build-deploy"
                     >
                         Build & Deploy
                     </NavLink>

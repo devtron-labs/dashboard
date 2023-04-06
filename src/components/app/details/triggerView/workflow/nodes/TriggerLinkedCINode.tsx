@@ -45,11 +45,11 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
         let status = this.props.status ? this.props.status.toLowerCase() : "";
         let hideDetails = status === DEFAULT_STATUS.toLowerCase() || status === "not triggered" || status === "not deployed";
         if (hideDetails)
-            return <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+            return <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }} data-testid="linked-status">
                 {this.props.status}
             </div>
         else return (
-            <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+            <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }} data-testid="linked-status">
                 {this.props.status}
                 {!this.props.fromAppGrouping && (
                     <>
@@ -74,7 +74,7 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
             <div className="workflow-node__trigger-type  workflow-node-trigger-type--external-ci">{this.props.triggerType}</div>
             <div className="workflow-node__title flex">
                 <div className="workflow-node__full-width-minus-Icon">
-                    <span className="workflow-node__text-light">Build: Linked</span>
+                    <span className="workflow-node__text-light" data-testid="linked-indication-name">Build: Linked</span>
                     <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.title}>
                         <div className="dc__ellipsis-left">{this.props.title}</div>
                     </Tippy>
