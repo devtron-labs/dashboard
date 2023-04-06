@@ -100,6 +100,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     rootClassName="form__checkbox-label--ignore-cache mb-0"
                     value={'CHECKED'}
                     onChange={this.context.toggleInvalidateCache}
+                    data-testid="set-clone-directory"
                 >
                     <div className="mr-5">
                         <div className="fs-13 fw-6">{IGNORE_CACHE_INFO.IgnoreCache.title}</div>

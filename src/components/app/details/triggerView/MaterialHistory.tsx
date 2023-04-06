@@ -80,6 +80,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                             onClick={(e) => this.onClickMaterialHistory(e, _commitId)}
                         >
                             <GitCommitInfoGeneric
+                              index={index}
                                 materialUrl={this.props.material.gitURL}
                                 showMaterialInfoHeader={false}
                                 commitInfo={history}
