@@ -242,7 +242,6 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"
                         data-action="App Configuration Clicked"
-                        data-testid="App-Configuration-Clicked"
                         onClick={handleEventClick}
                     >
                         <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
