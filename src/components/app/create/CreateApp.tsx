@@ -58,6 +58,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 appName: false,
                 cloneAppId: true,
             },
+            createAppLoader: false
         }
         this.createApp = this.createApp.bind(this)
         this.handleAppname = this.handleAppname.bind(this)
@@ -153,7 +154,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 labelTags.push({ key: currentTag.key, value: currentTag.value, propagate: currentTag.propagate })
             }
         }
-        this.setState({ showErrors: true, appNameErrors: true })
+        this.setState({ showErrors: true, appNameErrors: true})
         let allKeys = Object.keys(this.state.isValid)
         let isFormValid = allKeys.reduce((valid, key) => {
             valid = valid && this.state.isValid[key]
@@ -178,7 +179,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             request['description'] = this.state.form.description
         }
 
-        this.setState({ disableForm: true })
+        this.setState({ disableForm: true, createAppLoader: true  })
         const createAPI = this.props.isJobView ? createJob : createApp
         createAPI(request)
             .then((response) => {
@@ -198,6 +199,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             showErrors: false,
                             appNameErrors: false,
                             tags: response.result?.labels?.tags,
+                            createAppLoader: false
                         },
                         () => {
                             toast.success(
@@ -215,11 +217,12 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     errors.errors.forEach((element) => {
                         toast.error(element.userMessage)
                     })
-                    this.setState({ code: errors.code })
+                    this.setState({ code: errors.code,  createAppLoader: false })
                 } else {
                     showError(errors)
+                    this.setState({createAppLoader: false})
                 }
-                this.setState({ disableForm: false, showErrors: false, appNameErrors: false })
+                this.setState({ disableForm: false, showErrors: false, appNameErrors: false,  createAppLoader: false })
             })
     }
 
@@ -435,9 +438,13 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         return (
             <div className="w-800 dc__border-top flex right pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0">
                 <button className="cta flex h-36" onClick={this.createApp}>
-                    {`${this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}${
-                        this.props.isJobView ? 'Job' : 'App'
-                    }`}
+                    {this.state.createAppLoader ? (
+                        <Progressing />
+                    ) : (
+                        `${this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}${
+                            this.props.isJobView ? 'Job' : 'App'
+                        }`
+                    )}
                 </button>
             </div>
         )
