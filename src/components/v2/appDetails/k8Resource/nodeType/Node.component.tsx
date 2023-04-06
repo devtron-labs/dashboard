@@ -367,19 +367,19 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div className={'flex left col-1 pt-9 pb-9'}>
+                            <div data-testid="pod-ready-count" className={'flex left col-1 pt-9 pb-9'}>
                                 {node.info?.filter((_info) => _info.name === 'Containers')[0]?.value}
                             </div>
                         )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div className={'flex left col-1 pt-9 pb-9'}>
+                            <div data-testid="pod-restart-count" className={'flex left col-1 pt-9 pb-9'}>
                                 {node.kind !== 'Containers' && getPodRestartCount(node)}
                             </div>
                         )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div className={'flex left col-1 pt-9 pb-9'}>
+                            <div data-testid="pod-age-count" className={'flex left col-1 pt-9 pb-9'}>
                                 {getElapsedTime(new Date(node.createdAt))}
                             </div>
                         )}
