@@ -348,6 +348,19 @@ function Cluster(
 
     let envName: string = getEnvName(defaultClusterComponent, agentInstallationStage)
 
+    const renderNoEnvironmentTab = () => {
+        return (
+            <div
+                className="br-4 dashed dc__border flex bc-n50 pb-16 pt-16 m-16 fs-12 fw-4"
+            >
+                <div className="dc__align-center">
+                    <div className="fw-6">No Environments Added</div>
+                    <div>This cluster doesn't have any environments yet</div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <>
             <article
@@ -528,22 +541,7 @@ function Cluster(
                                 </div>
                             </div>
                         ) : (
-                            <div
-                                className="noenv mt-16 mb-16 ml-16 mr-16"
-                                style={{
-                                    boxSizing: 'border-box',
-                                    height: '72px' 
-                                    /*,flex: 'none',
-                                    order: '0',
-                                    alignSelf: 'stretch',
-                                    flexGrow: '0'*/,
-                                }}
-                            >
-                                <div className="noenvadded">
-                                    <div className="heading">No Environments Added</div>
-                                    <div className="subheading">This cluster doesn't have any environments yet</div>
-                                </div>
-                            </div>
+                            clusterId && renderNoEnvironmentTab()
                         )}
                     </>
                 ) : (
