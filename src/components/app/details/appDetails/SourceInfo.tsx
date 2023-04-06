@@ -96,11 +96,11 @@ export function SourceInfo({
                     </Tippy>
                 )}
                 {appDetails?.deploymentAppDeleteRequest && (
-                    <>
+                    <div data-testid="deleteing-argocd-pipeline">
                         <Trash className="icon-dim-16 mr-8 ml-12" />
                         <span className="cr-5 fw-6">Deleting deployment pipeline </span>
                         <span className="dc__loading-dots cr-5" />
-                    </>
+                    </div>
                 )}
 
                 {!appDetails?.deploymentAppDeleteRequest && (
@@ -186,7 +186,7 @@ export function SourceInfo({
                                             {isHibernated ? 'Hibernating' : status}
                                         </span>
                                     </div>
-                                    <div className="flex left">
+                                    <div className="flex left" data-testid="app-status-details">
                                         {appDetails?.deploymentAppType === DeploymentAppType.helm ? (
                                             <span data-testid="app-status-card-details" className="cb-5 fw-6">Details</span>
                                         ) : (

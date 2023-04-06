@@ -5,7 +5,7 @@ import { TagChipsContainerType } from '../types'
 
 export default function TagChipsContainer({ labelTags }: TagChipsContainerType) {
     return (
-        <div className="flex left flex-wrap dc__gap-8">
+        <div className="flex left flex-wrap dc__gap-8" data-testid="tag-chip-container">
             {labelTags.length > 0 ? (
                 labelTags.map((tag) => (
                     <div key={tag.id} className="flex">

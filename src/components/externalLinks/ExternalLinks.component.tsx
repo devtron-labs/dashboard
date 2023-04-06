@@ -173,6 +173,7 @@ export const AppLevelExternalLinks = ({
                     key={linkOption.label}
                     href={getParsedURL(true, linkOption.value, details)}
                     target="_blank"
+                    data-testid={`external-link-${idx}`}
                     className="external-link-chip flex left bc-n50 h-24 br-4 cn-7 dc__no-decor dc__border"
                 >
                     <img

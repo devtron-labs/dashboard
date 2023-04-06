@@ -48,6 +48,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
     const getTabNavLink = (tab: ApplicationObject) => {
         return (
             <NavLink
+                data-testid={`resource-tab-${tab.name.replace(' ', '').toLowerCase()}`}
                 to={tab.url}
                 className="resource-tree__tab-hover tab-list__tab resource-tab__node cursor cn-9 fw-6 dc__no-decor m-0-imp"
             >
@@ -118,7 +119,7 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
                                         {getTabNavLink(tab)}
                                         {tab.name !== AppDetailsTabs.log_analyzer &&
                                             tab.name !== AppDetailsTabs.k8s_Resources && (
-                                                <div className="resource-tab__close-wrapper flex br-5">
+                                                <div className="resource-tab__close-wrapper flex br-5" data-testid="resource-tab-cross">
                                                     <Cross
                                                         data-title={tab.title}
                                                         onClick={handleTabCloseAction}
