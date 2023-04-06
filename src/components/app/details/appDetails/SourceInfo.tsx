@@ -89,9 +89,9 @@ export function SourceInfo({
                         }`}
                     >
                         {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (
-                            <ArgoCD className="icon-dim-32 ml-16" />
+                            <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />
                         ) : (
-                            <Helm className="icon-dim-32 ml-16" />
+                            <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
                         )}
                     </Tippy>
                 )}
