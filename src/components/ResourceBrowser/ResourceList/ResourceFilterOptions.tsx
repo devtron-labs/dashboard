@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import ReactSelect, { MultiValue } from 'react-select'
-import { Option } from '../../../components/v2/common/ReactSelect.utils'
+import { Option } from '../../v2/common/ReactSelect.utils'
 import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
+import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
 import { ClusterOptionWithIcon, ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
 import { ALL_NAMESPACE_OPTION, FILTER_SELECT_COMMON_STYLES, NAMESPACE_NOT_APPLICABLE_OPTION } from '../Constants'
 import { ConditionalWrap, convertToOptionsList } from '../../common'
@@ -13,6 +14,7 @@ import { withShortcut, IWithShortcut } from 'react-keybind'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { components } from "react-select";
 import {podColumns} from "../Utils";
+import {tempMultiSelectStyles} from "../../ciConfig/CIConfig.utils";
 
 function ResourceFilterOptions({
     selectedResource,
@@ -108,20 +110,19 @@ function ResourceFilterOptions({
         setSelectedColumns(option)
     }
 
+    const handleFocus = () => {
+        setOpenMenu(!openMenu)
+    }
     const handleApply = (e) => {
-        if (selectedColumns?.length === 0){
-            return
-        }
         setOpenMenu(false)
-        let columns = selectedColumns?.map((ele)=>{
-            console.log(ele.value)
+        let columns = selectedColumns?.map((ele)=> {
             return ele.value
         })
         setExtraPodColumns(columns)
     }
 
     const  podColumnOptionsMenuList = (props): JSX.Element => {
-        setOpenMenu(props.menuIsOpen)
+        console.log(props)
         return <components.MenuList {...props}>
             {props.children}
             <button type="button" className="filter__apply" onClick={ handleApply } style={{position: "sticky", top: "40px"}}>
@@ -215,14 +216,16 @@ function ResourceFilterOptions({
                             closeMenuOnSelect={false}
                             hideSelectedOptions={false}
                             styles={FILTER_SELECT_COMMON_STYLES}
-                            // menuIsOpen={openMenu}
+                            menuIsOpen={openMenu}
                             value={selectedColumns}
                             components={{
                                 IndicatorSeparator: null,
                                 DropdownIndicator:null,
-                                Option: (props) => <Option {...props} showCheckBox={true} />,
+                                Option: (props) => <Option {...props} showCheckBox={true} style={tempMultiSelectStyles}/>,
                                 MenuList: podColumnOptionsMenuList,
-                                Control: hideControlPanel,
+                                Control: () => <div onClick={() => setOpenMenu(!openMenu)} className="w-60 ml-8">
+                                    <GlobalConfigIcon className="icon-dim-26 fcn-6"/>
+                                </div>
                             }}
                         />
                     }
@@ -230,12 +233,6 @@ function ResourceFilterOptions({
             </div>
         </div>
     )
-}
-
-const hideControlPanel = (props): JSX.Element => {
-    return <components.Control {...props} style = {{display:"none"}}>
-        {props.children}
-    </components.Control>
 }
 
 export default withShortcut(ResourceFilterOptions)
