@@ -76,7 +76,7 @@ const Select: React.FC<SelectProps> & SelectComposition = function ({
                 {button}
             </PopupMenu.Button>
             {popupOpen && AsyncComponent}
-            <PopupMenu.Body rootClassName={`select-popup ${rootClassName || ""}`} autoWidth={autoWidth} rootClassName="" bodyDataTestId="">
+            <PopupMenu.Body rootClassName={`select-popup ${rootClassName || ""}`} autoWidth={autoWidth}>
                 {loading ? null : <>
                     {optionLength === 0 && < div className={`${rootClassName} no-option-found flex`}>No results found</div>}
                     {body}

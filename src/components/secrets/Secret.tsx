@@ -780,7 +780,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     className={`form__input`}
                     placeholder={`random-secret`}
                     disabled={props.isUpdate}
-                    ata-testid="create-secrets-name-input"
+                    data-testid="create-secrets-name-input"
                 />
                 {configName.error && <label className="form__error">{configName.error}</label>}
             </div>

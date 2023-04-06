@@ -262,7 +262,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                             )}
                         </div>
                     )}
-                    <div className="node-row m-0 resource-row" data-testid="">
+                    <div className="node-row m-0 resource-row">
                         <div className={`resource-row__content ${firstColWidth} pt-9 pb-9`}>
                             <div className="flex left">
                                 <div
