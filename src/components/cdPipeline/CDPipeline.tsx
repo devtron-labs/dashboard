@@ -925,8 +925,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             this.handleStageConfigChange(event.target.value, key, 'triggerType')
                         }}
                     >
-                        <RadioGroupItem value={TriggerType.Auto}> Automatic </RadioGroupItem>
-                        <RadioGroupItem value={TriggerType.Manual}> Manual </RadioGroupItem>
+                        <RadioGroupItem dataTestId='trigger-automatic-button' value={TriggerType.Auto}> Automatic </RadioGroupItem>
+                        <RadioGroupItem dataTestId='trigger-manual-button' value={TriggerType.Manual}> Manual </RadioGroupItem>
                     </RadioGroup>
                 </div>
                 <div className="form__row">
@@ -934,6 +934,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <ReactSelect
                         menuPortalTarget={this.state.isAdvanced ? null : document.getElementById('visible-modal')}
                         closeMenuOnScroll={true}
+                        classNamePrefix="select-config-secret-dropdown"
                         isMulti={true}
                         placeholder="Select Configmap and Secrets"
                         isClearable={true}
@@ -1287,6 +1288,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
                 <div
                     className="flex left"
+                    data-testid="pre-stage-dropdown"
                     onClick={() => {
                         this.setState({ showPreStage: !this.state.showPreStage })
                     }}
@@ -1314,6 +1316,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <div className="divider mt-12 mb-12"></div>
                 <div
                     className="flex left"
+                    data-testid="deployment-stage-dropdown"
                     onClick={() => {
                         this.setState({ showDeploymentStage: !this.state.showDeploymentStage })
                     }}
@@ -1346,6 +1349,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <div className="divider mt-12 mb-12"></div>
                 <div
                     className="flex left"
+                    data-testid="post-stage-dropdown"
                     onClick={() => {
                         this.setState({ showPostStage: !this.state.showPostStage })
                     }}

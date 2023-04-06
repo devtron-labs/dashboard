@@ -89,9 +89,9 @@ export function SourceInfo({
                         }`}
                     >
                         {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (
-                            <ArgoCD className="icon-dim-32 ml-16" />
+                            <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />
                         ) : (
-                            <Helm className="icon-dim-32 ml-16" />
+                            <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
                         )}
                     </Tippy>
                 )}
@@ -181,6 +181,7 @@ export function SourceInfo({
                                     </div>
                                     <div>
                                         <span
+                                            data-testid="app-status-name"
                                             className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}
                                         >
                                             {isHibernated ? 'Hibernating' : status}
@@ -235,6 +236,7 @@ export function SourceInfo({
                                     </div>
                                     <div className="flexbox">
                                         <span
+                                            data-testid="deployment-status-name"
                                             className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus} ${
                                                 deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS
                                                     ? 'dc__loading-dots'
