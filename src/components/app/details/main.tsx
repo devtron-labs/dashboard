@@ -235,6 +235,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                 </li>
                 <li className="tab-list__tab">
                     <NavLink
+                        data-testid = "app-configuration"
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"
