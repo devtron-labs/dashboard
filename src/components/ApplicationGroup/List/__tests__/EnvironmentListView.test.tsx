@@ -23,56 +23,56 @@ describe('EnvironmentList', () => {
     })
 
     it('Environment render with list', async () => {
-        let cont
+        let component
         jest.spyOn(data, 'getEnvAppList').mockImplementation(mockFetch)
         await act(async () => {
-            cont = render(<EnvironmentsListView isSuperAdmin={true} removeAllFilters={jest.fn()} />, {
+            component = render(<EnvironmentsListView isSuperAdmin={true} removeAllFilters={jest.fn()} />, {
                 wrapper: BrowserRouter,
             })
         })
 
-        expect(cont.container).toBeInTheDocument()
-        const appGroupListContainer = cont.container.querySelector('.dc__overflow-scroll')
+        expect(component.container).toBeInTheDocument()
+        const appGroupListContainer = component.container.querySelector('.dc__overflow-scroll')
         expect(appGroupListContainer).toBeInTheDocument()
-        expect(cont.getAllByText('a')[0]).toBeInTheDocument()
-        expect(cont.getByText('shubham')).toBeInTheDocument()
+        expect(component.getAllByText('a')[0]).toBeInTheDocument()
+        expect(component.getByText('shubham')).toBeInTheDocument()
     })
 
     it('EnvironmentList renders with empty state', async () => {
-        let cont
+        let component
         jest.spyOn(data, 'getEnvAppList').mockImplementation(mockEmptyFetch)
         await act(async () => {
-            cont = render(<EnvironmentsListView isSuperAdmin={true} removeAllFilters={jest.fn()} />, {
+            component = render(<EnvironmentsListView isSuperAdmin={true} removeAllFilters={jest.fn()} />, {
                 wrapper: BrowserRouter,
             })
         })
 
-        expect(cont.container).toBeInTheDocument()
-        const emptyWrapper = cont.container.querySelector('.flex.dc__border-top-n1')
+        expect(component.container).toBeInTheDocument()
+        const emptyWrapper = component.container.querySelector('.flex.dc__border-top-n1')
         expect(emptyWrapper).toBeInTheDocument()
         const emptyComponent = emptyWrapper.querySelector('.flex.column.empty-state')
         expect(emptyComponent).toBeInTheDocument()
-        expect(cont.getByText('No matching env')).toBeInTheDocument()
+        expect(component.getByText('No matching env')).toBeInTheDocument()
         
     })
 
     it('EnvironmentList renders with empty state when ClusterId is available', async () => {
-        let cont
+        let component
         jest.spyOn(data, 'getEnvAppList').mockImplementation(mockEmptyFetch)
         await act(async () => {
-            cont = renderWithRouter(
+            component = renderWithRouter(
                 <Route path="application-group/list">
                     <EnvironmentsListView isSuperAdmin={true} removeAllFilters={jest.fn()} />
                 </Route>,
                 { route: 'application-group/list?cluster=3&offset=0' },
                 )
             })
-        expect(cont.container).toBeInTheDocument()
-        const emptyWrapper = cont.container.querySelector('.flex.dc__border-top-n1')
+        expect(component.container).toBeInTheDocument()
+        const emptyWrapper = component.container.querySelector('.flex.dc__border-top-n1')
         expect(emptyWrapper).toBeInTheDocument()
         const emptyComponent = emptyWrapper.querySelector('.flex.column.empty-state')
         expect(emptyComponent).toBeInTheDocument()
-        expect(cont.getByText('No app groups found')).toBeInTheDocument()
+        expect(component.getByText('No app groups found')).toBeInTheDocument()
         
     })
 })
