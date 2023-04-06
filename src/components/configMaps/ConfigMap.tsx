@@ -883,7 +883,6 @@ export function ConfigMapForm({
                     {yamlMode ? (
                         <div className="yaml-container">
                             <CodeEditor
-                                dataTestId="code-editor-key-value"
                                 value={yaml}
                                 mode="yaml"
                                 inline

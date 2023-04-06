@@ -954,7 +954,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     {yamlMode ? (
                         <div className="yaml-container">
                             <CodeEditor
-                                dataTestId="code-editor-key-value"
                                 value={secretMode ? lockedYaml : yaml}
                                 mode={MODES.YAML}
                                 inline
