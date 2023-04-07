@@ -25,7 +25,7 @@ export default function Artifacts({
     isArtifactUploaded,
     getArtifactPromise,
     isJobView,
-    type
+    type,
 }: ArtifactType) {
     const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
     const [copied, setCopied] = useState(false)
@@ -48,7 +48,7 @@ export default function Artifacts({
         }
     }
 
-    if (status.toLowerCase() === TERMINAL_STATUS_MAP.RUNNING) {
+    if (status.toLowerCase() === TERMINAL_STATUS_MAP.RUNNING || status.toLowerCase() === TERMINAL_STATUS_MAP.STARTING) {
         return <CIProgressView />
     } else if (isJobView && !blobStorageEnabled) {
         return (
@@ -90,20 +90,20 @@ export default function Artifacts({
         return (
             <div className="flex left column p-16">
                 {!isJobView && (
-                   <CIListItem type="artifact">
-                   <div className="flex column left hover-trigger">
-                       <div className="cn-9 fs-14 flex left">
-                           <CopyTippyWithText
-                               copyText={extractImage(artifact)}
-                               copied={copied}
-                               setCopied={setCopied}
-                           />
-                       </div>
-                       <div className="cn-7 fs-12 flex left">
-                           <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
-                       </div>
-                   </div>
-               </CIListItem>
+                    <CIListItem type="artifact">
+                        <div className="flex column left hover-trigger">
+                            <div className="cn-9 fs-14 flex left">
+                                <CopyTippyWithText
+                                    copyText={extractImage(artifact)}
+                                    copied={copied}
+                                    setCopied={setCopied}
+                                />
+                            </div>
+                            <div className="cn-7 fs-12 flex left">
+                                <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
+                            </div>
+                        </div>
+                    </CIListItem>
                 )}
                 {blobStorageEnabled && getArtifactPromise && (type === HistoryComponentType.CD || isArtifactUploaded) && (
                     <CIListItem type="report">
