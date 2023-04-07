@@ -225,7 +225,7 @@ function addDimensions(workflows: WorkflowType[], workflowOffset: Offset, dimens
             (node) => node.type == WorkflowNodeType.CI || node.type == WorkflowNodeType.WEBHOOK,
         )
         ciNode.sourceNodes?.forEach((s, si) => {
-            let sourceNodeY =
+            const sourceNodeY =
                 startY +
                 workflowOffset.offsetY +
                 si * (dimensions.staticNodeSizes.nodeHeight + dimensions.staticNodeSizes.distanceY)

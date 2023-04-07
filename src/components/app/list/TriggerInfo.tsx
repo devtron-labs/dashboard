@@ -112,7 +112,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             </div>
         }
         else {
-            let selectedMaterial = this.state.materials.find((mat) => mat.isSelected)
+            const selectedMaterial = this.state.materials.find((mat) => mat.isSelected)
             headerDescription = `Deployed on ${this.state.environmentName} at ${this.state.lastDeployedTime} by ${this.state.triggeredByEmail}`
             body = (
                 <div className="m-lr-0 flexbox">

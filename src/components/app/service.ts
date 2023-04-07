@@ -19,7 +19,7 @@ export const CDModalTab = {
 }
 
 export const getAppList = (request, options?) => {
-    let URL = `${Routes.APP_LIST}`
+    let URL = Routes.APP_LIST
     if(window._env_.USE_V2){
         URL+= `/${Routes.APP_LIST_V2}`
     }
@@ -181,7 +181,7 @@ const gitTriggersModal = (triggers, materials) => {
 
 const processMaterialHistory = (material) => {
     if (material.history) {
-        return material.history.map((history, indx) => {
+        return material.history.map((history, index) => {
             return {
                 commitURL: material.gitMaterialUrl ? createGitCommitUrl(material.gitMaterialUrl, history.Commit) : '',
                 changes: history.Changes || [],
@@ -189,7 +189,7 @@ const processMaterialHistory = (material) => {
                 message: history.Message,
                 date: history.Date ? moment(history.Date).format(Moment12HourFormat) : '',
                 commit: history?.Commit,
-                isSelected: indx == 0,
+                isSelected: index == 0,
                 showChanges: false,
                 webhookData: history.WebhookData
                     ? {
