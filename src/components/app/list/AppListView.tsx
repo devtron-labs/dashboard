@@ -201,7 +201,7 @@ export class AppListView extends Component<AppListViewProps> {
                                                     placement="top"
                                                     content={app.defaultEnv.lastDeployedTime}
                                                 >
-                                                    <p className="dc__truncate-text  m-0">
+                                                    <p className="dc__truncate-text  m-0" data-testid="last-deployed-time">
                                                         {handleUTCTime(app.defaultEnv.lastDeployedTime, true)}
                                                     </p>
                                                 </Tippy>
