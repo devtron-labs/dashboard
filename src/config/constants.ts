@@ -647,6 +647,7 @@ export const ModuleNameMap = {
 
 export const BUILD_STATUS = {
     NOT_TRIGGERED: 'not triggered',
+    NOT_DEPLOYED: 'not deployed'
 }
 
 export const EVENT_STREAM_EVENTS_MAP = {

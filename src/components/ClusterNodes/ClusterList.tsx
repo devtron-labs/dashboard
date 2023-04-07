@@ -48,14 +48,9 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                         return {
                             id: minData.id,
                             name: minData.cluster_name,
-                            nodeCount: null,
                             nodeErrors: [],
                             errorInNodeListing: minData.errorInConnecting,
-                            nodeK8sVersions: null,
-                            cpu: null,
-                            memory: null,
-                            serverVersion: null,
-                        }
+                        } as ClusterDetail
                     })
                 if (!completeDataLoadedRef.current) {
                     setClusterList(sortedResult)

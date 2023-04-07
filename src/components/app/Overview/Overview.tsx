@@ -88,7 +88,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     externalLinks:
                         externalLinksRes.result?.ExternalLinks?.filter(
                             (_link) => _link.type === ExternalLinkScopeType.AppLevel,
-                        )?.sort(sortByUpdatedOn) || [],
+                        ).sort(sortByUpdatedOn) || [],
                     monitoringTools:
                         externalLinksRes.result?.Tools?.map((tool) => ({
                             label: tool.name,

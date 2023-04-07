@@ -80,17 +80,15 @@ const isValidServerInfo = (_serverInfo: ServerInfoResponse): boolean => {
 }
 
 const getSavedServerInfo = (): ServerInfoResponse => {
-    let _serverInfo = serverInfo
-    if (!isValidServerInfo(_serverInfo)) {
+    if (!isValidServerInfo(serverInfo)) {
         if (typeof Storage !== 'undefined' && localStorage.serverInfo) {
             const _serverInfoFromLS = JSON.parse(localStorage.serverInfo)
             if (isValidServerInfo(_serverInfoFromLS)) {
-                _serverInfo = _serverInfoFromLS
                 serverInfo = _serverInfoFromLS
             }
         }
     }
-    return _serverInfo
+    return serverInfo
 }
 
 export const getServerInfo = async (withoutStatus: boolean, isFormHeader: boolean): Promise<ServerInfoResponse> => {

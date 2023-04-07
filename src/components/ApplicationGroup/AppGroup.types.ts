@@ -1,3 +1,4 @@
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
     CDMdalTabType,
@@ -249,4 +250,18 @@ export interface AppGroupListType {
     clusterName: string
     environmentId: number
     apps: ApplistEnvType[]
+}
+export interface ConfigAppListType extends ResponseType {
+  result?: ConfigAppList[]
+}
+export interface EnvAppType extends ResponseType {
+  result?: EnvApp
+}
+
+export interface AppGroupList extends ResponseType {
+  result?: AppGroupListType
+}
+
+export interface EnvDeploymentStatusType extends ResponseType {
+  result?: EnvDeploymentStatus[]
 }

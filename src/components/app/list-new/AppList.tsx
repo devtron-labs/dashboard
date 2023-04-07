@@ -64,7 +64,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
     const [appCount, setAppCount] = useState(0)
-    const [checkingUserRole, userRoleResponse] = useAsync(getUserRole, [])
+    const [, userRoleResponse] = useAsync(getUserRole, [])
 
     // on page load
     useEffect(() => {
