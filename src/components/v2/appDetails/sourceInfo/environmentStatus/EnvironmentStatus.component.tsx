@@ -51,19 +51,19 @@ function EnvironmentStatusComponent({
             <div className="flex left ml-20 mb-16">
                 <div className="bcn-0 w-150 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
                     <div className="flex left column mt-6 w-85 ml-16 dc__place-abs-shimmer-center">
-                        <div className="shimmer-loading w-80 h-20 br-2 mb-6" />
+                        <div className="shimmer-loading w-80px h-20 br-2 mb-6" />
                         <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
                     </div>
                 </div>
                 <div className="bcn-0 w-150 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
                     <div className="flex left column mt-6 w-85 ml-16 dc__place-abs-shimmer-center">
-                        <div className="shimmer-loading w-80 h-20 br-2 mb-6" />
+                        <div className="shimmer-loading w-80px h-20 br-2 mb-6" />
                         <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
                     </div>
                 </div>
                 <div className="bcn-0 w-150 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
                     <div className="flex left column mt-6 w-85 ml-16 dc__place-abs-shimmer-center">
-                        <div className="shimmer-loading w-80 h-20 br-2 mb-6" />
+                        <div className="shimmer-loading w-80px h-20 br-2 mb-6" />
                         <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
                     </div>
                 </div>
@@ -85,7 +85,7 @@ function EnvironmentStatusComponent({
                 </div>
                 {loadingResourceTree ? (
                     <div className="flex left column mt-6">
-                        <div className="shimmer-loading w-80 h-16 br-2 mb-6" />
+                        <div className="shimmer-loading w-80px h-16 br-2 mb-6" />
                         <div className="shimmer-loading w-60 h-12 br-2" />
                     </div>
                 ) : (

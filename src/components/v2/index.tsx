@@ -61,6 +61,7 @@ function RouterComponent({ envType }) {
             if (initTimer) {
                 clearTimeout(initTimer)
             }
+            IndexStore.publishAppDetails({} as AppDetails, AppType.DEVTRON_HELM_CHART) // Cleared out the data on unmount
         }
     }, [])
 
