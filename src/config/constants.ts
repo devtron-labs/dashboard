@@ -214,7 +214,8 @@ export const Routes = {
     JOB_LIST: 'job/list',
     JOB_CI_PIPELINE_LIST: 'job/ci-pipeline/list',
     USER_ROLE_GROUP: 'user/role/group',
-    APP_FILTER_LIST: 'app/app-listing/autocomplete'
+    APP_FILTER_LIST: 'app/app-listing/autocomplete',
+    APP_LIST_GROUP: 'app/list/group',
 }
 
 export const ViewType = {

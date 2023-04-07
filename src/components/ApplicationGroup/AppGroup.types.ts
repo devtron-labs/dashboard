@@ -220,6 +220,7 @@ export interface AppGroupAdminType {
 
 export interface AppGroupDetailDefaultType {
     filteredApps: MultiValue<OptionType>
+    appGroupListData?: AppGroupListType
 }
 export interface CIConfigListType {
     pipelineList: CiPipeline[]
@@ -233,4 +234,19 @@ export interface AppGroupAppFilterContextType {
     setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
     isMenuOpen: boolean
     setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface ApplistEnvType {
+    appId: number
+    appName: string
+    appStatus: string
+    lastDeployedTime: string
+}
+
+export interface AppGroupListType {
+    namespace: string
+    environmentName: string
+    clusterName: string
+    environmentId: number
+    apps: ApplistEnvType[]
 }

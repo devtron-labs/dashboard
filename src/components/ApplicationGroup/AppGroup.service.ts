@@ -13,7 +13,7 @@ import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { ModuleNameMap, Routes, URLS } from '../../config'
 import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { CIConfigListType, ConfigAppList, EnvApp, EnvDeploymentStatus, WorkflowsResponseType } from './AppGroup.types'
+import { AppGroupListType, CIConfigListType, ConfigAppList, EnvApp, EnvDeploymentStatus, WorkflowsResponseType } from './AppGroup.types'
 import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
@@ -155,6 +155,10 @@ export interface EnvAppType extends ResponseType {
     result?: EnvApp
 }
 
+export interface AppGroupList extends ResponseType {
+    result?: AppGroupListType
+}
+
 export interface EnvDeploymentStatusType extends ResponseType {
     result?: EnvDeploymentStatus[]
 }
@@ -181,4 +185,8 @@ export const getEnvAppList = (params?: {
 
 export const getDeploymentStatus = (envId: number): Promise<EnvDeploymentStatusType> => {
     return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.ENV_DEPLOYMENT_STATUS}`)
+}
+
+export const getAppGroupList = (envId: number): Promise<AppGroupList> => {
+    return get(`${Routes.APP_LIST_GROUP}/${envId}`)
 }
