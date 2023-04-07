@@ -1247,7 +1247,7 @@ export const approvalMetadata = {
         userActionTime: 12323123213,
         userComment: 'dummy-comment',
     },
-    userApprov: [
+    approvedBy: [
         { dataId: 13, userEmail: 'kripansh@devtron.ai', userActionTime: 12343123213, userComment: 'dummy-comment' },
         { dataId: 14, userEmail: 'nishant@devtron.ai', userActionTime: 13223123213, userComment: 'dummy-comment' },
         { dataId: 15, userEmail: 'sohel@devtron.ai', userActionTime: 13323123213, userComment: 'dummy-comment' },

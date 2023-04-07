@@ -170,14 +170,12 @@ export default function ApprovalMaterialModal({
     return (
         <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeApprovalModal}>
             <div className="modal-body--cd-material h-100" onClick={stopPropagation}>
+                {renderModalHeader()}
+                {renderTabs()}
                 {isLoading ? (
                     <Progressing size={32} fullHeight fillColor="var(--N500)" />
                 ) : (
-                    <>
-                        {renderModalHeader()}
-                        {renderTabs()}
-                        {showModalBody ? renderModalBody() : renderEmpty()}
-                    </>
+                    <>{showModalBody ? renderModalBody() : renderEmpty()}</>
                 )}
             </div>
         </VisibleModal>

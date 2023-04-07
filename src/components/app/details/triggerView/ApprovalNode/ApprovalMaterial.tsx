@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { CDModalTab } from '../../../service'
-import { ButtonWithLoader, ScanVulnerabilitiesTable, useAsync } from '../../../../common'
+import { ButtonWithLoader, getLoginInfo, ScanVulnerabilitiesTable, useAsync } from '../../../../common'
 import { getModuleInfo } from '../../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleNameMap } from '../../../../../config'
 import { ModuleStatus } from '../../../../v2/devtronStackManager/DevtronStackManager.type'
@@ -31,6 +31,8 @@ export default function ApprovalMaterial({
     const { onClickCDMaterial } = useContext(TriggerViewContext)
     const [selectedMaterial, setSelectedMaterial] = useState<CDMaterialType>()
     const [tippyVisible, setTippyVisible] = useState<Record<string, boolean>>({})
+    const loginInfo = getLoginInfo()
+    const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
     const [, securityModuleRes] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [])
     const isSecurityModuleInstalled = securityModuleRes?.status === ModuleStatus.INSTALLED
 
@@ -121,6 +123,23 @@ export default function ApprovalMaterial({
             })
     }
 
+    const approveRequest = (e: any) => {
+        toggleTippyVisibility(e)
+        const payload = {
+            actionType: 1,
+            pipelineId: pipelineId,
+            artifactId: +e.currentTarget.dataset.id,
+            approvalRequestId: +e.currentTarget.dataset.requestId,
+        }
+        submitApprovalRequest(payload)
+            .then((response) => {
+                onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
+            })
+            .catch((e) => {
+                showError(e)
+            })
+    }
+
     const cancelRequest = (e: any) => {
         toggleTippyVisibility(e)
         const payload = {
@@ -151,6 +170,22 @@ export default function ApprovalMaterial({
         )
     }
 
+    const getApproveRequestButton = (mat: CDMaterialType) => {
+        return (
+            <button
+                className="cta flex mt-4 ml-auto mr-16 mb-16"
+                data-id={mat.id}
+                data-request-id={mat.userApprovalMetadata?.approvalRequestId}
+                onClick={approveRequest}
+                style={{
+                    background: 'var(--G500)',
+                }}
+            >
+                Approve request
+            </button>
+        )
+    }
+
     const getSubmitRequestButton = (artifactId: number) => {
         return (
             <button className="cta flex mt-4 ml-auto mr-16 mb-16" data-id={artifactId} onClick={submitRequest}>
@@ -160,12 +195,20 @@ export default function ApprovalMaterial({
     }
 
     const toggleTippyVisibility = (e) => {
-        if (e.currentTarget?.dataset?.id) {
+        const dataId = e.currentTarget?.dataset?.id
+        if (dataId) {
             setTippyVisible((prevState) => ({
                 ...prevState,
-                [e.currentTarget.dataset.id]: !prevState[e.currentTarget.dataset.id],
+                [dataId]: !prevState[dataId],
             }))
         }
+    }
+
+    const handleOnClose = (id: string) => {
+        setTippyVisible((prevState) => ({
+            ...prevState,
+            [id]: false,
+        }))
     }
 
     const renderMaterialInfo = (mat: CDMaterialType, hideSelector?: boolean) => {
@@ -188,6 +231,27 @@ export default function ApprovalMaterial({
                     <div className="material-history__select-text dc__no-text-transform w-auto">
                         {mat.vulnerable ? (
                             <span className="material-history__scan-error">Security vulnerability found</span>
+                        ) : mat.userApprovalMetadata?.approvalRuntimeState === 1 &&
+                          mat.userApprovalMetadata.requestedUserData?.userEmail &&
+                          mat.userApprovalMetadata.requestedUserData.userEmail !== email ? (
+                            <TippyCustomized
+                                theme={TippyTheme.white}
+                                className="w-300 h-100 dc__align-left"
+                                placement="bottom-end"
+                                iconClass="fcv-5"
+                                heading="Approve image"
+                                infoText="Are you sure you want to approve deploying this image to cd-devtroncd?"
+                                additionalContent={getApproveRequestButton(mat)}
+                                showCloseButton={true}
+                                onClose={() => handleOnClose(mat.id)}
+                                trigger="click"
+                                interactive={true}
+                                visible={tippyVisible[mat.id]}
+                            >
+                                <span className="cg-5" data-id={mat.id} onClick={toggleTippyVisibility}>
+                                    Approve request
+                                </span>
+                            </TippyCustomized>
                         ) : mat.userApprovalMetadata?.approvalRuntimeState === 1 ? (
                             <TippyCustomized
                                 theme={TippyTheme.white}
@@ -198,6 +262,7 @@ export default function ApprovalMaterial({
                                 infoText="Are you sure you want to cancel approval request for this image? A new approval request would need to be raised if you want to deploy this image."
                                 additionalContent={getCancelRequestButton(mat)}
                                 showCloseButton={true}
+                                onClose={() => handleOnClose(mat.id)}
                                 trigger="click"
                                 interactive={true}
                                 visible={tippyVisible[mat.id]}
@@ -216,6 +281,7 @@ export default function ApprovalMaterial({
                                 infoText="Request approval for deploying this image. All users having ‘Approver’ permission for this application and environment can approve."
                                 additionalContent={getSubmitRequestButton(+mat.id)}
                                 showCloseButton={true}
+                                onClose={() => handleOnClose(mat.id)}
                                 trigger="click"
                                 interactive={true}
                                 visible={tippyVisible[mat.id]}
