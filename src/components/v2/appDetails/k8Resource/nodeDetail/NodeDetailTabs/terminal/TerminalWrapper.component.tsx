@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import TerminalView from './Terminal.component'
 import terminalStripTypeData from './terminal.utils'
 
@@ -22,13 +22,13 @@ export default function TerminalWrapper({ selectionListData, socketConnection, s
     const renderTerminalView = () => {
         return (
             <TerminalView
-                terminalRef={undefined}
-                initializeTerminal={undefined}
-                socketConnection={undefined}
-                setSocketConnection={undefined}
-                renderConnectionStrip={undefined}
-                registerLinkMatcher={undefined}
-                terminalMessageData={undefined}
+                terminalRef={selectionListData.tabSwitcher.terminalData.terminalRef}
+                initializeTerminal={selectionListData.tabSwitcher.terminalData.initializeTerminal}
+                socketConnection={selectionListData.tabSwitcher.terminalData.socketConnection}
+                setSocketConnection={selectionListData.tabSwitcher.terminalData.setSocketConnection}
+                renderConnectionStrip={() => <></>}
+                registerLinkMatcher={selectionListData.tabSwitcher.terminalData.registerLinkMatcher}
+                terminalMessageData={() => <></>}
             />
         )
     }
@@ -38,7 +38,7 @@ export default function TerminalWrapper({ selectionListData, socketConnection, s
             <div className="flex bcn-0 pl-20 dc__border-top h-32">{firstStrip()}</div>
             <div className="flex left bcn-0 pl-20 dc__border-top h-28">{secondStrip()}</div>
             {typeof selectionListData.tabSwitcher === 'function'
-                ? selectionListData.tabSwitcher(renderTerminalView())
+                ? selectionListData.tabSwitcher.terminalTabWrapper(renderTerminalView())
                 : renderTerminalView()}
         </div>
     )

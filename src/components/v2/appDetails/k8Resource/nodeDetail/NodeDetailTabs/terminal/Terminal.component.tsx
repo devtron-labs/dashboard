@@ -85,6 +85,7 @@ export default function TerminalView({
                 foreground: '#FFFFFF',
             },
         })
+        terminalRef.current = terminal
         handleSelectionChange(terminal, setPopupText)
         fitAddon = new FitAddon()
         const webFontAddon = new XtermWebfont()
@@ -217,8 +218,8 @@ export default function TerminalView({
         return () => {
             socket?.close()
             terminal?.dispose()
-
             socket = undefined
+            terminalRef.current = undefined
             terminal = undefined
             fitAddon = undefined
             clearTimeout(clusterTimeOut)

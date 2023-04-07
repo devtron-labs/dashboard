@@ -141,7 +141,9 @@ export default function terminalStripTypeData(elementData) {
         case 'closeExpandView':
             return closeExpandView(elementData)
         case 'reactSelect': 
-        return reactSelect(elementData)
+            return reactSelect(elementData)
+        case 'tabs':
+            return elementData.renderTabs()
         default:
             return null
     }
