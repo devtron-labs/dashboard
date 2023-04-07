@@ -15,6 +15,7 @@ import GitCommitInfoGeneric from '../../../../common/GitCommitInfoGeneric'
 import { Progressing, showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { submitApprovalRequest } from './Service'
 import { TriggerViewContext } from '../config'
+import Tippy from '@tippyjs/react'
 
 export default function ApprovalMaterial({
     material,
@@ -27,6 +28,7 @@ export default function ApprovalMaterial({
     appId,
     pipelineId,
     parentEnvironmentName,
+    node,
 }) {
     const { onClickCDMaterial } = useContext(TriggerViewContext)
     const [selectedMaterial, setSelectedMaterial] = useState<CDMaterialType>()
@@ -211,6 +213,99 @@ export default function ApprovalMaterial({
         }))
     }
 
+    const getApprovalCTA = (mat: CDMaterialType) => {
+        if (mat.userApprovalMetadata?.approvalRuntimeState === 1) {
+            if (node?.approvalUsers && !node.approvalUsers.includes(email)) {
+                return <span className="cn-5">Awaiting approval</span>
+            } else if (
+                node?.artifactTriggeredBy === email ||
+                mat.userApprovalMetadata?.requestedUserData?.userEmail === email
+            ) {
+                return (
+                    <Tippy
+                        className="default-tt w-200"
+                        arrow={false}
+                        placement="top"
+                        content={
+                            node?.artifactTriggeredBy === email
+                                ? 'You triggered the build pipeline for this image. The builder of an image cannot approve it.'
+                                : 'You raised the approval request for this image. As the requester, you cannot approve it.'
+                        }
+                    >
+                        <span className="cn-5">Approve</span>
+                    </Tippy>
+                )
+            } else 
+            if (
+                mat.userApprovalMetadata.requestedUserData?.userEmail &&
+                mat.userApprovalMetadata.requestedUserData.userEmail !== email
+            ) {
+                return (
+                    <TippyCustomized
+                        theme={TippyTheme.white}
+                        className="w-300 h-100 dc__align-left"
+                        placement="bottom-end"
+                        iconClass="fcv-5"
+                        heading="Approve image"
+                        infoText="Are you sure you want to approve deploying this image to cd-devtroncd?"
+                        additionalContent={getApproveRequestButton(mat)}
+                        showCloseButton={true}
+                        onClose={() => handleOnClose(mat.id)}
+                        trigger="click"
+                        interactive={true}
+                        visible={tippyVisible[mat.id]}
+                    >
+                        <span className="cg-5" data-id={mat.id} onClick={toggleTippyVisibility}>
+                            Approve
+                        </span>
+                    </TippyCustomized>
+                )
+            } else {
+                return (
+                    <TippyCustomized
+                        theme={TippyTheme.white}
+                        className="w-300 h-100 dc__align-left"
+                        placement="bottom-end"
+                        iconClass="fcv-5"
+                        heading="Cancel approval request"
+                        infoText="Are you sure you want to cancel approval request for this image? A new approval request would need to be raised if you want to deploy this image."
+                        additionalContent={getCancelRequestButton(mat)}
+                        showCloseButton={true}
+                        onClose={() => handleOnClose(mat.id)}
+                        trigger="click"
+                        interactive={true}
+                        visible={tippyVisible[mat.id]}
+                    >
+                        <span className="cr-5" data-id={mat.id} onClick={toggleTippyVisibility}>
+                            Cancel request
+                        </span>
+                    </TippyCustomized>
+                )
+            }
+        } else {
+            return (
+                <TippyCustomized
+                    theme={TippyTheme.white}
+                    className="w-300 h-100 dc__align-left"
+                    placement="bottom-end"
+                    iconClass="fcv-5"
+                    heading="Request approval"
+                    infoText="Request approval for deploying this image. All users having ‘Approver’ permission for this application and environment can approve."
+                    additionalContent={getSubmitRequestButton(+mat.id)}
+                    showCloseButton={true}
+                    onClose={() => handleOnClose(mat.id)}
+                    trigger="click"
+                    interactive={true}
+                    visible={tippyVisible[mat.id]}
+                >
+                    <span className="cb-5" data-id={mat.id} onClick={toggleTippyVisibility}>
+                        Request approval
+                    </span>
+                </TippyCustomized>
+            )
+        }
+    }
+
     const renderMaterialInfo = (mat: CDMaterialType, hideSelector?: boolean) => {
         return (
             <>
@@ -231,65 +326,8 @@ export default function ApprovalMaterial({
                     <div className="material-history__select-text dc__no-text-transform w-auto">
                         {mat.vulnerable ? (
                             <span className="material-history__scan-error">Security vulnerability found</span>
-                        ) : mat.userApprovalMetadata?.approvalRuntimeState === 1 &&
-                          mat.userApprovalMetadata.requestedUserData?.userEmail &&
-                          mat.userApprovalMetadata.requestedUserData.userEmail !== email ? (
-                            <TippyCustomized
-                                theme={TippyTheme.white}
-                                className="w-300 h-100 dc__align-left"
-                                placement="bottom-end"
-                                iconClass="fcv-5"
-                                heading="Approve image"
-                                infoText="Are you sure you want to approve deploying this image to cd-devtroncd?"
-                                additionalContent={getApproveRequestButton(mat)}
-                                showCloseButton={true}
-                                onClose={() => handleOnClose(mat.id)}
-                                trigger="click"
-                                interactive={true}
-                                visible={tippyVisible[mat.id]}
-                            >
-                                <span className="cg-5" data-id={mat.id} onClick={toggleTippyVisibility}>
-                                    Approve request
-                                </span>
-                            </TippyCustomized>
-                        ) : mat.userApprovalMetadata?.approvalRuntimeState === 1 ? (
-                            <TippyCustomized
-                                theme={TippyTheme.white}
-                                className="w-300 h-100 dc__align-left"
-                                placement="bottom-end"
-                                iconClass="fcv-5"
-                                heading="Cancel approval request"
-                                infoText="Are you sure you want to cancel approval request for this image? A new approval request would need to be raised if you want to deploy this image."
-                                additionalContent={getCancelRequestButton(mat)}
-                                showCloseButton={true}
-                                onClose={() => handleOnClose(mat.id)}
-                                trigger="click"
-                                interactive={true}
-                                visible={tippyVisible[mat.id]}
-                            >
-                                <span className="cr-5" data-id={mat.id} onClick={toggleTippyVisibility}>
-                                    Cancel request
-                                </span>
-                            </TippyCustomized>
                         ) : (
-                            <TippyCustomized
-                                theme={TippyTheme.white}
-                                className="w-300 h-100 dc__align-left"
-                                placement="bottom-end"
-                                iconClass="fcv-5"
-                                heading="Request approval"
-                                infoText="Request approval for deploying this image. All users having ‘Approver’ permission for this application and environment can approve."
-                                additionalContent={getSubmitRequestButton(+mat.id)}
-                                showCloseButton={true}
-                                onClose={() => handleOnClose(mat.id)}
-                                trigger="click"
-                                interactive={true}
-                                visible={tippyVisible[mat.id]}
-                            >
-                                <span className="cb-5" data-id={mat.id} onClick={toggleTippyVisibility}>
-                                    Request approval
-                                </span>
-                            </TippyCustomized>
+                            getApprovalCTA(mat)
                         )}
                     </div>
                 )}

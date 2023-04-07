@@ -141,6 +141,7 @@ export default function ApprovalMaterialModal({
                     appId={appId}
                     pipelineId={pipelineId}
                     parentEnvironmentName={node?.parentEnvironmentName}
+                    node={node}
                 />
             </div>
         )

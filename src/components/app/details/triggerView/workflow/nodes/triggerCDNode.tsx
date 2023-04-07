@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { DeploymentNodeType, TriggerCDNodeProps } from '../../types'
 import { statusColor, statusIcon } from '../../../../config'
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
+import { ReactComponent as ApprovalNodeIcon } from '../../../../../../assets/icons/ic-users.svg'
 import { URLS, DEFAULT_STATUS } from '../../../../../../config'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
@@ -88,9 +89,11 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                             <div className="workflow-node__btn-grp">
                                 <button
                                     className="workflow-node__rollback-btn"
-                                    onClick={(event) => context.onClickCDMaterial(+this.props.id, DeploymentNodeType.CD, true)}
+                                    onClick={(event) =>
+                                        context.onClickCDMaterial(+this.props.id, DeploymentNodeType.CD, true)
+                                    }
                                 >
-                                    <Rollback className="icon-dim-20 dc__vertical-align-middle" />
+                                    <ApprovalNodeIcon className="icon-dim-20 dc__vertical-align-middle" />
                                 </button>
                                 <Tippy className="default-tt" arrow={true} placement="bottom" content={'Rollback'}>
                                     <button
@@ -107,7 +110,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                         context.onClickCDMaterial(this.props.id, DeploymentNodeType[this.props.type])
                                     }}
                                 >
-                                    Select Image
+                                    Select {/* Image */}
                                 </button>
                             </div>
                         </div>

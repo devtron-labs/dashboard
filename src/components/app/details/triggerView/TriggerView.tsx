@@ -899,13 +899,15 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     renderCDMaterial() {
-        if (this.state.showCDModal && this.state.cdNodeId) {
+        if (this.state.showCDModal) {
             let node: NodeAttr
-            for (let i = 0; i < this.state.workflows.length; i++) {
-                node = this.state.workflows[i].nodes.find((el) => {
-                    return +el.id == this.state.cdNodeId && el.type == this.state.nodeType
-                })
-                if (node) break
+            if (this.state.cdNodeId) {
+                for (let i = 0; i < this.state.workflows.length; i++) {
+                    node = this.state.workflows[i].nodes.find((el) => {
+                        return +el.id == this.state.cdNodeId && el.type == this.state.nodeType
+                    })
+                    if (node) break
+                }
             }
             const material = node?.[this.state.materialType] || []
 

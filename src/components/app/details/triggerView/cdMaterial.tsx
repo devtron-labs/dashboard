@@ -720,55 +720,57 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         : ''
                 }`}
             >
-                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) && !this.state.showConfigDiffView && this.props.stageType === DeploymentNodeType.CD &&(
-                    <div className="flex left dc__border br-4 h-42">
-                        <div className="flex">
-                            <ReactSelect
-                                options={getDeployConfigOptions(
-                                    this.state.isRollbackTrigger,
-                                    this.state.recentDeploymentConfig !== null,
+                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) &&
+                    !this.state.showConfigDiffView &&
+                    this.props.stageType === DeploymentNodeType.CD && (
+                        <div className="flex left dc__border br-4 h-42">
+                            <div className="flex">
+                                <ReactSelect
+                                    options={getDeployConfigOptions(
+                                        this.state.isRollbackTrigger,
+                                        this.state.recentDeploymentConfig !== null,
+                                    )}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator,
+                                        Option,
+                                        ValueContainer: this.customValueContainer,
+                                    }}
+                                    isDisabled={this.state.checkingDiff}
+                                    isSearchable={false}
+                                    formatOptionLabel={this.formatOptionLabel}
+                                    classNamePrefix="deploy-config-select"
+                                    placeholder="Select Config"
+                                    menuPlacement="top"
+                                    value={this.state.selectedConfigToDeploy}
+                                    styles={getCommonConfigSelectStyles({
+                                        valueContainer: (base, state) => ({
+                                            ...base,
+                                            minWidth: '135px',
+                                            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+                                        }),
+                                    })}
+                                    onChange={this.handleConfigSelection}
+                                />
+                            </div>
+                            <span className="dc__border-left h-100" />
+                            <ConditionalWrap
+                                condition={!this.state.checkingDiff && this.isDeployButtonDisabled()}
+                                wrap={(children) => (
+                                    <Tippy
+                                        className="default-tt w-200"
+                                        arrow={false}
+                                        placement="top"
+                                        content={this.getTippyContent()}
+                                    >
+                                        {children}
+                                    </Tippy>
                                 )}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    DropdownIndicator,
-                                    Option,
-                                    ValueContainer: this.customValueContainer,
-                                }}
-                                isDisabled={this.state.checkingDiff}
-                                isSearchable={false}
-                                formatOptionLabel={this.formatOptionLabel}
-                                classNamePrefix="deploy-config-select"
-                                placeholder="Select Config"
-                                menuPlacement="top"
-                                value={this.state.selectedConfigToDeploy}
-                                styles={getCommonConfigSelectStyles({
-                                    valueContainer: (base, state) => ({
-                                        ...base,
-                                        minWidth: '135px',
-                                        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-                                    }),
-                                })}
-                                onChange={this.handleConfigSelection}
-                            />
+                            >
+                                {this.renderConfigDiffStatus()}
+                            </ConditionalWrap>
                         </div>
-                        <span className="dc__border-left h-100" />
-                        <ConditionalWrap
-                            condition={!this.state.checkingDiff && this.isDeployButtonDisabled()}
-                            wrap={(children) => (
-                                <Tippy
-                                    className="default-tt w-200"
-                                    arrow={false}
-                                    placement="top"
-                                    content={this.getTippyContent()}
-                                >
-                                    {children}
-                                </Tippy>
-                            )}
-                        >
-                            {this.renderConfigDiffStatus()}
-                        </ConditionalWrap>
-                    </div>
-                )}
+                    )}
                 <ConditionalWrap
                     condition={!this.state.checkingDiff && this.isDeployButtonDisabled()}
                     wrap={(children) => (
@@ -996,17 +998,27 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         } ${this.props.material.length > 0 ? '' : 'no-material'}`}
                         onClick={stopPropagation}
                     >
-                        {this.props.material.length > 0 ? (
-                            this.renderCDModal()
+                        {this.props.isLoading ? (
+                            <Progressing size={32} fillColor="var(--N500)" />
                         ) : (
                             <>
-                                <div className="trigger-modal__header">
-                                    <h1 className="modal__title">{this.renderCDModalHeader()}</h1>
-                                    <button type="button" className="dc__transparent" onClick={this.props.closeCDModal}>
-                                        <img alt="close" src={close} />
-                                    </button>
-                                </div>
-                                <EmptyStateCdMaterial materialType={this.props.materialType} />
+                                {this.props.material.length > 0 ? (
+                                    this.renderCDModal()
+                                ) : (
+                                    <>
+                                        <div className="trigger-modal__header">
+                                            <h1 className="modal__title">{this.renderCDModalHeader()}</h1>
+                                            <button
+                                                type="button"
+                                                className="dc__transparent"
+                                                onClick={this.props.closeCDModal}
+                                            >
+                                                <img alt="close" src={close} />
+                                            </button>
+                                        </div>
+                                        <EmptyStateCdMaterial materialType={this.props.materialType} />
+                                    </>
+                                )}
                             </>
                         )}
                     </div>
