@@ -47,7 +47,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [syncListData, setSyncListData] = useState<boolean>()
 
     // API master data
-    const [projectListRes, setProjectListRes] = useState([])
     const [environmentClusterListRes, setEnvironmentClusterListRes] = useState<EnvironmentClusterList>()
 
     // search
@@ -90,7 +89,6 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         // fetch master filters data and some master data
         getInitData(payloadParsedFromUrl, serverMode)
             .then((initData) => {
-                setProjectListRes(initData.projectsRes)
                 setEnvironmentClusterListRes(initData.environmentClusterAppListData)
                 setMasterFilters(initData.filters)
                 setDataStateType(AppListViewType.LIST)

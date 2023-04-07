@@ -9,11 +9,7 @@ import {
     createChartValues as createChartValuesService,
 } from './charts.service'
 import {
-    getChartRepoList,
     getAvailableCharts,
-    getTeamList,
-    getEnvironmentListMin,
-    isGitOpsModuleInstalledAndConfigured,
     getChartRepoListMin,
 } from '../../services/service'
 import {getTeamListMin} from '@devtron-labs/devtron-fe-common-lib'

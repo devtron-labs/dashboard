@@ -1,6 +1,6 @@
-import { getEnvironmentListMin as getEnvironmentList, getClusterListMinWithoutAuth as getClusterList, getNamespaceListMin as getNamespaceList, getAppFilters } from '../../../services/service';
-import {Routes, SERVER_MODE} from '../../../config';
-import {get, ResponseType, getTeamListMin as getProjectList} from '@devtron-labs/devtron-fe-common-lib';
+import { getNamespaceListMin as getNamespaceList, getAppFilters } from '../../../services/service';
+import {Routes} from '../../../config';
+import {get, ResponseType} from '@devtron-labs/devtron-fe-common-lib';
 import { EnvironmentListHelmResult, EnvironmentHelmResult, Cluster, EnvironmentListHelmResponse} from '../../../services/service.types';
 import { APP_STATUS } from '../config';
 
@@ -40,15 +40,15 @@ export interface AppEnvironmentDetail {
 }
 
 export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Promise<any> => {
-    // cluster vs namespace 
+    // cluster vs namespace
     let _clusterVsNamespaceMap = buildClusterVsNamespace(payloadParsedFromUrl.namespaces.join(','));
     let _clusterIds = [..._clusterVsNamespaceMap.keys()].join(',');
-    
+
     return Promise.all([getAppFilters() , (_clusterIds ? getNamespaceList(_clusterIds) : { result: undefined})]).then(([appFilterList, namespaceListRes]) => {
         const projectList = appFilterList.result?.Teams
         const environmentList = appFilterList.result?.Environments
         const clusterList = appFilterList.result?.Clusters
-       
+
         // push apps with no projects in project res
         if(projectList && Array.isArray(projectList)){
             projectList.push({

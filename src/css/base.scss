@@ -2916,8 +2916,7 @@ textarea::placeholder {
         animation-iteration-count: infinite;
         animation-name: shimmer-loading;
         animation-timing-function: linear;
-        background-color: #f6f7f8;
-        background: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
+        background-color: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
         background-size: 800px 104px;
         position: relative;
         height: 16px;
@@ -2931,8 +2930,7 @@ textarea::placeholder {
     animation-iteration-count: infinite;
     animation-name: shimmer-loading;
     animation-timing-function: linear;
-    background-color: #f6f7f8;
-    background: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
+    background-color: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
     background-size: 800px 104px;
     position: relative;
 }

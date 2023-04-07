@@ -1,5 +1,5 @@
 import { get, post, ResponseType, APIOptions, sortCallback, TeamList } from '@devtron-labs/devtron-fe-common-lib'
-import { ACCESS_TYPE_MAP, ModuleNameMap, Routes, SERVER_MODE } from '../config'
+import { ACCESS_TYPE_MAP, ModuleNameMap, Routes } from '../config'
 import moment from 'moment'
 import {
     CDPipelines,
@@ -15,11 +15,9 @@ import {
     ConfigOverrideWorkflowDetailsResponse,
 } from './service.types'
 import { Chart } from '../components/charts/charts.types'
-import { fetchWithFullRoute } from './fetchWithFullRoute'
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackManager.type'
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
-import { CdPipeline } from '../components/app/details/triggerView/types'
 
 export function getAppConfigStatus(appId: number, isJobView?: boolean): Promise<any> {
     return get(`${Routes.APP_CONFIG_STATUS}?app-id=${appId}${isJobView ? '&appType=2' : ''}`)
