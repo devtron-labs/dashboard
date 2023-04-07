@@ -5,7 +5,7 @@ import {Option, PodColumnOption} from '../../v2/common/ReactSelect.utils'
 import { ResourceFilterOptionsProps } from '../Types'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
-import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
+import { ReactComponent as PodColumnIcon } from '../../../assets/icons/ic-nav-gear.svg'
 import { ClusterOptionWithIcon, ResourceValueContainerWithIcon, tippyWrapper } from './ResourceList.component'
 import {
     ALL_NAMESPACE_OPTION,
@@ -209,7 +209,7 @@ function ResourceFilterOptions({
                             ValueContainer: ResourceValueContainerWithIcon,
                         }}
                     />
-                    {selectedResource?.gvk?.Kind == 'Pod' && resourceList?.headers?.length > 0 &&
+                    {selectedResource?.gvk?.Kind == 'Pod' && resourceList?.headers?.length > 0 && (
                         <ReactSelect
                             placeholder="Select Columns"
                             className="ml-8"
@@ -224,15 +224,17 @@ function ResourceFilterOptions({
                             value={selectedColumns}
                             components={{
                                 IndicatorSeparator: null,
-                                DropdownIndicator:null,
-                                Option: (props) => <PodColumnOption {...props} />,
+                                DropdownIndicator: null,
+                                Option: (props) => <PodColumnOption {...props} className="cn-7"/>,
                                 MenuList: podColumnOptionsMenuList,
-                                Control: () => <div onClick={() => setOpenMenu(!openMenu)} className="flex">
-                                    <GlobalConfigIcon className="icon-dim-24 scn-6"/>
-                                </div>
+                                Control: () => (
+                                    <div onClick={() => setOpenMenu(!openMenu)} className="flex">
+                                        <PodColumnIcon className="icon-dim-24 scn-6" />
+                                    </div>
+                                ),
                             }}
                         />
-                    }
+                    )}
                 </ConditionalWrap>
             </div>
         </div>

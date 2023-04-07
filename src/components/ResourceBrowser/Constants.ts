@@ -52,7 +52,7 @@ export const FILTER_MULTI_SELECT_STYLES = {
         right: '0px',
         zIndex: 9999,
         textAlign: 'left',
-
+        display: 'inline'
     }),
 }
 
