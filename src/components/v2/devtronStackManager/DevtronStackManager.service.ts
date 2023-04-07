@@ -29,10 +29,6 @@ const getSavedModuleStatus = (): Record<string, ModuleInfo> => {
 }
 
 export const getAllModulesInfo = async (): Promise<Record<string, ModuleInfo>> => {
-    // const _savedModuleStatusMap = getSavedModuleStatus()
-    // if (Object.keys(_savedModuleStatusMap).length) {
-    //     return Promise.resolve(_savedModuleStatusMap)
-    // }
     const { result } = await get(Routes.MODULE_INFO_API) // to fetch all modules
     if (result) {
         const _moduleStatusMap = {}

@@ -41,7 +41,6 @@ export default function DevtronStackManager({
 }) {
     const { serverMode, moduleInInstallingState, setModuleInInstallingState, installedModuleMap } =
         useContext(mainContext)
-    const updateToastRef = useRef(null)
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
     const [stackDetails, setStackDetails] = useState<StackDetailsType>({

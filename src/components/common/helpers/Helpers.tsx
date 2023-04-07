@@ -14,7 +14,6 @@ import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
-import { toast } from 'react-toastify';
 import { ToastBody3 as UpdateToast } from '../ToastBody'
 
 const commandLineParser = require('command-line-parser')
