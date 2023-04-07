@@ -350,9 +350,7 @@ function Cluster(
 
     const renderNoEnvironmentTab = () => {
         return (
-            <div
-                className="br-4 dashed dc__border flex bc-n50 pb-16 pt-16 m-16 fs-12 fw-4"
-            >
+            <div className="br-4 dashed dc__border flex bc-n50 pb-16 pt-16 m-16 fs-12 fw-4">
                 <div className="dc__align-center">
                     <div className="fw-6">No Environments Added</div>
                     <div>This cluster doesn't have any environments yet</div>
@@ -419,7 +417,10 @@ function Cluster(
                                             />
                                         </div>
                                         <div className="app-status-card__divider" />
-                                        <List.DropDown src={<PencilEdit onClick={handleEdit} />} />
+                                        <Tippy className="default-tt cursor" arrow={false} content={'Edit Cluster'}>
+                                            {<PencilEdit onClick={handleEdit} />}
+                                        </Tippy>
+                                        {/* <List.DropDown src={<PencilEdit onClick={handleEdit} />} /> */}
                                     </List>
                                 </div>
                             )}
@@ -452,7 +453,7 @@ function Cluster(
                         newEnvs.length > 1 ? (
                             <div className="cluster-token-container">
                                 <div className="cluster-list" style={{ border: 0 }}>
-                                    <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-6 pb-6 pr-20 pl-20 dc__uppercase">
+                                    <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-6 pb-6 pr-20 pl-20 dc__uppercase flex">
                                         <div></div>
                                         <div className="cluster-list__enviroment_name">ENVIRONMENT</div>
                                         <div className="cluster-list__name_space">NAMESPACE</div>
@@ -480,7 +481,21 @@ function Cluster(
                                                         {environment_name && <Database className="icon-dim-24" />}
                                                     </div>
 
-                                                    <div className="cluster-list__enviroment_name">
+                                                    <div
+                                                        className="cluster-list__enviroment_name"
+                                                        onClick={() => {
+                                                            setEnvironment({
+                                                                id,
+                                                                environment_name,
+                                                                cluster_id: clusterId,
+                                                                namespace,
+                                                                prometheus_url,
+                                                                isProduction,
+                                                                description,
+                                                            })
+                                                            setShowWindow(true)
+                                                        }}
+                                                    >
                                                         {environment_name}
 
                                                         {isProduction ? (
@@ -833,7 +848,7 @@ function ClusterForm({
                 {id && <Pencil color="#363636" className="icon-dim-24 dc__vertical-align-middle mr-8" />}
                 <span className="fw-6 fs-14 cn-9">{clusterTitle()}</span>
             </div>
-            <div className="form__row">
+            <div className="">
                 <CustomInput
                     autoComplete="off"
                     name="cluster_name"
@@ -845,7 +860,7 @@ function ClusterForm({
                     placeholder="Cluster name"
                 />
             </div>
-            <div className="form__row mb-8-imp">
+            <div className="mb-8-imp">
                 <CustomInput
                     autoComplete="off"
                     name="url"
@@ -856,7 +871,7 @@ function ClusterForm({
                     placeholder="Enter server URL"
                 />
             </div>
-            <div className="form__row form__row--bearer-token flex column left top">
+            <div className="zform__row--bearer-token flex column left top">
                 <div className="bearer-token">
                     <ResizableTextarea
                         className="dc__resizable-textarea__with-max-height"
@@ -898,7 +913,7 @@ function ClusterForm({
                     {(state.userName.error || state.password.error || state.endpoint.error) && (
                         <PrometheusRequiredFieldInfo />
                     )}
-                    <div className="form__row">
+                    <div className="">
                         <CustomInput
                             autoComplete="off"
                             name="endpoint"
@@ -908,7 +923,7 @@ function ClusterForm({
                             label="Prometheus endpoint*"
                         />
                     </div>
-                    <div className="form__row">
+                    <div className="">
                         <span className="form__label">Authentication Type*</span>
                         <RadioGroup
                             value={state.authType.value}
@@ -920,7 +935,7 @@ function ClusterForm({
                         </RadioGroup>
                     </div>
                     {state.authType.value === AuthenticationType.BASIC ? (
-                        <div className="form__row form__row--flex">
+                        <div className="form__row--flex">
                             <div className="w-50 mr-8">
                                 <CustomInput
                                     name="userName"
@@ -941,7 +956,7 @@ function ClusterForm({
                             </div>
                         </div>
                     ) : null}
-                    <div className="form__row">
+                    <div className="">
                         <span className="form__label">TLS Key</span>
                         <ResizableTextarea
                             className="dc__resizable-textarea__with-max-height w-100"
@@ -950,7 +965,7 @@ function ClusterForm({
                             onChange={handleOnChange}
                         />
                     </div>
-                    <div className="form__row">
+                    <div className="">
                         <span className="form__label">TLS Certificate</span>
                         <ResizableTextarea
                             className="dc__resizable-textarea__with-max-height w-100"
@@ -1045,7 +1060,7 @@ function Environment({
         onValidation,
     )
     const [deleting, setDeleting] = useState(false)
-    const [confirmation, toggleConfirmation] = useState(false)
+    const [confirmation, toggleConfirmation] = useState<boolean>(false)
 
     const getEnvironmentPayload = () => {
         return {
@@ -1078,8 +1093,9 @@ function Environment({
 
     const clusterDelete = (): void => {
         setDeleting(true)
-        reload()
-        hideClusterDrawer()
+        //reload()
+        //hideClusterDrawer()
+
     }
 
     const deleteEnv = (): void => {
@@ -1177,6 +1193,7 @@ function Environment({
                         >
                             <DeleteEnvironment className="icon-dim-16 mr-8" />
                             {deleting ? <Progressing /> : 'Delete Environment'}
+                             {/* {deleting && 'Delete Environment'} */}
                         </button>
                     )}
                     <button

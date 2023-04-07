@@ -44,6 +44,7 @@ function DeleteComponent({
     const handleConfirmation = () => {
         setCannotDeleteDialogModal(false)
         toggleConfirmation(false)
+        reload()
     }
 
     const renderCannotDeleteDialogModal = () => {

@@ -12,6 +12,7 @@
             text-align: left;
             width: 170px;
             display: flex;
+            
 
             .cluster-list__prod {
                 margin-left: 5px;
@@ -49,8 +50,9 @@
 
     .cluster-list-row {
         display: grid;
-        grid-template-columns: 24px 170px 328px auto minmax(80px, 90px);
+        grid-template-columns: 24px auto auto 350px 70px;
         grid-column-gap: 10px;
+        // color: var(--B500);
 
         .cluster-key-expired-icon {
             path:first-of-type {
@@ -62,7 +64,7 @@
             }
         }
     }
-
+    
     .cluster__row-actions {
         display: none;
     }
@@ -198,6 +200,7 @@
     display: flex;
     flex-direction: row;
     grid-column-gap: 0;
+    padding-right: 0;
 }
 
 .description {
