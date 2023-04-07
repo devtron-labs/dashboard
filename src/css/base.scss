@@ -2264,11 +2264,11 @@ textarea,
     width: 64px;
 }
 
-.w-80 {
+.w-80px {
     width: 80px;
 }
 
-.w-100-px {
+.w-100px {
     width: 100px;
 }
 
@@ -2916,7 +2916,7 @@ textarea::placeholder {
         animation-iteration-count: infinite;
         animation-name: shimmer-loading;
         animation-timing-function: linear;
-        background-color: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
+        background: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
         background-size: 800px 104px;
         position: relative;
         height: 16px;
@@ -2930,7 +2930,7 @@ textarea::placeholder {
     animation-iteration-count: infinite;
     animation-name: shimmer-loading;
     animation-timing-function: linear;
-    background-color: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
+    background: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
     background-size: 800px 104px;
     position: relative;
 }
