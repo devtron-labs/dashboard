@@ -39,13 +39,11 @@ export const createAppListPayload = (payloadParsedFromUrl, environmentClusterLis
 
     payloadParsedFromUrl.namespaces.forEach((item) => {
         const [cluster, namespace] = item.split('_')
-
-        if (+cluster) {
-            const envList = clustersMap.get(+cluster) || []
-            environments = [...environments, ...envList]
-        }
         if (namespace) {
             environments.push(namespaceMap.get(namespace))
+        }else if (+cluster) {
+            const envList = clustersMap.get(+cluster) || []
+            environments = [...environments, ...envList]
         }
     })
 
