@@ -175,7 +175,7 @@ export class AppListView extends Component<AppListViewProps> {
                                             )}
                                         </div>
                                         <div className="app-list__cell app-list__cell--name">
-                                            <p className="dc__truncate-text  m-0 value">{app.name}</p>
+                                            <p className="dc__truncate-text  m-0 value" data-testid="app-list-for-sort">{app.name}</p>
                                         </div>
                                         {this.props.isArgoInstalled && (
                                             <div className="app-list__cell app-list__cell--app_status" data-testid="devtron-app-status">
