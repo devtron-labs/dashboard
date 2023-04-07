@@ -142,7 +142,7 @@ export default function AppDetail() {
                     <SourceInfo appDetails={null} environments={otherEnvsResult?.result} environment={environment} />
                 </div>
             )}
-
+            {!params.envId && otherEnvsLoading && <Progressing pageLoader fullHeight />}
             <Route path={`${path.replace(':envId(\\d+)?', ':envId(\\d+)')}`}>
                 <Details
                     key={params.appId + '-' + params.envId}
@@ -156,7 +156,6 @@ export default function AppDetail() {
                     isAppDeleted={isAppDeleted}
                 />
             </Route>
-
             {otherEnvsResult && !otherEnvsLoading && renderAppNotConfigured()}
         </div>
     )
