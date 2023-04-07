@@ -36,7 +36,7 @@ export default function BulkCDTrigger({
     const [unauthorizedAppList, setUnauthorizedAppList] = useState<Record<number, boolean>>({})
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
-    const closeBulkCDModal = (e) => {
+    const closeBulkCDModal = (e): void => {
         abortControllerRef.current.abort()
         closePopup(e)
     }

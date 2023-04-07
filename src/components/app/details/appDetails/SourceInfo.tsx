@@ -77,6 +77,18 @@ export function SourceInfo({
         })
     }
 
+    const onClickShowCommitInfo = (): void => {
+        showCommitInfo(true)
+    }
+
+    const onClickShowUrlInfo = (): void => {
+        showUrlInfo(true)
+    }
+
+    const onClickShowHibernateModal = (): void => {
+        showHibernateModal(isHibernated ? 'resume' : 'hibernate')
+    }
+
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         return (
             <div className="flex left w-100 mb-16">
@@ -116,7 +128,7 @@ export function SourceInfo({
                                 {showUrlInfo && (
                                     <button
                                         className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
-                                        onClick={(e) => showUrlInfo(true)}
+                                        onClick={onClickShowUrlInfo}
                                     >
                                         <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
                                         URLs
@@ -125,7 +137,7 @@ export function SourceInfo({
                                 {showCommitInfo && (
                                     <button
                                         className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
-                                        onClick={(e) => showCommitInfo(true)}
+                                        onClick={onClickShowCommitInfo}
                                     >
                                         <CommitIcon className="icon-dim-16 mr-6" />
                                         commit info
@@ -134,7 +146,7 @@ export function SourceInfo({
                                 {showHibernateModal && (
                                     <button
                                         className="cta cta-with-img small cancel fs-12 fw-6"
-                                        onClick={(e) => showHibernateModal(isHibernated ? 'resume' : 'hibernate')}
+                                        onClick={onClickShowHibernateModal}
                                     >
                                         <ScaleDown
                                             className={`icon-dim-16 mr-6 rotate`}
