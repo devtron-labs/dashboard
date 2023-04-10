@@ -229,6 +229,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
                         className="tab-list__tab-link"
+                        data-testid= "deployment-matrix"
                         data-action="Deployment Metrics Clicked"
                         onClick={handleEventClick}
                     >
