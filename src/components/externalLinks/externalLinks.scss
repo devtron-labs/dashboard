@@ -37,15 +37,17 @@
         box-shadow: inset 0 -1px 0 0 var(--N200);
     }
 
-    .add-link.cta {
-        width: 108px;
-        height: 36px;
-        font-size: 13px;
-        padding: 0;
+    .add-link {
+        &.cta {
+            width: 108px;
+            height: 36px;
+            font-size: 13px;
+            padding: 0;
 
-        svg {
-            width: 16px;
-            height: 16px;
+            svg {
+                width: 16px;
+                height: 16px;
+            }
         }
     }
 
@@ -55,8 +57,12 @@
         padding: 20px 24px;
 
         .cta-search-filter-container {
-            .add-link.cta {
-                height: 32px;
+            margin-top: 20px;
+
+            .add-link {
+                .cta {
+                    height: 32px;
+                }
             }
         }
 

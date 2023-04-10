@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react'
+import { showError, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppOtherEnvironment, getCDConfig as getCDPipelines } from '../../../../services/service'
-import { Progressing, showError, useAsync, useInterval, useScrollable, mapByKey, asyncWrap } from '../../../common'
+import { useAsync, useInterval, useScrollable, mapByKey, asyncWrap } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
-import Reload from '../../../Reload/Reload'
 import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
 import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHistoryConfigList.component'
 import './cdDetail.scss'
@@ -274,6 +274,7 @@ export const TriggerOutput: React.FC<{
                             message={triggerDetails.message}
                             podStatus={triggerDetails.podStatus}
                             stage={triggerDetails.stage}
+                            artifact={triggerDetails.artifact}
                         />
                         <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
                             {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppType.helm && (
@@ -439,6 +440,7 @@ const HistoryLogs: React.FC<{
                                     artifact={triggerDetails.artifact}
                                     blobStorageEnabled={triggerDetails.blobStorageEnabled}
                                     getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
+                                    isArtifactUploaded={triggerDetails.isArtifactUploaded}
                                 />
                             </Route>
                         )}

@@ -1,14 +1,15 @@
 import React from 'react'
 import { SERVER_MODE } from '../../../../config'
-import { getEnvironmentListHelmApps, getEnvironmentListMin, getTeamListMin } from '../../../../services/service'
-import { EnvironmentListHelmResult, Teams } from '../../../../services/service.types'
+import { getEnvironmentListHelmApps, getEnvironmentListMin } from '../../../../services/service'
+import { EnvironmentListHelmResult } from '../../../../services/service.types'
 import {
     generateHelmManifest,
     getChartValuesCategorizedListParsed,
     getChartVersionsMin,
     getReadme,
 } from '../../../charts/charts.service'
-import { createClusterEnvGroup, showError, sortCallback, sortObjectArrayAlphabetically } from '../../../common'
+import { showError, Teams, sortCallback, getTeamListMin } from '@devtron-labs/devtron-fe-common-lib'
+import { createClusterEnvGroup, sortObjectArrayAlphabetically } from '../../../common'
 import { ChartKind, ChartValuesViewAction, ChartValuesViewActionTypes } from '../chartValuesDiff/ChartValuesView.type'
 import { convertSchemaJsonToMap, getAndUpdateSchemaValue } from '../chartValuesDiff/ChartValuesView.utils'
 

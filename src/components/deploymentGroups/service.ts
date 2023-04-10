@@ -1,5 +1,5 @@
 import { Routes } from '../../config';
-import { get, post, trash, put } from '../../services/api';
+import { get, post, trash, put } from '@devtron-labs/devtron-fe-common-lib';
 import { CDModalTab } from '../app/service';
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common';
 

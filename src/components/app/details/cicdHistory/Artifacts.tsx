@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { showError, copyToClipboard } from '../../../common'
+import { showError, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { copyToClipboard } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'
@@ -10,7 +11,6 @@ import docker from '../../../../assets/icons/misc/docker.svg'
 import folder from '../../../../assets/icons/ic-folder.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
 import Tippy from '@tippyjs/react'
-import EmptyState from '../../../EmptyState/EmptyState'
 import { EmptyView } from './History.components'
 import '../cIDetails/ciDetails.scss'
 import { ArtifactType, CIListItemType, CopyTippyWithTextType } from './types'
@@ -104,7 +104,7 @@ export default function Artifacts({
                    </div>
                </CIListItem>
                 )}
-                {isArtifactUploaded && blobStorageEnabled && getArtifactPromise && (
+                {blobStorageEnabled && getArtifactPromise && (!isJobView || isArtifactUploaded) && (
                     <CIListItem type="report">
                         <div className="flex column left">
                             <div className="cn-9 fs-14">Reports.zip</div>

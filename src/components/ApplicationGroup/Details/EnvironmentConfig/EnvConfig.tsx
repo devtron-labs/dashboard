@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Progressing, useAsync } from '../../../common'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { useAsync } from '../../../common'
 import EnvironmentOverride from '../../../EnvironmentOverride/EnvironmentOverride'
 import { getConfigAppList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, ConfigAppList } from '../../AppGroup.types'
@@ -25,7 +26,7 @@ export default function EnvConfig({ filteredApps }: AppGroupDetailDefaultType) {
                 .sort((a, b) => a.name.localeCompare(b.name))
             setEnvAppList(_envAppList)
             if (!appId) {
-                history.push(`${url}/${_envAppList[0].id}`)
+                history.replace(`${url}/${_envAppList[0].id}`)
             } else if (!_filteredAppMap.get(+appId)) {
                 const oldUrlSubstring = `/edit/${appId}`
                 const newUrlSubstring = `/edit/${_envAppList[0].id}`
