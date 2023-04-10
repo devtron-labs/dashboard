@@ -135,6 +135,7 @@ export default function ConfigureLinkAction({
                         MenuList: ToolsMenuList,
                     }}
                     styles={ToolSelectStyles}
+                    classNamePrefix="link-icon__select"
                 />
             </div>
             <div className="configure-link-action-content">

@@ -79,7 +79,7 @@ const ConfigMap = ({ respondOnSuccess, ...props }) => {
     let configData = [{ id: null, name: null }].concat(configmap?.configData)
     return (
         <div className="form__app-compose">
-            <h1 className="form__title form__title--artifacts">ConfigMaps</h1>
+            <h1 data-testid="configmaps-heading" className="form__title form__title--artifacts">ConfigMaps</h1>
             <p className="form__subtitle form__subtitle--artifacts">
                 ConfigMap is used to store common configuration variables, allowing users to unify environment variables
                 for different modules in a distributed system into one object.&nbsp;
@@ -145,6 +145,7 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
                     <label>
                         {keyLabel}
                         <input
+                            data-testid={`secrets-gui-key-textbox-${index}`}
                             type="text"
                             autoComplete="off"
                             placeholder=""
@@ -237,7 +238,7 @@ export function Tab({ title, active, onClick }) {
     return (
         <nav className={`form__tab white-card flex left ${active ? 'active' : ''}`} onClick={(e) => onClick(title)}>
             <div className="tab__selector"></div>
-            <div className="tab__title">{title}</div>
+            <div data-testid={`configmap-use-env-variable-bullet-button-${title}`} className="tab__title">{title}</div>
         </nav>
     )
 }
@@ -310,6 +311,7 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
 
     return (
         <textarea
+            data-testid="secrets-gui-value-textbox"
             ref={(el) => (_textRef.current = el)}
             value={text}
             placeholder={placeholder}
@@ -337,7 +339,7 @@ export function ListComponent({ title, name = '', subtitle = '', onClick, classN
                 <File className="configuration-list__logo icon-dim-24" />
             )}
             <div className="configuration-list__info">
-                <div className="configuration-list__title">{title}</div>
+                <div data-testid="add-configmap-button" className="configuration-list__title">{title}</div>
                 {subtitle && <div className="configuration-list__subtitle">{subtitle}</div>}
             </div>
             {collapsible && <img className="configuration-list__arrow pointer" alt="" src={arrowTriangle} />}
@@ -677,11 +679,11 @@ export function ConfigMapForm({
                             toggleExternalValues(e.target.value !== '')
                         }}
                     >
-                        <Select.Button dataTestId="data-type-select-control">
+                        <Select.Button dataTestIdDropdown = "select-configmap-datatype-dropdown"  dataTestId="data-type-select-control">
                             {isExternalValues ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
                         </Select.Button>
                         {Object.entries(EXTERNAL_TYPES).map(([value, name]) => (
-                            <Select.Option key={value} value={value}>
+                            <Select.Option dataTestIdMenuList = {`select-configmap-datatype-dropdown-${name}`} key={value} value={value}>
                                 {name}
                             </Select.Option>
                         ))}
@@ -703,6 +705,7 @@ export function ConfigMapForm({
             <div className="form__row">
                 <label className="form__label">Name*</label>
                 <input
+                    data-testid="configmap-name-textbox"
                     value={configName.value}
                     autoComplete="off"
                     autoFocus
@@ -711,7 +714,6 @@ export function ConfigMapForm({
                     className={`form__input`}
                     placeholder={`random-configmap`}
                     disabled={isUpdate}
-                    data-testid="create-config-name-input"
                 />
                 {configName.error && <label className="form__error">{configName.error}</label>}
             </div>
@@ -725,6 +727,7 @@ export function ConfigMapForm({
             {selectedTab === 'Data Volume' && (
                 <div className="form__row">
                     <CustomInput
+                        dataTestid="configmap-volume-path-textbox"
                         value={volumeMountPath.value}
                         autoComplete="off"
                         tabIndex={5}
@@ -882,7 +885,7 @@ export function ConfigMapForm({
                 <>
                     {yamlMode ? (
                         <div className="yaml-container">
-                            <CodeEditor
+                        <CodeEditor
                                 value={yaml}
                                 mode="yaml"
                                 inline
@@ -936,7 +939,7 @@ export function ConfigMapForm({
                 </>
             )}
             <div className="form__buttons">
-                <button type="button" className="cta" onClick={handleSubmit} data-testid="click-save-config-map">
+                <button data-testid={`configmap-save-button-${name}`} type="button" className="cta" onClick={handleSubmit}>
                     {loading ? <Progressing /> : `${name ? 'Update' : 'Save'} ConfigMap`}
                 </button>
             </div>

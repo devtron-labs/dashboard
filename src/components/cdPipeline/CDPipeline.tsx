@@ -798,10 +798,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     Add one or more deployment strategies. You can choose from selected strategy while deploying
                     manually to this environment.
                 </p>
-                <Select rootClassName="mb-16"  onChange={(e) => this.selectStrategy(e.target.value)}>
+                <Select rootClassName="mb-16" onChange={(e) => this.selectStrategy(e.target.value)}>
                     <Select.Button rootClassName="select-button--deployment-strategy">
                         <span>
-                            <Add className="icon-dim-24 mr-16 fcb-5 dc__vertical-align-middle" />
+                            <Add className="icon-dim-24 mr-16 fcb-5 dc__vertical-align-middle"/>
                             Add Deployment Strategy
                         </span>
                     </Select.Button>
@@ -1086,6 +1086,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     )}
                 >
                     <button
+                        data-testid = "cd-delete-pipeline-button"
                         type="button"
                         className={`cta cta--workflow delete mr-16`}
                         disabled={!canDeletePipeline}

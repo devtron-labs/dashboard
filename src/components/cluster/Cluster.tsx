@@ -939,6 +939,7 @@ function Environment({
                 </div>
                 <div className="form__row">
                     <CustomInput
+                        dataTestid="environment-name"
                         autoComplete="off"
                         disabled={!!environment_name}
                         name="environment_name"
@@ -950,6 +951,7 @@ function Environment({
                 </div>
                 <div className="form__row form__row--namespace">
                     <CustomInput
+                        dataTestid="enter-namespace"
                         disabled={!!namespace}
                         name="namespace"
                         value={state.namespace.value}
@@ -966,6 +968,7 @@ function Environment({
                                 <input
                                     type="radio"
                                     name="isProduction"
+                                    data-testid = "production"
                                     checked={state.isProduction.value === 'true'}
                                     value="true"
                                     onChange={handleOnChange}
@@ -997,7 +1000,7 @@ function Environment({
                             {deleting ? <Progressing /> : 'Delete'}
                         </button>
                     )}
-                    <button className="cta" type="submit" disabled={loading}>
+                    <button className="cta" data-testid = "save-and-update-environment" type="submit" disabled={loading}>
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}
                     </button>
                 </div>

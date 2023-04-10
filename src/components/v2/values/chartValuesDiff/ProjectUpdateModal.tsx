@@ -148,6 +148,7 @@ export default function ProjectUpdateModal({
                         disabled={isSubmitting}
                         onClick={handleSaveAction}
                         tabIndex={5}
+                        data-testid="overview-project-save-button"
                     >
                         {isSubmitting ? <Progressing /> : 'Save'}
                     </button>
