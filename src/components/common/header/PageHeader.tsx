@@ -70,12 +70,6 @@ function PageHeader({
         setExpiryDate(+localStorage.getItem('clickedOkay'))
     }, [])
 
-    // useEffect(() => {
-    //     if (!window._env_.K8S_CLIENT) {
-    //         getCurrentServerInfo()
-    //     }
-    // }, [])
-
     const onClickLogoutButton = () => {
         setShowLogOutCard(!showLogOutCard)
         if (showHelpCard) {
