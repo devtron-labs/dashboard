@@ -13,9 +13,13 @@ import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forwa
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check.svg'
 import { ReactComponent as ChevronDown } from '../../../../assets/icons/appstatus/ic-chevron-down.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, TIMELINE_STATUS, URLS } from '../../../../config'
-import { approvalMetadata, getAlphabetIcon } from '../../../common'
+import { getAlphabetIcon } from '../../../common'
 
-export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppType }: DeploymentDetailStepsType) {
+export default function DeploymentDetailSteps({
+    deploymentStatus,
+    deploymentAppType,
+    userApprovalMetadata,
+}: DeploymentDetailStepsType) {
     const history = useHistory()
     const { url } = useRouteMatch()
     const { appId, envId, triggerId } = useParams<{ appId: string; envId?: string; triggerId?: string }>()
@@ -100,45 +104,47 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
         </div>
     ) : (
         <div className="dc__mxw-1000 min-w-800">
-            <div className="deployment-approval-container pl-20 pr-20 pt-20">
-                <div className="deployment-status-breakdown-row pt-8 pb-8 pl-8 pr-8 bcn-0 bw-1 border-collapse en-2">
-                    <Check className="icon-dim-20 green-tick" />
-                    <span className="ml-12 mr-12 fs-13">
-                        <span>Approval requested by {approvalMetadata.requestedUserData.userEmail}</span>
-                    </span>
-                    {/* <span className="pl-8 pr-8 pt-4 pb-4 br-12 bcg-1 cg-7">Wed, 05 Apr 2023, 05:03 PM</span> */}
-                </div>
-                <div className="vertical-connector" />
-                <div className="deployment-status-breakdown-row pt-8 pb-8 pl-8 pr-8 bcn-0 bw-1 border-collapse en-2">
-                    <Check className="icon-dim-20 green-tick" />
-                    <span className="ml-12 mr-12 fs-13">
-                        <span>{approvalMetadata.approvedBy.length} Approved</span>
-                    </span>
-                    <ChevronDown
-                        style={{
-                            marginLeft: 'auto',
-                            ['--rotateBy' as any]: `${180 * Number(approverDetailsExpanded)}deg`,
-                        }}
-                        className="icon-dim-24 rotate pointer"
-                        onClick={toggleApproverDetailsExpanded}
-                    />
-                </div>
-                {approverDetailsExpanded && (
-                    <div className="bcn-0 en-2 detail-tab_border bw-1">
-                        <ol className="pt-12 pb-4 pl-12 pr-12 mb-0 dc__list-style-none">
-                            {approvalMetadata.approvedBy.map((_approver, idx) => {
-                                return (
-                                    <li key={_approver.userEmail} className="flex left mb-8">
-                                        {getAlphabetIcon(_approver.userEmail)}
-                                        {_approver.userEmail}
-                                    </li>
-                                )
-                            })}
-                        </ol>
+            {userApprovalMetadata && (
+                <div className="deployment-approval-container pl-20 pr-20 pt-20">
+                    <div className="deployment-status-breakdown-row pt-8 pb-8 pl-8 pr-8 bcn-0 bw-1 border-collapse en-2">
+                        <Check className="icon-dim-20 green-tick" />
+                        <span className="ml-12 mr-12 fs-13">
+                            <span>Approval requested by {userApprovalMetadata.requestedUserData.userEmail}</span>
+                        </span>
+                        {/* <span className="pl-8 pr-8 pt-4 pb-4 br-12 bcg-1 cg-7">Wed, 05 Apr 2023, 05:03 PM</span> */}
                     </div>
-                )}
-                <div className="vertical-connector" />
-            </div>
+                    <div className="vertical-connector" />
+                    <div className="deployment-status-breakdown-row pt-8 pb-8 pl-8 pr-8 bcn-0 bw-1 border-collapse en-2">
+                        <Check className="icon-dim-20 green-tick" />
+                        <span className="ml-12 mr-12 fs-13">
+                            <span>{userApprovalMetadata.approvedUsersData.length} Approved</span>
+                        </span>
+                        <ChevronDown
+                            style={{
+                                marginLeft: 'auto',
+                                ['--rotateBy' as any]: `${180 * Number(approverDetailsExpanded)}deg`,
+                            }}
+                            className="icon-dim-24 rotate pointer"
+                            onClick={toggleApproverDetailsExpanded}
+                        />
+                    </div>
+                    {approverDetailsExpanded && (
+                        <div className="bcn-0 en-2 detail-tab_border bw-1">
+                            <ol className="pt-12 pb-4 pl-12 pr-12 mb-0 dc__list-style-none">
+                                {userApprovalMetadata.approvedUsersData.map((_approver, idx) => {
+                                    return (
+                                        <li key={_approver.userEmail} className="flex left mb-8">
+                                            {getAlphabetIcon(_approver.userEmail)}
+                                            {_approver.userEmail}
+                                        </li>
+                                    )
+                                })}
+                            </ol>
+                        </div>
+                    )}
+                    <div className="vertical-connector" />
+                </div>
+            )}
             <DeploymentStatusDetailBreakdown
                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                 streamData={null}

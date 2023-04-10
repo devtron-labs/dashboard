@@ -1237,20 +1237,3 @@ export const getAlphabetIcon = (str: string) => {
 export const getEmptyArrayOfLength = (length: number) => {
     return Array.from({ length })
 }
-
-export const approvalMetadata = {
-    approvalRequestId: 123,
-    approvalRuntimeState: 'Consumed', // Init/Consumed/Requested
-    requestedUserData: {
-        dataId: 12,
-        userEmail: 'vivek@devtron.ai',
-        userActionTime: 12323123213,
-        userComment: 'dummy-comment',
-    },
-    approvedBy: [
-        { dataId: 13, userEmail: 'kripansh@devtron.ai', userActionTime: 12343123213, userComment: 'dummy-comment' },
-        { dataId: 14, userEmail: 'nishant@devtron.ai', userActionTime: 13223123213, userComment: 'dummy-comment' },
-        { dataId: 15, userEmail: 'sohel@devtron.ai', userActionTime: 13323123213, userComment: 'dummy-comment' },
-    ],
-    artifactTriggeredBy: 'vivek@devtron.ai',
-}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { showError, EmptyState, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
-import { approvalMetadata, copyToClipboard, getAlphabetIcon, getRandomColor } from '../../../common'
+import { copyToClipboard, getAlphabetIcon } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'
@@ -202,7 +202,7 @@ const getApprovedTippyContent = (approvalRequested, approvedBy, deployedBy) => {
     )
 }
 
-export const CIListItem = ({ type, children }: CIListItemType) => {
+export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children }: CIListItemType) => {
     return (
         <div className={`mb-16 ci-artifact ci-artifact--${type}`}>
             {type === 'approved-artifact' ? (
@@ -214,9 +214,9 @@ export const CIListItem = ({ type, children }: CIListItemType) => {
                         Icon={ApprovedIcon}
                         heading="Approved"
                         additionalContent={getApprovedTippyContent(
-                            approvalMetadata.requestedUserData.userEmail,
-                            approvalMetadata.approvedBy.map((_approver) => _approver.userEmail),
-                            approvalMetadata.artifactTriggeredBy,
+                            userApprovalMetadata.requestedUserData.userEmail,
+                            userApprovalMetadata.approvedUsersData.map((_approver) => _approver.userEmail),
+                            triggeredBy,
                         )}
                         showCloseButton={true}
                         trigger="click"
@@ -224,7 +224,7 @@ export const CIListItem = ({ type, children }: CIListItemType) => {
                     >
                         <div className="flex left dc_width-max-content dc__border-bottom-n1 pt-8 pb-8 pl-16 pr-16 h-36 cursor">
                             <ApprovedIcon className="icon-dim-16 mr-8" />
-                            {approvalMetadata.approvedBy.length} Approved
+                            {userApprovalMetadata.approvedUsersData.length} Approved
                         </div>
                     </TippyCustomized>
                     <div className="approved-artifact pt-16 pb-16 pl-16 pr-16 flex-align-center">

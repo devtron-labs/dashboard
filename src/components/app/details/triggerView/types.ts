@@ -90,6 +90,22 @@ export interface MaterialInfo {
   type?: string
 }
 
+interface ApprovalUserDataType {
+    dataId: number
+    userActionTime: string
+    userComment: string
+    userEmail: string
+    userId: number
+    userResponse: number
+}
+
+export interface UserApprovalMetadataType {
+    approvalRequestId: number
+    approvalRuntimeState: number
+    approvedUsersData: ApprovalUserDataType[]
+    requestedUserData: ApprovalUserDataType
+}
+
 export interface CDMaterialType {
     id: string
     materialInfo: MaterialInfo[]
@@ -109,7 +125,7 @@ export interface CDMaterialType {
     showSourceInfo: boolean
     latest: boolean
     runningOnParentCd?: boolean
-    userApprovalMetadata?: any
+    userApprovalMetadata?: UserApprovalMetadataType
 }
 
 interface VulnerabilityType {}
