@@ -45,11 +45,11 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
         let status = this.props.status ? this.props.status.toLowerCase() : "";
         let hideDetails = status === DEFAULT_STATUS.toLowerCase() || status === "not triggered" || status === "not deployed";
         if (hideDetails)
-            return <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+            return <div data-testid={`cd-status-trigger-${status}`} className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
                 {this.props.status}
             </div>
         else return (
-            <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+            <div data-testid={`cd-status-trigger-${status}`} className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
                 {this.props.status}
                 {!this.props.fromAppGrouping && (
                     <>
@@ -79,7 +79,7 @@ export class TriggerLinkedCINode extends Component<CINodeProps> {
                         <div className="dc__ellipsis-left">{this.props.title}</div>
                     </Tippy>
                 </div>
-                <div className="workflow-node__icon-common ml-8 workflow-node__CI-linked-icon"/>
+                <div data-testid="ci-trigger-build-linked" className="workflow-node__icon-common ml-8 workflow-node__CI-linked-icon"/>
             </div>
             {this.renderStatus()}
         </div>
