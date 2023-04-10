@@ -255,7 +255,7 @@ export default function ApprovalMaterial({
                         </span>
                     </TippyCustomized>
                 )
-            } else if (isApprover || requestedUserId !== userId) {
+            } else if (isApprover && requestedUserId !== userId) {
                 return (
                     <TippyCustomized
                         theme={TippyTheme.white}
