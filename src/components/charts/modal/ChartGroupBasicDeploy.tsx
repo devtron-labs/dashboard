@@ -44,11 +44,10 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
     }
 
     async componentDidMount() {
-        if(this.props.environments?.length) return
+        if (this.props.environments?.length) return
         try {
             const { result } = await getEnvironmentListMin()
-            this.props.setEnvironments(result);
-            
+            this.props.setEnvironments(result)
         } catch (error) {
             showError(error)
         }

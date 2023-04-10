@@ -41,7 +41,7 @@ export const createAppListPayload = (payloadParsedFromUrl, environmentClusterLis
         const [cluster, namespace] = item.split('_')
         if (namespace) {
             environments.push(namespaceMap.get(namespace))
-        }else if (+cluster) {
+        } else if (+cluster) {
             const envList = clustersMap.get(+cluster) || []
             environments = [...environments, ...envList]
         }
@@ -55,8 +55,8 @@ export const appListModal = (appList, environmentClusterList) => {
         return {
             id: app.appId || 0,
             name: app.appName || 'NA',
-            environments: app.environments.map((env) => environmentModal(env,environmentClusterList)) || [],
-            defaultEnv: getDefaultEnvironment(app.environments,environmentClusterList),
+            environments: app.environments.map((env) => environmentModal(env, environmentClusterList)) || [],
+            defaultEnv: getDefaultEnvironment(app.environments, environmentClusterList),
         }
     })
 }
@@ -75,7 +75,7 @@ const environmentModal = (env, environmentClusterList) => {
         }
     }
     const envData = environmentClusterList.get(env.environmentId)
-    
+
     return {
         id: env.environmentId || 0,
         name: envData?.environmentName || '',
