@@ -14,7 +14,7 @@ import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { ModuleNameMap, Routes, URLS } from '../../config'
 import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import {
-  AppGroupList,
+    AppGroupList,
     CIConfigListType,
     ConfigAppListType,
     EnvAppType,
@@ -149,7 +149,11 @@ function getParentNode(nodes: Map<string, NodeAttr>, node: NodeAttr): NodeAttr |
     const type = node.preNode ? WorkflowNodeType.PRE_CD : node.type
 
     if (!!parentNode) {
-        ;(parentNode.postNode ? parentNode.postNode : parentNode).downstreams = [type + '-' + node.id]
+        if (parentNode.postNode) {
+            parentNode.postNode.downstreams = [type + '-' + node.id]
+        } else {
+            parentNode.downstreams = [type + '-' + node.id]
+        }
         parentNode.downstreamNodes = [node]
     }
     return parentNode
