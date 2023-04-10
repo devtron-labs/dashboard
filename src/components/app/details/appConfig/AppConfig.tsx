@@ -628,7 +628,7 @@ function Navigation({
             })}
             {isJobView && <div className="h-100" />}
             <div className="cta-delete-app flex w-100 dc__position-sticky pt-2 pb-16 bcn-0">
-                <button type="button" className="flex cta delete mt-8 w-100 h-36" onClick={deleteApp}>
+                <button data-testid = "delete-job-app-button" type="button" className="flex cta delete mt-8 w-100 h-36" onClick={deleteApp}>
                     Delete {isJobView ? 'Job' : 'Application'}
                 </button>
             </div>
