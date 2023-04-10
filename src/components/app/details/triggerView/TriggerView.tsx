@@ -918,7 +918,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     stageType={DeploymentNodeType[this.state.nodeType]}
                     material={material}
                     materialType={this.state.materialType}
-                    envName={node.environmentName}
+                    envName={node?.environmentName}
                     isLoading={this.state.isLoading}
                     changeTab={this.changeTab}
                     triggerDeploy={this.onClickTriggerCDNode}
@@ -926,9 +926,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     closeCDModal={this.closeCDModal}
                     selectImage={this.selectImage}
                     toggleSourceInfo={this.toggleSourceInfo}
-                    parentPipelineId={node.parentPipelineId}
-                    parentPipelineType={node.parentPipelineType}
-                    parentEnvironmentName={node.parentEnvironmentName}
+                    parentPipelineId={node?.parentPipelineId}
+                    parentPipelineType={node?.parentPipelineType}
+                    parentEnvironmentName={node?.parentEnvironmentName}
                 />
             )
         }
