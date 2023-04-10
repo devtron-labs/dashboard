@@ -86,14 +86,14 @@ const Select: React.FC<SelectProps> & SelectComposition = function ({
     </SelectContext.Provider>
 }
 
-function Option({ children, value, disabled = false, style = {}, active = false, name = "", rootClassName = "" }) {
+function Option({ dataTestIdMenuList = "" ,children, value, disabled = false, style = {}, active = false, name = "", rootClassName = "" }) {
     const { selected, searchString, valueComparator, handleClick } = useSelectContext()
     active = active || selected === value;
     if (typeof value === 'object') {
         active = active || valueComparator(value)
     }
     return name.includes(searchString) ?
-        <div className={`select__option ${rootClassName} ${active ? 'selected' : ''}`}
+        <div data-testid =  {dataTestIdMenuList} className={`select__option ${rootClassName} ${active ? 'selected' : ''}`}
             style={{ ...style, }}
             onClick={e => { if (!disabled) { e.persist(); handleClick(e, value) } }}>
             {children}
@@ -107,9 +107,9 @@ const OptionGroup: React.SFC<OptionGroupProps> = function ({ children, label, ro
     </div>
 }
 
-function Button({ children, style = {}, rootClassName = "", arrowAsset = "", dataTestId="" }) {
+function Button({ dataTestIdDropdown = "" , children, style = {}, rootClassName = "", arrowAsset = "" }) {
     const { popupOpen, loading } = useSelectContext()
-    return <div className={`select-button flex ${rootClassName} ${popupOpen ? 'focused' : ''}`} style={{ ...style }} data-testid={dataTestId}>
+    return <div data-testid = {dataTestIdDropdown} className={`select-button flex ${rootClassName} ${popupOpen ? 'focused' : ''}`} style={{ ...style }}>
         {children}
         {loading ? <div><Progressing /></div> : <img src={arrowAsset || arrowTriangle} className="rotate select-button-sort-image" style={{ ['--rotateBy' as any]: popupOpen ? '180deg' : '0deg' }} />}
     </div>
