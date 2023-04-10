@@ -9,9 +9,9 @@ import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from './types'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
-import EmptyState from '../../../EmptyState/EmptyState'
 import { NavLink } from 'react-router-dom'
 import { TIMELINE_STATUS } from '../../../../config'
+import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
 export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResizeButtonType): JSX.Element => {
     const { pathname } = useLocation()

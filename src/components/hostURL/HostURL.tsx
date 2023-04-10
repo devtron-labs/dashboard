@@ -3,14 +3,19 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
 import { HostURLConfigState, HostURLConfigProps } from './hosturl.type';
-import { ErrorScreenManager, ErrorScreenNotAuthorized, Progressing, showError } from '../common'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    ErrorScreenNotAuthorized,
+    InfoColourBar,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config';
 import { toast } from 'react-toastify';
-import { getAppCheckList, getHostURLConfiguration } from '../../services/service';
+import { getHostURLConfiguration } from '../../services/service';
 import TriangleAlert from '../../assets/icons/ic-alert-triangle.svg';
 import { saveHostURLConfiguration, updateHostURLConfiguration } from './hosturl.service';
-import './hosturl.css';
-import InfoColourBar from '../common/infocolourBar/InfoColourbar';
+import './hosturl.scss';
 export default class HostURLConfiguration extends Component<HostURLConfigProps, HostURLConfigState> {
 
     constructor(props) {
@@ -39,7 +44,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                     value: '',
                     active: true,
                 }
-                
+
                 if (!form.value) {
                     const payload = {
                         id: form.id,

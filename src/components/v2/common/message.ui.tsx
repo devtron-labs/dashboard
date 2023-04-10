@@ -3,7 +3,8 @@ import { ReactComponent as InfoIcon } from '../assets/icons/ic-info-outline-gray
 import { ReactComponent as FilledInfoIcon } from '../assets/icons/ic-info-filled.svg';
 import { ReactComponent as MultipleContainer } from '../assets/icons/ic-select-container.svg';
 import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg';
-import { Pod as PodIcon, Progressing } from '../../common';
+import { Pod as PodIcon } from '../../common';
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum MsgUIType {
     LOADING = 'loading',

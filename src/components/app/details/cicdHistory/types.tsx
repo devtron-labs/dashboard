@@ -159,9 +159,9 @@ export interface TriggerDetailsStatusIconType {
 
 export interface FinishedType {
     status: string
-    startedOn:string
     finishedOn: string
     artifact: string
+    type: HistoryComponentType
 }
 export interface WorkerStatusType {
     message: string
@@ -170,7 +170,6 @@ export interface WorkerStatusType {
 }
 export interface ProgressingStatusType {
     status: string
-    startedOn: string
     message: string
     podStatus: string
     stage: DeploymentStageType
@@ -179,7 +178,6 @@ export interface ProgressingStatusType {
 
 export interface CurrentStatusType {
     status: string
-    startedOn:string
     finishedOn: string
     artifact: string
     message: string

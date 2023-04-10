@@ -1,13 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import {useLocation, useHistory} from 'react-router';
-import { showError, Progressing, ErrorScreenManager, sortOptionsByValue,  } from '../../../common';
-import { getAppDetail, HelmAppDetailResponse, HelmAppDetail, HelmAppDetailAndInstalledAppInfo } from '../../../external-apps/ExternalAppService';
-import { ServerErrors } from '../../../../modals/commonTypes';
+import { sortOptionsByValue,  } from '../../../common';
+import { showError, Progressing, ErrorScreenManager, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    getAppDetail,
+    HelmAppDetailResponse,
+    HelmAppDetailAndInstalledAppInfo,
+} from '../../../external-apps/ExternalAppService'
 import IndexStore from '../index.store';
 import { AppDetails, AppType } from "../appDetails.type";
 import AppDetailsComponent from '../AppDetails.component';
 import moment from 'moment'
-import * as queryString from 'query-string';
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../../../util/URLUtil';
 import { getExternalLinks, getMonitoringTools } from '../../../externalLinks/ExternalLinks.service';
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type';

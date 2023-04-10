@@ -1,10 +1,9 @@
 import React from 'react'
 import Help from '../../../assets/icons/ic-help-green.svg';
-import { Progressing } from '../../common';
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as GreenCheck } from '../../../assets/icons/ic-check.svg';
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg';
 import './validateForm.css'
-import { showError } from '../helpers/Helpers';
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg';
 
 export enum VALIDATION_STATUS {

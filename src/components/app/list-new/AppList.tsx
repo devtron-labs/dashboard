@@ -1,21 +1,18 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { useLocation, useHistory, useParams } from 'react-router'
 import { Switch, Route } from 'react-router-dom'
+import { Filter, FilterOption, handleUTCTime, useAsync } from '../../common'
 import {
-    Progressing,
-    Filter,
     showError,
-    FilterOption,
+    Progressing,
     ErrorScreenManager,
-    handleUTCTime,
-    useAsync,
     stopPropagation,
-} from '../../common'
+    ServerErrors,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
-import { ServerErrors } from '../../../modals/commonTypes'
 import { AppListViewType } from '../config'
-import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, ModuleNameMap, Moment12HourFormat } from '../../../config'
+import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, Moment12HourFormat } from '../../../config'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
@@ -23,7 +20,7 @@ import * as queryString from 'query-string'
 import { AppListPropType, OrderBy, SortBy } from '../list/types'
 import { AddNewApp } from '../create/CreateApp'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
-import '../list/list.css'
+import '../list/list.scss'
 import EAEmptyState, { EAEmptyStateType } from '../../common/eaEmptyState/EAEmptyState'
 import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES } from '../../common/ExportToCsv/constants'

@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react'
-import { Progressing, ConfirmationDialog, DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem, showError, ErrorScreenManager, } from '../common'
+import { DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem } from '../common'
+import { showError, Progressing, ErrorScreenManager, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../CodeEditor/CodeEditor';
 import { SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
@@ -19,7 +20,7 @@ import { ReactComponent as OIDC } from '../../assets/icons/ic-oidc.svg'
 import { ReactComponent as Openshift } from '../../assets/icons/ic-openshift.svg'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import warn from '../../assets/icons/ic-warning.svg';
-import './login.css';
+import './login.scss';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
 import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type';
 
