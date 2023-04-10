@@ -529,10 +529,10 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node[MATERIAL_TYPE.inputMaterialList] = data.materials
-                            node['approvalUsers'] = data.approvalUsers
-                            node['artifactTriggeredBy'] = data.artifactTriggeredBy
-                            node['userApprovalConfig'] = data.userApprovalConfig
-                            node['requestedUserId'] = data.requestedUserId
+                            node.approvalUsers = data.approvalUsers
+                            node.artifactTriggeredBy = data.artifactTriggeredBy
+                            node.userApprovalConfig = data.userApprovalConfig
+                            node.requestedUserId = data.requestedUserId
                             _selectedNode = node
                             _workflowId = workflow.id
                             _appID = workflow.appId
@@ -577,10 +577,11 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     const nodes = workflow.nodes.map((node) => {
                         if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
                             _selectedNode = node
+                            node.userApprovalConfig = response.result.userApprovalConfig
                             if (!offset && !size) {
-                                node.rollbackMaterialList = response.result
+                                node.rollbackMaterialList = response.result.materials
                             } else {
-                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result)
+                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result.materials)
                             }
                         }
                         return node

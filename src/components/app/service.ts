@@ -215,7 +215,11 @@ export const getCIMaterialList = (params) => {
     })
 }
 
-export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType, isApprovalNode?: boolean): Promise<CDMaterialResponseType> {
+export function getCDMaterialList(
+    cdMaterialId,
+    stageType: DeploymentNodeType,
+    isApprovalNode?: boolean,
+): Promise<CDMaterialResponseType> {
     const URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
         isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
     }`
@@ -226,7 +230,7 @@ export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType, i
                 artifactTriggeredBy: '',
                 materials: [],
                 userApprovalConfig: null,
-                requestedUserId: 0
+                requestedUserId: 0,
             }
         }
         return {
@@ -239,7 +243,7 @@ export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType, i
                 response.result.latest_wf_artifact_status,
             ),
             userApprovalConfig: response.result.userApprovalConfig,
-            requestedUserId: response.result.requestedUserId
+            requestedUserId: response.result.requestedUserId,
         }
     })
 }
@@ -250,7 +254,10 @@ export function getRollbackMaterialList(cdMaterialId, offset: number, size: numb
         return {
             code: response.code,
             status: response.status,
-            result: cdMaterialListModal(response?.result.ci_artifacts, offset === 1 ? true : false),
+            result: {
+                materials: cdMaterialListModal(response?.result.ci_artifacts, offset === 1 ? true : false),
+                userApprovalConfig: response.result.userApprovalConfig,
+            },
         }
     })
 }

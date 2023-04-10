@@ -45,6 +45,7 @@ export interface CDMaterialProps {
     appId?: number
     pipelineId?: number
     isFromBulkCD?: boolean
+    userApprovalConfig?: UserApprovalConfigType
 }
 
 export enum DeploymentWithConfigType {

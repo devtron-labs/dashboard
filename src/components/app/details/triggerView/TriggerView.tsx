@@ -375,17 +375,16 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
-        this.setState({ showApprovalModal: isApprovalNode, showCDModal: !isApprovalNode, isLoading: true })
         getCDMaterialList(cdNodeId, isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType)
             .then((data) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
-                            node['inputMaterialList'] = data.materials
-                            node['approvalUsers'] = data.approvalUsers
-                            node['artifactTriggeredBy'] = data.artifactTriggeredBy
-                            node['userApprovalConfig'] = data.userApprovalConfig
-                            node['requestedUserId'] = data.requestedUserId
+                            node.inputMaterialList = data.materials
+                            node.approvalUsers = data.approvalUsers
+                            node.artifactTriggeredBy = data.artifactTriggeredBy
+                            node.userApprovalConfig = data.userApprovalConfig
+                            node.requestedUserId = data.requestedUserId
                         }
                         return node
                     })
@@ -427,10 +426,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
+                            node.userApprovalConfig = response.result.userApprovalConfig
                             if (!offset && !size) {
-                                node.rollbackMaterialList = response.result
+                                node.rollbackMaterialList = response.result.materials
                             } else {
-                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result)
+                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result.materials)
                             }
                         }
                         return node
@@ -930,6 +930,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     parentPipelineId={node?.parentPipelineId}
                     parentPipelineType={node?.parentPipelineType}
                     parentEnvironmentName={node?.parentEnvironmentName}
+                    userApprovalConfig={node?.userApprovalConfig}
                 />
             )
         }

@@ -22,6 +22,7 @@ import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
+import noartifact from '../../../../assets/img/no-artifact@2x.png'
 import { ScanVulnerabilitiesTable, getRandomColor, noop } from '../../../common'
 import {
     showError,
@@ -52,6 +53,7 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
+import { EmptyView } from '../cicdHistory/History.components'
 
 export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     constructor(props: CDMaterialProps) {
@@ -921,7 +923,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <>
                         {!this.props.isFromBulkCD && (
                             <div className="material-list__title pb-16">
-                                {this.state.isRollbackTrigger
+                                {this.props.userApprovalConfig?.requiredCount > 0
+                                    ? 'Approved images'
+                                    : this.state.isRollbackTrigger
                                     ? 'Select from previously deployed images'
                                     : 'Select Image'}
                             </div>
@@ -1016,7 +1020,24 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                                 <img alt="close" src={close} />
                                             </button>
                                         </div>
-                                        <EmptyStateCdMaterial materialType={this.props.materialType} />
+                                        {this.props.userApprovalConfig?.requiredCount > 0 ? (
+                                            <>
+                                                <div className="material-list__title pt-16 pl-20 pr-20">
+                                                    Approved images
+                                                </div>
+                                                <EmptyView
+                                                    title="No image available"
+                                                    subTitle={
+                                                        this.state.isRollbackTrigger
+                                                            ? 'Approved previously deployed images will be available here to rollback to.'
+                                                            : 'Approved images will be available here for deployment.'
+                                                    }
+                                                    imgSrc={noartifact}
+                                                />
+                                            </>
+                                        ) : (
+                                            <EmptyStateCdMaterial materialType={this.props.materialType} />
+                                        )}
                                     </>
                                 )}
                             </>
