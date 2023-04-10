@@ -133,19 +133,19 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
         // set list data for env cluster & namespace
         const environmentClusterAppListData = new Map()
         const clusterMap = new Map()
-        clusterList.map((item) => {
-            clusterMap.set(item.id, item.cluster_name)
-        })
+        for (const cluster of clusterList) {
+            clusterMap.set(cluster.id, cluster.cluster_name)
+        }
 
-        environmentList.map((env) => {
+        for (const env of environmentList) {
             const envData = {
                 environmentName: env.environment_name,
                 namespace: env.namespace,
                 clusterName: clusterMap.get(env.cluster_id),
-                clusterId: env.cluster_id
+                clusterId: env.cluster_id,
             }
-            environmentClusterAppListData.set(env.id,envData)
-        })
+            environmentClusterAppListData.set(env.id, envData)
+        }
 
         // end
 
