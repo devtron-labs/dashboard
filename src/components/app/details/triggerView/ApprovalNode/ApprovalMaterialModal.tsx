@@ -21,7 +21,6 @@ export default function ApprovalMaterialModal({
     materialType,
     stageType,
     changeTab,
-    selectImage,
     toggleSourceInfo,
     closeApprovalModal,
     appId,
@@ -31,14 +30,19 @@ export default function ApprovalMaterialModal({
     const material = node?.[materialType] ?? []
     const approvalRequestedMaterial = [],
         remainingMaterial = []
-
-    for (const mat of material) {
+    material.forEach((mat, index) => {
         if (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState === 3) {
-            remainingMaterial.push(mat)
+            remainingMaterial.push({
+                ...mat,
+                index,
+            })
         } else if (mat.userApprovalMetadata?.approvalRuntimeState === 1) {
-            approvalRequestedMaterial.push(mat)
+            approvalRequestedMaterial.push({
+                ...mat,
+                index,
+            })
         }
-    }
+    })
 
     const renderModalHeader = () => {
         return (
@@ -132,11 +136,9 @@ export default function ApprovalMaterialModal({
                 </div>
                 <ApprovalMaterial
                     material={selectedTabIndex === 1 ? approvalRequestedMaterial : remainingMaterial}
-                    materialType={materialType}
                     envName={node?.environmentName}
                     stageType={stageType}
                     changeTab={changeTab}
-                    selectImage={selectImage}
                     toggleSourceInfo={toggleSourceInfo}
                     appId={appId}
                     pipelineId={pipelineId}

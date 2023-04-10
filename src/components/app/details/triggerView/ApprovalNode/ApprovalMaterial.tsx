@@ -19,11 +19,9 @@ import Tippy from '@tippyjs/react'
 
 export default function ApprovalMaterial({
     material,
-    materialType,
     envName,
     stageType,
     changeTab,
-    selectImage,
     toggleSourceInfo,
     appId,
     pipelineId,
@@ -31,7 +29,6 @@ export default function ApprovalMaterial({
     node,
 }) {
     const { onClickCDMaterial } = useContext(TriggerViewContext)
-    const [selectedMaterial, setSelectedMaterial] = useState<CDMaterialType>()
     const [tippyVisible, setTippyVisible] = useState<Record<string, boolean>>({})
     const loginInfo = getLoginInfo()
     const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
@@ -98,13 +95,6 @@ export default function ApprovalMaterial({
                     {(mat.artifactStatus === 'Degraded' || mat.artifactStatus === 'Failed') && renderFailedCD(mat)}
                 </div>
             )
-        }
-    }
-
-    const handleImageSelection = async (index: number, currentSelectedMaterial: CDMaterialType) => {
-        selectImage(index, materialType, null)
-        if (selectedMaterial?.image !== currentSelectedMaterial.image) {
-            setSelectedMaterial(selectedMaterial)
         }
     }
 
@@ -216,10 +206,15 @@ export default function ApprovalMaterial({
     const getApprovalCTA = (mat: CDMaterialType) => {
         if (mat.userApprovalMetadata?.approvalRuntimeState === 1) {
             if (node?.approvalUsers && !node.approvalUsers.includes(email)) {
-                return <span className="cn-5">Awaiting approval</span>
+                return <span className="cn-5 cursor-default">Awaiting approval</span>
+            } else if (
+                node.approvalUsers?.includes(email) &&
+                mat.userApprovalMetadata.approvedUsersData?.some((userData) => userData.userEmail === email)
+            ) {
+                return <span className="cg-5 cursor-default">Approved by you</span>
             } else if (
                 node?.artifactTriggeredBy === email ||
-                mat.userApprovalMetadata?.requestedUserData?.userEmail === email
+                mat.userApprovalMetadata.requestedUserData?.userEmail === email
             ) {
                 return (
                     <Tippy
@@ -232,11 +227,10 @@ export default function ApprovalMaterial({
                                 : 'You raised the approval request for this image. As the requester, you cannot approve it.'
                         }
                     >
-                        <span className="cn-5">Approve</span>
+                        <span className="cb-5 dc__opacity-0_5 cursor-default">Approve</span>
                     </Tippy>
                 )
-            } else 
-            if (
+            } else if (
                 mat.userApprovalMetadata.requestedUserData?.userEmail &&
                 mat.userApprovalMetadata.requestedUserData.userEmail !== email
             ) {
@@ -411,7 +405,7 @@ export default function ApprovalMaterial({
     }
 
     const renderMaterial = () => {
-        return material.map((mat, index) => {
+        return material.map((mat) => {
             let isMaterialInfoAvailable = true
             for (const materialInfo of mat.materialInfo) {
                 isMaterialInfoAvailable =
@@ -426,19 +420,13 @@ export default function ApprovalMaterial({
                 if (!isMaterialInfoAvailable) break
             }
             return (
-                <div key={`material-history-${index}`} className="material-history material-history--cd">
+                <div key={`material-history-${mat.index}`} className="material-history material-history--cd">
                     {renderSequentialCDCardTitle(mat)}
                     <div
                         className={`material-history__top mh-66 ${
                             !isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
                         }`}
                         style={{ cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
-                        onClick={(event) => {
-                            event.stopPropagation()
-                            if (!mat.vulnerable) {
-                                handleImageSelection(index, mat)
-                            }
-                        }}
                     >
                         {renderMaterialInfo(mat)}
                     </div>
@@ -452,7 +440,7 @@ export default function ApprovalMaterial({
                                             onClick={(e) => {
                                                 e.stopPropagation()
                                                 changeTab(
-                                                    index,
+                                                    mat.index,
                                                     Number(mat.id),
                                                     CDModalTab.Changes,
                                                     {
@@ -474,7 +462,7 @@ export default function ApprovalMaterial({
                                             type="button"
                                             onClick={(e) => {
                                                 e.stopPropagation()
-                                                changeTab(index, Number(mat.id), CDModalTab.Security, null, appId)
+                                                changeTab(mat.index, Number(mat.id), CDModalTab.Security, null, appId)
                                             }}
                                             className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
                                                 mat.tab === CDModalTab.Security ? 'active' : ''
@@ -498,7 +486,7 @@ export default function ApprovalMaterial({
                             data-testid={mat.showSourceInfo ? 'collapse-show-info' : 'collapse-hide-info'}
                             onClick={(event) => {
                                 event.stopPropagation()
-                                toggleSourceInfo(index, null)
+                                toggleSourceInfo(mat.index, null)
                             }}
                         >
                             {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}

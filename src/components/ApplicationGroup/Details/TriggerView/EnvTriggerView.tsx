@@ -1496,7 +1496,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     stageType={DeploymentNodeType[selectedCDNode.type]}
                     material={material}
                     materialType={materialType}
-                    envName={node.environmentName}
+                    envName={node?.environmentName}
                     isLoading={isCDLoading}
                     changeTab={changeTab}
                     triggerDeploy={onClickTriggerCDNode}
@@ -1504,9 +1504,9 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     closeCDModal={closeCDModal}
                     selectImage={selectImage}
                     toggleSourceInfo={toggleSourceInfo}
-                    parentPipelineId={node.parentPipelineId}
-                    parentPipelineType={node.parentPipelineType}
-                    parentEnvironmentName={node.parentEnvironmentName}
+                    parentPipelineId={node?.parentPipelineId}
+                    parentPipelineType={node?.parentPipelineType}
+                    parentEnvironmentName={node?.parentEnvironmentName}
                 />
             )
         }

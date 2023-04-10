@@ -958,7 +958,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     isLoading={this.state.isLoading}
                     changeTab={this.changeTab}
                     closeApprovalModal={this.closeApprovalModal}
-                    selectImage={this.selectImage}
                     toggleSourceInfo={this.toggleSourceInfo}
                 />
             )

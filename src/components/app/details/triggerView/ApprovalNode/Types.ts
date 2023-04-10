@@ -12,11 +12,6 @@ export interface ApprovalMaterialModalProps {
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
         appId?: number,
     ) => void
-    selectImage: (
-        index: number,
-        materialType: string,
-        selectedCDDetail?: { id: number; type: DeploymentNodeType },
-    ) => void
     toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
     closeApprovalModal: (e) => void
     appId?: number
