@@ -81,6 +81,7 @@ export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
                     <div
                         key={`mat-${gitTrigger?.Commit}-${index}`}
                         className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
+                        data-testid = "source-code-git-hash"
                         style={{ width: 'min( 100%, 800px )' }}
                     >
                         <GitCommitInfoGeneric

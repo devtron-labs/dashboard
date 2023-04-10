@@ -208,6 +208,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         to={`${match.url}/${URLS.APP_CI_DETAILS}`}
                         className="tab-list__tab-link"
                         data-action="Build History Clicked"
+                        data-testid="build-history-clicked"
                         onClick={handleEventClick}
                     >
                         Build History
