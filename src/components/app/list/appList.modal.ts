@@ -29,7 +29,7 @@ export const createAppListPayload = (payloadParsedFromUrl, environmentClusterLis
     if (entry) {
         for (const [key, value] of entry) {
             const { namespace, clusterId } = value
-            namespaceMap.set(namespace, key)
+            namespaceMap.set(`${clusterId}_${namespace}`, key)
             const clusterKeys = clustersMap.get(clusterId) || []
             clustersMap.set(clusterId, [...clusterKeys, key])
         }
@@ -40,13 +40,13 @@ export const createAppListPayload = (payloadParsedFromUrl, environmentClusterLis
     payloadParsedFromUrl.namespaces.forEach((item) => {
         const [cluster, namespace] = item.split('_')
         if (namespace) {
-            environments.push(namespaceMap.get(namespace))
+            environments.push(namespaceMap.get(`${cluster}_${namespace}`))
         } else if (+cluster) {
             const envList = clustersMap.get(+cluster) || []
             environments = [...environments, ...envList]
         }
     })
-
+    
     return { ...payloadParsedFromUrl, environments: [...new Set(environments)] }
 }
 
