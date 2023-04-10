@@ -245,6 +245,7 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     parentPipelineType?: string
     parentEnvironmentName?: string
     fromAppGrouping: boolean
+    showApprovalNode: boolean
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -575,6 +576,9 @@ export interface CdPipeline {
     parentPipelineType?: string
     deploymentAppDeleteRequest?: boolean
     deploymentAppCreated?: boolean
+    userApprovalConf?: {
+        requiredCount: number
+    }
 }
 
 export interface CdPipelineResult {

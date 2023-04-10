@@ -198,6 +198,7 @@ export class Workflow extends Component<WorkflowProps> {
                 parentPipelineType={node.parentPipelineType}
                 parentEnvironmentName={node.parentEnvironmentName}
                 fromAppGrouping={this.props.fromAppGrouping}
+                showApprovalNode={node.userApprovalConf && node.userApprovalConf.requiredCount > 0}
             />
         )
     }
