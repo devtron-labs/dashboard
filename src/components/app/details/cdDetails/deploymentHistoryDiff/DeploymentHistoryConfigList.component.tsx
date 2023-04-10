@@ -45,7 +45,7 @@ export default function DeploymentHistoryConfigList({
                 onClick={() => {
                   setFullScreenView(false)
                 }}
-                data-testid = {`configuration-deployment-template-option-${index}`}
+                data-testid = {`configuration-link-option-${index}`}
 
                 className="bcb-1 dc__no-decor bcn-0 cn-9 pl-16 pr-16 pt-12 pb-12 br-4 en-2 bw-1 mb-12 flex dc__content-space cursor lh-20"
             >

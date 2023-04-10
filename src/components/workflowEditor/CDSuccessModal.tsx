@@ -54,7 +54,7 @@ export default function CDSuccessModal({ appId, envId, closeSuccessPopup, envNam
                     </div>
                 </NavLink>
                 <div className="close-button-container">
-                    <button type="button" className="fw-6 fs-13 lh-20 cta" onClick={closeSuccessPopup} data-testid="close-build-deploy-button">
+                    <button type="button" className="fw-6 fs-13 lh-20 cta" onClick={closeSuccessPopup} data-testid = "close-build-deploy-button">
                         Close
                     </button>
                 </div>
