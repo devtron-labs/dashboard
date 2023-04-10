@@ -345,8 +345,8 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             this.changeTemplate(event.target.value)
                         }}
                     >
-                        <RadioGroupItem value={AppCreationType.Blank} data-testid="create-from-scratch-radio-button">Create from scratch</RadioGroupItem>
-                        <RadioGroupItem value={AppCreationType.Existing}>
+                        <RadioGroupItem value={AppCreationType.Blank} dataTestId="create-from-scratch-radio-button">Create from scratch</RadioGroupItem>
+                        <RadioGroupItem value={AppCreationType.Existing} dataTestId="clone-existing-application-radio-button">
                             Clone existing {this.props.isJobView ? 'job' : 'application'}
                         </RadioGroupItem>
                     </RadioGroup>
