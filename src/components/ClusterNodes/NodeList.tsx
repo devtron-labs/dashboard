@@ -351,8 +351,8 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }
 
     const alphabeticalComparatorMethod = (a, b) => {
-        let firstValue = a[sortByColumn.sortingFieldName] || ""
-        let secondValue = b[sortByColumn.sortingFieldName] || ""
+        const firstValue = a[sortByColumn.sortingFieldName] || ""
+        const secondValue = b[sortByColumn.sortingFieldName] || ""
         if (
             (sortOrder === OrderBy.ASC && sortByColumn.sortingFieldName !== 'createdAt') ||
             (sortOrder === OrderBy.DESC && sortByColumn.sortingFieldName === 'createdAt')
