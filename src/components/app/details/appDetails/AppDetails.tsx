@@ -633,7 +633,7 @@ export function EnvSelector({
                     ENV
                 </div>
             </div>
-            <div className="app-details__selector w-200">
+            <div data-testid="app-deployed-env-name" className="app-details__selector w-200">
                 <Select
                     placeholder="Select Environment"
                     options={

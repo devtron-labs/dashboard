@@ -598,6 +598,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             {renderConnectionStrip()}
             <div
                 id="terminal-id"
+                data-testid="terminal-editor-container"
                 className={`terminal-container ml-20 ${
                     terminalViewProps.isResourceBrowserView &&
                     isOnline &&
