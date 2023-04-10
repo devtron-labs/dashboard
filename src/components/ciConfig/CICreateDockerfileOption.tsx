@@ -228,7 +228,7 @@ export default function CICreateDockerfileOption({
             <div className="flex">
                 <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
                 {configOverrideView && !allowOverride ? (
-                    <div className="flex left">
+                    <div className="flex left" data-testid="select-create-dockerfile-language-dropdown">
                         {selectedLanguage?.icon && (
                             <img
                                 src={selectedLanguage.icon}
@@ -240,6 +240,7 @@ export default function CICreateDockerfileOption({
                     </div>
                 ) : (
                     <ReactSelect
+                        classNamePrefix='select-create-dockerfile-language-dropdown'
                         tabIndex={3}
                         options={languages}
                         value={selectedLanguage}
@@ -266,6 +267,7 @@ export default function CICreateDockerfileOption({
                                 tabIndex={3}
                                 options={languageFrameworks?.get(selectedLanguage?.value) || []}
                                 value={selectedFramework}
+                                classNamePrefix="build-config__select-framework"
                                 isSearchable={false}
                                 styles={_customStyles}
                                 components={{
@@ -361,6 +363,7 @@ export default function CICreateDockerfileOption({
                         }}
                         onChange={handleFileLocationChange}
                         isDisabled={configOverrideView && !allowOverride}
+                        classNamePrefix="build-config__select-repository-containing-code"
                     />
                 )}
                 {repository.error && <label className="form__error">{repository.error}</label>}

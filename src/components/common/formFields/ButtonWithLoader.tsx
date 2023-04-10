@@ -23,7 +23,8 @@ export class ButtonWithLoader extends Component<ButtonProps> {
     }
 
     render() {
-        return <button type="button"
+        return <button 
+            type="button"
             data-testid={this.props.dataTestId}
             disabled={!!this.props.disabled}
             className={`${this.props.rootClassName}`}

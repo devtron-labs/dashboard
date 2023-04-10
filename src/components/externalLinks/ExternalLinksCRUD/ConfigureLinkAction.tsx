@@ -145,6 +145,7 @@ export default function ConfigureLinkAction({
                         value={link.name}
                         onChange={onNameChange}
                         onBlur={validateAndUpdateLinksData}
+                        data-testid="external-link-name-input"
                     />
                     {link.invalidName && getErrorLabel('name')}
                 </div>
@@ -154,6 +155,7 @@ export default function ConfigureLinkAction({
                         placeholder="Description"
                         value={link.description}
                         onChange={onDescriptionChange}
+                        data-testid="external-link-description-input"
                     />
                 </div>
                 {!isAppConfigView && (
@@ -170,6 +172,7 @@ export default function ConfigureLinkAction({
                                     className={`dc__no-text-transform ${
                                         linkScope === ExternalLinkScopeType.ClusterLevel ? 'fw-6' : 'fw-4'
                                     }`}
+                                    data-testid="specific-clusters-select"
                                 >
                                     All apps in specific clusters
                                 </span>
@@ -179,6 +182,7 @@ export default function ConfigureLinkAction({
                                     className={`dc__no-text-transform ${
                                         linkScope === ExternalLinkScopeType.AppLevel ? 'fw-6' : 'fw-4'
                                     }`}
+                                    data-testid="specific-applications-select"
                                 >
                                     Specific applications
                                 </span>
@@ -207,6 +211,7 @@ export default function ConfigureLinkAction({
                         value={link.urlTemplate}
                         onChange={onUrlTemplateChange}
                         onBlur={validateAndUpdateLinksData}
+                        data-testid="link-url-template-input"
                     />
                     {link.invalidUrlTemplate && getErrorLabel('url')}
                     {link.invalidProtocol && getErrorLabel('invalidProtocol')}
@@ -239,7 +244,7 @@ export default function ConfigureLinkAction({
                 )}
             </div>
             {showDelete && (
-                <div className="link-delete icon-dim-20 cursor">
+                <div className="link-delete icon-dim-20 cursor" data-testid="close-link">
                     <CloseIcon className="icon-dim-20 fcn-6" onClick={() => deleteLinkData(index)} />
                 </div>
             )}

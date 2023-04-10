@@ -5,7 +5,7 @@ import { Switch, Redirect, NavLink } from 'react-router-dom'
 import { Route } from 'react-router'
 import { toast } from 'react-toastify'
 import { ServerErrors, Host, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME} from '../../config'
+import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME } from '../../config'
 import { getCookie } from '../common'
 import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
@@ -143,7 +143,10 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                                 <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24">
                                     <use href={`${LoginIcons}#${item.name}`}></use>
                                 </svg>
-                                Login with <span className="ml-5 dc__first-letter-capitalize">{item.name}</span>
+                                Login with
+                                <span className="ml-5 dc__first-letter-capitalize" data-testid="login-with-text">
+                                    {item.name}
+                                </span>
                             </a>
                         )
                     })}
@@ -191,8 +194,12 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             What is my admin password?
                         </a>
                     </div>
-                    <button disabled={this.isFormNotValid() || this.state.loading} className="cta login__button" data-testid="login-button">
-                        {this.state.loading ? <Progressing /> : 'Login' }
+                    <button
+                        disabled={this.isFormNotValid() || this.state.loading}
+                        className="cta login__button"
+                        data-testid="login-button"
+                    >
+                        {this.state.loading ? <Progressing /> : 'Login'}
                     </button>
                     {this.state.loginList.length ? (
                         <NavLink className="login__link cb-5" to={`${URLS.LOGIN_SSO}${search}`}>

@@ -152,7 +152,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     renderGitMaterialInfo(matInfo: MaterialInfo[]) {
         return (
             <>
-                {matInfo.map((mat: MaterialInfo) => {
+                {matInfo.map((mat: MaterialInfo,index) => {
                     let _gitCommit: GitTriggers = {
                         Commit: mat.revision,
                         Author: mat.author,
@@ -174,6 +174,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             _gitCommit.Commit) && (
                             <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
                                 <GitCommitInfoGeneric
+                                    index={index}
                                     materialUrl={mat.url}
                                     showMaterialInfoHeader={true}
                                     commitInfo={_gitCommit}

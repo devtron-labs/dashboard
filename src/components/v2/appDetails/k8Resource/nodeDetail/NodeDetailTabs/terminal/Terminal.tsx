@@ -392,7 +392,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     preFetchData(status)
                     clusterTimeOut = setTimeout(() => {
                         getClusterData(url, count - 1)
-                    }, 5000)
+                    }, window?._env_?.CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL || 7000)
                 } else if (sessionId) {
                     const _nodeName = response.result?.nodeName
                     if(terminalViewProps.nodeName === TERMINAL_STATUS.AUTO_SELECT_NODE){
@@ -437,7 +437,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (terminalViewProps.isClusterTerminal) {
             if (!terminalViewProps.terminalId) return
             terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING)
-            getClusterData(`user/terminal/get?namespace=${terminalViewProps.selectedNamespace}&shellName=${terminalViewProps.shell.value}&terminalAccessId=${terminalViewProps.terminalId}`, 7)
+            getClusterData(
+                `user/terminal/get?namespace=${terminalViewProps.selectedNamespace}&shellName=${terminalViewProps.shell.value}&terminalAccessId=${terminalViewProps.terminalId}`,
+                window?._env_?.CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT || 7,
+            )
         } else {
             if (
                 !terminalViewProps.nodeName ||
@@ -545,6 +548,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                         renderErrorMessageStrip(errorMessage)
                     ) : (
                         <div
+                            data-testid="terminal-strip-message"
                             className={`dc__first-letter-capitalize ${
                                 terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED &&
                                 !clusterSocketConnecting

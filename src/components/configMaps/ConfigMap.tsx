@@ -674,11 +674,12 @@ export function ConfigMapForm({
                 <div className="form-row__select-external-type flex">
                     <Select
                         value={isExternalValues ? 'KubernetesConfigMap' : ''}
+                        dataTestId="configmaps-data-type-select-dropdown"
                         onChange={(e) => {
                             toggleExternalValues(e.target.value !== '')
                         }}
                     >
-                        <Select.Button dataTestIdDropdown = "select-configmap-datatype-dropdown" >
+                        <Select.Button dataTestIdDropdown = "select-configmap-datatype-dropdown"  dataTestId="data-type-select-control">
                             {isExternalValues ? 'Kubernetes External ConfigMap' : 'Kubernetes ConfigMap'}
                         </Select.Button>
                         {Object.entries(EXTERNAL_TYPES).map(([value, name]) => (
@@ -866,8 +867,8 @@ export function ConfigMapForm({
                         disabled={false}
                         onChange={changeEditorMode}
                     >
-                        <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
-                        <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
+                        <RadioGroup.Radio value="gui" dataTestId="GUI">GUI</RadioGroup.Radio>
+                        <RadioGroup.Radio value="yaml" dataTestId="YAML">YAML</RadioGroup.Radio>
                     </RadioGroup>
                 </div>
             )}
