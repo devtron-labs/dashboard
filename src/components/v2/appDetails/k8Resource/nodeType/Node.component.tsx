@@ -274,6 +274,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                     {node.childNodes?.length > 0 ? (
                                         <span>
                                             <DropDown
+                                                data-testid="resource-child-nodes-dropdown"
                                                 className={`rotate icon-dim-24 pointer ${
                                                     _isSelected ? 'fcn-9' : 'fcn-5'
                                                 } `}
@@ -285,7 +286,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                     )}
                                     <div>
                                         <div className="resource__title-name flex left dc__align-start">
-                                            <span className="fs-13">{node.name}</span>
+                                            <span data-testid="resource-node-name" className="fs-13">{node.name}</span>
                                             <div
                                                 className={`flex left ${
                                                     node.kind.toLowerCase() == NodeType.Pod.toLowerCase()

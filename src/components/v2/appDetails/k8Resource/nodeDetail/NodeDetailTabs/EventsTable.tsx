@@ -10,6 +10,7 @@ export function EventsTable({ loading, eventsList, isResourceBrowserView, errorV
         if (loading) {
             return (
                 <MessageUI
+                    dataTestId="app-events-container-loading"
                     msg={MESSAGING_UI.FETCHING_EVENTS}
                     icon={MsgUIType.LOADING}
                     size={24}
@@ -78,7 +79,7 @@ export function EventsTable({ loading, eventsList, isResourceBrowserView, errorV
             } else {
                 return (
                     <MessageUI
-                        data-testid="app-events-container-empty"
+                        dataTestId="app-events-container-empty"
                         msg={MESSAGING_UI.NO_EVENTS}
                         size={24}
                         minHeight={isResourceBrowserView ? '200px' : ''}

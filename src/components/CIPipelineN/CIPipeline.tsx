@@ -310,6 +310,7 @@ export default function CIPipeline({
                     )}
                 >
                     <button
+                        data-testid = "ci-delete-pipeline-button"
                         type="button"
                         className={`cta cta--workflow delete mr-16`}
                         disabled={!canDeletePipeline}

@@ -72,7 +72,7 @@ export default function BranchRegexModal({
 
         return (
             <div className="trigger-modal__trigger flex right">
-                <button className="cta flex mr-20" onClick={onClickNextButton} disabled={_isDisabled}>
+                <button data-testid = "branch-regex-save-next-button" className="cta flex mr-20" onClick={onClickNextButton} disabled={_isDisabled}>
                     Save {!isChangeBranchClicked && '& Next'}
                     {!isChangeBranchClicked && (
                         <LeftIcon
@@ -142,6 +142,7 @@ export default function BranchRegexModal({
                                     </span>
                                 </div>
                                 <input
+                                    data-testid = "branch-name-matching-regex-textbox"
                                     tabIndex={index}
                                     placeholder={BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchNameRegex}
                                     className="form__input ml-36 w-95"

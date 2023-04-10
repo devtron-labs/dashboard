@@ -39,7 +39,7 @@ export default function LogsRenderer({
         (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled) ? (
         renderConfigurationError(isBlobStorageConfigured)
     ) : (
-        <div className="logs__body">
+        <div className="logs__body" data-testid="check-logs-detail">
             {logs.map((log: string, index: number) => {
                 return (
                     <div className="flex top left mb-10 lh-24" key={`logs-${index}`}>

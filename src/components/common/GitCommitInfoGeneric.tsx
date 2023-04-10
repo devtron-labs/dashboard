@@ -181,7 +181,7 @@ export default function GitCommitInfoGeneric({
                                 data-testid = {`deployment-history-source-code-material-history${index}`}
 
                             >
-                                <div className="material-history__header">
+                                <div className="material-history__header" data-testid={`git-commit-credential${index}`}>
                                     {' '}
                                     <Commit className="commit-hash__icon" />
                                     {_lowerCaseCommitInfo.commit}{' '}
