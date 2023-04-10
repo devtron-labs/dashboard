@@ -532,6 +532,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                             node['approvalUsers'] = data.approvalUsers
                             node['artifactTriggeredBy'] = data.artifactTriggeredBy
                             node['userApprovalConfig'] = data.userApprovalConfig
+                            node['requestedUserId'] = data.requestedUserId
                             _selectedNode = node
                             _workflowId = workflow.id
                             _appID = workflow.appId

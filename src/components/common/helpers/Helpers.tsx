@@ -1224,6 +1224,7 @@ export const parsePassword = (password: string): string => {
 }
 
 export const getAlphabetIcon = (str: string) => {
+    if (!str) return null
     return (
         <span
             className="alphabet-icon__initial fs-13 icon-dim-24 flex cn-0 mr-8"

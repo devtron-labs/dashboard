@@ -90,6 +90,10 @@ export interface MaterialInfo {
   type?: string
 }
 
+export interface UserApprovalConfigType {
+    requiredCount: number
+}
+
 interface ApprovalUserDataType {
     dataId: number
     userActionTime: string
@@ -222,9 +226,10 @@ export interface NodeAttr {
     primaryBranchAfterRegex?: string
     storageConfigured?: boolean
     deploymentAppDeleteRequest?: boolean
-    approvalUsers?: any[],
+    approvalUsers?: string[],
     artifactTriggeredBy?: string,
-    userApprovalConfig?: any,
+    userApprovalConfig?: UserApprovalConfigType,
+    requestedUserId?: number
 }
 
 export interface DownStreams {
@@ -592,9 +597,7 @@ export interface CdPipeline {
     parentPipelineType?: string
     deploymentAppDeleteRequest?: boolean
     deploymentAppCreated?: boolean
-    userApprovalConf?: {
-        requiredCount: number
-    }
+    userApprovalConf?: UserApprovalConfigType
 }
 
 export interface CdPipelineResult {

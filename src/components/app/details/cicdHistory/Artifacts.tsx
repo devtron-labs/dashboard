@@ -166,7 +166,11 @@ const CIProgressView = (): JSX.Element => {
     )
 }
 
-const getApprovedTippyContent = (approvalRequested, approvedBy, deployedBy) => {
+const getApprovedTippyContent = (
+    approvalRequested: string,
+    approvedBy: string[],
+    deployedBy: string
+) => {
     return (
         <div className="pl-12 pr-12 h-200 dc__overflow-hidden">
             <div className="pt-12 pb-12 h-100 dc__overflow-scroll">
@@ -214,8 +218,8 @@ export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children }
                         Icon={ApprovedIcon}
                         heading="Approved"
                         additionalContent={getApprovedTippyContent(
-                            userApprovalMetadata.requestedUserData.userEmail,
-                            userApprovalMetadata.approvedUsersData.map((_approver) => _approver.userEmail),
+                            userApprovalMetadata.requestedUserData?.userEmail,
+                            userApprovalMetadata.approvedUsersData?.map((_approver) => _approver.userEmail),
                             triggeredBy,
                         )}
                         showCloseButton={true}

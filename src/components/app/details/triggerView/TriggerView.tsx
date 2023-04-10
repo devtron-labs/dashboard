@@ -385,6 +385,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             node['approvalUsers'] = data.approvalUsers
                             node['artifactTriggeredBy'] = data.artifactTriggeredBy
                             node['userApprovalConfig'] = data.userApprovalConfig
+                            node['requestedUserId'] = data.requestedUserId
                         }
                         return node
                     })

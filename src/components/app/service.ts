@@ -3,7 +3,7 @@ import { get, post, trash, ServerErrors, ResponseType, sortCallback } from '@dev
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
 import { History } from './details/cicdHistory/types'
-import { AppDetails, CreateAppLabelsRequest } from './types'
+import { AppDetails, CDMaterialResponseType, CreateAppLabelsRequest } from './types'
 import { CDModalTabType, DeploymentNodeType, DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
 
@@ -215,13 +215,6 @@ export const getCIMaterialList = (params) => {
     })
 }
 
-interface CDMaterialResponseType {
-    approvalUsers: any[]
-    artifactTriggeredBy: string
-    materials: any[]
-    userApprovalConfig: any
-}
-
 export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType, isApprovalNode?: boolean): Promise<CDMaterialResponseType> {
     const URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
         isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
@@ -233,6 +226,7 @@ export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType, i
                 artifactTriggeredBy: '',
                 materials: [],
                 userApprovalConfig: null,
+                requestedUserId: 0
             }
         }
         return {
@@ -245,6 +239,7 @@ export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType, i
                 response.result.latest_wf_artifact_status,
             ),
             userApprovalConfig: response.result.userApprovalConfig,
+            requestedUserId: response.result.requestedUserId
         }
     })
 }

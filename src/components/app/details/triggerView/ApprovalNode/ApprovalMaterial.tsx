@@ -1,21 +1,23 @@
 import React, { useContext, useState } from 'react'
 import { CDModalTab } from '../../../service'
-import { ButtonWithLoader, getLoginInfo, ScanVulnerabilitiesTable, useAsync } from '../../../../common'
+import { ButtonWithLoader, getAlphabetIcon, getLoginInfo, ScanVulnerabilitiesTable, useAsync } from '../../../../common'
 import { getModuleInfo } from '../../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleNameMap } from '../../../../../config'
 import { ModuleStatus } from '../../../../v2/devtronStackManager/DevtronStackManager.type'
 import { ReactComponent as World } from '../../../../../assets/icons/ic-world.svg'
 import { ReactComponent as Failed } from '../../../../../assets/icons/ic-rocket-fail.svg'
 import { ReactComponent as DeployIcon } from '../../../../../assets/icons/ic-nav-rocket.svg'
+import { ReactComponent as ApprovalChecks } from '../../../../../assets/icons/ic-checks.svg'
 import arrow from '../../../../../assets/icons/misc/arrow-chevron-down-black.svg'
 import docker from '../../../../../assets/icons/misc/docker.svg'
-import { CDMaterialType, DeploymentNodeType, MaterialInfo } from '../types'
+import { CDMaterialType, DeploymentNodeType, MaterialInfo, UserApprovalMetadataType } from '../types'
 import { GitTriggers } from '../../cicdHistory/types'
 import GitCommitInfoGeneric from '../../../../common/GitCommitInfoGeneric'
 import { Progressing, showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { submitApprovalRequest } from './Service'
 import { TriggerViewContext } from '../config'
 import Tippy from '@tippyjs/react'
+import { toast } from 'react-toastify'
 
 export default function ApprovalMaterial({
     material,
@@ -27,6 +29,7 @@ export default function ApprovalMaterial({
     pipelineId,
     parentEnvironmentName,
     node,
+    selectedTabIndex,
 }) {
     const { onClickCDMaterial } = useContext(TriggerViewContext)
     const [tippyVisible, setTippyVisible] = useState<Record<string, boolean>>({})
@@ -108,6 +111,7 @@ export default function ApprovalMaterial({
         }
         submitApprovalRequest(payload)
             .then((response) => {
+                toast.success('Image approval request submitted')
                 onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
             })
             .catch((e) => {
@@ -125,6 +129,7 @@ export default function ApprovalMaterial({
         }
         submitApprovalRequest(payload)
             .then((response) => {
+                toast.success('Image approved')
                 onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
             })
             .catch((e) => {
@@ -132,8 +137,11 @@ export default function ApprovalMaterial({
             })
     }
 
-    const cancelRequest = (e: any) => {
-        toggleTippyVisibility(e)
+    const cancelRequest = (e: any, noConfirmation?: boolean) => {
+        if (!noConfirmation) {
+            toggleTippyVisibility(e)
+        }
+
         const payload = {
             actionType: 2,
             pipelineId: pipelineId,
@@ -142,6 +150,7 @@ export default function ApprovalMaterial({
         }
         submitApprovalRequest(payload)
             .then((response) => {
+                toast.success('Image approval request cancelled')
                 onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
             })
             .catch((e) => {
@@ -204,36 +213,49 @@ export default function ApprovalMaterial({
     }
 
     const getApprovalCTA = (mat: CDMaterialType) => {
+        const userId = node?.requestedUserId
+        const requestedUserId = mat.userApprovalMetadata?.requestedUserData?.userId
+        const isApprover = node.approvalUsers?.includes(email)
+
         if (mat.userApprovalMetadata?.approvalRuntimeState === 1) {
-            if (node?.approvalUsers && !node.approvalUsers.includes(email)) {
-                return <span className="cn-5 cursor-default">Awaiting approval</span>
-            } else if (
-                node.approvalUsers?.includes(email) &&
-                mat.userApprovalMetadata.approvedUsersData?.some((userData) => userData.userEmail === email)
-            ) {
-                return <span className="cg-5 cursor-default">Approved by you</span>
-            } else if (
-                node?.artifactTriggeredBy === email ||
-                mat.userApprovalMetadata.requestedUserData?.userEmail === email
-            ) {
+            if (node?.artifactTriggeredBy === email) {
                 return (
                     <Tippy
                         className="default-tt w-200"
                         arrow={false}
                         placement="top"
-                        content={
-                            node?.artifactTriggeredBy === email
-                                ? 'You triggered the build pipeline for this image. The builder of an image cannot approve it.'
-                                : 'You raised the approval request for this image. As the requester, you cannot approve it.'
-                        }
+                        content="You triggered the build pipeline for this image. The builder of an image cannot approve it."
                     >
                         <span className="cb-5 dc__opacity-0_5 cursor-default">Approve</span>
                     </Tippy>
                 )
             } else if (
-                mat.userApprovalMetadata.requestedUserData?.userEmail &&
-                mat.userApprovalMetadata.requestedUserData.userEmail !== email
+                isApprover &&
+                mat.userApprovalMetadata.approvedUsersData?.some((userData) => userData.userId === userId)
             ) {
+                return <span className="cg-5 cursor-default">Approved by you</span>
+            } else if (requestedUserId && userId && requestedUserId === userId) {
+                return (
+                    <TippyCustomized
+                        theme={TippyTheme.white}
+                        className="w-300 h-100 dc__align-left"
+                        placement="bottom-end"
+                        iconClass="fcv-5"
+                        heading="Cancel approval request"
+                        infoText="Are you sure you want to cancel approval request for this image? A new approval request would need to be raised if you want to deploy this image."
+                        additionalContent={getCancelRequestButton(mat)}
+                        showCloseButton={true}
+                        onClose={() => handleOnClose(mat.id)}
+                        trigger="click"
+                        interactive={true}
+                        visible={tippyVisible[mat.id]}
+                    >
+                        <span className="cr-5" data-id={mat.id} onClick={toggleTippyVisibility}>
+                            Cancel request
+                        </span>
+                    </TippyCustomized>
+                )
+            } else if (isApprover || requestedUserId !== userId) {
                 return (
                     <TippyCustomized
                         theme={TippyTheme.white}
@@ -255,26 +277,7 @@ export default function ApprovalMaterial({
                     </TippyCustomized>
                 )
             } else {
-                return (
-                    <TippyCustomized
-                        theme={TippyTheme.white}
-                        className="w-300 h-100 dc__align-left"
-                        placement="bottom-end"
-                        iconClass="fcv-5"
-                        heading="Cancel approval request"
-                        infoText="Are you sure you want to cancel approval request for this image? A new approval request would need to be raised if you want to deploy this image."
-                        additionalContent={getCancelRequestButton(mat)}
-                        showCloseButton={true}
-                        onClose={() => handleOnClose(mat.id)}
-                        trigger="click"
-                        interactive={true}
-                        visible={tippyVisible[mat.id]}
-                    >
-                        <span className="cr-5" data-id={mat.id} onClick={toggleTippyVisibility}>
-                            Cancel request
-                        </span>
-                    </TippyCustomized>
-                )
+                return <span className="cn-5 cursor-default">Awaiting approval</span>
             }
         } else {
             return (
@@ -300,7 +303,59 @@ export default function ApprovalMaterial({
         }
     }
 
+    const getApprovedTippyContent = (matId: string, userApprovalMetadata: UserApprovalMetadataType) => {
+        const requestedBySelf =
+            userApprovalMetadata?.requestedUserData?.userId &&
+            userApprovalMetadata.requestedUserData.userId === node?.requestedUserId
+        const imageApproved = userApprovalMetadata?.approvedUsersData?.length > 0
+
+        return (
+            <div className={`pl-12 pr-12 dc__overflow-hidden ${imageApproved ? 'h-200' : 'h-132'}`}>
+                <div className="pt-12 pb-12 h-100 dc__overflow-scroll">
+                    <div>
+                        <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">Approval requested by</h5>
+                        <span className="flex left mb-8">
+                            {getAlphabetIcon(userApprovalMetadata?.requestedUserData?.userEmail)}
+                            {requestedBySelf ? 'You' : userApprovalMetadata?.requestedUserData?.userEmail}
+                            {requestedBySelf && (
+                                <span
+                                    className="fs-13 fw-6 lh-20 cr-5 ml-auto cursor"
+                                    data-id={matId}
+                                    data-request-id={userApprovalMetadata?.approvalRequestId}
+                                    onClick={(e) => cancelRequest(e, true)}
+                                >
+                                    Cancel
+                                </span>
+                            )}
+                        </span>
+                    </div>
+                    <div className="mt-12">
+                        <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">Approved by</h5>
+                        {imageApproved ? (
+                            <ol className="p-0 dc__list-style-none">
+                                {userApprovalMetadata.approvedUsersData.map((_approver) => {
+                                    return (
+                                        <li key={_approver.userEmail} className="flex left mb-8">
+                                            {getAlphabetIcon(_approver.userEmail)}
+                                            {_approver.userId === node?.requestedUserId ? 'You' : _approver.userEmail}
+                                        </li>
+                                    )
+                                })}
+                            </ol>
+                        ) : (
+                            <span className="fs-13 fw-4 lh-20 cn-7">This image has not received any approvals.</span>
+                        )}
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     const renderMaterialInfo = (mat: CDMaterialType, hideSelector?: boolean) => {
+        const numOfApprovalsText = `${mat.userApprovalMetadata?.approvedUsersData?.length ?? 0}/${
+            node?.userApprovalConfig?.requiredCount ?? 0
+        } Approvals`
+
         return (
             <>
                 <div className="flex left column">
@@ -309,8 +364,26 @@ export default function ApprovalMaterial({
                         {mat.image}
                     </div>
                 </div>
-                {mat.deployedTime && (
-                    <div className="material-history__info flex left fs-13">
+                {selectedTabIndex === 1 && (
+                    <TippyCustomized
+                        theme={TippyTheme.white}
+                        className="w-300 h-100"
+                        placement="top-start"
+                        Icon={ApprovalChecks}
+                        heading={numOfApprovalsText}
+                        additionalContent={getApprovedTippyContent(mat.id, mat.userApprovalMetadata)}
+                        showCloseButton={true}
+                        trigger="click"
+                        interactive={true}
+                    >
+                        <div className="flex left cursor">
+                            <ApprovalChecks className="icon-dim-16 scn-6 mr-8" />
+                            <span className="fs-13 fw-4">{numOfApprovalsText}</span>
+                        </div>
+                    </TippyCustomized>
+                )}
+                {selectedTabIndex === 0 && mat.deployedTime && (
+                    <div className="material-history__info flex left">
                         <DeployIcon className="icon-dim-16 scn-6 mr-8" />
                         <span className="fs-13 fw-4">{mat.deployedTime}</span>
                     </div>

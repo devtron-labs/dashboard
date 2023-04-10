@@ -14,6 +14,7 @@ import { ApprovalMaterialModalProps } from './Types'
 import ApprovalMaterial from './ApprovalMaterial'
 import { getAlphabetIcon } from '../../../../common'
 import { TriggerViewContext } from '../config'
+import { Link } from 'react-router-dom'
 
 export default function ApprovalMaterialModal({
     isLoading,
@@ -87,19 +88,30 @@ export default function ApprovalMaterialModal({
     }
 
     const getApprovalUsersTippyContent = () => {
+        const approversPresent = node?.approvalUsers?.length > 0
         return (
-            <div className="pl-12 pr-12 h-200 dc__overflow-hidden">
+            <div className={`pl-12 pr-12 dc__overflow-hidden ${approversPresent ? 'h-200' : 'h-104'}`}>
                 <div className="pt-12 pb-12 h-100 dc__overflow-scroll">
-                    <ol className="p-0 dc__list-style-none">
-                        {node?.approvalUsers?.map((_approver) => {
-                            return (
-                                <li key={_approver} className="flex left mb-8">
-                                    {getAlphabetIcon(_approver)}
-                                    {_approver}
-                                </li>
-                            )
-                        })}
-                    </ol>
+                    {approversPresent ? (
+                        <ol className="p-0 dc__list-style-none">
+                            {node.approvalUsers.map((_approver) => {
+                                return (
+                                    <li key={_approver} className="flex left mb-8">
+                                        {getAlphabetIcon(_approver)}
+                                        {_approver}
+                                    </li>
+                                )
+                            })}
+                        </ol>
+                    ) : (
+                        <div className="fs-13 fw-4 cn-7 lh-20">
+                            No users have ‘Approver’ permission for this application and environment. ‘Approver’ role
+                            can be provided to users via&nbsp;
+                            <Link to="/global-config/auth/users" className="fs-13 cb-5 lh-20">
+                                User Permissions.
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </div>
         )
@@ -144,6 +156,7 @@ export default function ApprovalMaterialModal({
                     pipelineId={pipelineId}
                     parentEnvironmentName={node?.parentEnvironmentName}
                     node={node}
+                    selectedTabIndex={selectedTabIndex}
                 />
             </div>
         )
