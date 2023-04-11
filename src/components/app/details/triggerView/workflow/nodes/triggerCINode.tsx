@@ -61,7 +61,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
             )
         else
             return (
-                <div data-testid={`ci-trigger-status-${status}`} className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+                <div data-testid="ci-trigger-status" className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
                     {this.props.status && this.props.status.toLowerCase() === 'cancelled'
                         ? 'ABORTED'
                         : this.props.status}
