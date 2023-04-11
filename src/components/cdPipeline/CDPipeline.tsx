@@ -1149,6 +1149,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <div className="w-50 mr-8">
                         <div className="form__label">Environment*</div>
                         <ReactSelect
+                            menuIsOpen
                             menuPortalTarget={this.state.isAdvanced ? null : document.getElementById('visible-modal')}
                             closeMenuOnScroll={true}
                             isDisabled={!!this.props.match.params.cdPipelineId}
