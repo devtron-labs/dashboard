@@ -1225,11 +1225,13 @@ export const parsePassword = (password:string): string => {
     return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password
 }
 
+export const reloadLocation = () => {
+    window.location.reload()
+}
+
 export const reloadToastBody = () => {
     return <UpdateToast
-        onClick={() => {
-            window.location.reload()
-        }}
+        onClick={reloadLocation}
         text="You are viewing an outdated version of Devtron UI."
         buttonText="Reload"
     />
