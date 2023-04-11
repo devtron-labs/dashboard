@@ -61,7 +61,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
             )
         else
             return (
-                <div data-testid="ci-trigger-status" className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+                <div data-testid={`ci-trigger-status-${status}`} className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
                     {this.props.status && this.props.status.toLowerCase() === 'cancelled'
                         ? 'ABORTED'
                         : this.props.status}
@@ -114,7 +114,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 {this.renderStatus(this.props.title)}
                 <div className="workflow-node__btn-grp">
                     <button
-                        data-testid = {``}
+                        data-testid = "workflow-build-select-material-button"
                         className="workflow-node__deploy-btn workflow-node__deploy-btn--ci"
                         onClick={(event) => {
                             event.stopPropagation()
