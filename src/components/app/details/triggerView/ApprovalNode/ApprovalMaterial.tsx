@@ -216,7 +216,7 @@ export default function ApprovalMaterial({
     }
 
     const toggleTippyVisibility = (e) => {
-        const dataId = e.currentTarget?.dataset?.id
+        const dataId = (e.currentTarget ?? e.target)?.dataset?.id
         if (dataId) {
             setTippyVisible((prevState) => ({
                 ...prevState,
@@ -239,7 +239,7 @@ export default function ApprovalMaterial({
         const isApprover = node.approvalUsers?.includes(email)
 
         if (mat.userApprovalMetadata?.approvalRuntimeState === 1) {
-            if (mat.triggeredBy === userId) {
+            if (requestedUserId !== userId && mat.triggeredBy === userId) {
                 return (
                     <Tippy
                         className="default-tt w-200"
@@ -250,9 +250,7 @@ export default function ApprovalMaterial({
                         <span className="cb-5 dc__opacity-0_5 cursor-default">Approve</span>
                     </Tippy>
                 )
-            } else if (
-                mat.userApprovalMetadata.approvedUsersData?.some((userData) => userData.userId === userId)
-            ) {
+            } else if (mat.userApprovalMetadata.approvedUsersData?.some((userData) => userData.userId === userId)) {
                 return <span className="cg-5 cursor-default">Approved by you</span>
             } else if (requestedUserId && userId && requestedUserId === userId) {
                 return (

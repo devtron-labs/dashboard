@@ -357,35 +357,38 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     expireRequest = (e: any) => {
+        e.stopPropagation()
         this.setState({ requestInProgress: true })
         const payload = {
             appId: this.props.appId,
             actionType: 2,
-            pipelineId: this.props.pipelineId,
+            pipelineId: +this.props.pipelineId,
             artifactId: +e.currentTarget.dataset.id,
             approvalRequestId: +e.currentTarget.dataset.requestId,
         }
 
-        // submitApprovalRequest(payload)
-        //     .then((response) => {
-        //         toast.success('Image approval expired')
-        //         // if (!noConfirmation) {
-        //         //     toggleTippyVisibility(e)
-        //         // }
-        //         this.context.onClickCDMaterial(this.props.pipelineId, this.props.stageType)
-        //     })
-        //     .catch((e) => {
-        //         showError(e)
-        //     })
-        //     .finally(() => {
-        //         this.setState({ requestInProgress: false })
-        //     })
+        submitApprovalRequest(payload)
+            .then((response) => {
+                toast.success('Image approval expired')
+                this.context.onClickCDMaterial(this.props.pipelineId, this.props.stageType)
+            })
+            .catch((e) => {
+                showError(e)
+            })
+            .finally(() => {
+                this.setState({ requestInProgress: false })
+            })
     }
 
-    getExpireRequestButton = (artifactId: number) => {
+    getExpireRequestButton = (mat: CDMaterialType) => {
         return (
-            <button className="cta flex mt-4 ml-auto mr-16 mb-16" data-id={artifactId} onClick={this.expireRequest}>
-                {this.state.requestInProgress ? <Progressing size={24} /> : 'Submit request'}
+            <button
+                className="cta delete flex mt-4 ml-auto mr-16 mb-16"
+                data-id={mat.id}
+                data-request-id={mat.userApprovalMetadata?.approvalRequestId}
+                onClick={this.state.requestInProgress ? noop : this.expireRequest}
+            >
+                {this.state.requestInProgress ? <Progressing size={24} /> : 'Expire approval'}
             </button>
         )
     }
@@ -449,20 +452,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 className="w-300 h-100 dc__align-left"
                                 placement="bottom-end"
                                 iconClass="fcv-5"
-                                heading="Request approval"
-                                infoText="Request approval for deploying this image. All users having ‘Approver’ permission for this application and environment can approve."
-                                additionalContent={this.getExpireRequestButton(+mat.id)}
+                                heading="Expire approval"
+                                infoText="Are you sure you want to expire the deployment approval for this image? A new approval request would need to be raised if you want to deploy this image."
+                                additionalContent={this.getExpireRequestButton(mat)}
                                 showCloseButton={true}
-                                // onClose={() => handleOnClose(mat.id)}
                                 trigger="click"
                                 interactive={true}
-                                // visible={tippyVisible[mat.id]}
                             >
-                                <span
-                                    className="mr-16 cr-5"
-                                    data-id={mat.id}
-                                    // onClick={toggleTippyVisibility}
-                                >
+                                <span className="mr-16 cr-5" data-id={mat.id}>
                                     Expire approval
                                 </span>
                             </TippyCustomized>

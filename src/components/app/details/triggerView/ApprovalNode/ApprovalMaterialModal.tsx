@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import {
     Progressing,
     stopPropagation,
@@ -13,7 +13,6 @@ import close from '../../../../../assets/icons/ic-close.svg'
 import { ApprovalMaterialModalProps } from './Types'
 import ApprovalMaterial from './ApprovalMaterial'
 import { getAlphabetIcon } from '../../../../common'
-import { TriggerViewContext } from '../config'
 import { Link } from 'react-router-dom'
 
 export default function ApprovalMaterialModal({
