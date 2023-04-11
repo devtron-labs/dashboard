@@ -35,13 +35,13 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
             status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
         if (hideDetails)
             return (
-                <div data-testid={`cd-status-${statusText}`} className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
+                <div data-testid="cd-status-not-triggered" className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
                     <span>{statusText}</span>
                 </div>
             )
         else
             return (
-                <div data-testid={`cd-status-${statusText}`} className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
+                <div data-testid="cd-trigger-status" className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
                     <span>
                         <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
                     </span>
