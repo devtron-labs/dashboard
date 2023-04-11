@@ -1,14 +1,6 @@
 import React, { useState } from 'react'
-import {
-    showError,
-    useForm,
-    useEffectAfterMount,
-    useAsync,
-    Progressing,
-    ToastBody,
-    ErrorScreenNotAuthorized,
-    Checkbox, CHECKBOX_VALUE
-} from '../common'
+import { useForm, useEffectAfterMount, useAsync } from '../common'
+import { showError, Progressing, ToastBody, ErrorScreenNotAuthorized,  Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration'
 import Tippy from '@tippyjs/react';
@@ -21,8 +13,8 @@ import { ValidateForm, VALIDATION_STATUS } from '../common/ValidateForm/Validate
 import './chartRepo.scss'
 import DeleteComponent from '../../util/DeleteComponent'
 import {DC_CHART_REPO_CONFIRMATION_MESSAGE, DeleteComponentsName, TOAST_INFO} from '../../config/constantMessaging'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
-import TippyCustomized from '../common/TippyCustomized'
+import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
+import TippyCustomized from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwise.svg'
 import { ChartFormFields } from './ChartRepoType'
 import {ChartRepoType} from "./chartRepo.types";
