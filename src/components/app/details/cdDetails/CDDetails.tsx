@@ -107,7 +107,7 @@ export default function CDDetails() {
             )?.deploymentAppType
             const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
             let _selectedEnvironment,
-                isEnvDeleted = result[0]['value']?.result.find((envData) => envData.environmentId === +envId) || null
+                isEnvDeleted = false
             const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value']?.result || []).map((envData) => {
                 if (envData.environmentId === +envId) {
                     _selectedEnvironment = envData
