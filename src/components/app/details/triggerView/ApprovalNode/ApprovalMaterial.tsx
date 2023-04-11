@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react'
 import { CDModalTab } from '../../../service'
-import { ButtonWithLoader, getAlphabetIcon, getLoginInfo, ScanVulnerabilitiesTable, useAsync } from '../../../../common'
+import { getLoginInfo, noop, ScanVulnerabilitiesTable, useAsync } from '../../../../common'
 import { getModuleInfo } from '../../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleNameMap } from '../../../../../config'
 import { ModuleStatus } from '../../../../v2/devtronStackManager/DevtronStackManager.type'
@@ -10,7 +10,7 @@ import { ReactComponent as DeployIcon } from '../../../../../assets/icons/ic-nav
 import { ReactComponent as ApprovalChecks } from '../../../../../assets/icons/ic-checks.svg'
 import arrow from '../../../../../assets/icons/misc/arrow-chevron-down-black.svg'
 import docker from '../../../../../assets/icons/misc/docker.svg'
-import { CDMaterialType, DeploymentNodeType, MaterialInfo, UserApprovalMetadataType } from '../types'
+import { CDMaterialType, DeploymentNodeType, MaterialInfo } from '../types'
 import { GitTriggers } from '../../cicdHistory/types'
 import GitCommitInfoGeneric from '../../../../common/GitCommitInfoGeneric'
 import { Progressing, showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
@@ -18,6 +18,7 @@ import { submitApprovalRequest } from './Service'
 import { TriggerViewContext } from '../config'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
+import { ApprovedTippyContent } from './ApprovalMaterial.component'
 
 export default function ApprovalMaterial({
     material,
@@ -33,6 +34,7 @@ export default function ApprovalMaterial({
 }) {
     const { onClickCDMaterial } = useContext(TriggerViewContext)
     const [tippyVisible, setTippyVisible] = useState<Record<string, boolean>>({})
+    const [requestInProgress, setRequestInProgress] = useState(false)
     const loginInfo = getLoginInfo()
     const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
     const [, securityModuleRes] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [])
@@ -102,7 +104,7 @@ export default function ApprovalMaterial({
     }
 
     const submitRequest = (e: any) => {
-        toggleTippyVisibility(e)
+        setRequestInProgress(true)
         const payload = {
             actionType: 0,
             pipelineId: pipelineId,
@@ -112,15 +114,19 @@ export default function ApprovalMaterial({
         submitApprovalRequest(payload)
             .then((response) => {
                 toast.success('Image approval request submitted')
+                toggleTippyVisibility(e)
                 onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
             })
             .catch((e) => {
                 showError(e)
             })
+            .finally(() => {
+                setRequestInProgress(false)
+            })
     }
 
     const approveRequest = (e: any) => {
-        toggleTippyVisibility(e)
+        setRequestInProgress(true)
         const payload = {
             actionType: 1,
             pipelineId: pipelineId,
@@ -130,18 +136,19 @@ export default function ApprovalMaterial({
         submitApprovalRequest(payload)
             .then((response) => {
                 toast.success('Image approved')
+                toggleTippyVisibility(e)
                 onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
             })
             .catch((e) => {
                 showError(e)
             })
+            .finally(() => {
+                setRequestInProgress(false)
+            })
     }
 
     const cancelRequest = (e: any, noConfirmation?: boolean) => {
-        if (!noConfirmation) {
-            toggleTippyVisibility(e)
-        }
-
+        setRequestInProgress(true)
         const payload = {
             actionType: 2,
             pipelineId: pipelineId,
@@ -151,10 +158,16 @@ export default function ApprovalMaterial({
         submitApprovalRequest(payload)
             .then((response) => {
                 toast.success('Image approval request cancelled')
+                if (!noConfirmation) {
+                    toggleTippyVisibility(e)
+                }
                 onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
             })
             .catch((e) => {
                 showError(e)
+            })
+            .finally(() => {
+                setRequestInProgress(false)
             })
     }
 
@@ -164,9 +177,9 @@ export default function ApprovalMaterial({
                 className="cta delete flex mt-4 ml-auto mr-16 mb-16"
                 data-id={mat.id}
                 data-request-id={mat.userApprovalMetadata?.approvalRequestId}
-                onClick={cancelRequest}
+                onClick={requestInProgress ? noop : cancelRequest}
             >
-                Cancel request
+                {requestInProgress ? <Progressing size={24} /> : 'Cancel request'}
             </button>
         )
     }
@@ -177,20 +190,24 @@ export default function ApprovalMaterial({
                 className="cta flex mt-4 ml-auto mr-16 mb-16"
                 data-id={mat.id}
                 data-request-id={mat.userApprovalMetadata?.approvalRequestId}
-                onClick={approveRequest}
+                onClick={requestInProgress ? noop : approveRequest}
                 style={{
                     background: 'var(--G500)',
                 }}
             >
-                Approve request
+                {requestInProgress ? <Progressing size={24} /> : 'Approve request'}
             </button>
         )
     }
 
     const getSubmitRequestButton = (artifactId: number) => {
         return (
-            <button className="cta flex mt-4 ml-auto mr-16 mb-16" data-id={artifactId} onClick={submitRequest}>
-                Submit request
+            <button
+                className="cta flex mt-4 ml-auto mr-16 mb-16"
+                data-id={artifactId}
+                onClick={requestInProgress ? noop : submitRequest}
+            >
+                {requestInProgress ? <Progressing size={24} /> : 'Submit request'}
             </button>
         )
     }
@@ -206,6 +223,7 @@ export default function ApprovalMaterial({
     }
 
     const handleOnClose = (id: string) => {
+        if (requestInProgress) return
         setTippyVisible((prevState) => ({
             ...prevState,
             [id]: false,
@@ -303,54 +321,6 @@ export default function ApprovalMaterial({
         }
     }
 
-    const getApprovedTippyContent = (matId: string, userApprovalMetadata: UserApprovalMetadataType) => {
-        const requestedBySelf =
-            userApprovalMetadata?.requestedUserData?.userId &&
-            userApprovalMetadata.requestedUserData.userId === node?.requestedUserId
-        const imageApproved = userApprovalMetadata?.approvedUsersData?.length > 0
-
-        return (
-            <div className={`pl-12 pr-12 dc__overflow-hidden ${imageApproved ? 'h-200' : 'h-132'}`}>
-                <div className="pt-12 pb-12 h-100 dc__overflow-scroll">
-                    <div>
-                        <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">Approval requested by</h5>
-                        <span className="flex left mb-8">
-                            {getAlphabetIcon(userApprovalMetadata?.requestedUserData?.userEmail)}
-                            {requestedBySelf ? 'You' : userApprovalMetadata?.requestedUserData?.userEmail}
-                            {requestedBySelf && (
-                                <span
-                                    className="fs-13 fw-6 lh-20 cr-5 ml-auto cursor"
-                                    data-id={matId}
-                                    data-request-id={userApprovalMetadata?.approvalRequestId}
-                                    onClick={(e) => cancelRequest(e, true)}
-                                >
-                                    Cancel
-                                </span>
-                            )}
-                        </span>
-                    </div>
-                    <div className="mt-12">
-                        <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">Approved by</h5>
-                        {imageApproved ? (
-                            <ol className="p-0 dc__list-style-none">
-                                {userApprovalMetadata.approvedUsersData.map((_approver) => {
-                                    return (
-                                        <li key={_approver.userEmail} className="flex left mb-8">
-                                            {getAlphabetIcon(_approver.userEmail)}
-                                            {_approver.userId === node?.requestedUserId ? 'You' : _approver.userEmail}
-                                        </li>
-                                    )
-                                })}
-                            </ol>
-                        ) : (
-                            <span className="fs-13 fw-4 lh-20 cn-7">This image has not received any approvals.</span>
-                        )}
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
     const renderMaterialInfo = (mat: CDMaterialType, hideSelector?: boolean) => {
         const numOfApprovalsText = `${mat.userApprovalMetadata?.approvedUsersData?.length ?? 0}/${
             node?.userApprovalConfig?.requiredCount ?? 0
@@ -371,7 +341,15 @@ export default function ApprovalMaterial({
                         placement="top-start"
                         Icon={ApprovalChecks}
                         heading={numOfApprovalsText}
-                        additionalContent={getApprovedTippyContent(mat.id, mat.userApprovalMetadata)}
+                        additionalContent={
+                            <ApprovedTippyContent
+                                matId={mat.id}
+                                requestedUserId={node?.requestedUserId}
+                                userApprovalMetadata={mat.userApprovalMetadata}
+                                cancelRequest={cancelRequest}
+                                requestInProgress={requestInProgress}
+                            />
+                        }
                         showCloseButton={true}
                         trigger="click"
                         interactive={true}

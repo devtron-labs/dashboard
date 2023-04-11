@@ -1,4 +1,4 @@
-import { CDModalTabType, DeploymentNodeType, NodeAttr } from "../types"
+import { CDModalTabType, DeploymentNodeType, NodeAttr, UserApprovalMetadataType } from '../types'
 
 export interface ApprovalMaterialModalProps {
     isLoading: boolean
@@ -16,4 +16,12 @@ export interface ApprovalMaterialModalProps {
     closeApprovalModal: (e) => void
     appId?: number
     pipelineId?: number
+}
+
+export interface ApprovedTippyContentProps {
+    matId: string
+    requestedUserId: number
+    userApprovalMetadata: UserApprovalMetadataType
+    cancelRequest: (e: any, noConfirmation?: boolean) => void
+    requestInProgress: boolean
 }
