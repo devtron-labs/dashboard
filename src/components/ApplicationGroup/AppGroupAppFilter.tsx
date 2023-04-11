@@ -77,29 +77,6 @@ const Option = (props) => {
             ) : (
                 <Check className="icon-dim-16 mr-4 mw-18 cursor scb-5" onClick={selectData} />
             )}
-            {/* {props.isSelected && <Icon className="icon-dim-16 scb-5 mr-4 mw-18 cursor" onClick={selectData} />}
-            {props.isFocused &&
-                !props.isSelected &&
-                (selectedFilterTab === AppFilterTabs.APP_FILTER ? (
-                    <ShowIcon className="icon-dim-16 mr-4 mw-18 cursor" onClick={selectData} />
-                ) : (
-                    <div className="flex">
-                        <Edit className="icon-dim-16 mr-4" />
-                        <Trash className="scn-6 icon-dim-16" />
-                    </div>
-                ))} */}
-
-            {/* {(props.isSelected || props.isFocused) && (
-                <Icon
-                    className={`icon-dim-16 mr-4 mw-18 cursor ${props.isSelected ? 'scb-5' : ''}`}
-                    onClick={selectData}
-                />
-            )}
-
-            <div>
-                <Edit className="icon-dim-20" />
-                <Trash className="scn-6 icon-dim-20" />
-            </div> */}
         </div>
     )
 }
@@ -112,6 +89,7 @@ const MenuList = (props: any): JSX.Element => {
         selectedFilterTab,
         setSelectedFilterTab,
         groupFilterOptions,
+        openCreateGroup
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
     const clearSelection = (): void => {
         setSelectedAppList([])
@@ -169,7 +147,7 @@ const MenuList = (props: any): JSX.Element => {
                     className="dc__react-select__bottom dc__no-top-radius dc__align-right bcn-0 fw-6 fs-13 cb-5 pt-8 pr-12 pb-8 pl-12 cursor"
                     style={{ boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.25)' }}
                 >
-                    <span>Save selection as filter</span>
+                    <span onClick={openCreateGroup}>Save selection as filter</span>
                 </div>
             )}
         </components.MenuList>
@@ -223,7 +201,7 @@ export default function AppGroupAppFilter() {
 
     return (
         <ReactSelect
-            menuIsOpen={isMenuOpen}
+            menuIsOpen={true}
             value={selectedFilterTab === AppFilterTabs.APP_FILTER ? selectedAppList : selectedGroupFilter}
             options={selectedFilterTab === AppFilterTabs.APP_FILTER ? appListOptions : groupFilterOptions}
             onChange={onChangeFilter}

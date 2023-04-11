@@ -217,6 +217,7 @@ export interface EnvHeaderType {
     groupFilterOptions: OptionType[]
     selectedGroupFilter: MultiValue<OptionType>
     setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
+    openCreateGroup: (e)=> void
 }
 
 export interface AppGroupAdminType {
@@ -241,6 +242,13 @@ export interface AppGroupAppFilterContextType {
     selectedFilterTab: AppFilterTabs
     setSelectedFilterTab: React.Dispatch<React.SetStateAction<AppFilterTabs>>
     groupFilterOptions: OptionType[]
-    selectedGroupFilter: MultiValue<OptionType>,
-    setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>,
+    selectedGroupFilter: MultiValue<OptionType>
+    setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
+    openCreateGroup: (e)=> void
+}
+
+export interface CreateGroupType {
+    appList: MultiValue<OptionType>
+    selectedAppList: OptionType[]
+    closePopup: (e) => void
 }

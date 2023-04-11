@@ -1,7 +1,7 @@
 import React, { Suspense, useCallback, useRef, useEffect, useState, useMemo } from 'react'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
 import { ErrorBoundary, useAsync, sortOptionsByLabel } from '../common'
-import { Progressing, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, BreadCrumb, useBreadcrumb, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
 import { URLS } from '../../config'
@@ -24,6 +24,7 @@ import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
 import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
 import '../app/details/app.scss'
 import { CONTEXT_NOT_AVAILABLE_ERROR } from '../../config/constantMessaging'
+import CreateGroup from './CreateGroup'
 
 const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
 
@@ -47,6 +48,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [selectedFilterTab, setSelectedFilterTab] = useState<AppFilterTabs>(AppFilterTabs.GROUP_FILTER)
     const [groupFilterOptions, setGroupFilterOptions] = useState<OptionType[]>([])
     const [selectedGroupFilter, setSelectedGroupFilter] = useState<MultiValue<OptionType>>([])
+    const [showCreateGroup, setShowCreateGroup] = useState<boolean>(false)
 
     useEffect(() => {
         if (envList?.result) {
@@ -105,6 +107,16 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             )
         }
         setAppListLoading(false)
+    }
+
+    const openCreateGroup = (e) => {
+        stopPropagation(e)
+        setShowCreateGroup(true)
+    }
+
+    const closeCreateGroup = (e) => {
+        stopPropagation(e)
+        setShowCreateGroup(false)
     }
 
     const renderEmpty = () => {
@@ -171,8 +183,16 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 groupFilterOptions={groupFilterOptions}
                 selectedGroupFilter={selectedGroupFilter}
                 setSelectedGroupFilter={setSelectedGroupFilter}
+                openCreateGroup={openCreateGroup}
             />
             {renderRoute()}
+            {showCreateGroup && (
+                <CreateGroup
+                    appList={selectedAppList}
+                    selectedAppList={appListOptions}
+                    closePopup={closeCreateGroup}
+                />
+            )}
         </div>
     )
 }
@@ -190,6 +210,7 @@ export function EnvHeader({
     groupFilterOptions,
     selectedGroupFilter,
     setSelectedGroupFilter,
+    openCreateGroup,
 }: EnvHeaderType) {
     const { envId } = useParams<{ envId: string }>()
     const match = useRouteMatch()
@@ -210,6 +231,7 @@ export function EnvHeader({
             groupFilterOptions,
             selectedGroupFilter,
             setSelectedGroupFilter,
+            openCreateGroup,
         }),
         [appListOptions, isMenuOpen, selectedAppList, selectedFilterTab, groupFilterOptions, selectedGroupFilter],
     )
