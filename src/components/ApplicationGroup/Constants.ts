@@ -9,6 +9,10 @@ export const ENV_TRIGGER_VIEW_GA_EVENTS = {
         category: 'Environment Details Trigger View',
         action: 'Select Image Clicked',
     },
+    ApprovalNodeClicked: {
+        category: 'Environment Details Trigger View',
+        action: 'Approval Node Clicked',
+    },
     RollbackClicked: {
         category: 'Environment Details Trigger View',
         action: 'Select Rollback Material Clicked',

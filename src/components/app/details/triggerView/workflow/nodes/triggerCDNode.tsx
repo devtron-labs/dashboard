@@ -43,9 +43,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
         else
             return (
                 <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
-                    <span>
-                        <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
-                    </span>
+                    <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
                     <span>{statusText}</span>
                     {!this.props.fromAppGrouping && (
                         <>

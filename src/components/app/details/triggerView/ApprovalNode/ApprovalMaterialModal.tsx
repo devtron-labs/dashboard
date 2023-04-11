@@ -87,7 +87,7 @@ export default function ApprovalMaterialModal({
                 <div className="pt-12 pb-12 h-100 dc__overflow-scroll">
                     {approversPresent ? (
                         <ol className="p-0 dc__list-style-none">
-                            {node.approvalUsers.map((_approver) => {
+                            {node.approvalUsers.sort().map((_approver) => {
                                 return (
                                     <li key={_approver} className="flex left mb-8">
                                         {getAlphabetIcon(_approver)}

@@ -67,6 +67,7 @@ import {
 } from '../../AppGroup.types'
 import { handleSourceNotConfigured, processWorkflowStatuses } from '../../AppGroup.utils'
 import Tippy from '@tippyjs/react'
+import ApprovalMaterialModal from '../../../app/details/triggerView/ApprovalNode/ApprovalMaterialModal'
 
 let inprogressStatusTimer
 export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultType) {
@@ -82,6 +83,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     const [errorCode, setErrorCode] = useState(0)
     const [showCIModal, setShowCIModal] = useState(false)
     const [showCDModal, setShowCDModal] = useState(false)
+    const [showApprovalModal, setShowApprovalModal] = useState(false)
     const [showBulkCDModal, setShowBulkCDModal] = useState(false)
     const [showBulkCIModal, setShowBulkCIModal] = useState(false)
     const [showWebhookModal, setShowWebhookModal] = useState(false)
@@ -519,10 +521,10 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             })
     }
 
-    const onClickCDMaterial = (cdNodeId, nodeType: DeploymentNodeType) => {
-        ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.ImageClicked)
+    const onClickCDMaterial = (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => {
+        ReactGA.event(isApprovalNode ? ENV_TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : ENV_TRIGGER_VIEW_GA_EVENTS.ImageClicked)
         let _workflowId, _appID
-        getCDMaterialList(cdNodeId, nodeType)
+        getCDMaterialList(cdNodeId, isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType)
             .then((data) => {
                 let _selectedNode
                 const _workflows = [...filteredWorkflows].map((workflow) => {
@@ -547,7 +549,8 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                 setFilteredWorkflows(_workflows)
                 setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
                 setMaterialType(MATERIAL_TYPE.inputMaterialList)
-                setShowCDModal(true)
+                setShowCDModal(!isApprovalNode)
+                setShowApprovalModal(isApprovalNode)
                 setCDLoading(false)
                 preventBodyScroll(true)
             })
@@ -946,6 +949,11 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     const closeCDModal = (e): void => {
         preventBodyScroll(false)
         setShowCDModal(false)
+    }
+
+    const closeApprovalModal = (e): void => {
+        preventBodyScroll(false)
+        setShowApprovalModal(false)
     }
 
     const hideWebhookModal = (e?) => {
@@ -1509,6 +1517,41 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     parentPipelineId={node?.parentPipelineId}
                     parentPipelineType={node?.parentPipelineType}
                     parentEnvironmentName={node?.parentEnvironmentName}
+                    userApprovalConfig={node?.userApprovalConfig}
+                    requestedUserId={node?.requestedUserId}
+                />
+            )
+        }
+
+        return null
+    }
+
+    const renderApprovalMaterial = () => {
+        if (showApprovalModal) {
+            let node: NodeAttr, _appID
+            if (selectedCDNode?.id) {
+                for (const _wf of filteredWorkflows) {
+                    node = _wf.nodes.find((el) => {
+                        return +el.id == selectedCDNode.id && el.type == selectedCDNode.type
+                    })
+                    if (node) {
+                        _appID = _wf.appId
+                        break
+                    }
+                }
+            }
+
+            return (
+                <ApprovalMaterialModal
+                    appId={_appID}
+                    pipelineId={selectedCDNode.id}
+                    stageType={DeploymentNodeType[selectedCDNode.type]}
+                    node={node}
+                    materialType={materialType}
+                    isLoading={isCDLoading}
+                    changeTab={changeTab}
+                    closeApprovalModal={closeApprovalModal}
+                    toggleSourceInfo={toggleSourceInfo}
                 />
             )
         }
@@ -1678,6 +1721,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                 {renderCDMaterial()}
                 {renderBulkCDMaterial()}
                 {renderBulkCIMaterial()}
+                {renderApprovalMaterial()}
             </TriggerViewContext.Provider>
             <div></div>
         </div>
