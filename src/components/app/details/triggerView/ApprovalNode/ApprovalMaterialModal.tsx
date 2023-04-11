@@ -31,17 +31,11 @@ export default function ApprovalMaterialModal({
     const material = node?.[materialType] ?? []
     const approvalRequestedMaterial = [],
         remainingMaterial = []
-    material.forEach((mat, index) => {
+    material.forEach((mat) => {
         if (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState === 3) {
-            remainingMaterial.push({
-                ...mat,
-                index,
-            })
+            remainingMaterial.push(mat)
         } else if (mat.userApprovalMetadata?.approvalRuntimeState === 1) {
-            approvalRequestedMaterial.push({
-                ...mat,
-                index,
-            })
+            approvalRequestedMaterial.push(mat)
         }
     })
 

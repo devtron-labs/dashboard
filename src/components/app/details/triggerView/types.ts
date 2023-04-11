@@ -46,6 +46,7 @@ export interface CDMaterialProps {
     pipelineId?: number
     isFromBulkCD?: boolean
     userApprovalConfig?: UserApprovalConfigType
+    requestedUserId?: number
 }
 
 export enum DeploymentWithConfigType {
@@ -76,6 +77,7 @@ export interface CDMaterialState {
     specificDeploymentConfig: any
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
+    requestInProgress: boolean
 }
 
 export interface MaterialInfo {
@@ -112,6 +114,7 @@ export interface UserApprovalMetadataType {
 }
 
 export interface CDMaterialType {
+    index: number
     id: string
     materialInfo: MaterialInfo[]
     tab: CDModalTabType
@@ -131,6 +134,7 @@ export interface CDMaterialType {
     latest: boolean
     runningOnParentCd?: boolean
     userApprovalMetadata?: UserApprovalMetadataType
+    triggeredBy?: number
 }
 
 interface VulnerabilityType {}
@@ -598,7 +602,7 @@ export interface CdPipeline {
     parentPipelineType?: string
     deploymentAppDeleteRequest?: boolean
     deploymentAppCreated?: boolean
-    userApprovalConf?: UserApprovalConfigType
+    userApprovalConfig?: UserApprovalConfigType
 }
 
 export interface CdPipelineResult {

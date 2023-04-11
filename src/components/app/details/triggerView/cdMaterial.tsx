@@ -9,6 +9,7 @@ import {
     MaterialInfo,
     MATERIAL_TYPE,
     STAGE_TYPE,
+    TriggerViewContextType,
 } from './types'
 import { GitTriggers } from '../cicdHistory/types'
 import close from '../../../../assets/icons/ic-close.svg'
@@ -30,9 +31,11 @@ import {
     ConditionalWrap,
     stopPropagation,
     VisibleModal,
+    TippyCustomized,
+    TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { EmptyStateCdMaterial } from './EmptyStateCdMaterial'
-import { CDButtonLabelMap, getCommonConfigSelectStyles } from './config'
+import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import {
     CDModalTab,
     getLatestDeploymentConfig,
@@ -54,8 +57,12 @@ import {
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
 import { EmptyView } from '../cicdHistory/History.components'
+import { submitApprovalRequest } from './ApprovalNode/Service'
+import { toast } from 'react-toastify'
 
 export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
+    static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
+
     constructor(props: CDMaterialProps) {
         super(props)
         this.state = {
@@ -77,6 +84,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             latestDeploymentConfig: null,
             specificDeploymentConfig: null,
             isSelectImageTrigger: props.materialType === MATERIAL_TYPE.inputMaterialList,
+            requestInProgress: false,
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -348,7 +356,48 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
     }
 
-    renderMaterialInfo(mat: CDMaterialType, hideSelector?: boolean) {
+    expireRequest = (e: any) => {
+        this.setState({ requestInProgress: true })
+        const payload = {
+            appId: this.props.appId,
+            actionType: 2,
+            pipelineId: this.props.pipelineId,
+            artifactId: +e.currentTarget.dataset.id,
+            approvalRequestId: +e.currentTarget.dataset.requestId,
+        }
+
+        // submitApprovalRequest(payload)
+        //     .then((response) => {
+        //         toast.success('Image approval expired')
+        //         // if (!noConfirmation) {
+        //         //     toggleTippyVisibility(e)
+        //         // }
+        //         this.context.onClickCDMaterial(this.props.pipelineId, this.props.stageType)
+        //     })
+        //     .catch((e) => {
+        //         showError(e)
+        //     })
+        //     .finally(() => {
+        //         this.setState({ requestInProgress: false })
+        //     })
+    }
+
+    getExpireRequestButton = (artifactId: number) => {
+        return (
+            <button className="cta flex mt-4 ml-auto mr-16 mb-16" data-id={artifactId} onClick={this.expireRequest}>
+                {this.state.requestInProgress ? <Progressing size={24} /> : 'Submit request'}
+            </button>
+        )
+    }
+
+    renderMaterialInfo(
+        mat: CDMaterialType,
+        hideSelector?: boolean,
+        disableSelection?: boolean,
+        isImageApprover?: boolean,
+    ) {
+        const isApprovalRequester = mat.userApprovalMetadata?.requestedUserData?.userId === this.props.requestedUserId
+
         return (
             <>
                 <div className="flex left column">
@@ -393,11 +442,54 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <div />
                 )}
                 {!hideSelector && (
-                    <div className="material-history__select-text w-auto">
+                    <div className="material-history__select-text w-auto dc__no-text-transform flex right">
+                        {isApprovalRequester && !isImageApprover && !disableSelection && (
+                            <TippyCustomized
+                                theme={TippyTheme.white}
+                                className="w-300 h-100 dc__align-left"
+                                placement="bottom-end"
+                                iconClass="fcv-5"
+                                heading="Request approval"
+                                infoText="Request approval for deploying this image. All users having ‘Approver’ permission for this application and environment can approve."
+                                additionalContent={this.getExpireRequestButton(+mat.id)}
+                                showCloseButton={true}
+                                // onClose={() => handleOnClose(mat.id)}
+                                trigger="click"
+                                interactive={true}
+                                // visible={tippyVisible[mat.id]}
+                            >
+                                <span
+                                    className="mr-16 cr-5"
+                                    data-id={mat.id}
+                                    // onClick={toggleTippyVisibility}
+                                >
+                                    Expire approval
+                                </span>
+                            </TippyCustomized>
+                        )}
                         {mat.vulnerable ? (
                             <span className="material-history__scan-error">Security Issues Found</span>
                         ) : mat.isSelected ? (
-                            <Check className="dc__align-right icon-dim-24" />
+                            <Check
+                                className={`${
+                                    isApprovalRequester && !isImageApprover && !disableSelection
+                                        ? ''
+                                        : 'dc__align-right'
+                                } icon-dim-24`}
+                            />
+                        ) : disableSelection || isImageApprover ? (
+                            <Tippy
+                                className="default-tt w-200"
+                                arrow={false}
+                                placement="top"
+                                content={
+                                    !mat.latest && isImageApprover
+                                        ? 'This image was approved by you. An image cannot be deployed by its approver.'
+                                        : 'An image can be deployed only once after it has been approved. This image would need to be approved again for it to be eligible for deployment.'
+                                }
+                            >
+                                <span className="dc__opacity-0_5">Select</span>
+                            </Tippy>
                         ) : (
                             'Select'
                         )}
@@ -407,11 +499,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    renderMaterial() {
-        const materialList =
-            this.state.isRollbackTrigger && this.state.showOlderImages ? [this.props.material[0]] : this.props.material
-
-        return materialList.map((mat, index) => {
+    renderMaterial = (materialList: CDMaterialType[], disableSelection?: boolean) => {
+        return materialList.map((mat) => {
+            const isImageApprover = mat.userApprovalMetadata?.approvedUsersData?.some(
+                (_approver) => _approver.userId === this.props.requestedUserId,
+            )
             let isMaterialInfoAvailable = true
             for (const materialInfo of mat.materialInfo) {
                 isMaterialInfoAvailable =
@@ -427,7 +519,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             }
             return (
                 <div
-                    key={`material-history-${index}`}
+                    key={`material-history-${mat.index}`}
                     className={`material-history material-history--cd ${
                         mat.isSelected ? 'material-history-selected' : ''
                     }`}
@@ -437,15 +529,17 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         className={`material-history__top mh-66 ${
                             !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
                         }`}
-                        style={{ cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
+                        style={{
+                            cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}`,
+                        }}
                         onClick={(event) => {
                             event.stopPropagation()
-                            if (!mat.vulnerable) {
-                                this.handleImageSelection(index, mat)
+                            if (!disableSelection && !isImageApprover && !mat.vulnerable) {
+                                this.handleImageSelection(mat.index, mat)
                             }
                         }}
                     >
-                        {this.renderMaterialInfo(mat)}
+                        {this.renderMaterialInfo(mat, false, disableSelection, isImageApprover)}
                     </div>
                     {mat.showSourceInfo && (
                         <>
@@ -457,7 +551,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                             onClick={(e) => {
                                                 e.stopPropagation()
                                                 this.props.changeTab(
-                                                    index,
+                                                    mat.index,
                                                     Number(mat.id),
                                                     CDModalTab.Changes,
                                                     {
@@ -480,11 +574,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                             onClick={(e) => {
                                                 e.stopPropagation()
                                                 this.props.changeTab(
-                                                    index,
+                                                    mat.index,
                                                     Number(mat.id),
                                                     CDModalTab.Security,
                                                     this.props.isFromBulkCD
-                                                        ? { id: this.props.pipelineId, type: this.props.stageType }
+                                                        ? {
+                                                              id: this.props.pipelineId,
+                                                              type: this.props.stageType,
+                                                          }
                                                         : null,
                                                     this.props.appId,
                                                 )
@@ -512,7 +609,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             onClick={(event) => {
                                 event.stopPropagation()
                                 this.props.toggleSourceInfo(
-                                    index,
+                                    mat.index,
                                     this.props.isFromBulkCD
                                         ? { id: this.props.pipelineId, type: this.props.stageType }
                                         : null,
@@ -530,6 +627,57 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 </div>
             )
         })
+    }
+
+    renderMaterialList = () => {
+        const isApprovalConfigured = this.props.userApprovalConfig?.requiredCount > 0
+        const consumedImage = []
+        let materialList = []
+
+        if (isApprovalConfigured) {
+            const approvedImages = []
+
+            this.props.material.forEach((mat) => {
+                if (mat.latest && (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) {
+                    mat.isSelected = false
+                    consumedImage.push(mat)
+                } else {
+                    approvedImages.push(mat)
+                }
+            })
+
+            materialList =
+                this.state.isRollbackTrigger && this.state.showOlderImages ? [approvedImages[0]] : approvedImages
+        } else {
+            materialList =
+                this.state.isRollbackTrigger && this.state.showOlderImages
+                    ? [this.props.material[0]]
+                    : this.props.material
+        }
+
+        return (
+            <>
+                {isApprovalConfigured && this.renderMaterial(consumedImage, true)}
+                {!this.props.isFromBulkCD && (
+                    <div className="material-list__title pb-16">
+                        {isApprovalConfigured
+                            ? 'Approved images'
+                            : this.state.isRollbackTrigger
+                            ? 'Select from previously deployed images'
+                            : 'Select Image'}
+                    </div>
+                )}
+                {this.props.userApprovalConfig?.requiredCount > 0 && materialList.length <= 0 ? (
+                    <EmptyView
+                        title="No image available"
+                        subTitle="Approved images will be available here for deployment."
+                        imgSrc={noartifact}
+                    />
+                ) : (
+                    this.renderMaterial(materialList)
+                )}
+            </>
+        )
     }
 
     renderCDModalHeader(): JSX.Element | string {
@@ -714,6 +862,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     renderTriggerModalCTA() {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
+        const hideConfigDiffSelector =
+            this.props.userApprovalConfig?.requiredCount > 0 && this.props.material.length <= 1
+
         return (
             <div
                 className={`trigger-modal__trigger ${
@@ -722,7 +873,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         : ''
                 }`}
             >
-                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) &&
+                {!hideConfigDiffSelector &&
+                    (this.state.isRollbackTrigger || this.state.isSelectImageTrigger) &&
                     !this.state.showConfigDiffView &&
                     this.props.stageType === DeploymentNodeType.CD && (
                         <div className="flex left dc__border br-4 h-42">
@@ -921,16 +1073,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     />
                 ) : (
                     <>
-                        {!this.props.isFromBulkCD && (
-                            <div className="material-list__title pb-16">
-                                {this.props.userApprovalConfig?.requiredCount > 0
-                                    ? 'Approved images'
-                                    : this.state.isRollbackTrigger
-                                    ? 'Select from previously deployed images'
-                                    : 'Select Image'}
-                            </div>
-                        )}
-                        {this.renderMaterial()}
+                        {this.renderMaterialList()}
                         {this.state.isRollbackTrigger && !this.state.noMoreImages && this.props.material.length !== 1 && (
                             <button
                                 className="show-older-images-cta cta ghosted flex h-32"

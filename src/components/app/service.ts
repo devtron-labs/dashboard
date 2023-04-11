@@ -281,7 +281,8 @@ function cdMaterialListModal(
         }
 
         return {
-            id: material.id,
+            index,
+            id: material.id, 
             deployedTime: material.deployed_time
                 ? moment(material.deployed_time).format(Moment12HourFormat)
                 : 'Not Deployed',
@@ -303,6 +304,7 @@ function cdMaterialListModal(
             runningOnParentCd: material.runningOnParentCd,
             artifactStatus: artifactStatusValue,
             userApprovalMetadata: material.userApprovalMetadata,
+            triggeredBy: material.triggeredBy,
             materialInfo: material.material_info
                 ? material.material_info.map((mat) => {
                       return {

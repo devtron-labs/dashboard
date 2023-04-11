@@ -106,6 +106,7 @@ export default function ApprovalMaterial({
     const submitRequest = (e: any) => {
         setRequestInProgress(true)
         const payload = {
+            appId,
             actionType: 0,
             pipelineId: pipelineId,
             artifactId: +e.currentTarget.dataset.id,
@@ -128,6 +129,7 @@ export default function ApprovalMaterial({
     const approveRequest = (e: any) => {
         setRequestInProgress(true)
         const payload = {
+            appId,
             actionType: 1,
             pipelineId: pipelineId,
             artifactId: +e.currentTarget.dataset.id,
@@ -150,6 +152,7 @@ export default function ApprovalMaterial({
     const cancelRequest = (e: any, noConfirmation?: boolean) => {
         setRequestInProgress(true)
         const payload = {
+            appId,
             actionType: 2,
             pipelineId: pipelineId,
             artifactId: +e.currentTarget.dataset.id,
@@ -236,7 +239,7 @@ export default function ApprovalMaterial({
         const isApprover = node.approvalUsers?.includes(email)
 
         if (mat.userApprovalMetadata?.approvalRuntimeState === 1) {
-            if (node?.artifactTriggeredBy === email) {
+            if (mat.triggeredBy === userId) {
                 return (
                     <Tippy
                         className="default-tt w-200"
@@ -248,7 +251,6 @@ export default function ApprovalMaterial({
                     </Tippy>
                 )
             } else if (
-                isApprover &&
                 mat.userApprovalMetadata.approvedUsersData?.some((userData) => userData.userId === userId)
             ) {
                 return <span className="cg-5 cursor-default">Approved by you</span>

@@ -931,6 +931,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     parentPipelineType={node?.parentPipelineType}
                     parentEnvironmentName={node?.parentEnvironmentName}
                     userApprovalConfig={node?.userApprovalConfig}
+                    requestedUserId={node?.requestedUserId}
                 />
             )
         }

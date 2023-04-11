@@ -144,7 +144,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 parentPipelineType: parentPipelineType,
                 deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppType.Helm,
                 deploymentAppCreated: false,
-                userApprovalConf: null,
+                userApprovalConfig: null,
             },
             showPreStage: false,
             showDeploymentStage: true,
@@ -352,9 +352,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             showPreStage,
             showPostStage,
             showError: false,
-            showManualApproval:
-                pipelineConfigFromRes.userApprovalConf && pipelineConfigFromRes.userApprovalConf.requiredCount >= 1,
-            requiredApprovals: `${pipelineConfigFromRes.userApprovalConf?.requiredCount || 1}`,
+            showManualApproval: pipelineConfigFromRes.userApprovalConfig?.requiredCount >= 1,
+            requiredApprovals: `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || 1}`,
         })
     }
 
@@ -619,7 +618,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     default: savedStrategy.default,
                 }
             }),
-            userApprovalConf: this.state.showManualApproval
+            userApprovalConfig: this.state.showManualApproval
                 ? {
                       requiredCount: parseInt(this.state.requiredApprovals),
                   }
@@ -1281,7 +1280,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     toggleManualApproval = (): void => {
         this.setState({
             showManualApproval: !this.state.showManualApproval,
-            requiredApprovals: `${this.state.pipelineConfig.userApprovalConf?.requiredCount || 1}`,
+            requiredApprovals: `${this.state.pipelineConfig.userApprovalConfig?.requiredCount || 1}`,
         })
     }
 
