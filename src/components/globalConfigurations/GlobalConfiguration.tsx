@@ -340,7 +340,7 @@ function NavItem({ serverMode }) {
                                     <NavLink
                                         key={`nav_item_${index}`}
                                         to={route.href}
-                                        data-testid="dcdfdgffdgffsdsa"
+                                        data-testid="user-authorization-link"
                                         className={`cursor ${
                                             collapsedState[route.name] ? '' : 'fw-6'
                                         } flex dc__content-space`}
