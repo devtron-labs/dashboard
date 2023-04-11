@@ -224,6 +224,7 @@ export interface BuildPackConfigType {
 export interface DockerBuildConfigType {
     dockerfileContent: string
     dockerfileRelativePath: string
+    buildContext: string
     dockerfilePath?: string
     dockerfileRepository?: string
     args?: Record<string, string>

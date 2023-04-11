@@ -128,6 +128,13 @@ export const CI_CONFIG_FORM_VALIDATION = {
     repository_name: {
         required: false,
     },
+    buildContext: {
+        required: true,
+        validatior: {
+            error: 'buildContext is required',
+            regex: PATTERNS.STRING,
+        },
+    }
 }
 
 export const getCIConfigFormState = (
@@ -163,6 +170,14 @@ export const getCIConfigFormState = (
                 : '',
             error: '',
         },
+        buildContext: {
+            value:
+                (selectedCIPipeline?.isDockerConfigOverridden
+                    ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
+                    : ciConfig?.ciBuildConfig?.dockerBuildConfig &&
+                      ciConfig.ciBuildConfig.dockerBuildConfig?.buildContext === '.' ? 'Using root(.)' : ciConfig.ciBuildConfig.dockerBuildConfig?.buildContext) || 'Using root(.)',
+            error: '', 
+        }
     }
 }
 
@@ -172,6 +187,7 @@ export const initCurrentCIBuildConfig = (
     selectedCIPipeline: CIPipelineDataType,
     selectedMaterial: any,
     dockerfileValue: string,
+    buildContextValue: string
 ) => {
     if (
         allowOverride &&
@@ -186,6 +202,7 @@ export const initCurrentCIBuildConfig = (
             dockerBuildConfig: selectedCIPipeline.dockerConfigOverride.ciBuildConfig.dockerBuildConfig || {
                 dockerfileRelativePath: dockerfileValue.replace(/^\//, ''),
                 dockerfileContent: '',
+                buildContext: buildContextValue,
             },
             gitMaterialId: selectedMaterial?.id,
         }
@@ -196,6 +213,7 @@ export const initCurrentCIBuildConfig = (
             dockerBuildConfig: ciConfig.ciBuildConfig.dockerBuildConfig || {
                 dockerfileRelativePath: dockerfileValue.replace(/^\//, ''),
                 dockerfileContent: '',
+                buildContext: buildContextValue,
             },
             gitMaterialId: selectedMaterial?.id,
         }
@@ -206,6 +224,7 @@ export const initCurrentCIBuildConfig = (
             dockerBuildConfig: {
                 dockerfileRelativePath: dockerfileValue.replace(/^\//, ''),
                 dockerfileContent: '',
+                buildContext: buildContextValue,
             },
             gitMaterialId: selectedMaterial?.id,
         }

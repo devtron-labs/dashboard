@@ -81,8 +81,9 @@ export default function CIDockerFileConfig({
             addDivider: false,
         },
     ]
-
-    useEffect(() => {
+    // const [spanValue,setSpanValue] = useState<string>(" Set build context ")
+    const [disable,setDisable] = useState<boolean>(formState.buildContext ? false : true)
+    useEffect(() => { 
         setInProgress(true)
         Promise.all([getDockerfileTemplate(), getBuildpackMetadata()])
             .then(([{ result: dockerfileTemplate }, { result: buildpackMetadata }]) => {
@@ -228,6 +229,7 @@ export default function CIDockerFileConfig({
 
     const renderSelfDockerfileBuildOption = () => {
         return (
+            <div>
             <div className="mb-4 form-row__docker">
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                     <label className="form__label">{`${
@@ -310,9 +312,52 @@ export default function CIDockerFileConfig({
                     {formState.dockerfile.error && <label className="form__error">{formState.dockerfile.error}</label>}
                 </div>
             </div>
+            <div className="mb-4 form-row__docker">{renderBuildContext()}</div>
+            </div>
         )
     }
 
+    const renderBuildContext = () => {
+    
+        return (
+            <div className="docker-file-container">
+                <label htmlFor="" className="form__label dc__required-field">
+                    Build context
+                    { (!configOverrideView || allowOverride) && <span
+                        style={{
+                            color: 'var(--B500)',
+                        }}
+                        className="clickable-text"
+                        onClick={() => {
+                            setDisable(!disable)
+                        }}
+                    >
+                        {disable ? ' Set build context ' : ' Use root(.) '}
+                    </span>}
+                </label>
+                <div className="docker-file-container">
+                    <input
+                        tabIndex={4}
+                        type="text"
+                        className="form__input file-name"
+                        placeholder="Enter build context"
+                        name="buildContext"
+                        value={
+                            configOverrideView && !allowOverride
+                                ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext === '.' ? 'Using root(.)' 
+                                : ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext 
+                                : disable ? 'Using root(.)' : formState.buildContext.value
+                        }
+                        onChange={handleOnChangeConfig}
+                        autoComplete={'off'}
+                        autoFocus={!configOverrideView}
+                        disabled={configOverrideView ? !allowOverride : disable}
+                    />
+                    {!disable && formState.buildContext.error && <label className="form__error">{formState.buildContext.error}</label>}
+                </div>
+            </div>
+        )
+    }
     return (
         <div className="white-card white-card__docker-config dc__position-rel">
             <h3 className="fs-14 fw-6 lh-20 m-0 pb-12">
