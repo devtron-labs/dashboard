@@ -26,7 +26,7 @@ export const ApprovedTippyContent = ({
     }
 
     return (
-        <div className="pl-12 pr-12 dc__overflow-hidden h-100">
+        <div className="pl-12 pr-12 h-100 dc__overflow-hidden">
             <div className="pt-12 pb-12 h-100 mxh-210 dc__overflow-scroll">
                 <div>
                     <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">Approval requested by</h5>

@@ -83,8 +83,8 @@ export default function ApprovalMaterialModal({
     const getApprovalUsersTippyContent = () => {
         const approversPresent = node?.approvalUsers?.length > 0
         return (
-            <div className={`pl-12 pr-12 dc__overflow-hidden ${approversPresent ? 'h-200' : 'h-104'}`}>
-                <div className="pt-12 pb-12 h-100 dc__overflow-scroll">
+            <div className="pl-12 pr-12 h-100 dc__overflow-hidden">
+                <div className="pt-12 pb-12 h-100 mxh-210 dc__overflow-scroll">
                     {approversPresent ? (
                         <ol className="p-0 dc__list-style-none">
                             {node.approvalUsers.sort().map((_approver) => {
