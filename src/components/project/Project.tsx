@@ -69,11 +69,11 @@ export class Project extends Component<ProjectProps, ProjectState>  {
 
     renderCollapsedView() {
         return (
-            <div className="project__row white-card white-card--add-new-item mb-16">
+            <div data-testid = {`hover-project-id-${this.props.index}`} className="project__row white-card white-card--add-new-item mb-16">
                 <img src={folder} alt="" className="icon-dim-24 mr-16" />
                 <span className="project-title">{this.props.name}</span>
                 <button
-                    data-testid="delete-project-button"
+                    data-testid={`delete-project-button-${this.props.name}`}
                     type="button"
                     className="project__row__trash dc__transparent dc__align-right"
                     onClick={this.toggleConfirmation}
