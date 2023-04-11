@@ -380,7 +380,7 @@ function Cluster(
             >
                 {!editMode ? (
                     <>
-                        <List key={clusterId} onClick={clusterId ? () => {} : (e) => toggleEditMode((t) => !t)}>
+                        <List className = 'dc__border' key={clusterId} onClick={clusterId ? () => {} : (e) => toggleEditMode((t) => !t)}>
                             {!clusterId && (
                                 <List.Logo>
                                     <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
@@ -451,8 +451,8 @@ function Cluster(
                         !window._env_.K8S_CLIENT &&
                         Array.isArray(newEnvs) &&
                         newEnvs.length > 1 ? (
-                            <div className="pb-16">
-                                <div className="cluster-env-list_table fs-12 pt-8 pb-8 fw-6 h-36 flex left pl-16 pr-16">
+                            <div className="pb-8">
+                                <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left pl-20 pr-16 dc__border-n1">
                                     <div></div>
                                     <div>{CONFIGURATION_TYPES.ENVIRONMENT}</div>
                                     <div>{CONFIGURATION_TYPES.NAMESPACE}</div>
@@ -470,7 +470,7 @@ function Cluster(
                                     }) =>
                                         environment_name ? (
                                             <div
-                                                className="cluster-env-list_table dc__hover-n50 flex left h-36 fs-13 fw-4 pl-16 pr-16 dc__visible-hover dc__visible-hover--parent"
+                                                className="cluster-env-list_table dc__hover-n50 flex left h-36 fs-13 fw-4 pl-20 pr-16 dc__visible-hover dc__visible-hover--parent"
                                                 onClick={() =>
                                                     setEnvironment({
                                                         id,
@@ -1087,7 +1087,7 @@ function Environment({
                 </div>
             </div>
             <div onClick={(e) => e.stopPropagation()}>
-                <div className="p-20">
+                <div className="dc__overflow-scroll p-20">
                     <div className="mb-16">
                         <CustomInput
                             labelClassName="dc__required-field"
