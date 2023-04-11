@@ -91,14 +91,14 @@ export default function Artifacts({
                 {!isJobView && (
                    <CIListItem type="artifact">
                    <div className="flex column left hover-trigger">
-                       <div className="cn-9 fs-14 flex left">
+                       <div className="cn-9 fs-14 flex left" data-testid = "artifact-text-visibility">
                            <CopyTippyWithText
                                copyText={extractImage(artifact)}
                                copied={copied}
                                setCopied={setCopied}
                            />
                        </div>
-                       <div className="cn-7 fs-12 flex left">
+                       <div className="cn-7 fs-12 flex left" data-testid = "artifact-image-text">
                            <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
                        </div>
                    </div>

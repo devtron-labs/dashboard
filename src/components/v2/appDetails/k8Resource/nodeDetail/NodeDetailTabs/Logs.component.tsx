@@ -349,7 +349,7 @@ function LogsComponent({
     ) : (
         <React.Fragment>
             <div className="node-container-fluid bcn-0">
-                <div className={`node-row pt-2 pb-2 pl-16 pr-16 ${!isLogAnalyzer ? 'dc__border-top' : ''}`}>
+                <div data-testid="logs-container-header" className={`node-row pt-2 pb-2 pl-16 pr-16 ${!isLogAnalyzer ? 'dc__border-top' : ''}`}>
                     <div className="col-6 flexbox flex-align-center">
                         <Tippy
                             className="default-tt"
@@ -370,6 +370,7 @@ function LogsComponent({
                         </Tippy>
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={'Clear'}>
                             <Abort
+                                data-testid="clear-logs-container"
                                 onClick={(e) => {
                                     onLogsCleared()
                                 }}
@@ -542,6 +543,7 @@ function LogsComponent({
             {podContainerOptions.containerOptions.filter((_co) => _co.selected).length > 0 &&
                 podContainerOptions.podOptions.filter((_po) => _po.selected).length > 0 && (
                     <div
+                        data-testid="app-logs-container"
                         style={{
                             gridColumn: '1 / span 2',
                             background: '#0b0f22',
