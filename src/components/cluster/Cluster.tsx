@@ -367,6 +367,10 @@ function Cluster(
         setShowWindow(true)
     }
 
+    const clusterDelete = (): void => {
+        toggleConfirmation(false)
+    }
+
     return (
         <>
             <article
@@ -511,7 +515,7 @@ function Cluster(
                                                 </div>
                                                 {confirmation && (
                                                     <DeleteComponent
-                                                        setDeleting={() => {}}
+                                                        setDeleting={clusterDelete}
                                                         deleteComponent={deleteEnvironment}
                                                         payload={getEnvironmentPayload()}
                                                         title={environment_name}
@@ -981,12 +985,10 @@ function ClusterForm({
 }
 
 function Environment({
-    cluster_name,
     environment_name,
     namespace,
     id,
     cluster_id,
-    //handleClose,
     prometheus_endpoint,
     isProduction,
     description,
@@ -1065,9 +1067,6 @@ function Environment({
 
     const clusterDelete = (): void => {
         setDeleting(true)
-        //reload()
-        //hideClusterDrawer()
-
     }
 
     const deleteEnv = (): void => {
@@ -1159,7 +1158,6 @@ function Environment({
                         >
                             <DeleteEnvironment className="icon-dim-16 mr-8" />
                             {deleting ? <Progressing /> : 'Delete Environment'}
-                            {/* {deleting && 'Delete Environment'} */}
                         </button>
                     )}
                     <button className="cta cancel flex mt-8 mb-8 h-36" type="button" onClick={hideClusterDrawer}>
