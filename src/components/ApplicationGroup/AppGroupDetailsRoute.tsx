@@ -12,7 +12,7 @@ import EnvironmentOverview from './Details/EnvironmentOverview/EnvironmentOvervi
 import { EnvSelector } from './EnvSelector'
 import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceListEmptyState'
 import EmptyFolder from '../../assets/img/Empty-folder.png'
-import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
+import { AppFilterTabs, EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
 import { getEnvAppList } from './AppGroup.service'
 import { AppGroupAdminType, AppGroupAppFilterContextType, EnvHeaderType } from './AppGroup.types'
@@ -44,6 +44,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [loading, envList] = useAsync(getEnvAppList, [])
     const [appListOptions, setAppListOptions] = useState<OptionType[]>([])
     const [selectedAppList, setSelectedAppList] = useState<MultiValue<OptionType>>([])
+    const [selectedFilterTab, setSelectedFilterTab] = useState<AppFilterTabs>(AppFilterTabs.GROUP_FILTER)
+    const [groupFilterOptions, setGroupFilterOptions] = useState<OptionType[]>([])
+    const [selectedGroupFilter, setSelectedGroupFilter] = useState<MultiValue<OptionType>>([])
 
     useEffect(() => {
         if (envList?.result) {
@@ -55,9 +58,35 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
 
     useEffect(() => {
         if (envId) {
+            getSavedFilterData()
             getAppListData()
         }
     }, [envId])
+
+    const getSavedFilterData = async (): Promise<void> => {
+        setGroupFilterOptions([
+            { label: 'filter1', value: '1' },
+            { label: 'filter2', value: '2' },
+            { label: 'filter3', value: '3' },
+            { label: 'filter4', value: '4' },
+        ])
+        // setSelectedAppList([])
+        // setAppListLoading(true)
+        // const { result } = await getAppList({ environments: [+envId] })
+        // if (result.appContainers?.length) {
+        //   setGroupFilterOptions(
+        //         result.appContainers
+        //             .map((appDetails) => {
+        //                 return {
+        //                     value: appDetails.appId,
+        //                     label: appDetails.appName,
+        //                 }
+        //             })
+        //             .sort(sortOptionsByLabel),
+        //     )
+        // }
+        // setAppListLoading(false)
+    }
 
     const getAppListData = async (): Promise<void> => {
         setSelectedAppList([])
@@ -137,6 +166,11 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 appListOptions={appListOptions}
                 selectedAppList={selectedAppList}
                 setSelectedAppList={setSelectedAppList}
+                selectedFilterTab={selectedFilterTab}
+                setSelectedFilterTab={setSelectedFilterTab}
+                groupFilterOptions={groupFilterOptions}
+                selectedGroupFilter={selectedGroupFilter}
+                setSelectedGroupFilter={setSelectedGroupFilter}
             />
             {renderRoute()}
         </div>
@@ -151,6 +185,11 @@ export function EnvHeader({
     appListOptions,
     selectedAppList,
     setSelectedAppList,
+    selectedFilterTab,
+    setSelectedFilterTab,
+    groupFilterOptions,
+    selectedGroupFilter,
+    setSelectedGroupFilter,
 }: EnvHeaderType) {
     const { envId } = useParams<{ envId: string }>()
     const match = useRouteMatch()
@@ -166,8 +205,13 @@ export function EnvHeader({
             setMenuOpen,
             selectedAppList,
             setSelectedAppList,
+            selectedFilterTab,
+            setSelectedFilterTab,
+            groupFilterOptions,
+            selectedGroupFilter,
+            setSelectedGroupFilter,
         }),
-        [appListOptions, isMenuOpen, selectedAppList],
+        [appListOptions, isMenuOpen, selectedAppList, selectedFilterTab, groupFilterOptions, selectedGroupFilter],
     )
 
     useEffect(() => {

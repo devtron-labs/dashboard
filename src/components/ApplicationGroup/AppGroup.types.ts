@@ -8,7 +8,7 @@ import {
     WorkflowType,
 } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
-import { BulkResponseStatus } from './Constants'
+import { AppFilterTabs, BulkResponseStatus } from './Constants'
 
 interface BulkTriggerAppDetailType {
     workFlowId: string
@@ -212,6 +212,11 @@ export interface EnvHeaderType {
     appListOptions: OptionType[]
     selectedAppList: MultiValue<OptionType>
     setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
+    selectedFilterTab: AppFilterTabs
+    setSelectedFilterTab: React.Dispatch<React.SetStateAction<AppFilterTabs>>
+    groupFilterOptions: OptionType[]
+    selectedGroupFilter: MultiValue<OptionType>
+    setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
 }
 
 export interface AppGroupAdminType {
@@ -233,4 +238,9 @@ export interface AppGroupAppFilterContextType {
     setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
     isMenuOpen: boolean
     setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
+    selectedFilterTab: AppFilterTabs
+    setSelectedFilterTab: React.Dispatch<React.SetStateAction<AppFilterTabs>>
+    groupFilterOptions: OptionType[]
+    selectedGroupFilter: MultiValue<OptionType>,
+    setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>,
 }

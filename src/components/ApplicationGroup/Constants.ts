@@ -134,5 +134,10 @@ export const GROUP_LIST_HEADER = {
     NAMESPACE: 'Namespace',
     CLUSTER: 'Cluster',
     APPLICATIONS: 'Applications',
-    APPLICATION: 'Application'
+    APPLICATION: 'Application',
+}
+
+export enum AppFilterTabs {
+    'GROUP_FILTER' = 'groupFilter',
+    'APP_FILTER' = 'appFilter',
 }
