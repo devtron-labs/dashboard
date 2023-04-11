@@ -305,7 +305,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             this.props.materialType,
             this.props.isFromBulkCD ? { id: this.props.pipelineId, type: this.props.stageType } : null,
         )
-        if (this.state.isSelectImageTrigger && this.state.selectedMaterial?.image !== selectedMaterial.image) {
+        if (
+            (this.props.materialType === 'none' || this.state.isSelectImageTrigger) &&
+            this.state.selectedMaterial?.image !== selectedMaterial.image
+        ) {
             this.setState({
                 selectedMaterial,
             })
@@ -399,7 +402,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         disableSelection?: boolean,
         isImageApprover?: boolean,
     ) {
-        const isApprovalRequester = mat.userApprovalMetadata?.requestedUserData?.userId === this.props.requestedUserId
+        const isApprovalRequester =
+            mat.userApprovalMetadata?.requestedUserData &&
+            mat.userApprovalMetadata.requestedUserData.userId === this.props.requestedUserId
 
         return (
             <>
@@ -446,30 +451,36 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 )}
                 {!hideSelector && (
                     <div className="material-history__select-text w-auto dc__no-text-transform flex right">
-                        {isApprovalRequester && !isImageApprover && !disableSelection && (
-                            <TippyCustomized
-                                theme={TippyTheme.white}
-                                className="w-300 h-100 dc__align-left"
-                                placement="bottom-end"
-                                iconClass="fcv-5"
-                                heading="Expire approval"
-                                infoText="Are you sure you want to expire the deployment approval for this image? A new approval request would need to be raised if you want to deploy this image."
-                                additionalContent={this.getExpireRequestButton(mat)}
-                                showCloseButton={true}
-                                trigger="click"
-                                interactive={true}
-                            >
-                                <span className="mr-16 cr-5" data-id={mat.id}>
-                                    Expire approval
-                                </span>
-                            </TippyCustomized>
-                        )}
+                        {this.props.materialType !== 'none' &&
+                            isApprovalRequester &&
+                            !isImageApprover &&
+                            !disableSelection && (
+                                <TippyCustomized
+                                    theme={TippyTheme.white}
+                                    className="w-300 h-100 dc__align-left"
+                                    placement="bottom-end"
+                                    iconClass="fcv-5"
+                                    heading="Expire approval"
+                                    infoText="Are you sure you want to expire the deployment approval for this image? A new approval request would need to be raised if you want to deploy this image."
+                                    additionalContent={this.getExpireRequestButton(mat)}
+                                    showCloseButton={true}
+                                    trigger="click"
+                                    interactive={true}
+                                >
+                                    <span className="mr-16 cr-5" data-id={mat.id}>
+                                        Expire approval
+                                    </span>
+                                </TippyCustomized>
+                            )}
                         {mat.vulnerable ? (
                             <span className="material-history__scan-error">Security Issues Found</span>
                         ) : mat.isSelected ? (
                             <Check
                                 className={`${
-                                    isApprovalRequester && !isImageApprover && !disableSelection
+                                    this.props.materialType !== 'none' &&
+                                    isApprovalRequester &&
+                                    !isImageApprover &&
+                                    !disableSelection
                                         ? ''
                                         : 'dc__align-right'
                                 } icon-dim-24`}
@@ -498,9 +509,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     renderMaterial = (materialList: CDMaterialType[], disableSelection?: boolean) => {
         return materialList.map((mat) => {
-            const isImageApprover = mat.userApprovalMetadata?.approvedUsersData?.some(
-                (_approver) => _approver.userId === this.props.requestedUserId,
-            )
+            const isImageApprover =
+                mat.userApprovalMetadata?.approvedUsersData &&
+                mat.userApprovalMetadata.approvedUsersData.some(
+                    (_approver) => _approver.userId === this.props.requestedUserId,
+                )
             let isMaterialInfoAvailable = true
             for (const materialInfo of mat.materialInfo) {
                 isMaterialInfoAvailable =
@@ -650,6 +663,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 this.state.isRollbackTrigger && this.state.showOlderImages
                     ? [this.props.material[0]]
                     : this.props.material
+        }
+
+        // reset the selection for some cases
+        for (const mat of materialList) {
+            if (this.state.selectedMaterial?.id === mat.id) {
+                mat.isSelected = true
+                break
+            }
         }
 
         return (
