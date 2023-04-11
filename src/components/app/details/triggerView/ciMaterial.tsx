@@ -158,6 +158,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             return (
                 <>
                     <GitInfoMaterial
+                        dataTestId='edit-branch-name'
                         material={this.props.material}
                         title={this.props.title}
                         pipelineId={this.props.pipelineId}

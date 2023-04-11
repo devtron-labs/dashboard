@@ -20,6 +20,7 @@ import { useLocation } from 'react-router-dom'
 import { TriggerViewContext } from '../app/details/triggerView/config'
 
 export default function GitInfoMaterial({
+    dataTestId = "",
     material,
     title,
     pipelineId,
@@ -136,7 +137,7 @@ export default function GitInfoMaterial({
                         content={'Change branch'}
                         interactive={true}
                     >
-                        <button type="button" className="dc__transparent flexbox">
+                        <button data-testid = {dataTestId} type="button" className="dc__transparent flexbox">
                             <Edit className="icon-dim-16" />
                         </button>
                     </Tippy>
