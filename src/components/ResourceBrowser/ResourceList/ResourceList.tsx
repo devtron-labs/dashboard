@@ -498,10 +498,6 @@ export default function ResourceList() {
         }
     }
 
-    const showResourceModal = (): void => {
-        setShowCreateResourceModal(true)
-    }
-
     const closeResourceModal = (_refreshData: boolean): void => {
         if (_refreshData) {
             refreshData()
