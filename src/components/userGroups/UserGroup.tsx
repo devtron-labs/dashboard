@@ -1059,7 +1059,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : projectsList
                 )?.map((project) => ({ label: project.name, value: project.name }))}
                 className="basic-multi-select"
-                classNamePrefix="select"
+                classNamePrefix="select-project-dropdown"
                 onChange={handleDirectPermissionChange}
                 components={{
                     ClearIndicator: null,
@@ -1148,7 +1148,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         options={[allEnvironmentsOption, ...environments]}
                         className="basic-multi-select"
                         menuPlacement="auto"
-                        classNamePrefix="select"
+                        classNamePrefix="select-devtron-app-environment-dropdown"
                         hideSelectedOptions={false}
                         styles={tempMultiSelectStyles}
                         components={{
@@ -1197,7 +1197,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     placeholder="Select applications"
                     options={[allApplicationsOption, ...applications]}
                     className="basic-multi-select"
-                    classNamePrefix="select"
+                    classNamePrefix="select-application-dropdown"
                     onChange={handleDirectPermissionChange}
                     hideSelectedOptions={false}
                     inputValue={appInput}
@@ -1223,7 +1223,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     value: role as ActionTypes.MANAGER | ActionTypes.VIEW | ActionTypes.TRIGGER | ActionTypes.ADMIN,
                 }))}
                 className="basic-multi-select"
-                classNamePrefix="select"
+                classNamePrefix="select-user-role-dropdown"
                 formatOptionLabel={formatOptionLabel}
                 onChange={handleDirectPermissionChange}
                 isDisabled={!permission.team}

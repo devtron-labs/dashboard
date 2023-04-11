@@ -180,6 +180,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                 </li>
                 <li className="tab-list__tab dc__ellipsis-right">
                     <NavLink
+                        data-testid="app-details-tab"
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DETAILS}`}
                         className="tab-list__tab-link"
