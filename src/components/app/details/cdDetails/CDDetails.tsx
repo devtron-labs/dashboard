@@ -101,13 +101,13 @@ export default function CDDetails() {
 
     useEffect(() => {
         if (result) {
-            const pipelines = result[1]['value'].pipelines
+            const pipelines = result[1]['value']?.pipelines
             const _deploymentAppType = pipelines?.find(
                 (pipeline) => pipeline.id === Number(pipelineId),
             )?.deploymentAppType
             const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
             let _selectedEnvironment,
-                isEnvDeleted = result[0]['value'].result.find((envData) => envData.environmentId === +envId) || null
+                isEnvDeleted = result[0]['value']?.result.find((envData) => envData.environmentId === +envId) || null
             const envOptions: CICDSidebarFilterOptionType[] = (result[0]['value']?.result || []).map((envData) => {
                 if (envData.environmentId === +envId) {
                     _selectedEnvironment = envData
