@@ -1077,7 +1077,7 @@ function Environment({
 
     return (
         <div>
-            <div className="form__row bcn-0 pt-0 pr-20 pb-12 pl-20">
+            <div className="bcn-0">
                 <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12">
                     <div className="fs-16 fw-6 lh-1-43 ml-20 title-padding">
                         {id ? 'Edit Environment' : 'Add Environment'}
@@ -1087,9 +1087,9 @@ function Environment({
                     </button>
                 </div>
             </div>
-            <form onClick={(e) => e.stopPropagation()} onSubmit={handleOnSubmit}>
-                <div className="description">
-                    <div className="form__row bcn-0 pt-0 pr-20 pb-12 pl-20 ml-20 mr-12">
+            <div onClick={(e) => e.stopPropagation()}>
+                <div className="p-20">
+                    <div className="mb-16">
                         <CustomInput
                             labelClassName="dc__required-field"
                             autoComplete="off"
@@ -1102,7 +1102,7 @@ function Environment({
                             label="Environment Name"
                         />
                     </div>
-                    <div className="form__row form__row--namespace ml-20 mr-12">
+                    <div className="mb-16">
                         <CustomInput
                             labelClassName="dc__required-field"
                             disabled={!!namespace}
@@ -1114,35 +1114,29 @@ function Environment({
                             label="Namespace"
                         />
                     </div>
-                    <div className="form__row">
-                        <div className="flex row left ml-20">
-                            <div className="flex left environment environment--production">
-                                <label className="pr-10 form__label">
-                                    <input
-                                        type="radio"
-                                        name="isProduction"
-                                        checked={state.isProduction.value === 'true'}
-                                        value="true"
-                                        onChange={handleOnChange}
-                                    />
-                                    <span className="pl-10 cursor">Production</span>
-                                </label>
-                            </div>
-                            <div className="flex left environment environment--non-production">
-                                <label className="form__label">
-                                    <input
-                                        type="radio"
-                                        name="isProduction"
-                                        checked={state.isProduction.value === 'false'}
-                                        value="false"
-                                        onChange={handleOnChange}
-                                    />
-                                    <span className="pl-10 cursor">Non - Production</span>
-                                </label>
-                            </div>
-                        </div>
+                    <div className="mb-16 flex left">
+                        <label className="pr-10 flex cursor">
+                            <input
+                                type="radio"
+                                name="isProduction"
+                                checked={state.isProduction.value === 'true'}
+                                value="true"
+                                onChange={handleOnChange}
+                            />
+                            <span className="ml-10 fw-4 mt-4 fs-13">Production</span>
+                        </label>
+                        <label className="flex cursor">
+                            <input
+                                type="radio"
+                                name="isProduction"
+                                checked={state.isProduction.value === 'false'}
+                                value="false"
+                                onChange={handleOnChange}
+                            />
+                            <span className="ml-10 fw-4 mt-4 fs-13">Non - Production</span>
+                        </label>
                     </div>
-                    <div className="form__row ml-20 mr-12">
+                    <div className="mb-16">
                         <CustomInput
                             autoComplete="off"
                             name="description"
@@ -1165,21 +1159,17 @@ function Environment({
                         >
                             <DeleteEnvironment className="icon-dim-16 mr-8" />
                             {deleting ? <Progressing /> : 'Delete Environment'}
-                             {/* {deleting && 'Delete Environment'} */}
+                            {/* {deleting && 'Delete Environment'} */}
                         </button>
                     )}
-                    <button
-                        className="cta cancel flex mt-8 mb-8 h-36"
-                        type="button"
-                        onClick={hideClusterDrawer}
-                    >
+                    <button className="cta cancel flex mt-8 mb-8 h-36" type="button" onClick={hideClusterDrawer}>
                         Cancel
                     </button>
                     <button
-                        style={{ height: '36px' }}
-                        className="cta ml-8 flex mr-20 mt-8 mb-8"
+                        className="cta ml-8 flex mr-20 mt-8 mb-8 h-36"
                         type="submit"
                         disabled={loading}
+                        onClick={handleOnSubmit}
                     >
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}
                     </button>
@@ -1197,7 +1187,7 @@ function Environment({
                         reload={deleteEnv}
                     />
                 )}
-            </form>
+            </div>
         </div>
     )
 }
