@@ -291,7 +291,7 @@ const StartDetails = ({
                     })
                 )}
                 {!pathname.includes('source-code') && (
-                    <Link to={`${url}/source-code`} className="anchor ml-8">
+                    <Link to={`${url}/source-code`} className="anchor ml-8" data-testid = "commit-details-link">
                         Commit details
                     </Link>
                 )}

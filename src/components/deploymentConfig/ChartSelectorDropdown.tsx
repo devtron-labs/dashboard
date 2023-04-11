@@ -60,11 +60,11 @@ export default function ChartSelectorDropdown({
     }
 
     if (!isUnSet) {
-        return <span className="fs-13 fw-6 cn-9 flex pointer" data-testid="select-chartversion-dropdown">{selectedChart?.name}</span>
+        return <span className="fs-13 fw-6 cn-9 flex pointer" data-testid="select-chart-type-dropdown">{selectedChart?.name}</span>
     } else {
         return (
             <PopupMenu onToggleCallback={setPopupState} autoClose>
-                <PopupMenu.Button isKebab dataTestId="select-charttype-dropdown">
+                <PopupMenu.Button isKebab dataTestId="select-chart-type-dropdown">
                     <span className="fs-13 fw-6 cn-9 flex pointer">
                         {selectedChart?.name || 'Select Chart'}
                         <Dropdown

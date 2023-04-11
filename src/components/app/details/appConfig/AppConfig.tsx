@@ -825,7 +825,7 @@ const EnvOverrideRoute = ({ envOverride }: EnvironmentOverrideRouteProps) => {
             </div>
             {!collapsed && (
                 <div className="environment-routes">
-                    <NavLink className="app-compose__nav-item cursor" to={`${LINK}/deployment-template`}>
+                    <NavLink data-testid = "env-deployment-template" className="app-compose__nav-item cursor" to={`${LINK}/deployment-template`}>
                         Deployment template
                     </NavLink>
                     <NavLink className="app-compose__nav-item cursor" to={`${LINK}/configmap`}>
@@ -846,7 +846,7 @@ const EnvironmentOverrides = ({ environmentResult, environmentsLoading }: Enviro
     if (Array.isArray(environmentResult?.result)) {
         const environments = environmentResult.result.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
         return (
-            <div className="w-100" style={{ height: 'calc(100% - 60px)' }}>
+            <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid = "env-override-list">
                 {environments.map((env) => {
                     return (
                         !env.deploymentAppDeleteRequest && (

@@ -127,7 +127,7 @@ export function SourceInfo({
                         )}
                         {showHibernateModal && (
                             <button
-                                data-testid="app-details-hibernate"
+                                data-testid="app-details-hibernate-modal-button"
                                 className="cta cta-with-img small cancel fs-12 fw-6"
                                 onClick={(e) => showHibernateModal(isHibernated ? 'resume' : 'hibernate')}
                             >

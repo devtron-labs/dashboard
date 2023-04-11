@@ -69,7 +69,7 @@ export default function DeploymentHistoryDiffView({
                     previousConfigAvailable ? 'deployment-diff__upper' : ''
                 }`}
                 ref={ref}
-                data-testid = {`configuration-deployment-template-${
+                data-testid = {`configuration-link-${
                     previousConfigAvailable ? 'previous-deployment' : 'no-previous-deployment'
                 }`}
             >
@@ -98,7 +98,7 @@ export default function DeploymentHistoryDiffView({
             </div>
 
             <div className="en-2 bw-1 br-4 mr-20 ml-20 mb-20">
-                <div className="code-editor-header-value pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0" data-testid = "configuration-deployment-template-values-heading">
+                <div className="code-editor-header-value pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0" data-testid = "configuration-link-comparison-body-heading">
                     {baseTemplateConfiguration?.codeEditorValue?.['displayName']}
                 </div>
                 {baseTemplateConfiguration?.codeEditorValue?.value && renderDeploymentDiffViaCodeEditor()}

@@ -338,6 +338,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                         </div>
                                         <div className="flex left">
                                             <span
+                                                data-testid="node-resource-status"
                                                 className={`mr-4 app-summary__status-name f-${(
                                                     node?.status ||
                                                     node?.health?.status ||
