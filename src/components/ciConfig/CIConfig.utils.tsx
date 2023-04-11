@@ -5,6 +5,7 @@ import { CIBuildType, CIPipelineDataType, DockerConfigOverrideType } from '../ci
 import { deepEqual } from '../common'
 import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 import { CIBuildArgType, CIConfigDiffType } from './types'
+import React from 'react'
 
 export const _customStyles = {
     control: (base) => ({
@@ -503,4 +504,60 @@ const getTargetPlatformChangeBGColor = (
     const globalTargetPlatforms = globalCIConfig.ciBuildConfig?.dockerBuildConfig?.targetPlatform?.split(',')
     const overridenTargetPlatforms = ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform?.split(',')
     return !deepEqual(globalTargetPlatforms, overridenTargetPlatforms)
+}
+
+export const renderBuildContext = (
+    disable: boolean,
+    setDisable: React.Dispatch<React.SetStateAction<boolean>>,
+    formState: any,
+    configOverrideView: boolean,
+    allowOverride: boolean,
+    ciConfig:  CiPipelineResult,
+    handleOnChangeConfig: (e) => void
+): JSX.Element => {
+    return (
+        <div className="docker-file-container">
+            <label htmlFor="" className="form__label dc__required-field">
+                Build context
+                {(!configOverrideView || allowOverride) && (
+                    <span
+                        style={{
+                            color: 'var(--B500)',
+                        }}
+                        className="clickable-text"
+                        onClick={() => {
+                            setDisable(!disable)
+                        }}
+                    >
+                        {disable ? ' Set build context ' : ' Use root(.) '}
+                    </span>
+                )}
+            </label>
+            <div className="docker-file-container">
+                <input
+                    tabIndex={4}
+                    type="text"
+                    className="form__input file-name"
+                    placeholder="Enter build context"
+                    name="buildContext"
+                    value={
+                        configOverrideView && !allowOverride
+                            ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext == '.'
+                                ? 'Using root(.)'
+                                : ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext
+                            : disable
+                            ? 'Using root(.)'
+                            : formState.buildContext.value
+                    }
+                    onChange={handleOnChangeConfig}
+                    autoComplete={'off'}
+                    autoFocus={!configOverrideView}
+                    disabled={configOverrideView ? !allowOverride : disable}
+                />
+                {!disable && formState.buildContext.error && (
+                    <label className="form__error">{formState.buildContext.error}</label>
+                )}
+            </div>
+        </div>
+    )
 }

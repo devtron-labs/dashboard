@@ -273,6 +273,7 @@ export interface CIBuildpackBuildOptionsProps {
     setCurrentCIBuildConfig: React.Dispatch<React.SetStateAction<CIBuildConfigType>>
     buildEnvArgs: CIBuildArgType[]
     setBuildEnvArgs: React.Dispatch<React.SetStateAction<CIBuildArgType[]>>
+    formState: any
 }
 
 export interface CIAdvancedConfigProps {
