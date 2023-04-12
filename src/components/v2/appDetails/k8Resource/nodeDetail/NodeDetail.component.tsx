@@ -39,7 +39,7 @@ function NodeDetailComponent({
     const [resourceContainers, setResourceContainers] = useState([])
     const [isResourceDeleted, setResourceDeleted] = useState(false)
     const [isManagedFields, setManagedFields] = useState(false)
-    const [hideManagedFields, setHideManagedFields] = useState(false)
+    const [hideManagedFields, setHideManagedFields] = useState(true)
     const [fetchingResource, setFetchingResource] = useState(
         isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
     )
