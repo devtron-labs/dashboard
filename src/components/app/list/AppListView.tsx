@@ -209,7 +209,7 @@ export class AppListView extends Component<AppListViewProps> {
                                         </div>
                                         <div className="app-list__cell app-list__cell--action">
                                             <button
-                                                data-testid = {`${app.id}-edit-app-button`}
+                                                data-testid = {`edit-app-button`}
                                                 type="button"
                                                 data-key={app.id}
                                                 className="button-edit"

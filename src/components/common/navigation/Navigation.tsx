@@ -290,6 +290,22 @@ export default class Navigation extends Component<
         )
     }
 
+    canShowNavOption = (item) => {
+        const allowedUser = !item.markOnlyForSuperAdmin || this.props.isSuperAdmin
+        if (window._env_.K8S_CLIENT) {
+            return item.isAvailableInDesktop
+        } else if (
+            allowedUser &&
+            (!item.forceHideEnvKey || (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey]))
+        ) {
+            return (
+                (this.props.serverMode === SERVER_MODE.FULL && !item.moduleName) ||
+                (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
+                this.props.installedModuleMap.current?.[item.moduleName]
+            )
+        }
+    }
+
     render() {
         return (
             <>
@@ -314,18 +330,7 @@ export default class Navigation extends Component<
                             </div>
                         </NavLink>
                         {NavigationList.map((item) => {
-                            if (
-                                (!window._env_.K8S_CLIENT &&
-                                    ((item.markOnlyForSuperAdmin && this.props.isSuperAdmin) ||
-                                        (!item.markOnlyForSuperAdmin &&
-                                            (!item.forceHideEnvKey ||
-                                                (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey])) &&
-                                            ((this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
-                                                (this.props.serverMode === SERVER_MODE.EA_ONLY &&
-                                                    item.isAvailableInEA) ||
-                                                this.props.installedModuleMap.current?.[item.moduleName])))) ||
-                                item.isAvailableInDesktop
-                            ) {
+                            if (this.canShowNavOption(item)) {
                                 if (item.type === 'button') {
                                     return this.renderNavButton(item)
                                 } else {

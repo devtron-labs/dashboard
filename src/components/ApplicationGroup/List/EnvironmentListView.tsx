@@ -121,7 +121,7 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
                     <div>{GROUP_LIST_HEADER.APPLICATIONS}</div>
                 </div>
                 {filteredEnvList?.map((envData) => (
-                    <div className="env-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 ">
+                    <div key={envData.id} className="env-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 ">
                         <span className="icon-dim-24 bcb-1 flex br-6">
                             <EnvIcon className="icon-dim-16 scb-4" />
                         </span>

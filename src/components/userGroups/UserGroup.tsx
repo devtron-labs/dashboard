@@ -172,7 +172,7 @@ function HeaderSection(type: string) {
     const isUserPremissions = type === 'user'
 
     return (
-        <div className="auth-page__header pt-20">
+        <div data-testid="auth-page-header" className="auth-page__header pt-20">
             <h2 className="auth-page__header-title form__title">
                 {isUserPremissions ? 'User permissions' : 'Permission groups'}
             </h2>
@@ -182,6 +182,7 @@ function HeaderSection(type: string) {
                     : 'Permission groups allow you to easily manage user permissions by assigning desired permissions to a group and assigning these groups to users to provide all underlying permissions.'}
                 &nbsp;
                 <a
+                    data-testid="auth-page-learn-more-link"
                     className="dc__link"
                     rel="noreferrer noopener"
                     href={isUserPremissions ? DOCUMENTATION.GLOBAL_CONFIG_USER : DOCUMENTATION.GLOBAL_CONFIG_GROUPS}
@@ -559,7 +560,7 @@ const UserGroupList: React.FC<{
                 userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
         )
         return (
-            <div id="auth-page__body" className="auth-page__body-users__list-container">
+            <div id="auth-page__body" data-testid="user-group-page" className="auth-page__body-users__list-container">
                 {renderHeaders(type)}
                 {result.length > 0 && (
                     <div className="flex dc__content-space">
@@ -758,6 +759,7 @@ const AddUser: React.FC<AddUser> = ({
         <article className={`user-list flex column left ${collapsed ? 'user-list--collapsed' : ''} user-list--add`}>
             <div
                 className={`${collapsed ? 'pointer' : ''} user-list__header user-list__header  w-100`}
+                data-testid={collapsed ? 'add-user-button' : ''}
                 onClick={!collapsed ? noop : (e) => setCollapsed(not)}
             >
                 {collapsed && <AddIcon className="add-svg mr-16" />}
@@ -1059,7 +1061,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : projectsList
                 )?.map((project) => ({ label: project.name, value: project.name }))}
                 className="basic-multi-select"
-                classNamePrefix="select-project-dropdown"
+                classNamePrefix={`select-project-dropdown-${index}`}
                 onChange={handleDirectPermissionChange}
                 components={{
                     ClearIndicator: null,
@@ -1148,7 +1150,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         options={[allEnvironmentsOption, ...environments]}
                         className="basic-multi-select"
                         menuPlacement="auto"
-                        classNamePrefix="select-devtron-app-environment-dropdown"
+                        classNamePrefix={`select-devtron-app-environment-dropdown-${index}`}
                         hideSelectedOptions={false}
                         styles={tempMultiSelectStyles}
                         components={{
@@ -1197,7 +1199,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     placeholder="Select applications"
                     options={[allApplicationsOption, ...applications]}
                     className="basic-multi-select"
-                    classNamePrefix="select-application-dropdown"
+                    classNamePrefix={`select-application-dropdown-${index}`}
                     onChange={handleDirectPermissionChange}
                     hideSelectedOptions={false}
                     inputValue={appInput}
@@ -1223,7 +1225,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     value: role as ActionTypes.MANAGER | ActionTypes.VIEW | ActionTypes.TRIGGER | ActionTypes.ADMIN,
                 }))}
                 className="basic-multi-select"
-                classNamePrefix="select-user-role-dropdown"
+                classNamePrefix={`select-user-role-dropdown-${index}`}
                 formatOptionLabel={formatOptionLabel}
                 onChange={handleDirectPermissionChange}
                 isDisabled={!permission.team}
