@@ -4,7 +4,12 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import Tippy from '@tippyjs/react'
 import { CDNodeProps, CDNodeState } from '../types'
 import { toast } from 'react-toastify'
-import {BUTTON_TEXT, CONFIRMATION_DIALOG_MESSAGING, ERR_MESSAGE_ARGOCD, VIEW_DELETION_STATUS} from '../../../config/constantMessaging'
+import {
+    BUTTON_TEXT,
+    CONFIRMATION_DIALOG_MESSAGING,
+    ERR_MESSAGE_ARGOCD,
+    VIEW_DELETION_STATUS,
+} from '../../../config/constantMessaging'
 import { ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import warningIconSrc from '../../../assets/icons/info-filled.svg'
 import { URLS } from '../../../config'
@@ -121,8 +126,8 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                         placement="bottom"
                                         content={
                                             <div>
-                                                <div>{this.props.environmentName}</div>
-                                                <div className='dc__word-break-all'>{this.props.description}</div>
+                                                <div className="fw-6">{this.props.environmentName}</div>
+                                                <div className="dc__word-break-all">{this.props.description}</div>
                                             </div>
                                         }
                                     >

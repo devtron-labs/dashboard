@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import { DeploymentNodeType, TriggerCDNodeProps } from '../../types';
-import { statusColor, statusIcon } from '../../../../config';
-import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg';
-import { URLS, DEFAULT_STATUS } from '../../../../../../config';
-import Tippy from '@tippyjs/react';
-import { Link } from 'react-router-dom';
-import { TriggerViewContext } from '../../config';
-import { triggerStatus } from '../../../cicdHistory/History.components';
+import React, { Component } from 'react'
+import { DeploymentNodeType, TriggerCDNodeProps } from '../../types'
+import { statusColor, statusIcon } from '../../../../config'
+import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
+import { URLS, DEFAULT_STATUS } from '../../../../../../config'
+import Tippy from '@tippyjs/react'
+import { Link } from 'react-router-dom'
+import { TriggerViewContext } from '../../config'
+import { triggerStatus } from '../../../cicdHistory/History.components'
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     constructor(props) {
@@ -21,10 +21,10 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     }
 
     redirectToCDDetails() {
-      if (this.props.fromAppGrouping) {
-          return
-      }
-      this.props.history.push(this.getCDNodeDetailsURL())
+        if (this.props.fromAppGrouping) {
+            return
+        }
+        this.props.history.push(this.getCDNodeDetailsURL())
     }
 
     renderStatus() {
@@ -79,9 +79,9 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                             arrow={true}
                                             placement="bottom"
                                             content={
-                                                <div className='w-100'>
-                                                    <div>{this.props.environmentName}</div>
-                                                    <div className='dc__word-break-all'>{this.props.description}</div>
+                                                <div className="w-100">
+                                                    <div className="fw-6">{this.props.environmentName}</div>
+                                                    <div className="dc__word-break-all">{this.props.description}</div>
                                                 </div>
                                             }
                                         >

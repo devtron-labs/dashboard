@@ -435,7 +435,7 @@ export interface DeleteComponentProps {
     url?: string
     reload?: () => void
     configuration?: string
-    closeCustomComponet?: () => void
+    closeCustomComponent?: () => void
 }
 
 export interface AppStatusType {

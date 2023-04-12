@@ -3,12 +3,7 @@ import { ClusterInstallStatusProps } from './cluster.type'
 import { ReactComponent as NotDeployed } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
-import { TippyCustomized } from '@devtron-labs/devtron-fe-common-lib'
-
-enum TippyTheme {
-    black = 'black',
-    white = 'white',
-}
+import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 
 const handleQuestion = () => {
     return (
@@ -17,13 +12,11 @@ const handleQuestion = () => {
             className="w-300"
             placement="bottom"
             Icon={QuestionFilled}
-            heading={'Devtron Agents'}
+            heading="Devtron Agents"
             infoText="Devtron agent enables components of Devtron to communicate to your Kubernetes cluster."
             showCloseButton={true}
             trigger="click"
             interactive={true}
-            //documentationLink={DOCUMENTATION.WEBHOOK_API_TOKEN}
-            //documentationLinkText="View Documentation"
         >
             <div className="icon-dim-16 fcn-9 mt-23 ml-5 cursor">
                 <Question />
@@ -34,7 +27,7 @@ const handleQuestion = () => {
 
 export class ClusterInstallStatus extends Component<ClusterInstallStatusProps, {}> {
     render() {
-        let classes = `cluster-create-status`
+        let classes = "cluster-create-status"
         if (this.props.agentInstallationStage === 0) {
             return (
                 <div className={`${classes} cluster-create-status--not-triggered`}>

@@ -628,25 +628,6 @@ export function EnvSelector({
         )
     }
 
-    const customEnvOption = (props) => {
-        return (
-            <Option
-                {...props}
-                style={{
-                    option: (base, state) => {
-                        return {
-                            ...base,
-                            backgroundColor: state.isFocused ? 'red' : 'white',
-                            color: 'var(--N900)',
-                            padding: '8px 12px',
-                            whiteSpace: 'normal',
-                        }
-                    },
-                }}
-            />
-        )
-    }
-
     return (
         <>
             <div style={{ width: 'clamp( 100px, 30%, 100px )', height: '100%', position: 'relative' }}>
@@ -682,7 +663,7 @@ export function EnvSelector({
                     closeMenuOnSelect
                     components={{
                         IndicatorSeparator: null,
-                        Option: customEnvOption,
+                        Option,
                         DropdownIndicator: disabled ? null : components.DropdownIndicator,
                         ValueContainer: (props) => <CustomValueContainer {...props} valClassName="env-select" />,
                     }}

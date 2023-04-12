@@ -9,6 +9,7 @@ import {
     RadioGroup,
     RadioGroupItem,
     Drawer,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import {
@@ -362,6 +363,19 @@ function Cluster({
         setDeleteEnv(false)
     }
 
+    const addCluster = () => {
+        setEnvironment({
+            id: null,
+            environment_name: null,
+            cluster_id: clusterId,
+            namespace: null,
+            prometheus_url,
+            isProduction: null,
+            description: null,
+        })
+        setShowWindow(true)
+    }
+
     return (
         <>
             <article
@@ -394,18 +408,7 @@ function Cluster({
                                     <div className="flex dc__align-right">
                                         <div
                                             className="flex mr-16"
-                                            onClick={() => {
-                                                setEnvironment({
-                                                    id: null,
-                                                    environment_name: null,
-                                                    cluster_id: clusterId,
-                                                    namespace: null,
-                                                    prometheus_url,
-                                                    isProduction: null,
-                                                    description: null,
-                                                })
-                                                setShowWindow(true)
-                                            }}
+                                            onClick={addCluster}
                                         >
                                             <List.Logo>{<Add className="icon-dim-20 fcb-5 mr-8" />}</List.Logo>
                                             <div className="fw-6 fs-13 cb-5">Add Environment</div>
@@ -500,17 +503,29 @@ function Cluster({
                                                 </div>
                                                 <div className="dc__visible-hover--child">
                                                     <div className="flex">
-                                                        <PencilEdit
-                                                            className="cursor icon-dim-20 mr-12"
-                                                            onClick={showWindowModal}
-                                                        />
+                                                        <Tippy
+                                                            className="default-tt cursor"
+                                                            arrow={false}
+                                                            content={'Edit Environment'}
+                                                        >
+                                                            <PencilEdit
+                                                                className="cursor icon-dim-20 mr-12"
+                                                                onClick={showWindowModal}
+                                                            />
+                                                        </Tippy>
                                                         {envDelete ? (
                                                             <Progressing size={20} />
                                                         ) : (
-                                                            <DeleteEnvironment
-                                                                className="icon-dim-20 cursor"
-                                                                onClick={showToggleConfirmation}
-                                                            />
+                                                            <Tippy
+                                                                className="default-tt cursor"
+                                                                arrow={false}
+                                                                content={'Delete Environment'}
+                                                            >
+                                                                <DeleteEnvironment
+                                                                    className="icon-dim-20 cursor"
+                                                                    onClick={showToggleConfirmation}
+                                                                />
+                                                            </Tippy>
                                                         )}
                                                     </div>
                                                 </div>
@@ -1087,7 +1102,7 @@ function Environment({
                     </button>
                 </div>
             </div>
-            <div onClick={(e) => e.stopPropagation()}>
+            <div onClick={stopPropagation}>
                 <div className="dc__overflow-scroll p-20">
                     <div className="mb-16">
                         <CustomInput
@@ -1115,7 +1130,7 @@ function Environment({
                         />
                     </div>
                     <div className="mb-16 flex left">
-                        <label className="pr-10 flex cursor">
+                        <label className="pr-16 flex cursor">
                             <input
                                 type="radio"
                                 name="isProduction"
@@ -1152,8 +1167,7 @@ function Environment({
                 <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0 bcn-0">
                     {id && (
                         <button
-                            style={{ marginLeft: '20px', marginRight: 'auto', height: '36px' }}
-                            className="cta flex override-button delete scr-5 h-36 "
+                            className="cta flex override-button delete scr-5 h-36 ml-20 cluster-delete-icon"
                             type="button"
                             onClick={() => toggleConfirmation(true)}
                         >
@@ -1183,7 +1197,7 @@ function Environment({
                         toggleConfirmation={toggleConfirmation}
                         component={DeleteComponentsName.Environment}
                         confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
-                        closeCustomComponet={deleteEnv}
+                        closeCustomComponent={deleteEnv}
                         reload={deleteEnv}
                     />
                 )}
