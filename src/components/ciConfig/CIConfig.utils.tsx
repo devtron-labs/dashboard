@@ -9,8 +9,9 @@ import React from 'react'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { TippyCustomized, TippyTheme, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import { styles } from '../security/security.util'
-import { colors } from 'react-select/dist/declarations/src/theme'
+
+
+export const USING_ROOT = 'Using root(.)'
 
 export const _customStyles = {
     control: (base) => ({
@@ -181,7 +182,7 @@ export const getCIConfigFormState = (
                 (selectedCIPipeline?.isDockerConfigOverridden
                     ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
                     : ciConfig?.ciBuildConfig?.dockerBuildConfig &&
-                      ciConfig.ciBuildConfig.dockerBuildConfig?.buildContext === '.' ? 'Using root(.)' : ciConfig.ciBuildConfig.dockerBuildConfig?.buildContext) || 'Using root(.)',
+                      ciConfig.ciBuildConfig.dockerBuildConfig?.buildContext === '.' ? USING_ROOT : ciConfig.ciBuildConfig.dockerBuildConfig?.buildContext) || USING_ROOT,
             error: '', 
         }
     }
@@ -557,14 +558,13 @@ export const renderBuildContext = (
         <div className="docker-file-container">
             
                 <div className="flex left row ml-0 build-context-label">
-                    Build context
+                    <span className="dc__required-field">Build context</span>
                     {!configOverrideView || allowOverride ? (
                         <div className="flex row ml-0">
                         {renderInfoCard()}
                         <span
-                            className="cursor"
+                            className="cursor cb-5 fcb-5 ml-5"
                             onClick={() => setDisable(!disable)}
-                            style={{ color: 'var(--B500' }}
                         >
                             {disable ? ' Set build context ' : ' Use root(.) '}
                         </span>
@@ -576,7 +576,7 @@ export const renderBuildContext = (
                 {configOverrideView && !allowOverride ? (
                     <span className="fs-14 fw-4 lh-20 cn-9">
                         {ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext === '.'
-                            ? 'Using root(.)'
+                            ? USING_ROOT
                             : ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext}
                     </span>
                 ) : (
@@ -584,14 +584,14 @@ export const renderBuildContext = (
                         tabIndex={4}
                         type="text"
                         className="form__input file-name w-100"
-                        placeholder="Enter build context"
+                        placeholder="Enter URL or path"
                         name="buildContext"
                         value={
                             configOverrideView && !allowOverride
-                                ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || 'Using root(.)'
+                                ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || USING_ROOT
                                 : disable
-                                ? 'Using root(.)'
-                                : formState.buildContext.value === 'Using root(.)' ? '.' : formState.buildContext.value 
+                                ? USING_ROOT
+                                : formState.buildContext.value === USING_ROOT ? '.' : formState.buildContext.value 
                         }
                         onChange={handleOnChangeConfig}
                         autoComplete={'off'}

@@ -22,6 +22,7 @@ import {
     getTargetPlatformMap,
     initCurrentCIBuildConfig,
     processBuildArgs,
+    USING_ROOT,
 } from './CIConfig.utils'
 import { useHistory } from 'react-router-dom'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
@@ -88,7 +89,7 @@ export default function CIConfigForm({
     })
     const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden)
     const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>(
-        initCurrentCIBuildConfig(allowOverride, ciConfig, selectedCIPipeline, selectedMaterial, state.dockerfile.value, './serviceB'),
+        initCurrentCIBuildConfig(allowOverride, ciConfig, selectedCIPipeline, selectedMaterial, state.dockerfile.value, state.buildContext.value),
     )
 
     useEffect(() => {
@@ -275,6 +276,15 @@ export default function CIConfigForm({
                             ...currentCIBuildConfig.dockerBuildConfig,
                             dockerfileRelativePath: e.target.value,
                         },
+                    })
+                    break
+                case DockerConfigOverrideKeys.buildContext:
+                    updateDockerConfigOverride(DockerConfigOverrideKeys.buildContext, {
+                        ...currentCIBuildConfig,
+                        dockerBuildConfig: {
+                            ...currentCIBuildConfig.dockerBuildConfig,
+                            buildContext: e.target.value == USING_ROOT ? '.' : e.target.value,
+                         },
                     })
                     break
                 default:

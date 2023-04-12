@@ -253,7 +253,8 @@ export const DockerConfigOverrideKeys = {
     projectPath: 'projectPath',
     dockerfile: 'dockerfile',
     dockerfileRelativePath: 'dockerfileRelativePath',
-    targetPlatform: 'targetPlatform'
+    targetPlatform: 'targetPlatform',
+    buildContext: 'buildContext'
 }
 
 export interface DockerConfigOverrideType {
