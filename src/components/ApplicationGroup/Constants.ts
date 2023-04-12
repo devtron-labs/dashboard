@@ -141,3 +141,8 @@ export enum AppFilterTabs {
     'GROUP_FILTER' = 'groupFilter',
     'APP_FILTER' = 'appFilter',
 }
+
+export enum CreateGroupTabs {
+    'SELECTED_APPS' = 'selectedApps',
+    'ALL_APPS' = 'allApps',
+}

@@ -1,21 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Drawer, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Drawer, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { CreateGroupType } from './AppGroup.types'
+import SearchBar from './SearchBar'
+import { CreateGroupTabs } from './Constants'
 
 export default function CreateGroup({ appList, selectedAppList, closePopup }: CreateGroupType) {
     const CreateGroupRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(false)
-    const [filterName, setFilterName] = useState<string>()
-    const [filterDescription, setFilterDescription] = useState<string>()
-
-    const escKeyPressHandler = (evt): void => {
-        if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
-            evt.preventDefault()
-            closePopup(evt)
-        }
-    }
+    const [appGroupName, setAppGroupName] = useState<string>()
+    const [appGroupDescription, setAppGroupDescription] = useState<string>()
+    const [selectedTab, setSelectedTab] = useState<CreateGroupTabs>(CreateGroupTabs.SELECTED_APPS)
+    const [allAppSearchText, setAllAppSearchText] = useState('')
+    const [allAppSearchApplied, setAllAppSearchApplied] = useState(false)
+    const [selectedAppSearchText, setSelectedAppSearchText] = useState('')
+    const [selectedAppSearchApplied, setSelectedAppSearchApplied] = useState(false)
 
     const outsideClickHandler = (evt): void => {
         if (
@@ -28,19 +27,11 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
     }
 
     useEffect(() => {
-        document.addEventListener('keydown', escKeyPressHandler)
-        return (): void => {
-            document.removeEventListener('keydown', escKeyPressHandler)
-        }
-    }, [escKeyPressHandler])
-
-    useEffect(() => {
         document.addEventListener('click', outsideClickHandler)
         return (): void => {
             document.removeEventListener('click', outsideClickHandler)
         }
     }, [outsideClickHandler])
-
     useEffect(() => {}, [])
 
     const renderHeaderSection = (): JSX.Element => {
@@ -61,10 +52,65 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
 
     const onInputChange = (event): void => {
         if (event.target.name === 'name') {
-            setFilterName(event.target.value)
+            setAppGroupName(event.target.value)
         } else {
-            setFilterDescription(event.target.value)
+            setAppGroupDescription(event.target.value)
         }
+    }
+
+    const handleFilterChanges = (_searchText: string): void => {
+        const _filteredData = appList.filter((app) => app.label.indexOf(_searchText) >= 0)
+        //setFilteredAppList(_filteredData)
+    }
+
+    const renderSelectedApps = (): JSX.Element => {
+        return (
+            <div>
+                <SearchBar
+                    placeholder="Search applications"
+                    handleFilterChanges={handleFilterChanges}
+                    searchText={selectedAppSearchText}
+                    setSearchText={setSelectedAppSearchText}
+                    searchApplied={selectedAppSearchApplied}
+                    setSearchApplied={setSelectedAppSearchApplied}
+                />
+                <div>
+                    {selectedAppList.map((app) => (
+                        <div className="flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 cn-9">
+                            <span>{app.label}</span>
+                            <Close className="icon-dim-16 cursor" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
+    const renderAllApps = (): JSX.Element => {
+        return (
+            <div>
+                <SearchBar
+                    placeholder="Search applications"
+                    handleFilterChanges={handleFilterChanges}
+                    searchText={allAppSearchText}
+                    setSearchText={setAllAppSearchText}
+                    searchApplied={allAppSearchApplied}
+                    setSearchApplied={setAllAppSearchApplied}
+                />
+                <div>
+                    {appList.map((app) => (
+                        <div className="flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 cn-9">
+                            <span>{app.label}</span>
+                            <Close className="icon-dim-16 cursor" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
+    const onTabChange = (e): void => {
+        setSelectedTab(e.currentTarget.dataset.tabName)
     }
 
     const renderBodySection = (): JSX.Element => {
@@ -81,7 +127,7 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
                         autoComplete="off"
                         placeholder="Enter filter name"
                         type="text"
-                        value={filterName}
+                        value={appGroupName}
                         name="name"
                         onChange={onInputChange}
                     />
@@ -92,15 +138,32 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
                         tabIndex={1}
                         placeholder="Write a description for this filter"
                         className="form__textarea"
-                        value={filterDescription}
+                        value={appGroupDescription}
                         name="description"
                         onChange={onInputChange}
                     />
                 </div>
                 <div>
                     <div>
-                        <span>Selected applications</span>
-                        <span>Add/Remove applications</span>
+                        <span
+                            className={`mr-12 fs-13 ${
+                                selectedTab === CreateGroupTabs.SELECTED_APPS ? 'fw-6 cb-5' : 'fw-4 cn-9 cursor'
+                            }`}
+                            data-tab-name={CreateGroupTabs.SELECTED_APPS}
+                            onClick={onTabChange}
+                        >
+                            <span>Selected applications </span>
+                            {selectedAppList.length > 0 && <span>{selectedAppList.length}</span>}
+                        </span>
+                        <span
+                            className={`fs-13 ${selectedTab === CreateGroupTabs.ALL_APPS ? 'fw-6 cb-5' : 'fw-4 cn-9 cursor'}`}
+                            data-tab-name={CreateGroupTabs.ALL_APPS}
+                            onClick={onTabChange}
+                        >
+                            <span>Add/Remove applications </span>
+                            {appList.length > 0 && <span>{appList.length}</span>}
+                        </span>
+                        {selectedTab === CreateGroupTabs.SELECTED_APPS ? renderSelectedApps() : renderAllApps()}
                     </div>
                     <div></div>
                 </div>
@@ -126,7 +189,7 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
     }
 
     return (
-        <Drawer position="right" width="800px">
+        <Drawer position="right" width="800px" onEscape={closePopup}>
             <div className="dc__window-bg h-100" ref={CreateGroupRef}>
                 {renderHeaderSection()}
                 {renderBodySection()}

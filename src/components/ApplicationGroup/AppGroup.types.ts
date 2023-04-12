@@ -218,7 +218,7 @@ export interface EnvHeaderType {
     groupFilterOptions: OptionType[]
     selectedGroupFilter: MultiValue<OptionType>
     setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
-    openCreateGroup: (e)=> void
+    openCreateGroup: (e) => void
 }
 
 export interface AppGroupAdminType {
@@ -246,12 +246,12 @@ export interface AppGroupAppFilterContextType {
     groupFilterOptions: OptionType[]
     selectedGroupFilter: MultiValue<OptionType>
     setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
-    openCreateGroup: (e)=> void
+    openCreateGroup: (e) => void
 }
 
 export interface CreateGroupType {
-    appList: MultiValue<OptionType>
-    selectedAppList: OptionType[]
+    appList: OptionType[]
+    selectedAppList: MultiValue<OptionType>
     closePopup: (e) => void
 }
 
@@ -270,16 +270,16 @@ export interface AppGroupListType {
     apps: ApplistEnvType[]
 }
 export interface ConfigAppListType extends ResponseType {
-  result?: ConfigAppList[]
+    result?: ConfigAppList[]
 }
 export interface EnvAppType extends ResponseType {
-  result?: EnvApp
+    result?: EnvApp
 }
 
 export interface AppGroupList extends ResponseType {
-  result?: AppGroupListType
+    result?: AppGroupListType
 }
 
 export interface EnvDeploymentStatusType extends ResponseType {
-  result?: EnvDeploymentStatus[]
+    result?: EnvDeploymentStatus[]
 }

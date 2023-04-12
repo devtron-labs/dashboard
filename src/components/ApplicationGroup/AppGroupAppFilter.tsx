@@ -75,7 +75,7 @@ const Option = (props) => {
                     <Trash className="scn-6 icon-dim-16 cursor" />
                 </div>
             ) : (
-                <Check className="icon-dim-16 mr-4 mw-18 cursor scb-5" onClick={selectData} />
+                props.isSelected && <Check className="icon-dim-16 mr-4 mw-18 cursor scb-5" onClick={selectData} />
             )}
         </div>
     )
@@ -89,7 +89,7 @@ const MenuList = (props: any): JSX.Element => {
         selectedFilterTab,
         setSelectedFilterTab,
         groupFilterOptions,
-        openCreateGroup
+        openCreateGroup,
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
     const clearSelection = (): void => {
         setSelectedAppList([])

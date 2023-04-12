@@ -113,6 +113,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
 
     const openCreateGroup = (e) => {
         stopPropagation(e)
+        if(e.currentTarget.dataset.isEdit==='true'){
+
+        }
         setShowCreateGroup(true)
     }
 
@@ -190,8 +193,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             {renderRoute()}
             {showCreateGroup && (
                 <CreateGroup
-                    appList={selectedAppList}
-                    selectedAppList={appListOptions}
+                    appList={appListOptions}
+                    selectedAppList={selectedAppList}
                     closePopup={closeCreateGroup}
                 />
             )}
