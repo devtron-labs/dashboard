@@ -29,7 +29,7 @@ import {
     useAsync,
     ScanDetailsModal,
 } from '../../../common'
-import { CustomValueContainer, formatHighlightedTextDescription, Option } from './../../../v2/common/ReactSelect.utils'
+import { CustomValueContainer, Option } from './../../../v2/common/ReactSelect.utils'
 import {
     getAppConfigStatus,
     getAppOtherEnvironment,

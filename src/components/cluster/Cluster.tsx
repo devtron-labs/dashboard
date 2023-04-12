@@ -3,7 +3,6 @@ import { Pencil, useForm, CustomPassword, Toggle, useAsync } from '../common'
 import {
     showError,
     Progressing,
-    VisibleModal,
     sortCallback,
     ErrorScreenNotAuthorized,
     Reload,
@@ -46,8 +45,6 @@ import {
     URLS,
     ModuleNameMap,
     CLUSTER_COMMAND,
-    AppCreationType,
-    MODES,
     CONFIGURATION_TYPES,
 } from '../../config'
 import { getEnvName } from './cluster.util'
@@ -468,6 +465,7 @@ function Cluster({
                                         environment_name ? (
                                             <div
                                                 className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-12 pb-12 fs-13 fw-4 pl-20 pr-20 dc__visible-hover dc__visible-hover--parent"
+                                                key={id}
                                                 onClick={() =>
                                                     setEnvironment({
                                                         id,

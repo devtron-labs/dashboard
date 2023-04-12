@@ -43,8 +43,6 @@ export class ClusterInstallStatus extends Component<ClusterInstallStatusProps, {
                     <p className="cluster-create-status__title mb-0">
                         Devtron agent is not installed{this.props.envName && ` on env: ${this.props.envName}`}.
                     </p>
-                    {/* {handleQuestion()} */}
-
                     <button type="button" className="cluster-create-status__button" onClick={this.props.onClick}>
                         Install
                     </button>
