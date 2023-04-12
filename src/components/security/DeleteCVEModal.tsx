@@ -82,7 +82,7 @@ export class DeleteCVEModal extends Component<DeleteCVEModalProps, any> {
                 </ul>
                 <div className="flex right">
                     <button type="button" className="cta cancel cta-cd-delete-modal mr-16" onClick={this.props.closeDelete}>Cancel</button>
-                    <button type="button" className="cta delete cta-cd-delete-modal" onClick={this.props.delete}>Delete</button>
+                    <button type="button" className="cta delete cta-cd-delete-modal" onClick={this.props.delete} data-testid="delete-button-for-resource">Delete</button>
                 </div>
             </div>
         </VisibleModal >
