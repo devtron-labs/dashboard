@@ -20,8 +20,10 @@ export const CDModalTab = {
 
 export const getAppList = (request, options?) => {
     let URL = Routes.APP_LIST
-    if(window._env_.USE_V2){
-        URL+= `/${Routes.APP_LIST_V2}`
+    if (window._env_.USE_V2) {
+        URL += `/${Routes.APP_LIST_V2}`
+    } else {
+        URL += `/${Routes.APP_LIST_V1}`
     }
     return post(URL, request, options)
 }
