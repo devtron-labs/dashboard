@@ -390,7 +390,7 @@ export default function UserForm({
                     onChange={handlePermissionType}
                 >
                     {PermissionType.map(({ label, value }) => (
-                        <RadioGroupItem value={value} key={label}>
+                        <RadioGroupItem dataTestId={`${value==='SPECIFIC'?"specific-user":"super-admin"}-permission-radio-button`} value={value} key={label}>
                             <span className={`dc__no-text-transform ${localSuperAdmin === value ? 'fw-6' : 'fw-4'}`}>
                                 {label}
                             </span>
@@ -451,6 +451,7 @@ export default function UserForm({
             <div className="flex right mt-32">
                 {id && (
                     <button
+                        data-testid="user-form-delete-button"
                         className="cta delete"
                         onClick={(e) => setDeleteConfirmationModal(true)}
                         style={{ marginRight: 'auto' }}
@@ -473,6 +474,7 @@ export default function UserForm({
             </div>
             {deleteConfirmationModal && (
                 <DeleteDialog
+                    dataTestId='user-form-delete-dialog'
                     title={`Delete user '${emailState.emails[0]?.value || ''}'?`}
                     description={'Deleting this user will remove the user and revoke all their permissions.'}
                     delete={handleDelete}

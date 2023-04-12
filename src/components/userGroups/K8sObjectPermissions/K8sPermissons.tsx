@@ -44,7 +44,7 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }: K8sPe
     return (
         <>
             <div className="flex left mt-16 fs-13 fw-6">
-                <span className="flex cb-5 cursor" onClick={creatPermission}>
+                <span data-testid="add-k8s-permisson-link" className="flex cb-5 cursor" onClick={creatPermission}>
                     <AddIcon className="fcb-5 mr-12" />
                     Add permission
                 </span>

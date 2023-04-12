@@ -672,10 +672,11 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                     {email_id ? email_id[0] : name[0]}
                 </span>
                 <span className="user-list__email-name flex left column">
-                    <span className="user-list__title">{name || email_id}</span>
+                    <span data-testid="user-display-name-list" className="user-list__title">{name || email_id}</span>
                     <span className="user-list__subtitle">{description || email_id}</span>
                 </span>
                 <span
+                    data-testid={`user-list-${collapsed ?'expand':'collapse'}-dropdown`}
                     className="user-list__direction-container flex rotate pointer"
                     onClick={onClickUserDropdownHandler}
                     style={{ ['--rotateBy' as any]: collapsed ? '0deg' : '180deg' }}
@@ -1061,7 +1062,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : projectsList
                 )?.map((project) => ({ label: project.name, value: project.name }))}
                 className="basic-multi-select"
-                classNamePrefix={`select-project-dropdown-${index}`}
+                classNamePrefix="select-project-dropdown"
                 onChange={handleDirectPermissionChange}
                 components={{
                     ClearIndicator: null,
@@ -1106,7 +1107,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         formatGroupLabel={formatGroupLabel}
                         filterOption={customFilter}
                         className="basic-multi-select cluster-select"
-                        classNamePrefix="select"
+                        classNamePrefix="select-helm-app-environment-dropdown"
                         hideSelectedOptions={false}
                         menuPlacement="auto"
                         styles={{
@@ -1150,7 +1151,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         options={[allEnvironmentsOption, ...environments]}
                         className="basic-multi-select"
                         menuPlacement="auto"
-                        classNamePrefix={`select-devtron-app-environment-dropdown-${index}`}
+                        classNamePrefix="select-devtron-app-environment-dropdown"
                         hideSelectedOptions={false}
                         styles={tempMultiSelectStyles}
                         components={{
@@ -1199,7 +1200,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     placeholder="Select applications"
                     options={[allApplicationsOption, ...applications]}
                     className="basic-multi-select"
-                    classNamePrefix={`select-application-dropdown-${index}`}
+                    classNamePrefix="select-application-dropdown"
                     onChange={handleDirectPermissionChange}
                     hideSelectedOptions={false}
                     inputValue={appInput}
@@ -1225,7 +1226,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     value: role as ActionTypes.MANAGER | ActionTypes.VIEW | ActionTypes.TRIGGER | ActionTypes.ADMIN,
                 }))}
                 className="basic-multi-select"
-                classNamePrefix={`select-user-role-dropdown-${index}`}
+                classNamePrefix="select-user-role-dropdown"
                 formatOptionLabel={formatOptionLabel}
                 onChange={handleDirectPermissionChange}
                 isDisabled={!permission.team}
