@@ -1,5 +1,5 @@
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import React, { useState } from 'react'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getAlphabetIcon, noop } from '../../../../common'
 import { ApprovedTippyContentProps } from './Types'
 

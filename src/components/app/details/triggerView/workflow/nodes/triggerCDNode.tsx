@@ -85,16 +85,6 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                             </div>
                             {this.renderStatus()}
                             <div className="workflow-node__btn-grp">
-                                {this.props.showApprovalNode && (
-                                    <button
-                                        className="workflow-node__rollback-btn"
-                                        onClick={(event) =>
-                                            context.onClickCDMaterial(+this.props.id, DeploymentNodeType.CD, true)
-                                        }
-                                    >
-                                        <ApprovalNodeIcon className="icon-dim-20 dc__vertical-align-middle" />
-                                    </button>
-                                )}
                                 <Tippy className="default-tt" arrow={true} placement="bottom" content={'Rollback'}>
                                     <button
                                         className="workflow-node__rollback-btn"

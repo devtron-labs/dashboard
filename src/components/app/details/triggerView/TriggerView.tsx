@@ -375,6 +375,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) {
         ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
+        this.setState({ showApprovalModal: isApprovalNode, isLoading: true })
         getCDMaterialList(cdNodeId, isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType)
             .then((data) => {
                 const workflows = [...this.state.workflows].map((workflow) => {
