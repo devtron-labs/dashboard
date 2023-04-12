@@ -42,15 +42,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
             setLastDataSync(!lastDataSync)
             if (result) {
                 const sortedResult = result
-                    .sort((a, b) => a['cluster_name'].localeCompare(b['cluster_name']))
-                    .map((minData) => {
-                        return {
-                            id: minData.id,
-                            name: minData.cluster_name,
-                            nodeErrors: [],
-                            errorInNodeListing: minData.errorInConnecting,
-                        } as ClusterDetail
-                    })
+                    .sort((a, b) => a['name'].localeCompare(b['name']))
                 if (!completeDataLoadedRef.current) {
                     setClusterList(sortedResult)
                     setFilteredClusterList(sortedResult)

@@ -243,17 +243,17 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                 setLastDataSync(!lastDataSync)
                 if (response.result) {
                     const optionList = response.result
-                        .filter((cluster) => !cluster.errorInConnecting)
+                        .filter((cluster) => !cluster.errorInNodeListing)
                         .map((cluster) => {
                             const _clusterId = cluster.id?.toString()
                             if (_clusterId === clusterId) {
                                 setSelectedCluster({
-                                    label: cluster.cluster_name,
+                                    label: cluster.name,
                                     value: _clusterId,
                                 })
                             }
                             return {
-                                label: cluster.cluster_name,
+                                label: cluster.name,
                                 value: _clusterId,
                             }
                         })

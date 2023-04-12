@@ -12,13 +12,12 @@ import {
     EditTaintsRequest,
     TerminalDataType,
 } from './types'
-import { ClusterListResponse as ClusterListResponseMin } from '../../services/service.types'
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
     return get(Routes.CLUSTER_LIST)
 }
 
-export const getClusterListMin = (): Promise<ClusterListResponseMin> => {
+export const getClusterListMin = (): Promise<ClusterListResponse> => {
     return get(Routes.CLUSTER_LIST_MIN)
 }
 
