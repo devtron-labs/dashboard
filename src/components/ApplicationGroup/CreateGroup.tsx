@@ -75,12 +75,14 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
                     setSearchApplied={setSelectedAppSearchApplied}
                 />
                 <div>
-                    {selectedAppList.map((app) => (
-                        <div className="flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 cn-9">
-                            <span>{app.label}</span>
-                            <Close className="icon-dim-16 cursor" />
-                        </div>
-                    ))}
+                    {selectedAppList
+                        .filter((app) => !selectedAppSearchText || app.label.indexOf(selectedAppSearchText) >= 0)
+                        .map((app) => (
+                            <div className="flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 cn-9">
+                                <span>{app.label}</span>
+                                <Close className="icon-dim-16 cursor" />
+                            </div>
+                        ))}
                 </div>
             </div>
         )
@@ -98,12 +100,14 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
                     setSearchApplied={setAllAppSearchApplied}
                 />
                 <div>
-                    {appList.map((app) => (
-                        <div className="flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 cn-9">
-                            <span>{app.label}</span>
-                            <Close className="icon-dim-16 cursor" />
-                        </div>
-                    ))}
+                    {appList
+                        .filter((app) => !allAppSearchText || app.label.indexOf(allAppSearchText) >= 0)
+                        .map((app) => (
+                            <div className="flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 cn-9">
+                                <span>{app.label}</span>
+                                <Close className="icon-dim-16 cursor" />
+                            </div>
+                        ))}
                 </div>
             </div>
         )
@@ -153,15 +157,33 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
                             onClick={onTabChange}
                         >
                             <span>Selected applications </span>
-                            {selectedAppList.length > 0 && <span>{selectedAppList.length}</span>}
+                            {selectedAppList.length > 0 && (
+                                <span
+                                    className={`br-10 pl-5 pr-5 ${
+                                        selectedTab === CreateGroupTabs.SELECTED_APPS ? 'bcb-5 cn-0' : 'bcn-1 cn-7'
+                                    }`}
+                                >
+                                    {selectedAppList.length}
+                                </span>
+                            )}
                         </span>
                         <span
-                            className={`fs-13 ${selectedTab === CreateGroupTabs.ALL_APPS ? 'fw-6 cb-5' : 'fw-4 cn-9 cursor'}`}
+                            className={`fs-13 ${
+                                selectedTab === CreateGroupTabs.ALL_APPS ? 'fw-6 cb-5' : 'fw-4 cn-9 cursor'
+                            }`}
                             data-tab-name={CreateGroupTabs.ALL_APPS}
                             onClick={onTabChange}
                         >
                             <span>Add/Remove applications </span>
-                            {appList.length > 0 && <span>{appList.length}</span>}
+                            {appList.length > 0 && (
+                                <span
+                                    className={`br-10 pl-5 pr-5 ${
+                                        selectedTab === CreateGroupTabs.ALL_APPS ? 'bcb-5 cn-0' : 'bcn-1 cn-7'
+                                    }`}
+                                >
+                                    {appList.length}
+                                </span>
+                            )}
                         </span>
                         {selectedTab === CreateGroupTabs.SELECTED_APPS ? renderSelectedApps() : renderAllApps()}
                     </div>
