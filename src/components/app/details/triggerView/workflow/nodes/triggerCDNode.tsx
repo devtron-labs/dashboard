@@ -100,7 +100,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                         context.onClickCDMaterial(this.props.id, DeploymentNodeType[this.props.type])
                                     }}
                                 >
-                                    Select {/* Image */}
+                                    Select Image
                                 </button>
                             </div>
                         </div>
