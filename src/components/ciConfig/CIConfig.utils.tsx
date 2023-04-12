@@ -6,6 +6,9 @@ import { deepEqual } from '../common'
 import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 import { CIBuildArgType, CIConfigDiffType } from './types'
 import React from 'react'
+import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { TippyCustomized, TippyTheme, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
 export const _customStyles = {
     control: (base) => ({
@@ -507,6 +510,8 @@ const getTargetPlatformChangeBGColor = (
 }
 
 export const renderBuildContext = (
+    showInfo: boolean,
+    setShowInfo: React.Dispatch<React.SetStateAction<boolean>>, 
     disable: boolean,
     setDisable: React.Dispatch<React.SetStateAction<boolean>>,
     formState: any,
@@ -515,46 +520,75 @@ export const renderBuildContext = (
     ciConfig:  CiPipelineResult,
     handleOnChangeConfig: (e) => void
 ): JSX.Element => {
+    const renderInfoCard = (setShowInfo: React.Dispatch<React.SetStateAction<boolean>>): JSX.Element => {
+        return (
+            <TippyCustomized
+                theme={TippyTheme.white}
+                className="w-300 h-100 fcv-5"
+                placement="right"
+                Icon={QuestionFilled}
+                heading={'Docker build context'}
+                infoText="Tokens you have generated that can be used to access the Devtron API."
+                showCloseButton={true}
+                trigger="click"
+                interactive={true}
+                documentationLinkText="View Documentation"
+            >
+                <div className="icon-dim-16 fcn-9 ml-8 cursor">
+                    <Question />
+                </div>
+            </TippyCustomized>
+        )
+    }
     return (
         <div className="docker-file-container">
-            <label htmlFor="" className="form__label dc__required-field">
-                Build context
-                {(!configOverrideView || allowOverride) && (
-                    <span
-                        style={{
-                            color: 'var(--B500)',
-                        }}
-                        className="clickable-text"
-                        onClick={() => {
-                            setDisable(!disable)
-                        }}
-                    >
-                        {disable ? ' Set build context ' : ' Use root(.) '}
-                    </span>
-                )}
+            <label htmlFor="" className="form__label flex left">
+                <div className="flex row ml-0">
+                    <label className="dc__required-field">Build context</label>
+                    {(!configOverrideView || allowOverride) && (
+                        <span
+                            style={{
+                                color: 'var(--B500)',
+                            }}
+                            className="clickable-text"
+                            onClick={() => {
+                                setDisable(!disable)
+                            }}
+                        >
+                            {renderInfoCard(setShowInfo)}
+                            {disable ? ' Set build context ' : ' Use root(.) '}
+                        </span>
+                    )}
+                </div>
             </label>
             <div className="docker-file-container">
-                <input
-                    tabIndex={4}
-                    type="text"
-                    className="form__input file-name"
-                    placeholder="Enter build context"
-                    name="buildContext"
-                    value={
-                        configOverrideView && !allowOverride
-                            ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext == '.'
+                {configOverrideView && !allowOverride ? (
+                    <span className="fs-14 fw-4 lh-20 cn-9">
+                        {ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || 'Using root(.)'}
+                    </span>
+                ) : (
+                    <input
+                        tabIndex={4}
+                        type="text"
+                        className="form__input file-name"
+                        placeholder="Enter build context"
+                        name="buildContext"
+                        value={
+                            configOverrideView && !allowOverride
+                                ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext == '.'
+                                    ? 'Using root(.)'
+                                    : ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext
+                                : disable
                                 ? 'Using root(.)'
-                                : ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext
-                            : disable
-                            ? 'Using root(.)'
-                            : formState.buildContext.value
-                    }
-                    onChange={handleOnChangeConfig}
-                    autoComplete={'off'}
-                    autoFocus={!configOverrideView}
-                    disabled={configOverrideView ? !allowOverride : disable}
-                />
-                {!disable && formState.buildContext.error && (
+                                : formState.buildContext.value
+                        }
+                        onChange={handleOnChangeConfig}
+                        autoComplete={'off'}
+                        autoFocus={!configOverrideView}
+                        disabled={(configOverrideView && !allowOverride) || disable}
+                    />
+                )}
+                {(configOverrideView ? allowOverride && !disable : !disable) && formState.buildContext.error && (
                     <label className="form__error">{formState.buildContext.error}</label>
                 )}
             </div>

@@ -43,6 +43,7 @@ export default function CIDockerFileConfig({
     setCurrentCIBuildConfig,
     setInProgress,
 }: CIDockerFileConfigProps) {
+    const [showInfo,setShowInfo] = useState<boolean>(false)
     const [ciBuildTypeOption, setCIBuildTypeOption] = useState<CIBuildType>(currentCIBuildConfig.ciBuildType)
     const [buildersAndFrameworks, setBuildersAndFrameworks] = useState<BuildersAndFrameworksType>({
         builders: [],
@@ -317,7 +318,7 @@ export default function CIDockerFileConfig({
                     </div>
                 </div>
                 <div className="mb-4 form-row__docker">
-                    {renderBuildContext(disable, setDisable, formState, configOverrideView, allowOverride, ciConfig, handleOnChangeConfig)}
+                    {renderBuildContext(showInfo,setShowInfo,disable, setDisable, formState, configOverrideView, allowOverride, ciConfig, handleOnChangeConfig)}
                 </div>
             </div>
         )
@@ -345,6 +346,9 @@ export default function CIDockerFileConfig({
                     currentCIBuildConfig={currentCIBuildConfig}
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
                     setInProgress={setInProgress}
+                    ciConfig={ciConfig}
+                    formState={formState}
+                    handleOnChangeConfig={handleOnChangeConfig}
                 />
             )}
             {ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE && (
@@ -369,7 +373,6 @@ export default function CIDockerFileConfig({
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
                     buildEnvArgs={buildEnvArgs}
                     setBuildEnvArgs={setBuildEnvArgs}
-                    formState = {formState}
                 />
             )}
             {(!configOverrideView || isBuildpackType) && <hr className="mt-16 mb-16" />}

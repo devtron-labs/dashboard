@@ -17,7 +17,7 @@ import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwi
 import { CIBuildType } from '../ciPipeline/types'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
 import { renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
-import { _customStyles } from './CIConfig.utils'
+import { renderBuildContext, _customStyles } from './CIConfig.utils'
 
 export default function CICreateDockerfileOption({
     configOverrideView,
@@ -31,6 +31,9 @@ export default function CICreateDockerfileOption({
     currentCIBuildConfig,
     setCurrentCIBuildConfig,
     setInProgress,
+    formState,
+    ciConfig,
+    handleOnChangeConfig,
 }: CICreateDockerfileOptionProps) {
     const [languages, setLanguages] = useState<LanguageOptionType[]>([])
     const [languageFrameworks, setLanguageFrameworks] = useState<Map<string, FrameworkOptionType[]>>()
@@ -41,7 +44,8 @@ export default function CICreateDockerfileOption({
     const [copied, setCopied] = useState(false)
     const controller = new AbortController()
     const signal = controller.signal
-
+    const [disable, setDisable] = useState<boolean>(false)
+    const [showInfo,setShowInfo] = useState<boolean>(false)
     useEffect(() => {
         if (frameworks.length > 0) {
             const _languageFrameworks = new Map<string, FrameworkOptionType[]>()
@@ -317,53 +321,70 @@ export default function CICreateDockerfileOption({
         templateData && selectedLanguage ? templateData[getTemplateKey(selectedLanguage, selectedFramework)] : null
     return (
         <>
-            <div className="form__field mb-16">
-                <label className="form__label">{`${
-                    configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
-                } containing code`}</label>
-                {configOverrideView && !allowOverride ? (
-                    <div className="flex left">
-                        {currentMaterial?.url && renderOptionIcon(currentMaterial.url)}
-                        <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name || 'Not selected'}</span>
+            <div>
+                <div className="mb-16 form-row__docker">
+                    <div className="form__field mb-16">
+                        <label className="form__label">{`${
+                            configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
+                        } containing code`}</label>
+                        {configOverrideView && !allowOverride ? (
+                            <div className="flex left">
+                                {currentMaterial?.url && renderOptionIcon(currentMaterial.url)}
+                                <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name || 'Not selected'}</span>
+                            </div>
+                        ) : (
+                            <ReactSelect
+                                className="m-0"
+                                tabIndex={3}
+                                isSearchable={false}
+                                options={sourceConfig.material}
+                                getOptionLabel={(option) => `${option.name}`}
+                                getOptionValue={(option) => `${option.checkoutPath}`}
+                                value={configOverrideView && !allowOverride ? currentMaterial : selectedMaterial}
+                                styles={getCommonSelectStyle({
+                                    container: (base) => ({
+                                        ...base,
+                                        width: '50%',
+                                    }),
+                                    control: (base, state) => ({
+                                        ...base,
+                                        minHeight: '36px',
+                                        boxShadow: 'none',
+                                        backgroundColor: 'var(--N50)',
+                                        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                                        cursor: 'pointer',
+                                    }),
+                                    menu: (base) => ({
+                                        ...base,
+                                        marginTop: '0',
+                                        minWidth: '226px',
+                                    }),
+                                })}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    Option: repositoryOption,
+                                    Control: repositoryControls,
+                                }}
+                                onChange={handleFileLocationChange}
+                                isDisabled={configOverrideView && !allowOverride}
+                            />
+                        )}
+                        {repository.error && <label className="form__error">{repository.error}</label>}
                     </div>
-                ) : (
-                    <ReactSelect
-                        className="m-0"
-                        tabIndex={3}
-                        isSearchable={false}
-                        options={sourceConfig.material}
-                        getOptionLabel={(option) => `${option.name}`}
-                        getOptionValue={(option) => `${option.checkoutPath}`}
-                        value={configOverrideView && !allowOverride ? currentMaterial : selectedMaterial}
-                        styles={getCommonSelectStyle({
-                            container: (base) => ({
-                                ...base,
-                                width: '50%',
-                            }),
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: '36px',
-                                boxShadow: 'none',
-                                backgroundColor: 'var(--N50)',
-                                border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                cursor: 'pointer',
-                            }),
-                            menu: (base) => ({
-                                ...base,
-                                marginTop: '0',
-                                minWidth: '226px',
-                            }),
-                        })}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option: repositoryOption,
-                            Control: repositoryControls,
-                        }}
-                        onChange={handleFileLocationChange}
-                        isDisabled={configOverrideView && !allowOverride}
-                    />
-                )}
-                {repository.error && <label className="form__error">{repository.error}</label>}
+                </div>
+                <div className="mb-4 form-row__docker">
+                    {renderBuildContext(
+                        showInfo,
+                        setShowInfo,
+                        disable,
+                        setDisable,
+                        formState,
+                        configOverrideView,
+                        allowOverride,
+                        ciConfig,
+                        handleOnChangeConfig,
+                    )}
+                </div>
             </div>
             <div
                 className={`create-dockerfile-option dc__border br-4 dc__overflow-hidden ${
