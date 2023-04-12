@@ -51,7 +51,7 @@ export const processWorkflowStatuses = (
         wf.nodes = wf.nodes.map((node) => {
             switch (node.type) {
                 case 'CI':
-                    node['status'] = ciMap[node.id]?.status
+                    node['status'] = node.isLinkedCI ? ciMap[node.parentCiPipeline]?.status : ciMap[node.id]?.status
                     node['storageConfigured'] = ciMap[node.id]?.storageConfigured
                     break
                 case 'PRECD':
@@ -77,9 +77,10 @@ export const handleSourceNotConfigured = (
     _materialList: any[],
     isDockerFileError: boolean,
 ) => {
-    if (_materialList?.length > 0) {
+    if (_materialList.length > 0) {
         _materialList.forEach((node) => configuredMaterialList[wf.name].add(node.gitMaterialId))
     }
+
     for (const material of wf.gitMaterials) {
         if (configuredMaterialList[wf.name].has(material.gitMaterialId)) {
             continue
