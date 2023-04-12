@@ -810,6 +810,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <div className="mb-16">
                     <Checkbox
                         isChecked={isSubPathChecked}
+
                         onClick={(e) => {
                             e.stopPropagation()
                         }}
@@ -818,7 +819,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}
                     >
-                        <span className="mr-5">
+                        <span data-testid="configmap-sub-path-checkbox" className="mr-5">
                             Set SubPath (same as
                             <a
                                 href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
@@ -878,7 +879,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         disabled={isChartVersion309OrBelow}
                         onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}
                     >
-                        <span className="mr-5">
+                        <span data-testid="configmap-file-permission-checkbox" className="mr-5">
                             {' '}
                             Set File Permission (same as
                             <a
@@ -924,6 +925,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             {isHashiOrAWS || isESO ? (
                 <div className="form__row">
                     <CustomInput
+                        dataTestid="enter-role-ARN"
                         value={roleARN.value}
                         autoComplete="off"
                         tabIndex={4}

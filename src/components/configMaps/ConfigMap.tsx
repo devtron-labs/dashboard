@@ -311,7 +311,7 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
 
     return (
         <textarea
-            data-testid="secrets-gui-value-textbox"
+            data-testid="Configmap-gui-value-textbox"
             ref={(el) => (_textRef.current = el)}
             value={text}
             placeholder={placeholder}
@@ -338,8 +338,8 @@ export function ListComponent({ title, name = '', subtitle = '', onClick, classN
             ) : (
                 <File className="configuration-list__logo icon-dim-24" />
             )}
-            <div className="configuration-list__info">
-                <div data-testid="add-configmap-button" className="configuration-list__title">{title}</div>
+            <div data-testid="add-configmap-button" className="configuration-list__info">
+                <div className="configuration-list__title">{title}</div>
                 {subtitle && <div className="configuration-list__subtitle">{subtitle}</div>}
             </div>
             {collapsible && <img className="configuration-list__arrow pointer" alt="" src={arrowTriangle} />}
@@ -751,7 +751,7 @@ export function ConfigMapForm({
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}
                     >
-                        <span className="mb-0">
+                        <span data-testid="" className="mb-0">
                             Set SubPath (same as
                             <a
                                 href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
@@ -923,6 +923,7 @@ export function ConfigMapForm({
                                 />
                             ))}
                             <div
+                                data-testid="configmap-gui-add-parameter-link"
                                 className="add-parameter dc__bold pointer flex left"
                                 onClick={(e) =>
                                     setExternalValues((externalValues) => [
