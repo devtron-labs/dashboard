@@ -34,7 +34,6 @@ import {
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { EmptyStateCdMaterial } from './EmptyStateCdMaterial'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import {
     CDModalTab,
@@ -1141,13 +1140,23 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
+    renderEmptyState = () => {
+        return (
+            <EmptyView
+                title="No image available"
+                subTitle={
+                    this.props.materialType == MATERIAL_TYPE.rollbackMaterialList
+                        ? 'There are no rollback materials'
+                        : 'Please Trigger CI Pipeline and find the image here for deployment.'
+                }
+                imgSrc={noartifact}
+            />
+        )
+    }
+
     render() {
         if (this.props.isFromBulkCD) {
-            return this.props.material.length > 0 ? (
-                this.renderTriggerBody()
-            ) : (
-                <EmptyStateCdMaterial materialType={this.props.materialType} />
-            )
+            return this.props.material.length > 0 ? this.renderTriggerBody() : this.renderEmptyState()
         } else {
             return (
                 <VisibleModal
@@ -1197,7 +1206,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                                 />
                                             </>
                                         ) : (
-                                            <EmptyStateCdMaterial materialType={this.props.materialType} />
+                                            this.renderEmptyState()
                                         )}
                                     </>
                                 )}

@@ -251,8 +251,8 @@ export class Workflow extends Component<WorkflowProps> {
         }, [])
     }
 
-    onClickApprovalNode = () => {
-        this.context.onClickCDMaterial(+this.props.id, DeploymentNodeType.CD, true)
+    onClickApprovalNode = (nodeId: number) => {
+        this.context.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
     }
 
     renderEdgeList() {
@@ -271,7 +271,7 @@ export class Workflow extends Component<WorkflowProps> {
                     showApprovalNode={
                         edgeNode.endNode.userApprovalConfig && edgeNode.endNode.userApprovalConfig.requiredCount > 0
                     }
-                    onClickApprovalNode={this.onClickApprovalNode}
+                    onClickApprovalNode={() => this.onClickApprovalNode(edgeNode.endNode.id)}
                 />
             )
         })
