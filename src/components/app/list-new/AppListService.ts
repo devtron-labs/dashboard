@@ -1,6 +1,6 @@
-import { getEnvironmentListMin as getEnvironmentList, getClusterListMinWithoutAuth as getClusterList, getNamespaceListMin as getNamespaceList } from '../../../services/service';
-import {Routes, SERVER_MODE} from '../../../config';
-import {get, ResponseType, getTeamListMin as getProjectList} from '@devtron-labs/devtron-fe-common-lib';
+import { getNamespaceListMin as getNamespaceList, getAppFilters } from '../../../services/service';
+import {Routes} from '../../../config';
+import {get, ResponseType} from '@devtron-labs/devtron-fe-common-lib';
 import { EnvironmentListHelmResult, EnvironmentHelmResult, Cluster, EnvironmentListHelmResponse} from '../../../services/service.types';
 import { APP_STATUS } from '../config';
 
@@ -44,11 +44,14 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
     let _clusterVsNamespaceMap = buildClusterVsNamespace(payloadParsedFromUrl.namespaces.join(','));
     let _clusterIds = [..._clusterVsNamespaceMap.keys()].join(',');
 
-    return Promise.all([getProjectList(), (serverMode == SERVER_MODE.FULL ? getEnvironmentList() : { result: undefined}), getClusterList(), (_clusterIds ? getNamespaceList(_clusterIds) : { result: undefined})]).then(([projectsRes, environmentListRes, clusterListRes, namespaceListRes]) => {
+    return Promise.all([getAppFilters() , (_clusterIds ? getNamespaceList(_clusterIds) : { result: undefined})]).then(([appFilterList, namespaceListRes]) => {
+        const projectList = appFilterList.result?.Teams
+        const environmentList = appFilterList.result?.Environments
+        const clusterList = appFilterList.result?.Clusters
 
         // push apps with no projects in project res
-        if(projectsRes.result && Array.isArray(projectsRes.result)){
-            projectsRes.result.push({
+        if(projectList && Array.isArray(projectList)){
+            projectList.push({
                 id : 0,
                 name : 'Apps with no projects',
                 active : true
@@ -72,7 +75,7 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
         };
 
         // set filter projects starts
-        filters.projects = projectsRes.result ? projectsRes.result.map((team) => {
+        filters.projects = projectList ? projectList.map((team) => {
             return {
                 key: team.id,
                 label: team.name.toLocaleLowerCase(),
@@ -84,7 +87,7 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
         // set filter projects ends
 
         // set filter environments starts
-        filters.environments = environmentListRes.result ? environmentListRes.result.map((env) => {
+        filters.environments = environmentList ? environmentList.map((env) => {
             return {
                 key: env.id,
                 label: env.environment_name.toLocaleLowerCase(),
@@ -96,8 +99,8 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
         // set filter environments ends
 
         // set filter clusters starts
-        if(clusterListRes.result && Array.isArray(clusterListRes.result)){
-            clusterListRes.result.forEach((cluster : Cluster) => {
+        if(clusterList && Array.isArray(clusterList)){
+            clusterList.forEach((cluster : Cluster) => {
                 filters.clusters.push({
                     key: cluster.id,
                     label: cluster.cluster_name.toLocaleLowerCase(),
@@ -127,9 +130,28 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
 
         ////// set master filters data ends (check/uncheck)
 
+        // set list data for env cluster & namespace
+        const environmentClusterAppListData = new Map()
+        const clusterMap = new Map()
+        for (const cluster of clusterList) {
+            clusterMap.set(cluster.id, cluster.cluster_name)
+        }
+
+        for (const env of environmentList) {
+            const envData = {
+                environmentName: env.environment_name,
+                namespace: env.namespace,
+                clusterName: clusterMap.get(env.cluster_id),
+                clusterId: env.cluster_id,
+            }
+            environmentClusterAppListData.set(env.id, envData)
+        }
+
+        // end
+
         return {
-            projectsRes: projectsRes,
-            environmentListRes: environmentListRes,
+            projectsRes: projectList,
+            environmentClusterAppListData: environmentClusterAppListData,
             filters : filters
         };
     })

@@ -156,6 +156,7 @@ export interface RegexValueType {
 
 export interface CIMaterialState {
     regexValue: Record<number, RegexValueType>
+    savingRegexValue: boolean
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
 }
@@ -525,6 +526,7 @@ export interface CiPipelineResult {
     appWorkflowId?: number
     beforeDockerBuild?: Array<Task>
     afterDockerBuild?: Array<Task>
+    ciGitConfiguredId?: number
 }
 //End CI Response
 
@@ -605,6 +607,7 @@ export interface BranchRegexModalProps {
     regexValue
     onCloseBranchRegexModal
     hideHeaderFooter?: boolean
+    savingRegexValue: boolean
 }
 export interface AppDetailsProps {
     isV2: boolean
@@ -673,4 +676,5 @@ export interface MaterialSourceProps {
         refresh: (pipelineId: number, title: string, gitMaterialId: number) => void
     }
     ciPipelineId?: number
+    fromTriggerInfo?: boolean
 }
