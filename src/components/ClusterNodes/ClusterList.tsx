@@ -166,7 +166,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                     clusterData.nodeCount && isSuperAdmin ? 'dc__visible-hover--parent' : ''
                 }`}
             >
-                <div className="cb-5 dc__ellipsis-right flex left">
+                <div data-testid =  {`cluster-row-${clusterData.name}`} className="cb-5 dc__ellipsis-right flex left">
                     <NavLink
                         to={`${match.url}/${clusterData.id}`}
                         onClick={(e) => {
@@ -176,6 +176,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                         {clusterData.name}
                     </NavLink>
                     <TerminalIcon
+                        data-testid = {`cluster-terminal-${clusterData.name}`}
                         className="cursor icon-dim-16 dc__visible-hover--child ml-8"
                         onClick={() => openTerminalComponent(clusterData)}
                     />
@@ -229,7 +230,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                         {lastDataSyncTimeString && (
                             <span>
                                 {lastDataSyncTimeString}
-                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getData}>
+                                <button data-testid = "cluster-list-refresh-button" className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getData}>
                                     Refresh
                                 </button>
                             </span>
@@ -240,12 +241,13 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                     <ClusterNodeEmptyState actionHandler={clearSearch} />
                 ) : (
                     <div
+                        data-testid = "cluster-list-container"
                         className="dc__overflow-scroll"
                         style={{ height: `calc(${showTerminalModal ? '50vh - 125px)' : '100vh - 116px)'}` }}
                     >
                         <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
                             <div>Cluster</div>
-                            <div>Connection status</div>
+                            <div data-testid = "cluster-list-connection-status" >Connection status</div>
                             <div>Nodes</div>
                             <div>NODE Errors</div>
                             <div>K8S version</div>
