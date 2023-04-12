@@ -221,6 +221,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         to={`${match.url}/${URLS.APP_CD_DETAILS}`}
                         className="tab-list__tab-link"
                         data-action="Deployment History Clicked"
+                        data-testid = "deployment-history-link"
                         onClick={handleEventClick}
                     >
                         Deployment History
