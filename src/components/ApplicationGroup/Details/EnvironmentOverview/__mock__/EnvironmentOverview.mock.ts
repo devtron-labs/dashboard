@@ -1,7 +1,6 @@
 import { MultiValue } from 'react-select'
 import { OptionType } from '../../../../app/types'
-import { EnvDeploymentStatusType } from '../../../AppGroup.service'
-import { AppGroupListType, EnvDeploymentStatus } from '../../../AppGroup.types'
+import { AppGroupListType, EnvDeploymentStatus, EnvDeploymentStatusType } from '../../../AppGroup.types'
 
 const result = (): EnvDeploymentStatus[] => {
     return [
