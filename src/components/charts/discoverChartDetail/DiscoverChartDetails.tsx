@@ -343,10 +343,10 @@ const Deployment: React.FC<DeploymentProps> = ({
                     </div>
                 )}
             </div>
-            <button type="button" className="flex cta h-36" onClick={handleDeploy}>
+            <button type="button" className="flex cta h-36" data-testid="configure-and-deploy-button"onClick={handleDeploy}>
                 Configure & Deploy
             </button>
-            <button type="button" className="flex cta h-36 cb-5 cancel mt-8" onClick={openSavedValuesList}>
+            <button type="button" className="flex cta h-36 cb-5 cancel mt-8" data-testid="preset-values-button" onClick={openSavedValuesList}>
                 Preset values
             </button>
         </div>
