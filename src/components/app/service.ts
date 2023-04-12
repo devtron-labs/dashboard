@@ -107,7 +107,7 @@ export function fetchAppDetailsInTime(
     envId: number | string,
     reloadTimeOut: number,
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
+  return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
 }
 
 export function fetchResourceTreeInTime(
