@@ -61,6 +61,7 @@ import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.s
 import Tippy from '@tippyjs/react'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import TippyHeadless from '@tippyjs/react/headless'
+
 const PrometheusWarningInfo = () => {
     return (
         <div className="pt-10 pb-10 pl-16 pr-16 bcy-1 br-4 bw-1 dc__cluster-error mb-40">
@@ -456,7 +457,7 @@ function Cluster({
                                     <div>{CONFIGURATION_TYPES.DESCRIPTION}</div>
                                     <div></div>
                                 </div>
-                                {newEnvs.map(
+                                {newEnvs.sort((a,b) => sortCallback('environment_name', a, b)).map(
                                     ({
                                         id,
                                         environment_name,
