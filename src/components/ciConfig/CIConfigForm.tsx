@@ -171,6 +171,7 @@ export default function CIConfigForm({
                 }, {}),
                 dockerfileRepository: repository.value,
                 targetPlatform: targetPlatforms,
+                buildContext: buildContext.value,
             }
         }
 
@@ -300,7 +301,7 @@ export default function CIConfigForm({
         }
     }
 
-    const { repository, dockerfile, projectPath, registry, repository_name, key, value } = state
+    const { repository, dockerfile, projectPath, registry, repository_name, buildContext, key, value } = state
     return (
         <>
             <div className={`form__app-compose ${configOverrideView ? 'config-override-view' : ''}`}>
