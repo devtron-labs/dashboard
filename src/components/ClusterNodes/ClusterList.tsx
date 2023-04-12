@@ -42,13 +42,13 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
             setLastDataSync(!lastDataSync)
             if (result) {
                 const sortedResult = result
-                    .sort((a, b) => a['cluster_name'].localeCompare(b['cluster_name']))
+                    .sort((a, b) => a['name'].localeCompare(b['name']))
                     .map((minData) => {
                         return {
                             id: minData.id,
-                            name: minData.cluster_name,
+                            name: minData.name,
                             nodeErrors: [],
-                            errorInNodeListing: minData.errorInConnecting,
+                            errorInNodeListing: minData.errorInNodeListing,
                         } as ClusterDetail
                     })
                 if (!completeDataLoadedRef.current) {
