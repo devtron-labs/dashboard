@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
-import { ServerErrors, ConfirmationDialog, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, ConfirmationDialog, DeleteDialog, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router'
 import { DeleteComponentProps } from '../components/app/types'
 import info from '../assets/icons/ic-info-filled.svg'
@@ -17,6 +17,7 @@ function DeleteComponent({
     url = '',
     reload,
     configuration = '',
+    closeCustomComponet,
 }: DeleteComponentProps) {
     const [showCannotDeleteDialogModal, setCannotDeleteDialogModal] = useState(false)
     const { push } = useHistory()
@@ -32,6 +33,9 @@ function DeleteComponent({
             } else {
                 reload()
             }
+            if(typeof closeCustomComponet === 'function'){
+                closeCustomComponet()
+            }
         } catch (serverError) {
             if (serverError instanceof ServerErrors && serverError.code === 500) {
                 setCannotDeleteDialogModal(true)
@@ -44,6 +48,9 @@ function DeleteComponent({
     const handleConfirmation = () => {
         setCannotDeleteDialogModal(false)
         toggleConfirmation(false)
+        if(typeof closeCustomComponet === 'function'){
+            closeCustomComponet()
+        }
     }
 
     const renderCannotDeleteDialogModal = () => {

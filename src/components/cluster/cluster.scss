@@ -34,6 +34,6 @@
 
 .cluster-env-list_table{
     display: grid;
-    gap: 12px;
-    grid-template-columns: 20px 170px 1fr 1fr 48px
+    column-gap: 12px;
+    grid-template-columns: 20px 170px 1fr 1fr 52px
 }

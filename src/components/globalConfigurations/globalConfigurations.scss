@@ -170,10 +170,9 @@
     &>.list {
         border: unset;
         margin-bottom: unset;
-        grid-template-columns: 1fr 24px;
+        grid-template-columns: 1fr 20px;
         align-items: center;
         border-radius: 8px;
-        padding-right: 8px;
     }
 
     &.cluster-list--create {

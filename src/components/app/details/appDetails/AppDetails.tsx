@@ -608,17 +608,45 @@ export function EnvSelector({
             ...controlStyleOverrides,
         }),
         singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: 'var(--B500)' }),
-        indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),menu: (base)=>({...base, width: '250px'})
+        indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
+        menu: (base) => ({ ...base, width: '250px' }),
     }
-    // cb-5 ml-8 fw-6
+
     const sortedEnvironments =
         environments && !environments.deploymentAppDeleteRequest
             ? sortObjectArrayAlphabetically(environments, 'environmentName')
             : environments
 
-    const handleFormatHighlightedText = (opt, { inputValue }) => {
-        return formatHighlightedTextDescription(opt, inputValue, 'label')
+    const formatOptionLabel = (option): JSX.Element => {
+        return (
+            <div>
+                <div className="w-100 dc__ellipsis-right">{option.label}</div>
+                {option.description && (
+                    <small className="dc__word-break-all dc__white-space-normal">{option.description}</small>
+                )}
+            </div>
+        )
     }
+
+    const customEnvOption = (props) => {
+        return (
+            <Option
+                {...props}
+                style={{
+                    option: (base, state) => {
+                        return {
+                            ...base,
+                            backgroundColor: state.isFocused ? 'red' : 'white',
+                            color: 'var(--N900)',
+                            padding: '8px 12px',
+                            whiteSpace: 'normal',
+                        }
+                    },
+                }}
+            />
+        )
+    }
+
     return (
         <>
             <div style={{ width: 'clamp( 100px, 30%, 100px )', height: '100%', position: 'relative' }}>
@@ -654,14 +682,14 @@ export function EnvSelector({
                     closeMenuOnSelect
                     components={{
                         IndicatorSeparator: null,
-                        Option,
+                        Option: customEnvOption,
                         DropdownIndicator: disabled ? null : components.DropdownIndicator,
                         ValueContainer: (props) => <CustomValueContainer {...props} valClassName="env-select" />,
                     }}
                     styles={envSelectorStyle}
                     isDisabled={disabled}
                     isSearchable={false}
-                    formatOptionLabel={handleFormatHighlightedText}
+                    formatOptionLabel={formatOptionLabel}
                 />
             </div>
         </>

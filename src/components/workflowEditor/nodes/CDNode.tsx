@@ -122,7 +122,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                         content={
                                             <div>
                                                 <div>{this.props.environmentName}</div>
-                                                <div>{this.props.description}</div>
+                                                <div className='dc__word-break-all'>{this.props.description}</div>
                                             </div>
                                         }
                                     >

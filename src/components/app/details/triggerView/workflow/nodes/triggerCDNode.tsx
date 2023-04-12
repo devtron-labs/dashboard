@@ -79,9 +79,9 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                             arrow={true}
                                             placement="bottom"
                                             content={
-                                                <div>
+                                                <div className='w-100'>
                                                     <div>{this.props.environmentName}</div>
-                                                    <div>{this.props.description}</div>
+                                                    <div className='dc__word-break-all'>{this.props.description}</div>
                                                 </div>
                                             }
                                         >

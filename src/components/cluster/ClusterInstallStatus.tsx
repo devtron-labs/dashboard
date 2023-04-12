@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { ClusterInstallStatusProps } from './cluster.type'
 import { ReactComponent as NotDeployed } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help-purple.svg'
+import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { TippyCustomized } from '@devtron-labs/devtron-fe-common-lib'
 
 enum TippyTheme {

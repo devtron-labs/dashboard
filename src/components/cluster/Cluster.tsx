@@ -240,28 +240,26 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 }
 
-function Cluster(
-    this: any,
-    {
-        id: clusterId,
-        cluster_name,
-        defaultClusterComponent,
-        agentInstallationStage,
-        server_url,
-        active,
-        config: defaultConfig,
-        environments,
-        reload,
-        prometheus_url,
-        serverMode,
-    },
-) {
+function Cluster({
+    id: clusterId,
+    cluster_name,
+    defaultClusterComponent,
+    agentInstallationStage,
+    server_url,
+    active,
+    config: defaultConfig,
+    environments,
+    reload,
+    prometheus_url,
+    serverMode,
+}) {
     const [editMode, toggleEditMode] = useState(false)
     const [environment, setEnvironment] = useState(null)
     const [config, setConfig] = useState(defaultConfig)
     const [prometheusAuth, setPrometheusAuth] = useState(undefined)
     const [showClusterComponentModal, toggleClusterComponentModal] = useState(false)
     const [showWindow, setShowWindow] = useState(false)
+    const [envDelete, setDeleteEnv] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
     const [, grafanaModuleStatus] = useAsync(
         () => getModuleInfo(ModuleNameMap.GRAFANA),
@@ -308,10 +306,6 @@ function Cluster(
         if (agentInstallationStage === 3) {
             callRetryClusterInstall()
         } else toggleClusterComponentModal(!showClusterComponentModal)
-    }
-
-    const showClusterDrawer = () => {
-        setShowWindow(true)
     }
 
     const hideClusterDrawer = (e) => {
@@ -368,7 +362,7 @@ function Cluster(
     }
 
     const clusterDelete = (): void => {
-        toggleConfirmation(false)
+        setDeleteEnv(false)
     }
 
     return (
@@ -380,7 +374,11 @@ function Cluster(
             >
                 {!editMode ? (
                     <>
-                        <List className = 'dc__border' key={clusterId} onClick={clusterId ? () => {} : (e) => toggleEditMode((t) => !t)}>
+                        <List
+                            className="dc__border"
+                            key={clusterId}
+                            onClick={clusterId ? () => {} : (e) => toggleEditMode((t) => !t)}
+                        >
                             {!clusterId && (
                                 <List.Logo>
                                     <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
@@ -398,7 +396,7 @@ function Cluster(
                                 {clusterId && (
                                     <div className="flex dc__align-right">
                                         <div
-                                            className="flex mr-12"
+                                            className="flex mr-16"
                                             onClick={() => {
                                                 setEnvironment({
                                                     id: null,
@@ -427,7 +425,6 @@ function Cluster(
                         </List>
                         {serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId ? (
                             <>
-                                <hr className="mt-0 mb-0" />
                                 <ClusterInstallStatus
                                     agentInstallationStage={agentInstallationStage}
                                     envName={envName}
@@ -452,7 +449,7 @@ function Cluster(
                         Array.isArray(newEnvs) &&
                         newEnvs.length > 1 ? (
                             <div className="pb-8">
-                                <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left pl-20 pr-16 dc__border-n1">
+                                <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
                                     <div></div>
                                     <div>{CONFIGURATION_TYPES.ENVIRONMENT}</div>
                                     <div>{CONFIGURATION_TYPES.NAMESPACE}</div>
@@ -470,7 +467,7 @@ function Cluster(
                                     }) =>
                                         environment_name ? (
                                             <div
-                                                className="cluster-env-list_table dc__hover-n50 flex left h-36 fs-13 fw-4 pl-20 pr-16 dc__visible-hover dc__visible-hover--parent"
+                                                className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-12 pb-12 fs-13 fw-4 pl-20 pr-20 dc__visible-hover dc__visible-hover--parent"
                                                 onClick={() =>
                                                     setEnvironment({
                                                         id,
@@ -483,7 +480,7 @@ function Cluster(
                                                     })
                                                 }
                                             >
-                                                <span className="dc__transparent cursor flex w-100">
+                                                <span className="cursor flex w-100">
                                                     {environment_name && <Database className="icon-dim-20" />}
                                                 </span>
 
@@ -500,17 +497,23 @@ function Cluster(
                                                     ) : null}
                                                 </div>
                                                 <div className="dc__truncate-text">{namespace}</div>
-                                                <div className="cluster-list__description">{description}</div>
+                                                <div className="cluster-list__description dc__truncate-text">
+                                                    {description}
+                                                </div>
                                                 <div className="dc__visible-hover--child">
                                                     <div className="flex">
                                                         <PencilEdit
                                                             className="cursor icon-dim-20 mr-12"
                                                             onClick={showWindowModal}
                                                         />
-                                                        <DeleteEnvironment
-                                                            className="icon-dim-20 cursor"
-                                                            onClick={showToggleConfirmation}
-                                                        />
+                                                        {envDelete ? (
+                                                            <Progressing size={20} />
+                                                        ) : (
+                                                            <DeleteEnvironment
+                                                                className="icon-dim-20 cursor"
+                                                                onClick={showToggleConfirmation}
+                                                            />
+                                                        )}
                                                     </div>
                                                 </div>
                                                 {confirmation && (
@@ -1070,8 +1073,8 @@ function Environment({
     }
 
     const deleteEnv = (): void => {
-        reload()
         hideClusterDrawer()
+        reload()
     }
 
     return (
@@ -1157,7 +1160,7 @@ function Environment({
                             onClick={() => toggleConfirmation(true)}
                         >
                             <DeleteEnvironment className="icon-dim-16 mr-8" />
-                            {deleting ? <Progressing /> : 'Delete Environment'}
+                            {deleting ? <Progressing /> : 'Delete'}
                         </button>
                     )}
                     <button className="cta cancel flex mt-8 mb-8 h-36" type="button" onClick={hideClusterDrawer}>
@@ -1182,6 +1185,7 @@ function Environment({
                         toggleConfirmation={toggleConfirmation}
                         component={DeleteComponentsName.Environment}
                         confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
+                        closeCustomComponet={deleteEnv}
                         reload={deleteEnv}
                     />
                 )}
