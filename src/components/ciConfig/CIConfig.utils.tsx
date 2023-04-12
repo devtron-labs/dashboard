@@ -522,7 +522,19 @@ export const renderBuildContext = (
     ciConfig:  CiPipelineResult,
     handleOnChangeConfig: (e) => void
 ): JSX.Element => {
-    const renderInfoCard = (setShowInfo: React.Dispatch<React.SetStateAction<boolean>>): JSX.Element => {
+    const getBuildContextAdditionalContent = ()=>{
+        return (
+            <div className="p-12 fs-13">
+                {'To build all files from the root, use (.) as the build context, or set build context by referring a subdirectory path such as '}
+                <span className= "build-context-highlight">{'/myfolder'}</span>
+                 {' or '} 
+                <span className= "build-context-highlight">{'/myfolder/buildhere'}</span> 
+                {' or URL such as '}
+                <span className= "build-context-highlight">{'https://github.com/devtron-labs/ devtron.git'}</span> 
+            </div>
+        )
+    } 
+    const renderInfoCard = (): JSX.Element => {
         return (
             <TippyCustomized
                 theme={TippyTheme.white}
@@ -530,11 +542,12 @@ export const renderBuildContext = (
                 placement="right"
                 Icon={QuestionFilled}
                 heading={'Docker build context'}
-                infoText="Tokens you have generated that can be used to access the Devtron API."
+                infoText='Specify the set of files to be built by referring to a specific subdirectory, relative to the root of your repository.'
                 showCloseButton={true}
                 trigger="click"
                 interactive={true}
                 documentationLinkText="View Documentation"
+                additionalContent = {getBuildContextAdditionalContent()}
             >
                 <div className="icon-dim-16 fcn-9 ml-8 cursor">
                     <Question />
@@ -544,21 +557,23 @@ export const renderBuildContext = (
     }
     return (
         <div className="docker-file-container">
-            <label className="form__label flex left">
-                <div className="flex row ml-0">
-                    <label className="dc__required-field">Build context</label>
+            
+                <div className="flex left row ml-0 build-context-label">
+                    Build context
                     {!configOverrideView || allowOverride ? (
+                        <div className="flex row ml-0">
+                        {renderInfoCard()}
                         <span
-                            className="clickable-text"
+                            className="cursor"
                             onClick={() => setDisable(!disable)}
                             style={{ color: 'var(--B500' }}
                         >
-                            {renderInfoCard(setShowInfo)}
                             {disable ? ' Set build context ' : ' Use root(.) '}
                         </span>
+                        </div>
                     ) : null}
                 </div>
-            </label>
+            
             <div className="docker-file-container">
                 {configOverrideView && !allowOverride ? (
                     <span className="fs-14 fw-4 lh-20 cn-9">
@@ -570,7 +585,7 @@ export const renderBuildContext = (
                     <input
                         tabIndex={4}
                         type="text"
-                        className="form__input file-name"
+                        className="form__input file-name w-100"
                         placeholder="Enter build context"
                         name="buildContext"
                         value={
@@ -578,7 +593,7 @@ export const renderBuildContext = (
                                 ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || 'Using root(.)'
                                 : disable
                                 ? 'Using root(.)'
-                                : formState.buildContext.value === 'Using root(.)' ? '' : formState.buildContext.value 
+                                : formState.buildContext.value === 'Using root(.)' ? '.' : formState.buildContext.value 
                         }
                         onChange={handleOnChangeConfig}
                         autoComplete={'off'}
@@ -586,7 +601,9 @@ export const renderBuildContext = (
                         disabled={(configOverrideView && !allowOverride) || disable}
                     />
                 )}
-                {formState.buildContext.error && <label className="form__error">{formState.buildContext.error}</label>}
+                 {(configOverrideView ? allowOverride && !disable : !disable) && formState.buildContext.error && (
+                    <label className="form__error">{formState.buildContext.error}</label>
+                )}
             </div>
         </div>
     )
