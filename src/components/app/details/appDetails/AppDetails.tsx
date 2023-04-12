@@ -609,7 +609,7 @@ export function EnvSelector({
         }),
         singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: 'var(--B500)' }),
         indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
-        menu: (base) => ({ ...base, width: '250px' }),
+        menu: (base) => ({ ...base, width: '280px' }),
     }
 
     const sortedEnvironments =
@@ -622,7 +622,7 @@ export function EnvSelector({
             <div>
                 <div className="w-100 dc__ellipsis-right">{option.label}</div>
                 {option.description && (
-                    <small className="dc__word-break-all dc__white-space-normal">{option.description}</small>
+                    <small className="dc__word-break-all dc__white-space-normal fs-12 cn-7">{option.description}</small>
                 )}
             </div>
         )

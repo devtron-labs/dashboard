@@ -81,7 +81,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                             content={
                                                 <div className="w-100">
                                                     <div className="fw-6">{this.props.environmentName}</div>
-                                                    <div className="dc__word-break-all">{this.props.description}</div>
+                                                    <div className="dc__word-break-all lh-16 mt-4">{this.props.description}</div>
                                                 </div>
                                             }
                                         >
