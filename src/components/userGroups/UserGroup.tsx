@@ -1349,6 +1349,7 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
                     <label className="fw-6 fs-12 cn-5">EDIT</label>
                     <input type="checkbox" checked disabled />
                     <input
+                        data-testid="chart-group-create-permission-checkbox"
                         type="checkbox"
                         checked={chartPermission.action === ActionTypes.ADMIN}
                         onChange={handleChartCreateChange}
