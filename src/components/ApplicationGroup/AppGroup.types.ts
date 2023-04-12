@@ -1,3 +1,4 @@
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
     CDMdalTabType,
@@ -220,6 +221,7 @@ export interface AppGroupAdminType {
 
 export interface AppGroupDetailDefaultType {
     filteredApps: MultiValue<OptionType>
+    appGroupListData?: AppGroupListType
 }
 export interface CIConfigListType {
     pipelineList: CiPipeline[]
@@ -233,4 +235,33 @@ export interface AppGroupAppFilterContextType {
     setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
     isMenuOpen: boolean
     setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface ApplistEnvType {
+    appId: number
+    appName: string
+    appStatus: string
+    lastDeployedTime: string
+}
+
+export interface AppGroupListType {
+    namespace: string
+    environmentName: string
+    clusterName: string
+    environmentId: number
+    apps: ApplistEnvType[]
+}
+export interface ConfigAppListType extends ResponseType {
+  result?: ConfigAppList[]
+}
+export interface EnvAppType extends ResponseType {
+  result?: EnvApp
+}
+
+export interface AppGroupList extends ResponseType {
+  result?: AppGroupListType
+}
+
+export interface EnvDeploymentStatusType extends ResponseType {
+  result?: EnvDeploymentStatus[]
 }
