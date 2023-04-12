@@ -43,7 +43,6 @@ export default function CIDockerFileConfig({
     setCurrentCIBuildConfig,
     setInProgress,
 }: CIDockerFileConfigProps) {
-    const [showInfo,setShowInfo] = useState<boolean>(false)
     const [ciBuildTypeOption, setCIBuildTypeOption] = useState<CIBuildType>(currentCIBuildConfig.ciBuildType)
     const [buildersAndFrameworks, setBuildersAndFrameworks] = useState<BuildersAndFrameworksType>({
         builders: [],
@@ -318,7 +317,7 @@ export default function CIDockerFileConfig({
                     </div>
                 </div>
                 <div className="mb-4 form-row__docker">
-                    {renderBuildContext(showInfo,setShowInfo,disable, setDisable, formState, configOverrideView, allowOverride, ciConfig, handleOnChangeConfig)}
+                    {renderBuildContext(disable, setDisable, formState, configOverrideView, allowOverride, ciConfig, handleOnChangeConfig)}
                 </div>
             </div>
         )

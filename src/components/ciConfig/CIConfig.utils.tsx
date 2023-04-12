@@ -512,8 +512,6 @@ const getTargetPlatformChangeBGColor = (
 }
 
 export const renderBuildContext = (
-    showInfo: boolean,
-    setShowInfo: React.Dispatch<React.SetStateAction<boolean>>, 
     disable: boolean,
     setDisable: React.Dispatch<React.SetStateAction<boolean>>,
     formState: any,
@@ -574,7 +572,7 @@ export const renderBuildContext = (
                     ) : null}
                 </div>
             
-            <div className="docker-file-container">
+            <div className="w-100">
                 {configOverrideView && !allowOverride ? (
                     <span className="fs-14 fw-4 lh-20 cn-9">
                         {ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext === '.'

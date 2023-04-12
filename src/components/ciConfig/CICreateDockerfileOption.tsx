@@ -45,7 +45,6 @@ export default function CICreateDockerfileOption({
     const controller = new AbortController()
     const signal = controller.signal
     const [disable, setDisable] = useState<boolean>(false)
-    const [showInfo,setShowInfo] = useState<boolean>(false)
     useEffect(() => {
         if (frameworks.length > 0) {
             const _languageFrameworks = new Map<string, FrameworkOptionType[]>()
@@ -374,8 +373,6 @@ export default function CICreateDockerfileOption({
                 </div>
                 <div className="mb-4 form-row__docker">
                     {renderBuildContext(
-                        showInfo,
-                        setShowInfo,
                         disable,
                         setDisable,
                         formState,
