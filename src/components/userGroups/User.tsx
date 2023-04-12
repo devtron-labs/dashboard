@@ -356,6 +356,7 @@ export default function UserForm({
                         Email addresses*
                     </label>
                     <Creatable
+                        classNamePrefix="email-address-dropdown"
                         ref={creatableRef}
                         options={creatableOptions}
                         components={CreatableComponents}
@@ -403,6 +404,7 @@ export default function UserForm({
                     <Select
                         value={userGroups}
                         ref={groupPermissionsRef}
+                        classNamePrefix='group-permission-dropdown'
                         components={{
                             MultiValueContainer: ({ ...props }) => (
                                 <MultiValueChipContainer {...props} validator={null} />
@@ -465,7 +467,7 @@ export default function UserForm({
                 <button disabled={submitting} onClick={cancelCallback} type="button" className="cta cancel mr-16">
                     Cancel
                 </button>
-                <button disabled={submitting} type="button" className="cta" onClick={handleSubmit}>
+                <button disabled={submitting} data-testid="user-form-save-button" type="button" className="cta" onClick={handleSubmit}>
                     {submitting ? <Progressing /> : 'Save'}
                 </button>
             </div>
