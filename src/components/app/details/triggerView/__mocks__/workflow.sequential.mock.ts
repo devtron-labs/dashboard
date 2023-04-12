@@ -195,7 +195,7 @@ export const workflowsTriggerWithSequential = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -346,7 +346,7 @@ export const workflowsTriggerWithSequential = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -470,7 +470,7 @@ export const workflowsCreateWithSequential = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -621,7 +621,7 @@ export const workflowsCreateWithSequential = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -839,7 +839,7 @@ export const workflowsTriggerPrePostCDWithSequential = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -990,7 +990,7 @@ export const workflowsTriggerPrePostCDWithSequential = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1302,7 +1302,7 @@ export const workflowsTriggerPrePostCDWithPrePostSequential = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1547,7 +1547,7 @@ export const workflowsTriggerPrePostCDWithPrePostSequential = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1671,7 +1671,7 @@ export const workflowsCreatePrePostCDWithSequential = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1822,7 +1822,7 @@ export const workflowsCreatePrePostCDWithSequential = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1946,7 +1946,7 @@ export const workflowsCreatePrePostCDWithPrePostSequential = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2097,7 +2097,7 @@ export const workflowsCreatePrePostCDWithPrePostSequential = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2416,7 +2416,7 @@ export const workflowsTriggerPreCDRespWithSequential = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2567,7 +2567,7 @@ export const workflowsTriggerPreCDRespWithSequential = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2691,7 +2691,7 @@ export const workflowsCreatePreCDRespWithSequential = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2842,7 +2842,7 @@ export const workflowsCreatePreCDRespWithSequential = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2966,7 +2966,7 @@ export const workflowsCreatePostCDWithSequential = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -3117,7 +3117,7 @@ export const workflowsCreatePostCDWithSequential = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -3288,7 +3288,7 @@ export const workflowsTriggerPostCDWithSequential = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -3439,7 +3439,7 @@ export const workflowsTriggerPostCDWithSequential = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,

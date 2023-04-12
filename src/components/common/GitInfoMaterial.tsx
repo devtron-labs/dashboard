@@ -94,7 +94,7 @@ export default function GitInfoMaterial({
             pipelineId: pipelineId,
         }
         return (
-            <div className="material-list">
+            <div className="material-list dc__overflow-hidden" style={{ height: 'calc(100vh - 136px)' }}>
                 <div className="material-list__title material-list__title--border-bottom pt-12 pb-12 pl-20 pr-20">
                     Git Repository
                 </div>

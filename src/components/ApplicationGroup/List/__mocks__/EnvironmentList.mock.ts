@@ -1,11 +1,10 @@
-import { EnvAppType } from '../../AppGroup.service'
-import { EnvApp } from '../../AppGroup.types'
+import { EnvApp, EnvAppType } from '../../AppGroup.types'
 
 const result = (isEmpty = false): EnvApp => {
-    if(isEmpty){
+    if (isEmpty) {
         return {
             envList: [],
-            envCount: 1
+            envCount: 1,
         }
     }
 

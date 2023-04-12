@@ -36,6 +36,7 @@ import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWa
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
 import DetectBottom from '../../common/DetectBottom'
+import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
 
 //TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -80,6 +81,8 @@ function DiscoverChartList() {
         chartListing,
         applyFilterOnCharts,
         resetPaginationOffset,
+        setGitOpsConfigAvailable,
+        setEnvironmentList
     } = useChartGroup()
     const [project, setProject] = useState({ id: null, error: '' })
     const [installing, setInstalling] = useState(false)
@@ -107,15 +110,20 @@ function DiscoverChartList() {
 
     useEffect(() => {
         if (!state.loading) {
-
             resetPaginationOffset()
             initialiseFromQueryParams(state.chartRepos);
             callApplyFilterOnCharts(true);
+            getGitOpsModuleInstalledAndConfigured()
 
         }
     }, [location.search, state.loading])
 
-
+    async function getGitOpsModuleInstalledAndConfigured(){
+        await isGitOpsModuleInstalledAndConfigured().then((response) => {
+            setGitOpsConfigAvailable(response.result.isInstalled &&
+                !response.result.isConfigured)
+        })
+    }
 
     const handleDeployButtonClick= (): void => {
       handleActionButtonClick(false)
@@ -547,6 +555,7 @@ function DiscoverChartList() {
                     handleEnvironmentChangeOfAllCharts={handleEnvironmentChangeOfAllCharts}
                     redirectToAdvancedOptions={redirectToConfigure}
                     validateData={validateData}
+                    setEnvironments={setEnvironmentList}
                 />
             ) : null}
 

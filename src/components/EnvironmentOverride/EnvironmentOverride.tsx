@@ -15,7 +15,7 @@ import {
     SECTION_HEADING_INFO,
 } from './EnvironmentOverrides.type'
 import { ReactComponent as Arrow } from '../../assets/icons/ic-arrow-left.svg'
-import { getAppOtherEnvironment } from '../../services/service'
+import { getAppOtherEnvironmentMin } from '../../services/service'
 
 export default function EnvironmentOverride({
     appList,
@@ -30,7 +30,7 @@ export default function EnvironmentOverride({
     const { environmentId, setEnvironmentId } = useAppContext()
     const [headingData, setHeadingData] = useState<SectionHeadingType>()
     const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
-        () => getAppOtherEnvironment(params.appId),
+        () => getAppOtherEnvironmentMin(params.appId),
         [params.appId],
         !!params.appId,
     )

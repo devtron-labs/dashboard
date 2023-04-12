@@ -6,7 +6,7 @@ import { ViewType } from '../../../../config';
 import { generatePath } from 'react-router';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts'
 import { DeploymentTable } from './DeploymentTable';
-import { getAppOtherEnvironment } from '../../../../services/service';
+import { getAppOtherEnvironmentMin } from '../../../../services/service';
 import { DeploymentTableModal } from './DeploymentTableModal';
 import { BenchmarkModal } from './BenchmarkModal';
 import moment from 'moment';
@@ -125,7 +125,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     }
 
     callGetAppOtherEnv(prevEnvId: string | undefined) {
-        getAppOtherEnvironment(this.props.match.params.appId).then((envResponse) => {
+        getAppOtherEnvironmentMin(this.props.match.params.appId).then((envResponse) => {
             let allEnv= envResponse.result?.filter(env => env.prod).map((env) => {
                 return {
                     label: env.environmentName,
@@ -141,8 +141,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                 view: this.props.match.params.envId || callAPIOnEnvOfPrevApp ? ViewType.LOADING : ViewType.FORM,
 
             });
-        }).then(() => {
-            if (prevEnvId && this.state.environments.find(e => Number(e.value) === Number(prevEnvId))) {
+            if (prevEnvId && allEnv.find(e => Number(e.value) === Number(prevEnvId))) {
                 let url = generatePath(this.props.match.path, { appId: this.props.match.params.appId, envId: prevEnvId });
                 this.props.history.push(url);
             }

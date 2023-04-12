@@ -9,7 +9,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { AddLinkButton, NoExternalLinksView, NoMatchingResults, RoleBasedInfoNote } from './ExternalLinks.component'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
-import { getAllApps, getExternalLinks, getMonitoringTools } from './ExternalLinks.service'
+import { getAllApps, getExternalLinks } from './ExternalLinks.service'
 import {
     ExternalLink,
     ExternalLinkIdentifierType,
@@ -93,7 +93,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
 
     const initExternalLinksData = () => {
         setLoading(true)
-        const allPromises = [getMonitoringTools(), getClusterListMin()]
+        const allPromises = [getClusterListMin()]
 
         if (isAppConfigView) {
             allPromises.push(getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp))
@@ -106,24 +106,22 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
         }
 
         Promise.all(allPromises)
-            .then(([monitoringToolsRes, clustersResp, externalLinksRes, allAppsResp]) => {
+            .then(([clustersResp, externalLinksRes, allAppsResp]) => {
                 setExternalLinks(
                     (isAppConfigView
-                        ? externalLinksRes.result?.filter(
+                        ? externalLinksRes.result?.ExternalLinks.filter(
                               (_link) => _link.isEditable && _link.type === ExternalLinkScopeType.AppLevel,
                           )
-                        : externalLinksRes.result
+                        : externalLinksRes.result?.ExternalLinks
                     )?.sort(sortByUpdatedOn) || [],
                 )
                 setMonitoringTools(
-                    monitoringToolsRes.result
-                        ?.map((tool) => ({
-                            label: tool.name,
-                            value: tool.id,
-                            icon: tool.icon,
-                            category: tool.category,
-                        }))
-                        .sort(sortOptionsByValue) || [],
+                    externalLinksRes.result?.Tools?.map((tool) => ({
+                        label: tool.name,
+                        value: tool.id,
+                        icon: tool.icon,
+                        category: tool.category,
+                    })).sort(sortOptionsByValue) || [],
                 )
                 setClusters(
                     clustersResp.result

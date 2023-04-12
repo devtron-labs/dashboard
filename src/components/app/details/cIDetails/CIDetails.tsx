@@ -347,6 +347,7 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView }: His
                         getArtifactPromise={_getArtifactPromise}
                         isArtifactUploaded={triggerDetails.isArtifactUploaded}
                         isJobView={isJobView}
+                        type={HistoryComponentType.CI}
                     />
                 </Route>
                 {!isJobView && (

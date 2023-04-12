@@ -23,13 +23,7 @@ import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fai
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import { ScanVulnerabilitiesTable, getRandomColor, noop } from '../../../common'
-import {
-    showError,
-    Progressing,
-    ConditionalWrap,
-    stopPropagation,
-    VisibleModal,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { EmptyStateCdMaterial } from './EmptyStateCdMaterial'
 import { CDButtonLabelMap, getCommonConfigSelectStyles } from './config'
 import {
@@ -722,55 +716,57 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         : ''
                 }`}
             >
-                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) && !this.state.showConfigDiffView && this.props.stageType === DeploymentNodeType.CD &&(
-                    <div className="flex left dc__border br-4 h-42">
-                        <div className="flex">
-                            <ReactSelect
-                                options={getDeployConfigOptions(
-                                    this.state.isRollbackTrigger,
-                                    this.state.recentDeploymentConfig !== null,
+                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) &&
+                    !this.state.showConfigDiffView &&
+                    this.props.stageType === DeploymentNodeType.CD && (
+                        <div className="flex left dc__border br-4 h-42">
+                            <div className="flex">
+                                <ReactSelect
+                                    options={getDeployConfigOptions(
+                                        this.state.isRollbackTrigger,
+                                        this.state.recentDeploymentConfig !== null,
+                                    )}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator,
+                                        Option,
+                                        ValueContainer: this.customValueContainer,
+                                    }}
+                                    isDisabled={this.state.checkingDiff}
+                                    isSearchable={false}
+                                    formatOptionLabel={this.formatOptionLabel}
+                                    classNamePrefix="deploy-config-select"
+                                    placeholder="Select Config"
+                                    menuPlacement="top"
+                                    value={this.state.selectedConfigToDeploy}
+                                    styles={getCommonConfigSelectStyles({
+                                        valueContainer: (base, state) => ({
+                                            ...base,
+                                            minWidth: '135px',
+                                            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+                                        }),
+                                    })}
+                                    onChange={this.handleConfigSelection}
+                                />
+                            </div>
+                            <span className="dc__border-left h-100" />
+                            <ConditionalWrap
+                                condition={!this.state.checkingDiff && this.isDeployButtonDisabled()}
+                                wrap={(children) => (
+                                    <Tippy
+                                        className="default-tt w-200"
+                                        arrow={false}
+                                        placement="top"
+                                        content={this.getTippyContent()}
+                                    >
+                                        {children}
+                                    </Tippy>
                                 )}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    DropdownIndicator,
-                                    Option,
-                                    ValueContainer: this.customValueContainer,
-                                }}
-                                isDisabled={this.state.checkingDiff}
-                                isSearchable={false}
-                                formatOptionLabel={this.formatOptionLabel}
-                                classNamePrefix="deploy-config-select"
-                                placeholder="Select Config"
-                                menuPlacement="top"
-                                value={this.state.selectedConfigToDeploy}
-                                styles={getCommonConfigSelectStyles({
-                                    valueContainer: (base, state) => ({
-                                        ...base,
-                                        minWidth: '135px',
-                                        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-                                    }),
-                                })}
-                                onChange={this.handleConfigSelection}
-                            />
+                            >
+                                {this.renderConfigDiffStatus()}
+                            </ConditionalWrap>
                         </div>
-                        <span className="dc__border-left h-100" />
-                        <ConditionalWrap
-                            condition={!this.state.checkingDiff && this.isDeployButtonDisabled()}
-                            wrap={(children) => (
-                                <Tippy
-                                    className="default-tt w-200"
-                                    arrow={false}
-                                    placement="top"
-                                    content={this.getTippyContent()}
-                                >
-                                    {children}
-                                </Tippy>
-                            )}
-                        >
-                            {this.renderConfigDiffStatus()}
-                        </ConditionalWrap>
-                    </div>
-                )}
+                    )}
                 <ConditionalWrap
                     condition={!this.state.checkingDiff && this.isDeployButtonDisabled()}
                     wrap={(children) => (
@@ -978,42 +974,21 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     render() {
-        if (this.props.isFromBulkCD) {
-            return this.props.material.length > 0 ? (
-                this.renderTriggerBody()
-            ) : (
-                <EmptyStateCdMaterial materialType={this.props.materialType} />
-            )
+        if (this.props.material.length > 0) {
+            return this.props.isFromBulkCD ? this.renderTriggerBody() : this.renderCDModal()
         } else {
-            return (
-                <VisibleModal
-                    className=""
-                    parentClassName={
-                        this.state.isRollbackTrigger || this.state.isSelectImageTrigger ? 'dc__overflow-hidden' : ''
-                    }
-                    close={this.props.closeCDModal}
-                >
-                    <div
-                        className={`modal-body--cd-material h-100 ${
-                            this.state.isRollbackTrigger || this.state.isSelectImageTrigger ? 'contains-diff-view' : ''
-                        } ${this.props.material.length > 0 ? '' : 'no-material'}`}
-                        onClick={stopPropagation}
-                    >
-                        {this.props.material.length > 0 ? (
-                            this.renderCDModal()
-                        ) : (
-                            <>
-                                <div className="trigger-modal__header">
-                                    <h1 className="modal__title">{this.renderCDModalHeader()}</h1>
-                                    <button type="button" className="dc__transparent" onClick={this.props.closeCDModal}>
-                                        <img alt="close" src={close} />
-                                    </button>
-                                </div>
-                                <EmptyStateCdMaterial materialType={this.props.materialType} />
-                            </>
-                        )}
+            return this.props.isFromBulkCD ? (
+                <EmptyStateCdMaterial materialType={this.props.materialType} />
+            ) : (
+                <>
+                    <div className="trigger-modal__header">
+                        <h1 className="modal__title">{this.renderCDModalHeader()}</h1>
+                        <button type="button" className="dc__transparent" onClick={this.props.closeCDModal}>
+                            <img alt="close" src={close} />
+                        </button>
                     </div>
-                </VisibleModal>
+                    <EmptyStateCdMaterial materialType={this.props.materialType} />
+                </>
             )
         }
     }

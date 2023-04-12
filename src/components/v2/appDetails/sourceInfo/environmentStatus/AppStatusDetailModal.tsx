@@ -56,7 +56,7 @@ function AppStatusDetailModal({
     const conditions = _appDetails.resourceTree?.conditions
     const Rollout = nodes?.nodes?.Rollout?.entries()?.next().value[1]
     if (
-        ['progressing', 'degraded'].includes(_appDetails.resourceTree.status.toLowerCase()) &&
+        ['progressing', 'degraded'].includes(_appDetails.resourceTree?.status.toLowerCase()) &&
         Array.isArray(conditions) &&
         conditions.length > 0 &&
         conditions[0].message
@@ -112,10 +112,10 @@ function AppStatusDetailModal({
                         <div className="title cn-9 fs-16 fw-6 mb-4">{title ? title : 'App status detail'}</div>
                         <div
                             className={`subtitle app-summary__status-name fw-6 fs-13 f-${
-                                appStatus ? appStatus : _appDetails.resourceTree.status.toLowerCase()
+                                appStatus ? appStatus : _appDetails.resourceTree?.status.toLowerCase()
                             } mr-16`}
                         >
-                            {appStatusText ? appStatusText : _appDetails.resourceTree.status.toUpperCase()}
+                            {appStatusText ? appStatusText : _appDetails.resourceTree?.status.toUpperCase()}
                         </div>
                     </div>
                     <span className="cursor" onClick={close} data-testid="app-status-cross">
@@ -140,7 +140,7 @@ function AppStatusDetailModal({
                     {showAppStatusMessage && (
                         <div className="bcn-1 cn-9 pt-10 pb-10 pl-20 pr-20">
                             <span className="fw-6 ">Message: </span>
-                            {APP_STATUS_CUSTOM_MESSAGES[_appDetails.resourceTree.status.toUpperCase()]}
+                            {APP_STATUS_CUSTOM_MESSAGES[_appDetails.resourceTree?.status.toUpperCase()]}
                         </div>
                     )}
                     <AppStatusDetailsChart appStreamData={appStreamData} showFooter={showFooter} />

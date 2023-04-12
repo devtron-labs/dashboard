@@ -45,13 +45,15 @@ export const Routes = {
 
     APP: 'app',
     APP_LIST: 'app/list',
+    APP_LIST_V2: 'v2',
     APP_LIST_MIN: 'app/autocomplete',
     APP_DETAIL: 'app/detail',
     APP_CONFIG_STATUS: 'app/stage/status',
     APP_OTHER_ENVIRONMENT: 'app/other-env',
+    APP_OTHER_ENVIRONMENT_MIN: 'app/other-env/min',
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/edit',
-    
+
     JOB_CI_DETAIL:'job/ci-pipeline/list',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
@@ -78,6 +80,7 @@ export const Routes = {
     GIT_PROVIDER: 'git/provider',
     GIT_HOST: 'git/host',
     CHART_LIST_SUBPATH: 'list',
+    CHART_LIST_SUBPATH_MIN: 'list/min',
     GIT_PROVIDER_MIN: 'git/provider/autocomplete',
     MIGRATION_TOOLS: 'config/mig-tools',
     DATABASE: 'config/databases',
@@ -210,6 +213,8 @@ export const Routes = {
     JOB_LIST: 'job/list',
     JOB_CI_PIPELINE_LIST: 'job/ci-pipeline/list',
     USER_ROLE_GROUP: 'user/role/group',
+    APP_FILTER_LIST: 'app/app-listing/autocomplete',
+    APP_LIST_GROUP: 'app/list/group',
 }
 
 export const ViewType = {
@@ -641,6 +646,7 @@ export const ModuleNameMap = {
 
 export const BUILD_STATUS = {
     NOT_TRIGGERED: 'not triggered',
+    NOT_DEPLOYED: 'not deployed'
 }
 
 export const EVENT_STREAM_EVENTS_MAP = {
