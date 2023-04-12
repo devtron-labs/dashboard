@@ -310,9 +310,6 @@ function Cluster({
     const hideClusterDrawer = (e) => {
         setShowWindow(false)
     }
-    const deleteEnv = (): void => {
-        reload()
-    }
 
     const getEnvironmentPayload = () => {
         return {
@@ -541,7 +538,7 @@ function Cluster({
                                                         confirmationDialogDescription={
                                                             DC_ENVIRONMENT_CONFIRMATION_MESSAGE
                                                         }
-                                                        reload={deleteEnv}
+                                                        reload={reload}
                                                     />
                                                 )}
                                             </div>
