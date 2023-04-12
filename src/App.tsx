@@ -157,6 +157,9 @@ export default function App() {
                 updateToastRef.current = toast.info(updateToastBody, { autoClose: false, closeButton: false })
             }
             setForceUpdateOnLocationChange(true)
+            if (typeof Storage !== 'undefined') {
+                localStorage.removeItem('serverInfo')
+            }
         }
         function onSuccess(reg) {
             console.log('successfully installed')
@@ -203,13 +206,13 @@ export default function App() {
     return (
         <Suspense fallback={null}>
             {validating ? (
-                <div style={{ height: '100vh', width: '100vw' }}>
+                <div className="full-height-width">
                     <Progressing pageLoader />
                 </div>
             ) : (
                 <>
                     {errorPage ? (
-                        <div style={{ height: '100vh', width: '100vw' }}>
+                        <div className="full-height-width">
                             <Reload />
                         </div>
                     ) : (

@@ -594,7 +594,7 @@ export const workflowsTrigger = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -717,7 +717,7 @@ export const workflowsTrigger = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -812,7 +812,7 @@ export const workflowsCreate = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -935,7 +935,7 @@ export const workflowsCreate = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1128,7 +1128,7 @@ export const workflowsTriggerPrePostCD = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1251,7 +1251,7 @@ export const workflowsTriggerPrePostCD = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1346,7 +1346,7 @@ export const workflowsCreatePrePostCD = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1469,7 +1469,7 @@ export const workflowsCreatePrePostCD = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1847,7 +1847,7 @@ export const workflowsTriggerPreCDResp = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1970,7 +1970,7 @@ export const workflowsTriggerPreCDResp = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2065,7 +2065,7 @@ export const workflowsCreatePreCDResp = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2188,7 +2188,7 @@ export const workflowsCreatePreCDResp = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2283,7 +2283,7 @@ export const workflowsCreatePostCD = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2406,7 +2406,7 @@ export const workflowsCreatePostCD = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2550,7 +2550,7 @@ export const workflowsTriggerPostCD = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2673,7 +2673,7 @@ export const workflowsTriggerPostCD = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,

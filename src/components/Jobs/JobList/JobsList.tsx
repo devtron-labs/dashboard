@@ -320,7 +320,7 @@ export default function JobsList() {
             )}
             {dataStateType === JobListViewType.LIST && (
                 <>
-                    <HeaderWithCreateButton headerName="Jobs" />
+                    <HeaderWithCreateButton headerName="Jobs" isSuperAdmin={true} />
                     {renderCreateJobRouter()}
                     <JobListContainer
                         payloadParsedFromUrl={parsedPayloadOnUrlChange}

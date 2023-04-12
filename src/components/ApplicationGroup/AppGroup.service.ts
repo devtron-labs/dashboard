@@ -13,7 +13,14 @@ import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { ModuleNameMap, Routes, URLS } from '../../config'
 import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { CIConfigListType, ConfigAppList, EnvApp, EnvDeploymentStatus, WorkflowsResponseType } from './AppGroup.types'
+import {
+    AppGroupList,
+    CIConfigListType,
+    ConfigAppListType,
+    EnvAppType,
+    EnvDeploymentStatusType,
+    WorkflowsResponseType,
+} from './AppGroup.types'
 import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
@@ -142,21 +149,14 @@ function getParentNode(nodes: Map<string, NodeAttr>, node: NodeAttr): NodeAttr |
     const type = node.preNode ? WorkflowNodeType.PRE_CD : node.type
 
     if (!!parentNode) {
-        (parentNode.postNode ? parentNode.postNode : parentNode).downstreams = [type + '-' + node.id]
+        if (parentNode.postNode) {
+            parentNode.postNode.downstreams = [type + '-' + node.id]
+        } else {
+            parentNode.downstreams = [type + '-' + node.id]
+        }
         parentNode.downstreamNodes = [node]
     }
     return parentNode
-}
-
-export interface ConfigAppListType extends ResponseType {
-    result?: ConfigAppList[]
-}
-export interface EnvAppType extends ResponseType {
-    result?: EnvApp
-}
-
-export interface EnvDeploymentStatusType extends ResponseType {
-    result?: EnvDeploymentStatus[]
 }
 
 export const getConfigAppList = (envId: number): Promise<ConfigAppListType> => {
@@ -181,4 +181,8 @@ export const getEnvAppList = (params?: {
 
 export const getDeploymentStatus = (envId: number): Promise<EnvDeploymentStatusType> => {
     return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.ENV_DEPLOYMENT_STATUS}`)
+}
+
+export const getAppGroupList = (envId: number): Promise<AppGroupList> => {
+    return get(`${Routes.APP_LIST_GROUP}/${envId}`)
 }
