@@ -3,7 +3,13 @@ import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getAppOtherEnvironment, getJobCIPipeline, getTeamList } from '../../../services/service'
-import { handleUTCTime, importComponentFromFELibrary, processDeployedTime, sortOptionsByValue, useAsync } from '../../common'
+import {
+    handleUTCTime,
+    importComponentFromFELibrary,
+    processDeployedTime,
+    sortOptionsByValue,
+    useAsync,
+} from '../../common'
 import { showError, Progressing, TagType, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails, AppOverviewProps, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
@@ -22,7 +28,7 @@ import {
     ExternalLinksAndToolsType,
     ExternalLinkScopeType,
 } from '../../externalLinks/ExternalLinks.type'
-import { getExternalLinks, getMonitoringTools } from '../../externalLinks/ExternalLinks.service'
+import { getExternalLinks } from '../../externalLinks/ExternalLinks.service'
 import { sortByUpdatedOn } from '../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import AboutTagEditModal from '../details/AboutTagEditModal'
@@ -54,7 +60,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         [appId],
         !isJobOverview,
     )
-    const isAgroInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
+    const isArgoInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
 
@@ -75,22 +81,20 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     }, [appId])
 
     const getExternalLinksDetails = (): void => {
-        Promise.all([getMonitoringTools(), getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)])
-            .then(([monitoringToolsRes, externalLinksRes]) => {
+        getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
+            .then((externalLinksRes) => {
                 setExternalLinksAndTools({
                     fetchingExternalLinks: false,
                     externalLinks:
-                        externalLinksRes.result
-                            ?.filter((_link) => _link.type === ExternalLinkScopeType.AppLevel)
-                            ?.sort(sortByUpdatedOn) || [],
+                        externalLinksRes.result?.ExternalLinks?.filter(
+                            (_link) => _link.type === ExternalLinkScopeType.AppLevel,
+                        ).sort(sortByUpdatedOn) || [],
                     monitoringTools:
-                        monitoringToolsRes.result
-                            ?.map((tool) => ({
-                                label: tool.name,
-                                value: tool.id,
-                                icon: tool.icon,
-                            }))
-                            .sort(sortOptionsByValue) || [],
+                        externalLinksRes.result?.Tools?.map((tool) => ({
+                            label: tool.name,
+                            value: tool.id,
+                            icon: tool.icon,
+                        })).sort(sortOptionsByValue) || [],
                 })
             })
             .catch((e) => {
@@ -121,8 +125,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const toggleTagsUpdateModal = (e) => {
         stopPropagation(e)
         setShowUpdateTagModal(!showUpdateTagModal)
-        if(showUpdateTagModal){
-          setReloadMandatoryProjects(!reloadMandatoryProjects)
+        if (showUpdateTagModal) {
+            setReloadMandatoryProjects(!reloadMandatoryProjects)
         }
     }
 
@@ -161,7 +165,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             const payload = {
                 id: parseInt(appId),
                 description: newDescription,
-                labels: appMetaInfo.labels
+                labels: appMetaInfo.labels,
             }
 
             const appLabel = await createAppLabels(payload)
@@ -259,7 +263,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 <div className="env-deployments-info-wrapper w-100">
                     <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
                         <span>Environment</span>
-                        {isAgroInstalled && <span>App status</span>}
+                        {isArgoInstalled && <span>App status</span>}
                         <span>Last deployed</span>
                     </div>
                     <div className="env-deployments-info-body">
@@ -276,7 +280,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                         >
                                             {_env.environmentName}
                                         </Link>
-                                        {isAgroInstalled && (
+                                        {isArgoInstalled && (
                                             <AppStatus
                                                 appStatus={
                                                     _env.lastDeployed
@@ -286,7 +290,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                             />
                                         )}
                                         <span className="fs-13 fw-4 cn-7">
-                                            {processDeployedTime(_env.lastDeployed, isAgroInstalled)}
+                                            {processDeployedTime(_env.lastDeployed, isArgoInstalled)}
                                         </span>
                                     </div>
                                 ),
