@@ -1,7 +1,7 @@
 import React from 'react'
 import Tippy from '@tippyjs/react';
 
-export const envDescriptionTippy = (environmentName, description) => {
+export const envDescriptionTippy = (environmentName: string, description: string) => {
     return (
         <Tippy
             className="default-tt w-200"
