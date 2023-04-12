@@ -7,6 +7,7 @@ import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
 import { TriggerViewContext } from '../../config'
 import { triggerStatus } from '../../../cicdHistory/History.components'
+import { envDescriptionTippy } from './workflow.utils'
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     constructor(props) {
@@ -73,21 +74,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                     <span className="workflow-node__text-light">
                                         Deploy: {this.props.deploymentStrategy}
                                     </span>
-                                    {
-                                        <Tippy
-                                            className="default-tt w-200"
-                                            arrow={true}
-                                            placement="bottom"
-                                            content={
-                                                <div className="w-100">
-                                                    <div className="fw-6">{this.props.environmentName}</div>
-                                                    <div className="dc__word-break-all lh-16 mt-4">{this.props.description}</div>
-                                                </div>
-                                            }
-                                        >
-                                            <span className="dc__ellipsis-right">{this.props.environmentName}</span>
-                                        </Tippy>
-                                    }
+                                    {envDescriptionTippy(this.props.environmentName, this.props.description)}
                                 </div>
                                 <div className="workflow-node__icon-common ml-8 workflow-node__CD-icon" />
                             </div>

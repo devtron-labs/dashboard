@@ -13,6 +13,7 @@ import {
 import { ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import warningIconSrc from '../../../assets/icons/info-filled.svg'
 import { URLS } from '../../../config'
+import { envDescriptionTippy } from '../../app/details/triggerView/workflow/nodes/workflow.utils'
 
 export class CDNode extends Component<CDNodeProps, CDNodeState> {
     constructor(props) {
@@ -119,21 +120,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                         this.props.title
                                     )}
                                 </span>
-                                {
-                                    <Tippy
-                                        className="default-tt w-200"
-                                        arrow={true}
-                                        placement="bottom"
-                                        content={
-                                            <div>
-                                                <div className="fw-6">{this.props.environmentName}</div>
-                                                <div className="dc__word-break-all lh-16 mt-4">{this.props.description}</div>
-                                            </div>
-                                        }
-                                    >
-                                        <span className="dc__ellipsis-right">{this.props.environmentName}</span>
-                                    </Tippy>
-                                }
+                                {envDescriptionTippy(this.props.environmentName, this.props.description)}
                             </div>
                             <div className="workflow-node__icon-common workflow-node__CD-icon"></div>
                         </div>

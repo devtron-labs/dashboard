@@ -274,6 +274,7 @@ function Cluster({
         }
         return namespacesInAll && clusterId ? [{ id: null }].concat(environments || []) : environments || []
     }, [environments])
+    const sortedNewEnvs = newEnvs.sort((a, b) => sortCallback('environment_name', a, b))
 
     async function handleEdit(e) {
         try {
@@ -374,6 +375,12 @@ function Cluster({
         setShowWindow(true)
     }
 
+    const editModeToggle = (): void => {
+        if (!clusterId) {
+            toggleEditMode((t) => !t)
+        }
+    }
+
     return (
         <>
             <article
@@ -383,11 +390,7 @@ function Cluster({
             >
                 {!editMode ? (
                     <>
-                        <List
-                            className="dc__border"
-                            key={clusterId}
-                            onClick={clusterId ? () => {} : (e) => toggleEditMode((t) => !t)}
-                        >
+                        <List className="dc__border" key={clusterId} onClick={editModeToggle}>
                             {!clusterId && (
                                 <List.Logo>
                                     <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
@@ -404,11 +407,10 @@ function Cluster({
                                 />
                                 {clusterId && (
                                     <div className="flex dc__align-right">
-                                        <div
-                                            className="flex mr-16"
-                                            onClick={addCluster}
-                                        >
-                                            <List.Logo>{<Add className="icon-dim-20 fcb-5 mr-8" />}</List.Logo>
+                                        <div className="flex mr-16" onClick={addCluster}>
+                                            <List.Logo>
+                                                <Add className="icon-dim-20 fcb-5 mr-8" />
+                                            </List.Logo>
                                             <div className="fw-6 fs-13 cb-5">Add Environment</div>
                                         </div>
                                         <div className="dc__divider" />
@@ -416,8 +418,8 @@ function Cluster({
                                 )}
                             </div>
                             {clusterId && (
-                                <Tippy className="default-tt cursor" arrow={false} content={'Edit Cluster'}>
-                                    {<PencilEdit onClick={handleEdit} />}
+                                <Tippy className="default-tt cursor" arrow={false} content="Edit Cluster">
+                                    <PencilEdit onClick={handleEdit} />
                                 </Tippy>
                             )}
                         </List>
@@ -454,96 +456,98 @@ function Cluster({
                                     <div>{CONFIGURATION_TYPES.DESCRIPTION}</div>
                                     <div></div>
                                 </div>
-                                {newEnvs.sort((a,b) => sortCallback('environment_name', a, b)).map(
-                                    ({
-                                        id,
-                                        environment_name,
-                                        prometheus_url,
-                                        namespace,
-                                        default: isProduction,
-                                        description,
-                                    }) =>
-                                        environment_name ? (
-                                            <div
-                                                className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-12 pb-12 fs-13 fw-4 pl-20 pr-20 dc__visible-hover dc__visible-hover--parent"
-                                                key={id}
-                                                onClick={() =>
-                                                    setEnvironment({
-                                                        id,
-                                                        environment_name,
-                                                        cluster_id: clusterId,
-                                                        namespace,
-                                                        prometheus_url,
-                                                        isProduction,
-                                                        description,
-                                                    })
-                                                }
-                                            >
-                                                <span className="cursor flex w-100">
-                                                    {environment_name && <Database className="icon-dim-20" />}
-                                                </span>
-
+                                {newEnvs
+                                    .sort((a, b) => sortCallback('environment_name', a, b))
+                                    .map(
+                                        ({
+                                            id,
+                                            environment_name,
+                                            prometheus_url,
+                                            namespace,
+                                            default: isProduction,
+                                            description,
+                                        }) =>
+                                            environment_name ? (
                                                 <div
-                                                    className="dc__truncate-text flex left cb-5 cursor"
-                                                    onClick={showWindowModal}
+                                                    className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-12 pb-12 fs-13 fw-4 pl-20 pr-20 dc__visible-hover dc__visible-hover--parent"
+                                                    key={id}
+                                                    onClick={() =>
+                                                        setEnvironment({
+                                                            id,
+                                                            environment_name,
+                                                            cluster_id: clusterId,
+                                                            namespace,
+                                                            prometheus_url,
+                                                            isProduction,
+                                                            description,
+                                                        })
+                                                    }
                                                 >
-                                                    {environment_name}
+                                                    <span className="cursor flex w-100">
+                                                        {environment_name && <Database className="icon-dim-20" />}
+                                                    </span>
 
-                                                    {isProduction ? (
-                                                        <div className="bc-n50 dc__border pr-6 pl-6 fs-12 h-20 ml-8 flex cn-7 br-4 ">
-                                                            Prod
-                                                        </div>
-                                                    ) : null}
-                                                </div>
-                                                <div className="dc__truncate-text">{namespace}</div>
-                                                <div className="cluster-list__description dc__truncate-text">
-                                                    {description}
-                                                </div>
-                                                <div className="dc__visible-hover--child">
-                                                    <div className="flex">
-                                                        <Tippy
-                                                            className="default-tt cursor"
-                                                            arrow={false}
-                                                            content={'Edit Environment'}
-                                                        >
-                                                            <PencilEdit
-                                                                className="cursor icon-dim-20 mr-12"
-                                                                onClick={showWindowModal}
-                                                            />
-                                                        </Tippy>
-                                                        {envDelete ? (
-                                                            <Progressing size={20} />
-                                                        ) : (
+                                                    <div
+                                                        className="dc__truncate-text flex left cb-5 cursor"
+                                                        onClick={showWindowModal}
+                                                    >
+                                                        {environment_name}
+
+                                                        {isProduction && (
+                                                            <div className="bc-n50 dc__border pr-6 pl-6 fs-12 h-20 ml-8 flex cn-7 br-4 ">
+                                                                Prod
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="dc__truncate-text">{namespace}</div>
+                                                    <div className="cluster-list__description dc__truncate-text">
+                                                        {description}
+                                                    </div>
+                                                    <div className="dc__visible-hover--child">
+                                                        <div className="flex">
                                                             <Tippy
                                                                 className="default-tt cursor"
                                                                 arrow={false}
-                                                                content={'Delete Environment'}
+                                                                content={'Edit Environment'}
                                                             >
-                                                                <DeleteEnvironment
-                                                                    className="icon-dim-20 cursor"
-                                                                    onClick={showToggleConfirmation}
+                                                                <PencilEdit
+                                                                    className="cursor icon-dim-20 mr-12"
+                                                                    onClick={showWindowModal}
                                                                 />
                                                             </Tippy>
-                                                        )}
+                                                            {envDelete ? (
+                                                                <Progressing size={20} />
+                                                            ) : (
+                                                                <Tippy
+                                                                    className="default-tt cursor"
+                                                                    arrow={false}
+                                                                    content={'Delete Environment'}
+                                                                >
+                                                                    <DeleteEnvironment
+                                                                        className="icon-dim-20 cursor"
+                                                                        onClick={showToggleConfirmation}
+                                                                    />
+                                                                </Tippy>
+                                                            )}
+                                                        </div>
                                                     </div>
+                                                    {confirmation && (
+                                                        <DeleteComponent
+                                                            setDeleting={clusterDelete}
+                                                            deleteComponent={deleteEnvironment}
+                                                            payload={getEnvironmentPayload()}
+                                                            title={environment_name}
+                                                            toggleConfirmation={toggleConfirmation}
+                                                            component={DeleteComponentsName.Environment}
+                                                            confirmationDialogDescription={
+                                                                DC_ENVIRONMENT_CONFIRMATION_MESSAGE
+                                                            }
+                                                            reload={reload}
+                                                        />
+                                                    )}
                                                 </div>
-                                                {confirmation && (
-                                                    <DeleteComponent
-                                                        setDeleting={clusterDelete}
-                                                        deleteComponent={deleteEnvironment}
-                                                        payload={getEnvironmentPayload()}
-                                                        title={environment_name}
-                                                        toggleConfirmation={toggleConfirmation}
-                                                        component={DeleteComponentsName.Environment}
-                                                        confirmationDialogDescription={
-                                                            DC_ENVIRONMENT_CONFIRMATION_MESSAGE
-                                                        }
-                                                        reload={reload}
-                                                    />
-                                                )}
-                                            </div>
-                                        ) : null,
-                                )}
+                                            ) : null,
+                                    )}
                             </div>
                         ) : (
                             clusterId && renderNoEnvironmentTab()
