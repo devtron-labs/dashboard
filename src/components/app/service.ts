@@ -251,7 +251,6 @@ export function getCDMaterialList(
         if (!response.result) {
             return {
                 approvalUsers: [],
-                artifactTriggeredBy: '',
                 materials: [],
                 userApprovalConfig: null,
                 requestedUserId: 0,
@@ -259,7 +258,6 @@ export function getCDMaterialList(
         }
         return {
             approvalUsers: response.result.approvalUsers,
-            artifactTriggeredBy: response.result.artifactTriggeredBy,
             materials: cdMaterialListModal(
                 response.result.ci_artifacts,
                 true,

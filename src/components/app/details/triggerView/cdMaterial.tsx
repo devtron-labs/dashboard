@@ -680,7 +680,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return (
             <>
                 {isApprovalConfigured && this.renderMaterial(consumedImage, true)}
-                {!this.props.isFromBulkCD && (
+                {(!this.props.isFromBulkCD || isApprovalConfigured)  && (
                     <div className="material-list__title pb-16">
                         {isApprovalConfigured
                             ? 'Approved images'

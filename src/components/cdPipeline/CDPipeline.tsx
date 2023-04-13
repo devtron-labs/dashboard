@@ -1314,7 +1314,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     renderManualApprovalWrapper = () => {
-        console.log(this.state)
         return (
             <>
                 <div className="flex left">

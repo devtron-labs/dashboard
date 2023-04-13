@@ -456,7 +456,6 @@ export interface TagChipsContainerType {
 
 export interface CDMaterialResponseType {
     approvalUsers: string[]
-    artifactTriggeredBy: string
     materials: any[]
     userApprovalConfig: UserApprovalConfigType
     requestedUserId: number

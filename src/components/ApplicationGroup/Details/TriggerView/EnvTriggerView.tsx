@@ -70,6 +70,7 @@ import {
 import { handleSourceNotConfigured, processWorkflowStatuses } from '../../AppGroup.utils'
 import Tippy from '@tippyjs/react'
 import ApprovalMaterialModal from '../../../app/details/triggerView/ApprovalNode/ApprovalMaterialModal'
+import { CDMaterialResponseType } from '../../../app/types'
 
 let inprogressStatusTimer
 export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultType) {
@@ -559,7 +560,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             cdNodeId,
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             abortControllerRef.current.signal,
-            isApprovalNode
+            isApprovalNode,
         )
             .then((data) => {
                 let _selectedNode
@@ -568,7 +569,6 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node[MATERIAL_TYPE.inputMaterialList] = data.materials
                             node.approvalUsers = data.approvalUsers
-                            node.artifactTriggeredBy = data.artifactTriggeredBy
                             node.userApprovalConfig = data.userApprovalConfig
                             node.requestedUserId = data.requestedUserId
                             _selectedNode = node
@@ -1066,7 +1066,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         setShowBulkCIModal(true)
     }
 
-    const updateBulkCDInputMaterial = (materialList: Record<string, any[]>): void => {
+    const updateBulkCDInputMaterial = (cdMaterialResponse: Record<string, CDMaterialResponseType>): void => {
         const _workflows = filteredWorkflows.map((wf) => {
             if (wf.isSelected) {
                 const _appId = wf.appId
@@ -1074,15 +1074,20 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
                 )
                 let _selectedNode: NodeAttr
+                const _materialData = cdMaterialResponse[_appId]
                 if (bulkTriggerType === DeploymentNodeType.PRECD) {
                     _selectedNode = _cdNode.preNode
                 } else if (bulkTriggerType === DeploymentNodeType.CD) {
                     _selectedNode = _cdNode
+                    _selectedNode.approvalUsers = _materialData.approvalUsers
+                    _selectedNode.requestedUserId = _materialData.requestedUserId
+                    _selectedNode.userApprovalConfig = _materialData.userApprovalConfig
                 } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
                     _selectedNode = _cdNode.postNode
                 }
+
                 if (_selectedNode) {
-                    _selectedNode.inputMaterialList = materialList[_appId]
+                    _selectedNode.inputMaterialList = _materialData.materials
                 }
             }
             return wf
@@ -1290,6 +1295,9 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                         parentPipelineType: WorkflowNodeType[_selectedNode.parentPipelineType],
                         parentEnvironmentName: _selectedNode.parentEnvironmentName,
                         material: _selectedNode.inputMaterialList,
+                        approvalUsers: _selectedNode.approvalUsers,
+                        userApprovalConfig: _selectedNode.userApprovalConfig,
+                        requestedUserId: _selectedNode.requestedUserId,
                     })
                 } else {
                     let warningMessage = ''

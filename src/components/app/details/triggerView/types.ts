@@ -233,7 +233,6 @@ export interface NodeAttr {
     storageConfigured?: boolean
     deploymentAppDeleteRequest?: boolean
     approvalUsers?: string[],
-    artifactTriggeredBy?: string,
     userApprovalConfig?: UserApprovalConfigType,
     requestedUserId?: number
 }
