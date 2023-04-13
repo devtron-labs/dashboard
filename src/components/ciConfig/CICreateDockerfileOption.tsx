@@ -17,7 +17,7 @@ import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwi
 import { CIBuildType } from '../ciPipeline/types'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
 import { renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
-import { renderBuildContext, _customStyles } from './CIConfig.utils'
+import { renderBuildContext, USING_ROOT, _customStyles } from './CIConfig.utils'
 
 export default function CICreateDockerfileOption({
     configOverrideView,
@@ -211,6 +211,22 @@ export default function CICreateDockerfileOption({
         setSelectedFramework(selected)
         getTemplateData(selectedLanguage, selected)
     }
+
+    useEffect(() => {
+        if (disable) {
+            if (configOverrideView) {
+                setCurrentCIBuildConfig({
+                    ...currentCIBuildConfig,
+                    dockerBuildConfig: {
+                        ...currentCIBuildConfig.dockerBuildConfig,
+                        buildContext: USING_ROOT,
+                    },
+                })
+            } else {
+                formState.buildContext.value = USING_ROOT
+            }
+        }
+    }, [disable])
 
     const resetChanges = () => {
         const editorData = templateData && templateData[getTemplateKey(selectedLanguage, selectedFramework)]

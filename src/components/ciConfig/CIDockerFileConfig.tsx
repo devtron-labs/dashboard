@@ -5,7 +5,7 @@ import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as BuildpackIcon } from '../../assets/icons/ic-builpack.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import CIAdvancedConfig from './CIAdvancedConfig'
-import { CI_BUILDTYPE_ALIAS, _multiSelectStyles,renderBuildContext } from './CIConfig.utils'
+import {CI_BUILDTYPE_ALIAS, _multiSelectStyles, renderBuildContext, USING_ROOT} from './CIConfig.utils'
 import { CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import CIBuildpackBuildOptions, {
     renderOptionIcon,
@@ -99,6 +99,22 @@ export default function CIDockerFileConfig({
                 setInProgress(false)
             })
     }, [])
+
+    useEffect(() => {
+        if (disable) {
+            if (configOverrideView) {
+                setCurrentCIBuildConfig({
+                    ...currentCIBuildConfig,
+                    dockerBuildConfig: {
+                        ...currentCIBuildConfig.dockerBuildConfig,
+                        buildContext: USING_ROOT,
+                    },
+                })
+            } else {
+                formState.buildContext.value = USING_ROOT
+            }
+        }
+    }, [disable])
 
     useEffect(() => {
         if (configOverrideView && updateDockerConfigOverride && currentCIBuildConfig) {
