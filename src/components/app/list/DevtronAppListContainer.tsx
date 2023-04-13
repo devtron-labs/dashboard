@@ -139,7 +139,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
             let state = { ...this.state };
             const apps =
                 response.result && !!response.result.appContainers
-                    ? appListModal(response.result.appContainers, this.props.environmentClusterList)
+                    ? appListModal(response.result.appContainers)
                     : []
             state.code = response.code
             state.apps = apps;
