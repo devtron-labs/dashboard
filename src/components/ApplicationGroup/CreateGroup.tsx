@@ -117,6 +117,79 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
         setSelectedTab(e.currentTarget.dataset.tabName)
     }
 
+    const renderTabItem = (): JSX.Element => {
+        return (
+            <li className="tab-list__tab pointer" data-tab-name={CreateGroupTabs.SELECTED_APPS} onClick={onTabChange}>
+                <div
+                    className={`mb-6 fs-13 tab-hover${
+                        selectedTab === CreateGroupTabs.SELECTED_APPS ? ' fw-6 active' : ' fw-4'
+                    }`}
+                >
+                    <span className="mr-6">Selected applications </span>
+                    {selectedAppList.length > 0 && (
+                        <span
+                            className={`br-10 pl-5 pr-5 ${
+                                selectedTab === CreateGroupTabs.SELECTED_APPS ? 'bcb-5 cn-0' : 'bcn-1 cn-7'
+                            }`}
+                        >
+                            {selectedAppList.length}
+                        </span>
+                    )}
+                </div>
+                {selectedTab === CreateGroupTabs.SELECTED_APPS && <div className="apps-tab__active-tab" />}
+            </li>
+        )
+    }
+
+    const renderAppListTabs = (): JSX.Element => {
+        return (
+            <ul role="tablist" className="tab-list mb-8">
+                <li
+                    className="tab-list__tab pointer"
+                    data-tab-name={CreateGroupTabs.SELECTED_APPS}
+                    onClick={onTabChange}
+                >
+                    <div
+                        className={`mb-6 fs-13 tab-hover${
+                            selectedTab === CreateGroupTabs.SELECTED_APPS ? ' fw-6 active' : ' fw-4'
+                        }`}
+                    >
+                        <span className="mr-6">Selected applications </span>
+                        {selectedAppList.length > 0 && (
+                            <span
+                                className={`br-10 pl-5 pr-5 ${
+                                    selectedTab === CreateGroupTabs.SELECTED_APPS ? 'bcb-5 cn-0' : 'bcn-1 cn-7'
+                                }`}
+                            >
+                                {selectedAppList.length}
+                            </span>
+                        )}
+                    </div>
+                    {selectedTab === CreateGroupTabs.SELECTED_APPS && <div className="apps-tab__active-tab" />}
+                </li>
+                <li className="tab-list__tab pointer" data-tab-name={CreateGroupTabs.ALL_APPS} onClick={onTabChange}>
+                    <div
+                        className={`mb-6 flexbox fs-13 tab-hover${
+                            selectedTab === CreateGroupTabs.ALL_APPS ? ' fw-6 active' : ' fw-4'
+                        }`}
+                    >
+                        <span className="mr-6">Add/Remove applications </span>
+                        {appList.length > 0 && (
+                            <span
+                                className={`br-10 pl-5 pr-5 ${
+                                    selectedTab === CreateGroupTabs.ALL_APPS ? 'bcb-5 cn-0' : 'bcn-1 cn-7'
+                                }`}
+                            >
+                                {appList.length}
+                            </span>
+                        )}
+                    </div>
+                    {selectedTab === CreateGroupTabs.ALL_APPS && <div className="apps-tab__active-tab" />}
+                </li>
+            </ul>
+        )
+    }
+
     const renderBodySection = (): JSX.Element => {
         if (isLoading) {
             return <Progressing pageLoader />
@@ -148,46 +221,8 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
                     />
                 </div>
                 <div>
-                    <div>
-                        <span
-                            className={`mr-12 fs-13 ${
-                                selectedTab === CreateGroupTabs.SELECTED_APPS ? 'fw-6 cb-5' : 'fw-4 cn-9 cursor'
-                            }`}
-                            data-tab-name={CreateGroupTabs.SELECTED_APPS}
-                            onClick={onTabChange}
-                        >
-                            <span>Selected applications </span>
-                            {selectedAppList.length > 0 && (
-                                <span
-                                    className={`br-10 pl-5 pr-5 ${
-                                        selectedTab === CreateGroupTabs.SELECTED_APPS ? 'bcb-5 cn-0' : 'bcn-1 cn-7'
-                                    }`}
-                                >
-                                    {selectedAppList.length}
-                                </span>
-                            )}
-                        </span>
-                        <span
-                            className={`fs-13 ${
-                                selectedTab === CreateGroupTabs.ALL_APPS ? 'fw-6 cb-5' : 'fw-4 cn-9 cursor'
-                            }`}
-                            data-tab-name={CreateGroupTabs.ALL_APPS}
-                            onClick={onTabChange}
-                        >
-                            <span>Add/Remove applications </span>
-                            {appList.length > 0 && (
-                                <span
-                                    className={`br-10 pl-5 pr-5 ${
-                                        selectedTab === CreateGroupTabs.ALL_APPS ? 'bcb-5 cn-0' : 'bcn-1 cn-7'
-                                    }`}
-                                >
-                                    {appList.length}
-                                </span>
-                            )}
-                        </span>
-                        {selectedTab === CreateGroupTabs.SELECTED_APPS ? renderSelectedApps() : renderAllApps()}
-                    </div>
-                    <div></div>
+                    {renderAppListTabs()}
+                    {selectedTab === CreateGroupTabs.SELECTED_APPS ? renderSelectedApps() : renderAllApps()}
                 </div>
             </div>
         )
@@ -212,7 +247,7 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
 
     return (
         <Drawer position="right" width="800px" onEscape={closePopup}>
-            <div className="dc__window-bg h-100" ref={CreateGroupRef}>
+            <div className="dc__window-bg h-100 create-group-container" ref={CreateGroupRef}>
                 {renderHeaderSection()}
                 {renderBodySection()}
                 {renderFooterSection()}
