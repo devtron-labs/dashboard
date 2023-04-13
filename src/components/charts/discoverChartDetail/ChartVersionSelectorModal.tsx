@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { VisibleModal } from '../../common'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Back } from '../../../assets/icons/ic-back.svg'
@@ -8,6 +7,7 @@ import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
 import { ChartValuesType } from '../charts.types'
 import { ChartVersionSelectorModalType, PrimaryOptionType } from './types'
 import { PrimaryOptions, ValueType } from './constants'
+import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function ChartVersionSelectorModal({
     closePopup,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
+import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { SourceTypeMap } from '../../config'
 import { MaterialHistory, CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import MaterialSource from '../app/details/triggerView/MaterialSource'
@@ -13,7 +14,7 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
 import Tippy from '@tippyjs/react'
-import { getCIPipelineURL, stopPropagation } from '../common'
+import { getCIPipelineURL } from '../common'
 import { useHistory } from 'react-router'
 import { useLocation } from 'react-router-dom'
 import { TriggerViewContext } from '../app/details/triggerView/config'
@@ -92,7 +93,7 @@ export default function GitInfoMaterial({
             pipelineId: pipelineId,
         }
         return (
-            <div className="material-list">
+            <div className="material-list dc__overflow-hidden" style={{ height: 'calc(100vh - 136px)' }}>
                 <div className="material-list__title material-list__title--border-bottom pt-12 pb-12 pl-20 pr-20">
                     Git Repository
                 </div>

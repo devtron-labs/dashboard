@@ -17,7 +17,7 @@ import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { AppType, DeploymentAppType, ManifestActionPropsType, NodeType } from '../../../appDetails.type'
 import YAML from 'yaml'
 import { toast } from 'react-toastify'
-import { showError, ToastBody } from '../../../../../common'
+import { showError, ToastBody } from '@devtron-labs/devtron-fe-common-lib'
 import { appendRefetchDataToUrl } from '../../../../../util/URLUtil'
 import {
     EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT,
@@ -102,11 +102,10 @@ function ManifestComponent({
                     getDesiredManifestResource(appDetails, params.podName, params.nodeType),
             ])
                 .then((response) => {
-                    let _manifest: string
+                    let _manifest
                     if (
                         appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
                         appDetails.deploymentAppType === DeploymentAppType.helm ||
-                        appDetails.deploymentAppType === DeploymentAppType.argo_cd ||
                         isResourceBrowserView
                     ) {
                         _manifest = JSON.stringify(response[0]?.result?.manifest)

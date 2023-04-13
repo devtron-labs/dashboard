@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react'
 import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { toast } from 'react-toastify'
-import { showError, Progressing, ErrorScreenManager, RadioGroup, useJsonYaml, ConditionalWrap } from '../../../common'
+import { RadioGroup, useJsonYaml } from '../../../common'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    ConditionalWrap,
+    InfoColourBar,
+    ServerErrors,
+    ForceDeleteDialog,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     getReleaseInfo,
     ReleaseInfoResponse,
@@ -24,7 +33,6 @@ import {
     installChart,
     updateChartValues,
 } from '../../../charts/charts.service'
-import { ServerErrors } from '../../../../modals/commonTypes'
 import { ConfigurationType, SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import YAML from 'yaml'
 import {
@@ -61,7 +69,6 @@ import {
     getDeploymentHistory,
 } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import { mainContext } from '../../../common/navigation/NavigationRoutes'
-import ForceDeleteDialog from '../../../common/dialogs/ForceDeleteDialog'
 import {
     ChartEnvironmentOptionType,
     ChartKind,
@@ -81,7 +88,6 @@ import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfigure
 import { AppMetaInfo } from '../../../app/types'
 import { getHelmAppMetaInfo } from '../../../app/service'
 import ProjectUpdateModal from './ProjectUpdateModal'
-import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 import ChartValuesEditor from './ChartValuesEditor'
 import { ChartRepoSelector } from './ChartRepoSelector'
 import { MULTI_REQUIRED_FIELDS_MSG, SOME_ERROR_MSG, TOAST_INFO } from '../../../../config/constantMessaging'
@@ -569,7 +575,7 @@ function ChartValuesView({
                     payload: false,
                 })
                 toast.success(TOAST_INFO.DELETION_INITIATED)
-                init()
+                init && init()
                 history.push(
                     isCreateValueView
                         ? getSavedValuesListURL(installedConfigFromParent.appStoreId)

@@ -1,6 +1,5 @@
 import { Routes } from '../../config'
-import { get, post, put, trash } from '../../services/api'
-import { APIOptions, ResponseType } from '../../services/service.types'
+import { get, post, put, ResponseType, trash, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterCapacityResponse,
     ClusterListResponse,
@@ -16,6 +15,10 @@ import {
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
     return get(Routes.CLUSTER_LIST)
+}
+
+export const getClusterListMin = (): Promise<ClusterListResponse> => {
+    return get(Routes.CLUSTER_LIST_MIN)
 }
 
 export const getClusterCapacity = (clusterId: string): Promise<ClusterCapacityResponse> => {

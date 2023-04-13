@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
+import { Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { AppListViewType } from '../config'
-import { ErrorScreenManager, Pagination, Progressing, handleUTCTime } from '../../common'
+import { Pagination, handleUTCTime } from '../../common'
 import { Link } from 'react-router-dom'
 import { ExpandedRow } from './expandedRow/ExpandedRow'
 import { Empty } from './emptyView/Empty'
@@ -84,7 +85,7 @@ export class AppListView extends Component<AppListViewProps> {
             let icon = this.props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
             return (
                 <div className="app-list">
-                    <div className="app-list__header ">
+                    <div className="app-list__header">
                         <div className="app-list__cell--icon flex left cursor" onClick={this.toggleAllExpandRow}>
                             <Arrow className={`icon-dim-24 p-2 ${this.arrowIcon()}`} />
                         </div>

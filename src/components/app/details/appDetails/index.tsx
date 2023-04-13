@@ -1,7 +1,6 @@
 import React from 'react';
 import Select, { components } from 'react-select';
-import { getAppConfigStatus, getAppOtherEnvironment, stopStartApp, getLastExecutionMinByAppAndEnv } from '../../../../services/service';
-import { useAsync, multiSelectStyles } from '../../../common';
+import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 import { Option } from '../../../v2/common/ReactSelect.utils'
 import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router';
 import AppDetails from './AppDetails';

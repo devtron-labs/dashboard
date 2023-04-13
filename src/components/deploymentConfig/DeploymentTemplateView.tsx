@@ -2,16 +2,8 @@ import React, { useEffect, useRef, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { DEPLOYMENT, DOCUMENTATION, MODES, ROLLOUT_DEPLOYMENT } from '../../config'
-import {
-    Checkbox,
-    CHECKBOX_VALUE,
-    ConditionalWrap,
-    Progressing,
-    RadioGroup,
-    showError,
-    Toggle,
-    versionComparator,
-} from '../common'
+import { RadioGroup, Toggle, versionComparator } from '../common'
+import { Checkbox, CHECKBOX_VALUE, showError, Progressing, ConditionalWrap, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { DropdownIndicator, Option } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Arrows } from '../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file-text.svg'
@@ -48,7 +40,6 @@ import {
     README_TIPPY_CONTENT,
 } from './constants'
 import { SortingOrder } from '../app/types'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { validateBasicView } from './DeploymentConfig.utils'
 import ChartSelectorDropdown from './ChartSelectorDropdown'
 
@@ -710,13 +701,13 @@ export const DeploymentTemplateEditorView = ({
     const addRow = (e): void => {
         if (readOnly) return
         const _basicFieldValues = { ...basicFieldValues }
-        if (e.target.dataset.name === BASIC_FIELDS.PATH) {
+        if (e.currentTarget.dataset.name === BASIC_FIELDS.PATH) {
             _basicFieldValues[BASIC_FIELDS.HOSTS][0][BASIC_FIELDS.PATHS].unshift('')
         } else {
             _basicFieldValues[BASIC_FIELDS.ENV_VARIABLES].unshift({ name: '', value: '' })
         }
         setBasicFieldValues(_basicFieldValues)
-        if (e.target.dataset.name === BASIC_FIELDS.ENV_VARIABLES) {
+        if (e.currentTarget.dataset.name === BASIC_FIELDS.ENV_VARIABLES) {
             const _basicFieldValuesErrorObj = { ...basicFieldValuesErrorObj }
             _basicFieldValuesErrorObj.envVariables.unshift({ isValid: true, message: null })
             setBasicFieldValuesErrorObj(_basicFieldValuesErrorObj)

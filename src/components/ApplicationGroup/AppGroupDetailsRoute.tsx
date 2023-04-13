@@ -1,6 +1,7 @@
 import React, { Suspense, useCallback, useRef, useEffect, useState, useMemo } from 'react'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
-import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, useAsync, sortOptionsByLabel } from '../common'
+import { ErrorBoundary, useAsync, sortOptionsByLabel } from '../common'
+import { Progressing, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
 import { URLS } from '../../config'
@@ -13,15 +14,15 @@ import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceList
 import EmptyFolder from '../../assets/img/Empty-folder.png'
 import { EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
-import { getEnvAppList } from './AppGroup.service'
-import { AppGroupAdminType, AppGroupAppFilterContextType, EnvHeaderType } from './AppGroup.types'
+import { getAppGroupList, getEnvAppList } from './AppGroup.service'
+import { AppGroupAdminType, AppGroupAppFilterContextType, AppGroupListType, EnvHeaderType } from './AppGroup.types'
 import { getAppList } from '../app/service'
 import { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
 import AppGroupAppFilter from './AppGroupAppFilter'
 import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
 import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
-import '../app/details/app.css'
+import '../app/details/app.scss'
 import { CONTEXT_NOT_AVAILABLE_ERROR } from '../../config/constantMessaging'
 
 const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
@@ -43,7 +44,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [loading, envList] = useAsync(getEnvAppList, [])
     const [appListOptions, setAppListOptions] = useState<OptionType[]>([])
     const [selectedAppList, setSelectedAppList] = useState<MultiValue<OptionType>>([])
-
+    const [appGroupListData, setAppGroupListData] = useState<AppGroupListType>()
+ 
     useEffect(() => {
         if (envList?.result) {
             const environment = envList.result.envList?.find((env) => env.id === +envId)
@@ -61,14 +63,15 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const getAppListData = async (): Promise<void> => {
         setSelectedAppList([])
         setAppListLoading(true)
-        const { result } = await getAppList({ environments: [+envId] })
-        if (result.appContainers?.length) {
+        const { result } = await getAppGroupList(+envId)
+        setAppGroupListData(result)
+        if (result.apps?.length) {
             setAppListOptions(
-                result.appContainers
-                    .map((appDetails) => {
+                result.apps
+                    .map((app): OptionType => {
                         return {
-                            value: appDetails.appId,
-                            label: appDetails.appName,
+                            value: `${app.appId}`,
+                            label: app.appName,
                         }
                     })
                     .sort(sortOptionsByLabel),
@@ -102,7 +105,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                                 <div>Env detail</div>
                             </Route>
                             <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                                <EnvironmentOverview filteredApps={_filteredApps} />
+                                <EnvironmentOverview filteredApps={_filteredApps} appGroupListData={appGroupListData} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                                 <EnvTriggerView filteredApps={_filteredApps} />

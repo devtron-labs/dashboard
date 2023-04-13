@@ -1,6 +1,6 @@
 import { Routes } from '../../config'
-import { get, post } from '../../services/api'
-import { ClusterListResponse, ResponseType } from '../../services/service.types'
+import { get, post, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ClusterListResponse } from '../../services/service.types'
 import {
     APIResourceResponse,
     CreateResourcePayload,

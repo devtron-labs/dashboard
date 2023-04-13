@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import { Progressing } from '../index';
+import { Progressing} from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ButtonProps {
     disabled?: boolean;

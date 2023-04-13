@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { VisibleModal, showError, Progressing, } from '../../../components/common';
-import { RouteComponentProps } from 'react-router-dom';
+import { showError, Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { getCITriggerInfoModal } from '../service';
 import { ViewType } from '../../../config';
 import close from '../../../assets/icons/ic-close.svg';
@@ -113,16 +112,29 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             </div>
         }
         else {
-            let selectedMaterial = this.state.materials.find(mat => mat.isSelected);
-            headerDescription = `Deployed on ${this.state.environmentName} at ${this.state.lastDeployedTime} by ${this.state.triggeredByEmail}`;
-            body = <div className="m-lr-0 flexbox">
-                <div className="material-list">
-                    <MaterialSource material={this.state.materials} selectMaterial={this.selectMaterial} />
+            const selectedMaterial = this.state.materials.find((mat) => mat.isSelected)
+            headerDescription = `Deployed on ${this.state.environmentName} at ${this.state.lastDeployedTime} by ${this.state.triggeredByEmail}`
+            body = (
+                <div className="m-lr-0 flexbox">
+                    <div
+                        className="material-list dc__overflow-hidden dc__bottom-left-radius-8"
+                        style={{ height: 'calc(100vh - 229px)' }}
+                    >
+                        <MaterialSource
+                            material={this.state.materials}
+                            selectMaterial={this.selectMaterial}
+                            fromTriggerInfo={true}
+                        />
+                    </div>
+                    <div className="select-material" style={{ height: 'calc(100vh - 229px)' }}>
+                        <MaterialHistory
+                            material={selectedMaterial}
+                            pipelineName=""
+                            toggleChanges={this.toggleChanges}
+                        />
+                    </div>
                 </div>
-                <div className="select-material select-material--h450">
-                    <MaterialHistory material={selectedMaterial} pipelineName="" toggleChanges={this.toggleChanges} />
-                </div>
-            </div>
+            )
         }
         return this.renderWithBackDrop(headerDescription, body);
     }

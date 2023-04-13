@@ -20,7 +20,7 @@ import PerformanceIcon from '../../assets/icons/tools/ic-link-performance.png'
 import ReportIcon from '../../assets/icons/tools/ic-link-report.png'
 import SwaggerIcon from '../../assets/icons/tools/ic-link-swagger.png'
 import WebpageIcon from '../../assets/icons/tools/ic-link-webpage.png'
-import { multiSelectStyles } from '../common'
+import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 import { tempMultiSelectStyles } from '../ciConfig/CIConfig.utils'
 
 export const MONITORING_TOOL_ICONS = {

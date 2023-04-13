@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg';
-import { VisibleModal, Select, showError, Progressing } from '../common';
-import { getTeamListMin as getProjectListMin } from '../../services/service';
+import { Select } from '../common';
+import { showError, Progressing, VisibleModal, getTeamListMin as getProjectListMin } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config/constants';
 import { toast } from 'react-toastify';
 import { saveSlackConfiguration, updateSlackConfiguration, getSlackConfiguration } from './notifications.service';

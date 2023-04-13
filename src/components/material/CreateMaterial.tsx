@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { createMaterial } from './material.service';
 import { toast } from 'react-toastify';
-import { showError } from '../common';
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { MaterialView } from './MaterialView';
 import { CreateMaterialState } from './material.types';
 
@@ -104,7 +104,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         });
     }
 
-  
+
     handleUrlChange(event) {
 
         this.setState({
@@ -160,7 +160,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             })
         })
     }
-   
+
 
     cancel(event): void {
         this.setState({

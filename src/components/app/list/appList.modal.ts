@@ -20,18 +20,48 @@ export const buildInitState = (appListPayload): Promise<any> => {
     })
 }
 
-export const appListModal = (appList) => {
+export const createAppListPayload = (payloadParsedFromUrl, environmentClusterList) => {
+    const clustersMap = new Map()
+    const namespaceMap = new Map()
+    let environments = []
+
+    const entry = environmentClusterList?.entries()
+    if (entry) {
+        for (const [key, value] of entry) {
+            const { namespace, clusterId } = value
+            namespaceMap.set(`${clusterId}_${namespace}`, key)
+            const clusterKeys = clustersMap.get(clusterId) || []
+            clustersMap.set(clusterId, [...clusterKeys, key])
+        }
+    }
+
+    environments.push(...payloadParsedFromUrl.environments)
+
+    payloadParsedFromUrl.namespaces.forEach((item) => {
+        const [cluster, namespace] = item.split('_')
+        if (namespace) {
+            environments.push(namespaceMap.get(`${cluster}_${namespace}`))
+        } else if (+cluster) {
+            const envList = clustersMap.get(+cluster) || []
+            environments = [...environments, ...envList]
+        }
+    })
+    
+    return { ...payloadParsedFromUrl, environments: [...new Set(environments)] }
+}
+
+export const appListModal = (appList, environmentClusterList) => {
     return appList.map((app) => {
         return {
             id: app.appId || 0,
             name: app.appName || 'NA',
-            environments: app.environments.map((env) => environmentModal(env)) || [],
-            defaultEnv: getDefaultEnvironment(app.environments),
+            environments: app.environments.map((env) => environmentModal(env, environmentClusterList)) || [],
+            defaultEnv: getDefaultEnvironment(app.environments, environmentClusterList),
         }
     })
 }
 
-const environmentModal = (env) => {
+const environmentModal = (env, environmentClusterList) => {
     let status = env.status
     if (env.status.toLocaleLowerCase() == 'deployment initiated') {
         status = 'Progressing'
@@ -44,37 +74,39 @@ const environmentModal = (env) => {
             appStatus = 'notdeployed'
         }
     }
+    const envData = environmentClusterList.get(env.environmentId)
 
     return {
         id: env.environmentId || 0,
-        name: env.environmentName || '',
+        name: envData?.environmentName || '',
         lastDeployedTime: env.lastDeployedTime ? handleUTCTime(env.lastDeployedTime, false) : '',
         status: env.status ? handleDeploymentInitiatedStatus(env.status) : 'notdeployed',
         default: env.default ? env.default : false,
         materialInfo: env.materialInfo || [],
         ciArtifactId: env.ciArtifactId || 0,
-        clusterName: env.clusterName || '',
-        namespace: env.namespace || '',
+        clusterName: envData?.clusterName || '',
+        namespace: envData?.namespace || '',
         appStatus: appStatus,
     }
 }
 
-const getDefaultEnvironment = (envList): Environment => {
+const getDefaultEnvironment = (envList ,environmentClusterList): Environment => {
     let env = envList[0]
     let status = env.status
+    const envData = environmentClusterList.get(env.environmentId)
     if (env.status.toLowerCase() === 'deployment initiated') {
         status = 'Progressing'
     }
     let appStatus = env.appStatus || (env.lastDeployedTime ? '' : 'notdeployed')
     return {
         id: env.environmentId as number,
-        name: env.environmentName,
+        name: envData?.environmentName,
         lastDeployedTime: env.lastDeployedTime ? handleUTCTime(env.lastDeployedTime) : '',
         status: handleDeploymentInitiatedStatus(status),
         materialInfo: env.materialInfo || [],
         ciArtifactId: env.ciArtifactId || 0,
-        clusterName: env.clusterName || '',
-        namespace: env.namespace || '',
+        clusterName: envData?.clusterName || '',
+        namespace: envData?.namespace || '',
         appStatus,
     }
 }
