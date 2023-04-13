@@ -14,6 +14,7 @@ import { ApprovalMaterialModalProps } from './Types'
 import ApprovalMaterial from './ApprovalMaterial'
 import { getAlphabetIcon } from '../../../../common'
 import { Link } from 'react-router-dom'
+import { APPROVAL_RUNTIME_STATE } from './Constants'
 
 export default function ApprovalMaterialModal({
     isLoading,
@@ -31,10 +32,10 @@ export default function ApprovalMaterialModal({
     const approvalRequestedMaterial = [],
         remainingMaterial = []
     material.forEach((mat) => {
-        if (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState === 3) {
-            remainingMaterial.push(mat)
-        } else if (mat.userApprovalMetadata?.approvalRuntimeState === 1) {
+        if (mat.userApprovalMetadata?.approvalRuntimeState === APPROVAL_RUNTIME_STATE.requested) {
             approvalRequestedMaterial.push(mat)
+        } else {
+            remainingMaterial.push(mat)
         }
     })
 

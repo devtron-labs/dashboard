@@ -19,6 +19,13 @@ import { TriggerViewContext } from '../config'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import { ApprovedTippyContent } from './ApprovalMaterial.component'
+import {
+    APPROVAL_ACTION_TYPE,
+    APPROVAL_CTA_TEXT,
+    APPROVAL_REQUEST_TOAST_MSG,
+    APPROVAL_RUNTIME_STATE,
+} from './Constants'
+import { ApprovalRequestType } from './Types'
 
 export default function ApprovalMaterial({
     material,
@@ -40,30 +47,27 @@ export default function ApprovalMaterial({
     const [, securityModuleRes] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [])
     const isSecurityModuleInstalled = securityModuleRes?.status === ModuleStatus.INSTALLED
 
+    const renderActiveEnv = (envName: string) => {
+        return (
+            <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
+                <div className="fw-4 fs-11 lh-16 flex">
+                    <World className="icon-dim-16 mr-4 scg-5" />
+                    Active on <span className="fw-6 ml-4">{envName} </span>
+                </div>
+            </span>
+        )
+    }
+
     const renderActiveCD = (mat) => {
         return (
             <>
-                {mat.latest && (
-                    <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
-                        <div className="fw-4 fs-11 lh-16 flex">
-                            <World className="icon-dim-16 mr-4 scg-5" />
-                            Active on <span className="fw-6 ml-4">{envName} </span>
-                        </div>
-                    </span>
-                )}
-                {mat.runningOnParentCd && (
-                    <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
-                        <div className="fw-4 fs-11 lh-16 flex">
-                            <World className="icon-dim-16 mr-4 scg-5" />
-                            Active on <span className="fw-6 ml-4">{parentEnvironmentName}</span>
-                        </div>
-                    </span>
-                )}
+                {mat.latest && renderActiveEnv(envName)}
+                {mat.runningOnParentCd && renderActiveEnv(parentEnvironmentName)}
             </>
         )
     }
 
-    const renderFailedCD = (mat) => {
+    const renderFailedCD = () => {
         return (
             <span className="bcr-1 br-4 er-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
                 <div className="fw-4 fs-11 lh-16 flex">
@@ -74,7 +78,7 @@ export default function ApprovalMaterial({
         )
     }
 
-    const renderProgressingCD = (mat) => {
+    const renderProgressingCD = () => {
         return (
             <span className="bcy-1 br-4 ey-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
                 <div className="fw-4 fs-11 lh-16 flex">
@@ -96,71 +100,26 @@ export default function ApprovalMaterial({
             return (
                 <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
                     {renderActiveCD(mat)}
-                    {mat.artifactStatus === 'Progressing' && renderProgressingCD(mat)}
-                    {(mat.artifactStatus === 'Degraded' || mat.artifactStatus === 'Failed') && renderFailedCD(mat)}
+                    {mat.artifactStatus === 'Progressing' && renderProgressingCD()}
+                    {(mat.artifactStatus === 'Degraded' || mat.artifactStatus === 'Failed') && renderFailedCD()}
                 </div>
             )
         }
     }
 
-    const submitRequest = (e: any) => {
+    const approvalRequest = (e: any, noConfirmation?: boolean) => {
         setRequestInProgress(true)
+        const requestType = e.currentTarget.dataset.requestType as ApprovalRequestType
         const payload = {
-            appId,
-            actionType: 0,
-            pipelineId: pipelineId,
+            appId: +appId,
+            actionType: APPROVAL_ACTION_TYPE[requestType.toLowerCase()],
+            pipelineId: +pipelineId,
             artifactId: +e.currentTarget.dataset.id,
-            approvalRequestId: 0,
+            approvalRequestId: requestType === ApprovalRequestType.SUBMIT ? 0 : +e.currentTarget.dataset.requestId,
         }
         submitApprovalRequest(payload)
             .then((response) => {
-                toast.success('Image approval request submitted')
-                toggleTippyVisibility(e)
-                onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
-            })
-            .catch((e) => {
-                showError(e)
-            })
-            .finally(() => {
-                setRequestInProgress(false)
-            })
-    }
-
-    const approveRequest = (e: any) => {
-        setRequestInProgress(true)
-        const payload = {
-            appId,
-            actionType: 1,
-            pipelineId: pipelineId,
-            artifactId: +e.currentTarget.dataset.id,
-            approvalRequestId: +e.currentTarget.dataset.requestId,
-        }
-        submitApprovalRequest(payload)
-            .then((response) => {
-                toast.success('Image approved')
-                toggleTippyVisibility(e)
-                onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
-            })
-            .catch((e) => {
-                showError(e)
-            })
-            .finally(() => {
-                setRequestInProgress(false)
-            })
-    }
-
-    const cancelRequest = (e: any, noConfirmation?: boolean) => {
-        setRequestInProgress(true)
-        const payload = {
-            appId,
-            actionType: 2,
-            pipelineId: pipelineId,
-            artifactId: +e.currentTarget.dataset.id,
-            approvalRequestId: +e.currentTarget.dataset.requestId,
-        }
-        submitApprovalRequest(payload)
-            .then((response) => {
-                toast.success('Image approval request cancelled')
+                toast.success(APPROVAL_REQUEST_TOAST_MSG[requestType.toLowerCase()])
                 if (!noConfirmation) {
                     toggleTippyVisibility(e)
                 }
@@ -174,43 +133,27 @@ export default function ApprovalMaterial({
             })
     }
 
-    const getCancelRequestButton = (mat: CDMaterialType) => {
+    const getRequestButton = (mat: CDMaterialType, approvalRequestType: ApprovalRequestType) => {
+        const _className = `cta flex mt-4 ml-auto mr-16 mb-16 ${
+            approvalRequestType === ApprovalRequestType.CANCEL ? 'delete' : ''
+        }`
+        const _style =
+            approvalRequestType === ApprovalRequestType.APPROVE
+                ? {
+                      background: 'var(--G500)',
+                  }
+                : {}
+
         return (
             <button
-                className="cta delete flex mt-4 ml-auto mr-16 mb-16"
+                className={_className}
                 data-id={mat.id}
                 data-request-id={mat.userApprovalMetadata?.approvalRequestId}
-                onClick={requestInProgress ? noop : cancelRequest}
+                data-request-type={approvalRequestType}
+                onClick={requestInProgress ? noop : approvalRequest}
+                style={_style}
             >
-                {requestInProgress ? <Progressing size={24} /> : 'Cancel request'}
-            </button>
-        )
-    }
-
-    const getApproveRequestButton = (mat: CDMaterialType) => {
-        return (
-            <button
-                className="cta flex mt-4 ml-auto mr-16 mb-16"
-                data-id={mat.id}
-                data-request-id={mat.userApprovalMetadata?.approvalRequestId}
-                onClick={requestInProgress ? noop : approveRequest}
-                style={{
-                    background: 'var(--G500)',
-                }}
-            >
-                {requestInProgress ? <Progressing size={24} /> : 'Approve request'}
-            </button>
-        )
-    }
-
-    const getSubmitRequestButton = (artifactId: number) => {
-        return (
-            <button
-                className="cta flex mt-4 ml-auto mr-16 mb-16"
-                data-id={artifactId}
-                onClick={requestInProgress ? noop : submitRequest}
-            >
-                {requestInProgress ? <Progressing size={24} /> : 'Submit request'}
+                {requestInProgress ? <Progressing size={24} /> : APPROVAL_CTA_TEXT[approvalRequestType.toLowerCase()]}
             </button>
         )
     }
@@ -238,7 +181,7 @@ export default function ApprovalMaterial({
         const requestedUserId = mat.userApprovalMetadata?.requestedUserData?.userId
         const isApprover = node.approvalUsers?.includes(email)
 
-        if (mat.userApprovalMetadata?.approvalRuntimeState === 1) {
+        if (mat.userApprovalMetadata?.approvalRuntimeState === APPROVAL_RUNTIME_STATE.requested) {
             if (requestedUserId !== userId && mat.triggeredBy === userId) {
                 return (
                     <Tippy
@@ -261,7 +204,7 @@ export default function ApprovalMaterial({
                         iconClass="fcv-5"
                         heading="Cancel approval request"
                         infoText="Are you sure you want to cancel approval request for this image? A new approval request would need to be raised if you want to deploy this image."
-                        additionalContent={getCancelRequestButton(mat)}
+                        additionalContent={getRequestButton(mat, ApprovalRequestType.CANCEL)}
                         showCloseButton={true}
                         onClose={() => handleOnClose(mat.id)}
                         trigger="click"
@@ -282,7 +225,7 @@ export default function ApprovalMaterial({
                         iconClass="fcv-5"
                         heading="Approve image"
                         infoText="Are you sure you want to approve deploying this image to cd-devtroncd?"
-                        additionalContent={getApproveRequestButton(mat)}
+                        additionalContent={getRequestButton(mat, ApprovalRequestType.APPROVE)}
                         showCloseButton={true}
                         onClose={() => handleOnClose(mat.id)}
                         trigger="click"
@@ -306,7 +249,7 @@ export default function ApprovalMaterial({
                     iconClass="fcv-5"
                     heading="Request approval"
                     infoText="Request approval for deploying this image. All users having ‘Approver’ permission for this application and environment can approve."
-                    additionalContent={getSubmitRequestButton(+mat.id)}
+                    additionalContent={getRequestButton(mat, ApprovalRequestType.SUBMIT)}
                     showCloseButton={true}
                     onClose={() => handleOnClose(mat.id)}
                     trigger="click"
@@ -346,7 +289,7 @@ export default function ApprovalMaterial({
                                 matId={mat.id}
                                 requestedUserId={node?.requestedUserId}
                                 userApprovalMetadata={mat.userApprovalMetadata}
-                                cancelRequest={cancelRequest}
+                                cancelRequest={approvalRequest}
                                 requestInProgress={requestInProgress}
                             />
                         }
@@ -454,104 +397,111 @@ export default function ApprovalMaterial({
                 </div>
             )
     }
-
-    const renderMaterial = () => {
-        return material.map((mat) => {
-            let isMaterialInfoAvailable = true
-            for (const materialInfo of mat.materialInfo) {
-                isMaterialInfoAvailable =
-                    isMaterialInfoAvailable &&
-                    !!(
-                        materialInfo.webhookData ||
-                        materialInfo.author ||
-                        materialInfo.message ||
-                        materialInfo.modifiedTime ||
-                        materialInfo.revision
-                    )
-                if (!isMaterialInfoAvailable) break
-            }
-            return (
-                <div key={`material-history-${mat.index}`} className="material-history material-history--cd">
-                    {renderSequentialCDCardTitle(mat)}
-                    <div
-                        className={`material-history__top mh-66 ${
-                            !isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
-                        }`}
-                        style={{ cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}` }}
-                    >
-                        {renderMaterialInfo(mat)}
-                    </div>
-                    {mat.showSourceInfo && (
-                        <>
-                            {isSecurityModuleInstalled && (
-                                <ul className="tab-list tab-list--vulnerability">
-                                    <li className="tab-list__tab">
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                changeTab(
-                                                    mat.index,
-                                                    Number(mat.id),
-                                                    CDModalTab.Changes,
-                                                    {
-                                                        id: pipelineId,
-                                                        type: stageType,
-                                                    },
-                                                    appId,
-                                                )
-                                            }}
-                                            className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
-                                                mat.tab === CDModalTab.Changes ? 'active' : ''
-                                            }`}
-                                        >
-                                            Changes
-                                        </button>
-                                    </li>
-                                    <li className="tab-list__tab">
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation()
-                                                changeTab(mat.index, Number(mat.id), CDModalTab.Security, null, appId)
-                                            }}
-                                            className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
-                                                mat.tab === CDModalTab.Security ? 'active' : ''
-                                            }`}
-                                        >
-                                            Security
-                                            {mat.vulnerabilitiesLoading ? '' : ` (${mat.vulnerabilities.length})`}
-                                        </button>
-                                    </li>
-                                </ul>
-                            )}
-                            {mat.tab === CDModalTab.Changes
-                                ? renderGitMaterialInfo(mat.materialInfo)
-                                : renderVulnerabilities(mat)}
-                        </>
-                    )}
-                    {mat.materialInfo.length > 0 && isMaterialInfoAvailable && (
-                        <button
-                            type="button"
-                            className="material-history__changes-btn"
-                            data-testid={mat.showSourceInfo ? 'collapse-show-info' : 'collapse-hide-info'}
-                            onClick={(event) => {
-                                event.stopPropagation()
-                                toggleSourceInfo(mat.index, null)
+    return (
+        <>
+            {material.map((mat) => {
+                let isMaterialInfoAvailable = true
+                for (const materialInfo of mat.materialInfo) {
+                    isMaterialInfoAvailable =
+                        isMaterialInfoAvailable &&
+                        !!(
+                            materialInfo.webhookData ||
+                            materialInfo.author ||
+                            materialInfo.message ||
+                            materialInfo.modifiedTime ||
+                            materialInfo.revision
+                        )
+                    if (!isMaterialInfoAvailable) break
+                }
+                return (
+                    <div key={`material-history-${mat.index}`} className="material-history material-history--cd">
+                        {renderSequentialCDCardTitle(mat)}
+                        <div
+                            className={`material-history__top mh-66 ${
+                                !isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
+                            }`}
+                            style={{
+                                cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}`,
                             }}
                         >
-                            {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
-                            <img
-                                src={arrow}
-                                alt=""
-                                style={{ transform: `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }}
-                            />
-                        </button>
-                    )}
-                </div>
-            )
-        })
-    }
-
-    return renderMaterial()
+                            {renderMaterialInfo(mat)}
+                        </div>
+                        {mat.showSourceInfo && (
+                            <>
+                                {isSecurityModuleInstalled && (
+                                    <ul className="tab-list tab-list--vulnerability">
+                                        <li className="tab-list__tab">
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    changeTab(
+                                                        mat.index,
+                                                        Number(mat.id),
+                                                        CDModalTab.Changes,
+                                                        {
+                                                            id: pipelineId,
+                                                            type: stageType,
+                                                        },
+                                                        appId,
+                                                    )
+                                                }}
+                                                className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
+                                                    mat.tab === CDModalTab.Changes ? 'active' : ''
+                                                }`}
+                                            >
+                                                Changes
+                                            </button>
+                                        </li>
+                                        <li className="tab-list__tab">
+                                            <button
+                                                type="button"
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    changeTab(
+                                                        mat.index,
+                                                        Number(mat.id),
+                                                        CDModalTab.Security,
+                                                        null,
+                                                        appId,
+                                                    )
+                                                }}
+                                                className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
+                                                    mat.tab === CDModalTab.Security ? 'active' : ''
+                                                }`}
+                                            >
+                                                Security
+                                                {mat.vulnerabilitiesLoading ? '' : ` (${mat.vulnerabilities.length})`}
+                                            </button>
+                                        </li>
+                                    </ul>
+                                )}
+                                {mat.tab === CDModalTab.Changes
+                                    ? renderGitMaterialInfo(mat.materialInfo)
+                                    : renderVulnerabilities(mat)}
+                            </>
+                        )}
+                        {mat.materialInfo.length > 0 && isMaterialInfoAvailable && (
+                            <button
+                                type="button"
+                                className="material-history__changes-btn"
+                                data-testid={mat.showSourceInfo ? 'collapse-show-info' : 'collapse-hide-info'}
+                                onClick={(event) => {
+                                    event.stopPropagation()
+                                    toggleSourceInfo(mat.index, null)
+                                }}
+                            >
+                                {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
+                                <img
+                                    src={arrow}
+                                    alt=""
+                                    style={{ transform: `${mat.showSourceInfo ? 'rotate(-180deg)' : ''}` }}
+                                />
+                            </button>
+                        )}
+                    </div>
+                )
+            })}
+        </>
+    )
 }

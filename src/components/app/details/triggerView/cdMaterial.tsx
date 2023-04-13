@@ -58,6 +58,7 @@ import Tippy from '@tippyjs/react'
 import { EmptyView } from '../cicdHistory/History.components'
 import { submitApprovalRequest } from './ApprovalNode/Service'
 import { toast } from 'react-toastify'
+import { APPROVAL_ACTION_TYPE, APPROVAL_RUNTIME_STATE } from './ApprovalNode/Constants'
 
 export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
@@ -363,7 +364,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         this.setState({ requestInProgress: true })
         const payload = {
             appId: this.props.appId,
-            actionType: 2,
+            actionType: APPROVAL_ACTION_TYPE.cancel,
             pipelineId: +this.props.pipelineId,
             artifactId: +e.currentTarget.dataset.id,
             approvalRequestId: +e.currentTarget.dataset.requestId,
@@ -647,7 +648,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             const approvedImages = []
 
             this.props.material.forEach((mat) => {
-                if (mat.latest && (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) {
+                if (
+                    mat.latest &&
+                    (!mat.userApprovalMetadata ||
+                        mat.userApprovalMetadata.approvalRuntimeState !== APPROVAL_RUNTIME_STATE.approved)
+                ) {
                     mat.isSelected = false
                     consumedImage.push(mat)
                 } else {
