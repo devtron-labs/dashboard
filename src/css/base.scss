@@ -871,7 +871,6 @@ button.anchor {
 }
 
 .override-button.cta {
-
     &.ghosted,
     &.delete {
         height: 32px;
@@ -1168,24 +1167,24 @@ button.anchor {
         overflow: hidden;
         border-radius: 4px;
 
-        input+.radio__item-label {
+        input + .radio__item-label {
             border-radius: 0;
             border: 1px solid var(--N200);
         }
-
-        input[type='checkbox']:checked+.radio__item-label {
+    
+        input[type='checkbox']:checked + .radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
-
+    
             svg path {
                 stroke: var(--N900);
             }
         }
-
+    
         .radio {
             color: var(--N500);
-
+    
             svg path {
                 stroke: var(--N500);
             }
@@ -1211,6 +1210,16 @@ button.anchor {
                 border-top-right-radius: 4px;
                 border-bottom-right-radius: 4px;
                 border: 1px solid var(--N200);
+            }
+        }
+
+        input[type='checkbox']:checked+.radio__item-label {
+            border-radius: 0;
+            background-color: var(--N100);
+            color: var(--N900);
+
+            svg path {
+                stroke: var(--N900);
             }
         }
     }
@@ -2100,6 +2109,10 @@ button.anchor {
     border-top-left-radius: 4px;
 }
 
+.dc__bottom-left-radius-8 {
+    border-bottom-left-radius: 8px;
+}
+
 input,
 textarea,
 .bc-n50 {
@@ -2290,6 +2303,10 @@ textarea,
     min-width: 14px !important;
 }
 
+.mw-16 {
+    min-width: 16px !important;
+}
+
 .mw-18 {
     min-width: 18px !important;
 }
@@ -2318,7 +2335,23 @@ textarea,
     min-width: 385px;
 }
 
-.w-100-px {
+.w-54 {
+    width: 54px;
+}
+
+.w-60 {
+    width: 60px;
+}
+
+.w-64 {
+    width: 64px;
+}
+
+.w-80px {
+    width: 80px;
+}
+
+.w-100px {
     width: 100px;
 }
 
@@ -2352,6 +2385,10 @@ textarea,
 
 .w-280 {
     width: 280px;
+}
+
+.w-296 {
+    width: 296px;
 }
 
 .w-300 {
@@ -2397,6 +2434,10 @@ textarea,
 
 .w-80 {
     width: 80%;
+}
+
+.w-85 {
+    width: 85%;
 }
 
 .w-90 {
@@ -2456,6 +2497,10 @@ textarea,
 
 .h-8 {
     height: 8px;
+}
+
+.h-12 {
+    height: 12px;
 }
 
 .h-16 {
@@ -2555,6 +2600,10 @@ textarea,
     min-height: 66px;
 }
 
+.mh-92 {
+    min-height: 92px;
+}
+
 .mh-300 {
     min-height: 300px;
 }
@@ -2577,7 +2626,7 @@ textarea,
 }
 
 .dc__height-reduce-172 {
-    height: 'calc(100vh - 172px)';
+    height: calc(100vh - 172px);
 }
 
 // Line height
@@ -2976,6 +3025,56 @@ textarea::placeholder {
 
 .dc__zi-4 {
     z-index: 4;
+}
+
+.show-shimmer-loading {
+    .child-shimmer-loading {
+        animation-duration: 2s;
+        animation-fill-mode: forwards;
+        animation-iteration-count: infinite;
+        animation-name: shimmer-loading;
+        animation-timing-function: linear;
+        background: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
+        background-size: 800px 104px;
+        position: relative;
+        height: 16px;
+        border-radius: 2px;
+        margin-top: 4px;
+    }
+}
+
+.shimmer-loading {
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: shimmer-loading;
+    animation-timing-function: linear;
+    background: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
+    background-size: 800px 104px;
+    position: relative;
+}
+
+@keyframes shimmer-loading {
+    0% {
+        background-position: -800px 0;
+    }
+
+    100% {
+        background-position: 800px 0;
+    }
+}
+
+.dc__place-abs-shimmer-center {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(0, -50%);
+    width: 85%;
+}
+
+.full-height-width {
+    height: 100vh;
+    width: 100vw;
 }
 
 .dc__badge {

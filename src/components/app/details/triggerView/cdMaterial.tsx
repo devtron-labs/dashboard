@@ -1141,6 +1141,23 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     renderEmptyState = () => {
+        if (this.props.userApprovalConfig?.requiredCount > 0) {
+            return (
+                <>
+                    <div className="material-list__title pt-16 pl-20 pr-20">Approved images</div>
+                    <EmptyView
+                        title="No image available"
+                        subTitle={
+                            this.state.isRollbackTrigger
+                                ? 'Approved previously deployed images will be available here to rollback to.'
+                                : 'Approved images will be available here for deployment.'
+                        }
+                        imgSrc={noartifact}
+                    />
+                </>
+            )
+        }
+
         return (
             <EmptyView
                 title="No image available"
@@ -1155,65 +1172,21 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     render() {
-        if (this.props.isFromBulkCD) {
-            return this.props.material.length > 0 ? this.renderTriggerBody() : this.renderEmptyState()
+        if (this.props.material.length > 0) {
+            return this.props.isFromBulkCD ? this.renderTriggerBody() : this.renderCDModal()
         } else {
-            return (
-                <VisibleModal
-                    className=""
-                    parentClassName={
-                        this.state.isRollbackTrigger || this.state.isSelectImageTrigger ? 'dc__overflow-hidden' : ''
-                    }
-                    close={this.props.closeCDModal}
-                >
-                    <div
-                        className={`modal-body--cd-material h-100 ${
-                            this.state.isRollbackTrigger || this.state.isSelectImageTrigger ? 'contains-diff-view' : ''
-                        } ${this.props.material.length > 0 ? '' : 'no-material'}`}
-                        onClick={stopPropagation}
-                    >
-                        {this.props.isLoading ? (
-                            <Progressing size={32} fillColor="var(--N500)" />
-                        ) : (
-                            <>
-                                {this.props.material.length > 0 ? (
-                                    this.renderCDModal()
-                                ) : (
-                                    <>
-                                        <div className="trigger-modal__header">
-                                            <h1 className="modal__title">{this.renderCDModalHeader()}</h1>
-                                            <button
-                                                type="button"
-                                                className="dc__transparent"
-                                                onClick={this.props.closeCDModal}
-                                            >
-                                                <img alt="close" src={close} />
-                                            </button>
-                                        </div>
-                                        {this.props.userApprovalConfig?.requiredCount > 0 ? (
-                                            <>
-                                                <div className="material-list__title pt-16 pl-20 pr-20">
-                                                    Approved images
-                                                </div>
-                                                <EmptyView
-                                                    title="No image available"
-                                                    subTitle={
-                                                        this.state.isRollbackTrigger
-                                                            ? 'Approved previously deployed images will be available here to rollback to.'
-                                                            : 'Approved images will be available here for deployment.'
-                                                    }
-                                                    imgSrc={noartifact}
-                                                />
-                                            </>
-                                        ) : (
-                                            this.renderEmptyState()
-                                        )}
-                                    </>
-                                )}
-                            </>
-                        )}
+            return this.props.isFromBulkCD ? (
+                this.renderEmptyState()
+            ) : (
+                <>
+                    <div className="trigger-modal__header">
+                        <h1 className="modal__title">{this.renderCDModalHeader()}</h1>
+                        <button type="button" className="dc__transparent" onClick={this.props.closeCDModal}>
+                            <img alt="close" src={close} />
+                        </button>
                     </div>
-                </VisibleModal>
+                    {this.renderEmptyState()}
+                </>
             )
         }
     }

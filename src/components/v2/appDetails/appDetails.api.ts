@@ -6,6 +6,11 @@ import { getAppId } from '../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 export const getInstalledChartDetail = (_appId: number, _envId: number) => {
     return get(`${Routes.APP_STORE_INSTALLED_APP}/detail?installed-app-id=${_appId}&env-id=${_envId}`)
 }
+
+export const getInstalledChartResourceTree = (_appId: number, _envId: number) => {
+    return get(`${Routes.APP_STORE_INSTALLED_APP}/detail/resource-tree?installed-app-id=${_appId}&env-id=${_envId}`)
+}
+
 export const getInstalledChartNotesDetail = (_appId: number, _envId: number) => {
     return get(`${Routes.APP_STORE_INSTALLED_APP}/notes?installed-app-id=${_appId}&env-id=${_envId}`)
 }
