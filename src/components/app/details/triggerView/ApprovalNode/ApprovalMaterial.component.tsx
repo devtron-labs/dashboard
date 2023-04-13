@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getAlphabetIcon, noop } from '../../../../common'
-import { ApprovedTippyContentProps } from './Types'
+import { ApprovalRequestType, ApprovedTippyContentProps } from './Types'
 
 export const ApprovedTippyContent = ({
     matId,
@@ -50,6 +50,7 @@ export const ApprovedTippyContent = ({
                                     className="mr-12 cb-5 cursor"
                                     data-id={matId}
                                     data-request-id={userApprovalMetadata?.approvalRequestId}
+                                    data-request-type={ApprovalRequestType.CANCEL}
                                     onClick={handleCancelRequest}
                                 >
                                     Yes

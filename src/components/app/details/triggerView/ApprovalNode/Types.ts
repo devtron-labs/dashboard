@@ -25,3 +25,9 @@ export interface ApprovedTippyContentProps {
     cancelRequest: (e: any, noConfirmation?: boolean) => void
     requestInProgress: boolean
 }
+
+export enum ApprovalRequestType {
+    SUBMIT = 'SUBMIT',
+    APPROVE = 'APPROVE',
+    CANCEL = 'CANCEL',
+}
