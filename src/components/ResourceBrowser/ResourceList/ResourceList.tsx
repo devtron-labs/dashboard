@@ -495,6 +495,10 @@ export default function ResourceList() {
         }
     }
 
+    const showResourceModal = (): void => {
+        setShowCreateResourceModal(true)
+    }
+
     const closeResourceModal = (_refreshData: boolean): void => {
         if (_refreshData) {
             refreshData()
@@ -688,7 +692,7 @@ export default function ResourceList() {
                                     placement="top"
                                     content={K8S_RESOURCE_LIST.createResource}
                                 >
-                                    <div className="cursor cb-5 fw-6 fs-13 flexbox">
+                                    <div className="cursor cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
                                         <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
                                     </div>
                                 </Tippy>
@@ -732,7 +736,6 @@ export default function ResourceList() {
                 <PageHeader headerName="Kubernetes Resource Browser" />
                 {renderResourceListBody()}
                 {showCreateResourceModal && <CreateResource closePopup={closeResourceModal} clusterId={clusterId} />}
-                {/* <PageHeader  /> */}
             </div>
         </ShortcutProvider>
     )
