@@ -970,13 +970,12 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <div>
-            {dataStateType === AppListViewType.ERROR && (
-                <div className="dc__loading-wrapper">
+        <div className="h-100">
+            {dataStateType === AppListViewType.ERROR ? (
+                <div className="h-100 flex">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
-            )}
-            {
+            ) : (
                 <>
                     <HeaderWithCreateButton headerName="Applications" isSuperAdmin={isSuperAdmin} />
                     {renderMasterFilters()}
@@ -1041,7 +1040,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         </>
                     )}
                 </>
-            }
+            )}
         </div>
     )
 }
