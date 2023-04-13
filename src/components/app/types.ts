@@ -436,6 +436,7 @@ export interface DeleteComponentProps {
     reload?: () => void
     configuration?: string
     dataTestid?:string
+    closeCustomComponent?: () => void
 }
 
 export interface AppStatusType {

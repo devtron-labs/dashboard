@@ -247,6 +247,10 @@ a:focus {
     word-break: break-word;
 }
 
+.dc__white-space-normal {
+    white-space: normal;
+}
+
 .dc__hyphens-auto {
     -ms-hyphens: auto;
     -webkit-hyphens: auto;
@@ -2507,6 +2511,10 @@ textarea,
 
 .mh-92 {
     min-height: 92px;
+}
+
+.mh-200 {
+    min-height: 200px;
 }
 
 .mh-300 {

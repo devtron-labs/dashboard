@@ -17,7 +17,8 @@ function DeleteComponent({
     url = '',
     reload,
     configuration = '',
-    dataTestid = ''
+    dataTestid = '',
+    closeCustomComponent,
 }: DeleteComponentProps) {
     const [showCannotDeleteDialogModal, setCannotDeleteDialogModal] = useState(false)
     const { push } = useHistory()
@@ -33,6 +34,9 @@ function DeleteComponent({
             } else {
                 reload()
             }
+            if (typeof closeCustomComponent === 'function') {
+                closeCustomComponent()
+            }
         } catch (serverError) {
             if (serverError instanceof ServerErrors && serverError.code === 500) {
                 setCannotDeleteDialogModal(true)
@@ -45,6 +49,9 @@ function DeleteComponent({
     const handleConfirmation = () => {
         setCannotDeleteDialogModal(false)
         toggleConfirmation(false)
+        if (typeof closeCustomComponent === 'function') {
+            closeCustomComponent()
+        }
     }
 
     const renderCannotDeleteDialogModal = () => {
