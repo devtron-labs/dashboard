@@ -22,7 +22,7 @@ import { ReactComponent as ExitScreen } from '../../assets/icons/ic-exit-fullscr
 import { ReactComponent as Play } from '../../assets/icons/ic-play.svg'
 import CreatableSelect from 'react-select/creatable'
 import { clusterImageDescription, convertToOptionsList, elementDidMount } from '../common'
-import { ServerErrors, showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { get, ServerErrors, showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterManifest from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
@@ -42,7 +42,6 @@ import { OptionType } from '../userGroups/userGroups.types'
 import { getClusterTerminalParamsData } from '../cluster/cluster.util'
 import { useHistory, useLocation } from 'react-router-dom'
 import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'
-import { get } from '../../services/api'
 import { TERMINAL_STATUS } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 
 let clusterTimeOut = undefined
@@ -90,7 +89,7 @@ export default function ClusterTerminal({
     const [isReconnect, setReconnect] = useState<boolean>(false)
     const [toggleOption, settoggleOption] = useState<boolean>(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
-    const [initializeTerminal, setInitializeTerminal] = useState<{createNewTerminal?: boolean, sessionId?: number }>()
+    const [initializeTerminal, setInitializeTerminal] = useState<{createNewTerminal?: boolean, sessionId?: number }>({createNewTerminal: true})
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
     const terminalRef = useRef(null)
@@ -229,7 +228,7 @@ export default function ClusterTerminal({
                 clearTimeout(clusterTimeOut)
             }
         }
-        if (socketConnection === SocketConnectionType.CONNECTING) {
+        if (socketConnection === SocketConnectionType.CONNECTING && terminalAccessIdRef.current) {
             getNewSession()
         }
     }, [socketConnection, terminalAccessIdRef.current])
@@ -244,7 +243,7 @@ export default function ClusterTerminal({
     }
 
     const getClusterData = (url, count) => {
-        if (autoSelectNodeRef.current !== terminalAccessIdRef.current) return
+        // if (autoSelectNodeRef.current !== terminalAccessIdRef.current) return
         if (
             clusterTimeOut &&
             (socketConnection === SocketConnectionType.DISCONNECTED ||
@@ -532,7 +531,7 @@ export default function ClusterTerminal({
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
                 }`}
             >
-                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalView()}</div>
+                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalView}</div>
                 {selectedTabIndex === 1 && (
                     <div className="h-100 dc__overflow-scroll">
                         <ClusterEvents terminalAccessId={terminalAccessIdRef.current} reconnectStart={reconnectStart} />
@@ -557,7 +556,7 @@ export default function ClusterTerminal({
                     {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                 </li>
                 {terminalAccessIdRef.current && connectTerminal && (
-                    <li className="tab-list__tab fs-12" onClick={() => selectEventsTab()}>
+                    <li className="tab-list__tab fs-12" onClick={selectEventsTab}>
                         <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
                             {SELECT_TITLE.POD_EVENTS}
                         </div>

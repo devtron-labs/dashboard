@@ -45,12 +45,12 @@ export default function TerminalView({
     }
 
     useEffect(() => {
-        if(initializeTerminal.createNewTerminal && !terminal){
+        if(initializeTerminal?.createNewTerminal && !terminal){
             elementDidMount('#terminal-id').then(() => {
                 createNewTerminal()
             })
         }
-        if(initializeTerminal.sessionId && terminal){
+        if(initializeTerminal?.sessionId && terminal){
             postInitialize(initializeTerminal.sessionId)
         }
     },[initializeTerminal])

@@ -1,6 +1,5 @@
 import React from 'react'
 import CreatableSelect from 'react-select/creatable'
-import TippyCustomized, { TippyTheme } from '../../../../../../common/TippyCustomized'
 import { ReactComponent as Disconnect } from '../../../../../../../assets/icons/ic-disconnected.svg'
 import { ReactComponent as Close } from '../../../../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as FullScreen } from '../../../../../../../assets/icons/ic-fullscreen-2.svg'
@@ -10,6 +9,7 @@ import { ReactComponent as Connect } from '../../../../../../../assets/icons/ic-
 import { ReactComponent as Help } from '../../../../../../../assets/icons/ic-help.svg'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
+import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 
 const creatableSelectWrapper = (selectData) => {
     return (

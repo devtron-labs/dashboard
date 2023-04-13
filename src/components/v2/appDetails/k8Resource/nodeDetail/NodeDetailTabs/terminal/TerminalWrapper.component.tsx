@@ -37,7 +37,7 @@ export default function TerminalWrapper({ selectionListData, socketConnection, s
         <div className={className}>
             <div className="flex bcn-0 pl-20 dc__border-top h-32">{firstStrip()}</div>
             <div className="flex left bcn-0 pl-20 dc__border-top h-28">{secondStrip()}</div>
-            {typeof selectionListData.tabSwitcher === 'function'
+            {typeof selectionListData.tabSwitcher.terminalTabWrapper === 'function'
                 ? selectionListData.tabSwitcher.terminalTabWrapper(renderTerminalView())
                 : renderTerminalView()}
         </div>
