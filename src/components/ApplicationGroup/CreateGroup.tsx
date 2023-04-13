@@ -15,6 +15,7 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
     const [allAppSearchApplied, setAllAppSearchApplied] = useState(false)
     const [selectedAppSearchText, setSelectedAppSearchText] = useState('')
     const [selectedAppSearchApplied, setSelectedAppSearchApplied] = useState(false)
+    const [allAppsList, setAllAppsList] = useState<{ id: string; appName: string; isSelected: boolean }[]>([])
 
     const outsideClickHandler = (evt): void => {
         if (
@@ -32,7 +33,17 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
             document.removeEventListener('click', outsideClickHandler)
         }
     }, [outsideClickHandler])
-    useEffect(() => {}, [])
+    useEffect(() => {
+        const selectedAppsMap: Record<string, boolean> = {}
+        const _allAppList: { id: string; appName: string; isSelected: boolean }[] = []
+        for (const selectedApp of selectedAppList) {
+            selectedAppsMap[selectedApp.value] = true
+        }
+        for (const app of appList) {
+            _allAppList.push({ id: app.value, appName: app.label, isSelected: selectedAppsMap[app.value] })
+        }
+        setAllAppsList(_allAppList)
+    }, [])
 
     const renderHeaderSection = (): JSX.Element => {
         return (
@@ -75,11 +86,15 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
                     setSearchApplied={setSelectedAppSearchApplied}
                 />
                 <div>
-                    {selectedAppList
-                        .filter((app) => !selectedAppSearchText || app.label.indexOf(selectedAppSearchText) >= 0)
+                    {allAppsList
+                        .filter(
+                            (app) =>
+                                app.isSelected &&
+                                (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
+                        )
                         .map((app) => (
                             <div className="flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 cn-9">
-                                <span>{app.label}</span>
+                                <span>{app.appName}</span>
                                 <Close className="icon-dim-16 cursor" />
                             </div>
                         ))}
@@ -100,12 +115,16 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
                     setSearchApplied={setAllAppSearchApplied}
                 />
                 <div>
-                    {appList
-                        .filter((app) => !allAppSearchText || app.label.indexOf(allAppSearchText) >= 0)
+                    {allAppsList
+                        .filter((app) => !allAppSearchText || app.appName.indexOf(allAppSearchText) >= 0)
                         .map((app) => (
-                            <div className="flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 cn-9">
-                                <span>{app.label}</span>
-                                <Close className="icon-dim-16 cursor" />
+                            <div
+                                className={`flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 ${
+                                    app.isSelected ? 'bcb-1 cb-5' : 'cn-9'
+                                }`}
+                            >
+                                <span>{app.appName}</span>
+                                {app.isSelected && <Close className="icon-dim-16 cursor" />}
                             </div>
                         ))}
                 </div>
