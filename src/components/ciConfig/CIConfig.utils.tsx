@@ -583,7 +583,7 @@ export const renderBuildContext = (
                     <input
                         tabIndex={4}
                         type="text"
-                        className="form__input file-name w-100"
+                        className="form__input h-36 w-100"
                         placeholder="Enter URL or path"
                         name="buildContext"
                         value={

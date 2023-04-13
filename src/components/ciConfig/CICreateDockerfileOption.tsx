@@ -357,10 +357,6 @@ export default function CICreateDockerfileOption({
                                 getOptionValue={(option) => `${option.checkoutPath}`}
                                 value={configOverrideView && !allowOverride ? currentMaterial : selectedMaterial}
                                 styles={getCommonSelectStyle({
-                                    container: (base) => ({
-                                        ...base,
-                                        width: '50%',
-                                    }),
                                     control: (base, state) => ({
                                         ...base,
                                         minHeight: '36px',
@@ -386,8 +382,6 @@ export default function CICreateDockerfileOption({
                         )}
                         {repository.error && <label className="form__error">{repository.error}</label>}
                     </div>
-                </div>
-                <div className="mb-4 form-row__docker">
                     {renderBuildContext(
                         disable,
                         setDisable,
