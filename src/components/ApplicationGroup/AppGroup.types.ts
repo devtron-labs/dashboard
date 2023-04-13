@@ -3,6 +3,7 @@ import {
     CDModalTabType,
     CiPipeline,
     DeploymentNodeType,
+    UserApprovalConfigType,
     WebhookPayloads,
     WorkflowNodeType,
     WorkflowType,
@@ -40,6 +41,9 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     parentPipelineId?: string
     parentPipelineType?: WorkflowNodeType
     parentEnvironmentName?: string
+    approvalUsers?: string[],
+    userApprovalConfig?: UserApprovalConfigType,
+    requestedUserId?: number
 }
 
 export interface ResponseRowType {
@@ -70,7 +74,7 @@ export interface BulkCDTriggerType {
     stage: DeploymentNodeType
     appList: BulkCDDetailType[]
     closePopup: (e) => void
-    updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
+    updateBulkInputMaterial: (materialList: Record<string, any>) => void
     onClickTriggerBulkCD: (appsToRetry?: Record<string, boolean>) => void
     changeTab: (
         materrialId: string | number,

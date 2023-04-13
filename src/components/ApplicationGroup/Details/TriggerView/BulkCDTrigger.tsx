@@ -15,6 +15,7 @@ import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
+import { CDMaterialResponseType } from '../../../app/types'
 
 export default function BulkCDTrigger({
     stage,
@@ -83,12 +84,17 @@ export default function BulkCDTrigger({
                 )
             }
         }
-        const _materialListMap: Record<string, any[]> = {}
+        const _cdMaterialResponse: Record<string, CDMaterialResponseType> = {}
         Promise.allSettled(_CDMaterialPromiseList)
             .then((responses) => {
                 responses.forEach((response, index) => {
                     if (response.status === 'fulfilled') {
-                        _materialListMap[response.value['appId']] = response.value['materialList']
+                        _cdMaterialResponse[response.value['appId']] = {
+                            approvalUsers: response.value['approvalUsers'],
+                            materials: response.value['materialList'],
+                            userApprovalConfig: response.value['userApprovalConfig'],
+                            requestedUserId: response.value['requestedUserId'],
+                        }
                         delete _unauthorizedAppList[response.value['appId']]
                     } else {
                         const errorReason = response.reason
@@ -97,7 +103,7 @@ export default function BulkCDTrigger({
                         }
                     }
                 })
-                updateBulkInputMaterial(_materialListMap)
+                updateBulkInputMaterial(_cdMaterialResponse)
                 setUnauthorizedAppList(_unauthorizedAppList)
                 setLoading(false)
             })
@@ -153,7 +159,10 @@ export default function BulkCDTrigger({
         if (isLoading) {
             return <Progressing pageLoader />
         }
-        const _material = appList.find((app) => app.appId === selectedApp.appId)?.material || []
+
+        const _currentApp = appList.find((app) => app.appId === selectedApp.appId)
+        const _material = _currentApp?.material || []
+
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
@@ -209,6 +218,8 @@ export default function BulkCDTrigger({
                             parentPipelineId={selectedApp.parentPipelineId}
                             parentPipelineType={selectedApp.parentPipelineType}
                             parentEnvironmentName={selectedApp.parentEnvironmentName}
+                            userApprovalConfig={_currentApp?.userApprovalConfig}
+                            requestedUserId={_currentApp?.requestedUserId}
                             isFromBulkCD={true}
                         />
                     )}

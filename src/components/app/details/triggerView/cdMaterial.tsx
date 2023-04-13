@@ -680,7 +680,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return (
             <>
                 {isApprovalConfigured && this.renderMaterial(consumedImage, true)}
-                {!this.props.isFromBulkCD && (
+                {(!this.props.isFromBulkCD || isApprovalConfigured) && (
                     <div className="material-list__title pb-16">
                         {isApprovalConfigured
                             ? 'Approved images'
@@ -1146,6 +1146,23 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     renderEmptyState = () => {
+        if (this.props.userApprovalConfig?.requiredCount > 0) {
+            return (
+                <>
+                    <div className="material-list__title pt-16 pl-20 pr-20">Approved images</div>
+                    <EmptyView
+                        title="No image available"
+                        subTitle={
+                            this.state.isRollbackTrigger
+                                ? 'Approved previously deployed images will be available here to rollback to.'
+                                : 'Approved images will be available here for deployment.'
+                        }
+                        imgSrc={noartifact}
+                    />
+                </>
+            )
+        }
+
         return (
             <EmptyView
                 title="No image available"
@@ -1195,24 +1212,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                                 <img alt="close" src={close} />
                                             </button>
                                         </div>
-                                        {this.props.userApprovalConfig?.requiredCount > 0 ? (
-                                            <>
-                                                <div className="material-list__title pt-16 pl-20 pr-20">
-                                                    Approved images
-                                                </div>
-                                                <EmptyView
-                                                    title="No image available"
-                                                    subTitle={
-                                                        this.state.isRollbackTrigger
-                                                            ? 'Approved previously deployed images will be available here to rollback to.'
-                                                            : 'Approved images will be available here for deployment.'
-                                                    }
-                                                    imgSrc={noartifact}
-                                                />
-                                            </>
-                                        ) : (
-                                            this.renderEmptyState()
-                                        )}
+                                        {this.renderEmptyState()}
                                     </>
                                 )}
                             </>

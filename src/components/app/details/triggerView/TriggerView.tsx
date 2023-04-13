@@ -383,7 +383,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node.inputMaterialList = data.materials
                             node.approvalUsers = data.approvalUsers
-                            node.artifactTriggeredBy = data.artifactTriggeredBy
                             node.userApprovalConfig = data.userApprovalConfig
                             node.requestedUserId = data.requestedUserId
                         }
