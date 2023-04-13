@@ -332,7 +332,7 @@ export default function CIDockerFileConfig({
                         )}
                     </div>
                 </div>
-                <div className="mb-4 form-row__docker">
+                <div className="mb-4 w-100">
                     {renderBuildContext(disable, setDisable, formState, configOverrideView, allowOverride, ciConfig, handleOnChangeConfig)}
                 </div>
             </div>

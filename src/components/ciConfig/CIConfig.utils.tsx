@@ -557,13 +557,13 @@ export const renderBuildContext = (
     return (
         <div className="docker-file-container">
             
-                <div className="flex left row ml-0 build-context-label">
+                <div className="flex left row ml-0 build-context-label mb-6">
                     <span className="dc__required-field">Build context</span>
                     {!configOverrideView || allowOverride ? (
                         <div className="flex row ml-0">
                         {renderInfoCard()}
                         <span
-                            className="cursor cb-5 fcb-5 ml-5"
+                            className="cursor cb-5 fcb-5 ml-8"
                             onClick={() => setDisable(!disable)}
                         >
                             {disable ? ' Set build context ' : ' Use root(.) '}
