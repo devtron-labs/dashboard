@@ -3,8 +3,7 @@ import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
-import { getClusterList } from './clusterNodes.service'
-import { getClusterList as getClusterListMin } from '../ResourceBrowser/ResourceBrowser.service'
+import { getClusterList, getClusterListMin } from './clusterNodes.service'
 import { handleUTCTime, filterImageList, createGroupSelectList } from '../common'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterDetail, ClusterListType } from './types'
@@ -43,15 +42,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
             setLastDataSync(!lastDataSync)
             if (result) {
                 const sortedResult = result
-                    .sort((a, b) => a['cluster_name'].localeCompare(b['cluster_name']))
-                    .map((minData) => {
-                        return {
-                            id: minData.id,
-                            name: minData.cluster_name,
-                            nodeErrors: [],
-                            errorInNodeListing: minData.errorInConnecting,
-                        } as ClusterDetail
-                    })
+                    .sort((a, b) => a['name'].localeCompare(b['name']))
                 if (!completeDataLoadedRef.current) {
                     setClusterList(sortedResult)
                     setFilteredClusterList(sortedResult)
