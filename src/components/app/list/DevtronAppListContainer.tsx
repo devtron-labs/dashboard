@@ -60,12 +60,8 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.payloadParsedFromUrl !=  this.props.payloadParsedFromUrl){
-            if(window._env_.USE_V2){
-                this.getAppList(createAppListPayload(this.props.payloadParsedFromUrl, this.props.environmentClusterList));
-              } else {
-                this.getAppList(this.props.payloadParsedFromUrl)
-              }
+        if (prevProps.payloadParsedFromUrl != this.props.payloadParsedFromUrl) {
+            this.getAppList(createAppListPayload(this.props.payloadParsedFromUrl, this.props.environmentClusterList))
         }
     }
 
