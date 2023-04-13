@@ -220,11 +220,11 @@ export default function CICreateDockerfileOption({
                     ...currentCIBuildConfig,
                     dockerBuildConfig: {
                         ...currentCIBuildConfig.dockerBuildConfig,
-                        buildContext: USING_ROOT,
+                        buildContext: '.',
                     },
                 })
             } else {
-                formState.buildContext.value = USING_ROOT
+                formState.buildContext.value = '.'
             }
         }
     }, [disable])

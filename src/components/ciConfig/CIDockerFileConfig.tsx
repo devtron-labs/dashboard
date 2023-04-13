@@ -108,11 +108,11 @@ export default function CIDockerFileConfig({
                     ...currentCIBuildConfig,
                     dockerBuildConfig: {
                         ...currentCIBuildConfig.dockerBuildConfig,
-                        buildContext: USING_ROOT,
+                        buildContext: '.',
                     },
                 })
             } else {
-                formState.buildContext.value = USING_ROOT
+                formState.buildContext.value = '.'
             }
         }
     }, [disable])
