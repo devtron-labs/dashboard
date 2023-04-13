@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { MESSAGING_UI } from '../../config'
-import { showError } from '../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { EventsTable } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/EventsTable'
 import { PodEventsType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
 import MessageUI from '../v2/common/message.ui'

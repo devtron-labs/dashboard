@@ -2,6 +2,7 @@ export enum FILE_NAMES {
     Apps = 'Devtron Apps',
     Users = 'Devtron Apps Users Data',
     Groups = 'Devtron Apps Permission Groups',
+    Jobs = 'Devtron Jobs Data',
 }
 
 export interface ExportToCsvProps {
@@ -68,8 +69,20 @@ export const GROUP_EXPORT_HEADER_ROW = {
     role: 'Role',
 }
 
+export const JOBLIST_EXPORT_HEADERS = [
+    { label: 'Job Name', key: 'jobName' },
+    { label: 'Job ID', key: 'jobId' },
+    { label: 'Description', key: 'description' },
+    { label: 'Job Pipeline ID', key: 'ciPipelineId' },
+    { label: 'Job Pipeline Name', key: 'ciPipelineName' },
+    { label: 'Last Run Status', key: 'status' },
+    { label: 'Last Run At', key: 'lastRunAt' },
+    { label: 'Last Success At', key: 'lastSuccessAt' },
+]
+
 export const CSV_HEADERS = {
     [FILE_NAMES.Apps]: APPLIST_EXPORT_HEADERS,
     [FILE_NAMES.Users]: USER_EXPORT_HEADERS,
     [FILE_NAMES.Groups]: GROUP_EXPORT_HEADERS,
+    [FILE_NAMES.Jobs]: JOBLIST_EXPORT_HEADERS,
 }

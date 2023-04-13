@@ -115,9 +115,13 @@ export const TOAST_INFO = {
 }
 
 export const APP_DETAILS = {
-    APP_FULLY_NOT_CONFIGURED:
-        'This application is not fully configured. Complete the configuration, trigger a deployment and come back here.',
-    NEED_HELP: 'Need help?',
+  APP_FULLY_NOT_CONFIGURED: 'This application is not fully configured. Complete the configuration, trigger a deployment and come back here.',
+  JOB_FULLY_NOT_CONFIGURED: {
+    title: 'Finish configuring this job',
+    subTitle: 'This job is not fully configured. Complete the configuration and come back here to run the job.',
+    buttonTitle: 'Go to configurations'
+  },
+  NEED_HELP: 'Need help?'
 }
 
 // All CTA
@@ -132,11 +136,6 @@ export const BUTTON_TEXT = {
 export enum DeploymentAppTypeNameMapping {
     Helm = 'Helm',
     GitOps = 'GitOps',
-}
-export const SSO_LOGGING_INFO = {
-    frontText: "You don't have an account on this workplace. Please contact your manager for ",
-    tailText: ' or login as adminstration.',
-    redirectLink: 'login Permission',
 }
 
 export const APP_GROUP_CD_DETAILS = {
@@ -165,4 +164,16 @@ export const APP_GROUP_CI_DETAILS = {
 
 export const DEPLOYMENT_HISTORY_TABS = {
   SOURCE : 0,
+}
+
+export const CONFIGMAPS_SECRETS = {
+    configmaps: "configmaps",
+    secrets: "secrets"
+}
+
+export const API_COMPONENTS = {
+    TITLE: "API tokens ",
+    QUESTION_ICON_INFO: "API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API.",
+    NEW_API_TITLE: "/ New API token",
+    EDIT_API_TITLE: "/ Edit API token"
 }

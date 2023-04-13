@@ -19,7 +19,12 @@ export interface CDMaterialProps {
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
         appId?: number,
     ) => void
-    triggerDeploy: (stageType: DeploymentNodeType, _appId: number, deploymentWithConfig?: string, wfrId?: number) => void
+    triggerDeploy: (
+        stageType: DeploymentNodeType,
+        _appId: number,
+        deploymentWithConfig?: string,
+        wfrId?: number,
+    ) => void
     selectImage: (
         index: number,
         materialType: string,
@@ -69,6 +74,7 @@ export interface CDMaterialState {
     latestDeploymentConfig: any
     specificDeploymentConfig: any
     selectedMaterial: CDMaterialType
+    isSelectImageTrigger: boolean
 }
 
 export interface MaterialInfo {
@@ -140,6 +146,7 @@ export interface CIMaterialProps extends RouteComponentProps<CIMaterialRouterPro
     isCacheAvailable?: boolean
     fromAppGrouping?: boolean
     appId: string
+    isJobView?: boolean
 }
 
 export interface RegexValueType {
@@ -149,6 +156,7 @@ export interface RegexValueType {
 
 export interface CIMaterialState {
     regexValue: Record<number, RegexValueType>
+    savingRegexValue: boolean
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
 }
@@ -234,6 +242,7 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     parentPipelineType?: string
     parentEnvironmentName?: string
     fromAppGrouping: boolean
+    description: string
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -253,6 +262,7 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     inputMaterialList: InputMaterials[]
     rollbackMaterialList: InputMaterials[]
     fromAppGrouping: boolean
+    description: string
 }
 
 export interface TriggerEdgeType {
@@ -272,6 +282,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     isSelected?: boolean
     fromAppGrouping?: boolean
     handleSelectionChange?: (_appId: number)=> void
+    isJobView?: boolean
 }
 
 export interface TriggerViewContextType {
@@ -295,7 +306,9 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterProps> {}
+export interface TriggerViewProps extends RouteComponentProps<TriggerViewRouterProps> {
+    isJobView?: boolean
+}
 
 export interface WorkflowType {
     id: string
@@ -515,6 +528,7 @@ export interface CiPipelineResult {
     appWorkflowId?: number
     beforeDockerBuild?: Array<Task>
     afterDockerBuild?: Array<Task>
+    ciGitConfiguredId?: number
 }
 //End CI Response
 
@@ -541,6 +555,7 @@ export interface CdPipeline {
     id: number
     environmentId: number
     environmentName?: string
+    description?: string
     ciPipelineId: number
     triggerType: 'AUTOMATIC' | 'MANUAL'
     name: string
@@ -595,6 +610,7 @@ export interface BranchRegexModalProps {
     regexValue
     onCloseBranchRegexModal
     hideHeaderFooter?: boolean
+    savingRegexValue: boolean
 }
 export interface AppDetailsProps {
     isV2: boolean
@@ -614,6 +630,8 @@ export interface TriggerViewConfigDiffProps {
     handleConfigSelection: (selected) => void
     isConfigAvailable: (optionValue) => boolean
     diffOptions: Record<string, boolean>
+    isRollbackTriggerSelected: boolean
+    isRecentConfigAvailable: boolean
 }
 
 export const MATERIAL_TYPE = {
@@ -632,25 +650,25 @@ export const STAGE_TYPE = {
 }
 
 export interface EmptyStateCIMaterialProps {
-    isRepoError: boolean;
-    isBranchError: boolean;
+    isRepoError: boolean
+    isBranchError: boolean
     isDockerFileError: boolean
     dockerFileErrorMsg: string
-    gitMaterialName: string;
-    sourceValue: string;
-    repoUrl: string;
-    branchErrorMsg: string;
-    repoErrorMsg: string;
-    isMaterialLoading: boolean;
-    onRetry: (...args) => void;
-    anyCommit: boolean;
-    isWebHook?: boolean;
+    gitMaterialName: string
+    sourceValue: string
+    repoUrl: string
+    branchErrorMsg: string
+    repoErrorMsg: string
+    isMaterialLoading: boolean
+    onRetry: (...args) => void
+    anyCommit: boolean
+    isWebHook?: boolean
     noSearchResults?: boolean
     noSearchResultsMsg?: string
-    toggleWebHookModal?: () => void;
+    toggleWebHookModal?: () => void
     clearSearch?: () => void
     handleGoToWorkFlowEditor?: (e?: any) => void
-  }
+}
 
 export interface MaterialSourceProps {
     material: CIMaterialType[]
@@ -661,4 +679,5 @@ export interface MaterialSourceProps {
         refresh: (pipelineId: number, title: string, gitMaterialId: number) => void
     }
     ciPipelineId?: number
+    fromTriggerInfo?: boolean
 }

@@ -1,5 +1,5 @@
 import { RouteComponentProps } from 'react-router';
-import { ResponseType } from '../../services/service.types';
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib';
 
 export interface ChartValuesType {
     kind: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED' | 'EXISTING' | null;
@@ -290,6 +290,8 @@ export interface ChartGroupExports extends ChartGroupHelpers {
     applyFilterOnCharts: (qs: string, resetPage?: boolean) => Promise<void>;
     setCharts: (charts: ChartGroupEntry[]) => void;
     resetPaginationOffset: ()=> void;
+    setGitOpsConfigAvailable: (isGitOpsConfigAvailable: boolean) => void
+    setEnvironmentList: (environmentList) => void
 }
 
 export interface HelmTemplateChartRequest {

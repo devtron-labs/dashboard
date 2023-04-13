@@ -5,11 +5,12 @@ import { TriggerExternalCINode } from './nodes/TriggerExternalCINode'
 import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
-import { Checkbox, CHECKBOX_VALUE, getCIPipelineURL, RectangularEdge as Edge } from '../../../../common'
+import { getCIPipelineURL, RectangularEdge as Edge } from '../../../../common'
 import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
+import { Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 
 export class Workflow extends Component<WorkflowProps> {
     goToWorkFlowEditor = (node: NodeAttr) => {
@@ -19,6 +20,7 @@ export class Workflow extends Component<WorkflowProps> {
                 this.props.id,
                 true,
                 node.downstreams[0].split('-')[1],
+                this.props.isJobView
             )
             if (this.props.fromAppGrouping) {
                 window.open(
@@ -162,6 +164,8 @@ export class Workflow extends Component<WorkflowProps> {
                     location={this.props.location}
                     match={this.props.match}
                     branch={node.branch}
+                    fromAppGrouping={this.props.fromAppGrouping}
+                    isJobView={this.props.isJobView}
                 />
             )
         }
@@ -181,6 +185,7 @@ export class Workflow extends Component<WorkflowProps> {
                 id={node.id}
                 title={node.title}
                 environmentName={node.environmentName}
+                description={node.description}
                 environmentId={node.environmentId}
                 triggerType={node.triggerType}
                 colourCode={node.colourCode}
@@ -205,6 +210,7 @@ export class Workflow extends Component<WorkflowProps> {
                 x={node.x}
                 y={node.y}
                 environmentId={node.environmentId}
+                description={node.description}
                 type={node.type}
                 stageIndex={node.stageIndex}
                 status={node.status}

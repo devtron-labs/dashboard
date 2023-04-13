@@ -5,24 +5,20 @@ import { useParams } from 'react-router'
 import { ListComponent, Override } from './ConfigMapOverrides'
 import {
     mapByKey,
-    showError,
     Pencil,
     not,
-    ConfirmationDialog,
     useAsync,
     Select,
     RadioGroup,
     Info,
     CustomInput,
-    Checkbox,
-    CHECKBOX_VALUE,
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
 } from '../common'
+import { showError, Progressing, ConfirmationDialog, Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import { SecretForm } from '../secrets/Secret'
 import { KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
-import { Progressing } from '../common'
 import warningIcon from '../../assets/icons/ic-warning.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import YAML from 'yaml'

@@ -257,12 +257,12 @@
 }
 
 .help-grid__feedback {
-    grid-template-rows: 36px 36px 1px 36px 36px 1px 36px 36px auto !important;
+    grid-template-rows: 36px 36px 36px 36px 36px auto !important;
 }
 
 .help-card {
     display: grid;
-    grid-template-rows: 36px 36px 1px 36px 1px 36px 1px 36px auto;
+    grid-template-rows: 36px 36px 36px 36px auto;
     align-items: center;
     z-index: var(--modal-index);
     .help-card__option {
@@ -278,13 +278,15 @@
     }
 
     .help-card__option-separator {
-        height: 1px;
+        height: 0px;
         background-color: var(--N100);
     }
 
     .help-card__update-option {
-        height: 56px;
-        padding: 8px 10px;
+        height: 44px;
+        padding-left: 14px;
+        padding-top: 1.5px;
+        top: 190px;
         background-color: var(--N100);
     }
 }
@@ -328,5 +330,14 @@
 }
 
 .expandable-active-nav {
-    padding: 0px 0 0 12px;
+    padding: 0px 0px 0px 12px;
+}
+
+.help__enterprise{
+    flex-direction: row;
+    font-weight: 600;
+    width: 220px;
+
+    /* window-bg */
+    background: #F2F4F7;
 }

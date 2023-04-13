@@ -1,4 +1,4 @@
-import { post, put, get } from '../../services/api';
+import { post, put, get } from '@devtron-labs/devtron-fe-common-lib';
 import { Routes } from '../../config';
 
 export function getSSOConfigList(): Promise<any> {

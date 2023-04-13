@@ -23,6 +23,7 @@ import ReactGA from 'react-ga4'
 import './navigation.scss'
 import { ReactComponent as ClusterIcon } from '../../../assets/icons/ic-cluster.svg'
 import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
+import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 
@@ -36,6 +37,15 @@ const NavigationList = [
         isAvailableInEA: true,
     },
     {
+        title: 'Jobs',
+        type: 'link',
+        iconClass: 'nav-short-jobs',
+        icon: JobsIcon,
+        href: URLS.JOB,
+        isAvailableInEA: false,
+        markOnlyForSuperAdmin: true,
+    },
+    {
         title: 'Application Groups',
         type: 'link',
         iconClass: 'nav-short-env',
@@ -44,23 +54,6 @@ const NavigationList = [
         isAvailableInEA: false,
         markAsBeta: true,
         forceHideEnvKey: 'HIDE_APPLICATION_GROUPS',
-    },
-    {
-        title: 'Resource Browser',
-        type: 'link',
-        iconClass: 'nav-short-apps',
-        icon: CubeIcon,
-        href: URLS.RESOURCE_BROWSER,
-        isAvailableInEA: true,
-        markAsBeta: false,
-    },
-    {
-        title: 'Chart Store',
-        type: 'link',
-        iconClass: 'nav-short-helm',
-        icon: ChartStoreIcon,
-        href: URLS.CHARTS,
-        isAvailableInEA: true,
     },
     {
         title: 'Deployment Groups',
@@ -72,12 +65,14 @@ const NavigationList = [
         forceHideEnvKey: 'HIDE_DEPLOYMENT_GROUPS',
     },
     {
-        title: 'Security',
+        title: 'Resource Browser',
         type: 'link',
-        href: URLS.SECURITY,
-        iconClass: 'nav-security',
-        icon: SecurityIcon,
-        moduleName: ModuleNameMap.SECURITY,
+        iconClass: 'nav-short-resource-browser',
+        icon: CubeIcon,
+        href: URLS.RESOURCE_BROWSER,
+        isAvailableInEA: true,
+        markAsBeta: false,
+        isAvailableInDesktop: true,
     },
     {
         title: 'Clusters',
@@ -86,6 +81,23 @@ const NavigationList = [
         iconClass: 'nav-short-clusters',
         icon: ClusterIcon,
         isAvailableInEA: true,
+        isAvailableInDesktop: true,
+    },
+    {
+        title: 'Chart Store',
+        type: 'link',
+        iconClass: 'nav-short-helm',
+        icon: ChartStoreIcon,
+        href: URLS.CHARTS,
+        isAvailableInEA: true,
+    },
+    {
+        title: 'Security',
+        type: 'link',
+        href: URLS.SECURITY,
+        iconClass: 'nav-security',
+        icon: SecurityIcon,
+        moduleName: ModuleNameMap.SECURITY,
     },
     {
         title: 'Bulk Edit',
@@ -102,6 +114,7 @@ const NavigationList = [
         iconClass: 'nav-short-global',
         icon: GlobalConfigIcon,
         isAvailableInEA: true,
+        isAvailableInDesktop: true,
     },
 ]
 
@@ -116,7 +129,9 @@ interface NavigationType extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE
     moduleInInstallingState: string
     installedModuleMap: React.MutableRefObject<Record<string, boolean>>
+    isSuperAdmin: boolean
 }
+
 export default class Navigation extends Component<
     NavigationType,
     {
@@ -162,7 +177,7 @@ export default class Navigation extends Component<
     }
 
     async getSecurityModuleStatus(retryOnError: number): Promise<void> {
-        if (this.props.installedModuleMap.current?.[ModuleNameMap.SECURITY]) {
+        if (this.props.installedModuleMap.current?.[ModuleNameMap.SECURITY] || window._env_.K8S_CLIENT) {
             return
         }
         try {
@@ -264,6 +279,22 @@ export default class Navigation extends Component<
         )
     }
 
+    canShowNavOption = (item) => {
+        const allowedUser = !item.markOnlyForSuperAdmin || this.props.isSuperAdmin
+        if (window._env_.K8S_CLIENT) {
+            return item.isAvailableInDesktop
+        } else if (
+            allowedUser &&
+            (!item.forceHideEnvKey || (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey]))
+        ) {
+            return (
+                (this.props.serverMode === SERVER_MODE.FULL && !item.moduleName) ||
+                (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
+                this.props.installedModuleMap.current?.[item.moduleName]
+            )
+        }
+    }
+
     render() {
         return (
             <>
@@ -287,14 +318,8 @@ export default class Navigation extends Component<
                                 </div>
                             </div>
                         </NavLink>
-                        {NavigationList.map((item, index) => {
-                            if (
-                                (!item.forceHideEnvKey ||
-                                    (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey])) &&
-                                ((this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
-                                    (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
-                                    this.props.installedModuleMap.current?.[item.moduleName])
-                            ) {
+                        {NavigationList.map((item) => {
+                            if (this.canShowNavOption(item)) {
                                 if (item.type === 'button') {
                                     return this.renderNavButton(item)
                                 } else {
@@ -302,8 +327,12 @@ export default class Navigation extends Component<
                                 }
                             }
                         })}
-                        <div className="short-nav__divider" />
-                        {this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}
+                        {!window._env_.K8S_CLIENT && (
+                            <>
+                                <div className="short-nav__divider" />
+                                {this.renderNavLink(NavigationStack, 'short-nav__stack-manager')}
+                            </>
+                        )}
                     </aside>
                 </nav>
                 <CommandErrorBoundary toggleCommandBar={this.toggleCommandBar}>

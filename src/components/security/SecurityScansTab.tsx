@@ -6,11 +6,16 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg';
 import { getInitData, getSecurityScanList } from './security.service';
 import { Option as SelectSingleOption } from '../v2/common/ReactSelect.utils';
 import { DropdownIndicator, styles, ValueContainer, Option } from './security.util';
-import { ScanDetailsModal, Pagination, Progressing, showError, ErrorScreenManager as ErrorScreen, SingleSelectOption } from '../common'
+import { ScanDetailsModal, Pagination } from '../common'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager as ErrorScreen,
+    EmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../config';
 import { ReactSelectOptionType, SecurityScansTabState } from './security.types';
 import ReactSelect from 'react-select';
-import EmptyState from '../EmptyState/EmptyState';
 import AppNotDeployed from '../../assets/img/app-not-deployed.png';
 import NoResults from '../../assets/img/empty-noresult@2x.png';
 

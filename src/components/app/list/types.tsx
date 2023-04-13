@@ -1,5 +1,5 @@
 import React from 'react';
-import { ServerError } from '../../../modals/commonTypes';
+import { ServerError } from '@devtron-labs/devtron-fe-common-lib';
 import { RouteComponentProps } from 'react-router';
 
 export interface AppListState {
@@ -48,6 +48,10 @@ export interface Environment {
     namespace: string;
 }
 
+export interface EnvironmentClusterList {
+    environmentClusterAppListData: any
+}
+
 export interface AppListProps extends RouteComponentProps<{ route: string }> {
     payloadParsedFromUrl?: any;
     serverMode? : string;
@@ -59,6 +63,7 @@ export interface AppListProps extends RouteComponentProps<{ route: string }> {
     setAppCount: React.Dispatch<React.SetStateAction<number>>
     updateDataSyncing: (loading: boolean) => void
     isArgoInstalled: boolean
+    environmentClusterList: EnvironmentClusterList
 }
 
 export interface AppListViewProps extends AppListState, RouteComponentProps<{}> {

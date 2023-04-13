@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { toast } from 'react-toastify'
 import { getChartVersionDetailsV2 } from '../../charts/charts.service'
-import { DetailsProgressing } from '../../common'
+import { DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import IndexStore from '../appDetails/index.store'
 import ChartValuesView from './chartValuesDiff/ChartValuesView'
 // TODO: appDetails from useSharedState
@@ -15,6 +15,7 @@ function ValuesComponent({ appId, init }: ValueComponentTypes) {
     const appDetails = IndexStore.getAppDetails()
 
     useEffect(() => {
+      if (appDetails.appStoreInstalledAppVersionId) {
         getChartVersionDetailsV2(appDetails.appStoreInstalledAppVersionId)
             .then((res) => {
                 setInstalledConfig(res.result)
@@ -24,8 +25,8 @@ function ValuesComponent({ appId, init }: ValueComponentTypes) {
                     err.errors.map(({ userMessage }, idx) => toast.error(userMessage))
                 }
             })
-        // history.push(`${url}/update-chart`);
-    }, [])
+      }
+    }, [appDetails.appStoreInstalledAppVersionId])
 
     return (
         <div>

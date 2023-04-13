@@ -4,10 +4,16 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import Tippy from '@tippyjs/react'
 import { CDNodeProps, CDNodeState } from '../types'
 import { toast } from 'react-toastify'
-import {BUTTON_TEXT, CONFIRMATION_DIALOG_MESSAGING, ERR_MESSAGE_ARGOCD, VIEW_DELETION_STATUS} from '../../../config/constantMessaging'
-import { ConfirmationDialog } from '../../common'
+import {
+    BUTTON_TEXT,
+    CONFIRMATION_DIALOG_MESSAGING,
+    ERR_MESSAGE_ARGOCD,
+    VIEW_DELETION_STATUS,
+} from '../../../config/constantMessaging'
+import { ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import warningIconSrc from '../../../assets/icons/info-filled.svg'
 import { URLS } from '../../../config'
+import { envDescriptionTippy } from '../../app/details/triggerView/workflow/nodes/workflow.utils'
 
 export class CDNode extends Component<CDNodeProps, CDNodeState> {
     constructor(props) {
@@ -114,7 +120,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                         this.props.title
                                     )}
                                 </span>
-                                <span className="dc__ellipsis-right">{this.props.environmentName}</span>
+                                {envDescriptionTippy(this.props.environmentName, this.props.description)}
                             </div>
                             <div className="workflow-node__icon-common workflow-node__CD-icon"></div>
                         </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { highlightSearchedText, Pagination, Progressing } from '../../common'
+
+import { highlightSearchedText, Pagination } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
     K8S_EMPTY_GROUP,
@@ -16,6 +17,7 @@ import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib/dist/Common/Progressing'
 
 export function K8SResourceList({
     selectedResource,

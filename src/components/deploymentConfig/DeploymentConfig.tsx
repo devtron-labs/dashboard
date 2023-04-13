@@ -2,8 +2,9 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
-import { getAppOtherEnvironment, getChartReferences } from '../../services/service'
-import { Progressing, ConfirmationDialog, useJsonYaml, useEffectAfterMount, showError, useAsync, not } from '../common'
+import { getAppOtherEnvironmentMin, getChartReferences } from '../../services/service'
+import { useJsonYaml, useEffectAfterMount, useAsync, not } from '../common'
+import { showError, Progressing, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
 import {
     DeploymentConfigFormCTA,
@@ -46,7 +47,7 @@ export default function DeploymentConfig({
     const [chartConfig, setChartConfig] = useState(null)
     const [isAppMetricsEnabled, setAppMetricsEnabled] = useState(false)
     const [tempFormData, setTempFormData] = useState('')
-    const [obj, json, yaml, error] = useJsonYaml(tempFormData, 4, 'yaml', true)
+    const [obj, , , error] = useJsonYaml(tempFormData, 4, 'yaml', true)
     const [chartConfigLoading, setChartConfigLoading] = useState(null)
     const [showConfirmation, toggleConfirmation] = useState(false)
     const [showReadme, setShowReadme] = useState(false)
@@ -60,8 +61,8 @@ export default function DeploymentConfig({
     const [currentEditorView, setEditorView] = useState(null)
     const [basicFieldValues, setBasicFieldValues] = useState<Record<string, any>>(null)
     const [basicFieldValuesErrorObj, setBasicFieldValuesErrorObj] = useState<BasicFieldErrorObj>(null)
-    const [environmentsLoading, environmentResult, environmentError, reloadEnvironments] = useAsync(
-        () => getAppOtherEnvironment(appId),
+    const [environmentsLoading, environmentResult, , reloadEnvironments] = useAsync(
+        () => getAppOtherEnvironmentMin(appId),
         [appId],
         !!appId,
     )

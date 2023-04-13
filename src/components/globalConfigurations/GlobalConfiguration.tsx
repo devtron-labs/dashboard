@@ -2,16 +2,21 @@ import React, { lazy, useState, useEffect, Suspense, useContext } from 'react'
 import { Route, NavLink, Router, Switch, Redirect } from 'react-router-dom'
 import { useHistory, useLocation } from 'react-router'
 import { URLS } from '../../config'
-import { Toggle, Progressing, ErrorBoundary } from '../common'
+import { Toggle, ErrorBoundary, importComponentFromFELibrary } from '../common'
+import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import arrowTriangle from '../../assets/icons/ic-chevron-down.svg'
 import { AddNotification } from '../notifications/AddNotification'
-import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { getHostURLConfiguration } from '../../services/service'
 import { getAppCheckList } from '../../services/service'
-import { showError } from '../common'
 import './globalConfigurations.scss'
-import { ModuleNameMap, MODULE_STATUS_POLLING_INTERVAL, MODULE_STATUS_RETRY_COUNT, Routes, SERVER_MODE } from '../../config/constants'
+import {
+    ModuleNameMap,
+    MODULE_STATUS_POLLING_INTERVAL,
+    MODULE_STATUS_RETRY_COUNT,
+    Routes,
+    SERVER_MODE,
+} from '../../config/constants'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import ExternalLinks from '../externalLinks/ExternalLinks'
 import PageHeader from '../common/header/PageHeader'
@@ -31,6 +36,7 @@ const Project = lazy(() => import('../project/ProjectList'))
 const UserGroup = lazy(() => import('../userGroups/UserGroup'))
 const SSOLogin = lazy(() => import('../login/SSOLogin'))
 const CustomChartList = lazy(() => import('../CustomChart/CustomChartList'))
+const TagListContainer = importComponentFromFELibrary('TagListContainer')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -114,7 +120,7 @@ export default function GlobalConfiguration(props) {
             <PageHeader headerName="Global configurations" />
             <Router history={useHistory()}>
                 <section className="global-configuration__navigation">
-                    <NavItem hostURLConfig={hostURLConfig} serverMode={serverMode}/>
+                    <NavItem serverMode={serverMode} />
                 </section>
                 <section className="global-configuration__component-wrapper">
                     <Suspense fallback={<Progressing pageLoader />}>
@@ -134,9 +140,9 @@ export default function GlobalConfiguration(props) {
     )
 }
 
-function NavItem({ hostURLConfig, serverMode }) {
+function NavItem({ serverMode }) {
     const location = useLocation()
-    const {installedModuleMap} = useContext(mainContext)
+    const { installedModuleMap } = useContext(mainContext)
     const [, setForceUpdateTime] = useState(Date.now())
     // Add key of NavItem if grouping is used
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
@@ -150,13 +156,19 @@ function NavItem({ hostURLConfig, serverMode }) {
             component: HostURLConfiguration,
             isAvailableInEA: false,
         },
-        { name: 'GitOps ', href: URLS.GLOBAL_CONFIG_GITOPS, component: GitOpsConfiguration, moduleName: ModuleNameMap.ARGO_CD },
+        {
+            name: 'GitOps ',
+            href: URLS.GLOBAL_CONFIG_GITOPS,
+            component: GitOpsConfiguration,
+            moduleName: ModuleNameMap.ARGO_CD,
+        },
         { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project, isAvailableInEA: true },
         {
             name: 'Clusters' + (serverMode === SERVER_MODE.EA_ONLY ? '' : ' & Environments'),
             href: URLS.GLOBAL_CONFIG_CLUSTER,
             component: ClusterList,
             isAvailableInEA: true,
+            isAvailableInDesktop: true,
         },
         { name: 'Git Accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider, isAvailableInEA: false },
         { name: 'Container Registries', href: URLS.GLOBAL_CONFIG_DOCKER, component: Docker, isAvailableInEA: false },
@@ -195,33 +207,43 @@ function NavItem({ hostURLConfig, serverMode }) {
             component: UserGroup,
             isAvailableInEA: true,
         },
-        { name: 'Notifications', href: URLS.GLOBAL_CONFIG_NOTIFIER, component: Notifier, moduleName: ModuleNameMap.NOTIFICATION },
+        {
+            name: 'Notifications',
+            href: URLS.GLOBAL_CONFIG_NOTIFIER,
+            component: Notifier,
+            moduleName: ModuleNameMap.NOTIFICATION,
+        },
     ]
 
     useEffect(() => {
         getModuleStatus(ModuleNameMap.ARGO_CD, MODULE_STATUS_RETRY_COUNT)
         getModuleStatus(ModuleNameMap.NOTIFICATION, MODULE_STATUS_RETRY_COUNT)
+        return () => {
+            if (moduleStatusTimer) {
+                clearTimeout(moduleStatusTimer)
+            }
+        }
     }, [])
 
     const getModuleStatus = async (moduleName: string, retryOnError: number): Promise<void> => {
-      if (installedModuleMap.current?.[moduleName]) {
-          return
-      }
-      try {
-          const { result } = await getModuleInfo(moduleName)
-          if (result?.status === ModuleStatus.INSTALLED) {
-              installedModuleMap.current = { ...installedModuleMap.current, [moduleName]: true }
-              setForceUpdateTime(Date.now())
-          } else if (result?.status === ModuleStatus.INSTALLING) {
-              moduleStatusTimer = setTimeout(() => {
-                  getModuleStatus(moduleName, MODULE_STATUS_RETRY_COUNT)
-              }, MODULE_STATUS_POLLING_INTERVAL)
-          }
-      } catch (error) {
-          if (retryOnError >= 0) {
-              getModuleStatus(moduleName, retryOnError--)
-          }
-      }
+        if (installedModuleMap.current?.[moduleName] || window._env_.K8S_CLIENT) {
+            return
+        }
+        try {
+            const { result } = await getModuleInfo(moduleName)
+            if (result?.status === ModuleStatus.INSTALLED) {
+                installedModuleMap.current = { ...installedModuleMap.current, [moduleName]: true }
+                setForceUpdateTime(Date.now())
+            } else if (result?.status === ModuleStatus.INSTALLING) {
+                moduleStatusTimer = setTimeout(() => {
+                    getModuleStatus(moduleName, MODULE_STATUS_RETRY_COUNT)
+                }, MODULE_STATUS_POLLING_INTERVAL)
+            }
+        } catch (error) {
+            if (retryOnError >= 0) {
+                getModuleStatus(moduleName, retryOnError--)
+            }
+        }
     }
 
     const renderNavItem = (route, className = '', preventOnClickOp = false) => {
@@ -297,169 +319,219 @@ function NavItem({ hostURLConfig, serverMode }) {
     return (
         <div className="flex column left">
             {ConfigRequired.map(
-                (route) => ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModuleMap.current?.[route.moduleName]) && renderNavItem(route),
+                (route) =>
+                    ((!window._env_.K8S_CLIENT &&
+                        ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) ||
+                            route.isAvailableInEA ||
+                            installedModuleMap.current?.[route.moduleName])) ||
+                        route.isAvailableInDesktop) &&
+                    renderNavItem(route),
             )}
-            <hr className="mt-8 mb-8 w-100 checklist__divider" />
-            {ConfigOptional.map(
-                (route, index) =>
-                ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) || route.isAvailableInEA || installedModuleMap.current?.[route.moduleName]) &&
-                    (route.group ? (
-                        <>
-                            <NavLink
-                                key={`nav_item_${index}`}
-                                to={route.href}
-                                className={`cursor ${collapsedState[route.name] ? '' : 'fw-6'} flex dc__content-space`}
-                                onClick={(e) => {
-                                    handleGroupCollapsedState(e, route)
-                                }}
-                            >
-                                {route.name}
-                                <Dropdown
-                                    className="icon-dim-24 rotate"
-                                    style={{ ['--rotateBy' as any]: !collapsedState[route.name] ? '180deg' : '0deg' }}
-                                />
-                            </NavLink>
-                            {!collapsedState[route.name] && (
+            {!window._env_.K8S_CLIENT && (
+                <>
+                    <hr className="mt-8 mb-8 w-100 checklist__divider" />
+                    {ConfigOptional.map(
+                        (route, index) =>
+                            ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) ||
+                                route.isAvailableInEA ||
+                                installedModuleMap.current?.[route.moduleName]) &&
+                            (route.group ? (
                                 <>
-                                    {route.group.map((_route) => {
-                                        return renderNavItem(_route, 'ml-10', true)
-                                    })}
+                                    <NavLink
+                                        key={`nav_item_${index}`}
+                                        to={route.href}
+                                        className={`cursor ${
+                                            collapsedState[route.name] ? '' : 'fw-6'
+                                        } flex dc__content-space`}
+                                        onClick={(e) => {
+                                            handleGroupCollapsedState(e, route)
+                                        }}
+                                    >
+                                        {route.name}
+                                        <Dropdown
+                                            className="icon-dim-24 rotate"
+                                            style={{
+                                                ['--rotateBy' as any]: !collapsedState[route.name] ? '180deg' : '0deg',
+                                            }}
+                                        />
+                                    </NavLink>
+                                    {!collapsedState[route.name] && (
+                                        <>
+                                            {route.group.map((_route) => {
+                                                return renderNavItem(_route, 'ml-10', true)
+                                            })}
+                                        </>
+                                    )}
                                 </>
-                            )}
-                        </>
-                    ) : (
-                        renderNavItem(route)
-                    )),
+                            ) : (
+                                renderNavItem(route)
+                            )),
+                    )}
+                    <hr className="mt-8 mb-8 w-100 checklist__divider" />
+                    <NavLink
+                        to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
+                        key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
+                        activeClassName="active-route"
+                    >
+                        <div className="flexbox flex-justify">External Links</div>
+                    </NavLink>
+                    {TagListContainer && (
+                        <NavLink
+                            to={URLS.GLOBAL_CONFIG_TAGS}
+                            key={URLS.GLOBAL_CONFIG_TAGS}
+                            activeClassName="active-route"
+                        >
+                            <div className="flexbox flex-justify">Tags</div>
+                        </NavLink>
+                    )}
+                </>
             )}
-            <hr className="mt-8 mb-8 w-100 checklist__divider" />
-            <NavLink
-                to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
-                key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
-                activeClassName="active-route"
-            >
-                <div className="flexbox flex-justify">External Links</div>
-            </NavLink>
         </div>
     )
 }
 
-function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin } : BodyType) {
+function Body({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, isSuperAdmin }: BodyType) {
     const location = useLocation()
+
+    const defaultRoute = (): string => {
+        if (window._env_.K8S_CLIENT) {
+            return URLS.GLOBAL_CONFIG_CLUSTER
+        } else if (serverMode === SERVER_MODE.EA_ONLY) {
+            return URLS.GLOBAL_CONFIG_PROJECT
+        } else {
+            return URLS.GLOBAL_CONFIG_HOST_URL
+        }
+    }
 
     return (
         <Switch location={location}>
-            <Route
-                path={URLS.GLOBAL_CONFIG_HOST_URL}
-                render={(props) => {
-                    return (
-                        <div className="flexbox">
-                            <HostURLConfiguration
-                                {...props}
-                                isSuperAdmin={isSuperAdmin}
-                                refreshGlobalConfig={getHostURLConfig}
-                                handleChecklistUpdate={handleChecklistUpdate}
-                            />
-                        </div>
-                    )
-                }}
-            />
-            <Route
-                path={URLS.GLOBAL_CONFIG_GITOPS}
-                render={(props) => {
-                    return (
-                        <div className="flexbox">
-                            <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                        </div>
-                    )
-                }}
-            />
-            <Route
-                path={URLS.GLOBAL_CONFIG_PROJECT}
-                render={(props) => {
-                    return (
-                        <div className="flexbox">
-                            <Project {...props} isSuperAdmin={isSuperAdmin} />
-                        </div>
-                    )
-                }}
-            />
             <Route
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={(props) => {
                     return (
                         <div className="flexbox">
-                            <ClusterList {...props} serverMode={serverMode} isSuperAdmin={isSuperAdmin} />
-                        </div>
-                    )
-                }}
-            />
-            <Route
-                path={URLS.GLOBAL_CONFIG_GIT}
-                render={(props) => {
-                    return (
-                        <div className="flexbox">
-                            <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
-                        </div>
-                    )
-                }}
-            />
-            <Route
-                path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
-                render={(props) => {
-                    return (
-                        <div className="flexbox">
-                            <Docker
+                            <ClusterList
                                 {...props}
-                                handleChecklistUpdate={handleChecklistUpdate}
-                                isSuperAdmin={isSuperAdmin}
+                                serverMode={serverMode}
+                                isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT}
                             />
                         </div>
                     )
                 }}
             />
-
-            <Route
-                path={URLS.GLOBAL_CONFIG_CHART}
-                render={(props) => {
-                    return <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />
-                }}
-            />
-            <Route path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
-                <CustomChartList />
-            </Route>
-            <Route
-                path={URLS.GLOBAL_CONFIG_LOGIN}
-                render={(props) => {
-                    return <SSOLogin {...props} />
-                }}
-            />
-            <Route
-                path={URLS.GLOBAL_CONFIG_AUTH}
-                render={(props) => {
-                    return <UserGroup />
-                }}
-            />
-            <Route
-                path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`}
-                render={(props) => {
-                    return <AddNotification {...props} />
-                }}
-            />
-            <Route
-                path={URLS.GLOBAL_CONFIG_NOTIFIER}
-                render={(props) => {
-                    return <Notifier {...props} isSuperAdmin={isSuperAdmin} />
-                }}
-            />
-            <Route path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
-                <ExternalLinks />
-            </Route>
-            <Redirect
-                to={
-                    serverMode &&
-                    (serverMode === SERVER_MODE.EA_ONLY ? URLS.GLOBAL_CONFIG_PROJECT : URLS.GLOBAL_CONFIG_HOST_URL)
-                }
-            />
+            {!window._env_.K8S_CLIENT && [
+                <Route
+                    key={URLS.GLOBAL_CONFIG_HOST_URL}
+                    path={URLS.GLOBAL_CONFIG_HOST_URL}
+                    render={(props) => {
+                        return (
+                            <div className="flexbox">
+                                <HostURLConfiguration
+                                    {...props}
+                                    isSuperAdmin={isSuperAdmin}
+                                    refreshGlobalConfig={getHostURLConfig}
+                                    handleChecklistUpdate={handleChecklistUpdate}
+                                />
+                            </div>
+                        )
+                    }}
+                />,
+                <Route
+                    key={URLS.GLOBAL_CONFIG_GITOPS}
+                    path={URLS.GLOBAL_CONFIG_GITOPS}
+                    render={(props) => {
+                        return (
+                            <div className="flexbox">
+                                <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
+                            </div>
+                        )
+                    }}
+                />,
+                <Route
+                    key={URLS.GLOBAL_CONFIG_PROJECT}
+                    path={URLS.GLOBAL_CONFIG_PROJECT}
+                    render={(props) => {
+                        return (
+                            <div className="flexbox">
+                                <Project {...props} isSuperAdmin={isSuperAdmin} />
+                            </div>
+                        )
+                    }}
+                />,
+                <Route
+                    key={URLS.GLOBAL_CONFIG_GIT}
+                    path={URLS.GLOBAL_CONFIG_GIT}
+                    render={(props) => {
+                        return (
+                            <div className="flexbox">
+                                <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
+                            </div>
+                        )
+                    }}
+                />,
+                <Route
+                    key={URLS.GLOBAL_CONFIG_DOCKER}
+                    path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
+                    render={(props) => {
+                        return (
+                            <div className="flexbox">
+                                <Docker
+                                    {...props}
+                                    handleChecklistUpdate={handleChecklistUpdate}
+                                    isSuperAdmin={isSuperAdmin}
+                                />
+                            </div>
+                        )
+                    }}
+                />,
+                <Route
+                    key={URLS.GLOBAL_CONFIG_CHART}
+                    path={URLS.GLOBAL_CONFIG_CHART}
+                    render={(props) => {
+                        return <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />
+                    }}
+                />,
+                <Route key={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS} path={URLS.GLOBAL_CONFIG_CUSTOM_CHARTS}>
+                    <CustomChartList />
+                </Route>,
+                <Route
+                    key={URLS.GLOBAL_CONFIG_LOGIN}
+                    path={URLS.GLOBAL_CONFIG_LOGIN}
+                    render={(props) => {
+                        return <SSOLogin {...props} />
+                    }}
+                />,
+                <Route
+                    key={URLS.GLOBAL_CONFIG_AUTH}
+                    path={URLS.GLOBAL_CONFIG_AUTH}
+                    render={(props) => {
+                        return <UserGroup />
+                    }}
+                />,
+                <Route
+                    key={URLS.GLOBAL_CONFIG_NOTIFIER}
+                    path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`}
+                    render={(props) => {
+                        return <AddNotification {...props} />
+                    }}
+                />,
+                <Route
+                    key={URLS.GLOBAL_CONFIG_NOTIFIER}
+                    path={URLS.GLOBAL_CONFIG_NOTIFIER}
+                    render={(props) => {
+                        return <Notifier {...props} isSuperAdmin={isSuperAdmin} />
+                    }}
+                />,
+                <Route key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
+                    <ExternalLinks />
+                </Route>,
+            ]}
+            {TagListContainer && (
+                <Route path={URLS.GLOBAL_CONFIG_TAGS}>
+                    <TagListContainer />
+                </Route>
+            )}
+            <Redirect to={defaultRoute()} />
         </Switch>
     )
 }
@@ -518,15 +590,15 @@ export function CustomInput({
     value,
     error,
     onChange,
-    onBlur=(e)=>{},
-    onFocus=(e)=>{},
+    onBlur = (e) => {},
+    onFocus = (e) => {},
     label,
     type = 'text',
     disabled = false,
     autoComplete = 'off',
     labelClassName = '',
     placeholder = '',
-    tabIndex=1
+    tabIndex = 1,
 }) {
     return (
         <div className="flex column left top">
@@ -593,7 +665,6 @@ export function ProtectedInput({
                     }}
                     value={value}
                     disabled={disabled}
-                    
                 />
                 <ShowHide
                     className="protected-input__toggle"
