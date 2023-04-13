@@ -340,6 +340,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 title={node.title}
                 environmentName={node.environmentName}
                 environmentId={node.environmentId}
+                description={node.description}
                 triggerType={node.triggerType}
                 deploymentStrategy={node.deploymentStrategy}
                 toggleCDMenu={() => {

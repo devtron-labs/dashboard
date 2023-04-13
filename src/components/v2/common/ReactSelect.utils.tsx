@@ -240,3 +240,27 @@ export function formatHighlightedText(option: Environment, inputValue: string, e
         </div>
     )
 }
+
+export function formatHighlightedTextDescription(option: Environment, inputValue: string, environmentfieldName: string) {
+    const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
+    const regex = new RegExp(inputValue, 'gi')
+    return (
+        <div className="flex left column dc__highlight-text">
+            <span
+                className="w-100 dc__ellipsis-right"
+                dangerouslySetInnerHTML={{
+                    __html: option[environmentfieldName].replace(regex, highLightText),
+                }}
+            />
+            {option.description && (
+                <small
+                    className="cn-6"
+                    dangerouslySetInnerHTML={{
+                        __html: (option.description + '').replace(regex, highLightText),
+                    }}
+                ></small>
+            )}
+        </div>
+    )
+}
+
