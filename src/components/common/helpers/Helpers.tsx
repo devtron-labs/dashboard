@@ -188,7 +188,7 @@ export function getRandomColor(email: string): string {
 
 export function showError(serverError, showToastOnUnknownError = true, hideAccessError = false) {
     if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
-        serverError.errors.map(({ userMessage, internalMessage }) => {
+        serverError.errors.forEach(({ userMessage, internalMessage }) => {
             if (
                 serverError.code === 403 &&
                 (userMessage === ERROR_EMPTY_SCREEN.UNAUTHORIZED || userMessage === ERROR_EMPTY_SCREEN.FORBIDDEN)
