@@ -17,7 +17,8 @@ import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwi
 import { CIBuildType } from '../ciPipeline/types'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
 import { renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
-import { renderBuildContext, USING_ROOT, _customStyles } from './CIConfig.utils'
+import { USING_ROOT, _customStyles } from './CIConfig.utils'
+import BuildContext from './BuildContext'
 
 export default function CICreateDockerfileOption({
     configOverrideView,
@@ -382,15 +383,15 @@ export default function CICreateDockerfileOption({
                         )}
                         {repository.error && <label className="form__error">{repository.error}</label>}
                     </div>
-                    {renderBuildContext(
-                        disable,
-                        setDisable,
-                        formState,
-                        configOverrideView,
-                        allowOverride,
-                        ciConfig,
-                        handleOnChangeConfig,
-                    )}
+                    <BuildContext
+                        disable = {disable}
+                        setDisable = {setDisable}
+                        formState = {formState}
+                        configOverrideView = {configOverrideView}
+                        allowOverride = {allowOverride}
+                        ciConfig = {ciConfig}
+                        handleOnChangeConfig = {handleOnChangeConfig}
+                    />
                 </div>
             </div>
             <div

@@ -5,7 +5,7 @@ import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as BuildpackIcon } from '../../assets/icons/ic-builpack.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import CIAdvancedConfig from './CIAdvancedConfig'
-import {CI_BUILDTYPE_ALIAS, _multiSelectStyles, renderBuildContext, USING_ROOT} from './CIConfig.utils'
+import {CI_BUILDTYPE_ALIAS, _multiSelectStyles, USING_ROOT} from './CIConfig.utils'
 import { CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import CIBuildpackBuildOptions, {
     renderOptionIcon,
@@ -17,6 +17,7 @@ import CICreateDockerfileOption from './CICreateDockerfileOption'
 import { showError, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BuildersAndFrameworksType, CIDockerFileConfigProps } from './types'
+import BuildContext from './BuildContext'
 
 export default function CIDockerFileConfig({
     configOverrideView,
@@ -333,7 +334,15 @@ export default function CIDockerFileConfig({
                     </div>
                 </div>
                 <div className="mb-4 w-100">
-                    {renderBuildContext(disable, setDisable, formState, configOverrideView, allowOverride, ciConfig, handleOnChangeConfig)}
+                    <BuildContext
+                        disable={disable}
+                        setDisable={setDisable}
+                        formState={formState}
+                        configOverrideView={configOverrideView}
+                        allowOverride={allowOverride}
+                        ciConfig={ciConfig}
+                        handleOnChangeConfig={handleOnChangeConfig}
+                    />
                 </div>
             </div>
         )

@@ -310,3 +310,13 @@ export interface TargetPlatformSelectorType {
   configOverrideView?: boolean
   updateDockerConfigOverride?: (key: string, value: CIBuildConfigType | OptionType[] | boolean | string) => void
 }
+
+export interface BuildContextProps {
+    disable: boolean
+    setDisable: React.Dispatch<React.SetStateAction<boolean>>
+    formState: any
+    configOverrideView: boolean
+    allowOverride: boolean
+    ciConfig:  CiPipelineResult
+    handleOnChangeConfig: (e) => void
+}
