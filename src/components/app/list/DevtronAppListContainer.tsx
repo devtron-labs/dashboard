@@ -48,11 +48,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
                 },
             });
         }).then(() => {
-          if(window._env_.USE_V2){
-            this.getAppList(createAppListPayload(this.props.payloadParsedFromUrl, this.props.environmentClusterList));
-          } else {
-            this.getAppList(this.props.payloadParsedFromUrl)
-          }
+          this.getAppList(createAppListPayload(this.props.payloadParsedFromUrl, this.props.environmentClusterList))
         }).catch((errors: ServerErrors) => {
             showError(errors);
             this.setState({ view: AppListViewType.ERROR, code: errors.code });
