@@ -640,12 +640,25 @@ export function EnvSelector({
         }),
         singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: 'var(--B500)' }),
         indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
+        menu: (base) => ({ ...base, width: '280px' }),
     }
-    // cb-5 ml-8 fw-6
+
     const sortedEnvironments =
         environments && !environments.deploymentAppDeleteRequest
             ? sortObjectArrayAlphabetically(environments, 'environmentName')
             : environments
+
+    const formatOptionLabel = (option): JSX.Element => {
+        return (
+            <div>
+                <div className="w-100 dc__ellipsis-right">{option.label}</div>
+                {option.description && (
+                    <small className="dc__word-break-all dc__white-space-normal fs-12 cn-7">{option.description}</small>
+                )}
+            </div>
+        )
+    }
+
     return (
         <>
             <div style={{ width: 'clamp( 100px, 30%, 100px )', height: '100%', position: 'relative' }}>
@@ -672,6 +685,7 @@ export function EnvSelector({
                             ? sortedEnvironments.map((env) => ({
                                   label: env.environmentName,
                                   value: env.environmentId,
+                                  description: env.description,
                               }))
                             : []
                     }
@@ -687,6 +701,7 @@ export function EnvSelector({
                     styles={envSelectorStyle}
                     isDisabled={disabled}
                     isSearchable={false}
+                    formatOptionLabel={formatOptionLabel}
                 />
             </div>
         </>
