@@ -47,7 +47,11 @@ function OutputDirectoryPath() {
                     taskField={TaskFieldLabel.OUTPUTDIRECTORYPATH}
                     contentDescription={TaskFieldDescription.OUTPUTDIRECTORYPATH}
                 />
-                <div data-testid = "output-directory-path-add-path-button" className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32" onClick={addOutputDirectoryPath}>
+                <div
+                    data-testid="output-directory-path-add-path-button"
+                    className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32"
+                    onClick={addOutputDirectoryPath}
+                >
                     <Add className="add-icon mt-6" />
                     Add path
                 </div>
@@ -56,7 +60,7 @@ function OutputDirectoryPath() {
                 return (
                     <div className="custom-script__output-directory pl-220 mt-8" key={`output-directory-${index}`}>
                         <input
-                            data-testid = "output-directory-path-add-path-textbox"
+                            data-testid="output-directory-path-add-path-textbox"
                             className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
                             autoComplete="off"
                             placeholder="Enter directory path"
