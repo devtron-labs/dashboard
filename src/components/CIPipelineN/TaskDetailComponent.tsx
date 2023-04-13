@@ -238,7 +238,7 @@ export function TaskDetailComponent( {dataTestId}: { dataTestId?: string}) {
                 <>
                     <hr />
                     {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
-                        <CustomInputOutputVariables preBuildAddVariableTestId = "custom-script-input-variable-add-variable-button" preBuildAddVariableNameTextBoxTestId = "custom-script-input-variable-add-variable-variable-name-textbox" preBuildAddDescriptionTextBoxTestId = "custom-script-input-variable-add-description-textbox" type={PluginVariableType.INPUT} />
+                        <CustomInputOutputVariables type={PluginVariableType.INPUT} />
                     ) : (
                         <VariableContainer type={PluginVariableType.INPUT} />
                     )}{' '}
@@ -255,7 +255,7 @@ export function TaskDetailComponent( {dataTestId}: { dataTestId?: string}) {
                             <TaskTypeDetailComponent />
                             {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
                                 ScriptType.CONTAINERIMAGE && (
-                                <CustomInputOutputVariables preBuildAddVariableTestId = "custom-script-output-variables-add-variable-button" preBuildAddVariableNameTextBoxTestId = "custom-script-output-variable-add-variable-variable-name-textbox" preBuildAddDescriptionTextBoxTestId = "custom-script-output-variable-add-description-textbox" type={PluginVariableType.OUTPUT} />
+                                <CustomInputOutputVariables type={PluginVariableType.OUTPUT} />
                             )}
                         </>
                     ) : (
