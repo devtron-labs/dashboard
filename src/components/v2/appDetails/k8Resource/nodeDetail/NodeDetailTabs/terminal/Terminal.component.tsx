@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { elementDidMount } from "../../../../../../common";
-import CopyToast, { handleSelectionChange } from "../CopyToast";
+import React, { useEffect, useRef, useState } from 'react'
+import { elementDidMount, useHeightObserver } from '../../../../../../common'
+import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
-import { POD_LINKS, SocketConnectionType } from "../node.type";
+import { POD_LINKS, SocketConnectionType } from '../node.type'
 import IndexStore from '../../../../index.store'
-import { AppType } from "../../../../appDetails.type";
-import moment from "moment";
-import { CLUSTER_STATUS } from "../../../../../../ClusterNodes/constants";
-import { TERMINAL_STATUS } from "./constants";
+import { AppType } from '../../../../appDetails.type'
+import moment from 'moment'
+import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
+import { TERMINAL_STATUS } from './constants'
 
 let socket = undefined
 let terminal = undefined
@@ -25,13 +25,11 @@ export default function TerminalView({
     isTerminalTab = true,
     renderConnectionStrip,
     registerLinkMatcher,
-    terminalMessageData
-}){
+    terminalMessageData,
+}) {
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
     const appDetails = IndexStore.getAppDetails()
-
-
     const [popupText, setPopupText] = useState<boolean>(false)
 
     const resizeSocket = () => {
@@ -44,16 +42,18 @@ export default function TerminalView({
         }
     }
 
+    const [myDivRef] = useHeightObserver(resizeSocket)
+
     useEffect(() => {
-        if(initializeTerminal?.createNewTerminal && !terminal){
+        if (!terminal) {
             elementDidMount('#terminal-id').then(() => {
                 createNewTerminal()
             })
         }
-        if(initializeTerminal?.sessionId && terminal){
+        if (initializeTerminal?.sessionId && terminal) {
             postInitialize(initializeTerminal.sessionId)
         }
-    },[initializeTerminal])
+    }, [initializeTerminal])
 
     useEffect(() => {
         if (!popupText) return
@@ -114,7 +114,7 @@ export default function TerminalView({
         }
         return socketURL
     }
-    
+
     const postInitialize = (sessionId: string) => {
         const socketURL = generateSocketURL()
 
@@ -223,21 +223,15 @@ export default function TerminalView({
             terminal = undefined
             fitAddon = undefined
             clearTimeout(clusterTimeOut)
-
         }
     }, [])
 
-
     return (
-        <div className="terminal-view h-100 w-100">
+        <div ref={myDivRef} className="terminal-wrapper h-100 w-100">
             {renderConnectionStrip()}
-            <div
-                id="terminal-id"
-                className="w-100"
-            >
+            <div id="terminal-id" className="w-100 pt-8 terminal-component pl-20 h-100">
                 <CopyToast showCopyToast={popupText} />
             </div>
         </div>
     )
-    
 }

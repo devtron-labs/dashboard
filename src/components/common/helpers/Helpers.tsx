@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject } from 'react'
 import { TOKEN_COOKIE_NAME } from '../../../config'
 import { showError, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib';
 import YAML from 'yaml'
@@ -1235,4 +1235,28 @@ export const reloadToastBody = () => {
         text="You are viewing an outdated version of Devtron UI."
         buttonText="Reload"
     />
+}
+
+export function useHeightObserver(callback): [RefObject<HTMLDivElement>] {
+    const ref = useRef(null)
+    const callbackRef = useRef(callback)
+
+    useEffect(() => {
+        callbackRef.current = callback
+    }, [callback])
+
+    useEffect(() => {
+        const handleHeightChange = () => {
+            callbackRef.current && callbackRef.current(ref.current.clientHeight)
+        }
+
+        const observer = new ResizeObserver(handleHeightChange)
+        observer.observe(ref.current)
+
+        return () => {
+            observer.disconnect()
+        }
+    }, [])
+
+    return [ref]
 }

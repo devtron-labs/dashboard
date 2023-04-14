@@ -24,6 +24,16 @@
     overflow: hidden;
 }
 
-.terminal-strip{
+.terminal-strip {
   z-index: 4;
+}
+
+.terminal-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.terminal-wrapper .terminal-component {
+    overflow: hidden;
+    flex: 1;
 }
