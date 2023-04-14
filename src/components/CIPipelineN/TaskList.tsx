@@ -155,7 +155,7 @@ export function TaskList() {
                     </Fragment>
                 ))}
             </div>
-            <div data-testid = "sidebar-add-task-button" className="task-item add-task-container cb-5 fw-6 fs-13 flexbox mr-20" onClick={addNewTask}>
+            <div data-testid="sidebar-add-task-button" className="task-item add-task-container cb-5 fw-6 fs-13 flexbox mr-20" onClick={addNewTask}>
                 <Add className="add-icon" /> Add task
             </div>
         </>

@@ -727,7 +727,7 @@ export default function CIPipeline({
         return (
             <li className="tab-list__tab">
                 <NavLink
-                    data-testid = {`${toLink}-button`}
+                    data-testid={`${toLink}-button`}
                     replace
                     className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                     activeClassName="active"

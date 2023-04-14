@@ -345,7 +345,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return (
             <>
                 <div className="flex left column">
-                    <div data-testid = "cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
+                    <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
                         <img src={docker} alt="" className="commit-hash__icon" />
                         {mat.image}
                     </div>
@@ -427,7 +427,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 >
                     {this.renderSequentialCDCardTitle(mat)}
                     <div
-                        data-testid = {`cd-material-history-image-${index}`}
+                        data-testid={`cd-material-history-image-${index}`}
                         className={`material-history__top mh-66 ${
                             !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
                         }`}
@@ -781,7 +781,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     )}
                 >
                     <button
-                        data-testid = "cd-trigger-deploy-button"
+                        data-testid="cd-trigger-deploy-button"
                         className={`cta flex ml-auto h-36 ${this.isDeployButtonDisabled() ? 'disabled-opacity' : ''}`}
                         onClick={this.deployTrigger}
                     >
