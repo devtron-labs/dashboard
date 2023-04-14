@@ -213,6 +213,7 @@ export default function GroupForm({
                     <button
                         className="cta delete"
                         style={{ marginRight: 'auto' }}
+                        data-testid="permission-group-form-delete-button"
                         onClick={(e) => setDeleteConfirmationModal(true)}
                     >
                         Delete
@@ -227,7 +228,7 @@ export default function GroupForm({
                 <button disabled={submitting} onClick={cancelCallback} type="button" className="cta cancel mr-16">
                     Cancel
                 </button>
-                <button disabled={submitting} type="button" className="cta" onClick={handleSubmit}>
+                <button data-testid="permission-group-form-save-button" disabled={submitting} type="button" className="cta" onClick={handleSubmit}>
                     {submitting ? <Progressing /> : 'Save'}
                 </button>
             </div>
