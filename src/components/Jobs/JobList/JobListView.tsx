@@ -86,16 +86,28 @@ export default function JobListView(props: JobListViewProps) {
                                 <AppStatus appStatus={job.defaultPipeline.status} isJobView={true} />
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
-                                <p className="dc__truncate-text m-0">{job.defaultPipeline.lastRunAt}</p>
+                                <p data-testid="last-run" className="dc__truncate-text m-0">
+                                    {job.defaultPipeline.lastRunAt}
+                                </p>
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
-                                <p className="dc__truncate-text m-0">{job.defaultPipeline.lastSuccessAt}</p>
+                                <p data-testid="last-success" className="dc__truncate-text m-0">
+                                    {job.defaultPipeline.lastSuccessAt}
+                                </p>
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
-                                <p className="dc__truncate-text m-0">{job.description ? job.description : '-'}</p>
+                                <p data-testid="description" className="dc__truncate-text m-0">
+                                    {job.description ? job.description : '-'}
+                                </p>
                             </div>
                             <div className="app-list__cell app-list__cell--action">
-                                <button type="button" data-key={job.id} className="button-edit" onClick={handleEditJob}>
+                                <button
+                                    data-testid="edit-job-button"
+                                    type="button"
+                                    data-key={job.id}
+                                    className="button-edit"
+                                    onClick={handleEditJob}
+                                >
                                     <Edit className="button-edit__icon" />
                                 </button>
                             </div>
