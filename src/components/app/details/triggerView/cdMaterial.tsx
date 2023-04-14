@@ -509,7 +509,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     renderMaterial = (materialList: CDMaterialType[], disableSelection?: boolean) => {
-        return materialList.map((mat) => {
+        return materialList.map((mat, index) => {
             const isImageApprover =
                 mat.userApprovalMetadata?.approvedUsersData &&
                 mat.userApprovalMetadata.approvedUsersData.some(
