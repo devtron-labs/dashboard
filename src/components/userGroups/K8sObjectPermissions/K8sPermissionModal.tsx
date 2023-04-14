@@ -148,10 +148,20 @@ export default function K8sPermissionModal({
                     })}
                 </div>
                 <div className="w-100 pt-16 pb-16 pl-20 pr-20 flex right bcn-0 dc__border-top">
-                    <button type="button" data-testid="k8s-permission-cancel" className="cta cancel h-36 flex mr-16" onClick={close}>
+                    <button
+                        type="button"
+                        data-testid="k8s-permission-cancel"
+                        className="cta cancel h-36 flex mr-16"
+                        onClick={close}
+                    >
                         Cancel
                     </button>
-                    <button type="button" data-testid="k8s-permission-save" className="cta h-36 flex" onClick={savePermission}>
+                    <button
+                        type="button"
+                        data-testid="k8s-permission-save"
+                        className="cta h-36 flex"
+                        onClick={savePermission}
+                    >
                         Done
                     </button>
                 </div>

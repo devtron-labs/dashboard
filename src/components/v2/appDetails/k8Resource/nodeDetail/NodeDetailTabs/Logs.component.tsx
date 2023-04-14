@@ -349,7 +349,10 @@ function LogsComponent({
     ) : (
         <React.Fragment>
             <div className="node-container-fluid bcn-0">
-                <div data-testid="logs-container-header" className={`node-row pt-2 pb-2 pl-16 pr-16 ${!isLogAnalyzer ? 'dc__border-top' : ''}`}>
+                <div
+                    data-testid="logs-container-header"
+                    className={`node-row pt-2 pb-2 pl-16 pr-16 ${!isLogAnalyzer ? 'dc__border-top' : ''}`}
+                >
                     <div className="col-6 flexbox flex-align-center">
                         <Tippy
                             className="default-tt"

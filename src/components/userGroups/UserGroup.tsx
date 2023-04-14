@@ -674,11 +674,13 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                     {email_id ? email_id[0] : name[0]}
                 </span>
                 <span className="user-list__email-name flex left column">
-                    <span data-testid={`${type}-display-name-list`} className="user-list__title">{name || email_id}</span>
+                    <span data-testid={`${type}-display-name-list`} className="user-list__title">
+                        {name || email_id}
+                    </span>
                     <span className="user-list__subtitle">{description || email_id}</span>
                 </span>
                 <span
-                    data-testid={`${type}-list-${collapsed ?'expand':'collapse'}-dropdown`}
+                    data-testid={`${type}-list-${collapsed ? 'expand' : 'collapse'}-dropdown`}
                     className="user-list__direction-container flex rotate pointer"
                     onClick={onClickUserDropdownHandler}
                     style={{ ['--rotateBy' as any]: collapsed ? '0deg' : '180deg' }}

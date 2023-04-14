@@ -278,7 +278,7 @@ export default class Navigation extends Component<
                 activeClassName="active-nav"
             >
                 <div className="short-nav__item-selected" />
-                <div className="short-nav--flex" >
+                <div className="short-nav--flex">
                     <div className={`svg-container flex ${item.iconClass}`} data-testid={item?.dataTestId}>
                         <item.icon className="icon-dim-20" />
                     </div>
