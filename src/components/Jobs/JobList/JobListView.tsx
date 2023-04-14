@@ -141,7 +141,7 @@ export default function JobListView(props: JobListViewProps) {
                         >
                             {JOB_LIST_HEADERS.Name}
                             {props.sortRule.key == SortBy.APP_NAME ? (
-                                <span data-testid={'sort-job-list'} className={`sort ${icon} ml-4`}></span>
+                                <span data-testid="sort-job-list" className={`sort ${icon} ml-4`}></span>
                             ) : (
                                 <span className="sort-col"></span>
                             )}

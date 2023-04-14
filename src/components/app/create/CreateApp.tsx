@@ -265,14 +265,19 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             }
         },
     }
-    //  earlier it was data-testid="close-create-cutomapp-wing"
+   //  earlier data-testid="close-create-cutomapp-wing"
     renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                     Create {this.props.isJobView ? 'job' : 'application'}
                 </h2>
-                <button type="button" className="dc__transparent flex icon-dim-24" onClick={this.props.close} data-testid={`close-create-${this.props.isJobView ? 'job' : 'app'}-wing`}>
+                <button
+                    type="button"
+                    className="dc__transparent flex icon-dim-24"
+                    onClick={this.props.close}
+                    data-testid={`close-create-cutom${this.props.isJobView ? 'job' : 'app'}-wing`}
+                >
                     <Close className="icon-dim-24" />
                 </button>
             </div>
