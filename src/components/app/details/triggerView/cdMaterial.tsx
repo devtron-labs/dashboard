@@ -1154,7 +1154,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         title="No image available"
                         subTitle={
                             this.state.isRollbackTrigger
-                                ? 'Approved previously deployed images will be available here to rollback to.'
+                                ? 'Approved images which have been previously deployed will be available here for rollback.'
                                 : 'Approved images will be available here for deployment.'
                         }
                         imgSrc={noartifact}
@@ -1168,7 +1168,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 title="No image available"
                 subTitle={
                     this.props.materialType == MATERIAL_TYPE.rollbackMaterialList
-                        ? 'There are no rollback materials'
+                        ? 'Previously deployed images will be available here for rollback.'
                         : 'Please Trigger CI Pipeline and find the image here for deployment.'
                 }
                 imgSrc={noartifact}

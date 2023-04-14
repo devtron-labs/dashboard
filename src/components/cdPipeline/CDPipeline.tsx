@@ -1321,7 +1321,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <ApprovalIcon className="icon-dim-24" />
                     </div>
                     <div className="ml-16 mr-16 flex-1">
-                        <h4 className="fs-14 fw-6 lh-1-43 cn-9 mb-4">Manual approval</h4>
+                        <h4 className="fs-14 fw-6 lh-1-43 cn-9 mb-4">Manual approval for deployment</h4>
                         <div className="form__label form__label--sentence m-0">
                             When enabled, only approved images will be available to be deployed by this deployment
                             pipeline.
@@ -1341,40 +1341,41 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         </div>
                     </div>
                 )}
-                <div className="divider mt-12 mb-12"></div>
             </>
         )
     }
 
-    renderAdvancedCD() {
+    renderPipelineNameInput = () => {
+        return (
+            <div className="form__row">
+                <label className="form__label dc__required-field">Pipeline Name</label>
+                <input
+                    className="form__input"
+                    autoComplete="off"
+                    disabled={!!this.state.pipelineConfig.id}
+                    placeholder="Pipeline name"
+                    type="text"
+                    value={this.state.pipelineConfig.name}
+                    onChange={this.handlePipelineName}
+                />
+                {!this.state.errorForm.pipelineNameError.isValid && (
+                    <span className="form__error">
+                        <img src={error} className="form__icon" />
+                        {this.state.errorForm.pipelineNameError.message}
+                    </span>
+                )}
+            </div>
+        )
+    }
+
+    toggleShowPreStage = () => {
+        this.setState({ showPreStage: !this.state.showPreStage })
+    }
+
+    renderPreStage = () => {
         return (
             <>
-                <div className="form__row">
-                    <label className="form__label dc__required-field">Pipeline Name</label>
-                    <input
-                        className="form__input"
-                        autoComplete="off"
-                        disabled={!!this.state.pipelineConfig.id}
-                        placeholder="Pipeline name"
-                        type="text"
-                        value={this.state.pipelineConfig.name}
-                        onChange={this.handlePipelineName}
-                    />
-                    {!this.state.errorForm.pipelineNameError.isValid ? (
-                        <span className="form__error">
-                            <img src={error} className="form__icon" />
-                            {this.state.errorForm.pipelineNameError.message}
-                        </span>
-                    ) : null}
-                </div>
-                <div className="divider mt-12 mb-12"></div>
-                {this.renderManualApprovalWrapper()}
-                <div
-                    className="flex left"
-                    onClick={() => {
-                        this.setState({ showPreStage: !this.state.showPreStage })
-                    }}
-                >
+                <div className="flex left" onClick={this.toggleShowPreStage}>
                     <div className="icon-dim-44 bcn-1 br-8 flex">
                         <PrePostCD className="icon-dim-24" />
                     </div>
@@ -1393,15 +1394,19 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         />
                     </div>
                 </div>
-                {this.state.showPreStage ? this.renderDeploymentStageDetails('preStage') : null}
+                {this.state.showPreStage && this.renderDeploymentStageDetails('preStage')}
+            </>
+        )
+    }
 
-                <div className="divider mt-12 mb-12"></div>
-                <div
-                    className="flex left"
-                    onClick={() => {
-                        this.setState({ showDeploymentStage: !this.state.showDeploymentStage })
-                    }}
-                >
+    toggelShowDeploymentStage = () => {
+        this.setState({ showDeploymentStage: !this.state.showDeploymentStage })
+    }
+
+    renderDeploymentStage = () => {
+        return (
+            <>
+                <div className="flex left" onClick={this.toggelShowDeploymentStage}>
                     <div className="icon-dim-44 bcn-1 br-8 flex">
                         <CD className="icon-dim-24" />
                     </div>
@@ -1420,20 +1425,25 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         />
                     </div>
                 </div>
-                {this.state.showDeploymentStage ? (
+                {this.state.showDeploymentStage && (
                     <>
                         {this.renderEnvNamespaceAndTriggerType()}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && this.renderDeploymentAppType()}
                         {this.renderDeploymentStrategy()}
                     </>
-                ) : null}
-                <div className="divider mt-12 mb-12"></div>
-                <div
-                    className="flex left"
-                    onClick={() => {
-                        this.setState({ showPostStage: !this.state.showPostStage })
-                    }}
-                >
+                )}
+            </>
+        )
+    }
+
+    toggleShowPostStage = () => {
+        this.setState({ showPostStage: !this.state.showPostStage })
+    }
+
+    renderPostStage = () => {
+        return (
+            <>
+                <div className="flex left" onClick={this.toggleShowPostStage}>
                     <div className="icon-dim-44 bcn-1 br-8 flex">
                         <PrePostCD className="icon-dim-24" />
                     </div>
@@ -1452,7 +1462,23 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         />
                     </div>
                 </div>
-                {this.state.showPostStage ? this.renderDeploymentStageDetails('postStage') : null}
+                {this.state.showPostStage && this.renderDeploymentStageDetails('postStage')}
+            </>
+        )
+    }
+
+    renderAdvancedCD() {
+        return (
+            <>
+                {this.renderPipelineNameInput()}
+                <div className="divider mt-12 mb-12"></div>
+                {this.renderPreStage()}
+                <div className="divider mt-12 mb-12"></div>
+                {this.renderManualApprovalWrapper()}
+                <div className="divider mt-12 mb-12"></div>
+                {this.renderDeploymentStage()}
+                <div className="divider mt-12 mb-12"></div>
+                {this.renderPostStage()}
                 <div className="divider mt-12 mb-12"></div>
             </>
         )
