@@ -221,7 +221,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         to={`${match.url}/${URLS.APP_CD_DETAILS}`}
                         className="tab-list__tab-link"
                         data-action="Deployment History Clicked"
-                        data-testid = "deployment-history-link"
+                        data-testid="deployment-history-link"
                         onClick={handleEventClick}
                     >
                         Deployment History
@@ -232,7 +232,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
                         className="tab-list__tab-link"
-                        data-testid= "deployment-matrix"
+                        data-testid="deployment-matrix"
                         data-action="Deployment Metrics Clicked"
                         onClick={handleEventClick}
                     >
@@ -241,7 +241,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                 </li>
                 <li className="tab-list__tab">
                     <NavLink
-                        data-testid = "app-config-link"
+                        data-testid="app-config-link"
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"

@@ -925,7 +925,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             <span>
                                 {lastDataSyncTimeString}&nbsp;
                                 {!isDataSyncing && (
-                                    <button className="btn btn-link p-0 fw-6 cb-5" onClick={syncNow} data-testid="sync-now-button">
+                                    <button
+                                        className="btn btn-link p-0 fw-6 cb-5"
+                                        onClick={syncNow}
+                                        data-testid="sync-now-button"
+                                    >
                                         Sync now
                                     </button>
                                 )}

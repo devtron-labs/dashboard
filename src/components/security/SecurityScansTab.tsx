@@ -370,54 +370,98 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
       </div>
     }
     else if (this.state.view === ViewType.FORM && this.state.size === 0) {
-      return <div style={{ height: 'calc(100vh - 175px)' }}>
-        <EmptyState >
-          <EmptyState.Image><img src={AppNotDeployed} alt="" /></EmptyState.Image>
-          <EmptyState.Title><h4>No Scans Performed</h4></EmptyState.Title>
-          <EmptyState.Subtitle><span></span></EmptyState.Subtitle>
-        </EmptyState>
-      </div>
+      return (
+          <div style={{ height: 'calc(100vh - 175px)' }}>
+              <EmptyState>
+                  <EmptyState.Image>
+                      <img src={AppNotDeployed} data-testid="no-scan-performed-image" alt="" />
+                  </EmptyState.Image>
+                  <EmptyState.Title>
+                      <h4>No Scans Performed</h4>
+                  </EmptyState.Title>
+                  <EmptyState.Subtitle>
+                      <span></span>
+                  </EmptyState.Subtitle>
+              </EmptyState>
+          </div>
+      )
     }
-    return <>
-      <table className="user__table">
-        <tbody>
-          <tr className="table__row-head">
-            <th className="table__title">NAME</th>
-            <th className="table__title table__cell--type">TYPE</th>
-            <th className="table__title">SECURITY SCAN</th>
-            <th className="table__title">ENVIRONMENT</th>
-            <th className="table__title">LAST SCANNED</th>
-            <th className="table__title"><div className="icon-dim-20" /></th>
-          </tr>
-          {this.state.securityScans.map((scan) => {
-            let total = scan.severityCount.critical + scan.severityCount.moderate + scan.severityCount.low;
-            return <tr key={scan.name} className="table__row" onClick={() => {
-              this.setState({
-                name: scan.name,
-                uniqueId: {
-                  imageScanDeployInfoId: scan.imageScanDeployInfoId,
-                  appId: scan.appId,
-                  envId: scan.envId,
-                },
-              })
-            }}>
-              <td className="security__data dc__ellipsis-right">{scan.name}</td>
-              <td className="security__data table__cell--type dc__ellipsis-right">{scan.type}</td>
-              <td className="security__data dc__ellipsis-right">
-                {total === 0 ? <span className="dc__fill-pass">Passed</span> : null}
-                {scan.severityCount.critical !== 0 ? <span className="dc__fill-critical">{scan.severityCount.critical} Critical</span> : null}
-                {scan.severityCount.critical === 0 && scan.severityCount.moderate !== 0 ? <span className="dc__fill-moderate">{scan.severityCount.moderate} Moderate</span> : null}
-                {scan.severityCount.critical === 0 && scan.severityCount.moderate === 0 && scan.severityCount.low !== 0 ? <span className="dc__fill-low">{scan.severityCount.low} Low</span> : null}
-              </td>
-              <td className="security__data">{scan.environment}</td>
-              <td className="security__data table__cell--time dc__ellipsis-right">{scan.lastExecution}</td>
-              <td className="security__data"><Arrow className="table__row-icon dc__align-right icon-dim-20 fcn-6" /></td>
-            </tr>
-          })}
-        </tbody>
-      </table >
-      {this.renderPagination()}
-    </>
+    return (
+        <>
+            <table className="user__table">
+                <tbody>
+                    <tr className="table__row-head">
+                        <th className="table__title">NAME</th>
+                        <th className="table__title table__cell--type">TYPE</th>
+                        <th className="table__title">SECURITY SCAN</th>
+                        <th className="table__title">ENVIRONMENT</th>
+                        <th className="table__title" data-testid="last-scan-status">
+                            LAST SCANNED
+                        </th>
+                        <th className="table__title">
+                            <div className="icon-dim-20" />
+                        </th>
+                    </tr>
+                    {this.state.securityScans.map((scan) => {
+                        let total = scan.severityCount.critical + scan.severityCount.moderate + scan.severityCount.low
+                        return (
+                            <tr
+                                key={scan.name}
+                                className="table__row"
+                                onClick={() => {
+                                    this.setState({
+                                        name: scan.name,
+                                        uniqueId: {
+                                            imageScanDeployInfoId: scan.imageScanDeployInfoId,
+                                            appId: scan.appId,
+                                            envId: scan.envId,
+                                        },
+                                    })
+                                }}
+                            >
+                                <td
+                                    className="security__data dc__ellipsis-right"
+                                    data-testid={`scanned-app-list-${scan.name}`}
+                                >
+                                    {scan.name}
+                                </td>
+                                <td className="security__data table__cell--type dc__ellipsis-right">{scan.type}</td>
+                                <td className="security__data dc__ellipsis-right">
+                                    {total === 0 ? <span className="dc__fill-pass">Passed</span> : null}
+                                    {scan.severityCount.critical !== 0 ? (
+                                        <span className="dc__fill-critical">
+                                            {scan.severityCount.critical} Critical
+                                        </span>
+                                    ) : null}
+                                    {scan.severityCount.critical === 0 && scan.severityCount.moderate !== 0 ? (
+                                        <span className="dc__fill-moderate">
+                                            {scan.severityCount.moderate} Moderate
+                                        </span>
+                                    ) : null}
+                                    {scan.severityCount.critical === 0 &&
+                                    scan.severityCount.moderate === 0 &&
+                                    scan.severityCount.low !== 0 ? (
+                                        <span className="dc__fill-low">{scan.severityCount.low} Low</span>
+                                    ) : null}
+                                </td>
+                                <td className="security__data">{scan.environment}</td>
+                                <td
+                                    className="security__data table__cell--time dc__ellipsis-right"
+                                    data-testid="image-scan-security-check"
+                                >
+                                    {scan.lastExecution}
+                                </td>
+                                <td className="security__data">
+                                    <Arrow className="table__row-icon dc__align-right icon-dim-20 fcn-6" />
+                                </td>
+                            </tr>
+                        )
+                    })}
+                </tbody>
+            </table>
+            {this.renderPagination()}
+        </>
+    )
   }
 
   render() {
