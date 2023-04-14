@@ -54,7 +54,11 @@ export default function HeaderWithCreateButton({ headerName, isSuperAdmin }) {
     const renderCreateSelectionModal = () => {
         return (
             <Modal rootClassName="create-modal-wrapper" onClick={handleCreateButton}>
-                <div className="create-modal-child cursor" onClick={openCreateDevtronAppModel} data-testid="create-custom-app-button-in-dropdown">
+                <div
+                    className="create-modal-child cursor"
+                    onClick={openCreateDevtronAppModel}
+                    data-testid="create-custom-app-button-in-dropdown"
+                >
                     <AddIcon className="icon-dim-20 fcn-9" />
                     <div className="ml-8">
                         <strong>Custom app</strong>
@@ -63,7 +67,11 @@ export default function HeaderWithCreateButton({ headerName, isSuperAdmin }) {
                         </div>
                     </div>
                 </div>
-                <div className="create-modal-child cursor" onClick={redirectToHelmAppDiscover}>
+                <div
+                    className="create-modal-child cursor"
+                    onClick={redirectToHelmAppDiscover}
+                    data-testid="create-from-chart-store-button"
+                >
                     <ChartIcon className="icon-dim-20" />
                     <div className="ml-8">
                         <strong>From Chart store</strong>

@@ -78,7 +78,7 @@ function EnvironmentStatusComponent({
                 onClick={loadingResourceTree ? noop : handleShowAppStatusDetail}
             >
                 <div className="cn-9 flex left">
-                    <span>Application status</span>
+                    <span data-testid="application-status-heading">Application status</span>
                     <Tippy className="default-tt cursor" arrow={false} content={'The health status of your app'}>
                         <Question className="cursor icon-dim-16 ml-4" />
                     </Tippy>
@@ -91,7 +91,7 @@ function EnvironmentStatusComponent({
                 ) : (
                     <>
                         <div className={`f-${status.toLowerCase()} dc__capitalize fw-6 fs-14 flex left`}>
-                            <span>{status}</span>
+                            <span data-testid="application-status-app-details">{status}</span>
                             <figure
                                 className={`${
                                     showHibernationStatusMessage ? 'hibernating' : status.toLowerCase()
@@ -99,7 +99,9 @@ function EnvironmentStatusComponent({
                             ></figure>
                         </div>
                         <div>
-                            <span className="details-hover cb-5 fw-6">Details</span>
+                            <span className="details-hover cb-5 fw-6" data-testid="details-button-app-details">
+                                Details
+                            </span>
                         </div>
                     </>
                 )}
@@ -150,12 +152,12 @@ function EnvironmentStatusComponent({
             appDetails?.lastDeployedTime && (
                 <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12 en-2 bw-1">
                     <div className="cn-9 flex left">
-                        <span>Last updated</span>
+                        <span data-testid="last-updated-heading">Last updated</span>
                         <Tippy className="default-tt cursor" arrow={false} content={'When was this app last updated'}>
                             <Question className="cursor icon-dim-16 ml-4" />
                         </Tippy>
                     </div>
-                    <div className=" fw-6 fs-14">
+                    <div className=" fw-6 fs-14" data-testid="last-updated-time">
                         {moment(appDetails?.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()}
                     </div>
                     {appDetails?.lastDeployedBy && appDetails?.lastDeployedBy}
@@ -179,7 +181,7 @@ function EnvironmentStatusComponent({
             appDetails?.appStoreAppName && (
                 <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12 en-2 bw-1">
                     <div className="cn-9 flex left">
-                        <span>Chart used</span>
+                        <span data-testid="chart-used-heading">Chart used</span>
                         <Tippy
                             className="default-tt cursor"
                             arrow={false}
@@ -188,19 +190,25 @@ function EnvironmentStatusComponent({
                             <Question className="cursor icon-dim-16 ml-4" />
                         </Tippy>
                     </div>
-                    <div className=" fw-6 fs-14">
-                        {appDetails.appStoreChartName && <span>{appDetails.appStoreChartName}/</span>}
+                    <div className=" fw-6 fs-14" data-testid="full-chart-name-with-version">
+                        {appDetails.appStoreChartName && (
+                            <span data-testid="chart-name-value">{appDetails.appStoreChartName}/</span>
+                        )}
                         {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
                     </div>
                     <div className="flex left">
                         {notes && (
-                            <div className="details-hover flex cb-5 fw-6 cursor" onClick={onClickShowNotes}>
+                            <div
+                                className="details-hover flex cb-5 fw-6 cursor"
+                                onClick={onClickShowNotes}
+                                data-testid="notes.txt-heading"
+                            >
                                 <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
                             </div>
                         )}
                         {!!notes && !!appDetails.appStoreChartId && <div className="app-status-card__divider" />}
                         {appDetails.appStoreChartId && (
-                            <div>
+                            <div data-testid="view-chart-button">
                                 <Link
                                     className="cb-5 fw-6"
                                     to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}

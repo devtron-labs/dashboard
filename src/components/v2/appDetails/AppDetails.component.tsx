@@ -49,7 +49,7 @@ const AppDetailsComponent = ({
     )
 
     return (
-        <div className="helm-details">
+        <div className="helm-details" data-testid="app-details-wrapper">
             <div>
                 <EnvironmentSelectorComponent
                     isExternalApp={isExternalApp}

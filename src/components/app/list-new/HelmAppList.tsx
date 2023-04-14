@@ -470,7 +470,7 @@ export default function HelmAppList({
         return (
             <>
                 {!clusterIdsCsv && (
-                    <div className="bcn-0">
+                    <div className="bcn-0" data-testid="helm-app-list">
                         <div className="h-8"></div>
                         <div className="cluster-select-message-strip above-header-message flex left">
                             <span className="mr-8 flex">
