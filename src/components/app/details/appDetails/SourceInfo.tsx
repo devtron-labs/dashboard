@@ -147,7 +147,7 @@ export function SourceInfo({
                                 )}
                                 {showHibernateModal && (
                                     <button
-                                    data-testid="app-details-hibernate-modal-button"
+                                        data-testid="app-details-hibernate-modal-button"
                                         className="cta cta-with-img small cancel fs-12 fw-6"
                                         onClick={onClickShowHibernateModal}
                                     >
@@ -276,7 +276,7 @@ export function SourceInfo({
                                 </div>
                             </div>
                             <div
-                            data-testid="deployment-status-card"
+                                data-testid="deployment-status-card"
                                 onClick={loadingResourceTree ? noop : showDeploymentDetailedStatus}
                                 className={`flex left bcn-0 p-16 br-8 mw-382 en-2 bw-1 ${
                                     appDetails?.deploymentAppType === DeploymentAppType.helm ? '' : 'cursor'

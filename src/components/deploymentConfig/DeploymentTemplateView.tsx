@@ -291,7 +291,6 @@ export const DeploymentTemplateOptionsTab = ({
                             onChange={changeEditorMode}
                         >
                             <RadioGroup.Radio
-                                dataTestid = "base-deployment-template-basic-button"
                                 value="gui"
                                 canSelect={!chartConfigLoading && !isBasicViewLocked && codeEditorValue}
                                 isDisabled={isBasicViewLocked}
