@@ -106,14 +106,16 @@ export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
     )
 }
 
-export const EmptyView = ({ imgSrc, title, subTitle, link, linkText, dataTestId }: EmptyViewType) => {
+export const EmptyView = ({ imgSrc, title, subTitle, link, linkText}: EmptyViewType) => {
     return (
         <EmptyState>
             <EmptyState.Image>
                 <img src={imgSrc ?? AppNotDeployed} alt="" />
             </EmptyState.Image>
             <EmptyState.Title>
-            <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid= {`${title}-heading`}>{title}</h4>
+                <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
+                    {title}
+                </h4>
             </EmptyState.Title>
             <EmptyState.Subtitle>{subTitle}</EmptyState.Subtitle>
             {link && (
