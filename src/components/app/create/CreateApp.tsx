@@ -265,7 +265,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             }
         },
     }
-   //  earlier data-testid="close-create-cutomapp-wing"
+   //earlier data-testid="close-create-cutomapp-wing"
     renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12 pl-20">
@@ -276,7 +276,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     type="button"
                     className="dc__transparent flex icon-dim-24"
                     onClick={this.props.close}
-                    data-testid={`close-create-cutom${this.props.isJobView ? 'job' : 'app'}-wing`}
+                    data-testid={`close-create-custom${this.props.isJobView ? 'job' : 'app'}-wing`}
                 >
                     <Close className="icon-dim-24" />
                 </button>
@@ -300,7 +300,6 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     <span className="form__label dc__required-field">{this.props.isJobView ? 'Job' : 'App'} Name</span>
                     <input
                         ref={(node) => (this._inputAppName = node)}
-                        // earlier : data-testid="app-name-textbox"
                         data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
                         className="form__input"
                         type="text"
