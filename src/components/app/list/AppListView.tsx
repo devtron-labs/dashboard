@@ -102,7 +102,7 @@ export class AppListView extends Component<AppListViewProps> {
                                 {APP_LIST_HEADERS.AppName}
 
                                 <span
-                                    data-testid={'sort-app-name-list'}
+                                    data-testid="sort-app-name-list"
                                     className={` sort ${icon} ml-4 dc__visible-hover--child ${
                                         this.props.sortRule.key === SortBy.APP_NAME ? 'dc__visible' : ''
                                     } `}
