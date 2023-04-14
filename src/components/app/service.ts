@@ -394,7 +394,7 @@ export const getPrePostCDTriggerStatus = (params) => {
 }
 
 export const getWorkflowStatus = (appId: string) => {
-    const URL = `${Routes.APP_WORKFLOW_STATUS}/${appId}/v1`
+    const URL = `${Routes.APP_WORKFLOW_STATUS}/${appId}/${Routes.APP_LIST_V1}`
     return get(URL)
 }
 
