@@ -42,14 +42,14 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
             <div className="flex left fs-12 fw-6 mt-12">
                 {gitHost.webhookUrl &&
                     <Tippy content={copiedUrl ? 'Copied!' : 'Copy to clipboard.'}>
-                        <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12 flex left cursor" onClick={() => { copyToClipboard(gitHost.webhookUrl,()=> setCopiedUrl(true)) }}>Click to copy webhook URL
+                        <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 mr-12 flex left cursor" data-testid="build-copy-webhook-url-button" onClick={() => { copyToClipboard(gitHost.webhookUrl,()=> setCopiedUrl(true)) }}>Click to copy webhook URL
                         <Copy className="icon-dim-16 ml-4" />
                         </div>
                     </Tippy>
                 }
                 {gitHost.webhookSecret &&
                     <Tippy content={copiedKey ? 'Copied!' : 'Copy to clipboard.'}>
-                        <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 flex left cursor" onClick={() => { copyToClipboard(gitHost.webhookSecret,()=> setCopiedKey(true)) }}>Click to copy secret key
+                        <div className="bcn-0 pt-6 pb-6 pl-12 pr-12 pt-6 pb-2 br-4 bw-1 en-2 flex left cursor" data-testid="build-copy-secret-key-button" onClick={() => { copyToClipboard(gitHost.webhookSecret,()=> setCopiedKey(true)) }}>Click to copy secret key
                         <Copy className="icon-dim-16 ml-4 " />
                         </div>
                     </Tippy>
@@ -58,8 +58,8 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
         </div>
         <div className="webhook-config-container">
             <p className="mt-16 fs-13 mb-0 cn-7">Build {selectedWebhookEvent.name} Webhook CI which match below filters only <span className="cn-9 fw-6">(NOTE: Only regex is supported for values)</span></p>
-            <p className="mb-16 fs-13">Devtron uses regexp library, <a className="dc__link" href="https://yourbasic.org/golang/regexp-cheat-sheet/" target="_blank" rel="noreferrer noopener" >view regexp cheatsheet</a>.
-             You can test your regex <a className="dc__link" href="https://regex101.com/r/lHHuaE/1" rel="noreferrer noopener" target="_blank">here</a></p>
+            <p className="mb-16 fs-13">Devtron uses regexp library, <a className="dc__link" data-testid="regex-cheat-sheet-link" href="https://yourbasic.org/golang/regexp-cheat-sheet/" target="_blank" rel="noreferrer noopener" >view regexp cheatsheet</a>.
+             You can test your regex <a className="dc__link" href="https://regex101.com/r/lHHuaE/1" data-testid="regex-test-link" rel="noreferrer noopener" target="_blank">here</a></p>
             {webhookConditionList.map((_condition, index) => {
                 let _masterSelectorList = [];
                 let _canEditSelectorCondition = canEditPipeline;
@@ -88,7 +88,7 @@ export function ConfigureWebhook({ webhookConditionList, copyToClipboard, gitHos
 
             {
                 canEditPipeline &&
-                <div className="cb-5 fw-6 fs-14 cursor add-filter" onClick={addWebhookCondition}>
+                <div className="cb-5 fw-6 fs-14 cursor add-filter" data-testid="build-webhook-add-filter-button" onClick={addWebhookCondition}>
                     <Add className="icon-dim-20 mr-5 fs-14 fcb-5 mr-12 dc__vertical-align-bottom  " />Add Filter
                 </div>
             }

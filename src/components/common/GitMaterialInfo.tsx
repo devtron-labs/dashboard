@@ -20,7 +20,7 @@ function getGitIcon(repoUrl) {
     return 'git'
 }
 
-export function GitMaterialInfoHeader({ repoUrl = "", materialType = "",  materialValue = "",  style = {}, ...props }) {
+export function GitMaterialInfoHeader({ index,repoUrl = "", materialType = "",  materialValue = "",  style = {}, ...props }) {
     repoUrl = repoUrl.replace(".git", "")
     const tokens = repoUrl.split("/")
     const { length, [length - 1]: repo } = tokens
@@ -29,7 +29,7 @@ export function GitMaterialInfoHeader({ repoUrl = "", materialType = "",  materi
             <div className={getGitIcon(repoUrl)}>
             </div>
             <div className="flex column left">
-                <div className="repo fs-12 cn-9 fw-6">
+                <div className="repo fs-12 cn-9 fw-6" data-testid = {`deployment-history-source-code-repo${index}`}>
                     /{repo}
                 </div>
                 <div className="branch flex left fs-14 cn-7">

@@ -53,7 +53,8 @@ const GitProviderTab: React.FC<{
     provider: string
     gitops: string
     saveLoading: boolean
-}> = ({ providerTab, handleGitopsTab, lastActiveGitOp, provider, gitops, saveLoading }) => {
+    datatestid :string
+}> = ({ providerTab, handleGitopsTab, lastActiveGitOp, provider, gitops, saveLoading,datatestid }) => {
     return (
         <label className="dc__tertiary-tab__radio">
             <input
@@ -63,7 +64,7 @@ const GitProviderTab: React.FC<{
                 checked={providerTab === provider}
                 onChange={!saveLoading && handleGitopsTab}
             />
-            <span className="dc__tertiary-tab sso-icons">
+            <span className="dc__tertiary-tab sso-icons" data-testid={datatestid}>
                 <aside className="login__icon-alignment">
                     <GitProviderTabIcons gitops={gitops} />
                 </aside>
@@ -92,13 +93,13 @@ const GitInfoTab: React.FC<{ tab: string; gitLink: string; gitProvider: string; 
         <div className="git_impt pt-10 pb-10 pl-16 pr-16 br-4 bw-1 bcv-1 flexbox-col mb-16">
             <div className="flex left ">
                 <Info className="icon-dim-20" style={{ marginTop: 1 }} />
-                <div className="ml-8 fs-13">
-                    <span className="fw-6 dc__capitalize">Recommended: </span>Create a new {gitProvider}{' '}
+                <div className="ml-8 fs-13" data-testid="gitops-create-organisation-text">
+                    <span className="fw-6 dc__capitalize" >Recommended: </span>Create a new {gitProvider}{' '}
                     {gitProviderGroupAlias} for gitops. Avoid using {gitProvider} {gitProviderGroupAlias} containing
                     your source code.
                 </div>
             </div>
-            <a target="_blank" href={gitLink} className="ml-28 cursor fs-13 onlink">
+            <a target="_blank" href={gitLink} className="ml-28 cursor fs-13 onlink" data-testid="gitops-create-organization-link">
                 How to create {gitProviderGroupAlias} in {gitProvider} ?
             </a>
         </div>
@@ -453,8 +454,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
         }
         return (
             <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
-                <h2 className="form__title">GitOps</h2>
-                <p className="form__subtitle">
+                <h2 className="form__title" data-testid="gitops-heading">GitOps</h2>
+                <p className="form__subtitle" data-testid="gitops-subheading">
                     Devtron uses GitOps configuration to store kubernetes configuration files of applications.
                     <span>
                         <a
@@ -477,6 +478,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             provider={GitProvider.GITHUB}
                             gitops="GitHub"
                             saveLoading={this.state.saveLoading}
+                            datatestid="gitops-github-button"
                         />
                         <GitProviderTab
                             providerTab={this.state.providerTab}
@@ -485,6 +487,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             provider={GitProvider.GITLAB}
                             gitops="GitLab"
                             saveLoading={this.state.saveLoading}
+                            datatestid="gitops-gitlab-button"
                         />
                         <GitProviderTab
                             providerTab={this.state.providerTab}
@@ -493,6 +496,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             provider={GitProvider.AZURE_DEVOPS}
                             gitops="Azure"
                             saveLoading={this.state.saveLoading}
+                            datatestid="gitops-azure-button"
                         />
                         <GitProviderTab
                             providerTab={this.state.providerTab}
@@ -501,6 +505,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             provider={GitProvider.BITBUCKET_CLOUD}
                             gitops="Bitbucket Cloud"
                             saveLoading={this.state.saveLoading}
+                            datatestid="gitops-bitbucket-button"
                         />
                     </div>
                     <GitInfoTab
@@ -558,6 +563,14 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         }
                         tabIndex={1}
                         labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
+                        dataTestid={
+                            this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                ? 'gitops-azure-organisation-url-textbox'
+                                : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                ? 'gitops-bitbucket-host-url-textbox'
+                                : 'gitops-github-gitlab-host-url-textbox'
+                        }
+                        labelTestId={`gitops-provider-host-url-heading-${this.state.providerTab}`}
                     />
                     {this.state.isUrlValidationError && this.state.form.host.length ? (
                         <div className="flex fs-12 left pt-4">
@@ -596,6 +609,8 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 label={'Bitbucket Workspace ID*'}
                                 tabIndex={1}
                                 labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
+                                dataTestid='gitops-bitbucket-workspace-id-textbox'
+                                labelTestId='gitops-bitbucket-workspace-id-heading'
                             />
                         )}
                     </div>
@@ -609,14 +624,24 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             link={LinkAndLabelSpec[this.state.providerTab]['link']}
                             linkText={LinkAndLabelSpec[this.state.providerTab]['linkText']}
                             label={LinkAndLabelSpec[this.state.providerTab]['label']}
+                            labelTestId={`gitops-provider-link-heading-${this.state.providerTab}`}
                             onChange={(event) => {
                                 this.handleChange(event, key)
                             }}
                             labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"
+                            dataTestid={
+                                this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                    ? 'gitops-azure-project-name-textbox'
+                                    : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                    ? 'gitops-bitbucket-project-textbox'
+                                    : this.state.providerTab===GitProvider.GITLAB
+                                    ? 'gitops-gitlab-group-id-textbox'
+                                    : 'gitops-github-organisation-name-textbox'
+                            }
                         />
                     </div>
                     {this.state.providerTab === GitProvider.BITBUCKET_CLOUD && (
-                        <div className="mt-4 flex left">
+                        <div className="mt-4 flex left" data-testid="gitops-bitbucket-project-id">
                             <InfoFill className="icon-dim-16" />
                             <span className="ml-4 fs-11">
                                 If the project is not provided, the repository is automatically assigned to the oldest
@@ -625,7 +650,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                         </div>
                     )}
                     <hr />
-                    <div className="fw-6 cn-9 fs-14 mb-16">Git access credentials</div>
+                    <div className="fw-6 cn-9 fs-14 mb-16" data-testid="gitops-gitaccess-credentials-heading">Git access credentials</div>
 
                     <div className="form__row--two-third gitops__id mb-20 fs-13">
                         <div>
@@ -646,6 +671,16 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         : 'GitHub Username*'
                                 }
                                 labelClassName="gitops__id form__label--fs-13 fw-5 fs-13"
+                                dataTestid={
+                                    this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                        ? 'gitops-azure-username-textbox'
+                                        : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                        ? 'gitops-bitbucket-username-textbox'
+                                        : this.state.providerTab=== GitProvider.GITLAB
+                                        ? 'gitops-gitlab-username-textbox'
+                                        : 'gitops-github-username-textbox'
+                                }
+                                labelTestId={`gitops-provider-username-heading-${this.state.providerTab}`}
                             />
                         </div>
                         <div>
@@ -673,6 +708,16 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 }
                                 labelClassName="gitops__id form__label--fs-13 mb-8 fw-5 fs-13"
                                 autoComplete="off"
+                                dataTestid={
+                                    this.state.providerTab === GitProvider.AZURE_DEVOPS
+                                        ? 'gitops-azure-pat-textbox'
+                                        : this.state.providerTab === GitProvider.BITBUCKET_CLOUD
+                                        ? 'gitops-bitbucket-pat-textbox'
+                                        : this.state.providerTab=== GitProvider.GITLAB
+                                        ? 'gitops-gitlab-pat-textbox'
+                                        : 'gitops-github-pat-textbox'
+                                }
+                                labelTestId={`gitops-provider-pat-heading-${this.state.providerTab}`}
                             />
                         </div>
                     </div>
@@ -685,6 +730,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 e.preventDefault()
                                 this.saveGitOps()
                             }}
+                            data-testid="gitops-save-button"
                             tabIndex={5}
                             className={`cta ${this.state.saveLoading ? 'cursor-not-allowed' : ''}`}
                         >

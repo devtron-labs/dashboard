@@ -5,7 +5,6 @@ export const TOKEN_COOKIE_NAME = 'argocd.token'
 export const DEVTRON_DEFAULT_RELEASE_NAME = 'devtron'
 export const DEVTRON_DEFAULT_NAMESPACE = 'devtroncd'
 export const DEVTRON_DEFAULT_CLUSTER_ID = '1'
-
 export const Routes = {
     GET: 'get',
     UPDATE: 'update',
@@ -46,6 +45,7 @@ export const Routes = {
 
     APP: 'app',
     APP_LIST: 'app/list',
+    APP_LIST_V1: 'v1',
     APP_LIST_V2: 'v2',
     APP_LIST_MIN: 'app/autocomplete',
     APP_DETAIL: 'app/detail',
@@ -178,6 +178,7 @@ export const Routes = {
     VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
     CLUSTER_LIST: 'k8s/capacity/cluster/list',
+    CLUSTER_LIST_MIN: 'k8s/capacity/cluster/list/raw',
     CLUSTER_CAPACITY: 'k8s/capacity/cluster',
     NODE_LIST: 'k8s/capacity/node/list',
     NODE_CAPACITY: 'k8s/capacity/node',
@@ -797,4 +798,10 @@ export enum MANIFEST_KEY_FIELDS {
 export enum KEY_VALUE {
     KEY = 'key',
     VALUE = 'value',
+}
+
+export enum CONFIGURATION_TYPES {
+    ENVIRONMENT = 'ENVIRONMENT',
+    NAMESPACE = 'NAMESPACE',
+    DESCRIPTION = 'DESCRIPTION'
 }

@@ -38,11 +38,11 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
                 <>
                     {name && (
                         <div className="flex column left dc__border-bottom mb-20">
-                            <span className="flex flex-justify w-100 fs-14 cn-9">
+                            <span className="flex flex-justify w-100 fs-14 cn-9" data-testid="group-name-heading-after-create">
                                 Group name
                                 <Pencil className="pointer" onClick={updateChartDetails} />
                             </span>
-                            <div className="flex left fw-6 fs-14 mt-8 mb-20">{name}</div>
+                            <div className="flex left fw-6 fs-14 mt-8 mb-20" data-testid="group-name-chart-group">{name}</div>
                         </div>
                     )}
                     <div className="pb-16 flex left column">
@@ -63,6 +63,7 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
                             <div
                                 className="cr-5 scr-5 bcn-0 en-2 bw-1 cursor fw-6 fs-13 br-4 pr-12 pl-12 flex h-32 lh-n w-100"
                                 onClick={removeAllCharts}
+                                data-testid="chart-group-remove-all-charts"
                             >
                                 <Trash className="icon-dim-16 mr-8" />
                                 Remove all
@@ -104,6 +105,7 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
                                 getChartVersionsAndValues ? () => getChartVersionsAndValues(chart.id, index) : null
                             }
                             hideDeployedValues={hideDeployedValues}
+                            datatestid={`${index}`}
                         />
                     ))}
                 </div>
@@ -122,6 +124,7 @@ interface SelectedChartWidget {
     getChartVersionsAndValues?: (...args) => Promise<void>
     selected: boolean
     hideDeployedValues?: boolean
+    datatestid?:string
 }
 
 const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
@@ -134,6 +137,7 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
     getChartVersionsAndValues,
     selected,
     hideDeployedValues,
+    datatestid,
 }) => {
     const {
         chartMetaData: { chartName, chartRepoName, icon },
@@ -228,7 +232,7 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
                     <Warning className="chart-warn" />
                 </div>
                 <div className="flex left column ml-18">
-                    <b className="chart-name">
+                    <b className="chart-name" data-testid={`selected-chart-${datatestid}`}>
                         {chartRepoName}/{chartName}
                     </b>
                     {chart.isEnabled && (

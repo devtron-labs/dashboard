@@ -74,7 +74,7 @@ function TerminalComponent({
 
     return (
         <div className="terminal-view-container">
-            <div className="flex left bcn-0 pt-4 pb-4 pl-20 dc__border-top">
+            <div data-testid="terminal-editor-header" className="flex left bcn-0 pt-4 pb-4 pl-20 dc__border-top">
                 <Tippy
                     className="default-tt"
                     arrow={false}
@@ -99,7 +99,7 @@ function TerminalComponent({
                 </Tippy>
                 <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
                     <div>
-                        <Abort className="icon-dim-20" onClick={handleAbort} />
+                        <Abort data-testid="clear-terminal-editor" className="icon-dim-20" onClick={handleAbort} />
                     </div>
                 </Tippy>
                 <span className="bcn-2 mr-8 ml-8" style={{ width: '1px', height: '16px' }} />
@@ -134,6 +134,7 @@ function TerminalComponent({
                 </div>
             </div>
             <div
+                data-testid="app-terminal-container"
                 className="terminal-view-wrapper"
                 style={{
                     minHeight: isResourceBrowserView ? '200px' : '',

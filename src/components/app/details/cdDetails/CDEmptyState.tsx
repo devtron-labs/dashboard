@@ -11,6 +11,7 @@ export default function CDEmptyState({
     actionButtonIconRight,
     actionButtonText,
     actionHandler,
+    dataTestId
 }: {
     imgSource?: string
     title?: string
@@ -20,6 +21,7 @@ export default function CDEmptyState({
     actionButtonIconRight?: boolean
     actionButtonText?: string
     actionHandler?: () => void
+    dataTestId? : string
 }) {
     return (
         <div style={{backgroundColor: 'var(--window-bg)'}}>
@@ -28,7 +30,7 @@ export default function CDEmptyState({
                 <img src={imgSource || AppNotDeployed} alt="" />
             </EmptyState.Image>
             <EmptyState.Title>
-                <h4 className="fw-6 fs-16">{title ? title : `Data not available`}</h4>
+                <h4 className="fw-6 fs-16" data-testid={`${dataTestId}-heading`}>{title ? title : `Data not available`} </h4>
             </EmptyState.Title>
             <EmptyState.Subtitle>
                 {subtitle ? subtitle : `Deployed configurations is not available for older deployments`}
@@ -38,6 +40,7 @@ export default function CDEmptyState({
                     <div
                         className={`${actionButtonClass ? actionButtonClass : 'cb-5 bcn-0 en-2'} fcn-0 fw-6 fs-13 flexbox br-4 pl-16 pr-16 pt-8 pb-8 pointer`}
                         onClick={actionHandler}
+                        data-testid = {`${dataTestId}-button`}
                     >
                         {ActionButtonIcon && !actionButtonIconRight && <ActionButtonIcon className="add-icon" />}
                         {actionButtonText}

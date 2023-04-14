@@ -175,7 +175,7 @@ function NavItem({ serverMode }) {
     ]
 
     const ConfigOptional = [
-        { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
+        { name: 'Chart Repositories',href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
         {
             name: 'Custom Charts',
             href: URLS.GLOBAL_CONFIG_CUSTOM_CHARTS,
@@ -340,6 +340,7 @@ function NavItem({ serverMode }) {
                                     <NavLink
                                         key={`nav_item_${index}`}
                                         to={route.href}
+                                        data-testid="user-authorization-link"
                                         className={`cursor ${
                                             collapsedState[route.name] ? '' : 'fw-6'
                                         } flex dc__content-space`}
@@ -557,17 +558,17 @@ function Title({ title = '', subtitle = '', style = {}, className = '', tag = ''
 }
 
 function ListToggle({ onSelect, enabled = false, ...props }) {
-    return <Toggle {...props} onSelect={onSelect} selected={enabled} />
+    return <Toggle dataTestId="toggle-button" {...props} onSelect={onSelect} selected={enabled} />
 }
 
-function DropDown({ className = '', style = {}, src = null, ...props }) {
+function DropDown({ className = '',dataTestid='', style = {}, src = null, ...props }) {
     if (React.isValidElement(src)) return src
-    return <img {...props} src={src || arrowTriangle} alt="" className={`list__arrow ${className}`} style={style} />
+    return <img {...props} src={src || arrowTriangle} data-testid={dataTestid} alt="" className={`list__arrow ${className}`} style={style} />
 }
 
-export function List({ children = null, className = '', ...props }) {
+export function List({ dataTestId='' ,children = null, className = '', ...props }) {
     return (
-        <div className={`list ${className}`} {...props}>
+        <div className={`list ${className}`} {...props} data-testid = {dataTestId}>
             {children}
         </div>
     )
@@ -599,11 +600,13 @@ export function CustomInput({
     labelClassName = '',
     placeholder = '',
     tabIndex = 1,
+    dataTestid = ""
 }) {
     return (
         <div className="flex column left top">
             <label className={`form__label ${labelClassName}`}>{label}</label>
             <input
+                data-testid= {dataTestid}
                 type={type}
                 name={name}
                 autoComplete="off"

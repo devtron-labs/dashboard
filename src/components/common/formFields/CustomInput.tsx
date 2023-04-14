@@ -22,6 +22,8 @@ export interface CustomInputProps {
     onChange: (...args) => void;
     onBlur?: (e) => void;
     onFocus?: (e) => void;
+    dataTestid?:string;
+    labelTestId?: string;
 }
 
 export class CustomInput extends Component<CustomInputProps, any> {
@@ -46,8 +48,9 @@ export class CustomInput extends Component<CustomInputProps, any> {
         let labelClasses = `form__label`;
         if (this.props.labelClassName) labelClasses = `${labelClasses} ${this.props.labelClassName}`;
         return <div>
-            <label className={labelClasses}>{this.props.label} {this.props.showLink && this.gitCreate()}</label>
+            <label className={labelClasses} data-testid={this.props.labelTestId}>{this.props.label} {this.props.showLink && this.gitCreate()}</label>
             <input type={type}
+                data-testid = {this.props.dataTestid}
                 autoFocus={this.props.autoFocus}
                 autoComplete={this.props.autoComplete}
                 tabIndex={this.props.tabIndex}

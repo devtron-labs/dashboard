@@ -394,6 +394,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         filterType: string,
         query: Record<string, string>,
     ): string => {
+        
         /**
          * Step 1: Return currently selected/checked items from filters list as string if
          * - There are no query params
@@ -704,6 +705,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     <div className="search">
                         <Search className="search__icon icon-dim-18" />
                         <input
+                            data-testid="Search-by-app-name"
                             type="text"
                             name="app_search_input"
                             autoComplete="off"
@@ -738,6 +740,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 applyFilter={applyFilter}
                                 onShowHideFilterContent={onShowHideFilterContent}
                                 isFirstLetterCapitalize={true}
+                                dataTestId={'app-status-filter'}
                             />
                             <span className="filter-divider"></span>
                         </>
@@ -753,6 +756,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         type={AppListConstants.FilterType.PROJECT}
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
+                        dataTestId={'projects-filter'}
                     />
                     {serverMode == SERVER_MODE.FULL && (
                         <>
@@ -768,6 +772,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 type={AppListConstants.FilterType.ENVIRONMENT}
                                 applyFilter={applyFilter}
                                 onShowHideFilterContent={onShowHideFilterContent}
+                                dataTestId={'environment-filter'}
                             />
                         </>
                     )}
@@ -784,6 +789,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
                         showPulsatingDot={showPulsatingDot}
+                        dataTestId={'cluster-filter'}
                     />
                     <Filter
                         rootClassName="ml-0-imp"
@@ -805,6 +811,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         errored={fetchingNamespacesErrored}
                         errorMessage={'Could not load namespaces'}
                         errorCallbackFunction={_forceFetchAndSetNamespaces}
+                        dataTestId={'namespace-filter'}
                     />
                     {showExportCsvButton && (
                         <>
@@ -919,7 +926,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             <span>
                                 {lastDataSyncTimeString}&nbsp;
                                 {!isDataSyncing && (
-                                    <button className="btn btn-link p-0 fw-6 cb-5" onClick={syncNow}>
+                                    <button className="btn btn-link p-0 fw-6 cb-5" onClick={syncNow} data-testid="sync-now-button">
                                         Sync now
                                     </button>
                                 )}
@@ -970,13 +977,12 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <div>
-            {dataStateType === AppListViewType.ERROR && (
-                <div className="dc__loading-wrapper">
+        <div className="h-100">
+            {dataStateType === AppListViewType.ERROR ? (
+                <div className="h-100 flex">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
-            )}
-            {
+            ) : (
                 <>
                     <HeaderWithCreateButton headerName="Applications" isSuperAdmin={isSuperAdmin} />
                     {renderMasterFilters()}
@@ -1041,7 +1047,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         </>
                     )}
                 </>
-            }
+            )}
         </div>
     )
 }

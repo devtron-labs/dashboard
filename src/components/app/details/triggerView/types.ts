@@ -271,6 +271,7 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     parentPipelineType?: string
     parentEnvironmentName?: string
     fromAppGrouping: boolean
+    description: string
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -290,6 +291,7 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     inputMaterialList: InputMaterials[]
     rollbackMaterialList: InputMaterials[]
     fromAppGrouping: boolean
+    description: string
 }
 
 export interface TriggerEdgeType {
@@ -584,6 +586,7 @@ export interface CdPipeline {
     id: number
     environmentId: number
     environmentName?: string
+    description?: string
     ciPipelineId: number
     triggerType: 'AUTOMATIC' | 'MANUAL'
     name: string

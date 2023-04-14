@@ -32,7 +32,7 @@ function LogoutCard({ className, userFirstLetter, setShowLogOutCard, showLogOutC
                         {userFirstLetter[0]}
                     </p>
                 </div>
-                <div className="logout-card__logout cursor" onClick={onLogout}>
+                <div className="logout-card__logout cursor" data-testid="logout-button" onClick={onLogout}>
                     Logout
                 </div>
             </div>

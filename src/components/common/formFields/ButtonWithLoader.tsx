@@ -8,6 +8,7 @@ export interface ButtonProps {
     isLoading: boolean;
     loaderColor: string;
     onClick: (event) => void;
+    dataTestId?: string;
 }
 
 export class ButtonWithLoader extends Component<ButtonProps> {
@@ -22,7 +23,9 @@ export class ButtonWithLoader extends Component<ButtonProps> {
     }
 
     render() {
-        return <button type="button"
+        return <button 
+            type="button"
+            data-testid={this.props.dataTestId}
             disabled={!!this.props.disabled}
             className={`${this.props.rootClassName}`}
             onClick={this.clickHandler}>

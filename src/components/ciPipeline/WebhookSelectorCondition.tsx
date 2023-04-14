@@ -14,6 +14,7 @@ export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, s
                     ClearIndicator: null,
                     Option,
                 }}
+                classNamePrefix={`build-webhook-select-key-dropdown-${conditionIndex}`}
                 isSearchable={true}
                 tabIndex={1}
                 placeholder="Select Key"
@@ -36,7 +37,7 @@ export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, s
                 onChange={(selectedSelector) => onSelectorChange(conditionIndex, selectedSelector.value)}
                 isDisabled={!canEditSelectorCondition}
             />
-            <input type="text" className="form__input" placeholder="Enter regex" disabled={!canEditSelectorCondition}
+            <input type="text" data-testid={`build-webhook-select-key-input-${conditionIndex}`} className="form__input" placeholder="Enter regex" disabled={!canEditSelectorCondition}
                    onChange={(event) => { onSelectorValueChange(conditionIndex, event.target.value) }}
                    value={selectorCondition.value}
             />

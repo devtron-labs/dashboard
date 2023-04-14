@@ -205,7 +205,11 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                     )}
                 </div>
 
-                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32" onClick={addVariable}>
+                <div
+                    className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32"
+                    onClick={addVariable}
+                    data-testid={`custom-script-${type.toLowerCase()}-variable-add-variable-button`}
+                >
                     <Add className="add-icon mt-6" />
                     Add variable
                 </div>
@@ -231,6 +235,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                                 }}
                                             >
                                                 <input
+                                                    data-testid={`custom-script-${type.toLowerCase()}-variable-add-variable-variable-name-textbox`}
                                                     className={`w-100 en-2 bw-1 pl-10 pr-10 pt-4 pb-4 h-32 dc__no-bottom-border ${
                                                         type === PluginVariableType.INPUT
                                                             ? 'dc__top-radius-4'
@@ -317,6 +322,7 @@ function CustomInputOutputVariables({ type }: { type: PluginVariableType }) {
                                         </div>
                                     )}
                                     <input
+                                        data-testid={`custom-script-${type.toLowerCase()}-variable-add-description-textbox`}
                                         style={{ width: '80% !important' }}
                                         className={`w-100 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__bottom-radius-4 h-32 ${
                                             type === PluginVariableType.INPUT ? 'dc__no-top-border' : ''
