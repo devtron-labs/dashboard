@@ -138,7 +138,6 @@ export default function GitProvider({ ...props }) {
                 return (
                     <>
                         <CollapsedList
-                            dataTestId={`add-git-account-button-${index}`}
                             key={provider.name || Math.random().toString(36).substr(2, 5)}
                             id={provider.id}
                             name={provider.name}
@@ -174,7 +173,6 @@ export default function GitProvider({ ...props }) {
 }
 
 function CollapsedList({
-    dataTestId = '',
     id,
     name,
     active,
@@ -244,7 +242,7 @@ function CollapsedList({
             }`}
         >
             <List
-                dataTestId={dataTestId}
+                dataTestId={id || 'Add git account'}
                 onClick={setToggleCollapse}
                 className={`${!id && !collapsed ? 'no-grid-column' : ''}`}
             >

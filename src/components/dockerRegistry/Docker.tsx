@@ -109,7 +109,6 @@ useEffect(() => {
             </p>
             {dockerRegistryList.map((docker) => (
                 <CollapsedList
-                    dataTestId={docker.id || 'Add'}
                     reload={reload}
                     {...docker}
                     clusterOption={clusterOption}
@@ -121,7 +120,6 @@ useEffect(() => {
 }
 
 function CollapsedList({
-    dataTestId = '',
     id = '',
     pluginId = null,
     registryUrl = '',
@@ -164,7 +162,7 @@ function CollapsedList({
     return (
         <article className={`collapsed-list collapsed-list--docker collapsed-list--${id ? 'update' : 'create dashed'}`}>
             <List
-                dataTestId={dataTestId}
+                dataTestId={id || 'Add'}
                 onClick={setToggleCollapse}
                 className={`${!id && !collapsed ? 'no-grid-column' : ''}`}
             >
