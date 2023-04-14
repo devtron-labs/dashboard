@@ -38,11 +38,16 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
                 <>
                     {name && (
                         <div className="flex column left dc__border-bottom mb-20">
-                            <span className="flex flex-justify w-100 fs-14 cn-9" data-testid="group-name-heading-after-create">
+                            <span
+                                className="flex flex-justify w-100 fs-14 cn-9"
+                                data-testid="group-name-heading-after-create"
+                            >
                                 Group name
                                 <Pencil className="pointer" onClick={updateChartDetails} />
                             </span>
-                            <div className="flex left fw-6 fs-14 mt-8 mb-20" data-testid="group-name-chart-group">{name}</div>
+                            <div className="flex left fw-6 fs-14 mt-8 mb-20" data-testid="group-name-chart-group">
+                                {name}
+                            </div>
                         </div>
                     )}
                     <div className="pb-16 flex left column">

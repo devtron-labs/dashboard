@@ -176,7 +176,12 @@ export default function ChartGroupDetails() {
                     <Pencil className="mr-5" />
                     Edit
                 </button>
-                <button className="cta flex delete h-32" type="button" data-testid="chart-group-delete-button" onClick={() => toggleConfirmation(true)}>
+                <button
+                    className="cta flex delete h-32"
+                    type="button"
+                    data-testid="chart-group-delete-button"
+                    onClick={() => toggleConfirmation(true)}
+                >
                     {deleting ? <Progressing /> : 'Delete'}
                 </button>
             </div>
