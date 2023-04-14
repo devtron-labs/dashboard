@@ -107,7 +107,6 @@ export interface EmptyViewType {
     subTitle: string
     link?: string
     linkText?: string
-    dataTestId?: string
 }
 
 export interface SidebarType {
