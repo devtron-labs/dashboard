@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import { CDModalTab } from '../../../service'
 import { getLoginInfo, noop, ScanVulnerabilitiesTable, useAsync } from '../../../../common'
 import { getModuleInfo } from '../../../../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap } from '../../../../../config'
+import { ModuleNameMap, TriggerTypeMap } from '../../../../../config'
 import { ModuleStatus } from '../../../../v2/devtronStackManager/DevtronStackManager.type'
 import { ReactComponent as World } from '../../../../../assets/icons/ic-world.svg'
 import { ReactComponent as Failed } from '../../../../../assets/icons/ic-rocket-fail.svg'
@@ -119,7 +119,11 @@ export default function ApprovalMaterial({
         }
         submitApprovalRequest(payload)
             .then((response) => {
-                toast.success(APPROVAL_REQUEST_TOAST_MSG[requestType.toLowerCase()])
+                toast.success(
+                    requestType === ApprovalRequestType.APPROVE && node?.triggerType === TriggerTypeMap.automatic
+                        ? APPROVAL_REQUEST_TOAST_MSG[`${requestType.toLowerCase()}_auto_cd`]
+                        : APPROVAL_REQUEST_TOAST_MSG[requestType.toLowerCase()],
+                )
                 if (!noConfirmation) {
                     toggleTippyVisibility(e)
                 }

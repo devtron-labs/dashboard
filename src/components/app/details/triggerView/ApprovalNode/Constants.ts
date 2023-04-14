@@ -14,6 +14,7 @@ export const APPROVAL_RUNTIME_STATE = {
 export const APPROVAL_REQUEST_TOAST_MSG = {
     submit: 'Image approval request submitted',
     approve: 'Image approved',
+    approve_auto_cd: 'Image has been approved and the deployment is initiated.',
     cancel: 'Image approval request cancelled',
 }
 

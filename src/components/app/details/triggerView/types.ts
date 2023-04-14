@@ -47,6 +47,7 @@ export interface CDMaterialProps {
     isFromBulkCD?: boolean
     userApprovalConfig?: UserApprovalConfigType
     requestedUserId?: number
+    triggerType?: string
 }
 
 export enum DeploymentWithConfigType {
