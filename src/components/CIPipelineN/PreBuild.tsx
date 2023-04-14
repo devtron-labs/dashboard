@@ -131,7 +131,7 @@ export function PreBuild({
                 <div className="cn-9 fw-6 fs-14 pb-10">What do you want this task to do?</div>
                 <div onClick={() => setPluginType(PluginType.INLINE, 0)}>
                     <PluginCard
-                        dataTestId = "execute-custom-script-button"
+                        dataTestId="execute-custom-script-button"
                         imgSource={PreBuildIcon}
                         title="Execute custom script"
                         subTitle="Write a script to perform custom tasks."
@@ -178,7 +178,7 @@ export function PreBuild({
                     actionHandler={addNewTask}
                     actionButtonText="Add task"
                     ActionButtonIcon={Add}
-                    dataTestId = "pre-build-add-task-button"
+                    dataTestId="pre-build-add-task-button"
                 />
             )
         } else {
@@ -187,7 +187,7 @@ export function PreBuild({
                     {!formData[activeStageName].steps[selectedTaskIndex]?.stepType ? (
                         renderPluginList()
                     ) : (
-                        <TaskDetailComponent dataTestId="" />
+                        <TaskDetailComponent />
                     )}
                 </div>
             )

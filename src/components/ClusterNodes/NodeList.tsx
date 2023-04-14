@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink, useLocation, useRouteMatch, useParams, useHistory } from 'react-router-dom'
-import { getClusterCapacity, getNodeList } from './clusterNodes.service'
+import { getClusterCapacity, getClusterListMin, getNodeList } from './clusterNodes.service'
 import {
     handleUTCTime,
     Pagination,
@@ -35,7 +35,6 @@ import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as CloudIcon } from '../../assets/icons/ic-cloud.svg'
 import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwise.svg'
-import { getClusterList } from '../ResourceBrowser/ResourceBrowser.service'
 
 export default function NodeList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()
@@ -239,22 +238,22 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }, [clusterId])
 
     useEffect(() => {
-        getClusterList()
+        getClusterListMin()
             .then((response) => {
                 setLastDataSync(!lastDataSync)
                 if (response.result) {
                     const optionList = response.result
-                        .filter((cluster) => !cluster.errorInConnecting)
+                        .filter((cluster) => !cluster.errorInNodeListing)
                         .map((cluster) => {
                             const _clusterId = cluster.id?.toString()
                             if (_clusterId === clusterId) {
                                 setSelectedCluster({
-                                    label: cluster.cluster_name,
+                                    label: cluster.name,
                                     value: _clusterId,
                                 })
                             }
                             return {
-                                label: cluster.cluster_name,
+                                label: cluster.name,
                                 value: _clusterId,
                             }
                         })
