@@ -85,6 +85,7 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
                 subtitle="This deployment is in progress. Click on Check status to know the live status."
                 actionButtonText="Check live status"
                 actionButtonIconRight={true}
+                dataTestId="deployment-progress"
             />
         </div>
     ) : (

@@ -282,7 +282,7 @@ function CustomInputVariableSelect({ selectedVariableIndex }: { selectedVariable
                     : pluginSelectStyle
             }
             formatOptionLabel={formatOptionLabel}
-            classNamePrefix = "select"
+            classNamePrefix="select"
             components={{
                 MenuList: (props) => {
                     return (

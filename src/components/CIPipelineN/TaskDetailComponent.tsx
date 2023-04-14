@@ -22,7 +22,7 @@ import { ciPipelineContext } from './CIPipeline'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ValidationRules } from '../ciPipeline/validationRules'
 
-export function TaskDetailComponent( {dataTestId}: { dataTestId?: string}) {
+export function TaskDetailComponent() {
     const {
         formData,
         setFormData,
@@ -115,7 +115,8 @@ export function TaskDetailComponent( {dataTestId}: { dataTestId?: string}) {
 
     const handleTriggerIfParentStageFailChange = (): void => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail = !_formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail
+        _formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail =
+            !_formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail
         setFormData(_formData)
     }
 
@@ -165,13 +166,11 @@ export function TaskDetailComponent( {dataTestId}: { dataTestId?: string}) {
         <div>
             <div>
                 <div className="row-container mb-12">
-                    <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
-                        Task name
-                    </div>
+                    <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Task name</div>
                     <div>
                         <input
                             className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                            data-testid = "preBuild-task-name-textbox"
+                            data-testid="preBuild-task-name-textbox"
                             type="text"
                             onChange={(e) => handleNameChange(e)}
                             value={formData[activeStageName].steps[selectedTaskIndex].name}
@@ -191,7 +190,7 @@ export function TaskDetailComponent( {dataTestId}: { dataTestId?: string}) {
                     <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>{' '}
                     <input
                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
-                        data-testid = "preBuild-task-description-textbox"
+                        data-testid="preBuild-task-description-textbox"
                         type="text"
                         onChange={(e) => handleDescriptionChange(e)}
                         value={formData[activeStageName].steps[selectedTaskIndex].description}
@@ -199,8 +198,7 @@ export function TaskDetailComponent( {dataTestId}: { dataTestId?: string}) {
                     />
                 </div>
 
-                {
-                    activeStageName === BuildStageVariable.PostBuild &&
+                {activeStageName === BuildStageVariable.PostBuild && (
                     <div className="row-container mb-12">
                         <div className="fw-6 fs-13 lh-32 cn-7 ">Trigger even if build fails</div>
                         <input
@@ -210,7 +208,7 @@ export function TaskDetailComponent( {dataTestId}: { dataTestId?: string}) {
                             onChange={handleTriggerIfParentStageFailChange}
                         />
                     </div>
-                }
+                )}
 
                 {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE && (
                     <div className="row-container mb-12">
@@ -224,10 +222,18 @@ export function TaskDetailComponent( {dataTestId}: { dataTestId?: string}) {
                             name="task-type"
                             onChange={handleTaskScriptTypeChange}
                         >
-                            <RadioGroup.Radio className="left-radius" value={ScriptType.SHELL} dataTestId = "custom-script-task-name-shell">
+                            <RadioGroup.Radio
+                                className="left-radius"
+                                value={ScriptType.SHELL}
+                                dataTestId="custom-script-task-name-shell"
+                            >
                                 Shell
                             </RadioGroup.Radio>
-                            <RadioGroup.Radio className="right-radius dc__no-left-border" value={ScriptType.CONTAINERIMAGE} dataTestId = "custom-script-task-name-container-image">
+                            <RadioGroup.Radio
+                                className="right-radius dc__no-left-border"
+                                value={ScriptType.CONTAINERIMAGE}
+                                dataTestId="custom-script-task-name-container-image"
+                            >
                                 Container Image
                             </RadioGroup.Radio>
                         </RadioGroup>
@@ -238,7 +244,7 @@ export function TaskDetailComponent( {dataTestId}: { dataTestId?: string}) {
                 <>
                     <hr />
                     {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE ? (
-                        <CustomInputOutputVariables preBuildAddVariableTestId = "custom-script-input-variable-add-variable-button" preBuildAddVariableNameTextBoxTestId = "custom-script-input-variable-add-variable-variable-name-textbox" preBuildAddDescriptionTextBoxTestId = "custom-script-input-variable-add-description-textbox" type={PluginVariableType.INPUT} />
+                        <CustomInputOutputVariables type={PluginVariableType.INPUT} />
                     ) : (
                         <VariableContainer type={PluginVariableType.INPUT} />
                     )}{' '}
@@ -255,7 +261,7 @@ export function TaskDetailComponent( {dataTestId}: { dataTestId?: string}) {
                             <TaskTypeDetailComponent />
                             {formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].scriptType !==
                                 ScriptType.CONTAINERIMAGE && (
-                                <CustomInputOutputVariables preBuildAddVariableTestId = "custom-script-output-variables-add-variable-button" preBuildAddVariableNameTextBoxTestId = "custom-script-output-variable-add-variable-variable-name-textbox" preBuildAddDescriptionTextBoxTestId = "custom-script-output-variable-add-description-textbox" type={PluginVariableType.OUTPUT} />
+                                <CustomInputOutputVariables type={PluginVariableType.OUTPUT} />
                             )}
                         </>
                     ) : (

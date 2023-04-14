@@ -30,6 +30,7 @@ export interface CDPipeline {
     id: number;
     environmentId: number;
     environmentName: string;
+    description: string;
     ciPipelineId: number;
     triggerType: string;
     name: string;

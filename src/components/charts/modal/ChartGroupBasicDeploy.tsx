@@ -82,7 +82,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                         {appNames}
                     </div>}
             </div>
-            <button type="button" className="deploy-selected-charts__applications-edit" onClick={this.toggleShowAppName}>
+            <button type="button" className="deploy-selected-charts__applications-edit" data-testid="edit-application-name-chart-icon" onClick={this.toggleShowAppName}>
                 <Edit className="icon-dim-24" />
             </button>
         </div>
@@ -112,9 +112,10 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
             onSave={this.deployChartGroup}>
             <div className="deploy-selected-charts__body">
                 <label className="form__row">
-                    <span className="form__label dc__required-field">Project</span>
+                    <span className="form__label dc__required-field" data-testid="group-deployment-project-heading">Project</span>
                     <ReactSelect
                         autoFocus
+                        classNamePrefix='group-deployment-project'
                         defaultValue={selectedProject}
                         components={{
                             DropdownIndicator,
@@ -135,7 +136,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                     </span>
                 </label>
                 <div className="form__row">
-                    <span className="form__label dc__required-field">Deploy to Environment</span>
+                    <span className="form__label dc__required-field" data-testid="group-deployment-env-heading">Deploy to Environment</span>
                     <ReactSelect
                         defaultValue={selectedEnvironment}
                         components={{
@@ -143,6 +144,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                             Option
                         }}
                         tabIndex={2}
+                        classNamePrefix='group-deployment-env'
                         placeholder="Select Environment"
                         styles={{
                             ...smallMenuList,
@@ -165,10 +167,10 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                 />
             </div>
             <div className="deploy-selected-charts__bottom flexbox flex-justify">
-                <button type="button" className="cta cancel" onClick={this.props.redirectToAdvancedOptions}>
+                <button type="button" className="cta cancel" onClick={this.props.redirectToAdvancedOptions} data-testid="deployment-advance-button">
                     Advanced Options
                 </button>
-                <DialogFormSubmit tabIndex={3}>Deploy Chart</DialogFormSubmit>
+                <DialogFormSubmit tabIndex={3} >Deploy Chart</DialogFormSubmit>
             </div>
         </DialogForm>
     }
@@ -192,7 +194,7 @@ function ApplicationNameList({ charts, handleNameChange, showAppNames }) {
                     <img onError={handleImageError} src={chart.chartMetaData.icon || ""} alt="" className="dc__chart-grid-item__icon" />
                     <div className="w-100">
                         <span className="form__label form__label--lower">{chart.chartMetaData.chartRepoName}/{chart.chartMetaData.chartName}</span>
-                        <input autoComplete="off" className={`form__input ${chart?.name?.error ? 'form__input--error' : ''}`} type="text" tabIndex={index + 1} value={chart.name.value}
+                        <input autoComplete="off" className={`form__input ${chart?.name?.error ? 'form__input--error' : ''}`} type="text" data-testid={`chart-name-edit-input-${index}`} tabIndex={index + 1} value={chart.name.value}
                             onChange={(event) => {
                                 handleNameChange(index, event.target.value)
                             }} />

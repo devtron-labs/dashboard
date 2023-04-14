@@ -113,6 +113,7 @@ export function Pencil({ color = 'var(--N700)', style = {}, ...props }) {
             xmlns="http://www.w3.org/2000/svg"
             style={{ width: '24px', height: '24px', ...style }}
             viewBox="0 0 24 24"
+            data-testid='group-name-edit-icon'
         >
             <g fill="none" fillRule="evenodd">
                 <path

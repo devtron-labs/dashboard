@@ -4,10 +4,16 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import Tippy from '@tippyjs/react'
 import { CDNodeProps, CDNodeState } from '../types'
 import { toast } from 'react-toastify'
-import {BUTTON_TEXT, CONFIRMATION_DIALOG_MESSAGING, ERR_MESSAGE_ARGOCD, VIEW_DELETION_STATUS} from '../../../config/constantMessaging'
+import {
+    BUTTON_TEXT,
+    CONFIRMATION_DIALOG_MESSAGING,
+    ERR_MESSAGE_ARGOCD,
+    VIEW_DELETION_STATUS,
+} from '../../../config/constantMessaging'
 import { ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import warningIconSrc from '../../../assets/icons/info-filled.svg'
 import { URLS } from '../../../config'
+import { envDescriptionTippy } from '../../app/details/triggerView/workflow/nodes/workflow.utils'
 
 export class CDNode extends Component<CDNodeProps, CDNodeState> {
     constructor(props) {
@@ -94,7 +100,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         return (
             <>
                 <Link to={this.props.to} onClick={this.onClickNodeCard} className="dc__no-decor">
-                    <div data-testid = "workflow-editor-cd-node" className={`workflow-node cursor ${this.props.deploymentAppDeleteRequest ? 'pl-0' : 'pl-16'}`}>
+                    <div data-testid={`workflow-editor-cd-node-${this.props.environmentName}`} className={`workflow-node cursor ${this.props.deploymentAppDeleteRequest ? 'pl-0' : 'pl-16'}`}>
                         {this.props.deploymentAppDeleteRequest ? (
                             <div className="workflow-node__trigger-type-delete workflow-node__trigger-type--create-delete bcr-5 m-0 dc__position-abs fs-10 dc__uppercase dc__top-radius-8 dc__text-center"></div>
                         ) : (
@@ -114,7 +120,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                         this.props.title
                                     )}
                                 </span>
-                                <span className="dc__ellipsis-right">{this.props.environmentName}</span>
+                                {envDescriptionTippy(this.props.environmentName, this.props.description)}
                             </div>
                             <div className="workflow-node__icon-common workflow-node__CD-icon"></div>
                         </div>

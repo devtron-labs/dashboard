@@ -394,6 +394,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         filterType: string,
         query: Record<string, string>,
     ): string => {
+        
         /**
          * Step 1: Return currently selected/checked items from filters list as string if
          * - There are no query params
@@ -980,13 +981,12 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <div>
-            {dataStateType === AppListViewType.ERROR && (
-                <div className="dc__loading-wrapper">
+        <div className="h-100">
+            {dataStateType === AppListViewType.ERROR ? (
+                <div className="h-100 flex">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
-            )}
-            {
+            ) : (
                 <>
                     <HeaderWithCreateButton headerName="Applications" isSuperAdmin={isSuperAdmin} />
                     {renderMasterFilters()}
@@ -1051,7 +1051,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         </>
                     )}
                 </>
-            }
+            )}
         </div>
     )
 }
