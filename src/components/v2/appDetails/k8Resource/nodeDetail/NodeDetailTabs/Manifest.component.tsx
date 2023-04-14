@@ -352,7 +352,8 @@ function ManifestComponent({
                                                 className={`${
                                                     tab.isSelected ? 'selected-manifest-tab cn-0' : ' bcn-1'
                                                 } bw-1 pl-6 pr-6 br-4 en-2 dc__no-decor flex left`}
-                                                onClick={() => handleTabClick(tab)}
+                                                onClick={() => handleTabClick(tab)} 
+                                                data-testid={tab.name}
                                             >
                                                 {tab.name}
                                             </div>
@@ -364,7 +365,7 @@ function ManifestComponent({
                                     <>
                                         <div className="pl-16 pr-16">|</div>
                                         {!isEditmode ? (
-                                            <div className="flex left cb-5 cursor" onClick={handleEditLiveManifest}>
+                                            <div className="flex left cb-5 cursor" onClick={handleEditLiveManifest} data-testid="edit-live-manifest">
                                                 <Edit className="icon-dim-16 pr-4 fc-5 edit-icon" /> Edit Live manifest
                                             </div>
                                         ) : (

@@ -90,6 +90,7 @@ export default function ResourceBrowserActionMenu({
                                     data-tab={RESOURCE_ACTION_MENU.logs}
                                     className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                                     onClick={handleResourceClick}
+                                    data-testid="logs-option-link"
                                 >
                                     <LogAnalyzerIcon className="icon-dim-16 mr-8" />
                                     <span className="cn-9">{RESOURCE_ACTION_MENU.logs}</span>
@@ -99,6 +100,7 @@ export default function ResourceBrowserActionMenu({
                                     data-tab={RESOURCE_ACTION_MENU.terminal}
                                     className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
                                     onClick={handleResourceClick}
+                                    data-testid="terminal-option-link"
                                 >
                                     <TerminalIcon className="icon-dim-16 mr-8" />
                                     <span className="cn-9">{RESOURCE_ACTION_MENU.terminal}</span>

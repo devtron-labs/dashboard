@@ -360,6 +360,7 @@ function LogsComponent({
                             <div
                                 className={`mr-8 ${logsPaused ? 'play' : 'stop'} flex`}
                                 onClick={(e) => handleLogsPause()}
+                                data-testid="logs-stop-button"
                             >
                                 {logsPaused ? (
                                     <PlayButton className="icon-dim-16 cursor" />
@@ -589,12 +590,12 @@ function LogsComponent({
                             }`}
                         >
                             {readyState === 0 && (
-                                <div className="readyState dc__loading-dots" style={{ color: 'orange' }}>
+                                <div className="readyState dc__loading-dots" style={{ color: 'orange' }} data-testid="logs-connected-status">
                                     Connecting
                                 </div>
                             )}
                             {readyState === 1 && (
-                                <div className="readyState dc__loading-dots cg-5 pl-20">Connected</div>
+                                <div className="readyState dc__loading-dots cg-5 pl-20" data-testid="logs-connected-status">Connected</div>
                             )}
                         </div>
                     </div>
