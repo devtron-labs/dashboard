@@ -42,7 +42,7 @@ export function EventsTable({ loading, eventsList, isResourceBrowserView, errorV
                                                 className={
                                                     'cell-style dc__uppercase ' + head + (idx === 0 && ' pad-left-20')
                                                 }
-                                                data-testid={`${head}`}
+                                                data-testid={head}
                                             >
                                                 {head}
                                             </th>

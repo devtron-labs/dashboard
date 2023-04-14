@@ -199,7 +199,7 @@ function Sidebar({
                 data-grouped={useGroupName}
                 data-selected={isSelected}
                 onClick={selectNode}
-                data-testid={`${nodeName}`}
+                data-testid={nodeName}
             >
                 {nodeName}
             </div>

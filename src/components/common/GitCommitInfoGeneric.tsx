@@ -185,9 +185,8 @@ export default function GitCommitInfoGeneric({
                                         className="material-history__header"
                                         data-testid={`git-commit-credential${index}`}
                                     >
-                                        {' '}
                                         <Commit className="commit-hash__icon" />
-                                        {_lowerCaseCommitInfo.commit}{' '}
+                                        {_lowerCaseCommitInfo.commit}
                                     </div>
                                 </a>
                             ) : null}

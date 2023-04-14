@@ -156,7 +156,7 @@ function PageHeader({
                             <Close className="dc__page-header__close-icon icon-dim-24 cursor" />
                         </button>
                     )}
-                    <span className="fw-6" data-testid="kubertes-resource-browser-heading">
+                    <span className="fw-6" data-testid="main-header">
                         {headerName}
                     </span>
                     {additionalHeaderInfo && additionalHeaderInfo()}
