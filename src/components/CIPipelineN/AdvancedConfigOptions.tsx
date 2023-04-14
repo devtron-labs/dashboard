@@ -170,7 +170,7 @@ export default function AdvancedConfigOptions({
                     </TippyCustomized>
                 </h3>
                 <p className="fs-13 fw-4 cn-7 lh-20 m-0">Override docker build configurations for this pipeline.</p>
-                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32 mt-8" onClick={addDockerArg} data-testid = "create-build-pipeline-docker-args-add-parameter-button">
+                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32 mt-8" onClick={addDockerArg} data-testid="create-build-pipeline-docker-args-add-parameter-button">
                     <Add className="add-icon mt-6" />
                     Add parameter
                 </div>
@@ -235,7 +235,7 @@ export default function AdvancedConfigOptions({
                 </div>
                 <button
                     className={`allow-config-override flex h-28 ml-auto cta ${allowOverride ? 'delete' : 'ghosted'}`}
-                    data-testid = {`create-build-pipeline-${allowOverride ? 'delete' : 'allow'}-override-button`}
+                    data-testid={`create-build-pipeline-${allowOverride ? 'delete' : 'allow'}-override-button`}
                     onClick={toggleAllowOverride}
                 >
                     {`${allowOverride ? 'Delete' : 'Allow'} Override`}
