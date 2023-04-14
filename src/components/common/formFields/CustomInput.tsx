@@ -65,11 +65,15 @@ export class CustomInput extends Component<CustomInputProps, any> {
                 <Error className="form__icon form__icon--error" />
                 {this.props.error}
             </div>}
-
-            {this.props.helperText ? <> <div className="form__text-field-info">
-                <Info className="form__icon form__icon--info" />
-                <p className="sentence-case">{this.props.helperText}</p>
-            </div> </> : null}
-        </div>
+                {this.props.helperText ? (
+                    <>
+                        <div className="form__text-field-info">
+                            <Info className="form__icon form__icon--info" />
+                            <p className="sentence-case">{this.props.helperText}</p>
+                        </div>
+                    </>
+                ) : null}
+            </div>
+        )
     }
 }

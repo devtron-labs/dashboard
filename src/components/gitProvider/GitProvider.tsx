@@ -137,9 +137,7 @@ export default function GitProvider({ ...props }) {
             {allProviders.map((provider,index) => {
                 return (
                     <>
-                        {' '}
                         <CollapsedList
-                            dataTestId = {`add-git-account-button-${index}`}
                             key={provider.name || Math.random().toString(36).substr(2, 5)}
                             id={provider.id}
                             name={provider.name}
@@ -167,7 +165,7 @@ export default function GitProvider({ ...props }) {
                             </VisibleModal>
                         )}
                     </>
-                );
+                )
             })}
             {/* {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)} */}
         </section>
@@ -175,7 +173,6 @@ export default function GitProvider({ ...props }) {
 }
 
 function CollapsedList({
-    dataTestId = "",
     id,
     name,
     active,
@@ -195,14 +192,14 @@ function CollapsedList({
     sshPrivateKey,
     ...props
 }) {
-    const [collapsed, toggleCollapse] = useState(true);
-    const [enabled, toggleEnabled] = useState(active);
-    const [loading, setLoading] = useState(false);
-    let selectedGitHost = hostListOption.find((p) => p.value === gitHostId);
-    const [gitHost, setGithost] = useState({ value: selectedGitHost, error: '' });
+    const [collapsed, toggleCollapse] = useState(true)
+    const [enabled, toggleEnabled] = useState(active)
+    const [loading, setLoading] = useState(false)
+    let selectedGitHost = hostListOption.find((p) => p.value === gitHostId)
+    const [gitHost, setGithost] = useState({ value: selectedGitHost, error: '' })
 
     useEffectAfterMount(() => {
-        if (!collapsed) return;
+        if (!collapsed) return
         async function update() {
             let payload = {
                 id: id || 0,
@@ -214,20 +211,20 @@ function CollapsedList({
                 ...(authMode === 'USERNAME_PASSWORD' ? { username: userName, password } : {}),
                 ...(authMode === 'ACCESS_TOKEN' ? { accessToken } : {}),
                 ...(authMode === 'SSH' ? { sshPrivateKey: sshPrivateKey } : {}),
-            };
+            }
             try {
-                setLoading(true);
-                await updateGitProviderConfig(payload, id);
-                await reload();
-                toast.success(`Git account ${enabled ? 'enabled' : 'disabled'}.`);
+                setLoading(true)
+                await updateGitProviderConfig(payload, id)
+                await reload()
+                toast.success(`Git account ${enabled ? 'enabled' : 'disabled'}.`)
             } catch (err) {
-                showError(err);
+                showError(err)
             } finally {
-                setLoading(false);
+                setLoading(false)
             }
         }
-        update();
-    }, [enabled]);
+        update()
+    }, [enabled])
 
     const setToggleCollapse = () => {
         toggleCollapse(false)
@@ -244,7 +241,11 @@ function CollapsedList({
                 id ? 'update' : 'create'
             }`}
         >
-            <List dataTestId = {dataTestId} onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column' : ''}`}>
+            <List
+                dataTestId={id || 'Add git account'}
+                onClick={setToggleCollapse}
+                className={`${!id && !collapsed ? 'no-grid-column' : ''}`}
+            >
                 <List.Logo>
                     {id && (
                         <div className="">
@@ -576,7 +577,7 @@ function GitForm({
                                             position: 'relative',
                                             paddingBottom: '0px',
                                             maxHeight: '176px',
-                                        };
+                                        }
                                     },
                                 }}
                                 components={{
@@ -604,9 +605,9 @@ function GitForm({
                 </div>
                 <div className="form__label">Authentication type*</div>
                 <div className={` form__row--auth-type  ${!id ? 'pointer' : ''}`}>
-                    {AuthType.map(({ label: Lable, value } , index) => (
+                    {AuthType.map(({ label: Lable, value }, index) => (
                         <div
-                            data-testid = {`git-account-auth-type-${index}`}
+                            data-testid={`git-account-auth-type-${index}`}
                             className={` ${canSelectAuth(value) ? 'pointer' : 'wrapper-pointer-disabled'}`}
                             onChange={handleOnChange}
                             style={{ borderRight: '1px solid #d6d4d9', height: '48px' }}
@@ -659,10 +660,10 @@ function GitForm({
                         />
                         <div>
                             <CustomInput
-                            dataTestid="git-account-user-auth-password"
+                                dataTestid="git-account-user-auth-password"
                                 value={customState.password.value}
                                 onChange={customHandleChange}
-                                onBlur={id&&handleOnBlur}
+                                onBlur={id && handleOnBlur}
                                 onFocus={handleOnFocus}
                                 name="password"
                                 error={customState.password.error}
@@ -684,7 +685,7 @@ function GitForm({
                             className="form__input w-100"
                             style={{ height: '100px', backgroundColor: '#f7fafc' }}
                             onChange={customHandleChange}
-                            onBlur={id&&handleOnBlur}
+                            onBlur={id && handleOnBlur}
                             onFocus={handleOnFocus}
                             name="sshInput"
                             value={customState.sshInput.value}
@@ -694,14 +695,23 @@ function GitForm({
                 )}
                 <div className={`form__row form__buttons`}>
                     {id && (
-                        <button className={`cta delete dc__m-auto ml-0`} type="button" onClick={() => toggleConfirmation(true)}>
+                        <button
+                            className={`cta delete dc__m-auto ml-0`}
+                            type="button"
+                            onClick={() => toggleConfirmation(true)}
+                        >
                             {deleting ? <Progressing /> : 'Delete'}
                         </button>
                     )}
-                    <button className="cta cancel" data-testid = "add-git-account-cancel-button" type="button" onClick={(e) => toggleCollapse((t) => !t)}>
+                    <button
+                        className="cta cancel"
+                        data-testid="add-git-account-cancel-button"
+                        type="button"
+                        onClick={(e) => toggleCollapse((t) => !t)}
+                    >
                         Cancel
                     </button>
-                    <button className="cta" data-testid = "add-git-account-save-button" type="submit" disabled={loading}>
+                    <button className="cta" data-testid="add-git-account-save-button" type="submit" disabled={loading}>
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}
                     </button>
                 </div>
@@ -719,5 +729,5 @@ function GitForm({
                 )}
             </form>
         </>
-    );
+    )
 }

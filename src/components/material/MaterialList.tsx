@@ -110,7 +110,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     renderPageHeader() {
         return (
             <>
-                <h2 className="form__title form__title--artifacts" data-testid={`${this.props.isJobView ? 'source-code-heading':'git-repositories-heading'}`}>
+                <h2 className="form__title form__title--artifacts" data-testid={`${this.props.isJobView ? 'source-code-heading' : 'git-repositories-heading'}`}>
                     {this.props.isJobView ? 'Source code' : 'Git Repositories'}
                 </h2>
                 <p className="form__subtitle form__subtitle--artifacts">
@@ -171,7 +171,6 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                     {this.renderPageHeader()}
                     {!this.props.isJobView && !this.state.materials.length && this.renderSampleApp()}
                     <CreateMaterial
-                      
                         key={this.state.materials.length}
                         appId={Number(this.props.match.params.appId)}
                         isMultiGit={this.state.materials.length > 0}
@@ -183,7 +182,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         reload={this.getGitProviderConfig}
                         isJobView={this.props.isJobView}
                     />
-                    {this.state.materials.map((mat,index) => {
+                    {this.state.materials.map((mat, index) => {
                         return (
                             <UpdateMaterial
                                 key={mat.name}
@@ -200,7 +199,6 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                                 toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
                                 setRepo={this.props.setRepo}
                                 isJobView={this.props.isJobView}
-
                             />
                         )
                     })}

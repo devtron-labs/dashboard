@@ -22,18 +22,48 @@ export class SecurityPoliciesTab extends Component<RouteComponentProps<{}>> {
 
     render() {
         const path = this.props.match.path;
-        return <div className="security-policy">
-            <div className="dc__secondary-nav" >
-                <NavLink to={`${path}/global`} className="dc__secondary-nav__item">Global</NavLink>
-                <NavLink to={`${path}/clusters`} className="dc__secondary-nav__item">Cluster</NavLink>
-                <NavLink to={`${path}/environments`} className="dc__secondary-nav__item" >Environments</NavLink>
-                <NavLink to={`${path}/apps`} className="dc__secondary-nav__item">Applications</NavLink>
-                <hr className="mt-8 mb-8"/>
-                <NavLink to={`${path}/vulnerability`} className="dc__secondary-nav__item">Check CVE Policy</NavLink>
+        return (
+            <div className="security-policy">
+                <div className="dc__secondary-nav">
+                    <NavLink
+                        to={`${path}/global`}
+                        className="dc__secondary-nav__item"
+                        data-testid="click-on-security-global"
+                    >
+                        Global
+                    </NavLink>
+                    <NavLink
+                        to={`${path}/clusters`}
+                        className="dc__secondary-nav__item"
+                        data-testid="click-on-security-clusters"
+                    >
+                        Cluster
+                    </NavLink>
+                    <NavLink
+                        to={`${path}/environments`}
+                        className="dc__secondary-nav__item"
+                        data-testid="click-on-security-environments"
+                    >
+                        Environments
+                    </NavLink>
+                    <NavLink
+                        to={`${path}/apps`}
+                        className="dc__secondary-nav__item"
+                        data-testid="click-on-security-application"
+                    >
+                        Applications
+                    </NavLink>
+                    <hr className="mt-8 mb-8" />
+                    <NavLink
+                        to={`${path}/vulnerability`}
+                        className="dc__secondary-nav__item"
+                        data-testid="click-on-security-vulnerability"
+                    >
+                        Check CVE Policy
+                    </NavLink>
+                </div>
+                <div className="security-policy__content">{this.renderRouter()}</div>
             </div>
-            <div className="security-policy__content">
-                {this.renderRouter()}
-            </div>
-        </div>
+        )
     }
 }

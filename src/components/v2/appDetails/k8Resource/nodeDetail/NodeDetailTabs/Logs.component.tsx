@@ -349,7 +349,10 @@ function LogsComponent({
     ) : (
         <React.Fragment>
             <div className="node-container-fluid bcn-0">
-                <div data-testid="logs-container-header" className={`node-row pt-2 pb-2 pl-16 pr-16 ${!isLogAnalyzer ? 'dc__border-top' : ''}`}>
+                <div
+                    data-testid="logs-container-header"
+                    className={`node-row pt-2 pb-2 pl-16 pr-16 ${!isLogAnalyzer ? 'dc__border-top' : ''}`}
+                >
                     <div className="col-6 flexbox flex-align-center">
                         <Tippy
                             className="default-tt"
@@ -360,6 +363,7 @@ function LogsComponent({
                             <div
                                 className={`mr-8 ${logsPaused ? 'play' : 'stop'} flex`}
                                 onClick={(e) => handleLogsPause()}
+                                data-testid="logs-stop-button"
                             >
                                 {logsPaused ? (
                                     <PlayButton className="icon-dim-16 cursor" />
@@ -589,12 +593,21 @@ function LogsComponent({
                             }`}
                         >
                             {readyState === 0 && (
-                                <div className="readyState dc__loading-dots" style={{ color: 'orange' }}>
+                                <div
+                                    className="readyState dc__loading-dots"
+                                    style={{ color: 'orange' }}
+                                    data-testid="logs-connected-status"
+                                >
                                     Connecting
                                 </div>
                             )}
                             {readyState === 1 && (
-                                <div className="readyState dc__loading-dots cg-5 pl-20">Connected</div>
+                                <div
+                                    className="readyState dc__loading-dots cg-5 pl-20"
+                                    data-testid="logs-connected-status"
+                                >
+                                    Connected
+                                </div>
                             )}
                         </div>
                     </div>

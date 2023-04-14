@@ -203,7 +203,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                 autoComplete="off"
                                                 placeholder="Eg. main"
                                                 type="text"
-                                                data-testid={_materials.length>1?`build-pipeline-branch-name-textbox${index}`:"build-pipeline-branch-name-textbox"}
+                                                data-testid={`build-pipeline-branch-name-textbox${index}`}
                                                 disabled={!props.handleSourceChange}
                                                 value={mat.value}
                                                 onChange={(event) => {
@@ -235,7 +235,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             autoComplete="off"
                                             placeholder="Eg. feature.*"
                                             type="text"
-                                            data-testid={_materials.length>1?`build-pipeline-branch-regex-textbox${index}`:"build-pipeline-branch-regex-textbox"}
+                                            data-testid={`build-pipeline-branch-name-textbox${index}`}
                                             disabled={!props.handleSourceChange}
                                             value={mat.regex}
                                             onChange={(event) => {
@@ -248,7 +248,10 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             autoFocus={true}
                                         />
                                         {errorObj && !errorObj.isValid ? (
-                                            <span className="form__error ci-error " data-testid="build-pipeline-validation-error-message" >
+                                            <span
+                                                className="form__error ci-error "
+                                                data-testid="build-pipeline-validation-error-message"
+                                            >
                                                 <img src={error} className="form__icon" />
                                                 {props.validationRules?.sourceValue(_materials[index].regex).message}
                                             </span>
