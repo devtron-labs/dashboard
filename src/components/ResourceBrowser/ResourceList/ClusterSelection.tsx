@@ -98,7 +98,9 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
                         onClick={selectCluster}
                     >
                         <ClusterIcon className="icon-dim-16 scb-5 mr-8" />
-                        <div className="fw-4 fs-13 cb-5" data-testid={`cluster_link${index}`}>{cluster.label}</div>
+                        <div className="fw-4 fs-13 cb-5" data-testid={`cluster_link${index}`}>
+                            {cluster.label}
+                        </div>
                         {cluster.errorInConnecting && (
                             <Tippy
                                 className="default-tt w-200"
@@ -122,7 +124,9 @@ export function ClusterSelection({ clusterOptions, onChangeCluster }: ClusterSel
             <div className="w-600">
                 <div className="pb-16 dc__align-center">
                     <img className="w-250" src={emptyCustomChart} alt="No cluster selected" />
-                    <div className="fw-6 fs-16 cn-9 mt-16" data-testid="kubernetes-resource-browser">{CLUSTER_SELECTION_MESSAGING.title}</div>
+                    <div className="fw-6 fs-16 cn-9 mt-16" data-testid="kubernetes-resource-browser">
+                        {CLUSTER_SELECTION_MESSAGING.title}
+                    </div>
                 </div>
                 <div className="en-2 bw-1 bcn-0 br-4">
                     {renderSearch()}

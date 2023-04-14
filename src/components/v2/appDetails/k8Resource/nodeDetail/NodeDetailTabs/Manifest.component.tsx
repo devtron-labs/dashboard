@@ -333,8 +333,10 @@ function ManifestComponent({
             {!error && (
                 <>
                     <div className="bcn-0">
-                        {(appDetails.appType === AppType.EXTERNAL_HELM_CHART || isResourceBrowserView ||  (appDetails.deploymentAppType === DeploymentAppType.argo_cd &&
-            appDetails.deploymentAppDeleteRequest)) && (
+                        {(appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
+                            isResourceBrowserView ||
+                            (appDetails.deploymentAppType === DeploymentAppType.argo_cd &&
+                                appDetails.deploymentAppDeleteRequest)) && (
                             <div className="flex left pl-20 pr-20 dc__border-bottom manifest-tabs-row">
                                 {tabs.map((tab: iLink, index) => {
                                     return (!showDesiredAndCompareManifest &&
@@ -352,7 +354,7 @@ function ManifestComponent({
                                                 className={`${
                                                     tab.isSelected ? 'selected-manifest-tab cn-0' : ' bcn-1'
                                                 } bw-1 pl-6 pr-6 br-4 en-2 dc__no-decor flex left`}
-                                                onClick={() => handleTabClick(tab)} 
+                                                onClick={() => handleTabClick(tab)}
                                                 data-testid={tab.name}
                                             >
                                                 {tab.name}
@@ -365,7 +367,11 @@ function ManifestComponent({
                                     <>
                                         <div className="pl-16 pr-16">|</div>
                                         {!isEditmode ? (
-                                            <div className="flex left cb-5 cursor" onClick={handleEditLiveManifest} data-testid="edit-live-manifest">
+                                            <div
+                                                className="flex left cb-5 cursor"
+                                                onClick={handleEditLiveManifest}
+                                                data-testid="edit-live-manifest"
+                                            >
                                                 <Edit className="icon-dim-16 pr-4 fc-5 edit-icon" /> Edit Live manifest
                                             </div>
                                         ) : (

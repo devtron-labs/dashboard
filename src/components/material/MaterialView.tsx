@@ -39,7 +39,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             deleting: false,
             confirmation: false,
         }
-
     }
 
     toggleConfirmation = () => {
@@ -67,7 +66,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     className="white-card artifact-collapsed"
                     tabIndex={0}
                     onClick={this.props.toggleCollapse}
-                    data-testid={`already-existing-git-material`}
+                    data-testid="already-existing-git-material"
                 >
                     <span className="mr-8">
                         {this.props.material.url.includes('gitlab') ? <GitLab /> : null}
