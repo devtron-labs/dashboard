@@ -245,6 +245,7 @@ function EditAPIToken({
                         onClick={handleDeleteButton}
                         disabled={loader}
                         isLoading={false}
+                        dataTestId="delete-token"
                         loaderColor="white"
                     >
                     <Delete className='icon-dim-16 mr-8'/>

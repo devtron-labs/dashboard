@@ -35,7 +35,12 @@ export class Security extends Component<SecurityProps> {
                         </NavLink>
                     </li>
                     <li className="tab-list__tab">
-                        <NavLink activeClassName="active" to={`${path}/policies`} className="tab-list__tab-link">
+                        <NavLink
+                            activeClassName="active"
+                            to={`${path}/policies`}
+                            className="tab-list__tab-link"
+                            data-testid="security-policy"
+                        >
                             Security Policies
                         </NavLink>
                     </li>

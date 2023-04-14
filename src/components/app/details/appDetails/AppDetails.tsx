@@ -1073,7 +1073,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
             {params.tab === NodeDetailTabs.TERMINAL && (
                 <>
                     <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                    <div style={{ width: '130px' }}>
+                    <div style={{ width: '130px' }} data-testid="terminal-select-dropdown">
                         <Select
                             placeholder="Select shell"
                             className="pl-20"

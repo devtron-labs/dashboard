@@ -142,7 +142,7 @@ export function K8SResourceList({
                                 fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
                             }`}
                         >
-                            <div className="w-100 flex left">
+                            <div className="w-100 flex left" data-testid="created-resource-name">
                                 <div className="w-303 pr-4">
                                     <div className="dc__w-fit-content dc__mxw-304 pr-4">
                                         <Tippy
