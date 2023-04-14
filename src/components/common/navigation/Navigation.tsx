@@ -321,7 +321,11 @@ export default class Navigation extends Component<
                             }}
                         >
                             <div className="short-nav--flex">
-                                <svg className="devtron-logo" data-testid="click-on-devtron-app-logo" viewBox="0 0 40 40">
+                                <svg
+                                    className="devtron-logo"
+                                    data-testid="click-on-devtron-app-logo"
+                                    viewBox="0 0 40 40"
+                                >
                                     <use href={`${NavSprite}#nav-short-devtron-logo`}></use>
                                 </svg>
                                 <div className="pl-12 pt-10 pt-0">

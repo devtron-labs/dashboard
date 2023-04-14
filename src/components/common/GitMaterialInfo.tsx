@@ -20,16 +20,26 @@ function getGitIcon(repoUrl) {
     return 'git'
 }
 
-export function GitMaterialInfoHeader({ index,repoUrl = "", materialType = "",  materialValue = "",  style = {}, ...props }) {
-    repoUrl = repoUrl.replace(".git", "")
-    const tokens = repoUrl.split("/")
+export function GitMaterialInfoHeader({
+    index,
+    repoUrl = '',
+    materialType = '',
+    materialValue = '',
+    style = {},
+    ...props
+}) {
+    repoUrl = repoUrl.replace('.git', '')
+    const tokens = repoUrl.split('/')
     const { length, [length - 1]: repo } = tokens
     return (
-        <div {...props} className="pl-16 dc__box-shadow mb-12 pb-12 fs-12 fw-6 " style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '12px', ...style, }}>
-            <div className={getGitIcon(repoUrl)}>
-            </div>
+        <div
+            {...props}
+            className="pl-16 dc__box-shadow mb-12 pb-12 fs-12 fw-6 "
+            style={{ display: 'grid', gridTemplateColumns: '20px 1fr', gridColumnGap: '12px', ...style }}
+        >
+            <div className={getGitIcon(repoUrl)}></div>
             <div className="flex column left">
-                <div className="repo fs-12 cn-9 fw-6" data-testid = {`deployment-history-source-code-repo${index}`}>
+                <div className="repo fs-12 cn-9 fw-6" data-testid={`deployment-history-source-code-repo${index}`}>
                     /{repo}
                 </div>
                 <div className="branch flex left fs-14 cn-7">

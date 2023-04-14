@@ -565,14 +565,23 @@ function ListToggle({ onSelect, enabled = false, ...props }) {
     return <Toggle dataTestId="toggle-button" {...props} onSelect={onSelect} selected={enabled} />
 }
 
-function DropDown({ className = '',dataTestid='', style = {}, src = null, ...props }) {
+function DropDown({ className = '', dataTestid = '', style = {}, src = null, ...props }) {
     if (React.isValidElement(src)) return src
-    return <img {...props} src={src || arrowTriangle} data-testid={dataTestid} alt="" className={`list__arrow ${className}`} style={style} />
+    return (
+        <img
+            {...props}
+            src={src || arrowTriangle}
+            data-testid={dataTestid}
+            alt=""
+            className={`list__arrow ${className}`}
+            style={style}
+        />
+    )
 }
 
-export function List({ dataTestId='' ,children = null, className = '', ...props }) {
+export function List({ dataTestId = '', children = null, className = '', ...props }) {
     return (
-        <div className={`list ${className}`} {...props} data-testid = {dataTestId}>
+        <div className={`list ${className}`} {...props} data-testid={dataTestId}>
             {children}
         </div>
     )
@@ -604,13 +613,13 @@ export function CustomInput({
     labelClassName = '',
     placeholder = '',
     tabIndex = 1,
-    dataTestid = ""
+    dataTestid = '',
 }) {
     return (
         <div className="flex column left top">
             <label className={`form__label ${labelClassName}`}>{label}</label>
             <input
-                data-testid= {dataTestid}
+                data-testid={dataTestid}
                 type={type}
                 name={name}
                 autoComplete="off"
