@@ -286,7 +286,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                     )}
                                     <div>
                                         <div className="resource__title-name flex left dc__align-start">
-                                            <span data-testid="resource-node-name" className="fs-13">{node.name}</span>
+                                            <span data-testid="resource-node-name" className="fs-13">
+                                                {node.name}
+                                            </span>
                                             <div
                                                 className={`flex left ${
                                                     node.kind.toLowerCase() == NodeType.Pod.toLowerCase()

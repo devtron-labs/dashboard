@@ -49,7 +49,11 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
                     ''
                 )}
                 {kind === NodeType.Pod ? (
-                    <span data-testid="view-logs-button" className="flex pod-info__popup-row" onClick={(e) => describeNode(NodeDetailTabs.LOGS)}>
+                    <span
+                        data-testid="view-logs-button"
+                        className="flex pod-info__popup-row"
+                        onClick={(e) => describeNode(NodeDetailTabs.LOGS)}
+                    >
                         View Container Logs
                     </span>
                 ) : (
