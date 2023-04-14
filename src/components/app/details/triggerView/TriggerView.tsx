@@ -467,11 +467,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
-                            node.userApprovalConfig = response.result.userApprovalConfig
                             if (!offset && !size) {
-                                node.rollbackMaterialList = response.result.materials
+                                node.rollbackMaterialList = response.result
                             } else {
-                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result.materials)
+                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result)
                             }
                         }
                         return node

@@ -621,11 +621,10 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     const nodes = workflow.nodes.map((node) => {
                         if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
                             _selectedNode = node
-                            node.userApprovalConfig = response.result.userApprovalConfig
                             if (!offset && !size) {
-                                node.rollbackMaterialList = response.result.materials
+                                node.rollbackMaterialList = response.result
                             } else {
-                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result.materials)
+                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result)
                             }
                         }
                         return node
