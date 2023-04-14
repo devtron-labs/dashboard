@@ -561,7 +561,7 @@ const UserGroupList: React.FC<{
                 userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
         )
         return (
-            <div id="auth-page__body" data-testid={`${type==='group'?"permission":"user"}-group-page`} className="auth-page__body-users__list-container">
+            <div id="auth-page__body" data-testid={`auth-${type}-page`} className="auth-page__body-users__list-container">
                 {renderHeaders(type)}
                 {result.length > 0 && (
                     <div className="flex dc__content-space">

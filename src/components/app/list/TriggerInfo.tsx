@@ -99,7 +99,6 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
                             className="dc__transparent"
                             onClick={this.props.close}
                         >
-                            {' '}
                             <img src={close} alt="close" />
                         </button>
                     </div>

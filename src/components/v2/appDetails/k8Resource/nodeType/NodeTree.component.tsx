@@ -127,7 +127,7 @@ function NodeTreeComponent({
                                     treeNode.childNodes,
                                     [...parents, treeNode.name.toLowerCase()],
                                     isDevtronApp,
-                                )}{' '}
+                                )}
                             </div>
                         )}
                 </div>

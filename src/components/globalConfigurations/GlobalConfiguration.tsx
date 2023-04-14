@@ -255,7 +255,7 @@ function NavItem({ serverMode }) {
                 to={`${route.href}`}
                 key={route.href}
                 activeClassName="active-route"
-                data-testid={route?.dataTestId}
+                data-testid={route.dataTestId}
                 className={`${
                     route.name === 'API tokens' &&
                     location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)

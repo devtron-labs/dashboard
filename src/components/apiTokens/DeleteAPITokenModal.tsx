@@ -42,7 +42,7 @@ const DeleteAPITokenModal = ({
 
     return (
         <DeleteDialog
-            dataTestId='delete-api-token-modal'
+            dataTestId="delete-api-token-modal"
             title={`Delete API token '${tokenData.name}'?`}
             delete={deleteToken}
             closeDelete={() => {
