@@ -256,7 +256,7 @@ const StartDetails = ({
                 {type === HistoryComponentType.CD ? (
                     <>
                         {artifact && (
-                            <div className="dc__app-commit__hash ">
+                            <div className="dc__app-commit__hash" data-testid = "docker-image-hash" >
                                 <img src={docker} className="commit-hash__icon grayscale" />
                                 {artifact.split(':')[1]}
                             </div>
