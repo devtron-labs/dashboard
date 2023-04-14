@@ -146,7 +146,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     renderGitMaterialInfo(matInfo: MaterialInfo[]) {
         return (
             <>
-                {matInfo.map((mat: MaterialInfo,index) => {
+                {matInfo.map((mat: MaterialInfo, index) => {
                     let _gitCommit: GitTriggers = {
                         Commit: mat.revision,
                         Author: mat.author,

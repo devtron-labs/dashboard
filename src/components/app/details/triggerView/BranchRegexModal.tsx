@@ -151,7 +151,7 @@ export default function BranchRegexModal({
                                     </span>
                                 </div>
                                 <input
-                                    data-testid="branch-name-matching-regex-textbox"
+                                    data-testid={`branch-name-matching-regex-textbox${index}`}
                                     tabIndex={index}
                                     placeholder={BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchNameRegex}
                                     className="form__input ml-36 w-95"

@@ -124,7 +124,9 @@ function ChartHeaderFilter({
                 </form>
             </div>
             <div className="pl-12 pr-12 filter-tab">
-                <div className="fs-12 fw-6 ml-8 cn-6 pb-8 pt-8" data-testid="chart-store-view-type-heading">VIEW AS</div>
+                <div className="fs-12 fw-6 ml-8 cn-6 pb-8 pt-8" data-testid="chart-store-view-type-heading">
+                    VIEW AS
+                </div>
                 <div className="cursor flex">
                     <div
                         onClick={setGrid}
@@ -148,13 +150,15 @@ function ChartHeaderFilter({
                     </div>
                 </div>
                 <hr className="mt-8 mb-8" />
-                <div className="fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8" data-testid="chart-store-filter-heading">FILTERS</div>
+                <div className="fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8" data-testid="chart-store-filter-heading">
+                    FILTERS
+                </div>
                 <Checkbox
                     rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 pl-8 ml-8"
                     isChecked={includeDeprecated === 1}
                     value={'CHECKED'}
                     onChange={toggleDeprecated}
-                    dataTestId='chart-store-filter-checkbox'
+                    dataTestId="chart-store-filter-checkbox"
                 >
                     <div> Show deprecated charts</div>
                 </Checkbox>
