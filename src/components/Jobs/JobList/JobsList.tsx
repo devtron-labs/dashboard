@@ -231,6 +231,7 @@ export default function JobsList() {
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
                         isFirstLetterCapitalize={true}
+                        dataTestId={'job-status-filter'}
                     />
                     <span className="filter-divider" />
                     <Filter
@@ -243,6 +244,7 @@ export default function JobsList() {
                         type={JobsFilterTypeText.PROJECT}
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
+                        dataTestId={'job-projects-filter'}
                     />
                     {showExportCsvButton && (
                         <>

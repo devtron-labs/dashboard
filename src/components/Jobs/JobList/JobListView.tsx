@@ -65,6 +65,7 @@ export default function JobListView(props: JobListViewProps) {
                         <Link
                             to={redirectToJobOverview(job)}
                             className={`app-list__row ${len ? 'dc__hover-icon' : ''}`}
+                            data-testid="job-list-row"
                         >
                             <div className="app-list__cell--icon">
                                 <div className="icon-dim-24 dc__icon-bg-color br-4 dc__show-first--icon p-4">
@@ -115,16 +116,20 @@ export default function JobListView(props: JobListViewProps) {
 
         const icon = props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
         return (
-            <div className="app-list">
+            <div className="app-list" data-testid="job-list-container">
                 <div className="app-list__header dc__border-bottom">
                     <div className="app-list__cell--icon flex left cursor" onClick={toggleAllExpandRow}>
                         <Arrow className={`icon-dim-24 p-2 ${arrowIcon()}`} />
                     </div>
                     <div className="app-list__cell">
-                        <button className="app-list__cell-header flex" onClick={sortByAppName}>
+                        <button
+                            className="app-list__cell-header flex"
+                            onClick={sortByAppName}
+                            data-testid="job-name-list"
+                        >
                             {JOB_LIST_HEADERS.Name}
                             {props.sortRule.key == SortBy.APP_NAME ? (
-                                <span className={`sort ${icon} ml-4`}></span>
+                                <span data-testid={'sort-job-list'} className={`sort ${icon} ml-4`}></span>
                             ) : (
                                 <span className="sort-col"></span>
                             )}

@@ -360,7 +360,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                                 Select an {this.props.isJobView ? 'job' : 'app'} to clone
                             </span>
                             <AsyncSelect
-                                classNamePrefix='app-name-for-clone'
+                               classNamePrefix={`${this.props.isJobView ? 'job' : 'app'}-name-for-clone`}
                                 loadOptions={this.loadAppListOptions}
                                 noOptionsMessage={noOptionsMessage}
                                 onChange={this.handleCloneAppChange}
