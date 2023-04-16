@@ -166,6 +166,7 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
                             disabled={typeof onChange !== 'function'}
                             placeholder=""
                             maxHeight={300}
+                            data-testid="Configmap-gui-value-textbox"
                         />
                     ) : (
                         <input
@@ -311,7 +312,6 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
 
     return (
         <textarea
-            data-testid="Configmap-gui-value-textbox"
             ref={(el) => (_textRef.current = el)}
             value={text}
             placeholder={placeholder}

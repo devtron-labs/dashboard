@@ -190,16 +190,19 @@ function NavItem({ serverMode }) {
             group: [
                 {
                     name: 'User Permissions',
+                    dataTestId: 'authorization-user-permissions-link',
                     href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
                     isAvailableInEA: true,
                 },
                 {
                     name: 'Permission Groups',
+                    dataTestId: 'authorization-permission-groups-link',
                     href: `${URLS.GLOBAL_CONFIG_AUTH}/groups`,
                     isAvailableInEA: true,
                 },
                 {
                     name: 'API Tokens',
+                    dataTestId: 'authorization-api-tokens-link',
                     href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}/list`,
                     isAvailableInEA: true,
                 },
@@ -252,6 +255,7 @@ function NavItem({ serverMode }) {
                 to={`${route.href}`}
                 key={route.href}
                 activeClassName="active-route"
+                data-testid={route.dataTestId}
                 className={`${
                     route.name === 'API tokens' &&
                     location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)

@@ -310,7 +310,7 @@ export default function CIPipeline({
                     )}
                 >
                     <button
-                        data-testid = "ci-delete-pipeline-button"
+                        data-testid="ci-delete-pipeline-button"
                         type="button"
                         className={`cta cta--workflow delete mr-16`}
                         disabled={!canDeletePipeline}
@@ -727,7 +727,7 @@ export default function CIPipeline({
         return (
             <li className="tab-list__tab">
                 <NavLink
-                    data-testid = {`${toLink}-button`}
+                    data-testid={`${toLink}-button`}
                     replace
                     className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                     activeClassName="active"
@@ -751,7 +751,9 @@ export default function CIPipeline({
                 }`}
             >
                 <div className="flex flex-align-center flex-justify bcn-0 pr-20">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding" data-testid="build-pipeline-heading" >{title}</h2>
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding" data-testid="build-pipeline-heading">
+                        {title}
+                    </h2>
                     <button
                         type="button"
                         className="dc__transparent flex icon-dim-24"

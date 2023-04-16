@@ -211,7 +211,6 @@ export default function CDDetails() {
                     ) : (
                         <EmptyView
                             title="No deployments"
-                            dataTestId="deployment-history-no-deployment-message"
                             subTitle={`No deployment history available for the ${selectedEnv?.environmentName} environment.`}
                         />
                     )}
@@ -301,7 +300,7 @@ export const TriggerOutput: React.FC<{
                         />
                         <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
                             {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppType.helm && (
-                                <li className="tab-list__tab" data-testid = "deployment-history-steps-link">
+                                <li className="tab-list__tab" data-testid="deployment-history-steps-link">
                                     <NavLink
                                         replace
                                         className="tab-list__tab-link"
@@ -313,7 +312,7 @@ export const TriggerOutput: React.FC<{
                                 </li>
                             )}
                             {triggerDetails.stage !== 'DEPLOY' && (
-                                <li className="tab-list__tab" data-testid = "deployment-history-logs-link">
+                                <li className="tab-list__tab" data-testid="deployment-history-logs-link">
                                     <NavLink
                                         replace
                                         className="tab-list__tab-link"
@@ -324,7 +323,7 @@ export const TriggerOutput: React.FC<{
                                     </NavLink>
                                 </li>
                             )}
-                            <li className="tab-list__tab" data-testid = "deployment-history-source-code-link">
+                            <li className="tab-list__tab" data-testid="deployment-history-source-code-link">
                                 <NavLink
                                     replace
                                     className="tab-list__tab-link"
@@ -335,7 +334,7 @@ export const TriggerOutput: React.FC<{
                                 </NavLink>
                             </li>
                             {triggerDetails.stage == 'DEPLOY' && (
-                                <li className="tab-list__tab" data-testid = "deployment-history-configuration-link">
+                                <li className="tab-list__tab" data-testid="deployment-history-configuration-link">
                                     <NavLink
                                         replace
                                         className="tab-list__tab-link"
@@ -347,7 +346,7 @@ export const TriggerOutput: React.FC<{
                                 </li>
                             )}
                             {triggerDetails.stage !== 'DEPLOY' && (
-                                <li className="tab-list__tab" data-testid = "deployment-history-artifacts-link">
+                                <li className="tab-list__tab" data-testid="deployment-history-artifacts-link">
                                     <NavLink
                                         replace
                                         className="tab-list__tab-link"

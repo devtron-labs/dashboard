@@ -1136,7 +1136,7 @@ function Environment({
                     <div className="mb-16 flex left">
                         <label className="pr-16 flex cursor">
                             <input
-                                data-testid = "production"
+                                data-testid="production"
                                 type="radio"
                                 name="isProduction"
                                 checked={state.isProduction.value === 'true'}
@@ -1147,7 +1147,7 @@ function Environment({
                         </label>
                         <label className="flex cursor">
                             <input
-                                data-testid = "nonProduction"
+                                data-testid="nonProduction"
                                 type="radio"
                                 name="isNonProduction"
                                 checked={state.isProduction.value === 'false'}
@@ -1188,7 +1188,7 @@ function Environment({
                         type="submit"
                         disabled={loading}
                         onClick={handleOnSubmit}
-                        data-testid = "save-and-update-environment"
+                        data-testid="save-and-update-environment"
                     >
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}
                     </button>

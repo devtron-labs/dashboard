@@ -180,7 +180,7 @@ export default function AdvancedConfigOptions({
                             <div className="flexbox justify-space" key={`build-${index}`}>
                                 <div className="mt-8 w-100">
                                     <input
-                                        data-testid = {`docker-arg-key-${index}`}
+                                        data-testid={`docker-arg-key-${index}`}
                                         className="w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
                                         autoComplete="off"
                                         placeholder="Key"
@@ -191,7 +191,7 @@ export default function AdvancedConfigOptions({
                                         }}
                                     />
                                     <textarea
-                                        data-testid = {`docker-arg-value-${index}`}
+                                        data-testid={`docker-arg-value-${index}`}
                                         className="build__value w-100 dc__bottom-radius-4 dc__no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
                                         value={arg.value}
                                         onChange={(event) => {

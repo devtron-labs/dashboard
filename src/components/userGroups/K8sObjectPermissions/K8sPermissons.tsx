@@ -59,16 +59,35 @@ export default function K8sPermissons({ k8sPermission, setK8sPermission }: K8sPe
                     {k8sPermission.map((element, index) => {
                         return (
                             <div key={index} className="kubernetes-header pt-12 pb-12 cn-9 dc__border-bottom-n1">
-                                <span data-testid={`k8s-permission-list-${index}-cluster`} className="dc__truncate-text">{element.cluster.label}</span>
-                                <span data-testid={`k8s-permission-list-${index}-group`} className="dc__truncate-text">{element.group.label}</span>
-                                <span data-testid={`k8s-permission-list-${index}-kind`} className="dc__truncate-text">{element.kind.label}</span>
-                                <span data-testid={`k8s-permission-list-${index}-namespace`} className="dc__truncate-text">{element.namespace.label}</span>
-                                <span data-testid={`k8s-permission-list-${index}-resource`} className="dc__truncate-text">
+                                <span
+                                    data-testid={`k8s-permission-list-${index}-cluster`}
+                                    className="dc__truncate-text"
+                                >
+                                    {element.cluster.label}
+                                </span>
+                                <span data-testid={`k8s-permission-list-${index}-group`} className="dc__truncate-text">
+                                    {element.group.label}
+                                </span>
+                                <span data-testid={`k8s-permission-list-${index}-kind`} className="dc__truncate-text">
+                                    {element.kind.label}
+                                </span>
+                                <span
+                                    data-testid={`k8s-permission-list-${index}-namespace`}
+                                    className="dc__truncate-text"
+                                >
+                                    {element.namespace.label}
+                                </span>
+                                <span
+                                    data-testid={`k8s-permission-list-${index}-resource`}
+                                    className="dc__truncate-text"
+                                >
                                     {element.resource.length > 1
                                         ? element.resource.length + ' objects'
                                         : element.resource[0].label}
                                 </span>
-                                <span data-testid={`k8s-permission-list-${index}-action`} className="dc__truncate-text">{element.action?.label}</span>
+                                <span data-testid={`k8s-permission-list-${index}-action`} className="dc__truncate-text">
+                                    {element.action?.label}
+                                </span>
                                 <span className="flex right">
                                     <Tippy className="default-tt" arrow={false} placement="top" content="Duplicate">
                                         <Clone
