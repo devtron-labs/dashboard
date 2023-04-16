@@ -147,7 +147,7 @@ export function SourceInfo({
                                 )}
                                 {showHibernateModal && (
                                     <button
-                                    data-testid="app-details-hibernate-modal-button"
+                                        data-testid="app-details-hibernate-modal-button"
                                         className="cta cta-with-img small cancel fs-12 fw-6"
                                         onClick={onClickShowHibernateModal}
                                     >
@@ -246,14 +246,16 @@ export function SourceInfo({
                                     ) : (
                                         <>
                                             <div
-                                            data-testid="app-status-name"
+                                                data-testid="app-status-name"
                                                 className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}
                                             >
                                                 {isHibernated ? 'Hibernating' : status}
                                             </div>
                                             <div className="flex left">
                                                 {appDetails?.deploymentAppType === DeploymentAppType.helm ? (
-                                                    <span data-testid="app-status-card-details" className="cb-5 fw-6">Details</span>
+                                                    <span data-testid="app-status-card-details" className="cb-5 fw-6">
+                                                        Details
+                                                    </span>
                                                 ) : (
                                                     <>
                                                         {message && (
@@ -261,7 +263,8 @@ export function SourceInfo({
                                                                 {message.slice(0, 30)}
                                                             </span>
                                                         )}
-                                                        <span data-testid="app-status-card-details"
+                                                        <span
+                                                            data-testid="app-status-card-details"
                                                             className={`${
                                                                 message?.length > 30 ? 'more-message' : ''
                                                             } cb-5 fw-6`}
@@ -276,7 +279,7 @@ export function SourceInfo({
                                 </div>
                             </div>
                             <div
-                            data-testid="deployment-status-card"
+                                data-testid="deployment-status-card"
                                 onClick={loadingResourceTree ? noop : showDeploymentDetailedStatus}
                                 className={`flex left bcn-0 p-16 br-8 mw-382 en-2 bw-1 ${
                                     appDetails?.deploymentAppType === DeploymentAppType.helm ? '' : 'cursor'
