@@ -1,4 +1,7 @@
 import React, { useRef, useState } from 'react'
+import { useOnline } from '../../../../../../common'
+import { SocketConnectionType } from '../node.type'
+import { TERMINAL_TEXT } from './constants'
 import TerminalView from './Terminal.component'
 import terminalStripTypeData from './terminal.utils'
 
@@ -6,7 +9,7 @@ export default function TerminalWrapper({ selectionListData, socketConnection, s
     const firstStrip = () => {
         return (
             <div className="flex left w-100">
-                {selectionListData?.firstRow.map((ele) => {
+                {selectionListData.firstRow.map((ele) => {
                     return terminalStripTypeData(ele)
                 })}
             </div>
@@ -26,7 +29,13 @@ export default function TerminalWrapper({ selectionListData, socketConnection, s
                 initializeTerminal={selectionListData.tabSwitcher.terminalData.initializeTerminal}
                 socketConnection={selectionListData.tabSwitcher.terminalData.socketConnection}
                 setSocketConnection={selectionListData.tabSwitcher.terminalData.setSocketConnection}
-                renderConnectionStrip={() => <></>}
+                renderConnectionStrip={() => (
+                    <RenderConnectionStrip
+                        renderStripMessage={null}
+                        socketConnection={socketConnection}
+                        setSocketConnection={setSocketConnection}
+                    />
+                )}
                 registerLinkMatcher={selectionListData.tabSwitcher.terminalData.registerLinkMatcher}
                 terminalMessageData={() => <></>}
             />
@@ -40,6 +49,47 @@ export default function TerminalWrapper({ selectionListData, socketConnection, s
             {typeof selectionListData.tabSwitcher.terminalTabWrapper === 'function'
                 ? selectionListData.tabSwitcher.terminalTabWrapper(renderTerminalView())
                 : renderTerminalView()}
+        </div>
+    )
+}
+
+export function RenderConnectionStrip({ renderStripMessage, socketConnection, setSocketConnection }:{renderStripMessage?: any, socketConnection: SocketConnectionType, setSocketConnection: (type: SocketConnectionType) => void}) {
+    const isOnline = useOnline()
+
+    const reconnect = () => {
+        setSocketConnection(SocketConnectionType.CONNECTING)
+    }
+
+    if (!isOnline) {
+        return (
+            <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0">{TERMINAL_TEXT.OFFLINE_CHECK_CONNECTION}</div>
+        )
+    }
+
+    return (
+        <div
+            className={`dc__first-letter-capitalize ${
+                socketConnection !== SocketConnectionType.CONNECTED &&
+                `${socketConnection === SocketConnectionType.CONNECTING ? 'bcy-2' : 'bcr-7'}  pl-20`
+            } ${socketConnection === SocketConnectionType.CONNECTING ? 'cn-9' : 'cn-0'} m-0 pl-20 w-100`}
+        >
+            {socketConnection !== SocketConnectionType.CONNECTED && (
+                <span className={socketConnection === SocketConnectionType.CONNECTING ? 'dc__loading-dots' : ''}>
+                    {socketConnection?.toLowerCase()}
+                </span>
+            )}
+            {socketConnection === SocketConnectionType.DISCONNECTED && (
+                <React.Fragment>
+                    <span>.&nbsp;</span>
+                    <button
+                        type="button"
+                        onClick={reconnect}
+                        className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
+                    >
+                        Resume
+                    </button>
+                </React.Fragment>
+            )}
         </div>
     )
 }

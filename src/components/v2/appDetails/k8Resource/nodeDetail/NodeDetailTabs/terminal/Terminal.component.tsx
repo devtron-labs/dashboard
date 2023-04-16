@@ -51,7 +51,10 @@ export default function TerminalView({
             })
         }
         if (initializeTerminal?.sessionId && terminal) {
+            setIsReconnection(true)
             postInitialize(initializeTerminal.sessionId)
+        } else {
+            setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
     }, [initializeTerminal])
 

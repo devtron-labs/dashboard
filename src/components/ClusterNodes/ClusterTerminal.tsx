@@ -42,7 +42,7 @@ import { OptionType } from '../userGroups/userGroups.types'
 import { getClusterTerminalParamsData } from '../cluster/cluster.util'
 import { useHistory, useLocation } from 'react-router-dom'
 import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'
-import { TERMINAL_STATUS } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
+import { TERMINAL_STATUS, TERMINAL_TEXT } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 
 let clusterTimeOut = undefined
 
@@ -575,6 +575,37 @@ export default function ClusterTerminal({
         )
     }
 
+    // const renderErrorMessageStrip = (errorMessage) => {
+    //     if (errorMessage.message === TERMINAL_STATUS.TIMEDOUT) {
+    //         return (
+    //             <div className="pl-20 flex left h-24 pr-20 w-100 bcr-7 cn-0">
+    //                 {TERMINAL_TEXT.CONNECTION_TIMEOUT}&nbsp;
+    //                 <u className="cursor" onClick={switchTOPodEventTab}>
+    //                     {TERMINAL_TEXT.CHECK_POD_EVENTS}
+    //                 </u>&nbsp;
+    //                 {TERMINAL_TEXT.FOR_ERRORS}&nbsp;
+    //                 <u
+    //                     className="cursor"
+    //                     onClick={onClickResume}
+    //                 >
+    //                     {TERMINAL_TEXT.RETRY_CONNECTION}
+    //                 </u>&nbsp;
+    //                 {TERMINAL_TEXT.CASE_OF_ERROR}
+    //             </div>
+    //         )
+    //     } else if (errorMessage.message === TERMINAL_STATUS.TERMINATED) {
+    //         return (
+    //             <div className="pl-20 pr-20 w-100 bcr-7 cn-0">
+    //                 {TERMINAL_TEXT.POD_TERMINATED} {errorMessage.reason}&nbsp;
+    //                 <u className="cursor" onClick={terminalViewProps.reconnectTerminal}>
+    //                     {TERMINAL_TEXT.INITIATE_CONNECTION}
+    //                 </u>
+    //             </div>
+    //         )
+    //     }
+    //     return <div className="pl-20 pr-20 w-100 bcr-7 cn-0">{errorMessage.message} </div>
+    // }
+
     const selectionListData = {
         firstRow: [
             {
@@ -648,6 +679,9 @@ export default function ClusterTerminal({
                 type: 'tabs',
                 renderTabs: renderTabs,
             },
+            {
+                type: ''
+            }
         ],
         tabSwitcher: {
             terminalTabWrapper: terminalTabWrapper,
