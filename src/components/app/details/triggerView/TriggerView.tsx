@@ -405,7 +405,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType) {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.ImageClicked)
-        this.setState({ isLoading: true, showCDModal: true })
+        this.setState({ loader: true, showCDModal: true })
         this.abortController = new AbortController()
         getCDMaterialList(cdNodeId, nodeType, this.abortController.signal)
             .then((data) => {
@@ -425,7 +425,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     cdNodeId: cdNodeId,
                     nodeType,
                     showCDModal: true,
-                    isLoading: false,
+                    loader: false,
                 })
                 preventBodyScroll(true)
             })
@@ -978,7 +978,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         }`}
                         onClick={stopPropagation}
                     >
-                        {this.state.isLoading ? (
+                        {this.state.loader ? (
                             <>
                                 <div className="trigger-modal__header flex right">
                                     <button type="button" className="dc__transparent" onClick={this.closeCDModal}>
