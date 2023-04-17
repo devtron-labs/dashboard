@@ -45,7 +45,7 @@
         "xterm-webfont": "^2.0.0",
         "yaml": "^1.7.2",
         "yamljs": "^0.3.0",
-        "@devtron-labs/devtron-fe-common-lib": "0.0.7-beta-31"
+        "@devtron-labs/devtron-fe-common-lib": "0.0.7-beta-33"
     },
     "scripts": {
         "lint": "eslint src/**/*.tsx",
@@ -125,8 +125,8 @@
             "pre-commit": "yarn eslint"
         }
     },
-  "resolutions": {
-    "**/@typescript-eslint/eslint-plugin": "^5.15.0",
-    "**/@typescript-eslint/parser": "^5.15.0"
-  }
+    "resolutions": {
+        "**/@typescript-eslint/eslint-plugin": "^5.15.0",
+        "**/@typescript-eslint/parser": "^5.15.0"
+    }
 }

@@ -107,7 +107,7 @@ export default function EnvironmentOverride({
             <div className={headingData ? 'environment-override mb-24' : 'deployment-template-override h-100'}>
                 {headingData && (
                     <>
-                        <h1 className="form__title form__title--artifacts flex left">
+                        <h1 className="form__title form__title--artifacts flex left" data-testid="environment-override-header">
                             {formTitle()}
                             {headingData.title}
                         </h1>

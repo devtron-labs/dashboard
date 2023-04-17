@@ -16,6 +16,7 @@ export enum MsgUIType {
 
 export interface MsgUIProps {
     msg: string;
+    dataTestId?: string;
     icon?: MsgUIType;
     theme?: 'white' | 'dark' | 'light-gray';
     iconClassName?: string;
@@ -31,6 +32,7 @@ export interface MsgUIProps {
 
 const MessageUI: React.FC<MsgUIProps> = ({
     msg,
+    dataTestId,
     icon,
     theme,
     iconClassName,
@@ -45,6 +47,7 @@ const MessageUI: React.FC<MsgUIProps> = ({
 }: MsgUIProps) => {
     return (
         <div
+            data-testid={dataTestId}
             className={`dc__text-center ${theme || 'dark'}-background w-100 `}
             style={{ paddingTop: '200px', minHeight: minHeight || '600px', flex: '1', ...bodyStyle }}
         >

@@ -2,9 +2,9 @@ import React from 'react';
 import './Toggle.scss'
 import {useEffectAfterMount} from '../helpers/Helpers';
 
-const Toggle = ({selected=false, onSelect=null, color="#36b37e", rootClassName="", disabled=false, ...props})=>{
+const Toggle = ({selected=false, onSelect=null, color="#36b37e", rootClassName="", disabled=false, dataTestId="", ...props})=>{
     const [active, setActive] = React.useState(selected);
-    
+
     useEffectAfterMount(()=>{
         if(typeof onSelect === 'function'){
             if(active !== selected){
@@ -12,7 +12,7 @@ const Toggle = ({selected=false, onSelect=null, color="#36b37e", rootClassName="
             }
         }
     },[active])
-    
+
     useEffectAfterMount(() => {
         setActive(selected)
     }, [selected])
@@ -22,12 +22,16 @@ const Toggle = ({selected=false, onSelect=null, color="#36b37e", rootClassName="
             setActive(active=>!active)
         }
     }
-    
-    return(
-    <label {...props} className={`${rootClassName} toggle__switch ${disabled ? 'disabled' : ''}`} style={{ ['--color' as any]: color }}>
-        <input type="checkbox" checked={!!active} onChange={handleClick} className="toggle__input"/>
-        <span className="toggle__slider round"></span>
-    </label>
+
+    return (
+        <label
+            {...props}
+            className={`${rootClassName} toggle__switch ${disabled ? 'disabled' : ''}`}
+            style={{ ['--color' as any]: color }}
+        >
+            <input type="checkbox" checked={!!active} onChange={handleClick} className="toggle__input" />
+            <span className="toggle__slider round" data-testid={dataTestId}></span>
+        </label>
     )
 }
 

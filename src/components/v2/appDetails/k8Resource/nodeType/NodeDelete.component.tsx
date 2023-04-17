@@ -39,6 +39,7 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
             <div className="pod-info__popup-container">
                 {kind === NodeType.Pod ? (
                     <span
+                        data-testid="view-events-button"
                         className="flex pod-info__popup-row"
                         onClickCapture={(e) => describeNode(NodeDetailTabs.EVENTS)}
                     >
@@ -48,13 +49,18 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
                     ''
                 )}
                 {kind === NodeType.Pod ? (
-                    <span className="flex pod-info__popup-row" onClick={(e) => describeNode(NodeDetailTabs.LOGS)}>
+                    <span
+                        data-testid="view-logs-button"
+                        className="flex pod-info__popup-row"
+                        onClick={(e) => describeNode(NodeDetailTabs.LOGS)}
+                    >
                         View Container Logs
                     </span>
                 ) : (
                     ''
                 )}
                 <span
+                    data-testid="delete-resource-button"
                     className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
                     onClick={(e) => {
                         setShowDeleteConfirmation(true)
@@ -102,7 +108,7 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
     return (
         <div style={{ width: '40px' }}>
             <PopupMenu autoClose>
-                <PopupMenu.Button isKebab={true}>
+                <PopupMenu.Button dataTestId="node-resource-dot-button" isKebab={true}>
                     <img src={dots} className="pod-info__dots" />
                 </PopupMenu.Button>
                 <PopupMenu.Body>

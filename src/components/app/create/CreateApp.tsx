@@ -272,7 +272,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                     Create {this.props.isJobView ? 'job' : 'application'}
                 </h2>
-                <button type="button" className="dc__transparent flex icon-dim-24" onClick={this.props.close}>
+                <button type="button" className="dc__transparent flex icon-dim-24" onClick={this.props.close} data-testid="close-create-cutomapp-wing">
                     <Close className="icon-dim-24" />
                 </button>
             </div>
@@ -295,6 +295,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     <span className="form__label dc__required-field">{this.props.isJobView ? 'Job' : 'App'} Name</span>
                     <input
                         ref={(node) => (this._inputAppName = node)}
+                        data-testid="app-name-textbox"
                         className="form__input"
                         type="text"
                         name="app-name"
@@ -344,19 +345,28 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             this.changeTemplate(event.target.value)
                         }}
                     >
-                        <RadioGroupItem value={AppCreationType.Blank}>Create from scratch</RadioGroupItem>
-                        <RadioGroupItem value={AppCreationType.Existing}>
+                        <RadioGroupItem value={AppCreationType.Blank} dataTestId="create-from-scratch-radio-button">
+                            Create from scratch
+                        </RadioGroupItem>
+                        <RadioGroupItem
+                            value={AppCreationType.Existing}
+                            dataTestId="clone-existing-application-radio-button"
+                        >
                             Clone existing {this.props.isJobView ? 'job' : 'application'}
                         </RadioGroupItem>
                     </RadioGroup>
                 </div>
                 {this.state.form.appCreationType === AppCreationType.Existing && (
                     <>
-                        <div className="form__row clone-apps dc__inline-block">
-                            <span className="form__label dc__required-field">
+                        <div
+                            className="form__row clone-apps dc__inline-block"
+                            data-testid="clone-existing-application-radio-button"
+                        >
+                            <span className="form__label dc__required-field" data-testid="Clone-app-option">
                                 Select an {this.props.isJobView ? 'job' : 'app'} to clone
                             </span>
                             <AsyncSelect
+                                classNamePrefix="app-name-for-clone"
                                 loadOptions={this.loadAppListOptions}
                                 noOptionsMessage={noOptionsMessage}
                                 onChange={this.handleCloneAppChange}
@@ -394,6 +404,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 <div className="form__row">
                     <span className="form__label dc__required-field">Project</span>
                     <ReactSelect
+                        classNamePrefix="create-app__select-project"
                         className="m-0"
                         tabIndex={4}
                         isMulti={false}
@@ -434,7 +445,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     renderFooterSection = (): JSX.Element => {
         return (
             <div className="w-800 dc__border-top flex right pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0">
-                <button className="cta flex h-36" onClick={this.createApp}>
+                <button className="cta flex h-36" onClick={this.createApp}  data-testid="create-app-button-on-drawer">
                     {`${this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}${
                         this.props.isJobView ? 'Job' : 'App'
                     }`}

@@ -167,7 +167,9 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
     renderHeader() {
         return (
             <div className="p-20 flex flex-align-center flex-justify">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0">Create linked build pipeline</h2>
+                <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="create-linked-build-pipeline">
+                    Create linked build pipeline
+                </h2>
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"
@@ -202,6 +204,8 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         return (
             <div className={`typeahead form__row`}>
                 <Typeahead
+                    dataTestIdContainer = "source-ci-pipeline-container"
+                    dataTestIdInput = "source-ci-pipeline-input"
                     labelKey={'name'}
                     name="source-ci-pipeline"
                     label={'Source CI pipeline'}
@@ -214,7 +218,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                 >
                     {this.state.ciPipelines.map((ci) => {
                         return (
-                            <TypeaheadOption key={ci.id} id={ci.id} item={ci}>
+                            <TypeaheadOption dataTestIdMenuList = {`source-ci-pipeline-menu-list-${ci.name}`} key={ci.id} id={ci.id} item={ci}>
                                 {ci.name}
                             </TypeaheadOption>
                         )
@@ -267,6 +271,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                         <AsyncSelect
                             loadOptions={this.loadAppListOptions}
                             noOptionsMessage={noOptionsMessage}
+                            classNamePrefix="link-pipeline-filter-application"
                             onChange={this.selectApp}
                             styles={this._multiSelectStyles}
                             components={{
@@ -292,6 +297,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                                 type="text"
                                 value={this.state.form.name}
                                 onChange={this.handleName}
+                                data-testid="pipeline-name-for-linked"
                             />
                             {!this.state.isValid.name ? (
                                 <span className="form__error">
@@ -328,6 +334,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
                                 Cancel
                             </button>
                             <ButtonWithLoader
+                                dataTestId='create-linked-ci-button'
                                 rootClassName="cta cta--workflow flex-1"
                                 loaderColor="white"
                                 onClick={this.savePipeline}

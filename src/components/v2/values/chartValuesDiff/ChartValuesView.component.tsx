@@ -180,7 +180,7 @@ export const ChartVersionSelector = ({
 }: ChartVersionSelectorType) => {
     return (
         <div className="w-100 mb-12">
-            <span className="form__label fs-13 fw-4 lh-20 cn-7">Chart Version</span>
+            <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-version-heading">Chart Version</span>
             <Select
                 tabIndex={4}
                 rootClassName="select-button--default chart-values-selector"
@@ -191,13 +191,15 @@ export const ChartVersionSelector = ({
                         version: event.target.innerText,
                     })
                 }}
+                dataTestId='select-chart-version'
             >
-                <Select.Button>{selectedVersionUpdatePage?.version || chartVersionObj?.version}</Select.Button>
-                {chartVersionsData.map((_chartVersion) => (
-                    <Select.Option key={_chartVersion.id} value={_chartVersion.id}>
+                <Select.Button dataTestIdDropdown="chart-version-of-preset">{selectedVersionUpdatePage?.version || chartVersionObj?.version}</Select.Button>
+                {chartVersionsData.map((_chartVersion, index) => (
+                    <Select.Option key={_chartVersion.id} value={_chartVersion.id} dataTestIdMenuList={`chart-select-${index}`}>
                         {_chartVersion.version}
                     </Select.Option>
                 ))}
+                
             </Select>
         </div>
     )
@@ -213,7 +215,7 @@ export const ChartValuesSelector = ({
 }: ChartValuesSelectorType) => {
     return (
         <div className="w-100 mb-12">
-            <span className="form__label fs-13 fw-4 lh-20 cn-7">Chart Values</span>
+            <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-values-heading">Chart Values</span>
             <ChartValuesSelect
                 className="chart-values-selector"
                 chartValuesList={chartValuesList}
@@ -334,6 +336,7 @@ export const ValueNameInput = ({
                 onChange={(e) => handleValueNameChange(e.target.value)}
                 onBlur={() => handleValueNameOnBlur()}
                 disabled={valueNameDisabled}
+                data-testid="preset-values-name-input"
             />
             {invalidValueName && renderValidationErrorLabel(invalidValueNameMessage)}
         </label>
@@ -380,6 +383,7 @@ export const DeleteApplicationButton = ({
                     payload: true,
                 })
             }
+            data-testid="delete-preset-value"
         >
             {isDeleteInProgress ? (
                 <div className="flex">
@@ -413,6 +417,7 @@ export const UpdateApplicationButton = ({
                 isUpdateInProgress || isDeleteInProgress ? 'disabled' : ''
             }`}
             onClick={deployOrUpdateApplication}
+            data-testid="preset-save-values-button"
         >
             {isUpdateInProgress ? (
                 <div className="flex">

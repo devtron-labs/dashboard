@@ -18,7 +18,10 @@ export default function DeploymentStatusDetailBreakdown({
     return (
         <>
             {!url.includes(`/${URLS.APP_CD_DETAILS}`) && <ErrorBar appDetails={_appDetails} />}
-            <div className="deployment-status-breakdown-container pl-20 pr-20 pt-20 pb-20">
+            <div
+                className="deployment-status-breakdown-container pl-20 pr-20 pt-20 pb-20"
+                data-testid="deployment-history-steps-status"
+            >
                 <DeploymentStatusDetailRow
                     type={TIMELINE_STATUS.DEPLOYMENT_INITIATED}
                     deploymentDetailedData={deploymentStatusDetailsBreakdownData}

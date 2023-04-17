@@ -26,7 +26,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
     const history = useHistory()
     const markedNodes = useRef<Map<string, boolean>>(new Map<string, boolean>())
     const [selectedNodes, setSelectedNodes] = useState<Array<iNode>>()
-    const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<Number>(0)
+    const [selectedHealthyNodeCount, setSelectedHealthyNodeCount] = useState<number>(0)
     const [copiedNodeName, setCopiedNodeName] = useState<string>('')
     const [tableHeader, setTableHeader] = useState([])
     const [firstColWidth, setFirstColWidth] = useState('')
@@ -274,6 +274,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                     {node.childNodes?.length > 0 ? (
                                         <span>
                                             <DropDown
+                                                data-testid="resource-child-nodes-dropdown"
                                                 className={`rotate icon-dim-24 pointer ${
                                                     _isSelected ? 'fcn-9' : 'fcn-5'
                                                 } `}
@@ -285,7 +286,9 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                     )}
                                     <div>
                                         <div className="resource__title-name flex left dc__align-start">
-                                            <span className="fs-13">{node.name}</span>
+                                            <span data-testid="resource-node-name" className="fs-13">
+                                                {node.name}
+                                            </span>
                                             <div
                                                 className={`flex left ${
                                                     node.kind.toLowerCase() == NodeType.Pod.toLowerCase()
@@ -295,6 +298,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                             >
                                                 {renderClipboardInteraction(node.name)}
                                                 <div
+                                                    data-testid={`app-node-${index}-resource-tab-wrapper`}
                                                     className={`flex left ${getWidthClassnameForTabs()} ${
                                                         node.kind === NodeType.Containers ? '' : 'node__tabs'
                                                     } en-2 bw-1 br-4 dc__w-fit-content`}
@@ -304,6 +308,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                                             <div
                                                                 key={'tab__' + index}
                                                                 data-name={kind}
+                                                                data-testid={kind.toLowerCase() + '-tab'}
                                                                 onClick={onClickNodeDetailsTab}
                                                                 className={`dc__capitalize flex cn-7 fw-6 cursor bcn-0 ${
                                                                     node.kind === NodeType.Containers
@@ -335,6 +340,7 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                                         </div>
                                         <div className="flex left">
                                             <span
+                                                data-testid="node-resource-status"
                                                 className={`mr-4 app-summary__status-name f-${(
                                                     node?.status ||
                                                     node?.health?.status ||
@@ -365,19 +371,19 @@ function NodeComponent({ handleFocusTabs, externalLinks, monitoringTools, isDevt
                         )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div className={'flex left col-1 pt-9 pb-9'}>
+                            <div data-testid="pod-ready-count" className={'flex left col-1 pt-9 pb-9'}>
                                 {node.info?.filter((_info) => _info.name === 'Containers')[0]?.value}
                             </div>
                         )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div className={'flex left col-1 pt-9 pb-9'}>
+                            <div data-testid="pod-restart-count" className={'flex left col-1 pt-9 pb-9'}>
                                 {node.kind !== 'Containers' && getPodRestartCount(node)}
                             </div>
                         )}
 
                         {params.nodeType === NodeType.Pod.toLowerCase() && (
-                            <div className={'flex left col-1 pt-9 pb-9'}>
+                            <div data-testid="pod-age-count" className={'flex left col-1 pt-9 pb-9'}>
                                 {getElapsedTime(new Date(node.createdAt))}
                             </div>
                         )}

@@ -123,7 +123,7 @@ export function Option(props) {
 export function DropdownIndicator(props) {
     return (
         <components.DropdownIndicator {...props}>
-            <ArrowDown className="icon-dim-20 icon-n5" />
+            <ArrowDown className="icon-dim-20 icon-n5" data-testid="overview-project-edit-dropdown" />
         </components.DropdownIndicator>
     )
 }
@@ -222,7 +222,7 @@ export function formatHighlightedText(option: Environment, inputValue: string, e
     const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
     const regex = new RegExp(inputValue, 'gi')
     return (
-        <div className="flex left column dc__highlight-text">
+        <div className="flex left column dc__highlight-text" data-testid={option[environmentfieldName]}>
             <span
                 className="w-100 dc__ellipsis-right"
                 dangerouslySetInnerHTML={{

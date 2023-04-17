@@ -1106,6 +1106,7 @@ function Environment({
                 <div className="dc__overflow-scroll p-20">
                     <div className="mb-16">
                         <CustomInput
+                        dataTestid="environment-name"
                             labelClassName="dc__required-field"
                             autoComplete="off"
                             disabled={!!environment_name}
@@ -1119,6 +1120,7 @@ function Environment({
                     </div>
                     <div className="mb-16">
                         <CustomInput
+                        dataTestid="enter-namespace"
                             labelClassName="dc__required-field"
                             disabled={!!namespace}
                             name="namespace"
@@ -1132,6 +1134,7 @@ function Environment({
                     <div className="mb-16 flex left">
                         <label className="pr-16 flex cursor">
                             <input
+                                data-testid="production"
                                 type="radio"
                                 name="isProduction"
                                 checked={state.isProduction.value === 'true'}
@@ -1142,8 +1145,9 @@ function Environment({
                         </label>
                         <label className="flex cursor">
                             <input
+                                data-testid="nonProduction"
                                 type="radio"
-                                name="isProduction"
+                                name="isNonProduction"
                                 checked={state.isProduction.value === 'false'}
                                 value="false"
                                 onChange={handleOnChange}
@@ -1163,7 +1167,6 @@ function Environment({
                         />
                     </div>
                 </div>
-
                 <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0 bcn-0">
                     {id && (
                         <button
@@ -1183,6 +1186,7 @@ function Environment({
                         type="submit"
                         disabled={loading}
                         onClick={handleOnSubmit}
+                        data-testid="save-and-update-environment"
                     >
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}
                     </button>

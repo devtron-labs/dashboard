@@ -8,7 +8,6 @@ import { useSharedState } from '../../../utils/useSharedState';
 import { AggregationKeys, getAggregator, iNode, iNodes, NodeStatus, NodeType } from '../../appDetails.type';
 import { URLS } from '../../../../../config';
 import { ReactComponent as ErrorImage } from '../../../../../assets/icons/misc/errorInfo.svg';
-
 function NodeTreeComponent({
     clickedNodes,
     registerNodeClick,
@@ -80,12 +79,16 @@ function NodeTreeComponent({
                         {treeNode.childNodes?.length > 0 && !(isDevtronApp && treeNode.name === NodeType.Pod) ? (
                             <React.Fragment>
                                 <DropDown
+                                    data-testid={`${treeNode.name.toLowerCase()}-dropdown`}
                                     className={`${treeNode.isSelected ? 'fcn-9' : 'fcn-5'}  rotate icon-dim-24 pointer`}
                                     style={{ ['--rotateBy' as any]: !treeNode.isSelected ? '-90deg' : '0deg' }}
                                 />
-                                <div className={`fs-14 fw-6 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 `}>
+                                <div
+                                    data-testid={treeNode.name.toLowerCase()}
+                                    className={`fs-14 fw-6 pointer w-100 fw-4 flex left pl-8 pr-8 pt-6 pb-6 lh-20 `}
+                                >
                                     {treeNode.name}
-                                    {!treeNode.isSelected && treeNode.status?.toLowerCase() === NodeStatus.Degraded &&  (
+                                    {!treeNode.isSelected && treeNode.status?.toLowerCase() === NodeStatus.Degraded && (
                                         <ErrorImage
                                             className="icon-dim-16 rotate"
                                             style={{ ['--rotateBy' as any]: '180deg', marginLeft: 'auto' }}
@@ -102,6 +105,7 @@ function NodeTreeComponent({
                                     className={`dc__no-decor fs-14 pointer w-100 fw-4 flex left mr-8 pl-8 pr-8 pt-6 pb-6 lh-1-43 ${
                                         treeNode.isSelected ? 'bcb-1 cb-5' : 'cn-7 resource-tree__nodes '
                                     }`}
+                                    data-testid={`resource-node-${treeNode.name.toLowerCase()}`}
                                 >
                                     {treeNode.name}
                                     {treeNode.status?.toLowerCase() === 'degraded' && (
@@ -115,13 +119,19 @@ function NodeTreeComponent({
                         )}
                     </div>
 
-                    {treeNode.childNodes?.length > 0 && treeNode.isSelected && !(isDevtronApp && treeNode.name === NodeType.Pod) && (
-                        <div className={`pl-24`}>
-                            {makeNodeTree(treeNode.childNodes, [...parents, treeNode.name.toLowerCase()], isDevtronApp)}{' '}
-                        </div>
-                    )}
+                    {treeNode.childNodes?.length > 0 &&
+                        treeNode.isSelected &&
+                        !(isDevtronApp && treeNode.name === NodeType.Pod) && (
+                            <div className={`pl-24`}>
+                                {makeNodeTree(
+                                    treeNode.childNodes,
+                                    [...parents, treeNode.name.toLowerCase()],
+                                    isDevtronApp,
+                                )}
+                            </div>
+                        )}
                 </div>
-            );
+            )
         });
     };
 

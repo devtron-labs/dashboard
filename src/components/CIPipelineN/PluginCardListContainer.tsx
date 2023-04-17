@@ -14,7 +14,9 @@ export function PluginCardListContainer({
     return (
         pluginList.length > 0 && (
             <div className="plugin-container">
-                <div className="cn-5 fw-6 fs-13 mt-20 mb-8">{pluginListTitle}</div>
+                <div data-testid="preset-plugin-heading" className="cn-5 fw-6 fs-13 mt-20 mb-8">
+                    {pluginListTitle}
+                </div>
                 {pluginList.map((pluginDetails) => (
                     <div
                         key={pluginDetails.id}
@@ -28,6 +30,7 @@ export function PluginCardListContainer({
                         }
                     >
                         <PluginCard
+                            dataTestId={`${pluginDetails.name}-button`}
                             imgSource={pluginDetails.icon}
                             title={pluginDetails.name}
                             subTitle={pluginDetails.description}
