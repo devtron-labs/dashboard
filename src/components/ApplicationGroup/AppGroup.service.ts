@@ -12,13 +12,15 @@ import { WebhookListResponse } from '../ciPipeline/Webhook/types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { ModuleNameMap, Routes, URLS } from '../../config'
-import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
 import {
     AppGroupList,
     CIConfigListType,
     ConfigAppListType,
     EnvAppType,
     EnvDeploymentStatusType,
+    EnvGroupListResponse,
+    EnvGroupResponse,
     WorkflowsResponseType,
 } from './AppGroup.types'
 import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
@@ -185,4 +187,20 @@ export const getDeploymentStatus = (envId: number): Promise<EnvDeploymentStatusT
 
 export const getAppGroupList = (envId: number): Promise<AppGroupList> => {
     return get(`${Routes.APP_LIST_GROUP}/${envId}`)
+}
+
+export const getEnvGroupList = (envId: number): Promise<EnvGroupListResponse> => {
+    return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUPS}`)
+}
+
+export const getEnvGroup = (envId: number, groupId: number): Promise<EnvGroupResponse> => {
+  return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${groupId}`)
+}
+
+export const createEnvGroup = (envId: string, data): Promise<EnvGroupResponse> => {
+  return post(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}`, data)
+}
+
+export const deleteEnvGroup = (envId: number, groupId: number): Promise<EnvGroupResponse> => {
+  return trash(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${groupId}`)
 }

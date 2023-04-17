@@ -1,11 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Drawer, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Drawer, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { CreateGroupType } from './AppGroup.types'
 import SearchBar from './SearchBar'
 import { CreateGroupTabs } from './Constants'
+import { toast } from 'react-toastify'
+import { createEnvGroup } from './AppGroup.service'
+import { useParams } from 'react-router-dom'
 
 export default function CreateGroup({ appList, selectedAppList, closePopup }: CreateGroupType) {
+    const { envId } = useParams<{ envId: string }>()
     const CreateGroupRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(false)
     const [appGroupName, setAppGroupName] = useState<string>()
@@ -33,6 +37,7 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
             document.removeEventListener('click', outsideClickHandler)
         }
     }, [outsideClickHandler])
+
     useEffect(() => {
         const selectedAppsMap: Record<string, boolean> = {}
         const _allAppList: { id: string; appName: string; isSelected: boolean }[] = []
@@ -251,13 +256,41 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
         return false
     }
 
+    const handleSave = async (e): Promise<void> => {
+        e.preventDefault()
+        // let  = false
+
+        // if () {
+        //     toast.error('Some required fields are missing or invalid')
+        //     return
+        // }
+        setLoading(true)
+
+        const payload = {
+            id: null,
+            name: appGroupName,
+            description: appGroupDescription,
+            appIds: selectedAppList.map((app) => +app.value),
+        }
+
+        try {
+            await createEnvGroup(envId, payload)
+            toast.success('Successfully saved')
+            closePopup(e)
+        } catch (err) {
+            showError(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
     const renderFooterSection = (): JSX.Element => {
         return (
             <div className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 w-800">
                 <button className="cta cancel flex h-36 mr-12" onClick={closePopup}>
                     Cancel
                 </button>
-                <button className="cta flex h-36" onClick={() => {}} disabled={isCreateGroupDisabled()}>
+                <button className="cta flex h-36" onClick={handleSave} disabled={isCreateGroupDisabled()}>
                     Save
                 </button>
             </div>

@@ -215,9 +215,9 @@ export interface EnvHeaderType {
     setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
     selectedFilterTab: AppFilterTabs
     setSelectedFilterTab: React.Dispatch<React.SetStateAction<AppFilterTabs>>
-    groupFilterOptions: OptionType[]
-    selectedGroupFilter: MultiValue<OptionType>
-    setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
+    groupFilterOptions: GroupOptionType[]
+    selectedGroupFilter: MultiValue<GroupOptionType>
+    setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<GroupOptionType>>>
     openCreateGroup: (e) => void
 }
 
@@ -243,9 +243,9 @@ export interface AppGroupAppFilterContextType {
     setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
     selectedFilterTab: AppFilterTabs
     setSelectedFilterTab: React.Dispatch<React.SetStateAction<AppFilterTabs>>
-    groupFilterOptions: OptionType[]
-    selectedGroupFilter: MultiValue<OptionType>
-    setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
+    groupFilterOptions: GroupOptionType[]
+    selectedGroupFilter: MultiValue<GroupOptionType>
+    setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<GroupOptionType>>>
     openCreateGroup: (e) => void
 }
 
@@ -282,4 +282,22 @@ export interface AppGroupList extends ResponseType {
 
 export interface EnvDeploymentStatusType extends ResponseType {
     result?: EnvDeploymentStatus[]
+}
+
+export interface EnvGroupListType {
+    id: number
+    name: string
+    appIds: number[]
+}
+
+export interface EnvGroupListResponse extends ResponseType {
+    result?: EnvGroupListType[]
+}
+
+export interface EnvGroupResponse extends ResponseType {
+    result?: EnvGroupListType
+}
+
+export interface GroupOptionType extends OptionType {
+    appIds: number[]
 }

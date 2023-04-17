@@ -14,8 +14,14 @@ import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceList
 import EmptyFolder from '../../assets/img/Empty-folder.png'
 import { AppFilterTabs, EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
-import { getAppGroupList, getEnvAppList } from './AppGroup.service'
-import { AppGroupAdminType, AppGroupAppFilterContextType, AppGroupListType, EnvHeaderType } from './AppGroup.types'
+import { getAppGroupList, getEnvAppList, getEnvGroupList } from './AppGroup.service'
+import {
+    AppGroupAdminType,
+    AppGroupAppFilterContextType,
+    AppGroupListType,
+    EnvHeaderType,
+    GroupOptionType,
+} from './AppGroup.types'
 import { getAppList } from '../app/service'
 import { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
@@ -47,8 +53,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [selectedAppList, setSelectedAppList] = useState<MultiValue<OptionType>>([])
     const [appGroupListData, setAppGroupListData] = useState<AppGroupListType>()
     const [selectedFilterTab, setSelectedFilterTab] = useState<AppFilterTabs>(AppFilterTabs.GROUP_FILTER)
-    const [groupFilterOptions, setGroupFilterOptions] = useState<OptionType[]>([])
-    const [selectedGroupFilter, setSelectedGroupFilter] = useState<MultiValue<OptionType>>([])
+    const [groupFilterOptions, setGroupFilterOptions] = useState<GroupOptionType[]>([])
+    const [selectedGroupFilter, setSelectedGroupFilter] = useState<MultiValue<GroupOptionType>>([])
     const [showCreateGroup, setShowCreateGroup] = useState<boolean>(false)
 
     useEffect(() => {
@@ -67,28 +73,23 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     }, [envId])
 
     const getSavedFilterData = async (): Promise<void> => {
-        setGroupFilterOptions([
-            { label: 'filter1', value: '1' },
-            { label: 'filter2', value: '2' },
-            { label: 'filter3', value: '3' },
-            { label: 'filter4', value: '4' },
-        ])
-        // setSelectedAppList([])
-        // setAppListLoading(true)
-        // const { result } = await getAppList({ environments: [+envId] })
-        // if (result.appContainers?.length) {
-        //   setGroupFilterOptions(
-        //         result.appContainers
-        //             .map((appDetails) => {
-        //                 return {
-        //                     value: appDetails.appId,
-        //                     label: appDetails.appName,
-        //                 }
-        //             })
-        //             .sort(sortOptionsByLabel),
-        //     )
-        // }
-        // setAppListLoading(false)
+        setSelectedAppList([])
+        setAppListLoading(true)
+        const { result } = await getEnvGroupList(+envId)
+        if (result) {
+            setGroupFilterOptions(
+                result
+                    .map((grp) => {
+                        return {
+                            value: grp.id.toString(),
+                            label: grp.name,
+                            appIds: grp.appIds,
+                        }
+                    })
+                    .sort(sortOptionsByLabel),
+            )
+        }
+        setAppListLoading(false)
     }
 
     const getAppListData = async (): Promise<void> => {
@@ -113,8 +114,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
 
     const openCreateGroup = (e) => {
         stopPropagation(e)
-        if(e.currentTarget.dataset.isEdit==='true'){
-
+        if (e.currentTarget.dataset.isEdit === 'true') {
         }
         setShowCreateGroup(true)
     }
@@ -122,6 +122,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const closeCreateGroup = (e) => {
         stopPropagation(e)
         setShowCreateGroup(false)
+        getSavedFilterData()
     }
 
     const renderEmpty = () => {
@@ -192,11 +193,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             />
             {renderRoute()}
             {showCreateGroup && (
-                <CreateGroup
-                    appList={appListOptions}
-                    selectedAppList={selectedAppList}
-                    closePopup={closeCreateGroup}
-                />
+                <CreateGroup appList={appListOptions} selectedAppList={selectedAppList} closePopup={closeCreateGroup} />
             )}
         </div>
     )

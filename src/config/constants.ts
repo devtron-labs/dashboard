@@ -218,6 +218,8 @@ export const Routes = {
     USER_ROLE_GROUP: 'user/role/group',
     APP_FILTER_LIST: 'app/app-listing/autocomplete',
     APP_LIST_GROUP: 'app/list/group',
+    GROUPS: 'groups',
+    GROUP: 'group',
 }
 
 export const ViewType = {
