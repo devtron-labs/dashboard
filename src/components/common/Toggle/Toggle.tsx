@@ -23,11 +23,15 @@ const Toggle = ({selected=false, onSelect=null, color="#36b37e", rootClassName="
         }
     }
 
-    return(
-    <label {...props} className={`${rootClassName} toggle__switch ${disabled ? 'disabled' : ''}`} style={{ ['--color' as any]: color }}>
-        <input type="checkbox" checked={!!active} onChange={handleClick} className="toggle__input" />
-        <span className="toggle__slider round" data-testid={dataTestId}></span>
-    </label>
+    return (
+        <label
+            {...props}
+            className={`${rootClassName} toggle__switch ${disabled ? 'disabled' : ''}`}
+            style={{ ['--color' as any]: color }}
+        >
+            <input type="checkbox" checked={!!active} onChange={handleClick} className="toggle__input" />
+            <span className="toggle__slider round" data-testid={dataTestId}></span>
+        </label>
     )
 }
 

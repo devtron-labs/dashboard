@@ -926,8 +926,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             this.handleStageConfigChange(event.target.value, key, 'triggerType')
                         }}
                     >
-                        <RadioGroupItem dataTestId='trigger-automatic-button' value={TriggerType.Auto}> Automatic </RadioGroupItem>
-                        <RadioGroupItem dataTestId='trigger-manual-button' value={TriggerType.Manual}> Manual </RadioGroupItem>
+                        <RadioGroupItem dataTestId="trigger-automatic-button" value={TriggerType.Auto}>
+                            Automatic
+                        </RadioGroupItem>
+                        <RadioGroupItem dataTestId="trigger-manual-button" value={TriggerType.Manual}>
+                            Manual
+                        </RadioGroupItem>
                     </RadioGroup>
                 </div>
                 <div className="form__row">
@@ -961,8 +965,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         onChange={
                             this.state.pipelineConfig[key].switch === SwitchItemValues.Config
                                 ? (resp) => {
-                                    this.handleStageConfigChange(resp, key, 'config')
-                                }
+                                      this.handleStageConfigChange(resp, key, 'config')
+                                  }
                                 : null
                         }
                     >
@@ -1037,8 +1041,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     onChange={this.handleDeploymentAppTypeChange}
                     disabled={!!this.props.match.params.cdPipelineId}
                 >
-                    <RadioGroupItem dataTestId="helm-deployment-type-button" value={DeploymentAppType.Helm}> Helm </RadioGroupItem>
-                    <RadioGroupItem dataTestId="gitOps-deployment-type-button" value={DeploymentAppType.GitOps}> GitOps </RadioGroupItem>
+                    <RadioGroupItem data-testid="helm-deployment-type-button" value={DeploymentAppType.Helm}>
+                        Helm
+                    </RadioGroupItem>
+                    <RadioGroupItem data-testid="gitOps-deployment-type-button" value={DeploymentAppType.GitOps}>
+                        GitOps
+                    </RadioGroupItem>
                 </RadioGroup>
             </div>
         )
@@ -1221,8 +1229,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <p className="fs-14 fw-6 cn-9 mb-8">When do you want to deploy</p>
                 <div className="flex mb-20">
                     <div
-                        className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 mr-8 bw-1${this.state.pipelineConfig.triggerType === TriggerType.Auto ? ' bcb-1 eb-2' : ' bcn-0 en-2'
-                            }`}
+                        className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 mr-8 bw-1${
+                            this.state.pipelineConfig.triggerType === TriggerType.Auto ? ' bcb-1 eb-2' : ' bcn-0 en-2'
+                        }`}
                         data-testid="cd-auto-mode-button"
                         onClick={() => this.handleTriggerTypeChange(TriggerType.Auto)}
                     >
@@ -1233,8 +1242,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         </div>
                     </div>
                     <div
-                        className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 ml-8 bw-1${this.state.pipelineConfig.triggerType === TriggerType.Manual ? ' bcb-1 eb-2' : ' bcn-0 en-2'
-                            }`}
+                        className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 ml-8 bw-1${
+                            this.state.pipelineConfig.triggerType === TriggerType.Manual ? ' bcb-1 eb-2' : ' bcn-0 en-2'
+                        }`}
                         data-testid="cd-manual-mode-button"
                         onClick={() => this.handleTriggerTypeChange(TriggerType.Manual)}
                     >

@@ -50,7 +50,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                     {!this.props.fromAppGrouping && (
                         <>
                             {statusText && <span className="mr-5 ml-5">/</span>}
-                            <Link data-testid = {`cd-trigger-details-button-${title}`} to={url} className="workflow-node__details-link">
+                            <Link data-testid={`cd-trigger-details-button-${title}`} to={url} className="workflow-node__details-link">
                                 Details
                             </Link>
                         </>
@@ -90,7 +90,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                     </button>
                                 </Tippy>
                                 <button
-                                    data-testid = {`${this.props.type}-trigger-select-image`}
+                                    data-testid={`${this.props.type}-trigger-select-image`}
                                     className="workflow-node__deploy-btn"
                                     onClick={(event) => {
                                         event.stopPropagation()

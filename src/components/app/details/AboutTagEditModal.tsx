@@ -98,7 +98,11 @@ export default function AboutTagEditModal({
     const renderAboutModalInfo = (): JSX.Element => {
         return (
             <>
-                <div className="cn-7 p-20 dc__overflow-scroll" data-testid="tag-input-form" style={{ height: 'calc(100vh - 122px)' }}>
+                <div
+                    className="cn-7 p-20 dc__overflow-scroll"
+                    data-testid="tag-input-form"
+                    style={{ height: 'calc(100vh - 122px)' }}
+                >
                     <TagsContainer
                         labelTags={labelTags}
                         setLabelTags={setLabelTags}
