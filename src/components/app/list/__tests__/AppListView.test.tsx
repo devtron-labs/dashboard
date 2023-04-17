@@ -54,7 +54,7 @@ describe('AppListView tests', () => {
         expect(container).toBeInTheDocument()
         expect(getByTestId('appname')).toHaveTextContent('App name')
         expect(getByTestId('appstatus')).toHaveTextContent('App status')
-        expect(getByTestId('env')).toHaveTextContent('Environment')
+        expect(getByTestId('environment')).toHaveTextContent('Environment')
         expect(getByTestId('cluster')).toHaveTextContent('Cluster')
         expect(getByTestId('lastdeployedate')).toHaveTextContent('Last deployed at')
         expect(getByTestId('namespace')).toHaveTextContent('Namespace')
