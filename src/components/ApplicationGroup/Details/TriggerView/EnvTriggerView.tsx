@@ -109,15 +109,15 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
     const abortControllerRef = useRef(new AbortController())
 
     useEffect(() => {
-      if (envId) {
-          setPageViewType(ViewType.LOADING)
-          setSelectedAppList([])
-          getWorkflowsData()
-      }
-      return () => {
-          inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
-      }
-  }, [envId, filteredAppIds])
+        if (envId) {
+            setPageViewType(ViewType.LOADING)
+            setSelectedAppList([])
+            getWorkflowsData()
+        }
+        return () => {
+            inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
+        }
+    }, [envId, filteredAppIds])
 
     const getWorkflowsData = async (): Promise<void> => {
         try {
@@ -150,40 +150,40 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
         }
     }
 
-    const processFilteredData = (_filteredWorkflows: WorkflowType[]):void=>{
-      const _selectedAppList = []
-            let _preNodeExist, _postNodeExist
-            _filteredWorkflows.forEach((wf) => {
-                if (wf.isSelected) {
-                    const _currentAppDetail = {
-                        id: wf.appId,
-                        name: wf.name,
-                        preNodeAvailable: false,
-                        postNodeAvailable: false,
-                    }
-                    for (const node of wf.nodes) {
-                        if (node.environmentId === +envId && node.type === WorkflowNodeType.CD) {
-                            _preNodeExist = showPreDeployment || !!node.preNode
-                            _postNodeExist = showPostDeployment || !!node.postNode
-                            _currentAppDetail.preNodeAvailable = !!node.preNode
-                            _currentAppDetail.postNodeAvailable = !!node.postNode
-                            break
-                        }
-                    }
-                    _selectedAppList.push(_currentAppDetail)
+    const processFilteredData = (_filteredWorkflows: WorkflowType[]): void => {
+        const _selectedAppList = []
+        let _preNodeExist, _postNodeExist
+        _filteredWorkflows.forEach((wf) => {
+            if (wf.isSelected) {
+                const _currentAppDetail = {
+                    id: wf.appId,
+                    name: wf.name,
+                    preNodeAvailable: false,
+                    postNodeAvailable: false,
                 }
-            })
-            setShowPreDeployment(_preNodeExist)
-            setShowPostDeployment(_postNodeExist)
-            setSelectedAppList(_selectedAppList)
-            setSelectAll(_selectedAppList.length !== 0)
-            setSelectAllValue(
-                _filteredWorkflows.length === _selectedAppList.length
-                    ? CHECKBOX_VALUE.CHECKED
-                    : CHECKBOX_VALUE.INTERMEDIATE,
-            )
-            _filteredWorkflows.sort((a, b) => sortCallback('name', a, b))
-            setFilteredWorkflows(_filteredWorkflows)
+                for (const node of wf.nodes) {
+                    if (node.environmentId === +envId && node.type === WorkflowNodeType.CD) {
+                        _preNodeExist = showPreDeployment || !!node.preNode
+                        _postNodeExist = showPostDeployment || !!node.postNode
+                        _currentAppDetail.preNodeAvailable = !!node.preNode
+                        _currentAppDetail.postNodeAvailable = !!node.postNode
+                        break
+                    }
+                }
+                _selectedAppList.push(_currentAppDetail)
+            }
+        })
+        setShowPreDeployment(_preNodeExist)
+        setShowPostDeployment(_postNodeExist)
+        setSelectedAppList(_selectedAppList)
+        setSelectAll(_selectedAppList.length !== 0)
+        setSelectAllValue(
+            _filteredWorkflows.length === _selectedAppList.length
+                ? CHECKBOX_VALUE.CHECKED
+                : CHECKBOX_VALUE.INTERMEDIATE,
+        )
+        _filteredWorkflows.sort((a, b) => sortCallback('name', a, b))
+        setFilteredWorkflows(_filteredWorkflows)
     }
 
     const pollWorkflowStatus = (_processedWorkflowsData: ProcessWorkFlowStatusType) => {
