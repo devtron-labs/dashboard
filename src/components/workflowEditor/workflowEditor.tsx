@@ -464,7 +464,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 <p className="form__subtitle form__subtitle--workflow-editor">
                     {this.props.isJobView
                         ? 'Configure job pipelines to be executed. Pipelines can be configured to be triggered automatically based on code change or time.'
-                        : 'Workflows consist of pipelines from build to deployment stages of an application.'}{' '}
+                        : 'Workflows consist of pipelines from build to deployment stages of an application.'}
                     <br></br>
                     {!this.props.isJobView && (
                         <a

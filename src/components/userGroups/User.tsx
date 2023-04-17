@@ -471,7 +471,13 @@ export default function UserForm({
                         Unsaved changes
                     </span>
                 )}
-                <button disabled={submitting} onClick={cancelCallback} type="button" className="cta cancel mr-16">
+                <button
+                    data-testid="user-form-cancel-button"
+                    disabled={submitting}
+                    onClick={cancelCallback}
+                    type="button"
+                    className="cta cancel mr-16"
+                >
                     Cancel
                 </button>
                 <button

@@ -225,10 +225,22 @@ export default function GroupForm({
                         Unsaved changes
                     </span>
                 )}
-                <button disabled={submitting} onClick={cancelCallback} type="button" className="cta cancel mr-16">
+                <button
+                    data-testid="permission-group-form-cancel-button"
+                    disabled={submitting}
+                    onClick={cancelCallback}
+                    type="button"
+                    className="cta cancel mr-16"
+                >
                     Cancel
                 </button>
-                <button data-testid="permission-group-form-save-button" disabled={submitting} type="button" className="cta" onClick={handleSubmit}>
+                <button
+                    data-testid="permission-group-form-save-button"
+                    disabled={submitting}
+                    type="button"
+                    className="cta"
+                    onClick={handleSubmit}
+                >
                     {submitting ? <Progressing /> : 'Save'}
                 </button>
             </div>

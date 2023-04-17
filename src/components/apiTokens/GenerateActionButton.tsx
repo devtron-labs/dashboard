@@ -19,7 +19,7 @@ function GenerateActionButton({
                 rootClassName={`flex cta cancel h-36 ${regenerateButton ? 'mr-12 order-first' : 'order-second'}`}
                 onClick={onCancel}
                 disabled={loader}
-                dataTestId="cancel-button"
+                dataTestId="cancel-token"
                 isLoading={false}
                 loaderColor="white"
             >
