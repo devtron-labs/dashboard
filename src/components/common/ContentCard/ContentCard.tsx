@@ -20,11 +20,12 @@ export default function ContentCard({
     LinkIcon,
     linkIconClass,
     linkIconPlacement,
+    datatestid,
 }: ContentCardProps) {
     const getContent = () => {
         return (
             <>
-                <img className="content-card-img dc__top-radius-4" src={imgSrc} alt={title} />
+                <img className="content-card-img dc__top-radius-4" src={imgSrc} alt={title} data-testid={datatestid+"-image"} />
                 <ConditionalWrap
                     condition={direction === CardContentDirection.Horizontal}
                     wrap={(children) => <div className="flex column left">{children}</div>}
@@ -34,6 +35,8 @@ export default function ContentCard({
                             className={`fw-6 fs-16 cn-9 ${
                                 direction === CardContentDirection.Horizontal ? '' : 'pt-24'
                             } pb-12 pl-24 pr-24 dc__break-word`}
+                            data-testid={datatestid+"-heading"}
+                            
                         >
                             {title}
                         </div>
@@ -44,6 +47,7 @@ export default function ContentCard({
                                     ? 'dc__content-space'
                                     : 'left'
                             } w-100 ${direction === CardContentDirection.Horizontal ? '' : 'pb-24'} pl-24 pr-24`}
+                            data-testid={datatestid+"-link"}
                         >
                             {LinkIcon &&
                                 (linkIconPlacement === CardLinkIconPlacement.BeforeLink ||

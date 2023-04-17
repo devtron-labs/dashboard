@@ -84,6 +84,7 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                             LinkIcon={ArrowRight}
                             linkIconClass="scb-5"
                             linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
+                            datatestid="Browse-hem-charts"
                         />
                         <ContentCard
                             redirectTo={URLS.GLOBAL_CONFIG_CLUSTER}
@@ -95,6 +96,7 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                             LinkIcon={ArrowRight}
                             linkIconClass="scb-5"
                             linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
+                            datatestid="Connect-kubernetes-cluster"
                         />
                         <ContentCard
                             redirectTo={redirectDeployCardToCICD()}
@@ -109,6 +111,7 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                             LinkIcon={ArrowRight}
                             linkIconClass="scb-5"
                             linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
+                            datatestid="create-application"
                         />
                     </div>
                     <div className="fs-14 mt-40 mb-20 flex column">
@@ -117,10 +120,11 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                             className="guide_skip dc__no-decor cb-5 fw-6 cursor mb-4"
                             data-posthog={POSTHOG_EVENT_ONBOARDING.SKIP_AND_EXPLORE_DEVTRON}
                             onClick={handleSkipOnboarding}
+                            data-testid="skip-explore-link"
                         >
                             {SKIP_AND_EXPLORE_NOTE}
                         </NavLink>
-                        <div className="cn-7">{TIP_RETURN_FROM_HELP_MENU}</div>
+                        <div className="cn-7" data-testid="tip-return-from-help-menu">{TIP_RETURN_FROM_HELP_MENU}</div>
                     </div>
                 </div>
             </div>

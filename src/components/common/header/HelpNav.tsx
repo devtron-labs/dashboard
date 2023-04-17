@@ -113,7 +113,7 @@ function HelpNav({
                         onClick={onClickGettingStarted}
                     >
                         <GettingStartedIcon />
-                        <div className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
+                        <div className="help-card__option-name ml-12 cn-9 fs-14" data-testid="getting-started-link">Getting started</div>
                     </NavLink>
                 )}
                 {renderHelpOptions()}
