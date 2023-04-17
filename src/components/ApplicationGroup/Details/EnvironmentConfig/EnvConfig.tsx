@@ -18,13 +18,13 @@ export default function EnvConfig({ filteredAppIds }: AppGroupDetailDefaultType)
     useEffect(() => {
         if (appList?.result) {
             const appIdExist = appList.result.some((app) => app.id === +appId)
-            const _envAppList = appList.result.sort((a, b) => a.name.localeCompare(b.name))
-            setEnvAppList(_envAppList)
+            appList.result.sort((a, b) => a.name.localeCompare(b.name))
+            setEnvAppList(appList.result)
             if (!appId) {
-                history.replace(`${url}/${_envAppList[0].id}`)
+                history.replace(`${url}/${appList.result[0].id}`)
             } else if (!appIdExist) {
                 const oldUrlSubstring = `/edit/${appId}`
-                const newUrlSubstring = `/edit/${_envAppList[0].id}`
+                const newUrlSubstring = `/edit/${appList.result[0].id}`
                 history.push(`${url.replace(oldUrlSubstring, newUrlSubstring)}`)
             }
         }

@@ -124,7 +124,10 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
                                 (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
                         )
                         .map((app) => (
-                            <div className="flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 cn-9">
+                            <div
+                                key={`selected-app-${app.id}`}
+                                className="flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 cn-9"
+                            >
                                 <span>{app.appName}</span>
                                 <Close
                                     className="icon-dim-16 cursor"
@@ -154,6 +157,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
                         .filter((app) => !allAppSearchText || app.appName.indexOf(allAppSearchText) >= 0)
                         .map((app) => (
                             <div
+                                key={`app-${app.id}`}
                                 className={`flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 ${
                                     selectedAppsMap[app.id] ? 'bcb-1 cb-5' : 'cn-9'
                                 }`}

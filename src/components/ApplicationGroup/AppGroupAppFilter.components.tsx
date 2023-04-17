@@ -18,14 +18,15 @@ import Tippy from '@tippyjs/react'
 export const ValueContainer = (props): JSX.Element => {
     const { appListOptions, selectedAppList, selectedFilterTab, selectedGroupFilter }: AppGroupAppFilterContextType =
         useAppGroupAppFilterContext()
-    let selectedAppsLength = props.getValue().length
-
-    const selectorText =
-        selectedFilterTab === AppFilterTabs.GROUP_FILTER && selectedGroupFilter[0]
-            ? selectedGroupFilter[0]?.label
-            : `${selectedAppList.length > 0 ? selectedAppList.length : appListOptions.length}/${
-                  appListOptions.length
-              } Applications`
+    let selectorText,
+        selectedAppsLength = props.getValue().length
+    if (selectedFilterTab === AppFilterTabs.GROUP_FILTER && selectedGroupFilter[0]) {
+        selectorText = selectedGroupFilter[0]?.label
+    } else {
+        selectorText = `${selectedAppList.length > 0 ? selectedAppList.length : appListOptions.length}/${
+            appListOptions.length
+        } Applications`
+    }
     return (
         <components.ValueContainer {...props}>
             {!props.selectProps.inputValue ? (
@@ -103,15 +104,19 @@ export const Option = (props): JSX.Element => {
         return null
     }
 
+    const renderTippy = (children): JSX.Element => {
+        return (
+            <Tippy className="default-tt" content={data.description}>
+                <span>{children}</span>
+            </Tippy>
+        )
+    }
+
     return (
         <div className={`flex flex-justify pl-8 pr-8 ${getOptionBGClass(props.isSelected, props.isFocused)}`}>
             <ConditionalWrap
                 condition={selectedFilterTab === AppFilterTabs.GROUP_FILTER && data.description}
-                wrap={(children) => (
-                    <Tippy className="default-tt" content={data.description}>
-                        <span>{children}</span>
-                    </Tippy>
-                )}
+                wrap={renderTippy}
             >
                 <components.Option {...props} />
             </ConditionalWrap>

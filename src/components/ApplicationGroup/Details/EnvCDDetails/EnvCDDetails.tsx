@@ -51,12 +51,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
 
     useEffect(() => {
         if (result?.[0]?.['value']?.result.length) {
-            const _filteredPipelines = []
-            let selectedPipelineExist = false
-            result[0]['value'].result.forEach((pipeline) => {
-                _filteredPipelines.push(pipeline)
-                selectedPipelineExist = selectedPipelineExist || pipeline.id === +pipelineId
-            })
+            const selectedPipelineExist = result[0]['value'].result.some((pipeline) => pipeline.id === +pipelineId)
             result[0]['value'].result.sort((a, b) => sortCallback('appName', a, b))
             if (!selectedPipelineExist) {
                 replace(
