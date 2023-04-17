@@ -965,8 +965,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         onChange={
                             this.state.pipelineConfig[key].switch === SwitchItemValues.Config
                                 ? (resp) => {
-                                      this.handleStageConfigChange(resp, key, 'config')
-                                  }
+                                    this.handleStageConfigChange(resp, key, 'config')
+                                }
                                 : null
                         }
                     >
@@ -1041,10 +1041,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     onChange={this.handleDeploymentAppTypeChange}
                     disabled={!!this.props.match.params.cdPipelineId}
                 >
-                    <RadioGroupItem data-testid="helm-deployment-type-button" value={DeploymentAppType.Helm}>
+                    <RadioGroupItem dataTestId="helm-deployment-type-button" value={DeploymentAppType.Helm}>
                         Helm
                     </RadioGroupItem>
-                    <RadioGroupItem data-testid="gitOps-deployment-type-button" value={DeploymentAppType.GitOps}>
+                    <RadioGroupItem dataTestId="gitOps-deployment-type-button" value={DeploymentAppType.GitOps}>
                         GitOps
                     </RadioGroupItem>
                 </RadioGroup>
