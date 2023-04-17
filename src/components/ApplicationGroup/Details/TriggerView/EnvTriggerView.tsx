@@ -621,11 +621,10 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     const nodes = workflow.nodes.map((node) => {
                         if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
                             _selectedNode = node
-                            node.userApprovalConfig = response.result.userApprovalConfig
                             if (!offset && !size) {
-                                node.rollbackMaterialList = response.result.materials
+                                node.rollbackMaterialList = response.result
                             } else {
-                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result.materials)
+                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result)
                             }
                         }
                         return node
@@ -1290,6 +1289,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                         cdPipelineName: _cdNode.title,
                         cdPipelineId: _cdNode.id,
                         stageType: DeploymentNodeType[_selectedNode.type],
+                        triggerType: _cdNode.triggerType,
                         envName: _selectedNode.environmentName,
                         parentPipelineId: _selectedNode.parentPipelineId,
                         parentPipelineType: WorkflowNodeType[_selectedNode.parentPipelineType],
@@ -1600,6 +1600,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                                 appId={_appID}
                                 pipelineId={selectedCDNode?.id}
                                 stageType={DeploymentNodeType[selectedCDNode?.type]}
+                                triggerType={node?.triggerType}
                                 material={material}
                                 materialType={materialType}
                                 envName={node?.environmentName}

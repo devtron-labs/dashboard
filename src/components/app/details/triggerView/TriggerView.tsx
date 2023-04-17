@@ -467,11 +467,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
-                            node.userApprovalConfig = response.result.userApprovalConfig
                             if (!offset && !size) {
-                                node.rollbackMaterialList = response.result.materials
+                                node.rollbackMaterialList = response.result
                             } else {
-                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result.materials)
+                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result)
                             }
                         }
                         return node
@@ -1011,9 +1010,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 appId={Number(this.props.match.params.appId)}
                                 pipelineId={this.state.cdNodeId}
                                 stageType={DeploymentNodeType[this.state.nodeType]}
+                                triggerType={node?.triggerType}
                                 material={material}
                                 materialType={this.state.materialType}
-                                envName={node.environmentName}
+                                envName={node?.environmentName}
                                 isLoading={this.state.isLoading}
                                 changeTab={this.changeTab}
                                 triggerDeploy={this.onClickTriggerCDNode}
@@ -1021,9 +1021,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 closeCDModal={this.closeCDModal}
                                 selectImage={this.selectImage}
                                 toggleSourceInfo={this.toggleSourceInfo}
-                                parentPipelineId={node.parentPipelineId}
-                                parentPipelineType={node.parentPipelineType}
-                                parentEnvironmentName={node.parentEnvironmentName}
+                                parentPipelineId={node?.parentPipelineId}
+                                parentPipelineType={node?.parentPipelineType}
+                                parentEnvironmentName={node?.parentEnvironmentName}
                                 userApprovalConfig={node?.userApprovalConfig}
                                 requestedUserId={node?.requestedUserId}
                             />

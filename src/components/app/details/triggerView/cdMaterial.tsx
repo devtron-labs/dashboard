@@ -29,8 +29,6 @@ import {
     showError,
     Progressing,
     ConditionalWrap,
-    stopPropagation,
-    VisibleModal,
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -43,7 +41,7 @@ import {
 } from '../../service'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap } from '../../../../config'
+import { ModuleNameMap, TriggerTypeMap } from '../../../../config'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
 import {
@@ -509,7 +507,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     renderMaterial = (materialList: CDMaterialType[], disableSelection?: boolean) => {
-        return materialList.map((mat) => {
+        return materialList.map((mat, index) => {
             const isImageApprover =
                 mat.userApprovalMetadata?.approvedUsersData &&
                 mat.userApprovalMetadata.approvedUsersData.some(
@@ -682,7 +680,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return (
             <>
                 {isApprovalConfigured && this.renderMaterial(consumedImage, true)}
-                {(!this.props.isFromBulkCD || isApprovalConfigured)  && (
+                {(!this.props.isFromBulkCD || isApprovalConfigured) && (
                     <div className="material-list__title pb-16">
                         {isApprovalConfigured
                             ? 'Approved images'
@@ -692,11 +690,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     </div>
                 )}
                 {this.props.userApprovalConfig?.requiredCount > 0 && materialList.length <= 0 ? (
-                    <EmptyView
-                        title="No image available"
-                        subTitle="Approved images will be available here for deployment."
-                        imgSrc={noartifact}
-                    />
+                    <EmptyView title="No image available" subTitle={this.getEmptyStateSubtitle()} imgSrc={noartifact} />
                 ) : (
                     this.renderMaterial(materialList)
                 )}
@@ -1148,20 +1142,22 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
+    getEmptyStateSubtitle = () => {
+        if (this.props.triggerType === TriggerTypeMap.automatic) {
+            return 'Deployment to cd-devtroncd is set to Automatic. Deployment of an image is initiated as soon as it receives the required number of approvals.'
+        } else if (this.state.isRollbackTrigger) {
+            return 'Approved images which have been previously deployed will be available here for rollback.'
+        } else {
+            return 'Approved images will be available here for deployment.'
+        }
+    }
+
     renderEmptyState = () => {
         if (this.props.userApprovalConfig?.requiredCount > 0) {
             return (
                 <>
                     <div className="material-list__title pt-16 pl-20 pr-20">Approved images</div>
-                    <EmptyView
-                        title="No image available"
-                        subTitle={
-                            this.state.isRollbackTrigger
-                                ? 'Approved previously deployed images will be available here to rollback to.'
-                                : 'Approved images will be available here for deployment.'
-                        }
-                        imgSrc={noartifact}
-                    />
+                    <EmptyView title="No image available" subTitle={this.getEmptyStateSubtitle()} imgSrc={noartifact} />
                 </>
             )
         }
@@ -1171,7 +1167,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 title="No image available"
                 subTitle={
                     this.props.materialType == MATERIAL_TYPE.rollbackMaterialList
-                        ? 'There are no rollback materials'
+                        ? 'Previously deployed images will be available here for rollback.'
                         : 'Please Trigger CI Pipeline and find the image here for deployment.'
                 }
                 imgSrc={noartifact}

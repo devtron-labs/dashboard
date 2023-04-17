@@ -285,10 +285,7 @@ export function getRollbackMaterialList(
         return {
             code: response.code,
             status: response.status,
-            result: {
-                materials: cdMaterialListModal(response?.result.ci_artifacts, offset === 1 ? true : false),
-                userApprovalConfig: response.result.userApprovalConfig,
-            },
+            result: cdMaterialListModal(response?.result.ci_artifacts, offset === 1 ? true : false),
         }
     })
 }

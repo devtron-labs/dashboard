@@ -905,13 +905,21 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         return (
             <components.MenuList {...props}>
                 {props.children}
-                <div className="w-100 dc__border-top-n1" />
-                <components.Option {...props}>
-                    <div className="flex left top cursor" onClick={handleApproverChange}>
-                        <Checkbox isChecked={permission.approver} value={CHECKBOX_VALUE.CHECKED} onChange={noop} />
-                        {formatOptionLabel(APPROVER_ACTION)}
-                    </div>
-                </components.Option>
+                {permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && (
+                    <>
+                        <div className="w-100 dc__border-top-n1" />
+                        <components.Option {...props}>
+                            <div className="flex left top cursor" onClick={handleApproverChange}>
+                                <Checkbox
+                                    isChecked={permission.approver}
+                                    value={CHECKBOX_VALUE.CHECKED}
+                                    onChange={noop}
+                                />
+                                {formatOptionLabel(APPROVER_ACTION)}
+                            </div>
+                        </components.Option>
+                    </>
+                )}
             </components.MenuList>
         )
     }
