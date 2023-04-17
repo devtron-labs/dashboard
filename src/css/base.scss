@@ -247,6 +247,10 @@ a:focus {
     word-break: break-word;
 }
 
+.dc__white-space-normal {
+    white-space: normal;
+}
+
 .dc__hyphens-auto {
     -ms-hyphens: auto;
     -webkit-hyphens: auto;
@@ -857,7 +861,6 @@ button.anchor {
 }
 
 .override-button.cta {
-
     &.ghosted,
     &.delete {
         height: 32px;
@@ -1021,6 +1024,7 @@ button.anchor {
     &.succeeded {
         background: url('../assets/icons/appstatus/healthy.svg'), $background;
         background-size: contain, contain;
+
         &.healthy--node {
             background: url('../assets/icons/appstatus/ic-heart-green.svg'), transparent;
             background-size: contain, contain;
@@ -1041,6 +1045,7 @@ button.anchor {
     &.not-triggered {
         background: url('../assets/icons/appstatus/notdeployed.svg'), $background;
         background-size: contain, contain;
+
         &.not-deployed--node {
             background: url('../assets/icons/ic-close.svg'), transparent;
             background-size: contain, contain;
@@ -1164,6 +1169,7 @@ button.anchor {
             stroke: var(--N900);
         }
     }
+
     .radio {
         color: var(--N500);
 
@@ -1178,9 +1184,11 @@ button.anchor {
                 stroke: var(--N900);
             }
         }
+
         .radio__item-label {
             border-right: unset;
         }
+
         &:first-child input + .radio__item-label {
             border-top-left-radius: 4px;
             border-bottom-left-radius: 4px;
@@ -1209,11 +1217,13 @@ button.anchor {
     color: var(--N900);
     border: 1px solid var(--N200);
     background-color: var(--N000);
+
     &.no-content-padding {
         .tippy-content {
             padding: 0;
         }
     }
+
     &.tippy-shadow {
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
     }
@@ -1222,11 +1232,13 @@ button.anchor {
 .tippy-box.default-black {
     color: var(--N0);
     background-color: var(--tippy-card-black-bg);
+
     &.no-content-padding {
         .tippy-content {
             padding: 0;
         }
     }
+
     &.tippy-shadow {
         box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
     }
@@ -1317,9 +1329,11 @@ button.anchor {
     &:disabled {
         background: var(--N100);
     }
+
     &:not(.form__input--error):hover {
         border-color: var(--N500);
     }
+
     &:not(.form__input--error):focus {
         border: solid 1px var(--B500);
     }
@@ -1385,6 +1399,7 @@ button.anchor {
     .dc__visible-hover--child {
         display: none;
     }
+
     .dc__visible {
         display: block;
     }
@@ -1400,13 +1415,16 @@ button.anchor {
     .dc__show-first--icon {
         display: inherit;
     }
+
     .dc__show-second--icon {
         display: none;
     }
+
     &:hover {
         .dc__show-first--icon {
             display: none;
         }
+
         .dc__show-second--icon {
             display: inherit;
         }
@@ -2012,6 +2030,10 @@ button.anchor {
     border-top-left-radius: 4px;
 }
 
+.dc__bottom-left-radius-8 {
+    border-bottom-left-radius: 8px;
+}
+
 input,
 textarea,
 .bc-n50 {
@@ -2059,9 +2081,11 @@ textarea,
         &:nth-child(1) {
             fill: var(--N0) !important;
         }
+
         &:nth-child(2) {
             fill: var(--Y700) !important;
         }
+
         &:nth-child(3) {
             fill: var(--N0) !important;
         }
@@ -2073,6 +2097,7 @@ textarea,
         fill: var(--N900);
     }
 }
+
 .icon-color-grey {
     fill: #5a5a5a;
 }
@@ -2081,6 +2106,7 @@ textarea,
     path:nth-child(1) {
         fill: none !important;
     }
+
     path:nth-child(2) {
         fill: var(--N700);
     }
@@ -2090,6 +2116,7 @@ textarea,
     path:nth-child(1) {
         fill: none !important;
     }
+
     path:nth-child(2) {
         fill: var(--N600);
     }
@@ -2229,7 +2256,23 @@ textarea,
     min-width: 385px;
 }
 
-.w-100-px {
+.w-54 {
+    width: 54px;
+}
+
+.w-60 {
+    width: 60px;
+}
+
+.w-64 {
+    width: 64px;
+}
+
+.w-80px {
+    width: 80px;
+}
+
+.w-100px {
     width: 100px;
 }
 
@@ -2263,6 +2306,10 @@ textarea,
 
 .w-280 {
     width: 280px;
+}
+
+.w-296 {
+    width: 296px;
 }
 
 .w-300 {
@@ -2308,6 +2355,10 @@ textarea,
 
 .w-80 {
     width: 80%;
+}
+
+.w-85 {
+    width: 85%;
 }
 
 .w-90 {
@@ -2367,6 +2418,10 @@ textarea,
 
 .h-8 {
     height: 8px;
+}
+
+.h-12 {
+    height: 12px;
 }
 
 .h-16 {
@@ -2454,6 +2509,14 @@ textarea,
     min-height: 66px;
 }
 
+.mh-92 {
+    min-height: 92px;
+}
+
+.mh-200 {
+    min-height: 200px;
+}
+
 .mh-300 {
     min-height: 300px;
 }
@@ -2470,8 +2533,9 @@ textarea,
 .h-100 {
     height: 100%;
 }
+
 .dc__height-reduce-172 {
-    height: 'calc(100vh - 172px)';
+    height: calc(100vh - 172px);
 }
 
 // Line height
@@ -2731,6 +2795,7 @@ textarea::placeholder {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
 }
+
 // opacity
 .dc__opacity-0_5 {
     opacity: 0.5;
@@ -2791,11 +2856,14 @@ textarea::placeholder {
 .radio-group-no-border {
     border: none !important;
     display: inline-block !important;
+
     .form__radio-item {
         border: none;
         min-width: 110px;
+
         .form__radio-item-content {
             padding: 0 15px 0 0;
+
             .radio__title {
                 text-transform: none;
             }
@@ -2847,4 +2915,53 @@ textarea::placeholder {
 
 .dc__zi-4 {
     z-index: 4;
+}
+
+.show-shimmer-loading {
+    .child-shimmer-loading {
+        animation-duration: 2s;
+        animation-fill-mode: forwards;
+        animation-iteration-count: infinite;
+        animation-name: shimmer-loading;
+        animation-timing-function: linear;
+        background: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
+        background-size: 800px 104px;
+        position: relative;
+        height: 16px;
+        border-radius: 2px;
+        margin-top: 4px;
+    }
+}
+.shimmer-loading {
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-iteration-count: infinite;
+    animation-name: shimmer-loading;
+    animation-timing-function: linear;
+    background: linear-gradient(90deg, #edf1f5 30%, #ffffff 60%, #edf1f5 100%);
+    background-size: 800px 104px;
+    position: relative;
+}
+
+@keyframes shimmer-loading {
+    0% {
+        background-position: -800px 0;
+    }
+
+    100% {
+        background-position: 800px 0;
+    }
+}
+
+.dc__place-abs-shimmer-center {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(0, -50%);
+    width: 85%;
+}
+
+.full-height-width {
+    height: 100vh;
+    width: 100vw;
 }

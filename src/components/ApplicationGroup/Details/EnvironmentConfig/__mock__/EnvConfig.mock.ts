@@ -1,4 +1,4 @@
-import { ConfigAppListType } from "../../../AppGroup.service"
+import { ConfigAppListType } from "../../../AppGroup.types"
 
 export const filteredData = [
     {

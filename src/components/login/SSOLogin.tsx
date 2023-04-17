@@ -1,15 +1,14 @@
-
 import React, { Component } from 'react'
 import { DevtronSwitch as Switch, DevtronSwitchItem as SwitchItem } from '../common'
 import { showError, Progressing, ErrorScreenManager, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
-import CodeEditor from '../CodeEditor/CodeEditor';
+import CodeEditor from '../CodeEditor/CodeEditor'
 import { SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
 import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './login.service'
 import { SSOConfigType } from './ssoConfig.types'
 import { ViewType, DOCUMENTATION } from '../../config'
-import { toast } from 'react-toastify';
-import yamlJsParser from 'yaml';
-import sample from './sampleConfig.json';
+import { toast } from 'react-toastify'
+import yamlJsParser from 'yaml'
+import sample from './sampleConfig.json'
 import { ReactComponent as Google } from '../../assets/icons/ic-google.svg'
 import Check from '../../assets/icons/ic-selected-corner.png'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
@@ -19,45 +18,52 @@ import { ReactComponent as LDAP } from '../../assets/icons/ic-ldap.svg'
 import { ReactComponent as OIDC } from '../../assets/icons/ic-oidc.svg'
 import { ReactComponent as Openshift } from '../../assets/icons/ic-openshift.svg'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
-import warn from '../../assets/icons/ic-warning.svg';
-import './login.scss';
-import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
-import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type';
+import warn from '../../assets/icons/ic-warning.svg'
+import './login.scss'
+import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg'
+import { DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type'
 
 export const SwitchItemValues = {
     Sample: 'sample',
     Configuration: 'configuration',
-};
+}
 
 enum SSOProvider {
-    google = "google",
-    github = "github",
-    gitlab = "gitlab",
-    microsoft = "microsoft",
-    ldap = "ldap",
-    oidc = "oidc",
-    openshift = "openshift"
+    google = 'google',
+    github = 'github',
+    gitlab = 'gitlab',
+    microsoft = 'microsoft',
+    ldap = 'ldap',
+    oidc = 'oidc',
+    openshift = 'openshift',
 }
 
 const ssoMap = {
-    google: "https://dexidp.io/docs/connectors/google/",
-    github: "https://dexidp.io/docs/connectors/github/",
-    gitlab: "https://dexidp.io/docs/connectors/gitlab/",
-    microsoft: "https://dexidp.io/docs/connectors/microsoft/",
-    ldap: "https://dexidp.io/docs/connectors/ldap/",
-    oidc: "https://dexidp.io/docs/connectors/oidc/",
-    openshift: "https://dexidp.io/docs/connectors/openshift/",
+    google: 'https://dexidp.io/docs/connectors/google/',
+    github: 'https://dexidp.io/docs/connectors/github/',
+    gitlab: 'https://dexidp.io/docs/connectors/gitlab/',
+    microsoft: 'https://dexidp.io/docs/connectors/microsoft/',
+    ldap: 'https://dexidp.io/docs/connectors/ldap/',
+    oidc: 'https://dexidp.io/docs/connectors/oidc/',
+    openshift: 'https://dexidp.io/docs/connectors/openshift/',
 }
 
 const SSOTabIcons: React.FC<{ SSOName: string }> = ({ SSOName }) => {
     switch (SSOName) {
-        case "Google": return <Google />
-        case "GitHub": return <GitHub />
-        case "GitLab": return <GitLab />
-        case "Microsoft": return <Microsoft />
-        case "LDAP": return <LDAP />
-        case "OIDC": return <OIDC />
-        case "OpenShift": return <Openshift />
+        case 'Google':
+            return <Google />
+        case 'GitHub':
+            return <GitHub />
+        case 'GitLab':
+            return <GitLab />
+        case 'Microsoft':
+            return <Microsoft />
+        case 'LDAP':
+            return <LDAP />
+        case 'OIDC':
+            return <OIDC />
+        case 'OpenShift':
+            return <Openshift />
     }
 }
 
@@ -256,7 +262,6 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         let promise = this.state.ssoConfig.id ? updateSSOList(payload) : createSSOList(payload)
         promise
             .then((response) => {
-
                 this.saveSSO(response)
                 this.setState({
                     showToggling: false,
@@ -348,13 +353,14 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     handleOnBlur(): void {
         if (this.state.configMap !== SwitchItemValues.Configuration) return
 
-        let newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
-
-        if (!newConfig.clientID) {
-            newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
-        }
-        if (!newConfig.clientSecret) {
-            newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
+        const newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
+        if (newConfig) {
+            if (!newConfig.clientID) {
+                newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
+            }
+            if (!newConfig.clientSecret) {
+                newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
+            }
         }
         let value = yamlJsParser.stringify(newConfig)
 
@@ -576,7 +582,12 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             >
                                 Cancel
                             </button>
-                            <button type="submit" className="cta  sso__warn-button" onClick={this.saveNewSSO}>
+                            <button
+                                type="submit"
+                                className="cta  sso__warn-button"
+                                data-testid="confirm-sso-button"
+                                onClick={this.saveNewSSO}
+                            >
                                 Confirm
                             </button>
                         </ConfirmationDialog.ButtonGroup>

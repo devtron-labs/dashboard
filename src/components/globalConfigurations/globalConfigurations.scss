@@ -170,7 +170,7 @@
     &>.list {
         border: unset;
         margin-bottom: unset;
-        grid-template-columns: 1fr 24px;
+        grid-template-columns: 1fr 20px;
         align-items: center;
         border-radius: 8px;
     }
@@ -425,7 +425,7 @@
 }
 
 .cluster-create-status {
-    padding: 8px 24px;
+    padding: 8px 20px;
     display: grid;
     grid-template-columns: 20px auto 64px;
     column-gap: 16px;

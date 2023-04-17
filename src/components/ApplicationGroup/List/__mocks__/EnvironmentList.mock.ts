@@ -1,5 +1,4 @@
-import { EnvAppType } from '../../AppGroup.service'
-import { EnvApp } from '../../AppGroup.types'
+import { EnvApp, EnvAppType } from '../../AppGroup.types'
 
 const result = (isEmpty = false): EnvApp => {
     if(isEmpty){
