@@ -527,8 +527,8 @@ export const Details: React.FC<DetailsType> = ({
             )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
-                    appName={appDetails.appName}
-                    environmentName={appDetails.environmentName}
+                    appName={appDetails?.appName}
+                    environmentName={appDetails?.environmentName}
                     streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                 />

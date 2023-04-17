@@ -136,7 +136,7 @@ export function getEnvironmentListMin(isNamespaceReq = false): Promise<any> {
 }
 
 export function getAppFilters() {
-    return get(Routes.APP_FILTER_LIST)
+    return get(`${Routes.APP_FILTER_LIST}?auth=false`)
 }
 
 export function getEnvironmentListMinPublic() {
