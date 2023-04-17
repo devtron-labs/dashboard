@@ -226,7 +226,7 @@ export interface AppGroupAdminType {
 }
 
 export interface AppGroupDetailDefaultType {
-    filteredApps: MultiValue<OptionType>
+    filteredAppIds: string
     appGroupListData?: AppGroupListType
 }
 export interface CIConfigListType {

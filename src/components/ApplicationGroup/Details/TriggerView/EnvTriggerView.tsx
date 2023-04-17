@@ -71,7 +71,7 @@ import { handleSourceNotConfigured, processWorkflowStatuses } from '../../AppGro
 import Tippy from '@tippyjs/react'
 
 let inprogressStatusTimer
-export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultType) {
+export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefaultType) {
     const { envId } = useParams<{ envId: string }>()
     const location = useLocation()
     const history = useHistory()
@@ -108,9 +108,20 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     const [selectAllValue, setSelectAllValue] = useState<CHECKBOX_VALUE>(CHECKBOX_VALUE.CHECKED)
     const abortControllerRef = useRef(new AbortController())
 
+    useEffect(() => {
+      if (envId) {
+          setPageViewType(ViewType.LOADING)
+          setSelectedAppList([])
+          getWorkflowsData()
+      }
+      return () => {
+          inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
+      }
+  }, [envId, filteredAppIds])
+
     const getWorkflowsData = async (): Promise<void> => {
         try {
-            const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId)
+            const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
             if (showCIModal) {
                 _workflows.forEach((wf) =>
                     wf.nodes.forEach((n) => {
@@ -131,6 +142,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             setErrorCode(0)
             setPageViewType(ViewType.FORM)
             getWorkflowStatusData(_workflows)
+            processFilteredData(_workflows)
         } catch (error) {
             showError(error)
             setErrorCode(error['code'])
@@ -138,58 +150,8 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         }
     }
 
-    const pollWorkflowStatus = (_processedWorkflowsData: ProcessWorkFlowStatusType) => {
-        inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
-        inprogressStatusTimer = setTimeout(
-            () => {
-                getWorkflowStatusData(_processedWorkflowsData.workflows)
-            },
-            _processedWorkflowsData.cicdInProgress ? 10000 : 30000,
-        )
-    }
-
-    const getWorkflowStatusData = (workflowsList: WorkflowType[]) => {
-        getWorkflowStatus(envId)
-            .then((response) => {
-                const _processedWorkflowsData = processWorkflowStatuses(
-                    response?.result?.ciWorkflowStatus ?? [],
-                    response?.result?.cdWorkflowStatus ?? [],
-                    workflowsList,
-                )
-                pollWorkflowStatus(_processedWorkflowsData)
-                setWorkflows(_processedWorkflowsData.workflows)
-            })
-            .catch((errors: ServerErrors) => {
-                showError(errors)
-                // If ci cd is in progress then call the api after every 10sec
-                pollWorkflowStatus({ cicdInProgress: true, workflows: workflowsList })
-            })
-    }
-
-    useEffect(() => {
-        if (envId) {
-            setPageViewType(ViewType.LOADING)
-            setSelectedAppList([])
-            getWorkflowsData()
-        }
-        return () => {
-            inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
-        }
-    }, [envId])
-
-    useEffect(() => {
-        if (filteredApps.length) {
-            const _filteredAppMap = new Map<number, string>()
-            filteredApps.forEach((app) => {
-                _filteredAppMap.set(+app.value, app.label)
-            })
-            const _filteredWorkflows: WorkflowType[] = []
-            workflows.forEach((wf) => {
-                if (_filteredAppMap.get(wf.appId)) {
-                    _filteredWorkflows.push(wf)
-                }
-            })
-            const _selectedAppList = []
+    const processFilteredData = (_filteredWorkflows: WorkflowType[]):void=>{
+      const _selectedAppList = []
             let _preNodeExist, _postNodeExist
             _filteredWorkflows.forEach((wf) => {
                 if (wf.isSelected) {
@@ -222,8 +184,36 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             )
             _filteredWorkflows.sort((a, b) => sortCallback('name', a, b))
             setFilteredWorkflows(_filteredWorkflows)
-        }
-    }, [filteredApps, workflows])
+    }
+
+    const pollWorkflowStatus = (_processedWorkflowsData: ProcessWorkFlowStatusType) => {
+        inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
+        inprogressStatusTimer = setTimeout(
+            () => {
+                getWorkflowStatusData(_processedWorkflowsData.workflows)
+            },
+            _processedWorkflowsData.cicdInProgress ? 10000 : 30000,
+        )
+    }
+
+    const getWorkflowStatusData = (workflowsList: WorkflowType[]) => {
+        getWorkflowStatus(envId, filteredAppIds)
+            .then((response) => {
+                const _processedWorkflowsData = processWorkflowStatuses(
+                    response?.result?.ciWorkflowStatus ?? [],
+                    response?.result?.cdWorkflowStatus ?? [],
+                    workflowsList,
+                )
+                pollWorkflowStatus(_processedWorkflowsData)
+                setWorkflows(_processedWorkflowsData.workflows)
+                processFilteredData(_processedWorkflowsData.workflows)
+            })
+            .catch((errors: ServerErrors) => {
+                showError(errors)
+                // If ci cd is in progress then call the api after every 10sec
+                pollWorkflowStatus({ cicdInProgress: true, workflows: workflowsList })
+            })
+    }
 
     const clearAppList = (): void => {
         setSelectedAppList([])
@@ -656,7 +646,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         const pipelineId = node.id
         const ciArtifact = node[materialType].find((artifact) => artifact.isSelected)
         if (_appId && pipelineId && ciArtifact.id) {
-          ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
+            ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
             setCILoading(true)
             triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {

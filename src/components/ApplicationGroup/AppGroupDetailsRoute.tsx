@@ -19,10 +19,10 @@ import {
     AppGroupAdminType,
     AppGroupAppFilterContextType,
     AppGroupListType,
+    ApplistEnvType,
     EnvHeaderType,
     GroupOptionType,
 } from './AppGroup.types'
-import { getAppList } from '../app/service'
 import { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
 import AppGroupAppFilter from './AppGroupAppFilter'
@@ -135,13 +135,33 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         )
     }
 
+    const filteredAppListData = useMemo(() => {
+        const _appListData = { ...appGroupListData }
+        const _filteredApps: ApplistEnvType[] = []
+        if (selectedAppList?.length > 0) {
+            const _filteredAppMap = new Map<number, string>()
+            selectedAppList.forEach((app) => {
+                _filteredAppMap.set(+app.value, app.label)
+            })
+            appGroupListData?.apps.forEach((app) => {
+                if (_filteredAppMap.get(app.appId)) {
+                    _filteredApps.push(app)
+                }
+            })
+            _appListData.apps = _filteredApps
+        }
+        return _appListData
+    }, [selectedAppList, appGroupListData?.apps])
+
     const renderRoute = () => {
         if (loading || appListLoading) {
             return <Progressing pageLoader />
         } else if (showEmpty) {
             return <div className="env-empty-state flex w-100">{renderEmpty()}</div>
         } else {
-            const _filteredApps = selectedAppList.length > 0 ? selectedAppList : appListOptions
+            const _filteredAppsIds = (selectedAppList.length > 0 ? selectedAppList : appListOptions)
+                .map((app) => +app.value)
+                .join(',')
             return (
                 <ErrorBoundary>
                     <Suspense fallback={<Progressing pageLoader />}>
@@ -150,21 +170,24 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                                 <div>Env detail</div>
                             </Route>
                             <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                                <EnvironmentOverview filteredApps={_filteredApps} appGroupListData={appGroupListData} />
+                                <EnvironmentOverview
+                                    filteredAppIds={_filteredAppsIds}
+                                    appGroupListData={filteredAppListData}
+                                />
                             </Route>
                             <Route path={`${path}/${URLS.APP_TRIGGER}`}>
-                                <EnvTriggerView filteredApps={_filteredApps} />
+                                <EnvTriggerView filteredAppIds={_filteredAppsIds} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                                <EnvCIDetails filteredApps={_filteredApps} />
+                                <EnvCIDetails filteredAppIds={_filteredAppsIds} />
                             </Route>
                             <Route
                                 path={`${path}/${URLS.APP_CD_DETAILS}/:appId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
                             >
-                                <EnvCDDetails filteredApps={_filteredApps} />
+                                <EnvCDDetails filteredAppIds={_filteredAppsIds} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_CONFIG}/:appId(\\d+)?`}>
-                                <EnvConfig filteredApps={_filteredApps} />
+                                <EnvConfig filteredAppIds={_filteredAppsIds} />
                             </Route>
                             <Redirect to={`${path}/${URLS.APP_OVERVIEW}`} />
                         </Switch>

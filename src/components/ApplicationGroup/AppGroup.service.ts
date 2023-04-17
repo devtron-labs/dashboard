@@ -27,34 +27,50 @@ import { getModuleConfigured } from '../app/details/appDetails/appDetails.servic
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 
-export function getEnvWorkflowList(envId: string) {
-    return get(`${Routes.ENV_WORKFLOW}/${envId}/${Routes.APP_WF}`)
+const getFilteredAppQueryString = (appIds: string): string => {
+    let _appIdsQueryParam = ''
+    if (appIds) {
+        _appIdsQueryParam = `?appIds=${appIds}`
+    }
+    return _appIdsQueryParam
 }
 
-export function getCIConfig(envID: string): Promise<ResponseType> {
-    return get(`${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_CI_CONFIG}`)
+export function getEnvWorkflowList(envId: string, appIds: string) {
+    return get(`${Routes.ENV_WORKFLOW}/${envId}/${Routes.APP_WF}${getFilteredAppQueryString(appIds)}`)
 }
 
-export function getCDConfig(envID: string): Promise<ResponseType> {
-    return get(`${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_CD_CONFIG}`)
+export function getCIConfig(envID: string, appIds: string): Promise<ResponseType> {
+    return get(`${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_CI_CONFIG}${getFilteredAppQueryString(appIds)}`)
 }
 
-export function getExternalCIList(envID: string): Promise<WebhookListResponse> {
-    return get(`${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_EXTERNAL_CI_CONFIG}`)
+export function getCIConfigMin(envID: string, appIds: string): Promise<ResponseType> {
+    return get(`${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_CI_CONFIG}/min${getFilteredAppQueryString(appIds)}`)
 }
 
-export const getWorkflowStatus = (envID: string) => {
-    return get(`${Routes.ENV_WORKFLOW}/${envID}/${Routes.WORKFLOW_STATUS}`)
+export function getCDConfig(envID: string, appIds: string): Promise<ResponseType> {
+    return get(`${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_CD_CONFIG}${getFilteredAppQueryString(appIds)}`)
 }
 
-export const getWorkflows = (envID: string): Promise<WorkflowsResponseType> => {
+export function getAppsCDConfigMin(envID: string, appIds: string): Promise<ResponseType> {
+    return get(`${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_CD_CONFIG}/min${getFilteredAppQueryString(appIds)}`)
+}
+
+export function getExternalCIList(envID: string, appIds: string): Promise<WebhookListResponse> {
+    return get(`${Routes.ENV_WORKFLOW}/${envID}/${URLS.APP_EXTERNAL_CI_CONFIG}${getFilteredAppQueryString(appIds)}`)
+}
+
+export const getWorkflowStatus = (envID: string, appIds: string) => {
+    return get(`${Routes.ENV_WORKFLOW}/${envID}/${Routes.WORKFLOW_STATUS}${getFilteredAppQueryString(appIds)}`)
+}
+
+export const getWorkflows = (envID: string, appIds: string): Promise<WorkflowsResponseType> => {
     const _workflows: WorkflowType[] = []
     const _filteredCIPipelines: Map<string, any> = new Map()
     return Promise.all([
-        getEnvWorkflowList(envID),
-        getCIConfig(envID),
-        getCDConfig(envID),
-        getExternalCIList(envID),
+        getEnvWorkflowList(envID, appIds),
+        getCIConfig(envID, appIds),
+        getCDConfig(envID, appIds),
+        getExternalCIList(envID, appIds),
     ]).then(([workflow, ciConfig, cdConfig, externalCIConfig]) => {
         const _ciConfigMap = new Map<number, CiPipelineResult>()
         for (const _ciConfig of ciConfig.result) {
@@ -80,29 +96,15 @@ export const getWorkflows = (envID: string): Promise<WorkflowsResponseType> => {
     })
 }
 
-export const getCIConfigList = (envID: string): Promise<CIConfigListType> => {
-    const pipelineList = []
+export const getCIConfigList = (envID: string, appIds: string): Promise<CIConfigListType> => {
     const _appCIPipelineMap: Map<string, CiPipeline> = new Map()
     return Promise.all([
-        getEnvWorkflowList(envID),
-        getCIConfig(envID),
+        getCIConfigMin(envID, appIds),
         getModuleInfo(ModuleNameMap.SECURITY),
         getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
-    ]).then(([workflow, ciConfig, securityInfo, moduleConfig]) => {
-        workflow.result.workflows.forEach((_wf) => {
-            const selectedTree = _wf.tree?.find((list) => list.type === PipelineType.CI_PIPELINE)
-            _appCIPipelineMap.set(_wf.appId, selectedTree)
-        })
-
-        ciConfig.result.forEach((item) => {
-            let ciPipeline = _appCIPipelineMap.get(item.appId)
-            let pipelineData = item.ciPipelines?.find((pipeline) => pipeline.id === ciPipeline?.componentId)
-            if (pipelineData) {
-                pipelineList.push({ ...pipelineData, appName: item.appName, appId: item.appId })
-            }
-        })
+    ]).then(([ciConfig, securityInfo, moduleConfig]) => {
         return {
-            pipelineList,
+            pipelineList: ciConfig.result,
             securityModuleInstalled: securityInfo?.result?.status === ModuleStatus.INSTALLED,
             blobStorageConfigured: moduleConfig?.result?.enabled,
         }
@@ -161,8 +163,8 @@ function getParentNode(nodes: Map<string, NodeAttr>, node: NodeAttr): NodeAttr |
     return parentNode
 }
 
-export const getConfigAppList = (envId: number): Promise<ConfigAppListType> => {
-    return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.ENV_APPLICATIONS}`)
+export const getConfigAppList = (envId: number, appIds: string): Promise<ConfigAppListType> => {
+    return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.ENV_APPLICATIONS}${getFilteredAppQueryString(appIds)}`)
 }
 
 export const getEnvAppList = (params?: {
@@ -181,12 +183,8 @@ export const getEnvAppList = (params?: {
     return get(Routes.ENVIRONMENT_APPS)
 }
 
-export const getDeploymentStatus = (envId: number, appIds: number[]): Promise<EnvDeploymentStatusType> => {
-  let _appIdsQueryParam = ''
-  if(appIds?.length >0){
-    _appIdsQueryParam = `?appIds=${appIds}`
-  }
-    return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.ENV_DEPLOYMENT_STATUS}${_appIdsQueryParam}`)
+export const getDeploymentStatus = (envId: number, appIds: string): Promise<EnvDeploymentStatusType> => {
+    return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.ENV_DEPLOYMENT_STATUS}${getFilteredAppQueryString(appIds)}`)
 }
 
 export const getAppGroupList = (envId: number): Promise<AppGroupList> => {
@@ -198,13 +196,13 @@ export const getEnvGroupList = (envId: number): Promise<EnvGroupListResponse> =>
 }
 
 export const getEnvGroup = (envId: number, groupId: number): Promise<EnvGroupResponse> => {
-  return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${groupId}`)
+    return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${groupId}`)
 }
 
 export const createEnvGroup = (envId: string, data): Promise<EnvGroupResponse> => {
-  return post(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}`, data)
+    return post(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}`, data)
 }
 
 export const deleteEnvGroup = (envId: number, groupId: number): Promise<EnvGroupResponse> => {
-  return trash(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${groupId}`)
+    return trash(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${groupId}`)
 }

@@ -10,19 +10,24 @@ import { getDeploymentStatus } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, AppGroupListType, AppInfoListType, AppListDataType } from '../../AppGroup.types'
 import './envOverview.scss'
 
-export default function EnvironmentOverview({ appGroupListData, filteredApps }: AppGroupDetailDefaultType) {
+export default function EnvironmentOverview({ appGroupListData, filteredAppIds }: AppGroupDetailDefaultType) {
     const { envId } = useParams<{ envId: string }>()
     const [appListData, setAppListData] = useState<AppListDataType>()
-    const [filteredAppListData, setFilteredAppListData] = useState<AppListDataType>()
     const [loading, setLoading] = useState<boolean>()
     const timerId = useRef(null)
 
+    useEffect(() => {
+        setLoading(true)
+        fetchDeployments()
+        timerId.current = setInterval(fetchDeployments, 30000)
+        return () => {
+            if (timerId.current) clearInterval(timerId.current)
+        }
+    }, [envId, filteredAppIds])
+
     async function fetchDeployments() {
         try {
-            const response = await getDeploymentStatus(
-                +envId,
-                filteredApps.map((app) => +app.value),
-            )
+            const response = await getDeploymentStatus(+envId, filteredAppIds)
             if (response?.result) {
                 let statusRecord = {}
                 response.result.forEach((item) => {
@@ -35,31 +40,6 @@ export default function EnvironmentOverview({ appGroupListData, filteredApps }: 
             showError(err)
         }
     }
-
-    useEffect(() => {
-        setLoading(true)
-        fetchDeployments()
-        timerId.current = setInterval(fetchDeployments, 30000)
-        return () => {
-            if (timerId.current) clearInterval(timerId.current)
-        }
-    }, [envId, filteredApps])
-
-    useEffect(() => {
-        if (filteredApps.length && appListData?.appInfoList.length) {
-            const _filteredAppMap = new Map<number, string>()
-            filteredApps.forEach((app) => {
-                _filteredAppMap.set(+app.value, app.label)
-            })
-            const _filteredApps: AppInfoListType[] = []
-            appListData?.appInfoList.forEach((app) => {
-                if (_filteredAppMap.get(app.appId)) {
-                    _filteredApps.push(app)
-                }
-            })
-            setFilteredAppListData({ ...appListData, appInfoList: _filteredApps })
-        }
-    }, [appListData?.appInfoList])
 
     const parseAppListData = (data: AppGroupListType, statusRecord: Record<string, string>): void => {
         const parsedData = {
@@ -105,20 +85,20 @@ export default function EnvironmentOverview({ appGroupListData, filteredApps }: 
         )
     }
 
-    return filteredAppListData ? (
+    return appListData ? (
         <div className="env-overview-container display-grid bcn-0 dc__overflow-hidden">
             <div className="pt-16 pb-16 pl-20 pr-20 dc__border-right">
                 <div className="mb-16">
                     <div className="fs-12 fw-4 lh-20 cn-7">{GROUP_LIST_HEADER.ENVIRONMENT}</div>
-                    <div className="fs-13 fw-4 lh-20 cn-9">{filteredAppListData.environment}</div>
+                    <div className="fs-13 fw-4 lh-20 cn-9">{appListData.environment}</div>
                 </div>
                 <div className="mb-16">
                     <div className="fs-12 fw-4 lh-20 cn-7">{GROUP_LIST_HEADER.NAMESPACE}</div>
-                    <div className="fs-13 fw-4 lh-20 cn-9">{filteredAppListData.namespace} </div>
+                    <div className="fs-13 fw-4 lh-20 cn-9">{appListData.namespace} </div>
                 </div>
                 <div className="mb-16">
                     <div className="fs-12 fw-4 lh-20 cn-7">{GROUP_LIST_HEADER.CLUSTER}</div>
-                    <div className="fs-13 fw-4 lh-20 cn-9">{filteredAppListData.cluster}</div>
+                    <div className="fs-13 fw-4 lh-20 cn-9">{appListData.cluster}</div>
                 </div>
             </div>
             <div className="dc__overflow-scroll">
@@ -134,7 +114,7 @@ export default function EnvironmentOverview({ appGroupListData, filteredApps }: 
                             <span>{OVERVIEW_HEADER.LAST_DEPLOYED}</span>
                         </div>
                         <div className="app-deployments-info-body">
-                            {filteredAppListData.appInfoList.map((item, index) => renderAppInfoRow(item, index))}
+                            {appListData.appInfoList.map((item, index) => renderAppInfoRow(item, index))}
                         </div>
                     </div>
                 </div>

@@ -7,33 +7,28 @@ import { getConfigAppList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, ConfigAppList } from '../../AppGroup.types'
 import ApplicationRoute from './ApplicationRoutes'
 
-export default function EnvConfig({ filteredApps }: AppGroupDetailDefaultType) {
+export default function EnvConfig({ filteredAppIds }: AppGroupDetailDefaultType) {
     const { envId, appId } = useParams<{ envId: string; appId: string }>()
     const { url } = useRouteMatch()
     const history = useHistory()
     const [environments, setEnvironments] = useState([])
     const [envAppList, setEnvAppList] = useState<ConfigAppList[]>([])
-    const [loading, appList] = useAsync(() => getConfigAppList(+envId), [envId])
+    const [loading, appList] = useAsync(() => getConfigAppList(+envId, filteredAppIds), [envId, filteredAppIds])
 
     useEffect(() => {
-        if (appList?.result && filteredApps.length) {
-            const _filteredAppMap = new Map<number, string>()
-            filteredApps.forEach((app) => {
-                _filteredAppMap.set(+app.value, app.label)
-            })
-            const _envAppList = appList.result
-                .filter((app) => _filteredAppMap.get(app.id))
-                .sort((a, b) => a.name.localeCompare(b.name))
+        if (appList?.result) {
+            const appIdExist = appList.result.some((app) => app.id === +appId)
+            const _envAppList = appList.result.sort((a, b) => a.name.localeCompare(b.name))
             setEnvAppList(_envAppList)
             if (!appId) {
                 history.replace(`${url}/${_envAppList[0].id}`)
-            } else if (!_filteredAppMap.get(+appId)) {
+            } else if (!appIdExist) {
                 const oldUrlSubstring = `/edit/${appId}`
                 const newUrlSubstring = `/edit/${_envAppList[0].id}`
                 history.push(`${url.replace(oldUrlSubstring, newUrlSubstring)}`)
             }
         }
-    }, [appList, filteredApps])
+    }, [appList])
 
     if (loading) {
         return (
