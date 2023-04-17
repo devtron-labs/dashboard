@@ -12,7 +12,7 @@ import { WebhookListResponse } from '../ciPipeline/Webhook/types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
 import { WorkflowTrigger } from '../app/details/triggerView/config'
 import { ModuleNameMap, Routes, URLS } from '../../config'
-import { get, post, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, put, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
 import {
     AppGroupList,
     CIConfigListType,
@@ -20,6 +20,7 @@ import {
     EnvAppType,
     EnvDeploymentStatusType,
     EnvGroupListResponse,
+    EnvGroupListType,
     EnvGroupResponse,
     WorkflowsResponseType,
 } from './AppGroup.types'
@@ -199,7 +200,10 @@ export const getEnvGroup = (envId: number, groupId: number): Promise<EnvGroupRes
     return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${groupId}`)
 }
 
-export const createEnvGroup = (envId: string, data): Promise<EnvGroupResponse> => {
+export const createEnvGroup = (envId: string, data: EnvGroupListType, isEdit: boolean): Promise<EnvGroupResponse> => {
+    if (isEdit) {
+        return put(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}`, data)
+    }
     return post(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}`, data)
 }
 

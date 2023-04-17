@@ -38,8 +38,8 @@ import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
 import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
 import '../app/details/app.scss'
 import { CONTEXT_NOT_AVAILABLE_ERROR } from '../../config/constantMessaging'
-import CreateGroup from './CreateGroup'
 import { toast } from 'react-toastify'
+import CreateAppGroup from './CreateAppGroup'
 
 const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
 
@@ -130,8 +130,10 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         stopPropagation(e)
         const selectedAppsMap: Record<string, boolean> = {}
         const _allAppList: { id: string; appName: string; isSelected: boolean }[] = []
+        let _selectedGroup
         if (groupId) {
-            const groupAppIds = groupFilterOptions.find((group) => group.value === groupId)?.appIds || []
+            _selectedGroup = groupFilterOptions.find((group) => group.value === groupId)
+            const groupAppIds = _selectedGroup?.appIds || []
             for (const appId of groupAppIds) {
                 selectedAppsMap[appId] = true
             }
@@ -140,10 +142,10 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 selectedAppsMap[selectedApp.value] = true
             }
         }
-
         for (const app of appListOptions) {
             _allAppList.push({ id: app.value, appName: app.label, isSelected: selectedAppsMap[app.value] })
         }
+        setClickedGroup(_selectedGroup)
         setAllAppsList(_allAppList)
         setShowCreateGroup(true)
     }
@@ -274,7 +276,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 openDeleteGroup={openDeleteGroup}
             />
             {renderRoute()}
-            {showCreateGroup && <CreateGroup appList={allAppsList} closePopup={closeCreateGroup} />}
+            {showCreateGroup && (
+                <CreateAppGroup appList={allAppsList} selectedAppGroup={clickedGroup} closePopup={closeCreateGroup} />
+            )}
             {showDeleteGroup && (
                 <DeleteDialog
                     title={`Delete filter '${clickedGroup?.label}' ?`}

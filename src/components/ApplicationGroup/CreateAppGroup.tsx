@@ -9,13 +9,13 @@ import { toast } from 'react-toastify'
 import { createEnvGroup } from './AppGroup.service'
 import { useParams } from 'react-router-dom'
 
-export default function CreateGroup({ appList, closePopup }: CreateGroupType) {
+export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }: CreateGroupType) {
     const { envId } = useParams<{ envId: string }>()
     const CreateGroupRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(false)
     const [showErrorMsg, setShowErrorMsg] = useState(false)
-    const [appGroupName, setAppGroupName] = useState<string>()
-    const [appGroupDescription, setAppGroupDescription] = useState<string>()
+    const [appGroupName, setAppGroupName] = useState<string>(selectedAppGroup?.label ?? '')
+    const [appGroupDescription, setAppGroupDescription] = useState<string>(selectedAppGroup?.description ?? '')
     const [selectedTab, setSelectedTab] = useState<CreateGroupTabs>(CreateGroupTabs.SELECTED_APPS)
     const [allAppSearchText, setAllAppSearchText] = useState('')
     const [allAppSearchApplied, setAllAppSearchApplied] = useState(false)
@@ -212,6 +212,7 @@ export default function CreateGroup({ appList, closePopup }: CreateGroupType) {
                         value={appGroupName}
                         name="name"
                         onChange={onInputChange}
+                        disabled={selectedAppGroup && !!selectedAppGroup.value}
                     />
 
                     {showErrorMsg && !appGroupName && (
@@ -260,16 +261,20 @@ export default function CreateGroup({ appList, closePopup }: CreateGroupType) {
             return
         }
         setLoading(true)
+        const _selectedAppIds = []
+        for (const _appId in selectedAppsMap) {
+            _selectedAppIds.push(+_appId)
+        }
 
         const payload = {
-            id: null,
+            id: selectedAppGroup ? +selectedAppGroup.value : null,
             name: appGroupName,
             description: appGroupDescription,
-            appIds: appList.filter((app) => app.isSelected).map((app) => +app.id),
+            appIds: _selectedAppIds,
         }
 
         try {
-            await createEnvGroup(envId, payload)
+            await createEnvGroup(envId, payload, !!selectedAppGroup?.value)
             toast.success('Successfully saved')
             closePopup(e, true)
         } catch (err) {
@@ -286,7 +291,7 @@ export default function CreateGroup({ appList, closePopup }: CreateGroupType) {
                     Cancel
                 </button>
                 <button className="cta flex h-36" onClick={handleSave}>
-                    Save
+                    {selectedAppGroup?.value ? 'Update' : 'Save'}
                 </button>
             </div>
         )

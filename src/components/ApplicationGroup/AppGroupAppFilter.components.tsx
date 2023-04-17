@@ -109,7 +109,7 @@ export const Option = (props): JSX.Element => {
                 condition={selectedFilterTab === AppFilterTabs.GROUP_FILTER && data.description}
                 wrap={(children) => (
                     <Tippy className="default-tt" content={data.description}>
-                        <div>{children}</div>
+                        <span>{children}</span>
                     </Tippy>
                 )}
             >
