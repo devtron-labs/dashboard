@@ -300,13 +300,24 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
             <>
                 <div className="flexbox flex-justify mt-20">
                     <div>
-                        <h1 className="security-policy-card__title">CVE Policies</h1>
-                        <p className="security-policy-card__subtitle">Block or allow specific Common Vulnerabilities and Exposures (CVEs) policies.
-                     <a href={`https://cve.mitre.org/cve/search_cve_list.html`} rel="noopener noreferrer" target="_blank">Search CVE List</a></p>
+                        <h1 className="security-policy-card__title" data-testid="CVE-policy-title">
+                            CVE Policies
+                        </h1>
+                        <p className="security-policy-card__subtitle" data-testid="CVE-policy-subtitle">
+                            Block or allow specific Common Vulnerabilities and Exposures (CVEs) policies.
+                            <a
+                                href={`https://cve.mitre.org/cve/search_cve_list.html`}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                            >
+                                Search CVE List
+                            </a>
+                        </p>
                     </div>
                     <button type="button" className="cta small flex" onClick={() => this.toggleAddCveModal()}>
-                        <Add className="icon-dim-16 mr-5" />Add CVE Policy
-                </button>
+                        <Add className="icon-dim-16 mr-5" />
+                        Add CVE Policy
+                    </button>
                 </div>
             </>
         )

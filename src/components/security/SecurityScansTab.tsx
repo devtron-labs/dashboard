@@ -240,86 +240,108 @@ export class SecurityScansTab extends Component<RouteComponentProps<{}>, Securit
   renderFilters() {
     if ((this.state.size > 0) || (this.state.size <= 0 && (this.state.searchApplied || this.state.filtersApplied.severity.length || this.state.filtersApplied.clusters.length || this.state.filtersApplied.environments.length))) {
       let filterTypes = ['severity', 'clusters', 'environments'];
-      return <div className='security-scan__filters'>
-        <form onSubmit={(e) => { e.preventDefault(); this.search(); }} className="flex-1 flex mr-24">
-          <div className="dc__search-with-dropdown">
-            <ReactSelect className="search-with-dropdown__dropdown"
-              isMulti={false}
-              isSearchable={false}
-              isClearable={false}
-              value={this.state.searchObject}
-              onChange={this.handleObjectTypeChange}
-              hideSelectedOptions={false}
-              options={[
-                { label: 'Application', value: 'appName' },
-                { label: 'Vulnerability', value: 'cveName' },
-                { label: 'Deployment Object', value: 'objectName' }
-              ]}
-              components={{
-                DropdownIndicator,
-                Option: SelectSingleOption,
-              }}
-              styles={{
-                ...styles,
-                container: (base, state) => {
-                  return ({
-                    ...base,
-                    height: '36px',
-                  })
-                },
-                control: (base, state) => ({
-                  ...base,
-                  border: 'none',
-                  minHeight: '36px',
-                }),
-              }} />
-            <Search className="icon-dim-20 ml-7" />
-            <input autoComplete="off" type="text" className="search-with-dropdown__search"
-              tabIndex={1}
-              value={this.state.searchObjectValue}
-              placeholder={`Search ${this.state.searchObject.label}`}
-              onKeyDown={(e) => {
-                if (e.keyCode === 13) {
-                  this.search();
-                }
-              }} onChange={this.handleSearchChange} />
-            {this.state.searchApplied ? <Close className="icon-dim-20 cursor icon-n4 mr-5" onClick={this.removeSearch} /> : null}
+      return (
+          <div className="security-scan__filters">
+              <form
+                  onSubmit={(e) => {
+                      e.preventDefault()
+                      this.search()
+                  }}
+                  className="flex-1 flex mr-24"
+              >
+                  <div className="dc__search-with-dropdown">
+                      <ReactSelect
+                          className="search-with-dropdown__dropdown"
+                          isMulti={false}
+                          isSearchable={false}
+                          isClearable={false}
+                          value={this.state.searchObject}
+                          onChange={this.handleObjectTypeChange}
+                          hideSelectedOptions={false}
+                          options={[
+                              { label: 'Application', value: 'appName' },
+                              { label: 'Vulnerability', value: 'cveName' },
+                              { label: 'Deployment Object', value: 'objectName' },
+                          ]}
+                          components={{
+                              DropdownIndicator,
+                              Option: SelectSingleOption,
+                          }}
+                          styles={{
+                              ...styles,
+                              container: (base, state) => {
+                                  return {
+                                      ...base,
+                                      height: '36px',
+                                  }
+                              },
+                              control: (base, state) => ({
+                                  ...base,
+                                  border: 'none',
+                                  minHeight: '36px',
+                              }),
+                          }}
+                      />
+                      <Search className="icon-dim-20 ml-7" />
+                      <input
+                          autoComplete="off"
+                          type="text"
+                          className="search-with-dropdown__search"
+                          data-testid="search-in-security-scan"
+                          tabIndex={1}
+                          value={this.state.searchObjectValue}
+                          placeholder={`Search ${this.state.searchObject.label}`}
+                          onKeyDown={(e) => {
+                              if (e.keyCode === 13) {
+                                  this.search()
+                              }
+                          }}
+                          onChange={this.handleSearchChange}
+                      />
+                      {this.state.searchApplied ? (
+                          <Close className="icon-dim-20 cursor icon-n4 mr-5" onClick={this.removeSearch} />
+                      ) : null}
+                  </div>
+              </form>
+              <div className="flexbox">
+                  {filterTypes.map((filter, index) => {
+                      return (
+                          <ReactSelect
+                              key={filter}
+                              className={`dc__security-scan__filter dc__security-scan__filter--${filter}`}
+                              name={filter}
+                              tabIndex={index + 2}
+                              isMulti={true}
+                              isClearable={false}
+                              value={this.state.filtersApplied[filter]}
+                              options={this.state.filters[filter]}
+                              placeholder={`${filter}`}
+                              hideSelectedOptions={false}
+                              onChange={(selected) => this.handleFilterChange(filter, selected)}
+                              components={{
+                                  DropdownIndicator,
+                                  ValueContainer,
+                                  Option: Option,
+                              }}
+                              styles={{
+                                  container: (base, state) => {
+                                      return {
+                                          ...base,
+                                          height: '36px',
+                                      }
+                                  },
+                                  control: (base, state) => ({
+                                      ...base,
+                                      minHeight: '36px',
+                                  }),
+                                  ...styles,
+                              }}
+                          />
+                      )
+                  })}
+              </div>
           </div>
-        </form>
-        <div className="flexbox">
-          {filterTypes.map((filter, index) => {
-            return <ReactSelect key={filter}
-              className={`dc__security-scan__filter dc__security-scan__filter--${filter}`}
-              name={filter}
-              tabIndex={index + 2}
-              isMulti={true}
-              isClearable={false}
-              value={this.state.filtersApplied[filter]}
-              options={this.state.filters[filter]}
-              placeholder={`${filter}`}
-              hideSelectedOptions={false}
-              onChange={(selected) => this.handleFilterChange(filter, selected)}
-              components={{
-                DropdownIndicator,
-                ValueContainer,
-                Option: Option,
-              }}
-              styles={{
-                container: (base, state) => {
-                  return ({
-                    ...base,
-                    height: '36px',
-                  })
-                },
-                control: (base, state) => ({
-                  ...base,
-                  minHeight: '36px',
-                }),
-                ...styles,
-              }} />
-          })}
-        </div>
-      </div>
+      )
     }
   }
 
