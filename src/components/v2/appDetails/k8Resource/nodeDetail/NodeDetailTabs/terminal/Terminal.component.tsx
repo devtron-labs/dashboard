@@ -26,6 +26,7 @@ export default function TerminalView({
     renderConnectionStrip,
     registerLinkMatcher,
     terminalMessageData,
+    isTerminalCleared
 }) {
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
@@ -229,10 +230,15 @@ export default function TerminalView({
         }
     }, [])
 
+    useEffect(() => {
+        terminal?.clear()
+        terminal?.focus()
+    }, [isTerminalCleared])
+
     return (
-        <div ref={myDivRef} className="terminal-wrapper h-100 w-100">
+        <div className="terminal-wrapper h-100 w-100">
             {renderConnectionStrip()}
-            <div id="terminal-id" className="w-100 pt-8 terminal-component pl-20 h-100">
+            <div ref={myDivRef} id="terminal-id" className="w-100 pt-8 terminal-component pl-20 h-100">
                 <CopyToast showCopyToast={popupText} />
             </div>
         </div>

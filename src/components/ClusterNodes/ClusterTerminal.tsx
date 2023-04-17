@@ -139,7 +139,7 @@ export default function ClusterTerminal({
                         if (abortController.signal.aborted) {
                             return
                         }
-                        setTerminalCleared(true)
+                        setTerminalCleared(!terminalCleared)
                         socketConnecting()
                         setPodCreated(true)
                         setRetry(false)
@@ -448,6 +448,10 @@ export default function ClusterTerminal({
         setSelectedTabIndex(2)
     }
 
+    const clearTerminal = () => {
+        setTerminalCleared(!terminalCleared)
+    }
+
     const menuComponent = (props) => {
         return (
             <components.MenuList {...props}>
@@ -606,6 +610,8 @@ export default function ClusterTerminal({
     //     return <div className="pl-20 pr-20 w-100 bcr-7 cn-0">{errorMessage.message} </div>
     // }
 
+    const showShell: boolean = connectTerminal && isPodCreated 
+
     const selectionListData = {
         firstRow: [
             {
@@ -676,17 +682,40 @@ export default function ClusterTerminal({
         ],
         secondRow: [
             {
-                type: 'tabs',
-                renderTabs: renderTabs,
+                type: 'customComponent',
+                customComponent: renderTabs,
             },
             {
-                type: ''
-            }
+                type: showShell && 'connectionSwitch',
+                stopTerminalConnection,
+                resumePodConnection,
+                toggleButton:
+                    socketConnection === SocketConnectionType.CONNECTING ||
+                    socketConnection === SocketConnectionType.CONNECTED,
+            },
+            {
+                type: showShell && 'clearButton',
+                setTerminalCleared: clearTerminal,
+            },
+            {
+                type: showShell && 'creatableSelect',
+                title: SELECT_TITLE.SHELL,
+                placeholder: 'Select Shell',
+                options: clusterShellTypes,
+                defaultValue: selectedTerminalType,
+                onChange: onChangeTerminalType,
+                styles: clusterSelectStyle,
+                components: {
+                    IndicatorSeparator: null,
+                    Option,
+                },
+            },
         ],
         tabSwitcher: {
             terminalTabWrapper: terminalTabWrapper,
             terminalData: {
                 terminalRef: terminalRef,
+                terminalCleared: terminalCleared,
                 setSocketConnection: setSocketConnection,
                 socketConnection: socketConnection,
                 initializeTerminal: initializeTerminal,

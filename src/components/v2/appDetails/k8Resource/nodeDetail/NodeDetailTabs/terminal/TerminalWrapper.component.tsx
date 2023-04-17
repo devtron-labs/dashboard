@@ -23,22 +23,25 @@ export default function TerminalWrapper({ selectionListData, socketConnection, s
     }
 
     const renderTerminalView = () => {
+        const terminalData = selectionListData.tabSwitcher.terminalData
+        console.log(terminalData.terminalCleared);
+        
         return (
             <TerminalView
-                terminalRef={selectionListData.tabSwitcher.terminalData.terminalRef}
-                initializeTerminal={selectionListData.tabSwitcher.terminalData.initializeTerminal}
-                socketConnection={selectionListData.tabSwitcher.terminalData.socketConnection}
-                setSocketConnection={selectionListData.tabSwitcher.terminalData.setSocketConnection}
+                terminalRef={terminalData.terminalRef}
+                initializeTerminal={terminalData.initializeTerminal}
+                socketConnection={terminalData.socketConnection}
+                setSocketConnection={terminalData.setSocketConnection}
                 renderConnectionStrip={() => (
                     <RenderConnectionStrip
                         renderStripMessage={null}
                         socketConnection={socketConnection}
-                        setSocketConnection={setSocketConnection}
-                    />
+                        setSocketConnection={setSocketConnection} />
                 )}
-                registerLinkMatcher={selectionListData.tabSwitcher.terminalData.registerLinkMatcher}
-                terminalMessageData={() => <></>}
-            />
+                registerLinkMatcher={terminalData.registerLinkMatcher}
+                terminalMessageData={() => <></>} 
+                isTerminalCleared={terminalData.terminalCleared}            
+                />
         )
     }
 

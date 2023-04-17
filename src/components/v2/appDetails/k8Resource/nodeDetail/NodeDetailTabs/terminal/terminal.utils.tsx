@@ -7,6 +7,8 @@ import { ReactComponent as ExitScreen } from '../../../../../../../assets/icons/
 import { ReactComponent as HelpIcon } from '../../../../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Connect } from '../../../../../../../assets/icons/ic-connected.svg'
 import { ReactComponent as Help } from '../../../../../../../assets/icons/ic-help.svg'
+import { ReactComponent as Play } from '../../../../../../../assets/icons/ic-play.svg'
+import { ReactComponent as Abort } from '../../../../../../../assets/icons/ic-abort.svg'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
@@ -130,6 +132,44 @@ const closeExpandView = (viewData) => {
     )
 }
 
+const connectionSwitch = (switchProps) => {
+    return (
+        <>
+            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+            <Tippy
+                className="default-tt cursor"
+                arrow={false}
+                placement="bottom"
+                content={
+                   switchProps.toggleButton
+                        ? 'Disconnect from pod'
+                        : 'Reconnect to pod'
+                }
+            >
+                {switchProps.toggleButton ? (
+                    <span className="mr-8 cursor">
+                        <div className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5" onClick={switchProps.stopTerminalConnection} />
+                    </span>
+                ) : (
+                    <span className="mr-8 flex">
+                        <Play className="icon-dim-16 mr-4 cursor" onClick={switchProps.resumePodConnection} />
+                    </span>
+                )}
+            </Tippy>
+        </>
+    )
+}
+
+const clearTerminal = (clearProps) => {
+    return (
+        <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
+            <div className="flex">
+                <Abort className="icon-dim-16 mr-4 fcn-6 cursor" onClick={clearProps.setTerminalCleared} />
+            </div>
+        </Tippy>
+    )
+}
+
 export default function terminalStripTypeData(elementData) {
     switch (elementData.type) {
         case 'creatableSelect':
@@ -140,10 +180,14 @@ export default function terminalStripTypeData(elementData) {
             return titleName(elementData)
         case 'closeExpandView':
             return closeExpandView(elementData)
-        case 'reactSelect': 
+        case 'reactSelect':
             return reactSelect(elementData)
-        case 'tabs':
-            return elementData.renderTabs()
+        case 'connectionSwitch':
+            return connectionSwitch(elementData)
+        case 'clearButton':
+            return clearTerminal(elementData)
+        case 'customComponent':
+            return elementData.customComponent()
         default:
             return null
     }
