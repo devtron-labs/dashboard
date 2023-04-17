@@ -181,8 +181,12 @@ export const getEnvAppList = (params?: {
     return get(Routes.ENVIRONMENT_APPS)
 }
 
-export const getDeploymentStatus = (envId: number): Promise<EnvDeploymentStatusType> => {
-    return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.ENV_DEPLOYMENT_STATUS}`)
+export const getDeploymentStatus = (envId: number, appIds: number[]): Promise<EnvDeploymentStatusType> => {
+  let _appIdsQueryParam = ''
+  if(appIds?.length >0){
+    _appIdsQueryParam = `?appIds=${appIds}`
+  }
+    return get(`${Routes.ENVIRONMENT}/${envId}/${Routes.ENV_DEPLOYMENT_STATUS}${_appIdsQueryParam}`)
 }
 
 export const getAppGroupList = (envId: number): Promise<AppGroupList> => {

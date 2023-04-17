@@ -4,7 +4,6 @@ import { Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
 import AppStatus from '../../../app/AppStatus'
 import { StatusConstants } from '../../../app/list-new/Constants'
-import { getAppList } from '../../../app/service'
 import { processDeployedTime } from '../../../common'
 import { GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
 import { getDeploymentStatus } from '../../AppGroup.service'
@@ -20,7 +19,10 @@ export default function EnvironmentOverview({ appGroupListData, filteredApps }: 
 
     async function fetchDeployments() {
         try {
-            const response = await getDeploymentStatus(+envId)
+            const response = await getDeploymentStatus(
+                +envId,
+                filteredApps.map((app) => +app.value),
+            )
             if (response?.result) {
                 let statusRecord = {}
                 response.result.forEach((item) => {
@@ -41,7 +43,7 @@ export default function EnvironmentOverview({ appGroupListData, filteredApps }: 
         return () => {
             if (timerId.current) clearInterval(timerId.current)
         }
-    }, [envId])
+    }, [envId, filteredApps])
 
     useEffect(() => {
         if (filteredApps.length && appListData?.appInfoList.length) {
@@ -57,7 +59,7 @@ export default function EnvironmentOverview({ appGroupListData, filteredApps }: 
             })
             setFilteredAppListData({ ...appListData, appInfoList: _filteredApps })
         }
-    }, [filteredApps, appListData?.appInfoList])
+    }, [appListData?.appInfoList])
 
     const parseAppListData = (data: AppGroupListType, statusRecord: Record<string, string>): void => {
         const parsedData = {
