@@ -359,7 +359,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 </div>
                 {this.state.form.appCreationType === AppCreationType.Existing && (
                     <>
-                        <div className="form__row clone-apps dc__inline-block" data-testid={`clone-existing-${this.props.isJobView ? 'job' : 'app'}-radio-button`}>
+                        <div className="form__row clone-apps dc__inline-block" data-testid={`clone-existing-${this.props.isJobView ? 'job' : 'application'}-radio-button`}>
                             <span className="form__label dc__required-field" data-testid={`Clone-${this.props.isJobView ? 'job' : 'app'}-option`}>
                                 Select an {this.props.isJobView ? 'job' : 'app'} to clone
                             </span>
