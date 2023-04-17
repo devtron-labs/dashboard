@@ -1,17 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Drawer, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Drawer, Progressing, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
+import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { CreateGroupType } from './AppGroup.types'
 import SearchBar from './SearchBar'
-import { CreateGroupTabs } from './Constants'
+import { CreateGroupTabs, CREATE_GROUP_TABS } from './Constants'
 import { toast } from 'react-toastify'
 import { createEnvGroup } from './AppGroup.service'
 import { useParams } from 'react-router-dom'
 
-export default function CreateGroup({ appList, selectedAppList, closePopup }: CreateGroupType) {
+export default function CreateGroup({ appList, closePopup }: CreateGroupType) {
     const { envId } = useParams<{ envId: string }>()
     const CreateGroupRef = useRef<HTMLDivElement>(null)
     const [isLoading, setLoading] = useState(false)
+    const [showErrorMsg, setShowErrorMsg] = useState(false)
     const [appGroupName, setAppGroupName] = useState<string>()
     const [appGroupDescription, setAppGroupDescription] = useState<string>()
     const [selectedTab, setSelectedTab] = useState<CreateGroupTabs>(CreateGroupTabs.SELECTED_APPS)
@@ -19,7 +21,8 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
     const [allAppSearchApplied, setAllAppSearchApplied] = useState(false)
     const [selectedAppSearchText, setSelectedAppSearchText] = useState('')
     const [selectedAppSearchApplied, setSelectedAppSearchApplied] = useState(false)
-    const [allAppsList, setAllAppsList] = useState<{ id: string; appName: string; isSelected: boolean }[]>([])
+    const [selectedAppsMap, setSelectedAppsMap] = useState<Record<string, boolean>>({})
+    const [selectedAppsCount, setSelectedAppsCount] = useState<number>(0)
 
     const outsideClickHandler = (evt): void => {
         if (
@@ -39,16 +42,19 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
     }, [outsideClickHandler])
 
     useEffect(() => {
-        const selectedAppsMap: Record<string, boolean> = {}
-        const _allAppList: { id: string; appName: string; isSelected: boolean }[] = []
-        for (const selectedApp of selectedAppList) {
-            selectedAppsMap[selectedApp.value] = true
+        if (appList?.length) {
+            let _selectedAppsCount = 0
+            const _selectedAppsMap: Record<string, boolean> = {}
+            for (const app of appList) {
+                if (app.isSelected) {
+                    _selectedAppsMap[app.id] = true
+                    _selectedAppsCount++
+                }
+            }
+            setSelectedAppsMap(_selectedAppsMap)
+            setSelectedAppsCount(_selectedAppsCount)
         }
-        for (const app of appList) {
-            _allAppList.push({ id: app.value, appName: app.label, isSelected: selectedAppsMap[app.value] })
-        }
-        setAllAppsList(_allAppList)
-    }, [])
+    }, [appList])
 
     const renderHeaderSection = (): JSX.Element => {
         return (
@@ -75,8 +81,28 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
     }
 
     const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = appList.filter((app) => app.label.indexOf(_searchText) >= 0)
+        const _filteredData = appList.filter((app) => app.appName.indexOf(_searchText) >= 0)
         //setFilteredAppList(_filteredData)
+    }
+
+    const removeAppSelection = (e): void => {
+        stopPropagation(e)
+        const _selectedAppsMap = { ...selectedAppsMap }
+        if (_selectedAppsMap[e.currentTarget.dataset.appId]) {
+            delete _selectedAppsMap[e.currentTarget.dataset.appId]
+            setSelectedAppsMap(_selectedAppsMap)
+            setSelectedAppsCount(selectedAppsCount - 1)
+        }
+    }
+
+    const addApp = (e): void => {
+        stopPropagation(e)
+        const _selectedAppsMap = { ...selectedAppsMap }
+        if (!_selectedAppsMap[e.currentTarget.dataset.appId]) {
+            _selectedAppsMap[e.currentTarget.dataset.appId] = true
+            setSelectedAppsMap(_selectedAppsMap)
+            setSelectedAppsCount(selectedAppsCount + 1)
+        }
     }
 
     const renderSelectedApps = (): JSX.Element => {
@@ -91,16 +117,20 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
                     setSearchApplied={setSelectedAppSearchApplied}
                 />
                 <div>
-                    {allAppsList
+                    {appList
                         .filter(
                             (app) =>
-                                app.isSelected &&
+                                selectedAppsMap[app.id] &&
                                 (!selectedAppSearchText || app.appName.indexOf(selectedAppSearchText) >= 0),
                         )
                         .map((app) => (
                             <div className="flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 cn-9">
                                 <span>{app.appName}</span>
-                                <Close className="icon-dim-16 cursor" />
+                                <Close
+                                    className="icon-dim-16 cursor"
+                                    data-app-id={app.id}
+                                    onClick={removeAppSelection}
+                                />
                             </div>
                         ))}
                 </div>
@@ -120,16 +150,24 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
                     setSearchApplied={setAllAppSearchApplied}
                 />
                 <div>
-                    {allAppsList
+                    {appList
                         .filter((app) => !allAppSearchText || app.appName.indexOf(allAppSearchText) >= 0)
                         .map((app) => (
                             <div
                                 className={`flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 ${
-                                    app.isSelected ? 'bcb-1 cb-5' : 'cn-9'
+                                    selectedAppsMap[app.id] ? 'bcb-1 cb-5' : 'cn-9'
                                 }`}
+                                data-app-id={app.id}
+                                onClick={addApp}
                             >
                                 <span>{app.appName}</span>
-                                {app.isSelected && <Close className="icon-dim-16 cursor" />}
+                                {selectedAppsMap[app.id] && (
+                                    <Close
+                                        className="icon-dim-16 cursor"
+                                        data-app-id={app.id}
+                                        onClick={removeAppSelection}
+                                    />
+                                )}
                             </div>
                         ))}
                 </div>
@@ -141,76 +179,19 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
         setSelectedTab(e.currentTarget.dataset.tabName)
     }
 
-    const renderTabItem = (): JSX.Element => {
+    const renderTabItem = (tabName: CreateGroupTabs, appCount: number): JSX.Element => {
         return (
-            <li className="tab-list__tab pointer" data-tab-name={CreateGroupTabs.SELECTED_APPS} onClick={onTabChange}>
-                <div
-                    className={`mb-6 fs-13 tab-hover${
-                        selectedTab === CreateGroupTabs.SELECTED_APPS ? ' fw-6 active' : ' fw-4'
-                    }`}
-                >
-                    <span className="mr-6">Selected applications </span>
-                    {selectedAppList.length > 0 && (
-                        <span
-                            className={`br-10 pl-5 pr-5 ${
-                                selectedTab === CreateGroupTabs.SELECTED_APPS ? 'bcb-5 cn-0' : 'bcn-1 cn-7'
-                            }`}
-                        >
-                            {selectedAppList.length}
+            <li className="tab-list__tab pointer" data-tab-name={tabName} onClick={onTabChange}>
+                <div className={`mb-6 fs-13 tab-hover${selectedTab === tabName ? ' fw-6 active' : ' fw-4'}`}>
+                    <span className="mr-6">{CREATE_GROUP_TABS[tabName]} </span>
+                    {appCount > 0 && (
+                        <span className={`br-10 pl-5 pr-5 ${selectedTab === tabName ? 'bcb-5 cn-0' : 'bcn-1 cn-7'}`}>
+                            {appCount}
                         </span>
                     )}
                 </div>
-                {selectedTab === CreateGroupTabs.SELECTED_APPS && <div className="apps-tab__active-tab" />}
+                {selectedTab === tabName && <div className="apps-tab__active-tab" />}
             </li>
-        )
-    }
-
-    const renderAppListTabs = (): JSX.Element => {
-        return (
-            <ul role="tablist" className="tab-list mb-8">
-                <li
-                    className="tab-list__tab pointer"
-                    data-tab-name={CreateGroupTabs.SELECTED_APPS}
-                    onClick={onTabChange}
-                >
-                    <div
-                        className={`mb-6 fs-13 tab-hover${
-                            selectedTab === CreateGroupTabs.SELECTED_APPS ? ' fw-6 active' : ' fw-4'
-                        }`}
-                    >
-                        <span className="mr-6">Selected applications </span>
-                        {selectedAppList.length > 0 && (
-                            <span
-                                className={`br-10 pl-5 pr-5 ${
-                                    selectedTab === CreateGroupTabs.SELECTED_APPS ? 'bcb-5 cn-0' : 'bcn-1 cn-7'
-                                }`}
-                            >
-                                {selectedAppList.length}
-                            </span>
-                        )}
-                    </div>
-                    {selectedTab === CreateGroupTabs.SELECTED_APPS && <div className="apps-tab__active-tab" />}
-                </li>
-                <li className="tab-list__tab pointer" data-tab-name={CreateGroupTabs.ALL_APPS} onClick={onTabChange}>
-                    <div
-                        className={`mb-6 flexbox fs-13 tab-hover${
-                            selectedTab === CreateGroupTabs.ALL_APPS ? ' fw-6 active' : ' fw-4'
-                        }`}
-                    >
-                        <span className="mr-6">Add/Remove applications </span>
-                        {appList.length > 0 && (
-                            <span
-                                className={`br-10 pl-5 pr-5 ${
-                                    selectedTab === CreateGroupTabs.ALL_APPS ? 'bcb-5 cn-0' : 'bcn-1 cn-7'
-                                }`}
-                            >
-                                {appList.length}
-                            </span>
-                        )}
-                    </div>
-                    {selectedTab === CreateGroupTabs.ALL_APPS && <div className="apps-tab__active-tab" />}
-                </li>
-            </ul>
         )
     }
 
@@ -232,6 +213,13 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
                         name="name"
                         onChange={onInputChange}
                     />
+
+                    {showErrorMsg && !appGroupName && (
+                        <span className="form__error">
+                            <Error className="form__icon form__icon--error" />
+                            Group name is required field
+                        </span>
+                    )}
                 </div>
                 <div className="form__row mb-16">
                     <span className="form__label">Description (Max 50 characters)</span>
@@ -243,40 +231,47 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
                         name="description"
                         onChange={onInputChange}
                     />
+                    {showErrorMsg && appGroupDescription?.length > 50 && (
+                        <span className="form__error">
+                            <Error className="form__icon form__icon--error" />
+                            Max 50 char is allowed in description
+                        </span>
+                    )}
                 </div>
                 <div>
-                    {renderAppListTabs()}
+                    <ul role="tablist" className="tab-list mb-8">
+                        {renderTabItem(CreateGroupTabs.SELECTED_APPS, selectedAppsCount)}
+                        {renderTabItem(CreateGroupTabs.ALL_APPS, appList.length)}
+                    </ul>
                     {selectedTab === CreateGroupTabs.SELECTED_APPS ? renderSelectedApps() : renderAllApps()}
                 </div>
             </div>
         )
     }
 
-    const isCreateGroupDisabled = (): boolean => {
-        return false
-    }
-
     const handleSave = async (e): Promise<void> => {
         e.preventDefault()
-        // let  = false
-
-        // if () {
-        //     toast.error('Some required fields are missing or invalid')
-        //     return
-        // }
+        setShowErrorMsg(true)
+        if (!appGroupName || appGroupDescription?.length > 50) {
+            return
+        }
+        if (selectedAppsCount === 0) {
+            toast.error('Please select apps to create group')
+            return
+        }
         setLoading(true)
 
         const payload = {
             id: null,
             name: appGroupName,
             description: appGroupDescription,
-            appIds: selectedAppList.map((app) => +app.value),
+            appIds: appList.filter((app) => app.isSelected).map((app) => +app.id),
         }
 
         try {
             await createEnvGroup(envId, payload)
             toast.success('Successfully saved')
-            closePopup(e)
+            closePopup(e, true)
         } catch (err) {
             showError(err)
         } finally {
@@ -290,7 +285,7 @@ export default function CreateGroup({ appList, selectedAppList, closePopup }: Cr
                 <button className="cta cancel flex h-36 mr-12" onClick={closePopup}>
                     Cancel
                 </button>
-                <button className="cta flex h-36" onClick={handleSave} disabled={isCreateGroupDisabled()}>
+                <button className="cta flex h-36" onClick={handleSave}>
                     Save
                 </button>
             </div>

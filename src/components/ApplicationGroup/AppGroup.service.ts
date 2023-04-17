@@ -203,6 +203,6 @@ export const createEnvGroup = (envId: string, data): Promise<EnvGroupResponse> =
     return post(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}`, data)
 }
 
-export const deleteEnvGroup = (envId: number, groupId: number): Promise<EnvGroupResponse> => {
+export const deleteEnvGroup = (envId: string, groupId: string): Promise<EnvGroupResponse> => {
     return trash(`${Routes.ENVIRONMENT}/${envId}/${Routes.GROUP}/${groupId}`)
 }

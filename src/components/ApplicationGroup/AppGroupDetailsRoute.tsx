@@ -1,7 +1,14 @@
 import React, { Suspense, useCallback, useRef, useEffect, useState, useMemo } from 'react'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
 import { ErrorBoundary, useAsync, sortOptionsByLabel } from '../common'
-import { Progressing, BreadCrumb, useBreadcrumb, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Progressing,
+    BreadCrumb,
+    useBreadcrumb,
+    stopPropagation,
+    DeleteDialog,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import ReactGA from 'react-ga4'
 import { URLS } from '../../config'
@@ -14,12 +21,13 @@ import ResourceListEmptyState from '../ResourceBrowser/ResourceList/ResourceList
 import EmptyFolder from '../../assets/img/Empty-folder.png'
 import { AppFilterTabs, EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
 import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
-import { getAppGroupList, getEnvAppList, getEnvGroupList } from './AppGroup.service'
+import { deleteEnvGroup, getAppGroupList, getEnvAppList, getEnvGroupList } from './AppGroup.service'
 import {
     AppGroupAdminType,
     AppGroupAppFilterContextType,
     AppGroupListType,
     ApplistEnvType,
+    CreateGroupAppListType,
     EnvHeaderType,
     GroupOptionType,
 } from './AppGroup.types'
@@ -31,6 +39,7 @@ import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
 import '../app/details/app.scss'
 import { CONTEXT_NOT_AVAILABLE_ERROR } from '../../config/constantMessaging'
 import CreateGroup from './CreateGroup'
+import { toast } from 'react-toastify'
 
 const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
 
@@ -48,6 +57,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [envName, setEnvName] = useState<string>('')
     const [showEmpty, setShowEmpty] = useState<boolean>(false)
     const [appListLoading, setAppListLoading] = useState<boolean>(false)
+    const [deleting, setDeleting] = useState<boolean>(false)
     const [loading, envList] = useAsync(getEnvAppList, [])
     const [appListOptions, setAppListOptions] = useState<OptionType[]>([])
     const [selectedAppList, setSelectedAppList] = useState<MultiValue<OptionType>>([])
@@ -56,6 +66,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [groupFilterOptions, setGroupFilterOptions] = useState<GroupOptionType[]>([])
     const [selectedGroupFilter, setSelectedGroupFilter] = useState<MultiValue<GroupOptionType>>([])
     const [showCreateGroup, setShowCreateGroup] = useState<boolean>(false)
+    const [showDeleteGroup, setShowDeleteGroup] = useState<boolean>(false)
+    const [clickedGroup, setClickedGroup] = useState<GroupOptionType>(null)
+    const [allAppsList, setAllAppsList] = useState<CreateGroupAppListType[]>([])
 
     useEffect(() => {
         if (envList?.result) {
@@ -84,6 +97,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                             value: grp.id.toString(),
                             label: grp.name,
                             appIds: grp.appIds,
+                            description: grp.description,
                         }
                     })
                     .sort(sortOptionsByLabel),
@@ -112,17 +126,61 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setAppListLoading(false)
     }
 
-    const openCreateGroup = (e) => {
+    const openCreateGroup = (e, groupId?: string) => {
         stopPropagation(e)
-        if (e.currentTarget.dataset.isEdit === 'true') {
+        const selectedAppsMap: Record<string, boolean> = {}
+        const _allAppList: { id: string; appName: string; isSelected: boolean }[] = []
+        if (groupId) {
+            const groupAppIds = groupFilterOptions.find((group) => group.value === groupId)?.appIds || []
+            for (const appId of groupAppIds) {
+                selectedAppsMap[appId] = true
+            }
+        } else {
+            for (const selectedApp of selectedAppList) {
+                selectedAppsMap[selectedApp.value] = true
+            }
         }
+
+        for (const app of appListOptions) {
+            _allAppList.push({ id: app.value, appName: app.label, isSelected: selectedAppsMap[app.value] })
+        }
+        setAllAppsList(_allAppList)
         setShowCreateGroup(true)
     }
 
-    const closeCreateGroup = (e) => {
+    const closeCreateGroup = (e, refreshData?: boolean) => {
         stopPropagation(e)
         setShowCreateGroup(false)
-        getSavedFilterData()
+        if (refreshData) {
+            getSavedFilterData()
+        }
+    }
+
+    const openDeleteGroup = (e, groupId: string) => {
+        stopPropagation(e)
+        setClickedGroup(groupFilterOptions.find((group) => group.value === groupId))
+        setShowDeleteGroup(true)
+    }
+
+    async function handleDelete() {
+        if (deleting) {
+            return
+        }
+        setDeleting(true)
+        try {
+            await deleteEnvGroup(envId, clickedGroup.value)
+            toast.success('Successfully deleted')
+            setShowDeleteGroup(false)
+            getSavedFilterData()
+        } catch (serverError) {
+            showError(serverError)
+        } finally {
+            setDeleting(false)
+        }
+    }
+
+    const closeDeleteGroup = () => {
+        setShowDeleteGroup(false)
     }
 
     const renderEmpty = () => {
@@ -213,10 +271,17 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 selectedGroupFilter={selectedGroupFilter}
                 setSelectedGroupFilter={setSelectedGroupFilter}
                 openCreateGroup={openCreateGroup}
+                openDeleteGroup={openDeleteGroup}
             />
             {renderRoute()}
-            {showCreateGroup && (
-                <CreateGroup appList={appListOptions} selectedAppList={selectedAppList} closePopup={closeCreateGroup} />
+            {showCreateGroup && <CreateGroup appList={allAppsList} closePopup={closeCreateGroup} />}
+            {showDeleteGroup && (
+                <DeleteDialog
+                    title={`Delete filter '${clickedGroup?.label}' ?`}
+                    description="Are you sure you want to delete this filter?"
+                    delete={handleDelete}
+                    closeDelete={closeDeleteGroup}
+                />
             )}
         </div>
     )
@@ -236,6 +301,7 @@ export function EnvHeader({
     selectedGroupFilter,
     setSelectedGroupFilter,
     openCreateGroup,
+    openDeleteGroup,
 }: EnvHeaderType) {
     const { envId } = useParams<{ envId: string }>()
     const match = useRouteMatch()
@@ -257,6 +323,7 @@ export function EnvHeader({
             selectedGroupFilter,
             setSelectedGroupFilter,
             openCreateGroup,
+            openDeleteGroup,
         }),
         [appListOptions, isMenuOpen, selectedAppList, selectedFilterTab, groupFilterOptions, selectedGroupFilter],
     )

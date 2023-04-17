@@ -12,6 +12,8 @@ import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { AppGroupAppFilterContextType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
+import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 
 export const ValueContainer = (props): JSX.Element => {
     const { appListOptions, selectedAppList, selectedFilterTab, selectedGroupFilter }: AppGroupAppFilterContextType =
@@ -55,11 +57,20 @@ export const ValueContainer = (props): JSX.Element => {
 }
 
 export const Option = (props): JSX.Element => {
-    const { selectedFilterTab }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
+    const { selectedFilterTab, openCreateGroup, openDeleteGroup }: AppGroupAppFilterContextType =
+        useAppGroupAppFilterContext()
     const { selectOption, data } = props
 
     const selectData = () => {
         selectOption(data)
+    }
+
+    const showEditPopup = (e) => {
+        openCreateGroup(e, data.value)
+    }
+
+    const showDeletePopup = (e) => {
+        openDeleteGroup(e, data.value)
     }
 
     const renderOptionIcon = (): JSX.Element => {
@@ -76,8 +87,12 @@ export const Option = (props): JSX.Element => {
             if (props.isFocused) {
                 return (
                     <div className="flex">
-                        <Edit className="icon-dim-16 mr-4 cursor" />
-                        <Trash className="scn-6 icon-dim-16 cursor" />
+                        <Tippy className="default-tt" content="Edit group">
+                            <Edit className="icon-dim-16 mr-4 cursor" onClick={showEditPopup} />
+                        </Tippy>
+                        <Tippy className="default-tt" content="Delete group">
+                            <Trash className="scn-6 icon-dim-16 cursor" onClick={showDeletePopup} />
+                        </Tippy>
                     </div>
                 )
             } else if (props.isSelected) {
@@ -89,8 +104,18 @@ export const Option = (props): JSX.Element => {
     }
 
     return (
-        <div className={`flex left pl-8 pr-8 ${getOptionBGClass(props.isSelected, props.isFocused)}`}>
-            <components.Option {...props} />
+        <div className={`flex flex-justify pl-8 pr-8 ${getOptionBGClass(props.isSelected, props.isFocused)}`}>
+            <ConditionalWrap
+                condition={selectedFilterTab === AppFilterTabs.GROUP_FILTER && data.description}
+                wrap={(children) => (
+                    <Tippy className="default-tt" content={data.description}>
+                        <div>{children}</div>
+                    </Tippy>
+                )}
+            >
+                <components.Option {...props} />
+            </ConditionalWrap>
+
             {renderOptionIcon()}
         </div>
     )

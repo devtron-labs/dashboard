@@ -146,3 +146,8 @@ export enum CreateGroupTabs {
     'SELECTED_APPS' = 'selectedApps',
     'ALL_APPS' = 'allApps',
 }
+
+export const CREATE_GROUP_TABS = {
+    'selectedApps' :'Selected applications',
+    'allApps' : 'Add/Remove applications',
+}
