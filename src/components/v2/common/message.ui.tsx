@@ -32,7 +32,7 @@ export interface MsgUIProps {
 
 const MessageUI: React.FC<MsgUIProps> = ({
     msg,
-    dataTestId="",
+    dataTestId,
     icon,
     theme,
     iconClassName,

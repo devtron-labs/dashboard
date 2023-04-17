@@ -243,8 +243,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                 )}
             </div>
         )
-    }
-console.log(inputFileRef)
+}
     return (
         <VisibleModal className="transition-effect">
             <div className="modal__body upload-modal dc__no-top-radius mt-0">
