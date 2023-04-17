@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { BUSYBOX_LINK, NETSHOOT_LINK, shellTypes } from '../../config/constants'
-import { POD_LINKS, SocketConnectionType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
+import { ErrorMessageType, POD_LINKS, SocketConnectionType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
 import Terminal from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/Terminal'
 import {
     clusterDisconnectAndRetry,
@@ -90,6 +90,7 @@ export default function ClusterTerminal({
     const [toggleOption, settoggleOption] = useState<boolean>(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const [initializeTerminal, setInitializeTerminal] = useState<{createNewTerminal?: boolean, sessionId?: number }>({createNewTerminal: true})
+    const [errorMessage, setErrorMessage] = useState<ErrorMessageType>({message: '', reason: ''})
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
     const terminalRef = useRef(null)
@@ -229,6 +230,7 @@ export default function ClusterTerminal({
             }
         }
         if (socketConnection === SocketConnectionType.CONNECTING && terminalAccessIdRef.current) {
+            setErrorMessage({message: '', reason: ''})
             getNewSession()
         }
     }, [socketConnection, terminalAccessIdRef.current])
@@ -238,12 +240,13 @@ export default function ClusterTerminal({
         setSocketConnection(SocketConnectionType.CONNECTING)
         getClusterData(
             `user/terminal/get?namespace=${selectedNamespace.value}&shellName=${selectedTerminalType.value}&terminalAccessId=${terminalAccessIdRef.current}`,
+            terminalAccessIdRef.current,
             7,
         )
     }
 
-    const getClusterData = (url, count) => {
-        // if (autoSelectNodeRef.current !== terminalAccessIdRef.current) return
+    const getClusterData = (url, terminalId, count) => {
+        if (terminalId !== terminalAccessIdRef.current) return
         if (
             clusterTimeOut &&
             (socketConnection === SocketConnectionType.DISCONNECTED ||
@@ -260,17 +263,17 @@ export default function ClusterTerminal({
         }
         get(url)
             .then((response: any) => {
-                let sessionId = response.result.userTerminalSessionId
-                let status = response.result.status
+                const sessionId = response.result.userTerminalSessionId
+                const status = response.result.status
                 if (status === TERMINAL_STATUS.RUNNING && !response.result?.isValidShell) {
                     // preFetchData(status, TERMINAL_STATUS.FAILED)
-                    // setErrorMessage({ message: response.result?.errorReason, reason: '' })
+                    setErrorMessage({ message: response.result?.errorReason, reason: '' })
                 } else if (status === TERMINAL_STATUS.TERMINATED) {
-                    // setErrorMessage({ message: status, reason: response.result?.errorReason })
+                    setErrorMessage({ message: status, reason: response.result?.errorReason })
                 } else if (!sessionId && count) {
                     // preFetchData(status)
                     clusterTimeOut = setTimeout(() => {
-                        getClusterData(url, count - 1)
+                        getClusterData(url, terminalId, count - 1)
                     }, 5000)
                 } else if (sessionId) {
                     const _nodeName = response.result?.nodeName
@@ -285,7 +288,7 @@ export default function ClusterTerminal({
                 } else {
                     // preFetchData(CLUSTER_STATUS.FAILED, TERMINAL_STATUS.TIMEDOUT)
                     setSocketConnection(SocketConnectionType.DISCONNECTED)
-                    // setErrorMessage({ message: TERMINAL_STATUS.TIMEDOUT, reason: '' })
+                    setErrorMessage({ message: TERMINAL_STATUS.TIMEDOUT, reason: '' })
                 }
             })
             .catch((err) => {
@@ -579,36 +582,71 @@ export default function ClusterTerminal({
         )
     }
 
-    // const renderErrorMessageStrip = (errorMessage) => {
-    //     if (errorMessage.message === TERMINAL_STATUS.TIMEDOUT) {
-    //         return (
-    //             <div className="pl-20 flex left h-24 pr-20 w-100 bcr-7 cn-0">
-    //                 {TERMINAL_TEXT.CONNECTION_TIMEOUT}&nbsp;
-    //                 <u className="cursor" onClick={switchTOPodEventTab}>
-    //                     {TERMINAL_TEXT.CHECK_POD_EVENTS}
-    //                 </u>&nbsp;
-    //                 {TERMINAL_TEXT.FOR_ERRORS}&nbsp;
-    //                 <u
-    //                     className="cursor"
-    //                     onClick={onClickResume}
-    //                 >
-    //                     {TERMINAL_TEXT.RETRY_CONNECTION}
-    //                 </u>&nbsp;
-    //                 {TERMINAL_TEXT.CASE_OF_ERROR}
-    //             </div>
-    //         )
-    //     } else if (errorMessage.message === TERMINAL_STATUS.TERMINATED) {
-    //         return (
-    //             <div className="pl-20 pr-20 w-100 bcr-7 cn-0">
-    //                 {TERMINAL_TEXT.POD_TERMINATED} {errorMessage.reason}&nbsp;
-    //                 <u className="cursor" onClick={terminalViewProps.reconnectTerminal}>
-    //                     {TERMINAL_TEXT.INITIATE_CONNECTION}
-    //                 </u>
-    //             </div>
-    //         )
-    //     }
-    //     return <div className="pl-20 pr-20 w-100 bcr-7 cn-0">{errorMessage.message} </div>
-    // }
+    const renderErrorMessageStrip = () => {
+        if (errorMessage.message === TERMINAL_STATUS.TIMEDOUT) {
+            return (
+                <div className="pl-20 flex left h-24 pr-20 w-100 bcr-7 cn-0">
+                    {TERMINAL_TEXT.CONNECTION_TIMEOUT}&nbsp;
+                    <u className="cursor" onClick={selectEventsTab}>
+                        {TERMINAL_TEXT.CHECK_POD_EVENTS}
+                    </u>&nbsp;
+                    {TERMINAL_TEXT.FOR_ERRORS}&nbsp;
+                    <u
+                        className="cursor"
+                        onClick={socketConnecting}
+                    >
+                        {TERMINAL_TEXT.RETRY_CONNECTION}
+                    </u>&nbsp;
+                    {TERMINAL_TEXT.CASE_OF_ERROR}
+                </div>
+            )
+        } else if (errorMessage.message === TERMINAL_STATUS.TERMINATED) {
+            return (
+                <div className="pl-20 pr-20 w-100 bcr-7 cn-0">
+                    {TERMINAL_TEXT.POD_TERMINATED} {errorMessage.reason}&nbsp;
+                    <u className="cursor" onClick={reconnectTerminal}>
+                        {TERMINAL_TEXT.INITIATE_CONNECTION}
+                    </u>
+                </div>
+            )
+        }
+        return <div className="pl-20 pr-20 w-100 bcr-7 cn-0">{errorMessage.message} </div>
+    }
+
+    const renderStripMessage = (): JSX.Element => {
+        if (isFetchRetry) {
+            return (
+                <div className="bcr-7 pl-20 cn-0">
+                    {TERMINAL_TEXT.CONCURRENT_LIMIT_REACH}&nbsp;
+                    <button
+                        type="button"
+                        onClick={disconnectRetry}
+                        className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
+                    >
+                        {TERMINAL_TEXT.TERMINATE_RETRY}
+                    </button>
+                </div>
+            )
+        } else if (errorMessage.message && errorMessage.message.length > 0) {
+            return renderErrorMessageStrip()
+        } else if (socketConnection === SocketConnectionType.DISCONNECTED) {
+            return (
+                <div className='bcr-7 cn-0 pl-20'>
+                    Disconnected
+                    <span>.&nbsp;</span>
+                    <button
+                        type="button"
+                        onClick={socketConnecting}
+                        className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
+                    >
+                        Reconnect
+                    </button>
+                </div>
+            )
+        } else if(socketConnection === SocketConnectionType.CONNECTING){
+            return <></>
+        }
+    }
 
     const showShell: boolean = connectTerminal && isPodCreated 
 
@@ -716,6 +754,7 @@ export default function ClusterTerminal({
             terminalData: {
                 terminalRef: terminalRef,
                 terminalCleared: terminalCleared,
+                stripMessage: renderStripMessage(),
                 setSocketConnection: setSocketConnection,
                 socketConnection: socketConnection,
                 initializeTerminal: initializeTerminal,
