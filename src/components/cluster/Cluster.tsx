@@ -531,23 +531,21 @@ function Cluster({
                                                             )}
                                                         </div>
                                                     </div>
-                                                    {confirmation && (
-                                                        <DeleteComponent
-                                                            setDeleting={clusterDelete}
-                                                            deleteComponent={deleteEnvironment}
-                                                            payload={getEnvironmentPayload()}
-                                                            title={environment_name}
-                                                            toggleConfirmation={toggleConfirmation}
-                                                            component={DeleteComponentsName.Environment}
-                                                            confirmationDialogDescription={
-                                                                DC_ENVIRONMENT_CONFIRMATION_MESSAGE
-                                                            }
-                                                            reload={reload}
-                                                        />
-                                                    )}
                                                 </div>
                                             ) : null,
                                     )}
+                                {confirmation && (
+                                    <DeleteComponent
+                                        setDeleting={clusterDelete}
+                                        deleteComponent={deleteEnvironment}
+                                        payload={getEnvironmentPayload()}
+                                        title={environment.environment_name}
+                                        toggleConfirmation={toggleConfirmation}
+                                        component={DeleteComponentsName.Environment}
+                                        confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
+                                        reload={reload}
+                                    />
+                                )}
                             </div>
                         ) : (
                             clusterId && renderNoEnvironmentTab()
@@ -1136,7 +1134,7 @@ function Environment({
                     <div className="mb-16 flex left">
                         <label className="pr-16 flex cursor">
                             <input
-                                data-testid = "production"
+                                data-testid="production"
                                 type="radio"
                                 name="isProduction"
                                 checked={state.isProduction.value === 'true'}
@@ -1147,7 +1145,7 @@ function Environment({
                         </label>
                         <label className="flex cursor">
                             <input
-                                data-testid = "nonProduction"
+                                data-testid="nonProduction"
                                 type="radio"
                                 name="isNonProduction"
                                 checked={state.isProduction.value === 'false'}
@@ -1188,7 +1186,7 @@ function Environment({
                         type="submit"
                         disabled={loading}
                         onClick={handleOnSubmit}
-                        data-testid = "save-and-update-environment"
+                        data-testid="save-and-update-environment"
                     >
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}
                     </button>

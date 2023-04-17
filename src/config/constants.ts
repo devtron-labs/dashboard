@@ -5,6 +5,7 @@ export const TOKEN_COOKIE_NAME = 'argocd.token'
 export const DEVTRON_DEFAULT_RELEASE_NAME = 'devtron'
 export const DEVTRON_DEFAULT_NAMESPACE = 'devtroncd'
 export const DEVTRON_DEFAULT_CLUSTER_ID = '1'
+
 export const Routes = {
     GET: 'get',
     UPDATE: 'update',

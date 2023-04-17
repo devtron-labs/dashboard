@@ -97,7 +97,7 @@ export class AppListView extends Component<AppListViewProps> {
                             <button
                                 className="app-list__cell-header flex  dc__visible-hover dc__visible-hover--parent  "
                                 onClick={this.sortByAppName}
-                                data-testid="app-name-list"
+                                data-testid="appname"
                             >
                                 {APP_LIST_HEADERS.AppName}
 

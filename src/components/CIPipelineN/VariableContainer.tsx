@@ -47,7 +47,7 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                 </span>
                 {variableLength > 0 ? (
                     <Dropdown
-                        data-testid = "input-variable-value-dropdown"
+                        data-testid="input-variable-value-dropdown"
                         className="pointer"
                         style={{ transform: collapsedSection ? 'rotate(0)' : 'rotate(180deg)' }}
                         onClick={(event) => {
@@ -87,7 +87,7 @@ export function VariableContainer({ type }: { type: PluginVariableType }) {
                                             </span>
                                         }
                                     >
-                                        <div data-testid = {`${variable.name}-dropdown`} className="fs-13 fw-4 lh-28 dc__ellipsis-right">
+                                        <div data-testid={`${variable.name}-dropdown`} className="fs-13 fw-4 lh-28 dc__ellipsis-right">
                                             <span className="text-underline-dashed">{variable.name}</span>
                                         </div>
                                     </Tippy>

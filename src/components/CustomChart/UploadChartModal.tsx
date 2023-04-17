@@ -215,7 +215,7 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
             >
                 {uploadState !== UPLOAD_STATE.UPLOAD && (
                     <button
-                        data-testid = "cancel-upload-button"
+                        data-testid="cancel-upload-button"
                         className={`cta delete dc__no-text-transform ${
                             uploadState === UPLOAD_STATE.UPLOADING ? '  mr-20' : '  ml-20'
                         }`}
@@ -243,13 +243,12 @@ export default function UploadChartModal({ closeUploadPopup }: UploadChartModalT
                 )}
             </div>
         )
-    }
-console.log(inputFileRef)
+}
     return (
         <VisibleModal className="transition-effect">
             <div className="modal__body upload-modal dc__no-top-radius mt-0">
                 <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16 dc__border-bottom">
-                    <div className="fw-6 fs-16 cn-9" data-testid = "using-custom-chart-heading">
+                    <div className="fw-6 fs-16 cn-9" data-testid="using-custom-chart-heading">
                         {uploadState === UPLOAD_STATE.UPLOAD ? 'Using custom chart' : 'Upload chart'}
                     </div>
                     <CloseIcon className="pointer mt-2" onClick={() => closeUploadPopup(false)} />
