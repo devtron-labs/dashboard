@@ -94,6 +94,8 @@ export default function ClusterTerminal({
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
     const terminalRef = useRef(null)
+    const prevNodeRef = useRef('')
+    const currNodeRef = useRef('')
 
     const payload = {
         clusterId: clusterId,
@@ -231,6 +233,8 @@ export default function ClusterTerminal({
         }
         if (socketConnection === SocketConnectionType.CONNECTING && terminalAccessIdRef.current) {
             setErrorMessage({message: '', reason: ''})
+            prevNodeRef.current = selectedNodeName.value
+            currNodeRef.current = ''
             getNewSession()
         }
     }, [socketConnection, terminalAccessIdRef.current])
@@ -266,12 +270,12 @@ export default function ClusterTerminal({
                 const sessionId = response.result.userTerminalSessionId
                 const status = response.result.status
                 if (status === TERMINAL_STATUS.RUNNING && !response.result?.isValidShell) {
-                    // preFetchData(status, TERMINAL_STATUS.FAILED)
+                    preFetchData(status, TERMINAL_STATUS.FAILED)
                     setErrorMessage({ message: response.result?.errorReason, reason: '' })
                 } else if (status === TERMINAL_STATUS.TERMINATED) {
                     setErrorMessage({ message: status, reason: response.result?.errorReason })
                 } else if (!sessionId && count) {
-                    // preFetchData(status)
+                    preFetchData(status)
                     clusterTimeOut = setTimeout(() => {
                         getClusterData(url, terminalId, count - 1)
                     }, 5000)
@@ -282,11 +286,11 @@ export default function ClusterTerminal({
                     }
                     if (socketConnection === SocketConnectionType.CONNECTING) {
                         setInitializeTerminal({createNewTerminal: false, sessionId: sessionId })
-                        autoSelectNodeRef.current = _nodeName
-                        // preFetchData(status)
+                        currNodeRef.current = _nodeName
+                        preFetchData(status)
                     }
                 } else {
-                    // preFetchData(CLUSTER_STATUS.FAILED, TERMINAL_STATUS.TIMEDOUT)
+                    preFetchData(CLUSTER_STATUS.FAILED, TERMINAL_STATUS.TIMEDOUT)
                     setSocketConnection(SocketConnectionType.DISCONNECTED)
                     setErrorMessage({ message: TERMINAL_STATUS.TIMEDOUT, reason: '' })
                 }
@@ -296,6 +300,62 @@ export default function ClusterTerminal({
                 // terminalViewProps.sessionError(err)
                 // terminal?.reset()
             })
+    }
+
+    const preFetchData = (podState = '', status = '') => {
+        
+        const _terminal = terminalRef.current
+        let startingText = TERMINAL_STATUS.CREATE
+        if (!_terminal) return
+
+        _terminal?.reset()
+
+        if(prevNodeRef.current === TERMINAL_STATUS.AUTO_SELECT_NODE){
+            _terminal.write('Selecting a node')
+            if(currNodeRef.current){
+                _terminal.write(` > ${currNodeRef.current} selected`)
+                _terminal.writeln('')
+            }else {
+                _terminal.write('...')
+            }
+        }
+
+        if(prevNodeRef.current !== TERMINAL_STATUS.AUTO_SELECT_NODE || currNodeRef.current){
+            if(isShellSwitched.current){
+                startingText = TERMINAL_STATUS.SHELL
+            }
+
+            if(startingText){
+                if(startingText === TERMINAL_STATUS.CREATE){
+                    _terminal.write('Creating pod.')
+                } else if(startingText === TERMINAL_STATUS.SHELL){
+                    _terminal.write(`Switching shell to ${selectedTerminalType.value}.`)
+                }
+            }
+            if(startingText !== TERMINAL_STATUS.SHELL && podState){
+                if (podState === CLUSTER_STATUS.RUNNING) {
+                    _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
+                    _terminal.writeln('')
+                    _terminal.write('Connecting to pod terminal.')
+                }
+            }
+
+            if(status){
+                if (status === TERMINAL_STATUS.TIMEDOUT) {
+                    _terminal.write(' \u001b[38;5;196mTimed out\u001b[0m')
+                } else if (status === TERMINAL_STATUS.FAILED){
+                    _terminal.write(' \u001b[38;5;196mFailed\u001b[0m')
+                } else if (status === TERMINAL_STATUS.SUCCEDED) {
+                    _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
+                }
+                _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
+                _terminal.write(' | ')
+                _terminal.write('\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m')
+                _terminal.writeln('')
+            } else {
+                _terminal.write('..')
+            }
+        }
     }
 
     function updateSelectedContainerName() {
@@ -754,6 +814,7 @@ export default function ClusterTerminal({
             terminalData: {
                 terminalRef: terminalRef,
                 terminalCleared: terminalCleared,
+                terminalMessageData: preFetchData,
                 stripMessage: renderStripMessage(),
                 setSocketConnection: setSocketConnection,
                 socketConnection: socketConnection,

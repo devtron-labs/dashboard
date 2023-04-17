@@ -39,7 +39,7 @@ export default function TerminalWrapper({ selectionListData, socketConnection, s
                     />
                 )}
                 registerLinkMatcher={terminalData.registerLinkMatcher}
-                terminalMessageData={() => <></>}
+                terminalMessageData={terminalData.terminalMessageData}
                 isTerminalCleared={terminalData.terminalCleared}
             />
         )
