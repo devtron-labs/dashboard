@@ -67,8 +67,8 @@ export function Sidebar({ isJobView }: { isJobView?: boolean }) {
                                 changeTriggerType(event.target.value)
                             }}
                         >
-                            <RadioGroupItem value={TriggerType.Auto}>Automatically</RadioGroupItem>
-                            <RadioGroupItem value={TriggerType.Manual}>Manually</RadioGroupItem>
+                            <RadioGroupItem value={TriggerType.Auto} dataTestId="trigger-build-pipeline-automatically-checkbox">Automatically</RadioGroupItem>
+                            <RadioGroupItem value={TriggerType.Manual} dataTestId="trigger-build-pipeline-manually-checkbox">Manually</RadioGroupItem>
                         </RadioGroup>
                     </div>
                 </div>

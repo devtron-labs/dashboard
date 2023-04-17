@@ -115,7 +115,7 @@ export default function K8sPermissionModal({
             <div onClick={stopPropagation} className="h-100 dc__overflow-hidden">
                 <div className="flex pt-12 pb-12 pl-20 pr-20 dc__content-space bcn-0 dc__border-bottom">
                     <span className="flex left fw-6 lh-24 fs-16">Kubernetes resource permission</span>
-                    <span className="icon-dim-20 cursor" onClick={close}>
+                    <span className="icon-dim-20 cursor" data-testid="k8s-permission-drawer-close" onClick={close}>
                         <Close />
                     </span>
                 </div>
@@ -148,10 +148,20 @@ export default function K8sPermissionModal({
                     })}
                 </div>
                 <div className="w-100 pt-16 pb-16 pl-20 pr-20 flex right bcn-0 dc__border-top">
-                    <button type="button" className="cta cancel h-36 flex mr-16" onClick={close}>
+                    <button
+                        type="button"
+                        data-testid="k8s-permission-cancel"
+                        className="cta cancel h-36 flex mr-16"
+                        onClick={close}
+                    >
                         Cancel
                     </button>
-                    <button type="button" className="cta h-36 flex" onClick={savePermission}>
+                    <button
+                        type="button"
+                        data-testid="k8s-permission-save"
+                        className="cta h-36 flex"
+                        onClick={savePermission}
+                    >
                         Done
                     </button>
                 </div>

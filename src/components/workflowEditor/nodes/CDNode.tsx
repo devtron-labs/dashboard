@@ -100,7 +100,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         return (
             <>
                 <Link to={this.props.to} onClick={this.onClickNodeCard} className="dc__no-decor">
-                    <div className={`workflow-node cursor ${this.props.deploymentAppDeleteRequest ? 'pl-0' : 'pl-16'}`}>
+                    <div data-testid={`workflow-editor-cd-node-${this.props.environmentName}`} className={`workflow-node cursor ${this.props.deploymentAppDeleteRequest ? 'pl-0' : 'pl-16'}`}>
                         {this.props.deploymentAppDeleteRequest ? (
                             <div className="workflow-node__trigger-type-delete workflow-node__trigger-type--create-delete bcr-5 m-0 dc__position-abs fs-10 dc__uppercase dc__top-radius-8 dc__text-center"></div>
                         ) : (
@@ -127,7 +127,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                     </div>
                 </Link>
 
-                <button className="workflow-node__add-cd-btn">
+                <button className="workflow-node__add-cd-btn" data-testid="cd-add-deployment-pipeline-button">
                     <Tippy
                         className="default-tt workflow-node__add-cd-btn-tippy"
                         arrow={false}

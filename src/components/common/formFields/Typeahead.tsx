@@ -5,6 +5,8 @@ import { isArrayEqual } from '../helpers/util';
 const TypeaheadContext = createContext({ name: "", search: "", multi: false, labelKey: 0 as any, selections: [], selectItem: (item) => { }, onChange: (...args: any[]) => { } });
 
 export interface TypeaheadProps {
+    dataTestIdContainer?: string;
+    dataTestIdInput?: string;
     onChange: (...args: any[]) => void;
     defaultSelections?: any[];
     labelKey: string | number;
@@ -66,10 +68,10 @@ export class Typeahead extends Component<TypeaheadProps, { defaultSelections: an
         let classes = this.props.disabled ? "typeahead__single-selection disabled" : "typeahead__single-selection";
         return <label className="w-100">
             <span className="form__label">{this.props.label}</span>
-            <span style={{ 'position': 'relative', 'display': 'block' }}>
+            <span data-testid = {this.props.dataTestIdContainer} style={{ 'position': 'relative', 'display': 'block' }}>
                 {selection
                     ? <span className={classes} onClick={() => { if (!this.props.disabled) this.setState({ showMenu: true }) }}>{selection[this.props.labelKey]}</span>
-                    : <input type="text" value={this.state.search} placeholder={"Select"} disabled={this.props.disabled}
+                    : <input data-testid = {this.props.dataTestIdInput} type="text" value={this.state.search} placeholder={"Select"} disabled={this.props.disabled}
                         className={classes}
                         onClick={() => { if (!this.props.disabled) this.setState({ showMenu: true }) }}
                         onChange={this.onChange} />}
@@ -118,14 +120,14 @@ export class Typeahead extends Component<TypeaheadProps, { defaultSelections: an
     }
 }
 
-export class TypeaheadOption extends Component<{ item: any, id: number | string }> {
+export class TypeaheadOption extends Component<{ dataTestIdMenuList?: string, item: any, id: number | string }> {
     render() {
         return <TypeaheadContext.Consumer>
             {(context) => {
                 if (context.search.length && this.props.item[context.labelKey].search(context.search) === -1)
                     return null;
                 else return <>
-                    <li className="typeahead__menu-item" key={this.props.id}
+                    <li data-testid = {this.props.dataTestIdMenuList} className="typeahead__menu-item" key={this.props.id}
                         onClick={(event) => { context.selectItem(this.props.item); }}>
                         {this.props.children}
                     </li>

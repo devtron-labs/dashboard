@@ -63,7 +63,7 @@ export class CINode extends Component<CINodeProps> {
         return (
             <>
                 <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
-                    <div className="workflow-node cursor">
+                    <div data-testid={`workflow-editor-ci-node-${this.props.title}`} className="workflow-node cursor">
                         {this.props.linkedCount > 0 && (
                             <Tippy
                                 className="default-tt"
@@ -71,7 +71,7 @@ export class CINode extends Component<CINodeProps> {
                                 placement="bottom"
                                 content={this.props.linkedCount}
                             >
-                                <span className="link-count">
+                                <span className="link-count" data-testid="linked-symbol">
                                     <img src={link} className="icon-dim-12 mr-5" alt="" />
                                     {this.props.linkedCount}
                                 </span>
@@ -82,7 +82,7 @@ export class CINode extends Component<CINodeProps> {
                         </div>
                         <div className="workflow-node__title flex">
                             <div className="workflow-node__full-width-minus-Icon">
-                                <span className="workflow-node__text-light">{pipeline}</span>
+                                <span className="workflow-node__text-light" data-testid="linked-indication-name">{pipeline}</span>
                                 <Tippy
                                     className="default-tt"
                                     arrow={true}
@@ -97,7 +97,7 @@ export class CINode extends Component<CINodeProps> {
                     </div>
                 </Link>
                 {!this.props.isJobView && (
-                    <button className="workflow-node__add-cd-btn">
+                    <button className="workflow-node__add-cd-btn" data-testid={`ci-add-deployment-pipeline-button-${this.props.title}`}>
                         <Tippy
                             className="default-tt"
                             arrow={false}

@@ -69,11 +69,11 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
     const renderModalCTA = () => {
         return (
             <div className="modal__CTA flex right dc__border-top">
-                <button type="button" className="flex cta cancel h-32" onClick={handleCancelAction}>
+                <button type="button" className="flex cta cancel h-32" onClick={handleCancelAction} data-testid="close-export-csv-button">
                     {exportingData ? 'Cancel' : 'Close'}
                 </button>
                 {!exportingData && errorExportingData && (
-                    <button type="button" className="flex cta ml-12 h-32" onClick={generateDataToExport}>
+                    <button type="button" className="flex cta ml-12 h-32" onClick={generateDataToExport} data-testid="retry-export-csv-button">
                         Retry
                     </button>
                 )}
@@ -130,6 +130,7 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
                 <button
                     className={`flex cta ghosted w-100 h-36 ${disabled ? 'nothing-to-export' : ''}`}
                     onClick={generateDataToExport}
+                    data-testid={'export-csv-button'}
                 >
                     <ExportIcon className="icon-dim-16 mr-8" />
                     <span>Export CSV</span>
@@ -142,7 +143,7 @@ export default function ExportToCsv({ apiPromise, fileName, className, disabled 
                 data={dataToExport || []}
             />
             {showExportingModal && (
-                <VisibleModal className="export-to-csv-modal">
+                <VisibleModal className="export-to-csv-modal" data-testid="export-to-csv-modal">
                     <div className="modal__body">
                         <h2 className="cn-9 fw-6 fs-16 m-0 dc__border-bottom">Export to CSV</h2>
                         {renderExportStatus()}

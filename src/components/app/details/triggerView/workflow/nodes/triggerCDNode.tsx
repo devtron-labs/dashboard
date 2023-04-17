@@ -28,7 +28,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
         this.props.history.push(this.getCDNodeDetailsURL())
     }
 
-    renderStatus() {
+    renderStatus(title?: string) {
         const url = this.getCDNodeDetailsURL()
         let statusText = this.props.status ? triggerStatus(this.props.status) : ''
         let status = statusText ? statusText.toLowerCase() : ''
@@ -36,13 +36,13 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
             status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
         if (hideDetails)
             return (
-                <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
+                <div data-testid="cd-status-not-triggered" className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
                     <span>{statusText}</span>
                 </div>
             )
         else
             return (
-                <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
+                <div data-testid="cd-trigger-status" className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
                     <span>
                         <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
                     </span>
@@ -50,7 +50,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                     {!this.props.fromAppGrouping && (
                         <>
                             {statusText && <span className="mr-5 ml-5">/</span>}
-                            <Link to={url} className="workflow-node__details-link">
+                            <Link data-testid={`cd-trigger-details-${this.props.environmentName}-link`} to={url} className="workflow-node__details-link">
                                 Details
                             </Link>
                         </>
@@ -78,10 +78,11 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                 </div>
                                 <div className="workflow-node__icon-common ml-8 workflow-node__CD-icon" />
                             </div>
-                            {this.renderStatus()}
+                            {this.renderStatus(this.props.title)}
                             <div className="workflow-node__btn-grp">
                                 <Tippy className="default-tt" arrow={true} placement="bottom" content={'Rollback'}>
                                     <button
+                                        data-testid="cd-trigger-deploy-roll-back"
                                         className="workflow-node__rollback-btn"
                                         onClick={(event) => context.onClickRollbackMaterial(+this.props.id)}
                                     >
@@ -89,6 +90,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                     </button>
                                 </Tippy>
                                 <button
+                                    data-testid={`${this.props.type}-trigger-select-image`}
                                     className="workflow-node__deploy-btn"
                                     onClick={(event) => {
                                         event.stopPropagation()

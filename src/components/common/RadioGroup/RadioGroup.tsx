@@ -21,6 +21,7 @@ interface RadioGroupInterface {
     disabled: boolean
     showTippy?: boolean
     tippyContent?: any
+    dataTestId?: string
 }
 
 interface RadioGroupComposition {
@@ -34,6 +35,7 @@ const RadioGroup: React.FC<RadioGroupInterface> & RadioGroupComposition = React.
     className = '',
     initialTab,
     disabled = false,
+    dataTestId 
 }) {
     const [selected, select] = useState(null)
 
@@ -49,7 +51,7 @@ const RadioGroup: React.FC<RadioGroupInterface> & RadioGroupComposition = React.
     )
 })
 
-function Radio({ value, children, className = '', showTippy = false, tippyContent = '', canSelect = true, isDisabled = false, tippyClass = '' }) {
+function Radio({ value, children, className = '', showTippy = false, tippyContent = '', canSelect = true, isDisabled = false, tippyClass = '', dataTestId }) {
     const { name, selected, select, disabled, onChange } = useRadioContext()
     return (
         <ConditionalWrap
@@ -65,6 +67,7 @@ function Radio({ value, children, className = '', showTippy = false, tippyConten
                     type="checkbox"
                     value={value}
                     name={name}
+                    
                     checked={value === selected}
                     onChange={(e) => {
                         e.persist()
@@ -75,7 +78,7 @@ function Radio({ value, children, className = '', showTippy = false, tippyConten
                     }}
                     disabled={isDisabled || disabled}
                 />
-                <span className="radio__item-label">{children}</span>
+                <span className="radio__item-label" data-testid={dataTestId}>{children}</span>
             </label>
         </ConditionalWrap>
     )

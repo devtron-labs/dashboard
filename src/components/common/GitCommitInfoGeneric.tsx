@@ -20,6 +20,7 @@ export default function GitCommitInfoGeneric({
     materialUrl,
     showMaterialInfoHeader,
     canTriggerBuild = false,
+    index
 }) {
     const [showSeeMore, setShowSeeMore] = useState(true)
     let _lowerCaseCommitInfo = _lowerCaseObject(commitInfo)
@@ -160,6 +161,7 @@ export default function GitCommitInfoGeneric({
         <>
             {showMaterialInfoHeader && (_isWebhook || _lowerCaseCommitInfo.commit) && (
                 <GitMaterialInfoHeader
+                    index={index}
                     repoUrl={materialUrl}
                     materialType={materialSourceType}
                     materialValue={materialSourceValue}
@@ -168,28 +170,33 @@ export default function GitCommitInfoGeneric({
 
             {!_isWebhook && (
                 <>
-                    {_lowerCaseCommitInfo.commit && <div className="ml-16 mr-16 flex dc__content-space">
-                        {_commitUrl ? (
-                            <a
-                                href={_commitUrl}
-                                target="_blank"
-                                rel="noopener"
-                                className="commit-hash"
-                                onClick={(e) => e.stopPropagation()}
-                            >
-                                <div className="material-history__header">
-                                    {' '}
-                                    <Commit className="commit-hash__icon" />
-                                    {_lowerCaseCommitInfo.commit}{' '}
+                    {_lowerCaseCommitInfo.commit && (
+                        <div className="ml-16 mr-16 flex dc__content-space">
+                            {_commitUrl ? (
+                                <a
+                                    href={_commitUrl}
+                                    target="_blank"
+                                    rel="noopener"
+                                    className="commit-hash"
+                                    onClick={(e) => e.stopPropagation()}
+                                    data-testid={`deployment-history-source-code-material-history${index}`}
+                                >
+                                    <div
+                                        className="material-history__header"
+                                        data-testid={`git-commit-credential${index}`}
+                                    >
+                                        <Commit className="commit-hash__icon" />
+                                        {_lowerCaseCommitInfo.commit}
+                                    </div>
+                                </a>
+                            ) : null}
+                            {selectedCommitInfo ? (
+                                <div className="material-history__select-text ">
+                                    {_lowerCaseCommitInfo.isselected ? <Check className="dc__align-right" /> : 'Select'}
                                 </div>
-                            </a>
-                        ) : null}
-                        {selectedCommitInfo ? (
-                            <div className="material-history__select-text ">
-                                {_lowerCaseCommitInfo.isselected ? <Check className="dc__align-right" /> : 'Select'}
-                            </div>
-                        ) : null}
-                    </div>}
+                            ) : null}
+                        </div>
+                    )}
                     {_lowerCaseCommitInfo.author ? (
                         <div className="material-history__text flex left">
                             <PersonIcon className="icon-dim-16 mr-8" /> {_lowerCaseCommitInfo.author}

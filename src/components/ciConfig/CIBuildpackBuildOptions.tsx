@@ -469,6 +469,7 @@ export default function CIBuildpackBuildOptions({
                         </div>
                     ) : (
                         <ReactSelect
+                            classNamePrefix="build-config__select-repository-containing-code"
                             className="m-0"
                             tabIndex={3}
                             isSearchable={false}
@@ -528,6 +529,7 @@ export default function CIBuildpackBuildOptions({
                                 ./
                             </span>
                             <input
+                                data-testid="build-pack-project-path-textbox"
                                 tabIndex={4}
                                 type="text"
                                 className="form__input file-name"
@@ -561,6 +563,7 @@ export default function CIBuildpackBuildOptions({
                             </div>
                         ) : (
                             <ReactSelect
+                                classNamePrefix="build-pack-language-dropdown"
                                 className="m-0"
                                 tabIndex={3}
                                 options={supportedLanguagesList}
@@ -586,6 +589,7 @@ export default function CIBuildpackBuildOptions({
                             </span>
                         ) : (
                             <ReactSelect
+                                classNamePrefix="build-pack-version-dropdown"
                                 className="m-0"
                                 tabIndex={3}
                                 isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
@@ -634,6 +638,7 @@ export default function CIBuildpackBuildOptions({
                         <span className="fs-14 fw-4 lh-20 cn-9">{buildersAndFrameworks.selectedBuilder?.label}</span>
                     ) : (
                         <CreatableSelect
+                            classNamePrefix="build-pack-select-builder-dropdown"
                             placeholder={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.selectBuilder}
                             className="m-0"
                             tabIndex={3}

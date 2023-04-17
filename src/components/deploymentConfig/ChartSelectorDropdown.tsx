@@ -60,11 +60,15 @@ export default function ChartSelectorDropdown({
     }
 
     if (!isUnSet) {
-        return <span className="fs-13 fw-6 cn-9 flex pointer">{selectedChart?.name}</span>
+        return (
+            <span className="fs-13 fw-6 cn-9 flex pointer" data-testid="select-chart-type-dropdown">
+                {selectedChart?.name}
+            </span>
+        )
     } else {
         return (
             <PopupMenu onToggleCallback={setPopupState} autoClose>
-                <PopupMenu.Button isKebab>
+                <PopupMenu.Button isKebab dataTestId="select-chart-type-dropdown">
                     <span className="fs-13 fw-6 cn-9 flex pointer">
                         {selectedChart?.name || 'Select Chart'}
                         <Dropdown
@@ -90,6 +94,7 @@ export default function ChartSelectorDropdown({
                                     <RadioGroup.Radio
                                         value={CHART_TYPE_TAB_KEYS.DEVTRON_CHART}
                                         canSelect={selectedChartTypeTab !== CHART_TYPE_TAB_KEYS.DEVTRON_CHART}
+                                        dataTestId="select-chartversion-menu-list"
                                     >
                                         {CHART_TYPE_TAB[CHART_TYPE_TAB_KEYS.DEVTRON_CHART]}
                                     </RadioGroup.Radio>
@@ -102,7 +107,7 @@ export default function ChartSelectorDropdown({
                                 </RadioGroup>
                             </div>
                         )}
-                        <div className="pt-4 pb-4">
+                        <div className="pt-4 pb-4" data-testid="select-chart-type-menu-list">
                             {(selectedChartTypeTab === CHART_TYPE_TAB_KEYS.DEVTRON_CHART
                                 ? devtronCharts
                                 : customCharts
@@ -112,6 +117,7 @@ export default function ChartSelectorDropdown({
                                     className={`p-12 pointer chart-row ${
                                         chart.name === selectedChart?.name ? ' bcb-1' : ''
                                     }`}
+                                    data-testid={`select-chart-type-menu-${index}`}
                                     onClick={() => onSelectChartType(chart.name)}
                                 >
                                     <div>
@@ -128,7 +134,8 @@ export default function ChartSelectorDropdown({
                                     </div>
                                     {(chartsMetadata?.[chart.name]?.['chartDescription'] || chart.description) && (
                                         <div className="fs-12 fw-4 cn-7">
-                                            {chartsMetadata?.[chart.name]?.['chartDescription'] || chart.description.substring(0, 250)}
+                                            {chartsMetadata?.[chart.name]?.['chartDescription'] ||
+                                                chart.description.substring(0, 250)}
                                             &nbsp;
                                             {CHART_DOCUMENTATION_LINK[chart.name] && (
                                                 <a

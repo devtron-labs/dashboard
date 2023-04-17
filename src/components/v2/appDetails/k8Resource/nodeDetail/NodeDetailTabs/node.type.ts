@@ -1,6 +1,7 @@
 import { SelectedResourceType } from "../../../appDetails.type"
 
 export interface TerminalViewProps {
+    dataTestId?: string
     nodeName: string
     shell: any
     containerName: string

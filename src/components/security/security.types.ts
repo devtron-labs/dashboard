@@ -144,9 +144,9 @@ export interface ScanDetailsModalState {
 }
 
 export interface VulnerabilityUIMetaData {
-  className: string
-  title: string
-  subTitle: string
+    className: string
+    title: string
+    subTitle: string
 }
 //Generated for security policy
 

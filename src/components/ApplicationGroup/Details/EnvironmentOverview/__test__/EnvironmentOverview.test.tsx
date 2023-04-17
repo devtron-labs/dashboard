@@ -18,7 +18,7 @@ describe('EnvironmentOverview', () => {
     it('EnvironmentOverview render without error', () => {
         const { container } = renderWithRouter(
             <Route path="application-group/:envId/overview">
-               <EnvironmentOverview filteredApps={[]} />
+                <EnvironmentOverview filteredApps={[]} />
             </Route>,
             { route: 'application-group/28/overview' },
         )
@@ -33,7 +33,7 @@ describe('EnvironmentOverview', () => {
         await act(async () => {
             component = renderWithRouter(
                 <Route path="application-group/:envId/overview">
-                   <EnvironmentOverview filteredApps={filteredData} appGroupListData={appListResult} />
+                    <EnvironmentOverview filteredApps={filteredData} appGroupListData={appListResult} />
                 </Route>,
                 { route: 'application-group/4/overview' },
             )
@@ -56,4 +56,3 @@ describe('EnvironmentOverview', () => {
         expect(component.getAllByText('Healthy')[0]).toBeInTheDocument()
     })
 })
-

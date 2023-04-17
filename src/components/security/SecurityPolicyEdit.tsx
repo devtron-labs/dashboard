@@ -38,6 +38,7 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
             className: "low",
             title: "Low Vulnerabilities",
             subTitle: "Vulnerabilities are non-exploitable but would reduce your organization's attack surface."
+
         }
     ]
 
@@ -255,25 +256,43 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
         }
         let theAction = severity.policy.inherited && !severity.policy.isOverriden ? 'inherit' : severity.policy.action
         let permission = this.permissionText[severity.policy.action];
-        return <div key={severity.id} className="vulnerability">
-            <div className="flex-1">
-                <h3 className={`vulnerability__title vulnerability__title--${props.className}`}>{props.title + " : " + permission}</h3>
-                <p className="vulnerability__subtitle">{props.subTitle}</p>
+        return (
+            <div key={severity.id} className="vulnerability">
+                <div className="flex-1">
+                    <h3
+                        data-testid={`vulnerability-title-${props.className}`}
+                        className={`vulnerability__title vulnerability__title--${props.className}`}
+                    >
+                        {props.title + ' : ' + permission}
+                    </h3>
+                    <p className="vulnerability__subtitle" data-testid={`vulnerability-subtitle-${props.className}`}>
+                        {props.subTitle}
+                    </p>
+                </div>
+                <div className="vulnerability__menu">
+                    <ReactSelect
+                        classNamePrefix={`select-vulnerability-${props.className}`}
+                        value={{ label: theAction.toLowerCase(), value: theAction.toLowerCase() }}
+                        onChange={(selected) => {
+                            this.updateSeverity((selected as any).value, severity, v.envId)
+                        }}
+                        placeholder={`${
+                            severity.policy.inherited && !severity.policy.isOverriden
+                                ? 'INHERITED'
+                                : severity.policy.action
+                        }`}
+                        components={{
+                            DropdownIndicator,
+                        }}
+                        styles={{
+                            ...styles,
+                        }}
+                        isSearchable={false}
+                        options={actions}
+                    />
+                </div>
             </div>
-            <div className="vulnerability__menu">
-                <ReactSelect value={{ 'label': theAction.toLowerCase(), 'value': theAction.toLowerCase() }}
-                    onChange={(selected) => { this.updateSeverity((selected as any).value, severity, v.envId) }}
-                    placeholder={`${severity.policy.inherited && !severity.policy.isOverriden ? 'INHERITED' : severity.policy.action}`}
-                    components={{
-                        DropdownIndicator
-                    }}
-                    styles={{
-                        ...styles
-                    }}
-                    isSearchable={false}
-                    options={actions} />
-            </div>
-        </div>
+        )
     }
 
     renderPolicyListHeader = () => {
@@ -281,13 +300,24 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
             <>
                 <div className="flexbox flex-justify mt-20">
                     <div>
-                        <h1 className="security-policy-card__title">CVE Policies</h1>
-                        <p className="security-policy-card__subtitle">Block or allow specific Common Vulnerabilities and Exposures (CVEs) policies.
-                     <a href={`https://cve.mitre.org/cve/search_cve_list.html`} rel="noopener noreferrer" target="_blank">Search CVE List</a></p>
+                        <h1 className="security-policy-card__title" data-testid="CVE-policy-title">
+                            CVE Policies
+                        </h1>
+                        <p className="security-policy-card__subtitle" data-testid="CVE-policy-subtitle">
+                            Block or allow specific Common Vulnerabilities and Exposures (CVEs) policies.
+                            <a
+                                href={`https://cve.mitre.org/cve/search_cve_list.html`}
+                                rel="noopener noreferrer"
+                                target="_blank"
+                            >
+                                Search CVE List
+                            </a>
+                        </p>
                     </div>
                     <button type="button" className="cta small flex" onClick={() => this.toggleAddCveModal()}>
-                        <Add className="icon-dim-16 mr-5" />Add CVE Policy
-                </button>
+                        <Add className="icon-dim-16 mr-5" />
+                        Add CVE Policy
+                    </button>
                 </div>
             </>
         )
@@ -365,10 +395,17 @@ export class SecurityPolicyEdit extends Component<FetchPolicyQueryParams, GetVul
 
     renderHeader() {
         switch (this.props.level) {
-            case 'global': return <div className="ml-24 mr-24 mt-20 mb-20">
-                <h1 className="form__title"> Global Security Policies</h1>
-                <p className="form__subtitle">Security policies defined at global level will be applicable to all deployments unless overriden for specific clusters or environments.</p>
-            </div>
+            case 'global': return (
+                <div className="ml-24 mr-24 mt-20 mb-20">
+                    <h1 className="form__title" data-testid="global-security-policy">
+                        Global Security Policies
+                    </h1>
+                    <p className="form__subtitle" data-testid="global-security-policy-subtitle">
+                        Security policies defined at global level will be applicable to all deployments unless overriden
+                        for specific clusters or environments.
+                    </p>
+                </div>
+            )
             case 'cluster': return <div className="ml-24 mr-24 mt-20 mb-20">
                 <h1 className="form__title">
                     <NavLink to={`/security/policies/clusters`}>Clusters</NavLink>

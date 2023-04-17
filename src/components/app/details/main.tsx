@@ -164,6 +164,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         to={`${match.url}/${URLS.APP_OVERVIEW}`}
                         className="tab-list__tab-link flex"
                         data-action="Overview Clicked"
+                        data-testid="overview-click"
                         onClick={handleEventClick}
                     >
                         Overview
@@ -180,6 +181,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                 </li>
                 <li className="tab-list__tab dc__ellipsis-right">
                     <NavLink
+                        data-testid="app-details-tab"
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DETAILS}`}
                         className="tab-list__tab-link"
@@ -196,6 +198,8 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         className="tab-list__tab-link"
                         data-action="Build & Deploy Clicked"
                         onClick={handleEventClick}
+                        data-testid="build-deploy-click"
+                        id="build-deploy"
                     >
                         Build & Deploy
                     </NavLink>
@@ -206,6 +210,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         to={`${match.url}/${URLS.APP_CI_DETAILS}`}
                         className="tab-list__tab-link"
                         data-action="Build History Clicked"
+                        data-testid="build-history-clicked"
                         onClick={handleEventClick}
                     >
                         Build History
@@ -217,6 +222,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         to={`${match.url}/${URLS.APP_CD_DETAILS}`}
                         className="tab-list__tab-link"
                         data-action="Deployment History Clicked"
+                        data-testid="deployment-history-link"
                         onClick={handleEventClick}
                     >
                         Deployment History
@@ -227,6 +233,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
                         className="tab-list__tab-link"
+                        data-testid="deployment-matrix"
                         data-action="Deployment Metrics Clicked"
                         onClick={handleEventClick}
                     >
@@ -235,6 +242,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                 </li>
                 <li className="tab-list__tab">
                     <NavLink
+                        data-testid="app-config-link"
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"

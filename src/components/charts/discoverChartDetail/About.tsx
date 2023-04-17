@@ -4,7 +4,7 @@ import moment from 'moment';
 
 export function About({ description = "", home = "", chartYaml, appVersion = "", created = "", digest = "", source = "", ...rest }) {
     return <div className="flex column left about white-card white-card--no-padding">
-        <div className="chart-store-card__header">About</div>
+        <div className="chart-store-card__header" data-testid="single-chart-about-heading">About</div>
         <div className="chart-store-card__body">
             <span className="chart-store-card__subtitle">Description</span>
             <div className="chart-store-card__text">{description}</div>
