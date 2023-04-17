@@ -38,6 +38,7 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     cdPipelineName?: string
     cdPipelineId?: string
     stageType?: DeploymentNodeType
+    triggerType?: string
     envName: string
     parentPipelineId?: string
     parentPipelineType?: WorkflowNodeType

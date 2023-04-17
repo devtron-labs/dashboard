@@ -212,6 +212,7 @@ export default function BulkCDTrigger({
                             appId={selectedApp.appId}
                             pipelineId={+selectedApp.cdPipelineId}
                             stageType={selectedApp.stageType}
+                            triggerType={selectedApp.triggerType}
                             material={_material}
                             materialType={MATERIAL_TYPE.inputMaterialList}
                             envName={selectedApp.envName}
