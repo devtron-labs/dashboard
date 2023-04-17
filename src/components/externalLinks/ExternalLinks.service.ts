@@ -9,7 +9,7 @@ import {
 } from './ExternalLinks.type'
 
 const getURLWithQueryParams = (clusterId?: number, identifier?: string, type?: ExternalLinkIdentifierType) => {
-    let _url = Routes.EXTERNAL_LINKS_API
+    let _url = `${Routes.EXTERNAL_LINKS_API}/${Routes.APP_LIST_V2}`
     if (clusterId >= 0 || identifier || type) {
         const queryParams = {
             clusterId: clusterId >= 0 ? `${clusterId}` : '',

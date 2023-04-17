@@ -578,7 +578,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                                 <React.Fragment>
                                     <span>.&nbsp;</span>
                                     <button
-                                        data-testid = "reconnect-button"
+                                        data-testid="reconnect-button"
                                         type="button"
                                         onClick={onClickResume}
                                         className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
@@ -595,7 +595,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }
 
     return (
-        <div data-testid = {terminalViewProps.dataTestId} className="terminal-view h-100 w-100">
+        <div data-testid={terminalViewProps.dataTestId} className="terminal-view h-100 w-100">
             {renderConnectionStrip()}
             <div
                 id="terminal-id"

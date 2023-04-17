@@ -577,7 +577,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 ? 'gitops-bitbucket-host-url-textbox'
                                 : 'gitops-github-gitlab-host-url-textbox'
                         }
-                        labelTestId={`gitops-provider-host-url-heading-${this.state.providerTab}`}
                     />
                     {this.state.isUrlValidationError && this.state.form.host.length ? (
                         <div className="flex fs-12 left pt-4">
@@ -617,7 +616,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                 tabIndex={1}
                                 labelClassName="gitops__id form__label--fs-13 fw-5 fs-13 mb-4"
                                 dataTestid="gitops-bitbucket-workspace-id-textbox"
-                                labelTestId="gitops-bitbucket-workspace-id-heading"
                             />
                         )}
                     </div>
@@ -631,7 +629,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                             link={LinkAndLabelSpec[this.state.providerTab]['link']}
                             linkText={LinkAndLabelSpec[this.state.providerTab]['linkText']}
                             label={LinkAndLabelSpec[this.state.providerTab]['label']}
-                            labelTestId={`gitops-provider-link-heading-${this.state.providerTab}`}
                             onChange={(event) => {
                                 this.handleChange(event, key)
                             }}
@@ -689,7 +686,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         ? 'gitops-gitlab-username-textbox'
                                         : 'gitops-github-username-textbox'
                                 }
-                                labelTestId={`gitops-provider-username-heading-${this.state.providerTab}`}
                             />
                         </div>
                         <div>
@@ -726,7 +722,6 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
                                         ? 'gitops-gitlab-pat-textbox'
                                         : 'gitops-github-pat-textbox'
                                 }
-                                labelTestId={`gitops-provider-pat-heading-${this.state.providerTab}`}
                             />
                         </div>
                     </div>

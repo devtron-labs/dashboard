@@ -184,6 +184,7 @@ export default function GroupForm({
                 className="form__input mb-16"
                 disabled={!!id}
                 value={name.value}
+                data-testid="permission-group-name-textbox"
                 onChange={(e) => setName({ value: e.target.value, error: '' })}
             />
             <label htmlFor="" className="form__label">
@@ -195,6 +196,7 @@ export default function GroupForm({
                 className="w-100"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                data-testid="permission-group-description-textbox"
             />
             <AppPermissions
                 data={groupData}
@@ -211,6 +213,7 @@ export default function GroupForm({
                     <button
                         className="cta delete"
                         style={{ marginRight: 'auto' }}
+                        data-testid="permission-group-form-delete-button"
                         onClick={(e) => setDeleteConfirmationModal(true)}
                     >
                         Delete
@@ -225,7 +228,7 @@ export default function GroupForm({
                 <button disabled={submitting} onClick={cancelCallback} type="button" className="cta cancel mr-16">
                     Cancel
                 </button>
-                <button disabled={submitting} type="button" className="cta" onClick={handleSubmit}>
+                <button data-testid="permission-group-form-save-button" disabled={submitting} type="button" className="cta" onClick={handleSubmit}>
                     {submitting ? <Progressing /> : 'Save'}
                 </button>
             </div>

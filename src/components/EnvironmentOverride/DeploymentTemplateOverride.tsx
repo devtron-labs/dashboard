@@ -414,13 +414,13 @@ function DeploymentTemplateOverrideForm({
                 editorOnChange(YAML.stringify(envOverrideValuesWithBasic, { indent: 2 }), true)
             }
             toast.success(
-                <div className="toast" >
-                    <div className="toast__title" data-testd = "">
+                <div className="toast">
+                    <div className="toast__title">
                         {state.data.environmentConfig && state.data.environmentConfig.id > 0
                             ? 'Updated override'
                             : 'Overridden'}
                     </div>
-                    <div className="toast__subtitle" >Changes will be reflected after next deployment.</div>
+                    <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
                 </div>,
                 { autoClose: null },
             )
@@ -635,10 +635,20 @@ function DeploymentTemplateOverrideForm({
                         subtitle="This action will cause all overrides to erase and app level configuration will be applied"
                     />
                     <ConfirmationDialog.ButtonGroup>
-                        <button data-testid = "cancel-changes-button" type="button" className="cta cancel" onClick={closeConfirmationDialog}>
+                        <button
+                            data-testid="cancel-changes-button"
+                            type="button"
+                            className="cta cancel"
+                            onClick={closeConfirmationDialog}
+                        >
                             Cancel
                         </button>
-                        <button data-testid = "confirm-changes-button" type="button" className="cta delete" onClick={handleDelete}>
+                        <button
+                            data-testid="confirm-changes-button"
+                            type="button"
+                            className="cta delete"
+                            onClick={handleDelete}
+                        >
                             Confirm
                         </button>
                     </ConfirmationDialog.ButtonGroup>

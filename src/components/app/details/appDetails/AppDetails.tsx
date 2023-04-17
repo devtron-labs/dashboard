@@ -527,8 +527,8 @@ export const Details: React.FC<DetailsType> = ({
             )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
-                    appName={appDetails.appName}
-                    environmentName={appDetails.environmentName}
+                    appName={appDetails?.appName}
+                    environmentName={appDetails?.environmentName}
                     streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                 />
@@ -1073,7 +1073,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
             {params.tab === NodeDetailTabs.TERMINAL && (
                 <>
                     <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                    <div style={{ width: '130px' }}>
+                    <div style={{ width: '130px' }} data-testid="terminal-select-dropdown">
                         <Select
                             placeholder="Select shell"
                             className="pl-20"

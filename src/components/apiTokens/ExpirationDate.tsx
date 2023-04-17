@@ -20,6 +20,7 @@ function ExpirationDate({ selectedExpirationDate, onChangeSelectFormData, handle
                     value={selectedExpirationDate}
                     options={getOptions(customDate)}
                     className="select-width w-200"
+                    classNamePrefix="select-token-expiry-duration"
                     isSearchable={false}
                     onChange={onChangeSelectFormData}
                     components={{

@@ -181,23 +181,40 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             <div className="pt-16 pb-16 pl-20 pr-20 dc__border-right">
                 <div className="mb-16" data-testid="overview-app">
                     {isJobOverview ? 'Job name' : 'App name'}
-                    <div className="fs-13 fw-4 lh-20 cn-9" data-testid="overview-appName">{appMetaInfo?.appName}</div>
+                    <div className="fs-13 fw-4 lh-20 cn-9" data-testid="overview-appName">
+                        {appMetaInfo?.appName}
+                    </div>
                 </div>
                 <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7"  data-testid="overview-createdon">Created on</div>
+                    <div className="fs-12 fw-4 lh-20 cn-7" data-testid="overview-createdon">
+                        Created on
+                    </div>
                     <div className="fs-13 fw-4 lh-20 cn-9" data-testid="overview-createdonName">
                         {appMetaInfo?.createdOn ? moment(appMetaInfo.createdOn).format(Moment12HourFormat) : '-'}
                     </div>
                 </div>
-                <div className="mb-16" >
-                    <div className="fs-12 fw-4 lh-20 cn-7" data-testid="overview-createdby">Created by</div>
-                    <div className="fs-13 fw-4 lh-20 cn-9" data-testid="overview-createdbyName">{appMetaInfo?.createdBy}</div>
+                <div className="mb-16">
+                    <div className="fs-12 fw-4 lh-20 cn-7" data-testid="overview-createdby">
+                        Created by
+                    </div>
+                    <div className="fs-13 fw-4 lh-20 cn-9" data-testid="overview-createdbyName">
+                        {appMetaInfo?.createdBy}
+                    </div>
                 </div>
-                <div className="mb-16" >
-                    <div className="fs-12 fw-4 lh-20 cn-7" data-testid="overview-project">Project</div>
-                    <div className="flex left dc__content-space fs-13 fw-4 lh-20 cn-9" data-testid="overview-projectName">
+                <div className="mb-16">
+                    <div className="fs-12 fw-4 lh-20 cn-7" data-testid="overview-project">
+                        Project
+                    </div>
+                    <div
+                        className="flex left dc__content-space fs-13 fw-4 lh-20 cn-9"
+                        data-testid="overview-projectName"
+                    >
                         {appMetaInfo?.projectName}
-                        <EditIcon data-testid= "overview-project-edit" className="icon-dim-20 cursor" onClick={toggleChangeProjectModal} />
+                        <EditIcon
+                            data-testid="overview-project-edit"
+                            className="icon-dim-20 cursor"
+                            onClick={toggleChangeProjectModal}
+                        />
                     </div>
                 </div>
             </div>
@@ -212,7 +229,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                         <TagIcon className="tags-icon icon-dim-20 mr-8" />
                         Tags
                     </div>
-                    <div className="flex fs-14 fw-4 lh-16 cn-7 cursor" onClick={toggleTagsUpdateModal} data-testid="overview-tag-edit">
+                    <div
+                        className="flex fs-14 fw-4 lh-16 cn-7 cursor"
+                        onClick={toggleTagsUpdateModal}
+                        data-testid="overview-tag-edit"
+                    >
                         <EditIcon className="icon-dim-16 scn-7 mr-4" />
                         Edit
                     </div>
@@ -239,7 +260,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     External Links
                 </div>
                 {externalLinksAndTools.fetchingExternalLinks ? (
-                    <div className="dc__loading-dots" data-testid="overview-external-links-not-present"/>
+                    <div className="dc__loading-dots" data-testid="overview-external-links-not-present" />
                 ) : (
                     <AppLevelExternalLinks
                         isOverviewPage={true}
@@ -261,14 +282,17 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         if (otherEnvsResult?.[0]?.result?.length > 0) {
             return (
                 <div className="env-deployments-info-wrapper w-100">
-                    <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7" data-testid="overview-deployed-environment">
+                    <div
+                        className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7"
+                        data-testid="overview-deployed-environment"
+                    >
                         <span>Environment</span>
                         {isArgoInstalled && <span>App status</span>}
                         <span>Last deployed</span>
                     </div>
                     <div className="env-deployments-info-body">
                         {otherEnvsResult[0].result.map(
-                            (_env,index) =>
+                            (_env, index) =>
                                 !_env.deploymentAppDeleteRequest && (
                                     <div
                                         key={`${_env.environmentName}-${_env.environmentId}`}
@@ -301,7 +325,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             )
         }
 
-        return <div className="fs-13 fw-4 cn-7" data-testid="overview-no-deployment">This application has not been deployed yet.</div>
+        return (
+            <div className="fs-13 fw-4 cn-7" data-testid="overview-no-deployment">
+                This application has not been deployed yet.
+            </div>
+        )
     }
 
     const renderEnvironmentDeploymentsStatus = () => {

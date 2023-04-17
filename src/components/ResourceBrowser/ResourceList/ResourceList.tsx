@@ -692,7 +692,11 @@ export default function ResourceList() {
                                     placement="top"
                                     content={K8S_RESOURCE_LIST.createResource}
                                 >
-                                    <div className="cursor cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
+                                    <div
+                                        className="cursor cb-5 fw-6 fs-13 flexbox"
+                                        data-testid="create-resource"
+                                        onClick={showResourceModal}
+                                    >
                                         <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
                                     </div>
                                 </Tippy>

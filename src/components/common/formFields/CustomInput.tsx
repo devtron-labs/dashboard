@@ -23,7 +23,6 @@ export interface CustomInputProps {
     onBlur?: (e) => void;
     onFocus?: (e) => void;
     dataTestid?:string;
-    labelTestId?: string;
 }
 
 export class CustomInput extends Component<CustomInputProps, any> {
@@ -52,7 +51,7 @@ export class CustomInput extends Component<CustomInputProps, any> {
         if (this.props.labelClassName) labelClasses = `${labelClasses} ${this.props.labelClassName}`
         return (
             <div>
-                <label className={labelClasses} data-testid={this.props.labelTestId}>
+                <label className={labelClasses} data-testid={`label-${this.props.dataTestid}`}>
                     {this.props.label} {this.props.showLink && this.gitCreate()}
                 </label>
                 <input
@@ -79,7 +78,6 @@ export class CustomInput extends Component<CustomInputProps, any> {
                         {this.props.error}
                     </div>
                 )}
-
                 {this.props.helperText ? (
                     <>
                         <div className="form__text-field-info">

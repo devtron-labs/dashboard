@@ -69,7 +69,7 @@ export class Project extends Component<ProjectProps, ProjectState>  {
 
     renderCollapsedView() {
         return (
-            <div data-testid = {`hover-project-id-${this.props.name}`} className="project__row white-card white-card--add-new-item mb-16">
+            <div data-testid={`hover-project-id-${this.props.name}`} className="project__row white-card white-card--add-new-item mb-16">
                 <img src={folder} alt="" className="icon-dim-24 mr-16" />
                 <span className="project-title">{this.props.name}</span>
                 <button
@@ -110,7 +110,6 @@ export class Project extends Component<ProjectProps, ProjectState>  {
                             autoComplete="off"
                             name="name"
                             value={this.props.name}
-                            // data-testid="project-name-textbox"
                             placeholder="e.g. My Project"
                             className="form__input"
                             autoFocus
