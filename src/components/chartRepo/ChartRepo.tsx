@@ -383,17 +383,18 @@ function ChartForm({
         setSecureWithTls(!secureWithTls)
     }
     const handleDeleteClick = () => toggleConfirmation(true)
-    const handleCancelClick = (e) => toggleCollapse((t) => !t)
+    const handleCancelClick = () => toggleCollapse((t) => !t)
 
     const renderChartInputElement = (field: string) => {
+        const isNameField: boolean = field === 'name'
         return (
-            <CustomInput
+                <CustomInput
                 autoComplete="off"
-                value={field === 'name' ? state.name.value : state.url.value}
+                value={ isNameField ? state.name.value : state.url.value}
                 onChange={handleOnChange}
-                name={field === 'name' ? 'name' : 'url'}
-                error={field === 'name' ? state.name.error : state.url.error}
-                label={field === 'name' ? 'Name*' : 'URL*'}
+                name={isNameField ? 'name' : 'url'}
+                error={isNameField ? state.name.error : state.url.error}
+                label={isNameField ? 'Name*' : 'URL*'}
                 disabled={!isEditable}
             />
         )
