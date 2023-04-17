@@ -348,6 +348,7 @@ export default function ApprovalMaterial({
                             _gitCommit.Commit) && (
                             <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
                                 <GitCommitInfoGeneric
+                                    index={0}
                                     materialUrl={mat.url}
                                     showMaterialInfoHeader={true}
                                     commitInfo={_gitCommit}

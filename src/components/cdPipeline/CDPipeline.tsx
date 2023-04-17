@@ -1324,7 +1324,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             >
                 {getEmptyArrayOfLength(6).map((e, idx) => {
                     return (
-                        <CommonRadioGroup.Radio value={`${idx + 1}`}>
+                        <CommonRadioGroup.Radio dataTestId={`number-of-approvers-${1+idx}`} value={`${idx + 1}`}>
                             {idx === 0 ? (
                                 <ApprovalIcon className="icon-dim-12 mr-6" />
                             ) : (
@@ -1346,7 +1346,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <ApprovalIcon className="icon-dim-24" />
                     </div>
                     <div className="ml-16 mr-16 flex-1">
-                        <h4 className="fs-14 fw-6 lh-1-43 cn-9 mb-4">Manual approval</h4>
+                        <h4 data-testId="manual-approval-heading" className="fs-14 fw-6 lh-1-43 cn-9 mb-4">Manual approval</h4>
                         <div className="form__label form__label--sentence m-0">
                             When enabled, only approved images will be available to be deployed by this deployment
                             pipeline.

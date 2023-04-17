@@ -2,7 +2,7 @@ import React from 'react';
 import './Toggle.scss'
 import {useEffectAfterMount} from '../helpers/Helpers';
 
-const Toggle = ({selected=false, onSelect=null, color="#36b37e", rootClassName="", disabled=false, dataTestId="", ...props})=>{
+const Toggle = ({selected=false, onSelect=null, color="#36b37e", rootClassName="", disabled=false, dataTestId="handle-toggle-button", ...props})=>{
     const [active, setActive] = React.useState(selected);
 
     useEffectAfterMount(()=>{

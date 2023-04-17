@@ -537,7 +537,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 >
                     {this.renderSequentialCDCardTitle(mat)}
                     <div
-                        data-testid = {`cd-material-history-image-${index}`}
+                        data-testid = {`cd-material-history-image-${mat.index}`}
                         className={`material-history__top mh-66 ${
                             !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
                         }`}
