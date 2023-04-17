@@ -133,7 +133,9 @@ export function ChartRepoSelector({
         (isExternal || isUpdate) && (
             <div className="form__row form__row--w-100">
                 <div className="flex dc__content-space">
-                    <span className="form__label fs-13 fw-4 lh-20 cn-7">Helm Chart</span>
+                    <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="helm-chart-heading">
+                        Helm Chart
+                    </span>
                     <Tippy
                         className="default-tt "
                         arrow={false}
@@ -143,6 +145,7 @@ export function ChartRepoSelector({
                             className={`refetch-charts cb-5 cursor dc__underline-onhover ${
                                 refetchingCharts ? 'refetching' : ''
                             }`}
+                            data-testid="refetching-button"
                             onClick={refetchCharts}
                         >
                             {refetchingCharts ? <Refetch className="icon-dim-20" /> : 'Refetch Charts'}
@@ -155,9 +158,7 @@ export function ChartRepoSelector({
                         defaultOptions={repoChartOptions}
                         isSearchable={false}
                         formatOptionLabel={repoChartSelectOptionLabel}
-                        value={
-                            isExternal && !installedAppInfo && !repoChartValue.chartRepoName ? null : repoChartValue
-                        }
+                        value={isExternal && !installedAppInfo && !repoChartValue.chartRepoName ? null : repoChartValue}
                         loadOptions={repoChartLoadOptions}
                         onFocus={onFocus}
                         onChange={handleRepoChartValueChange}

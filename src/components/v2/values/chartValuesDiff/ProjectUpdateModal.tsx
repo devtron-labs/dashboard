@@ -52,6 +52,7 @@ export default function ProjectUpdateModal({
             <ReactSelect
                 options={projectOptions}
                 value={selectedProject}
+                classNamePrefix="select-project-list"
                 onChange={handleProjectSelection}
                 components={{
                     IndicatorSeparator: null,
@@ -121,7 +122,9 @@ export default function ProjectUpdateModal({
         return (
             <>
                 <div className="cn-7 p-20">
-                    <div className="fs-12 fw-4 lh-20 mb-2">Project</div>
+                    <div className="fs-12 fw-4 lh-20 mb-2" data-testid="project-heading-onchange">
+                        Project
+                    </div>
                     {renderProjectSelect()}
                     {selectedProject && appMetaInfo && selectedProject.label !== appMetaInfo.projectName && (
                         <InfoColourBar
@@ -139,6 +142,7 @@ export default function ProjectUpdateModal({
                         disabled={isSubmitting}
                         onClick={onClose}
                         tabIndex={6}
+                        data-tesid="cancel-button-on-project-change"
                     >
                         Cancel
                     </button>

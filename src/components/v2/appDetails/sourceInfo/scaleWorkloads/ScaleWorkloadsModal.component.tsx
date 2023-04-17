@@ -131,7 +131,9 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         return (
             <>
                 <div className="modal__heading flex left">
-                    <h1 className="cn-9 fw-6 fs-16 m-0">Scale workloads</h1>
+                    <h1 className="cn-9 fw-6 fs-16 m-0" data-testid="scale-workloads-heading-onclick">
+                        Scale workloads
+                    </h1>
                     <button
                         type="button"
                         className="dc__transparent p-0"
@@ -143,6 +145,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                         }}
                         onClick={() => onClose()}
                         disabled={scalingInProgress || fetchingLatestDetails}
+                        data-testid="scale-workload-close-button"
                     >
                         <Close className="icon-dim-24" />
                     </button>
@@ -193,6 +196,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                             }}
                             key={tab}
                             className="tab-list__tab"
+                            data-testid={`scale-workloads-tab-${index}`}
                         >
                             <div
                                 className={`tab-list__tab-link ${selectedDeploymentTabIndex == index ? 'active' : ''}`}
@@ -439,6 +443,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                 handleWorkloadUpdate(isActiveWorkloadsTab)
                             }
                         }}
+                        data-testid="scale-or-restore-workloads"
                     >
                         {scalingInProgress ? (
                             <Progressing size={24} />
