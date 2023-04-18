@@ -192,6 +192,14 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
         )
     }
 
+    const nameErrorMessage = (): string => {
+        if (!appGroupName) {
+            return 'Group name is required field'
+        } else {
+            return 'Max 50 char is allowed in name'
+        }
+    }
+
     const renderBodySection = (): JSX.Element => {
         if (isLoading) {
             return <Progressing pageLoader />
@@ -212,10 +220,10 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
                         disabled={selectedAppGroup && !!selectedAppGroup.value}
                     />
 
-                    {showErrorMsg && !appGroupName && (
+                    {showErrorMsg && (!appGroupName || appGroupName.length > 30) && (
                         <span className="form__error">
                             <Error className="form__icon form__icon--error" />
-                            Group name is required field
+                            {nameErrorMessage()}
                         </span>
                     )}
                 </div>
@@ -271,7 +279,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
         }
 
         try {
-            const {result} = await createEnvGroup(envId, payload, !!selectedAppGroup?.value)
+            const { result } = await createEnvGroup(envId, payload, !!selectedAppGroup?.value)
             toast.success('Successfully saved')
             closePopup(e, result.id)
         } catch (err) {

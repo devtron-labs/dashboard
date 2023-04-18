@@ -112,7 +112,7 @@ export const Option = (props): JSX.Element => {
                 className="default-tt w-200 mr-12 dc__break-word"
                 content={data.description}
             >
-                <div className="w-100">{children}</div>
+                <div className="w-100 dc__ellipsis-right">{children}</div>
             </Tippy>
         )
     }

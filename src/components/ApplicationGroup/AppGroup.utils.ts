@@ -169,7 +169,9 @@ export const appGroupAppSelectorStyle = {
         color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
         backgroundColor: getBGColor(state.isSelected, state.isFocused),
         cursor: 'pointer',
-        wordBreak: 'break-all',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
     }),
     valueContainer: (base, state) => ({
         ...base,
