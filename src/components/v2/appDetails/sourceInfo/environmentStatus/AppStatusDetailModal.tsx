@@ -118,7 +118,7 @@ function AppStatusDetailModal({
                             {appStatusText ? appStatusText : _appDetails.resourceTree?.status.toUpperCase()}
                         </div>
                     </div>
-                    <span className="cursor" onClick={close}>
+                    <span className="cursor" onClick={close} data-testid="app-status-cross">
                         <Close className="icon-dim-24" />
                     </span>
                 </div>

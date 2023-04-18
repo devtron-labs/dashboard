@@ -40,7 +40,7 @@ export default function HeaderWithCreateButton({ headerName, isSuperAdmin }) {
 
     const renderActionButtons = () => {
         return serverMode === SERVER_MODE.FULL ? (
-            <button type="button" className="flex cta h-32 lh-n" onClick={handleCreateButton}>
+            <button type="button" className="flex cta h-32 lh-n" onClick={handleCreateButton} data-testid="create-app-button-on-header">
                 Create
                 <DropDown className="icon-dim-20" />
             </button>
@@ -54,7 +54,7 @@ export default function HeaderWithCreateButton({ headerName, isSuperAdmin }) {
     const renderCreateSelectionModal = () => {
         return (
             <Modal rootClassName="create-modal-wrapper" onClick={handleCreateButton}>
-                <div className="create-modal-child cursor" onClick={openCreateDevtronAppModel}>
+                <div className="create-modal-child cursor" onClick={openCreateDevtronAppModel} data-testid="create-custom-app-button-in-dropdown">
                     <AddIcon className="icon-dim-20 fcn-9" />
                     <div className="ml-8">
                         <strong>Custom app</strong>

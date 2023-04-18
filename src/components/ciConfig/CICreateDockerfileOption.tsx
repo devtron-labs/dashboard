@@ -228,7 +228,7 @@ export default function CICreateDockerfileOption({
             <div className="flex">
                 <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
                 {configOverrideView && !allowOverride ? (
-                    <div className="flex left">
+                    <div className="flex left" data-testid="select-create-dockerfile-language-dropdown">
                         {selectedLanguage?.icon && (
                             <img
                                 src={selectedLanguage.icon}
@@ -239,21 +239,21 @@ export default function CICreateDockerfileOption({
                         <span className="fs-13 fw-6 lh-20 cn-9">{selectedLanguage?.label}</span>
                     </div>
                 ) : (
-                    <ReactSelect
-                        tabIndex={3}
-                        options={languages}
-                        value={selectedLanguage}
-                        isSearchable={false}
-                        styles={_customStyles}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option: OptionWithIcon,
-                            ValueContainer: ValueContainerWithIcon,
-                        }}
-                        onChange={handleLanguageSelection}
-                        isDisabled={configOverrideView && !allowOverride}
-                    />
+                        <ReactSelect
+                            tabIndex={3}
+                            options={languages}
+                            value={selectedLanguage}
+                            isSearchable={false}
+                            styles={_customStyles}
+                            components={{
+                                IndicatorSeparator: null,
+                                DropdownIndicator,
+                                Option: OptionWithIcon,
+                                ValueContainer: ValueContainerWithIcon,
+                            }}
+                            onChange={handleLanguageSelection}
+                            isDisabled={configOverrideView && !allowOverride}
+                        />
                 )}
                 {languageFrameworks?.get(selectedLanguage?.value)?.[0]?.value && (
                     <>
@@ -262,20 +262,21 @@ export default function CICreateDockerfileOption({
                         {configOverrideView && !allowOverride ? (
                             <span className="fs-13 fw-6 lh-20 cn-9">{selectedFramework?.label}</span>
                         ) : (
-                            <ReactSelect
-                                tabIndex={3}
-                                options={languageFrameworks?.get(selectedLanguage?.value) || []}
-                                value={selectedFramework}
-                                isSearchable={false}
-                                styles={_customStyles}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    DropdownIndicator,
-                                    Option,
-                                }}
-                                onChange={handleFrameworkSelection}
-                                isDisabled={configOverrideView && !allowOverride}
-                            />
+                                <ReactSelect
+                                    tabIndex={3}
+                                    options={languageFrameworks?.get(selectedLanguage?.value) || []}
+                                    value={selectedFramework}
+                                    classNamePrefix="build-config__select-framework"
+                                    isSearchable={false}
+                                    styles={_customStyles}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator,
+                                        Option,
+                                    }}
+                                    onChange={handleFrameworkSelection}
+                                    isDisabled={configOverrideView && !allowOverride}
+                                />
                         )}
                     </>
                 )}
@@ -327,41 +328,42 @@ export default function CICreateDockerfileOption({
                         <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name || 'Not selected'}</span>
                     </div>
                 ) : (
-                    <ReactSelect
-                        className="m-0"
-                        tabIndex={3}
-                        isSearchable={false}
-                        options={sourceConfig.material}
-                        getOptionLabel={(option) => `${option.name}`}
-                        getOptionValue={(option) => `${option.checkoutPath}`}
-                        value={configOverrideView && !allowOverride ? currentMaterial : selectedMaterial}
-                        styles={getCommonSelectStyle({
-                            container: (base) => ({
-                                ...base,
-                                width: '50%',
-                            }),
-                            control: (base, state) => ({
-                                ...base,
-                                minHeight: '36px',
-                                boxShadow: 'none',
-                                backgroundColor: 'var(--N50)',
-                                border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                cursor: 'pointer',
-                            }),
-                            menu: (base) => ({
-                                ...base,
-                                marginTop: '0',
-                                minWidth: '226px',
-                            }),
-                        })}
-                        components={{
-                            IndicatorSeparator: null,
-                            Option: repositoryOption,
-                            Control: repositoryControls,
-                        }}
-                        onChange={handleFileLocationChange}
-                        isDisabled={configOverrideView && !allowOverride}
-                    />
+                        <ReactSelect
+                            className="m-0"
+                            tabIndex={3}
+                            isSearchable={false}
+                            options={sourceConfig.material}
+                            getOptionLabel={(option) => `${option.name}`}
+                            getOptionValue={(option) => `${option.checkoutPath}`}
+                            value={configOverrideView && !allowOverride ? currentMaterial : selectedMaterial}
+                            styles={getCommonSelectStyle({
+                                container: (base) => ({
+                                    ...base,
+                                    width: '50%',
+                                }),
+                                control: (base, state) => ({
+                                    ...base,
+                                    minHeight: '36px',
+                                    boxShadow: 'none',
+                                    backgroundColor: 'var(--N50)',
+                                    border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
+                                    cursor: 'pointer',
+                                }),
+                                menu: (base) => ({
+                                    ...base,
+                                    marginTop: '0',
+                                    minWidth: '226px',
+                                }),
+                            })}
+                            components={{
+                                IndicatorSeparator: null,
+                                Option: repositoryOption,
+                                Control: repositoryControls,
+                            }}
+                            onChange={handleFileLocationChange}
+                            isDisabled={configOverrideView && !allowOverride}
+                            classNamePrefix="build-config__select-repository-containing-code"
+                        />
                 )}
                 {repository.error && <label className="form__error">{repository.error}</label>}
             </div>

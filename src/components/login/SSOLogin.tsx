@@ -71,7 +71,7 @@ const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastA
     return (
         <label className="dc__tertiary-tab__radio">
             <input type="radio" value={value} checked={checked} name="status" onClick={handleSSOClick} />
-            <span className="dc__tertiary-tab sso-icons">
+            <span className="dc__tertiary-tab sso-icons" data-testid={`sso-${value}-button`}>
                 <aside className="login__icon-alignment">
                     <SSOTabIcons SSOName={SSOName} />
                 </aside>
@@ -474,7 +474,9 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         return (
             <section className="global-configuration__component">
-                <h2 className="form__title">SSO Login Services</h2>
+                <h2 className="form__title" data-testid="sso-login-heading">
+                    SSO Login Services
+                </h2>
                 <p className="form__subtitle">
                     Configure and manage login service for your organization.
                     <span>
@@ -533,6 +535,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             className="form__input"
                             value={this.state.ssoConfig.url}
                             onChange={this.handleURLChange}
+                            data-testid="sso-url-input"
                         />
                         {this.state.isError.url && <div className="form__error">{this.state.isError.url}</div>}
                         <div className="flex left fw-4 pt-4">
@@ -558,6 +561,7 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             type="submit"
                             disabled={this.state.saveLoading}
                             className={`cta`}
+                            data-testid={`sso-save-button`}
                         >
                             {this.state.saveLoading ? <Progressing /> : this.renderButtonText()}
                         </button>

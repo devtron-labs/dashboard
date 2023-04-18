@@ -17,7 +17,7 @@ import HelpNav from './HelpNav'
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { PageHeaderType } from './header.type'
-import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg';
+import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
 
 function PageHeader({
     headerName,
@@ -105,15 +105,16 @@ function PageHeader({
                     </span>
                     <span className="fs-13 cn-9">Help</span>
                     <DropDownIcon
-                    style={{ ['--rotateBy' as any]: `${180 * Number(showHelpCard)}deg` }}
-                    className="fcn-9 icon-dim-20 rotate pointer"
-                />
+                        style={{ ['--rotateBy' as any]: `${180 * Number(showHelpCard)}deg` }}
+                        className="fcn-9 icon-dim-20 rotate pointer"
+                    />
                 </div>
                 {!window._env_.K8S_CLIENT && (
                     <div
                         className="logout-card__initial cursor fs-13 icon-dim-24 flex logout-card__initial--nav"
                         onClick={onClickLogoutButton}
                         style={{ backgroundColor: getRandomColor(email) }}
+                        data-testid="profile-button"
                     >
                         {email[0]}
                     </div>
@@ -152,7 +153,9 @@ function PageHeader({
                             <Close className="dc__page-header__close-icon icon-dim-24 cursor" />
                         </button>
                     )}
-                    <span className="fw-6">{headerName}</span>
+                    <span className="fw-6" data-testid="main-header">
+                        {headerName}
+                    </span>
                     {additionalHeaderInfo && additionalHeaderInfo()}
                     {isBreadcrumbs && breadCrumbs()}
                     {isTippyShown && (
