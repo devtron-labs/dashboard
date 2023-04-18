@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useHistory, useParams } from 'react-router'
 import { toast } from 'react-toastify'
 import { getDeploymentTemplate, updateDeploymentTemplate, saveDeploymentTemplate } from './service'
-import { getAppOtherEnvironment, getChartReferences } from '../../services/service'
+import { getAppOtherEnvironmentMin, getChartReferences } from '../../services/service'
 import { useJsonYaml, useEffectAfterMount, useAsync, not } from '../common'
 import { showError, Progressing, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import warningIcon from '../../assets/icons/ic-info-filled.svg'
@@ -47,7 +47,7 @@ export default function DeploymentConfig({
     const [chartConfig, setChartConfig] = useState(null)
     const [isAppMetricsEnabled, setAppMetricsEnabled] = useState(false)
     const [tempFormData, setTempFormData] = useState('')
-    const [obj, json, yaml, error] = useJsonYaml(tempFormData, 4, 'yaml', true)
+    const [obj, , , error] = useJsonYaml(tempFormData, 4, 'yaml', true)
     const [chartConfigLoading, setChartConfigLoading] = useState(null)
     const [showConfirmation, toggleConfirmation] = useState(false)
     const [showReadme, setShowReadme] = useState(false)
@@ -61,8 +61,8 @@ export default function DeploymentConfig({
     const [currentEditorView, setEditorView] = useState(null)
     const [basicFieldValues, setBasicFieldValues] = useState<Record<string, any>>(null)
     const [basicFieldValuesErrorObj, setBasicFieldValuesErrorObj] = useState<BasicFieldErrorObj>(null)
-    const [environmentsLoading, environmentResult, environmentError, reloadEnvironments] = useAsync(
-        () => getAppOtherEnvironment(appId),
+    const [environmentsLoading, environmentResult, , reloadEnvironments] = useAsync(
+        () => getAppOtherEnvironmentMin(appId),
         [appId],
         !!appId,
     )
@@ -223,8 +223,16 @@ export default function DeploymentConfig({
             setFetchedValues({})
             toast.success(
                 <div className="toast">
-                    <div className="toast__title" data-testid = {`${chartConfig.id ? 'update-base-deployment-template-popup' : 'saved-base-deployment-template-popup'}`}>
-                        {chartConfig.id ? 'Updated' : 'Saved'}</div>
+                    <div
+                        className="toast__title"
+                        data-testid={`${
+                            chartConfig.id
+                                ? 'update-base-deployment-template-popup'
+                                : 'saved-base-deployment-template-popup'
+                        }`}
+                    >
+                        {chartConfig.id ? 'Updated' : 'Saved'}
+                    </div>
                     <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
                 </div>,
             )
@@ -382,10 +390,20 @@ export default function DeploymentConfig({
                     <p>Changes will only be applied to environments using default configuration.</p>
                     <p>Environments using overriden configurations will not be updated.</p>
                     <ConfirmationDialog.ButtonGroup>
-                        <button data-testid = "base-deployment-template-cancel-button" type="button" className="cta cancel" onClick={closeConfirmationDialog}>
+                        <button
+                            data-testid="base-deployment-template-cancel-button"
+                            type="button"
+                            className="cta cancel"
+                            onClick={closeConfirmationDialog}
+                        >
                             Cancel
                         </button>
-                        <button data-testid = "base_deployment_template_update_button" type="button" className="cta" onClick={save}>
+                        <button
+                            data-testid="base_deployment_template_update_button"
+                            type="button"
+                            className="cta"
+                            onClick={save}
+                        >
                             {loading ? <Progressing /> : chartConfig.id ? 'Update' : 'Save'}
                         </button>
                     </ConfirmationDialog.ButtonGroup>

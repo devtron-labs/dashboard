@@ -5,7 +5,7 @@ export function PluginCard({
     title,
     subTitle,
     tags,
-    dataTestId
+    dataTestId,
 }: {
     imgSource: string
     title: string
@@ -14,7 +14,7 @@ export function PluginCard({
     dataTestId?: string
 }) {
     return (
-        <div data-testid = {dataTestId} className="flex left top cursor plugin-card p-10">
+        <div data-testid={dataTestId} className="flex left top cursor plugin-card p-10">
             <div className="pc-icon-container bcn-1 br-8 mr-16 flexbox">
                 <img src={imgSource} alt="" className="icon-dim-24" />
             </div>

@@ -225,7 +225,9 @@ function NodeDetailComponent({
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={handleChanges}
                             >
-                                <span className="mr-5 cn-9 fs-12" data-testid="hide-managed-fields">Hide Managed Fields</span>
+                                <span className="mr-5 cn-9 fs-12" data-testid="hide-managed-fields">
+                                    Hide Managed Fields
+                                </span>
                             </Checkbox>
                         </div>
                     </>

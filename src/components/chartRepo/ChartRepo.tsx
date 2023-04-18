@@ -58,7 +58,9 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
     } else {
         return (
             <section className="global-configuration__component" data-testid="chart-repository-wrapper">
-                <h2 className="form__title" data-testid="chart-repository-heading">Chart Repository</h2>
+                <h2 className="form__title" data-testid="chart-repository-heading">
+                    Chart Repository
+                </h2>
                 <p className="form__subtitle">
                     Manage your organization’s chart repositories.
                     <span>
@@ -91,7 +93,7 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                         <a
                             rel="noreferrer noopener"
                             target="_blank"
-                            className={`dc__link ${!fetching ? "cursor" : ""}`}
+                            className={`dc__link ${!fetching ? 'cursor' : ''}`}
                             onClick={refetchCharts}
                         >
                             <span>
@@ -155,26 +157,74 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
         }
     }
     return (
-        <article className={`collapsed-list dc__clear-both ${id ? 'collapsed-list--chart' : 'collapsed-list--git'} collapsed-list--${id ? 'update' : 'create dashed'}`}>
-            <List onClick={setToggleCollapse} dataTestId={name || 'add-repository-button'} className={`${!id && !collapsed ? 'no-grid-column':''}`}>
-                <List.Logo>{id ? <div className={`${url} list__logo`}><Helm className="icon-dim-24 fcb-5 dc__vertical-align-middle " /></div> : collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />}</List.Logo>
+        <article
+            className={`collapsed-list dc__clear-both ${
+                id ? 'collapsed-list--chart' : 'collapsed-list--git'
+            } collapsed-list--${id ? 'update' : 'create dashed'}`}
+        >
+            <List
+                onClick={setToggleCollapse}
+                dataTestId={name || 'add-repository-button'}
+                className={`${!id && !collapsed ? 'no-grid-column' : ''}`}
+            >
+                <List.Logo>
+                    {id ? (
+                        <div className={`${url} list__logo`}>
+                            <Helm className="icon-dim-24 fcb-5 dc__vertical-align-middle " />
+                        </div>
+                    ) : (
+                        collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
+                    )}
+                </List.Logo>
                 <div className="flex left">
-                    <List.Title style={{color: !id && !collapsed ? 'var(--N900)': ''}} title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />
-                    {id &&
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable chart repository' : 'Enable chart repository'}>
-                            <span data-testid= {`${name}-chart-repo-toggle-button`} style={{ marginLeft: 'auto' }}>
+                    <List.Title
+                        style={{ color: !id && !collapsed ? 'var(--N900)' : '' }}
+                        title={id && !collapsed ? 'Edit repository' : name || 'Add repository'}
+                        subtitle={collapsed ? url : null}
+                    />
+                    {id && (
+                        <Tippy
+                            className="default-tt"
+                            arrow={false}
+                            placement="bottom"
+                            content={enabled ? 'Disable chart repository' : 'Enable chart repository'}
+                        >
+                            <span data-testid={`${name}-chart-repo-toggle-button`} style={{ marginLeft: 'auto' }}>
                                 {loading ? (
                                     <Progressing />
                                 ) : (
-                                        <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />
-                                    )}
+                                    <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />
+                                )}
                             </span>
                         </Tippy>
-                    }
+                    )}
                 </div>
-                {id && <List.DropDown onClick={handleCollapse} dataTestid="select-existing-repository-button" className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
+                {id && (
+                    <List.DropDown
+                        onClick={handleCollapse}
+                        dataTestid="select-existing-repository-button"
+                        className="rotate"
+                        style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
+                    />
+                )}
             </List>
-            {!collapsed && <ChartForm {...{ id, name, active, url, authMode, accessToken, userName, password, reload, toggleCollapse, collapsed }} />}
+            {!collapsed && (
+                <ChartForm
+                    {...{
+                        id,
+                        name,
+                        active,
+                        url,
+                        authMode,
+                        accessToken,
+                        userName,
+                        password,
+                        reload,
+                        toggleCollapse,
+                        collapsed,
+                    }}
+                />
+            )}
         </article>
     )
 }
@@ -294,7 +344,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                         title="Chart repo saved"
                         subtitle="It may take upto 5 mins for the charts to be listed in the chart store."
                     />,
-                );
+                )
                 await reload();
             } else {
                 setValidationStatus(VALIDATION_STATUS.FAILURE)
@@ -314,7 +364,7 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
 
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
-            < ValidateForm
+            <ValidateForm
                 id={id}
                 onClickValidate={onClickValidate}
                 validationError={validationError}
@@ -324,8 +374,24 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
             />
 
             <div className="form__row form__row--two-third">
-                <CustomInput dataTestid='add-chart-repo-name' autoComplete="off" value={state.name.value} onChange={handleOnChange} name="name" error={state.name.error} label="Name*" />
-                <CustomInput dataTestid='add-chart-repo-URL' autoComplete="off" value={state.url.value} onChange={handleOnChange} name="url" error={state.url.error} label="URL*" />
+                <CustomInput
+                    dataTestid="add-chart-repo-name"
+                    autoComplete="off"
+                    value={state.name.value}
+                    onChange={handleOnChange}
+                    name="name"
+                    error={state.name.error}
+                    label="Name*"
+                />
+                <CustomInput
+                    dataTestid="add-chart-repo-URL"
+                    autoComplete="off"
+                    value={state.url.value}
+                    onChange={handleOnChange}
+                    name="url"
+                    error={state.url.error}
+                    label="URL*"
+                />
             </div>
             {/* <div className="form__label">Authentication type*</div>
             <div className="form__row form__row--auth-type pl-12 pointer">
@@ -343,14 +409,27 @@ function ChartForm({ id = null, name = "", active = false, url = "", authMode = 
                 <ProtectedInput value={customState.accessToken.value} onChange={customHandleChange} name="accessToken" error={customState.accessToken.error} label="Access token*" />
             </div>} */}
             <div className="form__row form__buttons">
-                   {
-                       id &&
-                       <button data-testid="chart-repo-delete-button" className="cta delete dc__m-auto chart_repo__delete-button" type="button" onClick={() => toggleConfirmation(true)}>
-                            {deleting ? <Progressing /> : 'Delete'}
-                        </button>
-                   }
-                <button data-testid = "chart-repo-cancel-button" className="cta cancel" type="button" onClick={e => toggleCollapse(t => !t)}>Cancel</button>
-                <button data-testid="chart-repo-save-button" className="cta" type="submit" disabled={loading}>{loading ? <Progressing /> : id ? 'Update' : 'Save'}</button>
+                {id && (
+                    <button
+                        data-testid="chart-repo-delete-button"
+                        className="cta delete dc__m-auto chart_repo__delete-button"
+                        type="button"
+                        onClick={() => toggleConfirmation(true)}
+                    >
+                        {deleting ? <Progressing /> : 'Delete'}
+                    </button>
+                )}
+                <button
+                    data-testid="chart-repo-cancel-button"
+                    className="cta cancel"
+                    type="button"
+                    onClick={(e) => toggleCollapse((t) => !t)}
+                >
+                    Cancel
+                </button>
+                <button data-testid="chart-repo-save-button" className="cta" type="submit" disabled={loading}>
+                    {loading ? <Progressing /> : id ? 'Update' : 'Save'}
+                </button>
             </div>
             {confirmation && (
                 <DeleteComponent

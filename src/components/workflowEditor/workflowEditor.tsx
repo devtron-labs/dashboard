@@ -87,7 +87,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     getWorkflows = () => {
         this.getHostURLConfig()
         this.checkGitOpsConfiguration()
-        getCreateWorkflows(this.props.match.params.appId)
+        getCreateWorkflows(this.props.match.params.appId, this.props.isJobView)
             .then((result) => {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
@@ -415,7 +415,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         }
         return (
             <>
-                <button type="button" className="cta dc__no-decor flex mb-20" data-testid="new-workflow-button" onClick={this.toggleCIMenu}>
+                <button
+                    type="button"
+                    className="cta dc__no-decor flex mb-20"
+                    data-testid="new-workflow-button"
+                    onClick={this.toggleCIMenu}
+                >
                     <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
                     New workflow
                 </button>

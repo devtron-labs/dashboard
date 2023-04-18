@@ -114,6 +114,7 @@ function ChartHeaderFilter({
                         value={appStoreName}
                         className="search__input bcn-0"
                         onChange={setStore}
+                        data-testid="chart-store-search-box"
                     />
                     {searchApplied && (
                         <button className="search__clear-button" type="button" onClick={clearFilterChange}>
@@ -123,13 +124,16 @@ function ChartHeaderFilter({
                 </form>
             </div>
             <div className="pl-12 pr-12 filter-tab">
-                <div className="fs-12 fw-6 ml-8 cn-6 pb-8 pt-8">VIEW AS</div>
+                <div className="fs-12 fw-6 ml-8 cn-6 pb-8 pt-8" data-testid="chart-store-view-type-heading">
+                    VIEW AS
+                </div>
                 <div className="cursor flex">
                     <div
                         onClick={setGrid}
                         className={`flex pt-8 pb-8 pl-10 pr-10 fs-13 br-4 w-100 ${
                             isGrid ? 'cb-5 bcb-1 scb-5' : 'dc__hover-n50'
                         }`}
+                        data-testid="chart-store-grid-view"
                     >
                         <Grid className="icon-dim-20 mr-8" />
                         Grid
@@ -139,18 +143,22 @@ function ChartHeaderFilter({
                         className={`flex pt-8 pb-8 fs-13 pr-10 pl-10 br-4 w-100 ${
                             !isGrid ? 'cb-5 bcb-1 scb-5' : 'dc__hover-n50'
                         }`}
+                        data-testid="chart-store-list-view"
                     >
                         <List className="icon-dim-20 mr-8" />
                         List
                     </div>
                 </div>
                 <hr className="mt-8 mb-8" />
-                <div className="fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8">FILTERS</div>
+                <div className="fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8" data-testid="chart-store-filter-heading">
+                    FILTERS
+                </div>
                 <Checkbox
                     rootClassName="fs-13 dc__hover-n50 pt-8 pb-8 pl-8 ml-8"
                     isChecked={includeDeprecated === 1}
                     value={'CHECKED'}
                     onChange={toggleDeprecated}
+                    dataTestId="chart-store-filter-checkbox"
                 >
                     <div> Show deprecated charts</div>
                 </Checkbox>
@@ -161,6 +169,7 @@ function ChartHeaderFilter({
                     value={selectedChartRepo}
                     onChange={handleSelection}
                     onClickViewChartButton={handleViewAllCharts}
+                    dataTestId="chart-store-repository"
                 />
             </div>
         </div>

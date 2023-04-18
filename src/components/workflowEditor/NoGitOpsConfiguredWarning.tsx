@@ -29,7 +29,7 @@ export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfig
                 </div>
                 <div className="flex right confirmation-dialog__button-group">
                     <button
-                        data-testid="continue_with-helm"
+                        data-testid="continue-with-helm"
                         type="button"
                         tabIndex={3}
                         className="cta cancel sso__warn-button"

@@ -1,64 +1,71 @@
-import React, { useEffect, useState } from 'react';
-import Select from 'react-select';
+import React, { useEffect, useState } from 'react'
+import Select from 'react-select'
 import { showError, PopupMenu, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
-import './sourceInfo.css';
-import IndexStore from '../index.store';
-import { AppEnvironment } from './environment.type';
-import { useParams, useHistory, useRouteMatch } from 'react-router';
-
-import { getAppOtherEnvironment } from '../appDetails.api';
-import { useSharedState } from '../../utils/useSharedState';
-import { AppType, DeploymentAppType } from "../appDetails.type";
-import { ReactComponent as ScaleObjects } from '../../../../assets/icons/ic-scale-objects.svg';
+import './sourceInfo.css'
+import IndexStore from '../index.store'
+import { AppEnvironment } from './environment.type'
+import { useParams, useHistory, useRouteMatch } from 'react-router'
+import { useSharedState } from '../../utils/useSharedState'
+import { AppType, DeploymentAppType } from '../appDetails.type'
+import { ReactComponent as ScaleObjects } from '../../../../assets/icons/ic-scale-objects.svg'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
-import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component';
-import Tippy from '@tippyjs/react';
-import { TriggerUrlModal } from '../../../app/list/TriggerUrl';
-import { ReactComponent as LinkIcon }  from '../../../../assets/icons/ic-link.svg'
+import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component'
+import Tippy from '@tippyjs/react'
+import { TriggerUrlModal } from '../../../app/list/TriggerUrl'
+import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-interactive.svg'
-import { deleteApplicationRelease } from '../../../external-apps/ExternalAppService';
-import { deleteInstalledChart } from '../../../charts/charts.service';
-import { toast } from 'react-toastify';
-import { ReactComponent as Dots} from '../../assets/icons/ic-menu-dot.svg'
-import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component';
-import { checkIfDevtronOperatorHelmRelease } from '../../../../config';
-import { ReactComponent as BinWithDots} from '../../../../assets/icons/ic-delete-dots.svg'
-import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging';
+import { deleteApplicationRelease } from '../../../external-apps/ExternalAppService'
+import { deleteInstalledChart } from '../../../charts/charts.service'
+import { toast } from 'react-toastify'
+import { ReactComponent as Dots } from '../../assets/icons/ic-menu-dot.svg'
+import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component'
+import { checkIfDevtronOperatorHelmRelease } from '../../../../config'
+import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delete-dots.svg'
+import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
+import { getAppOtherEnvironmentMin } from '../../../../services/service'
 
-function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: boolean; _init?: () => void}) {
-    const params = useParams<{ appId: string; envId?: string }>();
-    const { url } = useRouteMatch();
-    const history = useHistory();
-    const [showWorkloadsModal, setWorkloadsModal] = useState(false);
-    const [environments, setEnvironments] = useState<Array<AppEnvironment>>();
-    const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable());
+function EnvironmentSelectorComponent({
+    isExternalApp,
+    _init,
+    loadingResourceTree,
+}: {
+    isExternalApp: boolean
+    _init?: () => void
+    loadingResourceTree: boolean
+}) {
+    const params = useParams<{ appId: string; envId?: string }>()
+    const { url } = useRouteMatch()
+    const history = useHistory()
+    const [showWorkloadsModal, setWorkloadsModal] = useState(false)
+    const [environments, setEnvironments] = useState<Array<AppEnvironment>>()
+    const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [urlInfo, showUrlInfo] = useState<boolean>(false)
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
 
     useEffect(() => {
-        if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
-            getAppOtherEnvironment(params.appId)
+        if (appDetails.appType === AppType.DEVTRON_APP) {
+            getAppOtherEnvironmentMin(params.appId)
                 .then((response) => {
-                    setEnvironments(response.result || []);
+                    setEnvironments(response.result || [])
                 })
                 .catch((error) => {
-                    console.error('error in fetching environments');
-                    setEnvironments([]);
-                });
+                    console.error('error in fetching environments')
+                    setEnvironments([])
+                })
         }
-    }, [params.appId]);
+    }, [params.appId])
 
     useEffect(() => {
         if (!params.envId && appDetails.environmentId) {
-            handleEnvironmentChange(appDetails.environmentId);
+            handleEnvironmentChange(appDetails.environmentId)
         }
-    }, [appDetails.environmentId]);
+    }, [appDetails.environmentId])
 
     const handleEnvironmentChange = (envId: number) => {
-        history.push(`${url}/${envId}`);
-    };
+        history.push(`${url}/${envId}`)
+    }
 
     const closeUrlInfo = (): void => {
         showUrlInfo(false)
@@ -97,7 +104,6 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
     const toggleShowDeleteConfirmation = () => {
         setShowDeleteConfirmation(!showDeleteConfirmation)
     }
-
 
     async function deleteResourceAction() {
         try {
@@ -196,7 +202,9 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
                             className="default-tt"
                             arrow={false}
                             placement="top"
-                            content={`Deployed using ${isGitops ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm}`}
+                            content={`Deployed using ${
+                                isGitops ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
+                            }`}
                         >
                             {isGitops ? (
                                 <ArgoCD className="icon-dim-32 ml-16 mr-8" />
@@ -207,7 +215,7 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
                     )}
                     {appDetails?.deploymentAppDeleteRequest && (
                         <>
-                            <BinWithDots className='icon-dim-16 mr-8 ml-12'/>
+                            <BinWithDots className="icon-dim-16 mr-8 ml-12" />
                             <span className="cr-5 fw-6">{DELETE_DEPLOYMENT_PIPELINE}</span>
                             <span className="dc__loading-dots cr-5" />
                         </>
@@ -215,46 +223,52 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
                 </div>
             </div>
 
-            <div className="flex">
-                {!appDetails.deploymentAppDeleteRequest && (
-                    <button className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2" onClick={showInfoUrl}>
-                        <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
-                        Urls
-                    </button>
-                )}
-                {!showWorkloadsModal && (
-                    <button
-                        className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
-                        onClick={() => setWorkloadsModal(true)}
-                    >
-                        <ScaleObjects className="mr-4" /> Scale workloads
-                    </button>    
-                )}
+            {!loadingResourceTree && (
+                <div className="flex">
+                    {!appDetails.deploymentAppDeleteRequest && (
+                        <button className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2" onClick={showInfoUrl}>
+                            <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
+                            Urls
+                        </button>
+                    )}
+                    {!showWorkloadsModal && (
+                        <button
+                            className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
+                            onClick={() => setWorkloadsModal(true)}
+                        >
+                            <ScaleObjects className="mr-4" /> Scale workloads
+                        </button>
+                    )}
 
-                {!(
-                    deployedAppDetail &&
-                    checkIfDevtronOperatorHelmRelease(deployedAppDetail[2], deployedAppDetail[1], deployedAppDetail[0])
-                ) && (
-                    <div>
-                        <PopupMenu autoClose>
-                            <PopupMenu.Button rootClassName="flex" isKebab={true}>
-                                <Dots className="pod-info__dots ml-8 icon-dim-20 icon-color-n6" />
-                            </PopupMenu.Button>
-                            <PopupMenu.Body>
-                                <Popup />
-                            </PopupMenu.Body>
-                        </PopupMenu>
-                        {showDeleteConfirmation && (
-                            <DeleteChartDialog
-                                appName={appDetails.appName}
-                                handleDelete={deleteResourceAction}
-                                toggleConfirmation={toggleShowDeleteConfirmation}
-                                isCreateValueView={false}
-                            />
-                        )}
-                    </div>
-                )}
-            </div>
+                    {!(
+                        deployedAppDetail &&
+                        checkIfDevtronOperatorHelmRelease(
+                            deployedAppDetail[2],
+                            deployedAppDetail[1],
+                            deployedAppDetail[0],
+                        )
+                    ) && (
+                        <div>
+                            <PopupMenu autoClose>
+                                <PopupMenu.Button rootClassName="flex" isKebab={true}>
+                                    <Dots className="pod-info__dots ml-8 icon-dim-20 icon-color-n6" />
+                                </PopupMenu.Button>
+                                <PopupMenu.Body>
+                                    <Popup />
+                                </PopupMenu.Body>
+                            </PopupMenu>
+                            {showDeleteConfirmation && (
+                                <DeleteChartDialog
+                                    appName={appDetails.appName}
+                                    handleDelete={deleteResourceAction}
+                                    toggleConfirmation={toggleShowDeleteConfirmation}
+                                    isCreateValueView={false}
+                                />
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
 
             {urlInfo && (
                 <TriggerUrlModal
@@ -272,4 +286,4 @@ function EnvironmentSelectorComponent({isExternalApp, _init}: {isExternalApp: bo
     )
 }
 
-export default EnvironmentSelectorComponent;
+export default EnvironmentSelectorComponent

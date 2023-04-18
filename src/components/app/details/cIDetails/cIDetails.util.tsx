@@ -19,7 +19,7 @@ export function ScanDisabledView(props) {
                 Go to build pipeline configurations and enable ’Scan for vulnerabilities’
             </EmptyState.Subtitle>
             <EmptyState.Button>
-            <button className="flex cta h-36" data-testid="go-to-pipeline-configurations-button"onClick={props.redirectToCreate}>
+                <button className="flex cta h-36" data-testid="go-to-pipeline-configurations-button" onClick={props.redirectToCreate}>
                     Go to pipeline configurations
                     <Arrow className="button__icon" />
                 </button>

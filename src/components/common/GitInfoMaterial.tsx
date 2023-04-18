@@ -20,7 +20,7 @@ import { useLocation } from 'react-router-dom'
 import { TriggerViewContext } from '../app/details/triggerView/config'
 
 export default function GitInfoMaterial({
-    dataTestId = "",
+    dataTestId="",
     material,
     title,
     pipelineId,
@@ -63,7 +63,7 @@ export default function GitInfoMaterial({
     function renderMaterialHeader() {
         return (
             <div className={`trigger-modal__header ${fromBulkCITrigger ? 'bcn-0' : ''}`}>
-                <h1  data-testid = "build-deploy-pipeline-name-heading" className="modal__title flex left fs-16">
+                <h1  data-testid="build-deploy-pipeline-name-heading" className="modal__title flex left fs-16">
                     {showWebhookModal ? (
                         <button type="button" className="dc__transparent flex" onClick={hideWebhookModal}>
                             <Back className="mr-16" />
@@ -94,7 +94,7 @@ export default function GitInfoMaterial({
             pipelineId: pipelineId,
         }
         return (
-            <div className="material-list">
+            <div className="material-list dc__overflow-hidden" style={{ height: 'calc(100vh - 136px)' }}>
                 <div className="material-list__title material-list__title--border-bottom pt-12 pb-12 pl-20 pr-20">
                     Git Repository
                 </div>
@@ -137,7 +137,7 @@ export default function GitInfoMaterial({
                         content={'Change branch'}
                         interactive={true}
                     >
-                        <button data-testid = {dataTestId} type="button" className="dc__transparent flexbox">
+                        <button data-testid={dataTestId} type="button" className="dc__transparent flexbox">
                             <Edit className="icon-dim-16" />
                         </button>
                     </Tippy>
@@ -187,7 +187,7 @@ export default function GitInfoMaterial({
             <div className="search dc__position-rel en-2 bw-1 br-4 h-32">
                 <Search className="search__icon icon-dim-18" />
                 <input
-                    data-testid = "ci-trigger-search-by-commit-hash"
+                    data-testid="ci-trigger-search-by-commit-hash"
                     type="text"
                     placeholder="Search by commit hash"
                     value={searchText}

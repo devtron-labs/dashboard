@@ -244,7 +244,9 @@ const StartDetails = ({
     const { pathname } = useLocation()
     return (
         <div className="trigger-details__start flex column left">
-            <div className="cn-9 fs-14 fw-6" data-testid = "deployment-history-start-heading">Start</div>
+            <div className="cn-9 fs-14 fw-6" data-testid="deployment-history-start-heading">
+                Start
+            </div>
             <div className="flex left">
                 <time className="cn-7 fs-12">
                     {moment(startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
@@ -256,7 +258,7 @@ const StartDetails = ({
                 {type === HistoryComponentType.CD ? (
                     <>
                         {artifact && (
-                            <div className="dc__app-commit__hash ">
+                            <div className="dc__app-commit__hash" data-testid="docker-image-hash">
                                 <img src={docker} className="commit-hash__icon grayscale" />
                                 {artifact.split(':')[1]}
                             </div>
@@ -291,7 +293,7 @@ const StartDetails = ({
                     })
                 )}
                 {!pathname.includes('source-code') && (
-                    <Link to={`${url}/source-code`} className="anchor ml-8" data-testid = "commit-details-link">
+                    <Link to={`${url}/source-code`} className="anchor ml-8" data-testid="commit-details-link">
                         Commit details
                     </Link>
                 )}

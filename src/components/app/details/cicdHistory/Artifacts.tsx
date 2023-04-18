@@ -13,7 +13,7 @@ import noartifact from '../../../../assets/img/no-artifact@2x.png'
 import Tippy from '@tippyjs/react'
 import { EmptyView } from './History.components'
 import '../cIDetails/ciDetails.scss'
-import { ArtifactType, CIListItemType, CopyTippyWithTextType } from './types'
+import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentType } from './types'
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { ARTIFACTS_EMPTY_STATE_TEXTS } from './Constants'
 import { extractImage } from '../../service'
@@ -25,6 +25,7 @@ export default function Artifacts({
     isArtifactUploaded,
     getArtifactPromise,
     isJobView,
+    type,
 }: ArtifactType) {
     const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
     const [copied, setCopied] = useState(false)
@@ -47,7 +48,7 @@ export default function Artifacts({
         }
     }
 
-    if (status.toLowerCase() === TERMINAL_STATUS_MAP.RUNNING) {
+    if (status.toLowerCase() === TERMINAL_STATUS_MAP.RUNNING || status.toLowerCase() === TERMINAL_STATUS_MAP.STARTING) {
         return <CIProgressView />
     } else if (isJobView && !blobStorageEnabled) {
         return (
@@ -89,22 +90,22 @@ export default function Artifacts({
         return (
             <div className="flex left column p-16">
                 {!isJobView && (
-                   <CIListItem type="artifact">
-                   <div className="flex column left hover-trigger">
-                       <div className="cn-9 fs-14 flex left" data-testid = "artifact-text-visibility">
-                           <CopyTippyWithText
-                               copyText={extractImage(artifact)}
-                               copied={copied}
-                               setCopied={setCopied}
-                           />
-                       </div>
-                       <div className="cn-7 fs-12 flex left" data-testid = "artifact-image-text">
-                           <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
-                       </div>
-                   </div>
-               </CIListItem>
+                    <CIListItem type="artifact">
+                        <div className="flex column left hover-trigger">
+                            <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
+                                <CopyTippyWithText
+                                    copyText={extractImage(artifact)}
+                                    copied={copied}
+                                    setCopied={setCopied}
+                                />
+                            </div>
+                            <div className="cn-7 fs-12 flex left" data-testid="artifact-image-text">
+                                <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
+                            </div>
+                        </div>
+                    </CIListItem>
                 )}
-                {blobStorageEnabled && getArtifactPromise && (!isJobView || isArtifactUploaded) && (
+                {blobStorageEnabled && getArtifactPromise && (type === HistoryComponentType.CD || isArtifactUploaded) && (
                     <CIListItem type="report">
                         <div className="flex column left">
                             <div className="cn-9 fs-14">Reports.zip</div>
@@ -167,7 +168,7 @@ const CIProgressView = (): JSX.Element => {
 
 const CIListItem = ({ type, children }: CIListItemType) => {
     return (
-        <div className={`mb-16 ci-artifact ci-artifact--${type}`}>
+        <div className={`mb-16 ci-artifact ci-artifact--${type}`} data-testid="hover-on-report-artifact">
             <div className="bcn-1 flex br-4">
                 <img src={type === 'artifact' ? docker : folder} className="icon-dim-24" />
             </div>

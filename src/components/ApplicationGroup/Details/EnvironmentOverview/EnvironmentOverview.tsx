@@ -8,10 +8,10 @@ import { getAppList } from '../../../app/service'
 import { processDeployedTime } from '../../../common'
 import { GROUP_LIST_HEADER, OVERVIEW_HEADER } from '../../Constants'
 import { getDeploymentStatus } from '../../AppGroup.service'
-import { AppGroupDetailDefaultType, AppInfoListType, AppListDataType } from '../../AppGroup.types'
+import { AppGroupDetailDefaultType, AppGroupListType, AppInfoListType, AppListDataType } from '../../AppGroup.types'
 import './envOverview.scss'
 
-export default function EnvironmentOverview({ filteredApps }: AppGroupDetailDefaultType) {
+export default function EnvironmentOverview({ appGroupListData, filteredApps }: AppGroupDetailDefaultType) {
     const { envId } = useParams<{ envId: string }>()
     const [appListData, setAppListData] = useState<AppListDataType>()
     const [filteredAppListData, setFilteredAppListData] = useState<AppListDataType>()
@@ -20,14 +20,14 @@ export default function EnvironmentOverview({ filteredApps }: AppGroupDetailDefa
 
     async function fetchDeployments() {
         try {
-            const response = await Promise.all([getAppList({ environments: [+envId] }), getDeploymentStatus(+envId)])
-            if (response?.[0]?.result && response[1]?.result) {
+            const response = await getDeploymentStatus(+envId)
+            if (response?.result) {
                 let statusRecord = {}
-                response[1].result.forEach((item) => {
+                response.result.forEach((item) => {
                     statusRecord = { ...statusRecord, [item.appId]: item.deployStatus }
                 })
                 setLoading(false)
-                parseAppListData(response[0]?.result, statusRecord)
+                parseAppListData(appGroupListData, statusRecord)
             }
         } catch (err) {
             showError(err)
@@ -59,31 +59,23 @@ export default function EnvironmentOverview({ filteredApps }: AppGroupDetailDefa
         }
     }, [filteredApps, appListData?.appInfoList])
 
-    const parseAppListData = (data: any, statusRecord: Record<string, string>): void => {
+    const parseAppListData = (data: AppGroupListType, statusRecord: Record<string, string>): void => {
         const parsedData = {
-            environment: '',
-            namespace: '',
-            cluster: '',
+            environment: data.environmentName,
+            namespace: data.namespace,
+            cluster: data.clusterName,
             appInfoList: [],
         }
 
-        data?.appContainers?.forEach((app) => {
-            app.environments.forEach((env) => {
-                if (!(parsedData.environment || parsedData.namespace || parsedData.cluster)) {
-                    parsedData.environment = env.environmentName
-                    parsedData.namespace = env.namespace
-                    parsedData.cluster = env.clusterName
-                }
-                const appInfo = {
-                    appId: env.appId,
-                    envId: env.envId,
-                    application: env.appName,
-                    appStatus: env.appStatus,
-                    deploymentStatus: statusRecord[env.appId],
-                    lastDeployed: env.lastDeployedTime,
-                }
-                parsedData.appInfoList.push(appInfo)
-            })
+        data?.apps?.forEach((app) => {
+            const appInfo = {
+                appId: app.appId,
+                application: app.appName,
+                appStatus: app.appStatus,
+                deploymentStatus: statusRecord[app.appId],
+                lastDeployed: app.lastDeployedTime,
+            }
+            parsedData.appInfoList.push(appInfo)
         })
         parsedData.appInfoList = parsedData.appInfoList.sort((a, b) => a.application.localeCompare(b.application))
         setAppListData(parsedData)

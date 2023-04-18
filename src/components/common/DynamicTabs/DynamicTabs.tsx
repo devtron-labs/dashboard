@@ -60,7 +60,9 @@ export function DynamicTabs({ tabs, removeTabByIdentifier }: DynamicTabsProps) {
                     className={`flex left ${isSelected ? 'cn-9' : ''} ${isDeleted ? 'dynamic-tab__deleted cr-5' : ''}`}
                 >
                     {iconPath && <img className="icon-dim-16 mr-8" src={iconPath} alt={name} />}
-                    <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={`${name}`}>{name}</span>
+                    <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
+                        {name}
+                    </span>
                 </div>
             </NavLink>
         )

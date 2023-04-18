@@ -199,7 +199,7 @@ function Sidebar({
                 data-grouped={useGroupName}
                 data-selected={isSelected}
                 onClick={selectNode}
-                data-testid={`${nodeName}`}
+                data-testid={nodeName}
             >
                 {nodeName}
             </div>
@@ -337,7 +337,12 @@ function Sidebar({
                                     className={`${k8sObject.isExpanded ? 'fcn-9' : 'fcn-5'} rotate icon-dim-24 pointer`}
                                     style={{ ['--rotateBy' as any]: !k8sObject.isExpanded ? '-90deg' : '0deg' }}
                                 />
-                                <span className="fs-14 fw-6 pointer w-100 pt-6 pb-6" data-testid={`k8sObject-${k8sObject.name}`}>{k8sObject.name}</span>
+                                <span
+                                    className="fs-14 fw-6 pointer w-100 pt-6 pb-6"
+                                    data-testid={`k8sObject-${k8sObject.name}`}
+                                >
+                                    {k8sObject.name}
+                                </span>
                             </div>
                             {k8sObject.isExpanded && (
                                 <div className="pl-20">

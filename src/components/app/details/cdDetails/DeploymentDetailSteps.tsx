@@ -65,8 +65,9 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
         })
     }
 
-    return deploymentStatus.toUpperCase() === TIMELINE_STATUS.ABORTED || deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ? (
-        <div className="flexbox deployment-aborted" data-testid = "deployment-history-steps-failed-message">
+    return deploymentStatus.toUpperCase() === TIMELINE_STATUS.ABORTED ||
+        deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ? (
+        <div className="flexbox deployment-aborted" data-testid="deployment-history-steps-failed-message">
             <CDEmptyState
                 title="Deployment failed"
                 subtitle="A new deployment was initiated before this deployment completed."
@@ -85,6 +86,7 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
                 subtitle="This deployment is in progress. Click on Check status to know the live status."
                 actionButtonText="Check live status"
                 actionButtonIconRight={true}
+                dataTestId="deployment-progress"
             />
         </div>
     ) : (

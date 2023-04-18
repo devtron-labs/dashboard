@@ -353,13 +353,14 @@ export default class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     handleOnBlur(): void {
         if (this.state.configMap !== SwitchItemValues.Configuration) return
 
-        let newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
-
-        if (!newConfig.clientID) {
-            newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
-        }
-        if (!newConfig.clientSecret) {
-            newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
+        const newConfig = yamlJsParser.parse(this.state.ssoConfig.config.config)
+        if (newConfig) {
+            if (!newConfig.clientID) {
+                newConfig.clientID = DEFAULT_SECRET_PLACEHOLDER
+            }
+            if (!newConfig.clientSecret) {
+                newConfig.clientSecret = DEFAULT_SECRET_PLACEHOLDER
+            }
         }
         let value = yamlJsParser.stringify(newConfig)
 

@@ -231,7 +231,7 @@ export function Tab({ title, active, onClick }) {
     return (
         <nav className={`form__tab white-card flex left ${active ? 'active' : ''}`} onClick={(e) => onClick(title)}>
             <div className="tab__selector"></div>
-            <div data-testid={`secrets-use-env-variable-bullet-button-Environment Variable-${title}`} className="tab__title">{title}</div>
+            <div data-testid={`secret-${title.toLowerCase().split(' ').join('-')}-radio-button`} className="tab__title">{title}</div>
         </nav>
     )
 }
@@ -243,7 +243,7 @@ export function ListComponent({ icon = '', title, subtitle = '', onClick, classN
             onClick={typeof onClick === 'function' ? onClick : function () {}}
         >
             <img src={icon} className="configuration-list__logo icon-dim-24 fcb-5" />
-            <div data-testid={`add-secret-button-${title}`} className="configuration-list__info">
+            <div data-testid={`add-secret-button`} className="configuration-list__info">
                 <div className="">{title}</div>
                 {subtitle && <div className="configuration-list__subtitle">{subtitle}</div>}
             </div>
@@ -810,6 +810,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <div className="mb-16">
                     <Checkbox
                         isChecked={isSubPathChecked}
+
                         onClick={(e) => {
                             e.stopPropagation()
                         }}
@@ -818,7 +819,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}
                     >
-                        <span className="mr-5">
+                        <span data-testid="configmap-sub-path-checkbox" className="mr-5">
                             Set SubPath (same as
                             <a
                                 href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
@@ -878,7 +879,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         disabled={isChartVersion309OrBelow}
                         onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}
                     >
-                        <span className="mr-5">
+                        <span data-testid="configmap-file-permission-checkbox" className="mr-5">
                             {' '}
                             Set File Permission (same as
                             <a
@@ -924,6 +925,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             {isHashiOrAWS || isESO ? (
                 <div className="form__row">
                     <CustomInput
+                        dataTestid="enter-role-ARN"
                         value={roleARN.value}
                         autoComplete="off"
                         tabIndex={4}
@@ -945,8 +947,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                             disabled={false}
                             onChange={changeEditorMode}
                         >
-                            <RadioGroup.Radio dataTestId = "secrets-data-gui-togglebutton" value={VIEW_MODE.GUI}>{VIEW_MODE.GUI.toUpperCase()}</RadioGroup.Radio>
-                            <RadioGroup.Radio dataTestId = "secrets-data-yaml-togglebutton" value={VIEW_MODE.YAML}>{VIEW_MODE.YAML.toUpperCase()}</RadioGroup.Radio>
+                            <RadioGroup.Radio dataTestId="secrets-data-gui-togglebutton" value={VIEW_MODE.GUI}>{VIEW_MODE.GUI.toUpperCase()}</RadioGroup.Radio>
+                            <RadioGroup.Radio dataTestId="secrets-data-yaml-togglebutton" value={VIEW_MODE.YAML}>{VIEW_MODE.YAML.toUpperCase()}</RadioGroup.Radio>
                         </RadioGroup>
                     )}
                 </div>

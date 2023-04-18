@@ -3,7 +3,7 @@ import { TriggerStatus } from '../../../../config'
 import { RouteComponentProps } from 'react-router'
 import { CIMaterialType } from '../../MaterialHistory'
 import { Link } from 'react-router-dom'
-import { DEFAULT_STATUS, URLS } from '../../../../../../config'
+import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import link from '../../../../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
 import { TriggerViewContext } from '../../config'
@@ -48,35 +48,52 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
         this.props.history.push(this.getCIDetailsURL())
     }
 
-    renderStatus(title?: string) {
-        let url = this.getCIDetailsURL()
-        let status = this.props.status ? this.props.status.toLowerCase() : ''
-        let hideDetails =
-            status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
-        if (hideDetails)
+    hideDetails(status: string = '') {
+        return (
+            status === DEFAULT_STATUS.toLowerCase() ||
+            status === BUILD_STATUS.NOT_TRIGGERED ||
+            status === BUILD_STATUS.NOT_DEPLOYED ||
+            status === ''
+        )
+    }
+
+    renderStatus() {
+        const url = this.getCIDetailsURL()
+        const status = this.props.status ? this.props.status.toLowerCase() : ''
+        if (this.hideDetails(status))
             return (
-                <div data-testid="ci-trigger-status-not-triggered" className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
-                    {this.props.status}
+                <div
+                    data-testid="ci-trigger-status-not-triggered"
+                    className="dc__cd-trigger-status"
+                    style={{ color: TriggerStatus[status] }}
+                >
+                    {this.props.status ? this.props.status : BUILD_STATUS.NOT_TRIGGERED}
                 </div>
             )
         else
             return (
-                <div data-testid="ci-trigger-status" className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+                <div
+                    data-testid="ci-trigger-status"
+                    className="dc__cd-trigger-status"
+                    style={{ color: TriggerStatus[status] }}
+                >
                     {this.props.status && this.props.status.toLowerCase() === 'cancelled'
                         ? 'ABORTED'
                         : this.props.status}
-                        <span  className="mr-5 ml-5">/</span>
-                        <Link data-testid = {`ci-trigger-select-details-button-${title}`} to={url} className="workflow-node__details-link" >
-                            Details
-                        </Link>
+                    {this.props.status && <span className="mr-5 ml-5">/</span>}
+                    <Link
+                        data-testid={`ci-trigger-select-details-button-${this.props.title}`}
+                        to={url}
+                        className="workflow-node__details-link"
+                    >
+                        Details
+                    </Link>
                 </div>
             )
     }
 
     renderCardContent(context) {
-        let status = this.props.status ? this.props.status.toLowerCase() : ''
-        let hideDetails =
-            status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
+        const hideDetails = this.hideDetails(this.props.status?.toLowerCase())
 
         return (
             <div
@@ -111,10 +128,10 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                         }`}
                     />
                 </div>
-                {this.renderStatus(this.props.title)}
+                {this.renderStatus()}
                 <div className="workflow-node__btn-grp">
                     <button
-                        data-testid = "workflow-build-select-material-button"
+                        data-testid="workflow-build-select-material-button"
                         className="workflow-node__deploy-btn workflow-node__deploy-btn--ci"
                         onClick={(event) => {
                             event.stopPropagation()

@@ -740,7 +740,11 @@ export function Override({ external, overridden, onClick, loading = false, type 
                 </div>
             </div>
             {!external && (
-                <button data-testid = {`button-override-${overridden ? 'delete' : 'allow'}`} className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`} onClick={onClick}>
+                <button
+                    data-testid={`button-override-${overridden ? 'delete' : 'allow'}`}
+                    className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`}
+                    onClick={onClick}
+                >
                     {loading ? (
                         <Progressing />
                     ) : overridden ? (

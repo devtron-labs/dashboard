@@ -12,12 +12,12 @@ import {
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
 import { getInitData, buildClusterVsNamespace, getNamespaces } from './AppListService'
 import { AppListViewType } from '../config'
-import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, Moment12HourFormat } from '../../../config'
+import { URLS, AppListConstants, SERVER_MODE, DOCUMENTATION, Moment12HourFormat, ModuleNameMap } from '../../../config'
 import { ReactComponent as Clear } from '../../../assets/icons/ic-error.svg'
 import DevtronAppListContainer from '../list/DevtronAppListContainer'
 import HelmAppList from './HelmAppList'
 import * as queryString from 'query-string'
-import { AppListPropType, OrderBy, SortBy } from '../list/types'
+import { AppListPropType, EnvironmentClusterList, OrderBy, SortBy } from '../list/types'
 import { AddNewApp } from '../create/CreateApp'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import '../list/list.scss'
@@ -29,7 +29,7 @@ import moment from 'moment'
 import { getUserRole } from '../../userGroups/userGroup.service'
 import { APP_LIST_HEADERS, StatusConstants } from './Constants'
 import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
-import Index from '../details/appDetails'
+import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
@@ -47,8 +47,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [syncListData, setSyncListData] = useState<boolean>()
 
     // API master data
-    const [projectListRes, setProjectListRes] = useState({ result: [] })
-    const [environmentListRes, setEnvironmentListRes] = useState({ result: [] })
+    const [environmentClusterListRes, setEnvironmentClusterListRes] = useState<EnvironmentClusterList>()
 
     // search
     const [searchString, setSearchString] = useState(undefined)
@@ -65,7 +64,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [showPulsatingDot, setShowPulsatingDot] = useState<boolean>(false)
     const [fetchingExternalApps, setFetchingExternalApps] = useState(false)
     const [appCount, setAppCount] = useState(0)
-    const [checkingUserRole, userRoleResponse] = useAsync(getUserRole, [])
+    const [, userRoleResponse] = useAsync(getUserRole, [])
 
     // on page load
     useEffect(() => {
@@ -90,12 +89,12 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         // fetch master filters data and some master data
         getInitData(payloadParsedFromUrl, serverMode)
             .then((initData) => {
-                setProjectListRes(initData.projectsRes)
-                setEnvironmentListRes(initData.environmentListRes)
+                setEnvironmentClusterListRes(initData.environmentClusterAppListData)
                 setMasterFilters(initData.filters)
                 setDataStateType(AppListViewType.LIST)
                 if (serverMode === SERVER_MODE.EA_ONLY) {
                     applyClusterSelectionFilterOnPageLoadIfSingle(initData.filters.clusters, _currentTab)
+                    getModuleInfo(ModuleNameMap.CICD) //To check the latest status and show user reload toast
                 }
             })
             .catch((errors: ServerErrors) => {
@@ -395,6 +394,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         filterType: string,
         query: Record<string, string>,
     ): string => {
+        
         /**
          * Step 1: Return currently selected/checked items from filters list as string if
          * - There are no query params
@@ -733,6 +733,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 labelKey="label"
                                 buttonText={APP_LIST_HEADERS.AppStatus}
                                 placeholder={APP_LIST_HEADERS.SearchAppStatus}
+                                isDisabled={dataStateType === AppListViewType.LOADING}
                                 searchable
                                 multi
                                 type={AppListConstants.FilterType.APP_STATUS}
@@ -749,6 +750,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         labelKey="label"
                         buttonText="Projects"
                         placeholder="Search Project"
+                        isDisabled={dataStateType === AppListViewType.LOADING}
                         searchable
                         multi
                         type={AppListConstants.FilterType.PROJECT}
@@ -761,6 +763,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             <span className="filter-divider"></span>
                             <Filter
                                 list={masterFilters.environments}
+                                isDisabled={dataStateType === AppListViewType.LOADING}
                                 labelKey="label"
                                 buttonText="Environment"
                                 searchable
@@ -781,6 +784,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                         searchable
                         multi
                         placeholder="Search Cluster"
+                        isDisabled={dataStateType === AppListViewType.LOADING}
                         type={AppListConstants.FilterType.CLUTSER}
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
@@ -922,7 +926,11 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                             <span>
                                 {lastDataSyncTimeString}&nbsp;
                                 {!isDataSyncing && (
-                                    <button className="btn btn-link p-0 fw-6 cb-5" onClick={syncNow} data-testid="sync-now-button">
+                                    <button
+                                        className="btn btn-link p-0 fw-6 cb-5"
+                                        onClick={syncNow}
+                                        data-testid="sync-now-button"
+                                    >
                                         Sync now
                                     </button>
                                 )}
@@ -973,73 +981,75 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     return (
-        <div>
-            {dataStateType === AppListViewType.LOADING && (
-                <div className="dc__loading-wrapper">
-                    <Progressing pageLoader />
-                </div>
-            )}
-            {dataStateType === AppListViewType.ERROR && (
-                <div className="dc__loading-wrapper">
+        <div className="h-100">
+            {dataStateType === AppListViewType.ERROR ? (
+                <div className="h-100 flex">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
-            )}
-            {dataStateType === AppListViewType.LIST && (
+            ) : (
                 <>
-                    <HeaderWithCreateButton headerName="Applications" />
+                    <HeaderWithCreateButton headerName="Applications" isSuperAdmin={isSuperAdmin} />
                     {renderMasterFilters()}
                     {renderAppliedFilters()}
                     {renderAppTabs()}
                     {serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
-                    <>
-                        {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
-                            serverMode === SERVER_MODE.FULL && (
-                                <DevtronAppListContainer
-                                    payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                                    clearAllFilters={removeAllFilters}
-                                    sortApplicationList={sortApplicationList}
-                                    appListCount={appListCount}
-                                    isSuperAdmin={isSuperAdmin}
-                                    openDevtronAppCreateModel={openDevtronAppCreateModel}
-                                    setAppCount={setAppCount}
-                                    updateDataSyncing={updateDataSyncing}
-                                    isArgoInstalled={isArgoInstalled}
-                                />
-                            )}
-                        {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
-                            serverMode === SERVER_MODE.EA_ONLY && (
-                                <div style={{ height: 'calc(100vh - 250px)' }}>
-                                    <EAEmptyState
-                                        title="Create, build, deploy and debug custom apps"
-                                        msg="Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI."
-                                        stateType={EAEmptyStateType.DEVTRONAPPS}
-                                        knowMoreLink={DOCUMENTATION.HOME_PAGE}
+                    {dataStateType === AppListViewType.LOADING && (
+                        <div className="dc__height-reduce-172">
+                            <Progressing pageLoader />
+                        </div>
+                    )}
+                    {dataStateType === AppListViewType.LIST && (
+                        <>
+                            {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
+                                serverMode === SERVER_MODE.FULL && (
+                                    <DevtronAppListContainer
+                                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                                        environmentClusterList={environmentClusterListRes}
+                                        clearAllFilters={removeAllFilters}
+                                        sortApplicationList={sortApplicationList}
+                                        appListCount={appListCount}
+                                        isSuperAdmin={isSuperAdmin}
+                                        openDevtronAppCreateModel={openDevtronAppCreateModel}
+                                        setAppCount={setAppCount}
+                                        updateDataSyncing={updateDataSyncing}
+                                        isArgoInstalled={isArgoInstalled}
                                     />
-                                </div>
-                            )}
-                        {params.appType === AppListConstants.AppType.HELM_APPS && (
-                            <>
-                                <HelmAppList
-                                    serverMode={serverMode}
-                                    payloadParsedFromUrl={parsedPayloadOnUrlChange}
-                                    sortApplicationList={sortApplicationList}
-                                    clearAllFilters={removeAllFilters}
-                                    fetchingExternalApps={fetchingExternalApps}
-                                    setFetchingExternalAppsState={setFetchingExternalAppsState}
-                                    updateDataSyncing={updateDataSyncing}
-                                    setShowPulsatingDotState={setShowPulsatingDotState}
-                                    masterFilters={masterFilters}
-                                    syncListData={syncListData}
-                                    isArgoInstalled={isArgoInstalled}
-                                />
-                                {fetchingExternalApps && (
-                                    <div className="mt-16">
-                                        <Progressing size={32} />
+                                )}
+                            {params.appType === AppListConstants.AppType.DEVTRON_APPS &&
+                                serverMode === SERVER_MODE.EA_ONLY && (
+                                    <div style={{ height: 'calc(100vh - 250px)' }}>
+                                        <EAEmptyState
+                                            title="Create, build, deploy and debug custom apps"
+                                            msg="Create custom application by connecting your code repository. Build and deploy images at the click of a button. Debug your applications using the interactive UI."
+                                            stateType={EAEmptyStateType.DEVTRONAPPS}
+                                            knowMoreLink={DOCUMENTATION.HOME_PAGE}
+                                        />
                                     </div>
                                 )}
-                            </>
-                        )}
-                    </>
+                            {params.appType === AppListConstants.AppType.HELM_APPS && (
+                                <>
+                                    <HelmAppList
+                                        serverMode={serverMode}
+                                        payloadParsedFromUrl={parsedPayloadOnUrlChange}
+                                        sortApplicationList={sortApplicationList}
+                                        clearAllFilters={removeAllFilters}
+                                        fetchingExternalApps={fetchingExternalApps}
+                                        setFetchingExternalAppsState={setFetchingExternalAppsState}
+                                        updateDataSyncing={updateDataSyncing}
+                                        setShowPulsatingDotState={setShowPulsatingDotState}
+                                        masterFilters={masterFilters}
+                                        syncListData={syncListData}
+                                        isArgoInstalled={isArgoInstalled}
+                                    />
+                                    {fetchingExternalApps && (
+                                        <div className="mt-16">
+                                            <Progressing size={32} />
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </>
+                    )}
                 </>
             )}
         </div>

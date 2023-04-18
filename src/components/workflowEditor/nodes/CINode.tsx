@@ -63,7 +63,7 @@ export class CINode extends Component<CINodeProps> {
         return (
             <>
                 <Link to={this.props.to} onClick={this.props.hideWebhookTippy} className="dc__no-decor">
-                    <div data-testid = {`workflow-editor-ci-node-${this.props.title}`} className="workflow-node cursor">
+                    <div data-testid={`workflow-editor-ci-node-${this.props.title}`} className="workflow-node cursor">
                         {this.props.linkedCount > 0 && (
                             <Tippy
                                 className="default-tt"

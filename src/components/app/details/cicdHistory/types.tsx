@@ -66,6 +66,7 @@ export interface ArtifactType {
     isArtifactUploaded?: boolean
     getArtifactPromise?: () => Promise<any>
     isJobView?: boolean
+    type: HistoryComponentType
 }
 
 export interface CopyTippyWithTextType {
@@ -106,7 +107,6 @@ export interface EmptyViewType {
     subTitle: string
     link?: string
     linkText?: string
-    dataTestId?: string
 }
 
 export interface SidebarType {

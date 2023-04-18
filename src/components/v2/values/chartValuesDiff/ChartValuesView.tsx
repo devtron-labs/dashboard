@@ -575,7 +575,7 @@ function ChartValuesView({
                     payload: false,
                 })
                 toast.success(TOAST_INFO.DELETION_INITIATED)
-                init()
+                init && init()
                 history.push(
                     isCreateValueView
                         ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
@@ -1014,7 +1014,7 @@ function ChartValuesView({
                     <Edit className="icon-dim-12 mr-6" />
                     {ConfigurationType.YAML}
                 </RadioGroup.Radio>
-                <RadioGroup.Radio value="manifest" canSelect={isValidData()} tippyContent={MANIFEST_INFO.InfoText}>
+                <RadioGroup.Radio value="manifest" canSelect={isValidData()} tippyContent={MANIFEST_INFO.InfoText} dataTestId="manifest-radio-button">
                     Manifest output
                 </RadioGroup.Radio>
             </RadioGroup>

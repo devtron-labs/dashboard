@@ -11,6 +11,7 @@ import { BranchRegexModalProps } from './types'
 import { TriggerViewContext } from './config'
 import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
+import { ButtonWithLoader } from '../../../common'
 
 export default function BranchRegexModal({
     material,
@@ -23,7 +24,8 @@ export default function BranchRegexModal({
     handleRegexInputValue,
     regexValue,
     onCloseBranchRegexModal,
-    hideHeaderFooter
+    hideHeaderFooter,
+    savingRegexValue,
 }: BranchRegexModalProps) {
     const triggerViewContext = useContext(TriggerViewContext)
 
@@ -47,15 +49,15 @@ export default function BranchRegexModal({
     }
 
     const renderBranchRegexMaterialHeader = () => {
-      if (hideHeaderFooter) return null
-      return (
-          <div className="trigger-modal__header">
-              <h1 className="modal__title flex left fs-16">{title}</h1>
-              <button type="button" className="dc__transparent" onClick={_closeCIModal}>
-                  <Close />
-              </button>
-          </div>
-      )
+        if (hideHeaderFooter) return null
+        return (
+            <div className="trigger-modal__header">
+                <h1 className="modal__title flex left fs-16">{title}</h1>
+                <button type="button" className="dc__transparent" onClick={_closeCIModal}>
+                    <Close />
+                </button>
+            </div>
+        )
     }
 
     const renderMaterialRegexFooterNextButton = () => {
@@ -72,7 +74,14 @@ export default function BranchRegexModal({
 
         return (
             <div className="trigger-modal__trigger flex right">
-                <button data-testid = "branch-regex-save-next-button" className="cta flex mr-20" onClick={onClickNextButton} disabled={_isDisabled}>
+                <ButtonWithLoader
+                    data-testid="branch-regex-save-next-button"
+                    rootClassName="cta flex mr-20"
+                    onClick={onClickNextButton}
+                    disabled={_isDisabled || savingRegexValue}
+                    isLoading={savingRegexValue}
+                    loaderColor="white"
+                >
                     Save {!isChangeBranchClicked && '& Next'}
                     {!isChangeBranchClicked && (
                         <LeftIcon
@@ -80,7 +89,7 @@ export default function BranchRegexModal({
                             className={`rotate icon-dim-16 ml-8 ${_isDisabled ? 'scn-4' : 'scn-0'}`}
                         />
                     )}
-                </button>
+                </ButtonWithLoader>
             </div>
         )
     }
@@ -142,7 +151,7 @@ export default function BranchRegexModal({
                                     </span>
                                 </div>
                                 <input
-                                    data-testid ={ material.length>1?`branch-name-matching-regex-textbox${index}`:`branch-name-matching-regex-textbox`}
+                                    data-testid={`branch-name-matching-regex-textbox${index}`}
                                     tabIndex={index}
                                     placeholder={BRANCH_REGEX_MODAL_MESSAGING.MatchingBranchNameRegex}
                                     className="form__input ml-36 w-95"

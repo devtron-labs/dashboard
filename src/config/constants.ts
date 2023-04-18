@@ -5,6 +5,7 @@ export const TOKEN_COOKIE_NAME = 'argocd.token'
 export const DEVTRON_DEFAULT_RELEASE_NAME = 'devtron'
 export const DEVTRON_DEFAULT_NAMESPACE = 'devtroncd'
 export const DEVTRON_DEFAULT_CLUSTER_ID = '1'
+
 export const Routes = {
     GET: 'get',
     UPDATE: 'update',
@@ -45,13 +46,16 @@ export const Routes = {
 
     APP: 'app',
     APP_LIST: 'app/list',
+    APP_LIST_V1: 'v1',
+    APP_LIST_V2: 'v2',
     APP_LIST_MIN: 'app/autocomplete',
     APP_DETAIL: 'app/detail',
     APP_CONFIG_STATUS: 'app/stage/status',
     APP_OTHER_ENVIRONMENT: 'app/other-env',
+    APP_OTHER_ENVIRONMENT_MIN: 'app/other-env/min',
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/edit',
-    
+
     JOB_CI_DETAIL:'job/ci-pipeline/list',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
@@ -78,6 +82,7 @@ export const Routes = {
     GIT_PROVIDER: 'git/provider',
     GIT_HOST: 'git/host',
     CHART_LIST_SUBPATH: 'list',
+    CHART_LIST_SUBPATH_MIN: 'list/min',
     GIT_PROVIDER_MIN: 'git/provider/autocomplete',
     MIGRATION_TOOLS: 'config/mig-tools',
     DATABASE: 'config/databases',
@@ -174,6 +179,7 @@ export const Routes = {
     VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
     CLUSTER_LIST: 'k8s/capacity/cluster/list',
+    CLUSTER_LIST_MIN: 'k8s/capacity/cluster/list/raw',
     CLUSTER_CAPACITY: 'k8s/capacity/cluster',
     NODE_LIST: 'k8s/capacity/node/list',
     NODE_CAPACITY: 'k8s/capacity/node',
@@ -210,6 +216,8 @@ export const Routes = {
     JOB_LIST: 'job/list',
     JOB_CI_PIPELINE_LIST: 'job/ci-pipeline/list',
     USER_ROLE_GROUP: 'user/role/group',
+    APP_FILTER_LIST: 'app/app-listing/autocomplete',
+    APP_LIST_GROUP: 'app/list/group',
 }
 
 export const ViewType = {
@@ -641,6 +649,7 @@ export const ModuleNameMap = {
 
 export const BUILD_STATUS = {
     NOT_TRIGGERED: 'not triggered',
+    NOT_DEPLOYED: 'not deployed'
 }
 
 export const EVENT_STREAM_EVENTS_MAP = {
@@ -790,4 +799,10 @@ export enum MANIFEST_KEY_FIELDS {
 export enum KEY_VALUE {
     KEY = 'key',
     VALUE = 'value',
+}
+
+export enum CONFIGURATION_TYPES {
+    ENVIRONMENT = 'ENVIRONMENT',
+    NAMESPACE = 'NAMESPACE',
+    DESCRIPTION = 'DESCRIPTION'
 }

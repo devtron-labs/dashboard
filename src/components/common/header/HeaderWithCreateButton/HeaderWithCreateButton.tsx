@@ -10,7 +10,7 @@ import { AppListConstants, SERVER_MODE, URLS } from '../../../../config'
 import './HeaderWithCreateButton.scss'
 import { mainContext } from '../../navigation/NavigationRoutes'
 
-export default function HeaderWithCreateButton({ headerName }) {
+export default function HeaderWithCreateButton({ headerName, isSuperAdmin }) {
     const params = useParams<{ appType: string }>()
     const history = useHistory()
     const location = useLocation()
@@ -72,15 +72,17 @@ export default function HeaderWithCreateButton({ headerName }) {
                         </div>
                     </div>
                 </div>
-                <div className="create-modal-child cursor" onClick={openCreateJobModel}>
-                    <JobIcon className="icon-dim-20 scn-7" />
-                    <div className="ml-8">
-                        <strong>Job</strong>
-                        <div>
-                            Jobs allow manual and automated <br /> execution of developer actions.
+                {isSuperAdmin && (
+                    <div className="create-modal-child cursor" onClick={openCreateJobModel}>
+                        <JobIcon className="icon-dim-20 scn-7" />
+                        <div className="ml-8">
+                            <strong>Job</strong>
+                            <div>
+                                Jobs allow manual and automated <br /> execution of developer actions.
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
             </Modal>
         )
     }

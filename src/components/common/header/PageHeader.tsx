@@ -3,7 +3,7 @@ import Tippy from '@tippyjs/react'
 import './pageHeader.css'
 import LogoutCard from '../LogoutCard'
 import { getLoginInfo, getRandomColor, setActionWithExpiry } from '../helpers/Helpers'
-import { ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
+import { InstallationType, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
 import { mainContext } from '../navigation/NavigationRoutes'
@@ -52,7 +52,7 @@ function PageHeader({
 
     const getCurrentServerInfo = async () => {
         try {
-            const { result } = await getServerInfo()
+            const { result } = await getServerInfo(true, true)
             setCurrentServerInfo({
                 serverInfo: result,
                 fetchingServerInfo: false,
@@ -70,12 +70,6 @@ function PageHeader({
         setExpiryDate(+localStorage.getItem('clickedOkay'))
     }, [])
 
-    useEffect(() => {
-        if (!window._env_.K8S_CLIENT) {
-            getCurrentServerInfo()
-        }
-    }, [])
-
     const onClickLogoutButton = () => {
         setShowLogOutCard(!showLogOutCard)
         if (showHelpCard) {
@@ -86,17 +80,20 @@ function PageHeader({
     }
 
     const onClickHelp = (e) => {
-        setShowHelpCard(!showHelpCard)
-        if (showLogOutCard) {
-            setShowLogOutCard(false)
-        }
-        setActionWithExpiry('clickedOkay', 1)
-        hideGettingStartedCard()
-        handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.HELP)
-        ReactGA.event({
-            category: 'Main Navigation',
-            action: `Help Clicked`,
-        })
+      if (!window._env_.K8S_CLIENT && currentServerInfo.serverInfo?.installationType !== InstallationType.ENTERPRISE) {
+          getCurrentServerInfo()
+      }
+      setShowHelpCard(!showHelpCard)
+      if (showLogOutCard) {
+          setShowLogOutCard(false)
+      }
+      setActionWithExpiry('clickedOkay', 1)
+      hideGettingStartedCard()
+      handlePostHogEventUpdate(e, POSTHOG_EVENT_ONBOARDING.HELP)
+      ReactGA.event({
+          category: 'Main Navigation',
+          action: `Help Clicked`,
+      })
     }
 
     const renderLogoutHelpSection = () => {
@@ -156,7 +153,9 @@ function PageHeader({
                             <Close className="dc__page-header__close-icon icon-dim-24 cursor" />
                         </button>
                     )}
-                    <span className="fw-6" data-testid="kubertes-resource-browser-heading">{headerName}</span>
+                    <span className="fw-6" data-testid="main-header">
+                        {headerName}
+                    </span>
                     {additionalHeaderInfo && additionalHeaderInfo()}
                     {isBreadcrumbs && breadCrumbs()}
                     {isTippyShown && (

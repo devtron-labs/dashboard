@@ -15,6 +15,7 @@ function ValuesComponent({ appId, init }: ValueComponentTypes) {
     const appDetails = IndexStore.getAppDetails()
 
     useEffect(() => {
+      if (appDetails.appStoreInstalledAppVersionId) {
         getChartVersionDetailsV2(appDetails.appStoreInstalledAppVersionId)
             .then((res) => {
                 setInstalledConfig(res.result)
@@ -24,8 +25,8 @@ function ValuesComponent({ appId, init }: ValueComponentTypes) {
                     err.errors.map(({ userMessage }, idx) => toast.error(userMessage))
                 }
             })
-        // history.push(`${url}/update-chart`);
-    }, [])
+      }
+    }, [appDetails.appStoreInstalledAppVersionId])
 
     return (
         <div>

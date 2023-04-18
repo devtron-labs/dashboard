@@ -86,14 +86,14 @@ const Select: React.FC<SelectProps> & SelectComposition = function ({
     </SelectContext.Provider>
 }
 
-function Option({ dataTestIdMenuList = "" ,children, value, disabled = false, style = {}, active = false, name = "", rootClassName = "" }) {
+function Option({ dataTestIdMenuList, children, value, disabled = false, style = {}, active = false, name = "", rootClassName = "" }) {
     const { selected, searchString, valueComparator, handleClick } = useSelectContext()
     active = active || selected === value;
     if (typeof value === 'object') {
         active = active || valueComparator(value)
     }
     return name.includes(searchString) ?
-        <div data-testid =  {dataTestIdMenuList} className={`select__option ${rootClassName} ${active ? 'selected' : ''}`}
+        <div data-testid={`list-${dataTestIdMenuList}`} className={`select__option ${rootClassName} ${active ? 'selected' : ''}`}
             style={{ ...style, }}
             onClick={e => { if (!disabled) { e.persist(); handleClick(e, value) } }}>
             {children}
@@ -107,14 +107,14 @@ const OptionGroup: React.SFC<OptionGroupProps> = function ({ children, label, ro
     </div>
 }
 
-function Button({ dataTestIdDropdown = "" , children, style = {}, rootClassName = "", arrowAsset = "" }) {
+function Button({ dataTestIdDropdown, children, style = {}, rootClassName = "", arrowAsset = "" }) {
     const { popupOpen, loading } = useSelectContext()
-    return <div data-testid = {dataTestIdDropdown} className={`select-button flex ${rootClassName} ${popupOpen ? 'focused' : ''}`} style={{ ...style }}>
+    return <div data-testid={dataTestIdDropdown} className={`select-button flex ${rootClassName} ${popupOpen ? 'focused' : ''}`} style={{ ...style }}>
         {children}
         {loading ? <div><Progressing /></div> : <img src={arrowAsset || arrowTriangle} className="rotate select-button-sort-image" style={{ ['--rotateBy' as any]: popupOpen ? '180deg' : '0deg' }} />}
     </div>
 }
-
+ 
 function Search({ placeholder = "search", style = {}, inputStyle = {}, rootClassName = "" }) {
     const { searchString, search } = useSelectContext();
     return <div className={`${rootClassName} search search--select-menu`}
