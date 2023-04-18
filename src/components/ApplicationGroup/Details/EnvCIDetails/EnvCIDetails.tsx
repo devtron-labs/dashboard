@@ -35,11 +35,9 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             getCIConfigList(envId, filteredAppIds).then((result) => {
                 if (result?.pipelineList.length) {
                     const _filteredPipelines = []
-                    let nonWebhookCIExist = false
                     let selectedPipelineExist = false
                     result.pipelineList.forEach((pipeline) => {
                         _filteredPipelines.push(pipeline)
-                        nonWebhookCIExist = true
                         selectedPipelineExist = selectedPipelineExist || pipeline.id === +pipelineId
                     })
                     _filteredPipelines.sort((a, b) => sortCallback('appName', a, b))
