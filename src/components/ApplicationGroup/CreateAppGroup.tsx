@@ -140,7 +140,6 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
             <div>
                 <SearchBar
                     placeholder="Search applications"
-                    handleFilterChanges={handleFilterChanges}
                     searchText={allAppSearchText}
                     setSearchText={setAllAppSearchText}
                     searchApplied={allAppSearchApplied}
