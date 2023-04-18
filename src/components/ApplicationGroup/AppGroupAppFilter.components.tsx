@@ -107,18 +107,18 @@ export const Option = (props): JSX.Element => {
     const renderTippy = (children): JSX.Element => {
         return (
             <Tippy
-                placement="right"
+                placement="left"
                 arrow={false}
-                className="default-tt w-200 ml-12 dc__break-word"
+                className="default-tt w-200 mr-12 dc__break-word"
                 content={data.description}
             >
-                <span>{children}</span>
+                <div className="w-100">{children}</div>
             </Tippy>
         )
     }
 
     return (
-        <div className={`dc__position-rel pl-8 pr-8 ${getOptionBGClass(props.isSelected, props.isFocused)}`}>
+        <div className={`flex flex-justify pl-8 pr-8 ${getOptionBGClass(props.isSelected, props.isFocused)}`}>
             <ConditionalWrap
                 condition={selectedFilterTab === AppFilterTabs.GROUP_FILTER && data.description}
                 wrap={renderTippy}
@@ -126,9 +126,7 @@ export const Option = (props): JSX.Element => {
                 <components.Option {...props} />
             </ConditionalWrap>
 
-            <div className="dc__position-abs" style={{ right: '8px', top: '8px' }}>
-                {renderOptionIcon()}
-            </div>
+            {renderOptionIcon()}
         </div>
     )
 }
