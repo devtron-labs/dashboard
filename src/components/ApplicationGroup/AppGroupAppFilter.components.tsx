@@ -58,7 +58,7 @@ export const ValueContainer = (props): JSX.Element => {
 }
 
 export const Option = (props): JSX.Element => {
-    const { selectedFilterTab, openCreateGroup, openDeleteGroup }: AppGroupAppFilterContextType =
+    const { isSuperAdmin, selectedFilterTab, openCreateGroup, openDeleteGroup }: AppGroupAppFilterContextType =
         useAppGroupAppFilterContext()
     const { selectOption, data } = props
 
@@ -85,7 +85,7 @@ export const Option = (props): JSX.Element => {
                 )
             }
         } else {
-            if (props.isFocused) {
+            if (props.isFocused && isSuperAdmin) {
                 return (
                     <div className="flex">
                         <Tippy className="default-tt" content="Edit group">

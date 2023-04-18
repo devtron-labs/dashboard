@@ -220,6 +220,7 @@ export interface EnvHeaderType {
     setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<GroupOptionType>>>
     openCreateGroup: (e, groupId?: string) => void
     openDeleteGroup: (e, groupId: string) => void
+    isSuperAdmin: boolean
 }
 
 export interface AppGroupAdminType {
@@ -249,6 +250,7 @@ export interface AppGroupAppFilterContextType {
     setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<GroupOptionType>>>
     openCreateGroup: (e, groupId?: string) => void
     openDeleteGroup: (e, groupId: string) => void
+    isSuperAdmin: boolean
 }
 
 export interface CreateGroupAppListType {

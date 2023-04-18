@@ -274,12 +274,13 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 setSelectedGroupFilter={setSelectedGroupFilter}
                 openCreateGroup={openCreateGroup}
                 openDeleteGroup={openDeleteGroup}
+                isSuperAdmin={isSuperAdmin}
             />
             {renderRoute()}
-            {showCreateGroup && (
+            {isSuperAdmin && showCreateGroup && (
                 <CreateAppGroup appList={allAppsList} selectedAppGroup={clickedGroup} closePopup={closeCreateGroup} />
             )}
-            {showDeleteGroup && (
+            {isSuperAdmin && showDeleteGroup && (
                 <DeleteDialog
                     title={`Delete filter '${clickedGroup?.label}' ?`}
                     description="Are you sure you want to delete this filter?"
@@ -306,6 +307,7 @@ export function EnvHeader({
     setSelectedGroupFilter,
     openCreateGroup,
     openDeleteGroup,
+    isSuperAdmin,
 }: EnvHeaderType) {
     const { envId } = useParams<{ envId: string }>()
     const match = useRouteMatch()
@@ -328,8 +330,17 @@ export function EnvHeader({
             setSelectedGroupFilter,
             openCreateGroup,
             openDeleteGroup,
+            isSuperAdmin,
         }),
-        [appListOptions, isMenuOpen, selectedAppList, selectedFilterTab, groupFilterOptions, selectedGroupFilter],
+        [
+            appListOptions,
+            isMenuOpen,
+            selectedAppList,
+            selectedFilterTab,
+            groupFilterOptions,
+            selectedGroupFilter,
+            isSuperAdmin,
+        ],
     )
 
     useEffect(() => {
