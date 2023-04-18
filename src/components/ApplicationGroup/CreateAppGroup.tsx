@@ -196,7 +196,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
         if (!appGroupName) {
             return 'Group name is required field'
         } else {
-            return 'Max 50 char is allowed in name'
+            return 'Max 30 char is allowed in name'
         }
     }
 
