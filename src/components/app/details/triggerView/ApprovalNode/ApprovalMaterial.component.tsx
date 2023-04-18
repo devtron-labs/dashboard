@@ -48,7 +48,7 @@ export const ApprovedTippyContent = ({
                             <div className="ml-auto fw-6">
                                 <span
                                     className="mr-12 cb-5 cursor"
-                                    data-id={matId}
+                                    data-id={`cancel-approved-request-${matId}`}
                                     data-request-id={userApprovalMetadata?.approvalRequestId}
                                     data-request-type={ApprovalRequestType.CANCEL}
                                     onClick={handleCancelRequest}

@@ -41,7 +41,7 @@ export default function ApprovalMaterialModal({
 
     const renderModalHeader = () => {
         return (
-            <div className="trigger-modal__header dc__no-border pb-12 cn-9">
+            <div data-testid="approval-for-deployment-heading" className="trigger-modal__header dc__no-border pb-12 cn-9">
                 <h1 className="modal__title">
                     Approval for deployment to <span className="fw-6">{node?.environmentName ?? ''}</span>
                 </h1>

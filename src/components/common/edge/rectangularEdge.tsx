@@ -20,6 +20,7 @@ interface EdgeProps {
     containsApprovalNode: boolean
     showApprovalNode?: boolean
     onClickApprovalNode?: () => void
+    dataTestId?: string
 }
 
 interface LineDots {
@@ -153,6 +154,7 @@ export default class Edge extends Component<EdgeProps>{
                             transform: `translate(${arrowEquation.pointX - 13}px, ${arrowEquation.pointY - 7}px)`,
                         }}
                         onClick={this.props.onClickApprovalNode}
+                        data-testid={this.props.dataTestId}
                     >
                         <rect x="0.5" y="0.5" width="31" height="31" rx="7.5" fill="white" stroke="#D0D4D9" />
                         <path
