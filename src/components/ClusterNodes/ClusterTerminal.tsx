@@ -2,7 +2,11 @@ import React, { useState, useEffect, useRef } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { BUSYBOX_LINK, NETSHOOT_LINK, shellTypes } from '../../config/constants'
-import { ErrorMessageType, POD_LINKS, SocketConnectionType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
+import {
+    ErrorMessageType,
+    POD_LINKS,
+    SocketConnectionType,
+} from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
 import Terminal from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/Terminal'
 import {
     clusterDisconnectAndRetry,
@@ -42,7 +46,11 @@ import { OptionType } from '../userGroups/userGroups.types'
 import { getClusterTerminalParamsData } from '../cluster/cluster.util'
 import { useHistory, useLocation } from 'react-router-dom'
 import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'
-import { TERMINAL_STATUS, TERMINAL_TEXT } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
+import {
+    TERMINAL_STATUS,
+    TERMINAL_TEXT,
+} from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
+import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
 
 let clusterTimeOut = undefined
 
@@ -90,7 +98,7 @@ export default function ClusterTerminal({
     const [toggleOption, settoggleOption] = useState<boolean>(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const [sessionId, setSessionId] = useState<string>()
-    const [errorMessage, setErrorMessage] = useState<ErrorMessageType>({message: '', reason: ''})
+    const [errorMessage, setErrorMessage] = useState<ErrorMessageType>({ message: '', reason: '' })
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
     const terminalRef = useRef(null)
@@ -232,7 +240,7 @@ export default function ClusterTerminal({
             }
         }
         if (socketConnection === SocketConnectionType.CONNECTING && terminalAccessIdRef.current) {
-            setErrorMessage({message: '', reason: ''})
+            setErrorMessage({ message: '', reason: '' })
             prevNodeRef.current = selectedNodeName.value
             currNodeRef.current = ''
             getNewSession()
@@ -302,36 +310,35 @@ export default function ClusterTerminal({
     }
 
     const preFetchData = (podState = '', status = '') => {
-        
         const _terminal = terminalRef.current
         let startingText = TERMINAL_STATUS.CREATE
         if (!_terminal) return
 
         _terminal?.reset()
 
-        if(prevNodeRef.current === TERMINAL_STATUS.AUTO_SELECT_NODE){
+        if (prevNodeRef.current === TERMINAL_STATUS.AUTO_SELECT_NODE) {
             _terminal.write('Selecting a node')
-            if(currNodeRef.current){
+            if (currNodeRef.current) {
                 _terminal.write(` > ${currNodeRef.current} selected`)
                 _terminal.writeln('')
-            }else {
+            } else {
                 _terminal.write('...')
             }
         }
 
-        if(prevNodeRef.current !== TERMINAL_STATUS.AUTO_SELECT_NODE || currNodeRef.current){
-            if(isShellSwitched.current){
+        if (prevNodeRef.current !== TERMINAL_STATUS.AUTO_SELECT_NODE || currNodeRef.current) {
+            if (isShellSwitched.current) {
                 startingText = TERMINAL_STATUS.SHELL
             }
 
-            if(startingText){
-                if(startingText === TERMINAL_STATUS.CREATE){
+            if (startingText) {
+                if (startingText === TERMINAL_STATUS.CREATE) {
                     _terminal.write('Creating pod.')
-                } else if(startingText === TERMINAL_STATUS.SHELL){
+                } else if (startingText === TERMINAL_STATUS.SHELL) {
                     _terminal.write(`Switching shell to ${selectedTerminalType.value}.`)
                 }
             }
-            if(startingText !== TERMINAL_STATUS.SHELL && podState){
+            if (startingText !== TERMINAL_STATUS.SHELL && podState) {
                 if (podState === CLUSTER_STATUS.RUNNING) {
                     _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
                     _terminal.writeln('')
@@ -339,10 +346,10 @@ export default function ClusterTerminal({
                 }
             }
 
-            if(status){
+            if (status) {
                 if (status === TERMINAL_STATUS.TIMEDOUT) {
                     _terminal.write(' \u001b[38;5;196mTimed out\u001b[0m')
-                } else if (status === TERMINAL_STATUS.FAILED){
+                } else if (status === TERMINAL_STATUS.FAILED) {
                     _terminal.write(' \u001b[38;5;196mFailed\u001b[0m')
                 } else if (status === TERMINAL_STATUS.SUCCEDED) {
                     _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
@@ -631,14 +638,13 @@ export default function ClusterTerminal({
                     {TERMINAL_TEXT.CONNECTION_TIMEOUT}&nbsp;
                     <u className="cursor" onClick={selectEventsTab}>
                         {TERMINAL_TEXT.CHECK_POD_EVENTS}
-                    </u>&nbsp;
+                    </u>
+                    &nbsp;
                     {TERMINAL_TEXT.FOR_ERRORS}&nbsp;
-                    <u
-                        className="cursor"
-                        onClick={socketConnecting}
-                    >
+                    <u className="cursor" onClick={socketConnecting}>
                         {TERMINAL_TEXT.RETRY_CONNECTION}
-                    </u>&nbsp;
+                    </u>
+                    &nbsp;
                     {TERMINAL_TEXT.CASE_OF_ERROR}
                 </div>
             )
@@ -673,7 +679,7 @@ export default function ClusterTerminal({
             return renderErrorMessageStrip()
         } else if (socketConnection === SocketConnectionType.DISCONNECTED) {
             return (
-                <div className='bcr-7 cn-0 pl-20'>
+                <div className="bcr-7 cn-0 pl-20">
                     Disconnected
                     <span>.&nbsp;</span>
                     <button
@@ -685,14 +691,14 @@ export default function ClusterTerminal({
                     </button>
                 </div>
             )
-        } else if(socketConnection === SocketConnectionType.CONNECTING){
+        } else if (socketConnection === SocketConnectionType.CONNECTING) {
             return <></>
         }
     }
 
-    const showShell: boolean = connectTerminal && isPodCreated 
+    const showShell: boolean = connectTerminal && isPodCreated
 
-    const selectionListData = {
+    const selectionListData: TerminalSelectionListDataType = {
         firstRow: [
             {
                 type: clusterName ? 'titleName' : '',

@@ -3,9 +3,15 @@ import { useOnline } from '../../../../../../common'
 import { SocketConnectionType } from '../node.type'
 import { TERMINAL_TEXT } from './constants'
 import TerminalView from './Terminal.component'
+import { TerminalWrapperProps } from './terminal.type'
 import terminalStripTypeData from './terminal.utils'
 
-export default function TerminalWrapper({ selectionListData, socketConnection, setSocketConnection, className }) {
+export default function TerminalWrapper({
+    selectionListData,
+    socketConnection,
+    setSocketConnection,
+    className,
+}: TerminalWrapperProps) {
     const firstStrip = () => {
         return (
             <div className="flex left w-100">
@@ -119,5 +125,5 @@ export function RenderConnectionStrip({
         }
     }
 
-    return <div className=''>{renderStrip()}</div>
+    return <div className="">{renderStrip()}</div>
 }

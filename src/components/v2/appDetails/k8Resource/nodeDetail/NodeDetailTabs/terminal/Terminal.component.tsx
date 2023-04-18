@@ -12,6 +12,7 @@ import moment from 'moment'
 import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
 import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
+import { TerminalViewType } from './terminal.type'
 
 let socket = undefined
 let terminal = undefined
@@ -27,14 +28,14 @@ export default function TerminalView({
     renderConnectionStrip,
     registerLinkMatcher,
     terminalMessageData,
-    isTerminalCleared
-}) {
+    isTerminalCleared,
+}: TerminalViewType) {
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
     const appDetails = IndexStore.getAppDetails()
     const [popupText, setPopupText] = useState<boolean>(false)
 
-    function resizeSocket () {
+    function resizeSocket() {
         if (terminal && fitAddon && isTerminalTab) {
             const dim = fitAddon.proposeDimensions()
             if (dim && socket?.readyState === WebSocket.OPEN) {
@@ -96,7 +97,7 @@ export default function TerminalView({
         const webFontAddon = new XtermWebfont()
         terminal.loadAddon(fitAddon)
         terminal.loadAddon(webFontAddon)
-        if(typeof registerLinkMatcher === 'function'){
+        if (typeof registerLinkMatcher === 'function') {
             registerLinkMatcher(terminal)
         }
         terminal.loadWebfontAndOpen(document.getElementById('terminal-id'))
