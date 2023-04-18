@@ -1020,7 +1020,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     renderWorkflow() {
         return (
             <React.Fragment>
-                {this.state.workflows.map((workflow) => {
+                {this.state.workflows.map((workflow,index) => {
                     return (
                         <Workflow
                             key={workflow.id}
@@ -1035,6 +1035,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             location={this.props.location}
                             match={this.props.match}
                             isJobView={this.props.isJobView}
+                            index={index}
                         />
                     )
                 })}

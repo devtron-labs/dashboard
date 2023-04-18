@@ -25,7 +25,12 @@ const ValueContainer = (props) => {
                             ) : (
                                 <ShowIcon className="icon-dim-16 mr-4 mw-18" />
                             )}
-                            <span className="dc__position-abs dc__left-35 cn-9 ml-2">{selectorText}</span>
+                            <span
+                                data-testid="app-group-selector-text"
+                                className="dc__position-abs dc__left-35 cn-9 ml-2"
+                            >
+                                {selectorText}
+                            </span>
                         </>
                     ) : (
                         <>

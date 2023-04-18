@@ -240,6 +240,7 @@ export function EnvHeader({
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_TRIGGER}`}
                         className="tab-list__tab-link"
+                        data-testid="group-build-deploy"
                         onClick={handleBuildClick}
                     >
                         Build & Deploy
