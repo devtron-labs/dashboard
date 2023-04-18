@@ -205,7 +205,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
             return <Progressing pageLoader />
         }
         return (
-            <div className="p-20 bcn-0 dc__overflow-auto" style={{ height: 'calc(100vh - 128px)' }}>
+            <div className="p-20 bcn-0 dc__overflow-auto" style={{ height: 'calc(100vh - 145px)' }}>
                 <div className="form__row mb-16">
                     <span className="form__label dc__required-field">Name</span>
                     <input
