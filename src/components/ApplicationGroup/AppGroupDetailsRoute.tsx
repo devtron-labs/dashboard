@@ -85,23 +85,38 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         }
     }, [envId])
 
-    const getSavedFilterData = async (): Promise<void> => {
+    const getSavedFilterData = async (groupId?: number): Promise<void> => {
         setSelectedAppList([])
         setAppListLoading(true)
         const { result } = await getEnvGroupList(+envId)
         if (result) {
-            setGroupFilterOptions(
-                result
-                    .map((grp) => {
-                        return {
-                            value: grp.id.toString(),
-                            label: grp.name,
-                            appIds: grp.appIds,
-                            description: grp.description,
-                        }
-                    })
-                    .sort(sortOptionsByLabel),
-            )
+            const _groupFilterOption = []
+            let _selectedGroup
+            for (const group of result) {
+                const processedGroupData = {
+                    value: group.id.toString(),
+                    label: group.name,
+                    appIds: group.appIds,
+                    description: group.description,
+                }
+                _groupFilterOption.push(processedGroupData)
+                if (groupId && groupId === group.id) {
+                    _selectedGroup = processedGroupData
+                }
+            }
+            if (_selectedGroup) {
+                const selectedAppsMap: Record<string, boolean> = {}
+                const groupAppIds = _selectedGroup?.appIds || []
+                for (const appId of groupAppIds) {
+                    selectedAppsMap[appId] = true
+                }
+                setSelectedAppList(appListOptions.filter((app) => selectedAppsMap[app.value]))
+                setSelectedGroupFilter([_selectedGroup])
+            } else{
+              setSelectedAppList([])
+              setSelectedGroupFilter([])
+            }
+            setGroupFilterOptions(_groupFilterOption)
         }
         setAppListLoading(false)
     }
@@ -150,11 +165,11 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         setShowCreateGroup(true)
     }
 
-    const closeCreateGroup = (e, refreshData?: boolean) => {
+    const closeCreateGroup = (e, groupId?: number) => {
         stopPropagation(e)
         setShowCreateGroup(false)
-        if (refreshData) {
-            getSavedFilterData()
+        if (groupId) {
+            getSavedFilterData(groupId)
         }
     }
 
@@ -173,7 +188,11 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             await deleteEnvGroup(envId, clickedGroup.value)
             toast.success('Successfully deleted')
             setShowDeleteGroup(false)
-            getSavedFilterData()
+            getSavedFilterData(
+                selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
+                    ? +selectedGroupFilter[0].value
+                    : null,
+            )
         } catch (serverError) {
             showError(serverError)
         } finally {

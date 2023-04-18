@@ -262,7 +262,7 @@ export interface CreateGroupAppListType {
 export interface CreateGroupType {
     appList: CreateGroupAppListType[]
     selectedAppGroup: GroupOptionType
-    closePopup: (e, refreshData?: boolean) => void
+    closePopup: (e, groupId?: number) => void
 }
 
 export interface ApplistEnvType {

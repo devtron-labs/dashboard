@@ -278,9 +278,9 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
         }
 
         try {
-            await createEnvGroup(envId, payload, !!selectedAppGroup?.value)
+            const {result} = await createEnvGroup(envId, payload, !!selectedAppGroup?.value)
             toast.success('Successfully saved')
-            closePopup(e, true)
+            closePopup(e, result.id)
         } catch (err) {
             showError(err)
         } finally {
