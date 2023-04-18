@@ -19,7 +19,8 @@ export default function AppGroupAppFilter() {
         selectedGroupFilter,
         setSelectedGroupFilter,
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
-    const [appFilterInput, setAppFilterInput] = useState('')
+    const [appFilterAppInput, setAppFilterAppInput] = useState('')
+    const [appFilterGroupInput, setAppFilterGroupInput] = useState('')
 
     const handleOpenFilter = (): void => {
         setMenuOpen(true)
@@ -31,12 +32,20 @@ export default function AppGroupAppFilter() {
     }
 
     const clearAppFilterInput = () => {
-        setAppFilterInput('')
+        if (selectedFilterTab === AppFilterTabs.APP_FILTER) {
+            setAppFilterAppInput('')
+        } else {
+            setAppFilterGroupInput('')
+        }
     }
 
     const onAppFilterInputChange = (value, action) => {
         if (action.action === 'input-change') {
-            setAppFilterInput(value)
+            if (selectedFilterTab === AppFilterTabs.APP_FILTER) {
+                setAppFilterAppInput(value)
+            } else {
+                setAppFilterGroupInput(value)
+            }
         }
     }
 
@@ -71,7 +80,7 @@ export default function AppGroupAppFilter() {
             onMenuOpen={handleOpenFilter}
             onMenuClose={handleCloseFilter}
             blurInputOnSelect={selectedFilterTab !== AppFilterTabs.APP_FILTER}
-            inputValue={appFilterInput}
+            inputValue={selectedFilterTab === AppFilterTabs.APP_FILTER ? appFilterAppInput : appFilterGroupInput}
             onBlur={clearAppFilterInput}
             onInputChange={onAppFilterInputChange}
             components={{
@@ -82,7 +91,7 @@ export default function AppGroupAppFilter() {
                 ValueContainer: ValueContainer,
                 MenuList: MenuList,
             }}
-            placeholder="Search applications"
+            placeholder={selectedFilterTab === AppFilterTabs.APP_FILTER ? 'Search applications' : 'Search filters'}
             styles={appGroupAppSelectorStyle}
             onKeyDown={escHandler}
         />

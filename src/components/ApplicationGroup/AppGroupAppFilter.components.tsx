@@ -88,10 +88,10 @@ export const Option = (props): JSX.Element => {
             if (props.isFocused && isSuperAdmin) {
                 return (
                     <div className="flex">
-                        <Tippy className="default-tt" content="Edit group">
-                            <Edit className="icon-dim-16 mr-4 cursor" onClick={showEditPopup} />
+                        <Tippy className="default-tt" arrow={false} content="Edit group">
+                            <Edit className="icon-dim-16 mr-8 cursor" onClick={showEditPopup} />
                         </Tippy>
-                        <Tippy className="default-tt" content="Delete group">
+                        <Tippy className="default-tt" arrow={false} content="Delete group">
                             <Trash className="scn-6 icon-dim-16 cursor" onClick={showDeletePopup} />
                         </Tippy>
                     </div>
@@ -106,14 +106,19 @@ export const Option = (props): JSX.Element => {
 
     const renderTippy = (children): JSX.Element => {
         return (
-            <Tippy className="default-tt" content={data.description}>
+            <Tippy
+                placement="right"
+                arrow={false}
+                className="default-tt w-200 ml-12 dc__break-word"
+                content={data.description}
+            >
                 <span>{children}</span>
             </Tippy>
         )
     }
 
     return (
-        <div className={`flex flex-justify pl-8 pr-8 ${getOptionBGClass(props.isSelected, props.isFocused)}`}>
+        <div className={`dc__position-rel pl-8 pr-8 ${getOptionBGClass(props.isSelected, props.isFocused)}`}>
             <ConditionalWrap
                 condition={selectedFilterTab === AppFilterTabs.GROUP_FILTER && data.description}
                 wrap={renderTippy}
@@ -121,7 +126,9 @@ export const Option = (props): JSX.Element => {
                 <components.Option {...props} />
             </ConditionalWrap>
 
-            {renderOptionIcon()}
+            <div className="dc__position-abs" style={{ right: '8px', top: '8px' }}>
+                {renderOptionIcon()}
+            </div>
         </div>
     )
 }
@@ -146,25 +153,39 @@ export const MenuList = (props: any): JSX.Element => {
     return (
         <components.MenuList {...props}>
             <div className="dc__position-sticky dc__top-0 dc__no-top-radius bcn-0">
-                <div className="dc__no-top-radius flex left w-100 pt-6 pr-8 pb-6 pl-8 fs-12">
-                    <span
-                        className={`mr-16 ${
-                            selectedFilterTab === AppFilterTabs.GROUP_FILTER ? 'cb-5 fw-6' : 'cn-9 fw-4 cursor'
-                        }`}
-                        data-selected-tab={AppFilterTabs.GROUP_FILTER}
-                        onClick={onTabChange}
-                    >
-                        Saved filters
-                    </span>
-                    <span
-                        className={`mr-16 ${
-                            selectedFilterTab === AppFilterTabs.APP_FILTER ? 'cb-5 fw-6' : 'cn-9 fw-4 cursor'
-                        }`}
-                        data-selected-tab={AppFilterTabs.APP_FILTER}
-                        onClick={onTabChange}
-                    >
-                        All applications
-                    </span>
+                <div className="pt-6 pr-8 pl-8 env-header-tab">
+                    <ul role="tablist" className="tab-list">
+                        <li
+                            className="tab-list__tab pointer"
+                            data-selected-tab={AppFilterTabs.GROUP_FILTER}
+                            onClick={onTabChange}
+                        >
+                            <div
+                                className={`mb-6 fs-12 tab-hover ${
+                                    selectedFilterTab === AppFilterTabs.GROUP_FILTER ? 'fw-6 active' : 'fw-4'
+                                }`}
+                            >
+                                <span className="mr-6">Saved filters</span>
+                            </div>
+                            {selectedFilterTab === AppFilterTabs.GROUP_FILTER && (
+                                <div className="apps-tab__active-tab" />
+                            )}
+                        </li>
+                        <li
+                            className="tab-list__tab pointer"
+                            data-selected-tab={AppFilterTabs.APP_FILTER}
+                            onClick={onTabChange}
+                        >
+                            <div
+                                className={`mb-6 fs-12 tab-hover ${
+                                    selectedFilterTab === AppFilterTabs.APP_FILTER ? 'fw-6 active' : 'fw-4'
+                                }`}
+                            >
+                                <span className="mr-6">All applications </span>
+                            </div>
+                            {selectedFilterTab === AppFilterTabs.APP_FILTER && <div className="apps-tab__active-tab" />}
+                        </li>
+                    </ul>
                 </div>
                 <div className="flex flex-justify dc__window-bg w-100 pt-6 pr-8 pb-6 pl-8">
                     <span className="fs-12 fw-6 cn-9">
