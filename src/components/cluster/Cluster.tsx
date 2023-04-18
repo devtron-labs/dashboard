@@ -535,23 +535,21 @@ function Cluster({
                                                             )}
                                                         </div>
                                                     </div>
-                                                    {confirmation && (
-                                                        <DeleteComponent
-                                                            setDeleting={clusterDelete}
-                                                            deleteComponent={deleteEnvironment}
-                                                            payload={getEnvironmentPayload()}
-                                                            title={environment_name}
-                                                            toggleConfirmation={toggleConfirmation}
-                                                            component={DeleteComponentsName.Environment}
-                                                            confirmationDialogDescription={
-                                                                DC_ENVIRONMENT_CONFIRMATION_MESSAGE
-                                                            }
-                                                            reload={reload}
-                                                        />
-                                                    )}
                                                 </div>
                                             ) : null,
                                     )}
+                                {confirmation && (
+                                    <DeleteComponent
+                                        setDeleting={clusterDelete}
+                                        deleteComponent={deleteEnvironment}
+                                        payload={getEnvironmentPayload()}
+                                        title={environment.environment_name}
+                                        toggleConfirmation={toggleConfirmation}
+                                        component={DeleteComponentsName.Environment}
+                                        confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
+                                        reload={reload}
+                                    />
+                                )}
                             </div>
                         ) : (
                             clusterId && renderNoEnvironmentTab()

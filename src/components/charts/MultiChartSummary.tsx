@@ -110,7 +110,7 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
                                 getChartVersionsAndValues ? () => getChartVersionsAndValues(chart.id, index) : null
                             }
                             hideDeployedValues={hideDeployedValues}
-                            datatestid={`${index}`}
+                            index={index}
                         />
                     ))}
                 </div>
@@ -129,7 +129,7 @@ interface SelectedChartWidget {
     getChartVersionsAndValues?: (...args) => Promise<void>
     selected: boolean
     hideDeployedValues?: boolean
-    datatestid?:string
+    index?:number
 }
 
 const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
@@ -142,7 +142,7 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
     getChartVersionsAndValues,
     selected,
     hideDeployedValues,
-    datatestid,
+    index,
 }) => {
     const {
         chartMetaData: { chartName, chartRepoName, icon },
@@ -237,7 +237,7 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
                     <Warning className="chart-warn" />
                 </div>
                 <div className="flex left column ml-18">
-                    <b className="chart-name" data-testid={`selected-chart-${datatestid}`}>
+                    <b className="chart-name" data-testid={`selected-chart-${index}`}>
                         {chartRepoName}/{chartName}
                     </b>
                     {chart.isEnabled && (

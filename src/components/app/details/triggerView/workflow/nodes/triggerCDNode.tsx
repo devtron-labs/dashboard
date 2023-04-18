@@ -54,11 +54,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                     {!this.props.fromAppGrouping && (
                         <>
                             {statusText && <span className="mr-5 ml-5">/</span>}
-                            <Link
-                                data-testid={`cd-trigger-details-button-${title}`}
-                                to={url}
-                                className="workflow-node__details-link"
-                            >
+                            <Link data-testid={`cd-trigger-details-${this.props.environmentName}-link`} to={url} className="workflow-node__details-link">
                                 Details
                             </Link>
                         </>

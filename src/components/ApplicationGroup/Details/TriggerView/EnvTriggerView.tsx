@@ -647,8 +647,6 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         deploymentWithConfig?: string,
         wfrId?: number,
     ): void => {
-        ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
-        setCDLoading(true)
         let node
         for (const _wf of filteredWorkflows) {
             node = _wf.nodes.find((nd) => +nd.id == selectedCDNode.id && nd.type == selectedCDNode.type)
@@ -658,6 +656,8 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         const pipelineId = node.id
         const ciArtifact = node[materialType].find((artifact) => artifact.isSelected)
         if (_appId && pipelineId && ciArtifact.id) {
+          ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
+            setCILoading(true)
             triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
@@ -667,7 +667,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                                 : 'Deployment Initiated'
                         toast.success(msg)
                         setShowCDModal(false)
-                        setCDLoading(false)
+                        setCILoading(false)
                         setErrorCode(response.code)
                         preventBodyScroll(false)
                         getWorkflowStatusData(workflows)
@@ -675,7 +675,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                 })
                 .catch((errors: ServerErrors) => {
                     showError(errors)
-                    setCDLoading(false)
+                    setCILoading(false)
                     setErrorCode(errors.code)
                 })
         } else {
@@ -1575,7 +1575,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                                 material={material}
                                 materialType={materialType}
                                 envName={node?.environmentName}
-                                isLoading={isCDLoading}
+                                isLoading={isCILoading}
                                 changeTab={changeTab}
                                 triggerDeploy={onClickTriggerCDNode}
                                 onClickRollbackMaterial={onClickRollbackMaterial}

@@ -97,7 +97,7 @@ export default function CIAdvancedConfig({
                         <div className="flexbox justify-space" key={`build-${idx}`}>
                             <div className="mt-8 w-100">
                                 <input
-                                    data-testid="build-pack-build-env-key"
+                                    data-testid={`build-pack-build-env-key${idx}`}
                                     name="arg-key"
                                     className={`w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1 ${
                                         updateNotAllowed ? 'cursor-not-allowed' : ''
@@ -112,7 +112,7 @@ export default function CIAdvancedConfig({
                                     disabled={updateNotAllowed}
                                 />
                                 <textarea
-                                    data-testid="build-pack-build-env-value"
+                                    data-testid={`build-pack-build-env-value${idx}`}
                                     name="arg-value"
                                     className={`build__value w-100 dc__bottom-radius-4 dc__no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1 ${
                                         updateNotAllowed ? 'cursor-not-allowed' : ''

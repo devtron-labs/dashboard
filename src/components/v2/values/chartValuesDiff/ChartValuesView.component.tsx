@@ -194,8 +194,8 @@ export const ChartVersionSelector = ({
                 dataTestId='select-chart-version'
             >
                 <Select.Button dataTestIdDropdown="chart-version-of-preset">{selectedVersionUpdatePage?.version || chartVersionObj?.version}</Select.Button>
-                {chartVersionsData.map((_chartVersion,index) => (
-                    <Select.Option key={_chartVersion.id} value={_chartVersion.id} dataTestIdMenuList= {`chart-select-${index}`}>
+                {chartVersionsData.map((_chartVersion, index) => (
+                    <Select.Option key={_chartVersion.id} value={_chartVersion.id} dataTestIdMenuList={`chart-select-${index}`}>
                         {_chartVersion.version}
                     </Select.Option>
                 ))}
