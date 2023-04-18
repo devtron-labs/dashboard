@@ -24,6 +24,7 @@ function GuideCommonHeader({
                         type="button"
                         className="w-100 flex right dc__transparent p-20"
                         onClick={onClickCloseButton}
+                        data-testid="close-button"
                     >
                         <Close className="icon-dim-24" />
                     </button>
