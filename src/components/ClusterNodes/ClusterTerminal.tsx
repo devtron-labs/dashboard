@@ -245,7 +245,7 @@ export default function ClusterTerminal({
         getClusterData(
             `user/terminal/get?namespace=${selectedNamespace.value}&shellName=${selectedTerminalType.value}&terminalAccessId=${terminalAccessIdRef.current}`,
             terminalAccessIdRef.current,
-            7,
+            window?._env_?.CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT || 7,
         )
     }
 
@@ -277,7 +277,7 @@ export default function ClusterTerminal({
                     preFetchData(status)
                     clusterTimeOut = setTimeout(() => {
                         getClusterData(url, terminalId, count - 1)
-                    }, 5000)
+                    }, window?._env_?.CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL || 7000)
                 } else if (sessionId) {
                     const _nodeName = response.result?.nodeName
                     if (selectedNodeName.value === TERMINAL_STATUS.AUTO_SELECT_NODE) {
