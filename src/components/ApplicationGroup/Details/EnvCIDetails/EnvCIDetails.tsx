@@ -60,7 +60,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             setTriggerHistory(new Map())
             setHasMoreLoading(false)
         }
-    }, [envId, filteredAppIds])
+    }, [filteredAppIds])
 
     const [loading, triggerHistoryResult, , , , dependencyState] = useAsync(
         () => getTriggerHistory(pipelineId, pagination),

@@ -17,13 +17,19 @@ export default function EnvironmentOverview({ appGroupListData, filteredAppIds }
     const timerId = useRef(null)
 
     useEffect(() => {
+        return () => {
+            if (timerId.current) clearInterval(timerId.current)
+        }
+    }, [])
+
+    useEffect(() => {
         setLoading(true)
         fetchDeployments()
         timerId.current = setInterval(fetchDeployments, 30000)
         return () => {
             if (timerId.current) clearInterval(timerId.current)
         }
-    }, [envId, filteredAppIds])
+    }, [appGroupListData])
 
     async function fetchDeployments() {
         try {

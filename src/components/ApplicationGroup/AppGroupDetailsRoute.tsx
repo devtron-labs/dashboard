@@ -83,6 +83,12 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             getSavedFilterData()
             getAppListData()
         }
+        return () => {
+            setSelectedAppList([])
+            setSelectedGroupFilter([])
+            setAppListOptions([])
+            setAppGroupListData(null)
+        }
     }, [envId])
 
     const getSavedFilterData = async (groupId?: number): Promise<void> => {
@@ -112,9 +118,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 }
                 setSelectedAppList(appListOptions.filter((app) => selectedAppsMap[app.value]))
                 setSelectedGroupFilter([_selectedGroup])
-            } else{
-              setSelectedAppList([])
-              setSelectedGroupFilter([])
+            } else {
+                setSelectedAppList([])
+                setSelectedGroupFilter([])
             }
             setGroupFilterOptions(_groupFilterOption)
         }
@@ -238,9 +244,8 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
         } else if (showEmpty) {
             return <div className="env-empty-state flex w-100">{renderEmpty()}</div>
         } else {
-            const _filteredAppsIds = (selectedAppList.length > 0 ? selectedAppList : appListOptions)
-                .map((app) => +app.value)
-                .join(',')
+            const _filteredAppsIds =
+                selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
             return (
                 <ErrorBoundary>
                     <Suspense fallback={<Progressing pageLoader />}>

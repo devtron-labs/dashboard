@@ -117,7 +117,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
         return () => {
             inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
         }
-    }, [envId, filteredAppIds])
+    }, [filteredAppIds])
 
     const getWorkflowsData = async (): Promise<void> => {
         try {
