@@ -313,3 +313,11 @@ export interface GroupOptionType extends OptionType {
     appIds: number[]
     description: string
 }
+
+export interface SearchBarType {
+    placeholder: string
+    searchText: string
+    setSearchText: React.Dispatch<React.SetStateAction<string>>
+    searchApplied: boolean
+    setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
+}

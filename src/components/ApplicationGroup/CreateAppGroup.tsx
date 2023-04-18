@@ -80,11 +80,6 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
         }
     }
 
-    const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = appList.filter((app) => app.appName.indexOf(_searchText) >= 0)
-        //setFilteredAppList(_filteredData)
-    }
-
     const removeAppSelection = (e): void => {
         stopPropagation(e)
         const _selectedAppsMap = { ...selectedAppsMap }
@@ -110,7 +105,6 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
             <div>
                 <SearchBar
                     placeholder="Search applications"
-                    handleFilterChanges={handleFilterChanges}
                     searchText={selectedAppSearchText}
                     setSearchText={setSelectedAppSearchText}
                     searchApplied={selectedAppSearchApplied}

@@ -1,25 +1,17 @@
 import React from 'react'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
+import { SearchBarType } from './AppGroup.types'
 
 export default function SearchBar({
     placeholder,
-    handleFilterChanges,
     searchText,
     setSearchText,
     searchApplied,
     setSearchApplied,
-}: {
-    placeholder: string
-    handleFilterChanges: (searchText: string) => void
-    searchText: string
-    setSearchText: React.Dispatch<React.SetStateAction<string>>
-    searchApplied: boolean
-    setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
-}) {
+}: SearchBarType) {
     const clearSearch = (): void => {
         if (searchApplied) {
-            handleFilterChanges('')
             setSearchApplied(false)
         }
         setSearchText('')
@@ -27,10 +19,7 @@ export default function SearchBar({
 
     const handleFilterKeyPress = (event): void => {
         const theKeyCode = event.key
-        if (theKeyCode === 'Enter') {
-            handleFilterChanges(event.target.value)
-            setSearchApplied(true)
-        } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
+        if (theKeyCode === 'Backspace' && searchText.length === 1) {
             clearSearch()
         }
     }

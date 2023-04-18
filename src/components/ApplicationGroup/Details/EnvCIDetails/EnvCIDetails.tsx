@@ -43,14 +43,8 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         selectedPipelineExist = selectedPipelineExist || pipeline.id === +pipelineId
                     })
                     _filteredPipelines.sort((a, b) => sortCallback('appName', a, b))
-                    if (nonWebhookCIExist) {
-                        if (!selectedPipelineExist) {
-                            replace(generatePath(path, { envId, pipelineId: _filteredPipelines[0].id }))
-                        }
-                    } else {
-                        replace(generatePath(path, { envId }))
-                        setTriggerHistory(new Map())
-                        setHasMoreLoading(false)
+                    if (!selectedPipelineExist) {
+                        replace(generatePath(path, { envId, pipelineId: _filteredPipelines[0].id }))
                     }
                     setPipelineList(_filteredPipelines)
                 }
