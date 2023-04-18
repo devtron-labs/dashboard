@@ -14,7 +14,7 @@ import { get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-li
 import { SERVER_MODE } from '../../../../../../../config'
 import { mainContext } from '../../../../../../common/navigation/NavigationRoutes'
 import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
-import './terminal.css'
+import './terminal.scss'
 import { TERMINAL_RESOURCE_GA, termialGAEvents, TERMINAL_STATUS, TERMINAL_TEXT } from './constants'
 
 let socket = undefined

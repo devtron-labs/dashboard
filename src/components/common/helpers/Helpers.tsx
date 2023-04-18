@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject, useLayoutEffect } from 'react'
 import { TOKEN_COOKIE_NAME } from '../../../config'
-import { showError, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib';
+import { showError, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
 import { useLocation } from 'react-router'
@@ -1037,16 +1037,16 @@ export const convertToOptionsList = (
     })
 }
 
-export const importComponentFromFELibrary =(componentName: string, defaultComponent?)=>{
-  try {
-    const module = require('@devtron-labs/devtron-fe-lib')
-    return module[componentName]?.default || defaultComponent || null;
-  } catch (e) {
-      if (e['code'] !== 'MODULE_NOT_FOUND') {
-          throw e;
-      }
-      return defaultComponent || null
-  }
+export const importComponentFromFELibrary = (componentName: string, defaultComponent?) => {
+    try {
+        const module = require('@devtron-labs/devtron-fe-lib')
+        return module[componentName]?.default || defaultComponent || null
+    } catch (e) {
+        if (e['code'] !== 'MODULE_NOT_FOUND') {
+            throw e
+        }
+        return defaultComponent || null
+    }
 }
 
 export const getElapsedTime = (createdAt: Date) => {
@@ -1104,18 +1104,18 @@ export const processK8SObjects = (
             _k8SObjectMap.set(groupParent, {
                 name: groupParent,
                 isExpanded:
-                element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
-                element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
-                element.gvk.Kind.toLowerCase() === selectedResourceKind,
+                    element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
+                    element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
+                    element.gvk.Kind.toLowerCase() === selectedResourceKind,
                 child: [{ namespaced: element.namespaced, gvk: element.gvk }],
             })
         } else {
             currentData.child = [...currentData.child, { namespaced: element.namespaced, gvk: element.gvk }]
             if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
                 currentData.isExpanded =
-                element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
-                element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
-                element.gvk.Kind.toLowerCase() === selectedResourceKind
+                    element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
+                    element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
+                    element.gvk.Kind.toLowerCase() === selectedResourceKind
             }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind) {
@@ -1131,13 +1131,20 @@ export const processK8SObjects = (
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
 
-export function createClusterEnvGroup<T>(list: T[], propKey: string, isOptionType?: boolean, optionName?: string): { label: string; options: T[] }[] {
+export function createClusterEnvGroup<T>(
+    list: T[],
+    propKey: string,
+    isOptionType?: boolean,
+    optionName?: string,
+): { label: string; options: T[] }[] {
     const objList: Record<string, T[]> = list.reduce((acc, obj) => {
         const key = obj[propKey]
         if (!acc[key]) {
             acc[key] = []
         }
-        acc[key].push(isOptionType ? {label: obj[optionName], value: obj[optionName], description: obj['description']} : obj)
+        acc[key].push(
+            isOptionType ? { label: obj[optionName], value: obj[optionName], description: obj['description'] } : obj,
+        )
         return acc
     }, {})
 
@@ -1221,7 +1228,7 @@ export const handleOnBlur = (e): void => {
     }
 }
 
-export const parsePassword = (password:string): string => {
+export const parsePassword = (password: string): string => {
     return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password
 }
 
@@ -1230,33 +1237,37 @@ export const reloadLocation = () => {
 }
 
 export const reloadToastBody = () => {
-    return <UpdateToast
-        onClick={reloadLocation}
-        text="You are viewing an outdated version of Devtron UI."
-        buttonText="Reload"
-    />
+    return (
+        <UpdateToast
+            onClick={reloadLocation}
+            text="You are viewing an outdated version of Devtron UI."
+            buttonText="Reload"
+        />
+    )
 }
 
 export function useHeightObserver(callback): [RefObject<HTMLDivElement>] {
     const ref = useRef(null)
     const callbackRef = useRef(callback)
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         callbackRef.current = callback
     }, [callback])
 
-    useEffect(() => {
-        const handleHeightChange = () => {
-            callbackRef.current && callbackRef.current(ref.current.clientHeight)
-        }
+    const handleHeightChange = useCallback(() => {
+        callbackRef.current && callbackRef.current(ref.current.clientHeight)
+    }, [callbackRef])
 
+    useLayoutEffect(() => {
+        if (!ref.current) {
+            return
+        }
         const observer = new ResizeObserver(handleHeightChange)
         observer.observe(ref.current)
-
         return () => {
             observer.disconnect()
         }
-    }, [])
+    }, [handleHeightChange, ref])
 
     return [ref]
 }

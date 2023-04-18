@@ -1,16 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { elementDidMount, useHeightObserver } from '../../../../../../common'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
-import { POD_LINKS, SocketConnectionType } from '../node.type'
+import { SocketConnectionType } from '../node.type'
 import IndexStore from '../../../../index.store'
 import { AppType } from '../../../../appDetails.type'
 import moment from 'moment'
 import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
 import { TERMINAL_STATUS } from './constants'
+import './terminal.scss'
 
 let socket = undefined
 let terminal = undefined
@@ -19,7 +20,7 @@ let clusterTimeOut = undefined
 
 export default function TerminalView({
     terminalRef,
-    initializeTerminal,
+    sessionId,
     socketConnection,
     setSocketConnection,
     isTerminalTab = true,
@@ -33,7 +34,7 @@ export default function TerminalView({
     const appDetails = IndexStore.getAppDetails()
     const [popupText, setPopupText] = useState<boolean>(false)
 
-    const resizeSocket = () => {
+    function resizeSocket () {
         if (terminal && fitAddon && isTerminalTab) {
             const dim = fitAddon.proposeDimensions()
             if (dim && socket?.readyState === WebSocket.OPEN) {
@@ -51,13 +52,13 @@ export default function TerminalView({
                 createNewTerminal()
             })
         }
-        if (initializeTerminal?.sessionId && terminal) {
+        if (sessionId && terminal) {
             setIsReconnection(true)
-            postInitialize(initializeTerminal.sessionId)
+            postInitialize(sessionId)
         } else {
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
-    }, [initializeTerminal])
+    }, [sessionId])
 
     useEffect(() => {
         if (!popupText) return
@@ -95,8 +96,9 @@ export default function TerminalView({
         const webFontAddon = new XtermWebfont()
         terminal.loadAddon(fitAddon)
         terminal.loadAddon(webFontAddon)
-        const linkMatcherRegex = new RegExp(`${POD_LINKS.POD_MANIFEST}|${POD_LINKS.POD_EVENTS}`)
-        terminal.registerLinkMatcher(linkMatcherRegex, registerLinkMatcher)
+        if(typeof registerLinkMatcher === 'function'){
+            registerLinkMatcher(terminal)
+        }
         terminal.loadWebfontAndOpen(document.getElementById('terminal-id'))
         fitAddon.fit()
         terminal.reset()

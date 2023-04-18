@@ -28,9 +28,10 @@ export default function TerminalWrapper({ selectionListData, socketConnection, s
         return (
             <TerminalView
                 terminalRef={terminalData.terminalRef}
-                initializeTerminal={terminalData.initializeTerminal}
+                sessionId={terminalData.sessionId}
                 socketConnection={terminalData.socketConnection}
                 setSocketConnection={terminalData.setSocketConnection}
+                isTerminalTab={terminalData.isTerminalTab}
                 renderConnectionStrip={() => (
                     <RenderConnectionStrip
                         renderStripMessage={terminalData.stripMessage}
