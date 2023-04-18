@@ -1141,7 +1141,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     getEmptyStateSubtitle = () => {
         if (this.props.triggerType === TriggerTypeMap.automatic) {
-            return 'Deployment to cd-devtroncd is set to Automatic. Deployment of an image is initiated as soon as it receives the required number of approvals.'
+            return `Deployment to ${this.props.envName} is set to Automatic. Deployment of an image is initiated as soon as it receives the required number of approvals.`
         } else if (this.state.isRollbackTrigger) {
             return 'Approved images which have been previously deployed will be available here for rollback.'
         } else {
