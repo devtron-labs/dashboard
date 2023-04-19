@@ -41,7 +41,6 @@ import {
 import Tippy from '@tippyjs/react'
 import { resourceKindOptionLabel } from './K8sPermission.component'
 import { ParseData } from '../UserGroup'
-import { ACCESS_TYPE_CLUSTER } from '../../../config'
 
 export default function K8sListItemCard({
     k8sPermission,
@@ -311,7 +310,7 @@ export default function K8sListItemCard({
         return isAllSelected
     }
    
-    const k8sOptions = ParseData(customRoles.customRoles, EntityTypes.CLUSTER, ACCESS_TYPE_CLUSTER).map((role) => {
+    const k8sOptions = ParseData(customRoles.customRoles, EntityTypes.CLUSTER).map((role) => {
         return { label: role.roleDisplayName, value: role.roleName, infoText: role.roleDescription }
     }) 
     return (

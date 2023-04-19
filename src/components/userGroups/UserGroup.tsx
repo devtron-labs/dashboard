@@ -58,7 +58,7 @@ import {
     CustomRoleAndMeta,
     UserGroup,
 } from './userGroups.types'
-import { ACCESS_TYPE_CLUSTER, ACCESS_TYPE_MAP, DOCUMENTATION, HELM_APP_UNASSIGNED_PROJECT, Routes, SERVER_MODE } from '../../config'
+import { ACCESS_TYPE_MAP, DOCUMENTATION, HELM_APP_UNASSIGNED_PROJECT, Routes, SERVER_MODE } from '../../config'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Lock } from '../../assets/icons/ic-locked.svg'
@@ -279,8 +279,7 @@ export default function UserGroupRoute() {
                             ),
                             possibleRolesMetaForCluster: getMetaPossibleRoles(
                                 customRolesList.status === 'fulfilled' ? customRolesList?.value?.result : [],
-                                EntityTypes.CLUSTER,
-                                ACCESS_TYPE_CLUSTER,
+                                EntityTypes.CLUSTER
                             ),
                         },
                     }}
@@ -1581,7 +1580,7 @@ function SearchEmpty({ searchString, setSearchString }) {
     )
 }
 
-export function ParseData(dataList: any[], entity: string, accessType: string) {
+export function ParseData(dataList: any[], entity: string, accessType?: string) {
     switch (entity) {
         case EntityTypes.DIRECT:
             if (accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
@@ -1596,10 +1595,10 @@ export function ParseData(dataList: any[], entity: string, accessType: string) {
     }
 }
 
-function getMetaPossibleRoles(customRoles: Custom_Roles[], entity: string, accessType: string | undefined) {
+function getMetaPossibleRoles(customRoles: Custom_Roles[], entity: string, accessType?: string ) {
     let possibleRolesMeta = {}
-    customRoles.map((role) => {
-        if (role.entity === entity && role.accessType === accessType) {
+    customRoles.forEach((role) => {
+        if (role.entity === entity && (!(entity=== EntityTypes.DIRECT)|| role.accessType === accessType)) {
             possibleRolesMeta = {
                 ...possibleRolesMeta,
                 [role.roleName]: {

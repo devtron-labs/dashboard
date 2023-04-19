@@ -385,7 +385,6 @@ export enum ACCESS_TYPE_MAP {
     DEVTRON_APPS = 'devtron-app', // devtron app work flow
     HELM_APPS = 'helm-app', //helm app work flow
 }
-export const ACCESS_TYPE_CLUSTER = undefined
 
 export enum MODES {
     YAML = 'yaml',
