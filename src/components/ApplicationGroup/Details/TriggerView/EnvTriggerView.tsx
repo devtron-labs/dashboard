@@ -163,8 +163,8 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                 }
                 for (const node of wf.nodes) {
                     if (node.environmentId === +envId && node.type === WorkflowNodeType.CD) {
-                        _preNodeExist = showPreDeployment || !!node.preNode
-                        _postNodeExist = showPostDeployment || !!node.postNode
+                        _preNodeExist = _preNodeExist || !!node.preNode
+                        _postNodeExist = _postNodeExist || !!node.postNode
                         _currentAppDetail.preNodeAvailable = !!node.preNode
                         _currentAppDetail.postNodeAvailable = !!node.postNode
                         break
