@@ -141,6 +141,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         triggerHistory={triggerHistory}
                         isSecurityModuleInstalled={securityModuleInstalled}
                         isBlobStorageConfigured={blobStorageConfigured}
+                        appIdFromParent={pipeline.appId}
                     />
                 </Route>
             )
