@@ -38,6 +38,7 @@ export default function SearchBar({
                 className="search__input"
                 onChange={handleSearchChange}
                 onKeyDown={handleFilterKeyPress}
+                tabIndex={4}
             />
             {searchApplied && (
                 <button className="search__clear-button" type="button" onClick={clearSearch}>

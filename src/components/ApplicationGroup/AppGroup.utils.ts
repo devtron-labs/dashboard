@@ -165,10 +165,13 @@ export const appGroupAppSelectorStyle = {
         ...base,
         fontWeight: '500',
         fontSize: '13px',
-        padding: '5px 8px 5px 0',
+        padding: '6px 8px 6px 0',
         color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
         backgroundColor: getBGColor(state.isSelected, state.isFocused),
-        cursor: 'pointer'
+        cursor: 'pointer',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
     }),
     valueContainer: (base, state) => ({
         ...base,
@@ -179,7 +182,7 @@ export const appGroupAppSelectorStyle = {
         fontSize: '13px',
         cursor: state.isDisabled ? 'not-allowed' : 'pointer',
         pointerEvents: 'all',
-        width: '100px',
+        minWidth: '100px',
         whiteSpace: 'nowrap',
     }),
     menuList: (base) => {
@@ -187,9 +190,14 @@ export const appGroupAppSelectorStyle = {
             ...base,
             paddingTop: '0',
             paddingBottom: '0',
-            marginBottom: '4px',
+            marginBottom: '0',
+            borderRadius: '4px',
         }
     },
+    dropdownIndicator: (base, state) => ({
+        ...base,
+        padding: '0 4px 0 4px',
+    }),
 }
 
 const getBGColor = (isSelected: boolean, isFocused: boolean): string => {

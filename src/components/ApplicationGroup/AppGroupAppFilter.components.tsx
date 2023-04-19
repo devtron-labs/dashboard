@@ -89,10 +89,10 @@ export const Option = (props): JSX.Element => {
                 return (
                     <div className="flex">
                         <Tippy className="default-tt" arrow={false} content="Edit group">
-                            <Edit className="icon-dim-16 mr-8 cursor" onClick={showEditPopup} />
+                            <Edit className="icon-dim-32 pt-8 pr-6 pb-8 pl-8 cursor" onClick={showEditPopup} />
                         </Tippy>
                         <Tippy className="default-tt" arrow={false} content="Delete group">
-                            <Trash className="scn-6 icon-dim-16 cursor" onClick={showDeletePopup} />
+                            <Trash className="scn-6 icon-dim-32 pt-8 pr-8 pb-8 pl-6 cursor" onClick={showDeletePopup} />
                         </Tippy>
                     </div>
                 )
@@ -107,18 +107,18 @@ export const Option = (props): JSX.Element => {
     const renderTippy = (children): JSX.Element => {
         return (
             <Tippy
-                placement="right"
+                placement="left"
                 arrow={false}
-                className="default-tt w-200 ml-12 dc__break-word"
+                className="default-tt w-200 mr-12 dc__break-word"
                 content={data.description}
             >
-                <span>{children}</span>
+                <div className="w-100 dc__ellipsis-right">{children}</div>
             </Tippy>
         )
     }
 
     return (
-        <div className={`dc__position-rel pl-8 pr-8 ${getOptionBGClass(props.isSelected, props.isFocused)}`}>
+        <div className={`flex flex-justify pl-8 pr-8 ${getOptionBGClass(props.isSelected, props.isFocused)}`}>
             <ConditionalWrap
                 condition={selectedFilterTab === AppFilterTabs.GROUP_FILTER && data.description}
                 wrap={renderTippy}
@@ -126,9 +126,7 @@ export const Option = (props): JSX.Element => {
                 <components.Option {...props} />
             </ConditionalWrap>
 
-            <div className="dc__position-abs" style={{ right: '8px', top: '8px' }}>
-                {renderOptionIcon()}
-            </div>
+            {renderOptionIcon()}
         </div>
     )
 }
@@ -152,7 +150,7 @@ export const MenuList = (props: any): JSX.Element => {
     }
     return (
         <components.MenuList {...props}>
-            <div className="dc__position-sticky dc__top-0 dc__no-top-radius bcn-0">
+            <div className="dc__position-sticky dc__top-0 bcn-0">
                 <div className="pt-6 pr-8 pl-8 env-header-tab">
                     <ul role="tablist" className="tab-list">
                         <li
@@ -165,7 +163,7 @@ export const MenuList = (props: any): JSX.Element => {
                                     selectedFilterTab === AppFilterTabs.GROUP_FILTER ? 'fw-6 active' : 'fw-4'
                                 }`}
                             >
-                                <span className="mr-6">Saved filters</span>
+                                <span>Saved filters</span>
                             </div>
                             {selectedFilterTab === AppFilterTabs.GROUP_FILTER && (
                                 <div className="apps-tab__active-tab" />
@@ -181,7 +179,7 @@ export const MenuList = (props: any): JSX.Element => {
                                     selectedFilterTab === AppFilterTabs.APP_FILTER ? 'fw-6 active' : 'fw-4'
                                 }`}
                             >
-                                <span className="mr-6">All applications </span>
+                                <span>All applications </span>
                             </div>
                             {selectedFilterTab === AppFilterTabs.APP_FILTER && <div className="apps-tab__active-tab" />}
                         </li>
@@ -198,10 +196,10 @@ export const MenuList = (props: any): JSX.Element => {
                 </div>
             </div>
             {selectedFilterTab === AppFilterTabs.APP_FILTER || groupFilterOptions?.length ? (
-                props.children
+                <div className="mt-4 mb-4">{props.children}</div>
             ) : (
                 <div className="h-250 flex column">
-                    <InfoIcon className="icon-dim-16 mr-4 mw-18 cursor icon-n4 mb-4" />
+                    <InfoIcon className="icon-dim-20 mr-4 mw-18 cursor fcn-6 mb-4" />
                     <div className="fs-13 fw-6 cn-9 mb-4">No saved filters</div>
                     <div className="fs-12 fw-4 cn-7 dc__align-center ">
                         To save a filter, select some applications from All applications and click on ‘Save selection as

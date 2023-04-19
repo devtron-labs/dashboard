@@ -13,21 +13,21 @@ describe('EnvCDDetails', () => {
     it('EnvCDDetails render without error', () => {
         const { container } = renderWithRouter(
             <Route path="application-group/:envId/cd-details/:pipelineId">
-                <EnvCDDetails filteredApps={filteredData} />
+                <EnvCDDetails filteredAppIds={filteredData} />
             </Route>,
             { route: 'application-group/1/cd-details/1/1' },
         )
         expect(container).toBeInTheDocument()
     })
 
-    it('EnvCIDetails render without error', async () => {
+    it('EnvCDDetails render without error', async () => {
         let component
-        jest.spyOn(apiData, 'getCDConfig').mockImplementation(mockCDList)
+        jest.spyOn(apiData, 'getAppsCDConfigMin').mockImplementation(mockCDList)
         jest.spyOn(appdetailsData, 'getModuleConfigured').mockImplementation(mockCDModuleConfig)
         await act(async () => {
             component = renderWithRouter(
                 <Route path="application-group/:envId/cd-details/:pipelineId/:triggerId">
-                   <EnvCDDetails filteredApps={filteredData} />
+                   <EnvCDDetails filteredAppIds={filteredData} />
                 </Route>,
                 { route: 'application-group/1/cd-details/1/1' },
             )

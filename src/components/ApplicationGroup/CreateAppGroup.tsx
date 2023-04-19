@@ -73,6 +73,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
     }
 
     const onInputChange = (event): void => {
+        setShowErrorMsg(true)
         if (event.target.name === 'name') {
             setAppGroupName(event.target.value)
         } else {
@@ -192,6 +193,14 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
         )
     }
 
+    const nameErrorMessage = (): string => {
+        if (!appGroupName) {
+            return 'Group name is required field'
+        } else {
+            return 'Max 30 char is allowed in name'
+        }
+    }
+
     const renderBodySection = (): JSX.Element => {
         if (isLoading) {
             return <Progressing pageLoader />
@@ -201,7 +210,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
                 <div className="form__row mb-16">
                     <span className="form__label dc__required-field">Name</span>
                     <input
-                        tabIndex={0}
+                        tabIndex={1}
                         className="form__input"
                         autoComplete="off"
                         placeholder="Enter filter name"
@@ -212,17 +221,17 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
                         disabled={selectedAppGroup && !!selectedAppGroup.value}
                     />
 
-                    {showErrorMsg && !appGroupName && (
+                    {showErrorMsg && (!appGroupName || appGroupName.length > 30) && (
                         <span className="form__error">
                             <Error className="form__icon form__icon--error" />
-                            Group name is required field
+                            {nameErrorMessage()}
                         </span>
                     )}
                 </div>
                 <div className="form__row mb-16">
                     <span className="form__label">Description (Max 50 characters)</span>
                     <textarea
-                        tabIndex={1}
+                        tabIndex={2}
                         placeholder="Write a description for this filter"
                         className="form__textarea"
                         value={appGroupDescription}
@@ -249,7 +258,6 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
 
     const handleSave = async (e): Promise<void> => {
         e.preventDefault()
-        setShowErrorMsg(true)
         if (!appGroupName || appGroupDescription?.length > 50) {
             return
         }
@@ -271,7 +279,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
         }
 
         try {
-            const {result} = await createEnvGroup(envId, payload, !!selectedAppGroup?.value)
+            const { result } = await createEnvGroup(envId, payload, !!selectedAppGroup?.value)
             toast.success('Successfully saved')
             closePopup(e, result.id)
         } catch (err) {

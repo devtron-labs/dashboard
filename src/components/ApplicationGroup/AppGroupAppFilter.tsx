@@ -85,7 +85,6 @@ export default function AppGroupAppFilter() {
             onInputChange={onAppFilterInputChange}
             components={{
                 IndicatorSeparator: null,
-                DropdownIndicator: null,
                 ClearIndicator: null,
                 Option: Option,
                 ValueContainer: ValueContainer,

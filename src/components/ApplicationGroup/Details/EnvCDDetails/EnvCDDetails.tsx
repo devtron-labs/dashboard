@@ -37,7 +37,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 getAppsCDConfigMin(envId, filteredAppIds),
                 getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
             ]),
-        [envId, filteredAppIds],
+        [filteredAppIds],
     )
     const [loadingDeploymentHistory, deploymentHistoryResult, , , , dependencyState] = useAsync(
         () => getTriggerHistory(+appId, +envId, pipelineId, pagination),
@@ -50,7 +50,7 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
 
     useEffect(() => {
-        if (result?.[0]?.['value']?.result.length) {
+        if (result?.[0]?.['value']?.result?.length) {
             const selectedPipelineExist = result[0]['value'].result.some((pipeline) => pipeline.id === +pipelineId)
             result[0]['value'].result.sort((a, b) => sortCallback('appName', a, b))
             if (!selectedPipelineExist) {
