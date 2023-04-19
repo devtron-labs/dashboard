@@ -9,7 +9,7 @@ export const apiGroupAll = (permission, isLabel = false) => {
         return isLabel ? 'K8s core groups (eg. service, pod, etc.)' : 'k8sempty'
     } else return permission
 }
-
+// Commented this for reference :- This will be enabled in v1 commenting out for v0 (Cluster ADMIN)
 // export const k8sPermissionRoles = [
 //     { value: ActionTypes.VIEW, label: ACTION_LABEL[ActionTypes.VIEW], infoText: 'View allowed K8s resources.' },
 //     {

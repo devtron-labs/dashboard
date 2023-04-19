@@ -143,7 +143,6 @@ export default function AppPermissions({
             uniqueProjectIdsDevtronApps = [],
             uniqueProjectIdsHelmApps = []
 
-
         roleFilters?.forEach((element) => {
             if (element.entity === EntityTypes.DIRECT) {
                 const projectId = projectsMap.get(element.team)?.id
@@ -156,7 +155,6 @@ export default function AppPermissions({
                 }
             }
         })
-        
         await Promise.all([
             fetchAppList([...new Set(uniqueProjectIdsDevtronApps)].map(Number)),
             fetchAppListHelmApps([...new Set(uniqueProjectIdsHelmApps)].map(Number)),
@@ -216,7 +214,7 @@ export default function AppPermissions({
 
         const _assignedRoleFilters: APIRoleFilter[] = roleFilters?.filter(
             (roleFilter) => roleFilter.entity === EntityTypes.CLUSTER,
-        )       
+        )
         if (_assignedRoleFilters) {
             const _k8sPermission = _assignedRoleFilters.map((k8s) => {
                 return {
