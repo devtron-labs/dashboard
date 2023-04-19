@@ -876,7 +876,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     },[customRoles])
 
     useEffect(() => {
-        const envOptions = envClustersList?.map((cluster) => ({
+        const envOptions = envClustersList.map((cluster) => ({
             label: cluster.clusterName,
             options: [
                 {
