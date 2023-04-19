@@ -16,7 +16,7 @@ import {
 import { mapByKey, removeItemsFromArray } from '../common'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import K8sPermissons from './K8sObjectPermissions/K8sPermissons'
-import { apiGroupAll, k8sPermissionRoles } from './K8sObjectPermissions/K8sPermissions.utils'
+import { apiGroupAll } from './K8sObjectPermissions/K8sPermissions.utils'
 
 export default function AppPermissions({
     data = null,
@@ -67,7 +67,7 @@ export default function AppPermissions({
         }
         populateDataFromAPI(data.roleFilters)
     }, [data])
-
+    const {customRoles}=useUserGroupContext()
     function setAllApplication(directRolefilter: APIRoleFilter, projectId) {
         if ( directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
             return [
@@ -156,7 +156,7 @@ export default function AppPermissions({
                 }
             }
         })
-
+        
         await Promise.all([
             fetchAppList([...new Set(uniqueProjectIdsDevtronApps)].map(Number)),
             fetchAppListHelmApps([...new Set(uniqueProjectIdsHelmApps)].map(Number)),
@@ -216,7 +216,7 @@ export default function AppPermissions({
 
         const _assignedRoleFilters: APIRoleFilter[] = roleFilters?.filter(
             (roleFilter) => roleFilter.entity === EntityTypes.CLUSTER,
-        )
+        )       
         if (_assignedRoleFilters) {
             const _k8sPermission = _assignedRoleFilters.map((k8s) => {
                 return {
@@ -227,7 +227,7 @@ export default function AppPermissions({
                         value: k8s.namespace === '' ? '*' : k8s.namespace,
                     },
                     group: { label: apiGroupAll(k8s.group, true), value: apiGroupAll(k8s.group) },
-                    action: k8sPermissionRoles.find((_role) => _role.value === k8s.action),
+                    action: { label: customRoles.possibleRolesMetaForCluster[k8s.action].value, value: k8s.action },
                     kind: { label: k8s.kind === '' ? 'All Kinds' : k8s.kind, value: k8s.kind === '' ? '*' : k8s.kind },
                     resource: k8s.resource
                         .split(',')

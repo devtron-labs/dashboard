@@ -218,6 +218,7 @@ export const Routes = {
     USER_ROLE_GROUP: 'user/role/group',
     APP_FILTER_LIST: 'app/app-listing/autocomplete',
     APP_LIST_GROUP: 'app/list/group',
+    CUSTOM_ROLES:'rbac/role'
 }
 
 export const ViewType = {
@@ -384,6 +385,7 @@ export enum ACCESS_TYPE_MAP {
     DEVTRON_APPS = 'devtron-app', // devtron app work flow
     HELM_APPS = 'helm-app', //helm app work flow
 }
+export const ACCESS_TYPE_CLUSTER = undefined
 
 export enum MODES {
     YAML = 'yaml',

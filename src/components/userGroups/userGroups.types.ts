@@ -69,7 +69,7 @@ export interface DirectPermissionsRoleFilter extends RoleFilter {
     environmentError?: string
     action: {
         label: string
-        value: ActionTypes.ADMIN | ActionTypes.MANAGER | ActionTypes.TRIGGER | ActionTypes.VIEW
+        value: string
     }
     accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
 }
@@ -78,7 +78,7 @@ export interface ChartGroupPermissionsFilter extends RoleFilter {
     entity: EntityTypes.CHART_GROUP
     team?: never
     environment?: never
-    action: ActionTypes.ADMIN | ActionTypes.MANAGER | ActionTypes.TRIGGER | ActionTypes.VIEW | ActionTypes.UPDATE | '*'
+    action: string
 }
 
 export interface APIRoleFilter {
@@ -86,7 +86,7 @@ export interface APIRoleFilter {
     team?: string
     entityName?: string
     environment?: string
-    action: ActionTypes.ADMIN | ActionTypes.MANAGER | ActionTypes.TRIGGER | ActionTypes.VIEW | ActionTypes.UPDATE | '*'
+    action: string
     accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
     cluster?: any
     namespace?: any
@@ -162,6 +162,7 @@ export interface K8sListItemCardType {
         action: string
         index: number
     }
+    customRoles:CustomRoleAndMeta
 }
 
 export interface K8sPermissionModalType {
@@ -205,3 +206,19 @@ export const K8S_PERMISSION_INFO_MESSAGE = {
 }
 
 export const ALL_NAMESPACE = { label: 'All Namespaces / Cluster scoped', value: '*' }
+
+export interface Custom_Roles  {
+    id:number,
+    roleName:string,
+    roleDisplayName:string,
+    roleDescription :string,
+    entity: EntityTypes,
+    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
+}
+export interface CustomRoleAndMeta {
+    customRoles:Custom_Roles[],
+    possibleRolesMeta:{}
+    possibleRolesMetaForHelm:{},
+    possibleRolesMetaForCluster:{}
+}
+

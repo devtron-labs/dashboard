@@ -10,20 +10,20 @@ export const apiGroupAll = (permission, isLabel = false) => {
     } else return permission
 }
 
-export const k8sPermissionRoles = [
-    { value: ActionTypes.VIEW, label: ACTION_LABEL[ActionTypes.VIEW], infoText: 'View allowed K8s resources.' },
-    {
-        value: ActionTypes.EDIT,
-        label: ACTION_LABEL[ActionTypes.ADMIN],
-        infoText: 'Create, view, edit & delete allowed K8s resources.',
-    },
-    // This will be enabled in v1 commenting out for v0
-    // {
-    //     value: ActionTypes.ADMIN,
-    //     label: ACTION_LABEL[ActionTypes.MANAGER],
-    //     infoText: 'Can perform all actions and provide access to permitted K8s resources to other users.',
-    // },
-]
+// export const k8sPermissionRoles = [
+//     { value: ActionTypes.VIEW, label: ACTION_LABEL[ActionTypes.VIEW], infoText: 'View allowed K8s resources.' },
+//     {
+//         value: ActionTypes.EDIT,
+//         label: ACTION_LABEL[ActionTypes.ADMIN],
+//         infoText: 'Create, view, edit & delete allowed K8s resources.',
+//     },
+//     // This will be enabled in v1 commenting out for v0
+//     // {
+//     //     value: ActionTypes.ADMIN,
+//     //     label: ACTION_LABEL[ActionTypes.MANAGER],
+//     //     infoText: 'Can perform all actions and provide access to permitted K8s resources to other users.',
+//     // },
+// ]
 
 export const HEADER_OPTIONS = ['CLUSTER', 'API GROUP', 'KIND', 'NAMESPACE', 'RESOURCE', 'ROLE']
 

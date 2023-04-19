@@ -6,6 +6,7 @@ import K8sListItemCard from './K8sListItemCard'
 import { getPermissionObject } from './K8sPermissions.utils'
 import { toast } from 'react-toastify'
 import { Drawer, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { useUserGroupContext } from '../UserGroup'
 
 export default function K8sPermissionModal({
     selectedPermissionAction,
@@ -18,6 +19,7 @@ export default function K8sPermissionModal({
     const [apiGroupMapping, setApiGroupMapping] = useState<Record<number, OptionType[]>>()
     const [kindMapping, setKindMapping] = useState<Record<number, OptionType[]>>()
     const [objectMapping, setObjectMapping] = useState<Record<number, OptionType[]>>()
+    const {customRoles}=useUserGroupContext()
 
     const handleK8sPermission = (action: string, key?: number, data?: any) => {
         const _k8sPermissionList = [...k8PermissionList]
@@ -143,6 +145,7 @@ export default function K8sPermissionModal({
                                 objectMapping={objectMapping}
                                 setObjectMapping={setObjectMapping}
                                 selectedPermissionAction={selectedPermissionAction}
+                                customRoles={customRoles}                              
                             />
                         )
                     })}
