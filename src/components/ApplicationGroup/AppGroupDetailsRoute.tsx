@@ -269,6 +269,7 @@ export function EnvHeader({
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"
+                        data-testid="group-configuration"
                         onClick={handleConfigClick}
                     >
                         <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
