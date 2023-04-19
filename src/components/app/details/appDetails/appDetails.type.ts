@@ -163,7 +163,7 @@ export interface NodeSelectorsType {
 }
 
 export interface DetailsType {
-  environment?: any
+    environment?: any
     appDetailsAPI: (appId: string, envId: string, timeout: number) => Promise<any>
     setAppDetailResultInParent?: (appDetails) => void
     isAppDeployment?: boolean

@@ -82,12 +82,11 @@ export interface ConfigureLinkActionType {
     ) => void
 }
 
-export interface MonitoringToolResponse extends ResponseType {
-    result?: MonitoringTool[]
-}
-
 export interface ExternalLinkResponse extends ResponseType {
-    result?: ExternalLink[]
+    result?: {
+        ExternalLinks: ExternalLink[],
+        Tools: MonitoringTool[]
+    }
 }
 
 export interface ExternalLinkUpdateResponse extends ResponseType {

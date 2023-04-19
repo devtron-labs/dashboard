@@ -14,6 +14,7 @@ export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, s
                     ClearIndicator: null,
                     Option,
                 }}
+                classNamePrefix={`build-webhook-select-key-dropdown-${conditionIndex}`}
                 isSearchable={true}
                 tabIndex={1}
                 placeholder="Select Key"
@@ -26,25 +27,27 @@ export function WebhookSelectorCondition({ conditionIndex, masterSelectorList, s
                             paddingBottom: '0px',
                             maxHeight: '176px',
                         }
-                    }
+                    },
                 }}
                 options={masterSelectorList}
-                value = {
-                    masterSelectorList.filter(_selector =>
-                        _selector.value == selectorCondition.selectorId)
-                }
+                value={masterSelectorList.filter((_selector) => _selector.value == selectorCondition.selectorId)}
                 onChange={(selectedSelector) => onSelectorChange(conditionIndex, selectedSelector.value)}
                 isDisabled={!canEditSelectorCondition}
             />
-            <input type="text" className="form__input" placeholder="Enter regex" disabled={!canEditSelectorCondition}
-                   onChange={(event) => { onSelectorValueChange(conditionIndex, event.target.value) }}
-                   value={selectorCondition.value}
+            <input
+                type="text"
+                data-testid={`build-webhook-select-key-input-${conditionIndex}`}
+                className="form__input"
+                placeholder="Enter regex"
+                disabled={!canEditSelectorCondition}
+                onChange={(event) => {
+                    onSelectorValueChange(conditionIndex, event.target.value)
+                }}
+                value={selectorCondition.value}
             />
-            {
-                canEditSelectorCondition &&
+            {canEditSelectorCondition && (
                 <CloseIcon className="pointer icon-dim-20" onClick={(e) => deleteWebhookCondition(conditionIndex)} />
-            }
-
+            )}
         </div>
     )
 }

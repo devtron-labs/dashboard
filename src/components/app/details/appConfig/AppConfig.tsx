@@ -25,7 +25,7 @@ import {
     TippyTheme,
     InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getAppConfigStatus, getAppOtherEnvironment, getWorkflowList } from '../../../../services/service'
+import { getAppConfigStatus, getAppOtherEnvironmentMin, getWorkflowList } from '../../../../services/service'
 import { deleteApp } from './appConfig.service'
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg'
 import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
@@ -548,6 +548,7 @@ const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, current
 function renderNavItem(item: CustomNavItemsType) {
     return (
         <NavLink
+            data-testid={`${item.title.toLowerCase().split(' ').join('-')}-link`}
             key={item.title}
             onClick={(event) => {
                 if (item.isLocked) event.preventDefault()
@@ -627,7 +628,7 @@ function Navigation({
             })}
             {isJobView && <div className="h-100" />}
             <div className="cta-delete-app flex w-100 dc__position-sticky pt-2 pb-16 bcn-0">
-                <button type="button" className="flex cta delete mt-8 w-100 h-36" onClick={deleteApp}>
+                <button data-testid = "delete-job-app-button" type="button" className="flex cta delete mt-8 w-100 h-36" onClick={deleteApp}>
                     Delete {isJobView ? 'Job' : 'Application'}
                 </button>
             </div>
@@ -824,7 +825,11 @@ const EnvOverrideRoute = ({ envOverride }: EnvironmentOverrideRouteProps) => {
             </div>
             {!collapsed && (
                 <div className="environment-routes">
-                    <NavLink className="app-compose__nav-item cursor" to={`${LINK}/deployment-template`}>
+                    <NavLink
+                        data-testid="env-deployment-template"
+                        className="app-compose__nav-item cursor"
+                        to={`${LINK}/deployment-template`}
+                    >
                         Deployment template
                     </NavLink>
                     <NavLink className="app-compose__nav-item cursor" to={`${LINK}/configmap`}>
@@ -845,7 +850,7 @@ const EnvironmentOverrides = ({ environmentResult, environmentsLoading }: Enviro
     if (Array.isArray(environmentResult?.result)) {
         const environments = environmentResult.result.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
         return (
-            <div className="w-100" style={{ height: 'calc(100% - 60px)' }}>
+            <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
                 {environments.map((env) => {
                     return (
                         !env.deploymentAppDeleteRequest && (
@@ -873,7 +878,7 @@ function EnvironmentOverrideRouter() {
     const { appId } = useParams<{ appId: string }>()
     const previousPathName = usePrevious(pathname)
     const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
-        () => getAppOtherEnvironment(appId),
+        () => getAppOtherEnvironmentMin(appId),
         [appId],
         !!appId,
     )

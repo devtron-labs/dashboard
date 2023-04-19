@@ -10,7 +10,7 @@ import { AppListConstants, SERVER_MODE, URLS } from '../../../../config'
 import './HeaderWithCreateButton.scss'
 import { mainContext } from '../../navigation/NavigationRoutes'
 
-export default function HeaderWithCreateButton({ headerName }) {
+export default function HeaderWithCreateButton({ headerName, isSuperAdmin }) {
     const params = useParams<{ appType: string }>()
     const history = useHistory()
     const location = useLocation()
@@ -40,7 +40,7 @@ export default function HeaderWithCreateButton({ headerName }) {
 
     const renderActionButtons = () => {
         return serverMode === SERVER_MODE.FULL ? (
-            <button type="button" className="flex cta h-32 lh-n" onClick={handleCreateButton}>
+            <button type="button" className="flex cta h-32 lh-n" onClick={handleCreateButton} data-testid="create-app-button-on-header">
                 Create
                 <DropDown className="icon-dim-20" />
             </button>
@@ -54,7 +54,7 @@ export default function HeaderWithCreateButton({ headerName }) {
     const renderCreateSelectionModal = () => {
         return (
             <Modal rootClassName="create-modal-wrapper" onClick={handleCreateButton}>
-                <div className="create-modal-child cursor" onClick={openCreateDevtronAppModel}>
+                <div className="create-modal-child cursor" onClick={openCreateDevtronAppModel} data-testid="create-custom-app-button-in-dropdown">
                     <AddIcon className="icon-dim-20 fcn-9" />
                     <div className="ml-8">
                         <strong>Custom app</strong>
@@ -72,15 +72,17 @@ export default function HeaderWithCreateButton({ headerName }) {
                         </div>
                     </div>
                 </div>
-                <div className="create-modal-child cursor" onClick={openCreateJobModel}>
-                    <JobIcon className="icon-dim-20 scn-7" />
-                    <div className="ml-8">
-                        <strong>Job</strong>
-                        <div>
-                            Jobs allow manual and automated <br /> execution of developer actions.
+                {isSuperAdmin && (
+                    <div className="create-modal-child cursor" onClick={openCreateJobModel}>
+                        <JobIcon className="icon-dim-20 scn-7" />
+                        <div className="ml-8">
+                            <strong>Job</strong>
+                            <div>
+                                Jobs allow manual and automated <br /> execution of developer actions.
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
             </Modal>
         )
     }

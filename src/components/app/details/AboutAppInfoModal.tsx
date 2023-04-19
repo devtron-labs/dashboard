@@ -51,6 +51,7 @@ export default function AboutAppInfoModal({
     const renderProjectSelect = (): JSX.Element => {
         return (
             <ReactSelect
+                classNamePrefix="overview-project-menu-list"
                 options={projectsOptions}
                 value={selectedProject}
                 onChange={handleProjectSelection}

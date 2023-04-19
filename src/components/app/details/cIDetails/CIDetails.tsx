@@ -251,7 +251,13 @@ export const Details = ({
                         />
                         <ul className="tab-list dc__border-bottom pl-20 pr-20">
                             <li className="tab-list__tab">
-                                <NavLink replace className="tab-list__tab-link" activeClassName="active" to={`logs`}>
+                                <NavLink
+                                    replace
+                                    className="tab-list__tab-link"
+                                    activeClassName="active"
+                                    to={`logs`}
+                                    data-testid="logs-link"
+                                >
                                     Logs
                                 </NavLink>
                             </li>
@@ -261,6 +267,7 @@ export const Details = ({
                                     className="tab-list__tab-link"
                                     activeClassName="active"
                                     to={`source-code`}
+                                    data-testid="source-code-link"
                                 >
                                     Source code
                                 </NavLink>
@@ -271,6 +278,7 @@ export const Details = ({
                                     className="tab-list__tab-link"
                                     activeClassName="active"
                                     to={`artifacts`}
+                                    data-testid="artifacts-link"
                                 >
                                     Artifacts
                                 </NavLink>
@@ -282,6 +290,7 @@ export const Details = ({
                                         className="tab-list__tab-link"
                                         activeClassName="active"
                                         to={`security`}
+                                        data-testid="security_link"
                                     >
                                         Security
                                     </NavLink>
@@ -338,6 +347,7 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView }: His
                         getArtifactPromise={_getArtifactPromise}
                         isArtifactUploaded={triggerDetails.isArtifactUploaded}
                         isJobView={isJobView}
+                        type={HistoryComponentType.CI}
                     />
                 </Route>
                 {!isJobView && (
@@ -440,8 +450,8 @@ const SecurityTab = ({ ciPipelineId, artifactId, status }: SecurityTabType) => {
 
     return (
         <>
-            <div className="security__top">Latest Scan Execution</div>
-            <div className="white-card white-card--ci-scan">
+            <div className="security__top" data-testid="security-scan-execution-heading">Latest Scan Execution</div>
+            <div className="white-card white-card--ci-scan" data-testid="last-scan-execution">
                 <div className="security-scan__header" onClick={toggleCollapse}>
                     <Down
                         style={{ ['--rotateBy' as any]: isCollapsed ? '0deg' : '180deg' }}
@@ -456,7 +466,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status }: SecurityTabType) => {
                         <span className="dc__fill-moderate">{severityCount.moderate} Moderate</span>
                     ) : null}
                     {severityCount.critical === 0 && severityCount.moderate === 0 && severityCount.low !== 0 ? (
-                        <span className="dc__fill-low">{severityCount.low} Low</span>
+                        <span className="dc__fill-low" >{severityCount.low} Low</span>
                     ) : null}
                     <div className="security-scan__type">post build execution</div>
                 </div>
@@ -488,7 +498,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status }: SecurityTabType) => {
                                             </a>
                                         </td>
                                         <td className="security-scan-table__data security-scan-table__pl">
-                                            <span className={`fill-${item.severity}`}>{item.severity}</span>
+                                            <span className={`fill-${item.severity}`} data-testid="severity-check">{item.severity} </span>
                                         </td>
                                         <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
                                             {item.package}

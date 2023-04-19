@@ -59,8 +59,10 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
         return <ErrorScreenNotAuthorized />
     } else {
         return (
-            <section className="global-configuration__component">
-                <h2 className="form__title">Chart Repository</h2>
+            <section className="global-configuration__component" data-testid="chart-repository-wrapper">
+                <h2 className="form__title" data-testid="chart-repository-heading">
+                    Chart Repository
+                </h2>
                 <p className="form__subtitle">
                     Manage your organization’s chart repositories.
                     <span>
@@ -93,7 +95,7 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                         <a
                             rel="noreferrer noopener"
                             target="_blank"
-                            className={`dc__link ${!fetching ? "cursor" : ""}`}
+                            className={`dc__link ${!fetching ? 'cursor' : ''}`}
                             onClick={refetchCharts}
                         >
                             <span>
@@ -158,24 +160,56 @@ function CollapsedList({ id, name, active, url, authMode, isEditable, accessToke
         }
     }
     return (
-        <article className={`collapsed-list dc__clear-both ${id ? 'collapsed-list--chart' : 'collapsed-list--git'} collapsed-list--${id ? 'update' : 'create dashed'}`}>
-            <List onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column':''}`}>
-                <List.Logo>{id ? <div className={`${url} list__logo`}><Helm className="icon-dim-24 fcb-5 dc__vertical-align-middle " /></div> : collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />}</List.Logo>
+        <article
+            className={`collapsed-list dc__clear-both ${
+                id ? 'collapsed-list--chart' : 'collapsed-list--git'
+            } collapsed-list--${id ? 'update' : 'create dashed'}`}
+        >
+            <List
+                onClick={setToggleCollapse}
+                dataTestId={name || 'add-repository-button'}
+                className={`${!id && !collapsed ? 'no-grid-column' : ''}`}
+            >
+                <List.Logo>
+                    {id ? (
+                        <div className={`${url} list__logo`}>
+                            <Helm className="icon-dim-24 fcb-5 dc__vertical-align-middle " />
+                        </div>
+                    ) : (
+                        collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
+                    )}
+                </List.Logo>
                 <div className="flex left">
-                    <List.Title style={{color: !id && !collapsed ? 'var(--N900)': ''}} title={id && !collapsed ? 'Edit repository' : name || "Add repository"} subtitle={collapsed ? url : null} />
-                    {id &&
-                        <Tippy className="default-tt" arrow={false} placement="bottom" content={enabled ? 'Disable chart repository' : 'Enable chart repository'}>
-                            <span style={{ marginLeft: 'auto' }}>
+                    <List.Title
+                        style={{ color: !id && !collapsed ? 'var(--N900)' : '' }}
+                        title={id && !collapsed ? 'Edit repository' : name || 'Add repository'}
+                        subtitle={collapsed ? url : null}
+                    />
+                    {id && (
+                        <Tippy
+                            className="default-tt"
+                            arrow={false}
+                            placement="bottom"
+                            content={enabled ? 'Disable chart repository' : 'Enable chart repository'}
+                        >
+                            <span data-testid={`${name}-chart-repo-toggle-button`} style={{ marginLeft: 'auto' }}>
                                 {loading ? (
                                     <Progressing />
                                 ) : (
-                                        <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />
-                                    )}
+                                    <List.Toggle onSelect={(en) => toggleEnabled(en)} enabled={enabled} />
+                                )}
                             </span>
                         </Tippy>
-                    }
+                    )}
                 </div>
-                {id && <List.DropDown onClick={handleCollapse} className="rotate" style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }} />}
+                {id && (
+                    <List.DropDown
+                        onClick={handleCollapse}
+                        dataTestid="select-existing-repository-button"
+                        className="rotate"
+                        style={{ ['--rotateBy' as any]: `${Number(!collapsed) * 180}deg` }}
+                    />
+                )}
             </List>
             {!collapsed && (
                 <ChartForm
@@ -348,10 +382,11 @@ function ChartForm({
                 setValidationStatus(VALIDATION_STATUS.SUCCESS)
                 toast.success(
                     <ToastBody
+                        data-testid="update-toast-for-chart-repo"
                         title="Chart repo saved"
                         subtitle="It may take upto 5 mins for the charts to be listed in the chart store."
                     />,
-                );
+                )
                 await reload();
             } else {
                 setValidationStatus(VALIDATION_STATUS.FAILURE)
@@ -389,6 +424,7 @@ function ChartForm({
         const isNameField: boolean = field === 'name'
         return (
                 <CustomInput
+                dataTestid={isNameField ? "add-chart-repo-name" : "add-chart-repo-URL"}
                 autoComplete="off"
                 value={ isNameField ? state.name.value : state.url.value}
                 onChange={handleOnChange}
@@ -451,6 +487,7 @@ function ChartForm({
                     (id && authMode === CHART_REPO_AUTH_TYPE.USERNAME_PASSWORD)) && (
                     <>
                         <CustomInput
+                            dataTestid="add-chart-repo-username"
                             autoComplete="off"
                             value={customState.username.value}
                             onChange={customHandleChange}
@@ -460,6 +497,7 @@ function ChartForm({
                             labelClassName="mt-12"
                         />
                         <ProtectedInput
+                            dataTestid="add-chart-repo-password"
                             value={customState.password.value}
                             onChange={customHandleChange}
                             name="password"
@@ -482,6 +520,7 @@ function ChartForm({
             <div className="form__row form__buttons">
                 {id && (
                     <button
+                        data-testid="chart-repo-delete-button"
                         className="cta delete dc__m-auto chart_repo__delete-button"
                         type="button"
                         onClick={handleDeleteClick}
@@ -489,10 +528,10 @@ function ChartForm({
                         {deleting ? <Progressing /> : 'Delete'}
                     </button>
                 )}
-                <button className="cta cancel" type="button" onClick={handleCancelClick}>
+                <button data-testid="chart-repo-cancel-button" className="cta cancel" type="button" onClick={handleCancelClick}>
                     Cancel
                 </button>
-                <button className="cta" type="submit" disabled={loading}>
+                <button data-testid="chart-repo-save-button" className="cta" type="submit" disabled={loading}>
                     {loading ? <Progressing /> : id ? 'Update' : 'Save'}
                 </button>
             </div>
@@ -508,7 +547,6 @@ function ChartForm({
                     reload={reload}
                 />
             )}
-
         </form>
     )
 }

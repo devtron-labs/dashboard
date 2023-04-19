@@ -38,6 +38,7 @@ export default function ChartGroupDetails() {
         handleChartVersionChange,
         handleChartValueChange,
         handleEnvironmentChangeOfAllCharts,
+        setEnvironmentList
     } = useChartGroup(groupId)
     const { breadcrumbs } = useBreadcrumb(
         {
@@ -175,7 +176,12 @@ export default function ChartGroupDetails() {
                     <Pencil className="mr-5" />
                     Edit
                 </button>
-                <button className="cta flex delete h-32" type="button" onClick={() => toggleConfirmation(true)}>
+                <button
+                    className="cta flex delete h-32"
+                    type="button"
+                    data-testid="chart-group-delete-button"
+                    onClick={() => toggleConfirmation(true)}
+                >
                     {deleting ? <Progressing /> : 'Delete'}
                 </button>
             </div>
@@ -276,6 +282,7 @@ export default function ChartGroupDetails() {
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
                                         onClick={handleDeployButtonClick}
                                         className="cta dc__ellipsis-right w-100"
+                                        data-testid="group-deploy-to-button"
                                     >
                                         {loading ? <Progressing /> : 'Deploy to ...'}
                                     </button>
@@ -303,6 +310,7 @@ export default function ChartGroupDetails() {
                         toggleDeployModal(false)
                         push(`${url}/deploy`, { charts: state.charts, projectId })
                     }}
+                    setEnvironments={setEnvironmentList}
                 />
             ) : null}
             {showGitOpsWarningModal && <NoGitOpsConfiguredWarning closePopup={hideNoGitOpsWarning} />}

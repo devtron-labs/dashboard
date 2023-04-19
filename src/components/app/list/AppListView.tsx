@@ -21,6 +21,7 @@ import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/Onboardin
 import { APPLIST_EMPTY_STATE_MESSAGING, APP_LIST_HEADERS, ClearFiltersLabel } from '../list-new/Constants'
 import AppStatus from '../AppStatus'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
+import cluster from 'cluster'
 export class AppListView extends Component<AppListViewProps> {
     expandEnv = (event): void => {
         event.stopPropagation()
@@ -44,7 +45,10 @@ export class AppListView extends Component<AppListViewProps> {
             let isEnvConfigured = app.defaultEnv && app.defaultEnv.name
             return (
                 <div className="app-list__cell app-list__cell--env">
-                    <p className={`app-list__cell--env-text ${isEnvConfigured ? '' : 'not-configured'}`}>
+                    <p
+                        data-testid={`${app.defaultEnv.name}-environment`}
+                        className={`app-list__cell--env-text ${isEnvConfigured ? '' : 'not-configured'}`}
+                    >
                         {isEnvConfigured ? app.defaultEnv.name : 'Not configured'}
                     </p>
                     {len > 1 ? (
@@ -84,8 +88,8 @@ export class AppListView extends Component<AppListViewProps> {
         if (this.props.apps.length) {
             let icon = this.props.sortRule.order == OrderBy.ASC ? '' : 'sort-up'
             return (
-                <div className="app-list">
-                    <div className="app-list__header ">
+                <div className="app-list" data-testid="app-list-container">
+                    <div className="app-list__header">
                         <div className="app-list__cell--icon flex left cursor" onClick={this.toggleAllExpandRow}>
                             <Arrow className={`icon-dim-24 p-2 ${this.arrowIcon()}`} />
                         </div>
@@ -98,6 +102,7 @@ export class AppListView extends Component<AppListViewProps> {
                                 {APP_LIST_HEADERS.AppName}
 
                                 <span
+                                    data-testid="sort-app-name-list"
                                     className={` sort ${icon} ml-4 dc__visible-hover--child ${
                                         this.props.sortRule.key === SortBy.APP_NAME ? 'dc__visible' : ''
                                     } `}
@@ -112,10 +117,11 @@ export class AppListView extends Component<AppListViewProps> {
                             </div>
                         )}
                         <div className="app-list__cell app-list__cell--env">
-                            <span className="app-list__cell-header mr-4" data-testid="env">
+                            <span className="app-list__cell-header mr-4" data-testid="environment">
                                 {APP_LIST_HEADERS.Environment}
                             </span>
                             <Tippy
+                                data-testid="env-tippy"
                                 className="default-tt"
                                 arrow={true}
                                 placement="top"
@@ -159,6 +165,7 @@ export class AppListView extends Component<AppListViewProps> {
                                     <Link
                                         to={this.props.redirectToAppDetails(app, app.defaultEnv.id)}
                                         className={`app-list__row ${len ? 'dc__hover-icon' : ''}`}
+                                        data-testid="app-list-row"
                                     >
                                         <div className="app-list__cell--icon">
                                             <DevtronAppIcon className="icon-dim-24 dc__show-first--icon" />
@@ -171,21 +178,32 @@ export class AppListView extends Component<AppListViewProps> {
                                             )}
                                         </div>
                                         <div className="app-list__cell app-list__cell--name">
-                                            <p className="dc__truncate-text  m-0 value">{app.name}</p>
+                                            <p className="dc__truncate-text  m-0 value" data-testid="app-list-for-sort">
+                                                {app.name}
+                                            </p>
                                         </div>
                                         {this.props.isArgoInstalled && (
-                                            <div className="app-list__cell app-list__cell--app_status">
+                                            <div
+                                                className="app-list__cell app-list__cell--app_status"
+                                                data-testid="devtron-app-status"
+                                            >
                                                 <AppStatus appStatus={app.defaultEnv.appStatus} />
                                             </div>
                                         )}
                                         {this.renderEnvironmentList(app)}
                                         <div className="app-list__cell app-list__cell--cluster">
-                                            <p className="dc__truncate-text  m-0">
+                                            <p
+                                                data-testid={`${app.defaultEnv.clusterName}-cluster`}
+                                                className="dc__truncate-text  m-0"
+                                            >
                                                 {app.defaultEnv ? app.defaultEnv.clusterName : ''}
                                             </p>
                                         </div>
                                         <div className="app-list__cell app-list__cell--namespace">
-                                            <p className="dc__truncate-text  m-0">
+                                            <p
+                                                data-testid={`${app.defaultEnv.namespace}-namespace`}
+                                                className="dc__truncate-text  m-0"
+                                            >
                                                 {app.defaultEnv ? app.defaultEnv.namespace : ''}
                                             </p>
                                         </div>
@@ -197,7 +215,10 @@ export class AppListView extends Component<AppListViewProps> {
                                                     placement="top"
                                                     content={app.defaultEnv.lastDeployedTime}
                                                 >
-                                                    <p className="dc__truncate-text  m-0">
+                                                    <p
+                                                        className="dc__truncate-text  m-0"
+                                                        data-testid="last-deployed-time"
+                                                    >
                                                         {handleUTCTime(app.defaultEnv.lastDeployedTime, true)}
                                                     </p>
                                                 </Tippy>
@@ -205,6 +226,7 @@ export class AppListView extends Component<AppListViewProps> {
                                         </div>
                                         <div className="app-list__cell app-list__cell--action">
                                             <button
+                                                data-testid="edit-app-button"
                                                 type="button"
                                                 data-key={app.id}
                                                 className="button-edit"

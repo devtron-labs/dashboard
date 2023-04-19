@@ -19,7 +19,12 @@ export const CDModalTab = {
 }
 
 export const getAppList = (request, options?) => {
-    const URL = `${Routes.APP_LIST}`
+    let URL = Routes.APP_LIST
+    if (window._env_.USE_V2) {
+        URL += `/${Routes.APP_LIST_V2}`
+    } else {
+        URL += `/${Routes.APP_LIST_V1}`
+    }
     return post(URL, request, options)
 }
 
@@ -104,7 +109,15 @@ export function fetchAppDetailsInTime(
     envId: number | string,
     reloadTimeOut: number,
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
+  return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
+}
+
+export function fetchResourceTreeInTime(
+    appId: number | string,
+    envId: number | string,
+    reloadTimeOut: number,
+): Promise<AppDetailsResponse> {
+    return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
 }
 
 export function getEvents(pathParams) {
@@ -168,44 +181,54 @@ const gitTriggersModal = (triggers, materials) => {
     })
 }
 
-export const getCIMaterialList = (params) => {
-    return get(`${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`).then((response) => {
-        const materials = Array.isArray(response?.result)
-            ? response.result
-                  .sort((a, b) => sortCallback('id', a, b))
-                  .map((material, index) => {
-                      return {
-                          ...material,
-                          isSelected: index == 0,
-                          gitURL: material.gitMaterialUrl || '',
-                          lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
-                          isMaterialLoading: false,
-                          history: material.history
-                              ? material.history.map((history, indx) => {
-                                    return {
-                                        commitURL: material.gitMaterialUrl
-                                            ? createGitCommitUrl(material.gitMaterialUrl, history.Commit)
-                                            : '',
-                                        changes: history.Changes || [],
-                                        author: history.Author,
-                                        message: history.Message,
-                                        date: history.Date ? moment(history.Date).format(Moment12HourFormat) : '',
-                                        commit: history?.Commit,
-                                        isSelected: indx == 0,
-                                        showChanges: false,
-                                        webhookData: history.WebhookData
-                                            ? {
-                                                  id: history.WebhookData.id,
-                                                  eventActionType: history.WebhookData.eventActionType,
-                                                  data: history.WebhookData.data,
-                                              }
-                                            : null,
-                                    }
-                                })
-                              : [],
+const processMaterialHistory = (material) => {
+    if (material.history) {
+        return material.history.map((history, index) => {
+            return {
+                commitURL: material.gitMaterialUrl ? createGitCommitUrl(material.gitMaterialUrl, history.Commit) : '',
+                changes: history.Changes || [],
+                author: history.Author,
+                message: history.Message,
+                date: history.Date ? moment(history.Date).format(Moment12HourFormat) : '',
+                commit: history?.Commit,
+                isSelected: index == 0,
+                showChanges: false,
+                webhookData: history.WebhookData
+                    ? {
+                          id: history.WebhookData.id,
+                          eventActionType: history.WebhookData.eventActionType,
+                          data: history.WebhookData.data,
                       }
-                  })
-            : []
+                    : null,
+            }
+        })
+    }
+    return []
+}
+
+const processCIMaterialResponse = (response) => {
+    if (Array.isArray(response?.result)) {
+        const sortedCIMaterials = response.result.sort((a, b) => sortCallback('id', a, b))
+        return sortedCIMaterials.map((material, index) => {
+            return {
+                ...material,
+                isSelected: index == 0,
+                gitURL: material.gitMaterialUrl || '',
+                lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
+                isMaterialLoading: false,
+                history: processMaterialHistory(material),
+            }
+        })
+    }
+
+    return []
+}
+
+export const getCIMaterialList = (params, abortSignal: AbortSignal) => {
+    return get(`${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`, {
+        signal: abortSignal,
+    }).then((response) => {
+        const materials = processCIMaterialResponse(response)
         return {
             code: response.code,
             status: response.status,
@@ -214,9 +237,11 @@ export const getCIMaterialList = (params) => {
     })
 }
 
-export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType) {
+export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType, abortSignal: AbortSignal) {
     let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${stageMap[stageType]}`
-    return get(URL).then((response) => {
+    return get(URL, {
+        signal: abortSignal,
+    }).then((response) => {
         return cdMaterialListModal(
             response.result.ci_artifacts,
             true,
@@ -226,9 +251,16 @@ export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType) {
     })
 }
 
-export function getRollbackMaterialList(cdMaterialId, offset: number, size: number): Promise<ResponseType> {
+export function getRollbackMaterialList(
+    cdMaterialId,
+    offset: number,
+    size: number,
+    abortSignal: AbortSignal,
+): Promise<ResponseType> {
     let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material/rollback?offset=${offset}&size=${size}`
-    return get(URL).then((response) => {
+    return get(URL, {
+        signal: abortSignal,
+    }).then((response) => {
         return {
             code: response.code,
             status: response.status,
@@ -238,7 +270,7 @@ export function getRollbackMaterialList(cdMaterialId, offset: number, size: numb
 }
 
 export function extractImage(image: string): string {
-    return image? image.split(':').pop() : ''
+    return image ? image.split(':').pop() : ''
 }
 
 function cdMaterialListModal(
@@ -288,8 +320,11 @@ function cdMaterialListModal(
                           tag: mat.tag || '',
                           webhookData: mat.webhookData || '',
                           url: mat.url || '',
-                          branch: (material.ciConfigureSourceType === SourceTypeMap.WEBHOOK ? material.ciConfigureSourceValue : mat.branch) || '',
-                          type: material.ciConfigureSourceType || ''
+                          branch:
+                              (material.ciConfigureSourceType === SourceTypeMap.WEBHOOK
+                                  ? material.ciConfigureSourceValue
+                                  : mat.branch) || '',
+                          type: material.ciConfigureSourceType || '',
                       }
                   })
                 : [],
@@ -359,7 +394,7 @@ export const getPrePostCDTriggerStatus = (params) => {
 }
 
 export const getWorkflowStatus = (appId: string) => {
-    const URL = `${Routes.APP_WORKFLOW_STATUS}/${appId}`
+    const URL = `${Routes.APP_WORKFLOW_STATUS}/${appId}/${Routes.APP_LIST_V2}`
     return get(URL)
 }
 
@@ -368,9 +403,11 @@ export const getCIPipelines = (appId) => {
     return get(URL)
 }
 
-export function refreshGitMaterial(gitMaterialId: string) {
+export function refreshGitMaterial(gitMaterialId: string, abortSignal: AbortSignal) {
     const URL = `${Routes.REFRESH_MATERIAL}/${gitMaterialId}`
-    return get(URL).then((response) => {
+    return get(URL, {
+        signal: abortSignal,
+    }).then((response) => {
         return {
             code: response.code,
             result: {
@@ -456,7 +493,7 @@ export function getAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
     return get(`${Routes.APP_META_INFO}/${appId}`)
 }
 
-export function getHelmAppMetaInfo(appId: string): Promise<AppMetaInfoResponse>{
+export function getHelmAppMetaInfo(appId: string): Promise<AppMetaInfoResponse> {
     return get(`${Routes.HELM_APP_META_INFO}/${appId}`)
 }
 

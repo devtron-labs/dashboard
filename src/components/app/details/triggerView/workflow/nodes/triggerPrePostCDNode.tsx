@@ -32,7 +32,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps>{
                     <span>{this.props.status}</span>
                     {!this.props.fromAppGrouping && (
                         <>
-                            <span className="mr-5 ml-5">/</span>
+                            {this.props.status && <span className="mr-5 ml-5">/</span>}
                             <Link to={url} className="workflow-node__details-link">
                                 Details
                             </Link>

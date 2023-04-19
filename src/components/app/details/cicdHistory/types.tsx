@@ -66,6 +66,7 @@ export interface ArtifactType {
     isArtifactUploaded?: boolean
     getArtifactPromise?: () => Promise<any>
     isJobView?: boolean
+    type: HistoryComponentType
 }
 
 export interface CopyTippyWithTextType {
@@ -127,6 +128,7 @@ export interface HistorySummaryCardType {
     artifact: string
     type: HistoryComponentType
     stage: DeploymentStageType
+    dataTestId?: string
 }
 
 export interface SummaryTooltipCardType {

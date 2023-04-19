@@ -4,9 +4,8 @@ import EnvironmentOverview from '../EnvironmentOverview'
 import { act, render } from '@testing-library/react'
 import { Route, Router } from 'react-router-dom'
 import * as data from '../../../AppGroup.service'
-import * as appListData from '../../../../../components/app/service'
 import { createMemoryHistory } from 'history'
-import { filteredData, mockAppStatus, mockStatusFetch } from '../__mock__/EnvironmentOverview.mock'
+import { appListResult, filteredData, mockStatusFetch } from '../__mock__/EnvironmentOverview.mock'
 
 function renderWithRouter(ui, { route = '/', history = createMemoryHistory({ initialEntries: [route] }) } = {}) {
     return {
@@ -19,7 +18,7 @@ describe('EnvironmentOverview', () => {
     it('EnvironmentOverview render without error', () => {
         const { container } = renderWithRouter(
             <Route path="application-group/:envId/overview">
-               <EnvironmentOverview filteredApps={[]} />
+                <EnvironmentOverview filteredApps={[]} />
             </Route>,
             { route: 'application-group/28/overview' },
         )
@@ -30,12 +29,11 @@ describe('EnvironmentOverview', () => {
 
     it('EnvironmentOverview render with data', async () => {
         let component
-        jest.spyOn(appListData, 'getAppList').mockImplementation(mockAppStatus)
         jest.spyOn(data, 'getDeploymentStatus').mockImplementation(mockStatusFetch)
         await act(async () => {
             component = renderWithRouter(
                 <Route path="application-group/:envId/overview">
-                   <EnvironmentOverview filteredApps={filteredData} />
+                    <EnvironmentOverview filteredApps={filteredData} appGroupListData={appListResult} />
                 </Route>,
                 { route: 'application-group/4/overview' },
             )
@@ -47,7 +45,7 @@ describe('EnvironmentOverview', () => {
         const infoLeftRowComponent = leftInfoComponent.querySelector('.fs-13.fw-4.lh-20.cn-9')
         expect(infoLeftRowComponent).toBeInTheDocument()
         expect(component.getByText('prakash-1mar')).toBeInTheDocument()
-        expect(component.getByText('ns-2')).toBeInTheDocument()
+        expect(component.getByText('devtron-ns')).toBeInTheDocument()
         expect(component.getByText('default_cluster')).toBeInTheDocument()
         //right side component
         const rightInfoComponent = component.container.querySelector('.dc__overflow-scroll')
@@ -58,4 +56,3 @@ describe('EnvironmentOverview', () => {
         expect(component.getAllByText('Healthy')[0]).toBeInTheDocument()
     })
 })
-
