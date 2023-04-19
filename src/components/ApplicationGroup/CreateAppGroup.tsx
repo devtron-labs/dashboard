@@ -220,7 +220,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
                         disabled={selectedAppGroup && !!selectedAppGroup.value}
                     />
 
-                    {showErrorMsg && (!appGroupName || appGroupName.length > 30) && (
+                    {showErrorMsg && !(appGroupName?.length <= 30) && (
                         <span className="form__error">
                             <Error className="form__icon form__icon--error" />
                             {nameErrorMessage()}
