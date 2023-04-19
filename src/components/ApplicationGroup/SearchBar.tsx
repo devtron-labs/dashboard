@@ -29,7 +29,7 @@ export default function SearchBar({
     }
 
     return (
-        <div className="dc__block w-100 dc__position-rel en-2 bw-1 br-4 h-32">
+        <div className="dc__block w-100 dc__position-rel en-2 bw-1 br-4 h-32 mb-8">
             <Search className="search__icon icon-dim-18" />
             <input
                 type="text"

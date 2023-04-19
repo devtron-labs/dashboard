@@ -165,7 +165,8 @@
     }
 }
 
-.create-group-container, .env-header-tab {
+.create-group-container,
+.env-header-tab {
     .tab-list {
         .tab-list__tab {
             .tab-hover {
@@ -179,6 +180,23 @@
                 background-color: var(--B500);
                 border-radius: 2px 2px 0px 0px;
                 margin-top: -1px;
+            }
+        }
+    }
+
+    .selected-app-row {
+        .check-icon {
+            display: block;
+        }
+        .delete-icon {
+            display: none;
+        }
+        &:hover {
+            .check-icon {
+                display: none;
+            }
+            .delete-icon {
+                display: block;
             }
         }
     }
