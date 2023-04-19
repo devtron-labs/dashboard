@@ -122,6 +122,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 setSelectedAppList([])
                 setSelectedGroupFilter([])
             }
+            _groupFilterOption.sort(sortOptionsByLabel)
             setGroupFilterOptions(_groupFilterOption)
         }
         setAppListLoading(false)

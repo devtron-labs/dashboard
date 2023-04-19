@@ -506,7 +506,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                                         </td>
                                         <td className="security-scan-table__data security-scan-table__pl">
                                             <span className={`fill-${item.severity}`} data-testid="severity-check">
-                                                {item.severity}{' '}
+                                                {item.severity}
                                             </span>
                                         </td>
                                         <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
