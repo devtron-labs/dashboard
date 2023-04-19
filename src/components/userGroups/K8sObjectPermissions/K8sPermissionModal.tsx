@@ -19,7 +19,7 @@ export default function K8sPermissionModal({
     const [apiGroupMapping, setApiGroupMapping] = useState<Record<number, OptionType[]>>()
     const [kindMapping, setKindMapping] = useState<Record<number, OptionType[]>>()
     const [objectMapping, setObjectMapping] = useState<Record<number, OptionType[]>>()
-    const {customRoles}=useUserGroupContext()
+    const { customRoles } = useUserGroupContext()
 
     const handleK8sPermission = (action: string, key?: number, data?: any) => {
         const _k8sPermissionList = [...k8PermissionList]

@@ -56,6 +56,7 @@ import {
     Custom_Roles,
     EntityTypes,
     CustomRoleAndMeta,
+    UserGroup,
 } from './userGroups.types'
 import { ACCESS_TYPE_CLUSTER, ACCESS_TYPE_MAP, DOCUMENTATION, HELM_APP_UNASSIGNED_PROJECT, Routes, SERVER_MODE } from '../../config'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -78,20 +79,6 @@ import { getSSOConfigList } from '../login/login.service'
 import { ERROR_EMPTY_SCREEN, SSO_NOT_CONFIGURED_STATE_TEXTS, TOAST_ACCESS_DENIED, USER_NOT_EDITABLE } from '../../config/constantMessaging'
 import { group } from 'console'
 
-interface UserGroup {
-    appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
-    userGroupsList: any[]
-    environmentsList: any[]
-    projectsList: any[]
-    chartGroupsList: ChartGroup[]
-    fetchAppList: (projectId: number[]) => void
-    superAdmin: boolean
-    roles: string[]
-    envClustersList: any[]
-    fetchAppListHelmApps: (projectId: number[]) => void
-    appsListHelmApps: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>,
-    customRoles: CustomRoleAndMeta
-}
 const UserGroupContext = React.createContext<UserGroup>({
     appsList: new Map(),
     userGroupsList: [],
@@ -805,13 +792,14 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     removeRow,
 }) => {
     const { serverMode } = useContext(mainContext)
-    const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps,customRoles } = useUserGroupContext()
+    const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps, customRoles } =
+        useUserGroupContext()
     const projectId =
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
             ? projectsList.find((project) => project.name === permission.team.value)?.id
             : null
 
-    const [possibleRoles,setPossibleRoles] =useState([])
+    const [possibleRoles, setPossibleRoles] = useState([])
     const [openMenu, changeOpenMenu] = useState<'entityName' | 'environment' | ''>('')
     const [environments, setEnvironments] = useState([])
     const [applications, setApplications] = useState([])

@@ -67,7 +67,7 @@ export default function AppPermissions({
         }
         populateDataFromAPI(data.roleFilters)
     }, [data])
-    const {customRoles}=useUserGroupContext()
+    const { customRoles } = useUserGroupContext()
     function setAllApplication(directRolefilter: APIRoleFilter, projectId) {
         if ( directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
             return [
