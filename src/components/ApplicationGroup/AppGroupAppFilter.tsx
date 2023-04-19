@@ -23,11 +23,11 @@ export default function AppGroupAppFilter() {
     const [appFilterGroupInput, setAppFilterGroupInput] = useState('')
 
     const handleOpenFilter = (): void => {
+        setSelectedFilterTab(groupFilterOptions.length > 0 ? AppFilterTabs.GROUP_FILTER : AppFilterTabs.APP_FILTER)
         setMenuOpen(true)
     }
 
     const handleCloseFilter = (): void => {
-        setSelectedFilterTab(AppFilterTabs.GROUP_FILTER)
         setMenuOpen(false)
     }
 

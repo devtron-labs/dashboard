@@ -246,7 +246,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
                     )}
                 </div>
                 <div>
-                    <ul role="tablist" className="tab-list mb-8">
+                    <ul role="tablist" className="tab-list dc__border-bottom mb-8">
                         {renderTabItem(CreateGroupTabs.SELECTED_APPS, selectedAppsCount)}
                         {renderTabItem(CreateGroupTabs.ALL_APPS, appList.length)}
                     </ul>

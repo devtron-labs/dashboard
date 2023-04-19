@@ -35,7 +35,7 @@ export default function SearchBar({
                 type="text"
                 placeholder={placeholder ?? 'Search'}
                 value={searchText}
-                className="search__input"
+                className="dc__position-abs dc__no-border w-100 h-100 br-4 pt-8 pr-30 pb-8 pl-30"
                 onChange={handleSearchChange}
                 onKeyDown={handleFilterKeyPress}
                 tabIndex={4}

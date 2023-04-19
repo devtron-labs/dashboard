@@ -3,7 +3,8 @@ import { components } from 'react-select'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
 import { getOptionBGClass } from './AppGroup.utils'
 import { ReactComponent as ShowIcon } from '../../assets/icons/ic-visibility-on.svg'
-import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-visibility-on-filter.svg'
+import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-group-filter.svg'
+import { ReactComponent as ShowIconFilterApplied } from '../../assets/icons/ic-group-filter-applied.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-outlined.svg'
@@ -34,11 +35,11 @@ export const ValueContainer = (props): JSX.Element => {
                     {!props.selectProps.menuIsOpen ? (
                         <>
                             {selectedAppsLength > 0 ? (
-                                <ShowIconFilter className="icon-dim-16 mr-4 mw-18" />
+                                <ShowIconFilterApplied className="icon-dim-16 mr-4 mw-18" />
                             ) : (
-                                <ShowIcon className="icon-dim-16 mr-4 mw-18" />
+                                <ShowIconFilter className="icon-dim-16 mr-4 mw-18" />
                             )}
-                            <span className="dc__position-abs dc__left-35 cn-9 ml-2">{selectorText}</span>
+                            <span className="cn-9 ml-2">{selectorText}</span>
                         </>
                     ) : (
                         <>

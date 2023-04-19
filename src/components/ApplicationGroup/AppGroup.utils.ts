@@ -150,7 +150,7 @@ export const appGroupAppSelectorStyle = {
         borderRadius: '4px',
         height: '32px',
         fontSize: '12px',
-        width: '250px',
+        width: state.menuIsOpen ? '250px' : 'unset',
         cursor: state.isDisabled ? 'not-allowed' : 'normal',
     }),
     singleValue: (base, state) => ({
@@ -176,13 +176,13 @@ export const appGroupAppSelectorStyle = {
     valueContainer: (base, state) => ({
         ...base,
         color: 'var(--N900)',
-        padding: '0px 10px',
+        padding: '0 0 0 10px',
         display: 'flex',
         height: '30px',
         fontSize: '13px',
         cursor: state.isDisabled ? 'not-allowed' : 'pointer',
         pointerEvents: 'all',
-        minWidth: '100px',
+        width: state.menuIsOpen ? '250px' : 'max-content',
         whiteSpace: 'nowrap',
     }),
     menuList: (base) => {
