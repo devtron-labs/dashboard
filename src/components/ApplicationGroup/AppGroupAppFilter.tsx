@@ -22,8 +22,16 @@ export default function AppGroupAppFilter() {
     const [appFilterAppInput, setAppFilterAppInput] = useState('')
     const [appFilterGroupInput, setAppFilterGroupInput] = useState('')
 
+    const selectDefaultFilterTab = (): void => {
+        let _filterTab = AppFilterTabs.GROUP_FILTER
+        if ((!selectedGroupFilter[0] && selectedAppList.length > 0) || groupFilterOptions.length === 0) {
+            _filterTab = AppFilterTabs.APP_FILTER
+        }
+        setSelectedFilterTab(_filterTab)
+    }
+
     const handleOpenFilter = (): void => {
-        setSelectedFilterTab(groupFilterOptions.length > 0 ? AppFilterTabs.GROUP_FILTER : AppFilterTabs.APP_FILTER)
+        selectDefaultFilterTab()
         setMenuOpen(true)
     }
 

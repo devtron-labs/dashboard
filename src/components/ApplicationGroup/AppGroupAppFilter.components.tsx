@@ -142,9 +142,11 @@ export const MenuList = (props: any): JSX.Element => {
         groupFilterOptions,
         openCreateGroup,
         selectedGroupFilter,
+        setSelectedGroupFilter,
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
     const clearSelection = (): void => {
         setSelectedAppList([])
+        setSelectedGroupFilter([])
     }
     const onTabChange = (e): void => {
         setSelectedFilterTab(e.currentTarget.dataset.selectedTab)
