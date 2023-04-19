@@ -864,7 +864,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     }, [environmentsList])
 
     useEffect(() =>{
-        const customRoleOptions = customRoles.customRoles?.map((role)=>({
+        const customRoleOptions = customRoles.customRoles.map((role)=>({
             label:role.roleDisplayName,
             value:role.roleName,
             description:role.roleDescription,
