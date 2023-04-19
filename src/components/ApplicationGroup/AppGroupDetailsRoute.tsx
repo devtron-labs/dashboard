@@ -250,6 +250,7 @@ export function EnvHeader({
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CI_DETAILS}`}
                         className="tab-list__tab-link"
+                        data-testid="app-group-build-history"
                     >
                         Build history
                     </NavLink>
