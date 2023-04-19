@@ -160,7 +160,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                                         type="button"
                                         className="dc__transparent"
                                         data-index={index}
-                                        data-testid="api-token-edit-button"
+                                        data-testid="api-token-delete-button"
                                         onClick={handleDelete}
                                     >
                                         <Trash className="scn-6 icon-dim-20" />
