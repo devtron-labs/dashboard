@@ -331,8 +331,9 @@ function EditAPIToken({
                                 name="permission-type"
                                 onChange={handlePermissionType}
                             >
-                                {PermissionType.map(({ label, value }) => (
+                                {PermissionType.map(({ label, value }, index) => (
                                     <RadioGroupItem
+                                        key={`radio-button-${index}`}
                                         dataTestId={`${
                                             value === 'SPECIFIC' ? 'specific-user' : 'super-admin'
                                         }-permission-radio-button`}
