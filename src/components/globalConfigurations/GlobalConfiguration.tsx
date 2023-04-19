@@ -657,6 +657,7 @@ export function ProtectedInput({
     hidden = true,
     labelClassName = '',
     placeholder = '',
+    dataTestId = ''
 }) {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
@@ -670,6 +671,7 @@ export function ProtectedInput({
             </label>
             <div className="dc__position-rel w-100">
                 <input
+                    data-testid={dataTestId}
                     type={shown ? 'text' : 'password'}
                     tabIndex={tabIndex}
                     className={error ? 'form__input form__input--error pl-42' : 'form__input pl-42'}

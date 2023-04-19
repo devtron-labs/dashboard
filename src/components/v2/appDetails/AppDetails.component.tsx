@@ -75,7 +75,7 @@ const AppDetailsComponent = ({
             )}
             {loadingResourceTree ? (
                 <div className="bcn-0 dc__border-top h-100">
-                    <Progressing pageLoader fullHeight size={32} fillColor="var(--N500)" />
+                    <Progressing pageLoader fullHeight size={32}  />
                 </div>
             ) : (
                 <NodeTreeDetailTab

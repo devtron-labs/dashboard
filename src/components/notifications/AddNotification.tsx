@@ -416,8 +416,8 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         name="trigger-type"
                         onChange={this.changeEmailAgent}
                     >
-                        <RadioGroupItem value={EMAIL_AGENT.SES}>{EMAIL_AGENT.SES}</RadioGroupItem>
-                        <RadioGroupItem value={EMAIL_AGENT.SMTP}>{EMAIL_AGENT.SMTP}</RadioGroupItem>
+                        <RadioGroupItem dataTestId="add-notification-ses-checkbox" value={EMAIL_AGENT.SES}>{EMAIL_AGENT.SES}</RadioGroupItem>
+                        <RadioGroupItem dataTestId="add-notification-smtp-checkbox" value={EMAIL_AGENT.SMTP}>{EMAIL_AGENT.SMTP}</RadioGroupItem>
                     </RadioGroup>
                     <div className="w-300">
                         <Select
@@ -425,13 +425,13 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                             onChange={this.selectEmailAgentAccount}
                             value={this.state.emailAgentConfigId}
                         >
-                            <Select.Button rootClassName="select-button--default h-36">
+                            <Select.Button dataTestIdDropdown="add-notification-select-agent-dropdown" rootClassName="select-button--default h-36">
                                 {emailAgentConfig
                                     ? emailAgentConfig.configName
                                     : `Select ${EMAIL_AGENT[this.state.selectedEmailAgent]} Account`}
                             </Select.Button>
                             {this.state[emailConfigAgentOptions].map((config) => (
-                                <Select.Option key={`${this.state.selectedEmailAgent}_${config.id}`} value={config.id}>
+                                <Select.Option dataTestIdMenuList={`add-notification-select-agent-menu-${config.configName}`} key={`${this.state.selectedEmailAgent}_${config.id}`} value={config.id}>
                                     <span className="dc__ellipsis-left">{config.configName}</span>
                                 </Select.Option>
                             ))}
@@ -507,6 +507,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         return (
             <div className="dc__position-rel">
                 <div
+                    data-testid="add-notification-select-pipeline"
                     className="form__input pipeline-filter__select-pipeline"
                     onClick={() => this.setState({ openSelectPipeline: true })}
                 >
@@ -530,6 +531,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                     {unsavedFilter ? `${unsavedFilter.type}: ` : ''}
                     {unsavedFilter ? (
                         <input
+                            data-testid="add-notification-select-pipeline-input"
                             autoComplete="off"
                             type="text"
                             className="pipeline-filter__search dc__transparent flex-1"
@@ -559,6 +561,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                             {options.map((o) => {
                                 return (
                                     <div
+                                        data-testid={`add-notification-select-pipeline-filter-${o.label}`}
                                         className="pipeline-filter__option"
                                         key={o.label}
                                         onClick={() => {
@@ -681,6 +684,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                         <Tippy className="default-tt" arrow={true} placement="top" content="Trigger">
                                             <div>
                                                 <Checkbox
+                                                    dataTestId={`trigger-notification-checkbox-${rowIndex}`}
                                                     rootClassName="gray"
                                                     isChecked={row.trigger}
                                                     value={'CHECKED'}
@@ -695,6 +699,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                         <Tippy className="default-tt" arrow={true} placement="top" content="Success">
                                             <div>
                                                 <Checkbox
+                                                    dataTestId={`success-notification-checkbox-${rowIndex}`}
                                                     rootClassName="green"
                                                     isChecked={row.success}
                                                     value={'CHECKED'}
@@ -709,6 +714,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                         <Tippy className="default-tt" arrow={true} placement="top" content="Failure">
                                             <div>
                                                 <Checkbox
+                                                    dataTestId={`failure-notification-checkbox-${rowIndex}`}
                                                     rootClassName="red"
                                                     isChecked={row.failure}
                                                     value={'CHECKED'}
@@ -735,6 +741,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             <div className="form__row">
                 <p className="add-notification__title mb-16">Send to</p>
                 <CreatableSelect
+                    classNamePrefix='add-notification-send-to'
                     placeholder="Enter email addresses or slack channels"
                     value={this.state.selectedChannels}
                     isMulti
@@ -809,6 +816,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         Cancel
                     </Link>
                     <button
+                        data-testid="add-notification-save-button"
                         type="submit"
                         className="cta"
                         tabIndex={7}
@@ -897,7 +905,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         return (
             <ErrorBoundary>
                 <div className="add-notification-page">
-                    <div className="form__title mb-16">Add Notifications</div>
+                    <div data-testid="add-notifications-heading-title" className="form__title mb-16">Add Notifications</div>
                     {this.renderAddCard()}
                     {this.renderShowSlackConfigModal()}
                     {this.renderSESConfigModal()}

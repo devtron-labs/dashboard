@@ -101,7 +101,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         return (
             <div key="slack-config" className="white-card white-card--configuration-tab mb-16">
                 <div className="configuration-tab__header">
-                    <p className="configuration-tab__title">
+                    <p data-testid = "slack-heading-title" className="configuration-tab__title">
                         <img src={slack} alt="slack" className="icon-dim-24 mr-10" />
                         Slack Configurations
                     </p>
@@ -111,6 +111,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         onClick={(event) => {
                             this.setState({ showSlackConfigModal: true, slackConfigId: 0 })
                         }}
+                        data-testid="slack-add-button"
                     >
                         <Add className="icon-dim-14 mr-5" />
                         Add
@@ -170,6 +171,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                             slackConfigId: slackConfig.id,
                                                         })
                                                     }}
+                                                    data-testid="slack-configure-edit-button"
                                                 >
                                                     <Edit className="icon-dim-20" />
                                                 </button>
@@ -189,6 +191,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                             DeleteComponentsName.SlackConfigurationTab,
                                                         )
                                                     }}
+                                                    data-testid="slack-configure-delete-button"
                                                 >
                                                     <Trash className="scn-5 icon-dim-20" />
                                                 </button>
@@ -207,7 +210,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         return (
             <div key="ses-config" className="white-card white-card--configuration-tab">
                 <div className="configuration-tab__header">
-                    <p className="configuration-tab__title">
+                    <p data-testid = "ses-heading-title" className="configuration-tab__title">
                         <img alt="ses config" src={ses} className="icon-dim-24 mr-10" />
                         SES Configurations
                     </p>
@@ -217,6 +220,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         onClick={(event) => {
                             this.setState({ showSESConfigModal: true, sesConfigId: 0 })
                         }}
+                        data-testid="ses-add-button"
                     >
                         <Add className="icon-dim-14 mr-5" />
                         Add
@@ -231,7 +235,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         return (
             <div key="smtp-config" className="white-card white-card--configuration-tab">
                 <div className="configuration-tab__header">
-                    <p className="configuration-tab__title flexbox">
+                    <p data-testid = "smtp-heading-title" className="configuration-tab__title flexbox">
                         <SMTP className="icon-dim-24 mr-10" />
                         SMTP Configurations
                     </p>
@@ -241,6 +245,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         onClick={(event) => {
                             this.setState({ showSMTPConfigModal: true, smtpConfigId: 0 })
                         }}
+                        data-testid="smtp-add-button"
                     >
                         <Add className="icon-dim-14 mr-5" />
                         Add
@@ -336,14 +341,14 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         <tr className="mb-8">
                             {this.state.sesConfigurationList.map((sesConfig) => {
                                 return (
-                                    <td key={sesConfig.id} className="configuration-tab__table-row">
-                                        <div className="ses-config-table__name dc__truncate-text ">
+                                    <td data-testid={`ses-container-${sesConfig.name}`} key={sesConfig.id} className="configuration-tab__table-row">
+                                        <div data-testid={`ses-config-name-${sesConfig.name}`}className="ses-config-table__name dc__truncate-text ">
                                             {sesConfig.name}
                                             {sesConfig.isDefault ? (
                                                 <span className="dc__ses_config-table__tag">Default</span>
                                             ) : null}
                                         </div>
-                                        <div className="ses-config-table__access-key dc__truncate-text ">
+                                        <div data-testid={`ses-access-key-${sesConfig.accessKeyId}`} className="ses-config-table__access-key dc__truncate-text ">
                                             {sesConfig.accessKeyId}
                                         </div>
                                         <div className="ses-config-table__email dc__truncate-text ">
@@ -360,6 +365,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                             sesConfigId: sesConfig.id,
                                                         })
                                                     }}
+                                                    data-testid="ses-config-edit-button"
                                                 >
                                                     <Edit className="icon-dim-20" />
                                                 </button>
@@ -379,6 +385,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                             DeleteComponentsName.SesConfigurationTab,
                                                         )
                                                     }}
+                                                    data-testid="ses-config-delete-button"
                                                 >
                                                     <Trash className="scn-5 icon-dim-20" />
                                                 </button>
@@ -426,14 +433,14 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                         <tr className="mb-8">
                             {this.state.smtpConfigurationList.map((smtpConfig) => {
                                 return (
-                                    <td key={smtpConfig.id} className="configuration-tab__table-row">
-                                        <div className="ses-config-table__name dc__truncate-text ">
+                                    <td data-testid={`smtp-container-${smtpConfig.name}`} key={smtpConfig.id} className="configuration-tab__table-row">
+                                        <div data-testid={`smtp-config-name-${smtpConfig.name}`} className="ses-config-table__name dc__truncate-text ">
                                             {smtpConfig.name}
                                             {smtpConfig.isDefault ? (
                                                 <span className="dc__ses_config-table__tag">Default</span>
                                             ) : null}
                                         </div>
-                                        <div className="smtp-config-table__host dc__truncate-text ">
+                                        <div data-testid={`smtp-config-host-${smtpConfig.host}`} className="smtp-config-table__host dc__truncate-text ">
                                             {smtpConfig.host}
                                         </div>
                                         <div className="smtp-config-table__port dc__truncate-text ">
@@ -453,6 +460,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                             smtpConfigId: smtpConfig.id,
                                                         })
                                                     }}
+                                                    data-testid="smtp-config-edit-button"
                                                 >
                                                     <Edit className="icon-dim-20" />
                                                 </button>
@@ -472,6 +480,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
                                                             DeleteComponentsName.SMTPConfigurationTab,
                                                         )
                                                     }}
+                                                    data-testid="smtp-config-delete-button"
                                                 >
                                                     <Trash className="scn-5 icon-dim-20" />
                                                 </button>
