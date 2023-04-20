@@ -2,7 +2,6 @@ import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
     CDMdalTabType,
-    CiPipeline,
     DeploymentNodeType,
     WebhookPayloads,
     WorkflowNodeType,
@@ -231,8 +230,16 @@ export interface AppGroupDetailDefaultType {
     filteredAppIds: string
     appGroupListData?: AppGroupListType
 }
+
+interface CIPipeline {
+  appName: string
+  appId: number
+  id: number
+  parentCiPipeline: number
+  parentAppId: number
+}
 export interface CIConfigListType {
-    pipelineList: CiPipeline[]
+    pipelineList: CIPipeline[]
     securityModuleInstalled: boolean
     blobStorageConfigured: boolean
 }

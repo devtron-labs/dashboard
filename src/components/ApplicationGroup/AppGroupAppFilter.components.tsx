@@ -2,14 +2,15 @@ import React from 'react'
 import { components } from 'react-select'
 import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
 import { getOptionBGClass } from './AppGroup.utils'
-import { ReactComponent as ShowIcon } from '../../assets/icons/ic-visibility-on.svg'
-import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-visibility-on-filter.svg'
+import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-group-filter.svg'
+import { ReactComponent as ShowIconFilterApplied } from '../../assets/icons/ic-group-filter-applied.svg'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-outlined.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { AppGroupAppFilterContextType } from './AppGroup.types'
 import { AppFilterTabs } from './Constants'
 import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
@@ -34,11 +35,11 @@ export const ValueContainer = (props): JSX.Element => {
                     {!props.selectProps.menuIsOpen ? (
                         <>
                             {selectedAppsLength > 0 ? (
-                                <ShowIconFilter className="icon-dim-16 mr-4 mw-18" />
+                                <ShowIconFilterApplied className="icon-dim-16 mr-4 mw-18" />
                             ) : (
-                                <ShowIcon className="icon-dim-16 mr-4 mw-18" />
+                                <ShowIconFilter className="icon-dim-16 mr-4 mw-18" />
                             )}
-                            <span className="dc__position-abs dc__left-35 cn-9 ml-2">{selectorText}</span>
+                            <span className="cn-9 ml-2">{selectorText}</span>
                         </>
                     ) : (
                         <>
@@ -78,7 +79,7 @@ export const Option = (props): JSX.Element => {
         if (selectedFilterTab === AppFilterTabs.APP_FILTER) {
             if (props.isSelected || props.isFocused) {
                 return (
-                    <ShowIcon
+                    <CheckIcon
                         className={`icon-dim-16 mr-4 mw-18 cursor ${props.isSelected ? 'scb-5' : ''}`}
                         onClick={selectData}
                     />
@@ -141,9 +142,11 @@ export const MenuList = (props: any): JSX.Element => {
         groupFilterOptions,
         openCreateGroup,
         selectedGroupFilter,
+        setSelectedGroupFilter,
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
     const clearSelection = (): void => {
         setSelectedAppList([])
+        setSelectedGroupFilter([])
     }
     const onTabChange = (e): void => {
         setSelectedFilterTab(e.currentTarget.dataset.selectedTab)

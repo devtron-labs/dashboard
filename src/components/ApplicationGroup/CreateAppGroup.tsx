@@ -1,7 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Drawer, Progressing, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    Drawer,
+    Progressing,
+    showError,
+    stopPropagation,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
+import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { CreateGroupType } from './AppGroup.types'
 import SearchBar from './SearchBar'
 import { CreateGroupTabs, CREATE_GROUP_TABS } from './Constants'
@@ -91,14 +99,18 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
         }
     }
 
-    const addApp = (e): void => {
-        stopPropagation(e)
+    const toggleAppSelection = (appId: string): void => {
         const _selectedAppsMap = { ...selectedAppsMap }
-        if (!_selectedAppsMap[e.currentTarget.dataset.appId]) {
-            _selectedAppsMap[e.currentTarget.dataset.appId] = true
-            setSelectedAppsMap(_selectedAppsMap)
-            setSelectedAppsCount(selectedAppsCount + 1)
+        let _selectedAppsCount = selectedAppsCount
+        if (!_selectedAppsMap[appId]) {
+            _selectedAppsMap[appId] = true
+            _selectedAppsCount += 1
+        } else {
+            delete _selectedAppsMap[appId]
+            _selectedAppsCount -= 1
         }
+        setSelectedAppsMap(_selectedAppsMap)
+        setSelectedAppsCount(_selectedAppsCount)
     }
 
     const renderSelectedApps = (): JSX.Element => {
@@ -121,14 +133,13 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
                         .map((app) => (
                             <div
                                 key={`selected-app-${app.id}`}
-                                className="flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 cn-9"
+                                className="flex left dc__hover-n50 p-8 fs-13 fw-4 cn-9 selected-app-row cursor"
+                                data-app-id={app.id}
+                                onClick={removeAppSelection}
                             >
+                                <CheckIcon className="icon-dim-16 cursor check-icon mr-8" />
+                                <Close className="icon-dim-16 cursor delete-icon fcr-5 mr-8" />
                                 <span>{app.appName}</span>
-                                <Close
-                                    className="icon-dim-16 cursor"
-                                    data-app-id={app.id}
-                                    onClick={removeAppSelection}
-                                />
                             </div>
                         ))}
                 </div>
@@ -150,23 +161,15 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
                     {appList
                         .filter((app) => !allAppSearchText || app.appName.indexOf(allAppSearchText) >= 0)
                         .map((app) => (
-                            <div
+                            <Checkbox
                                 key={`app-${app.id}`}
-                                className={`flex dc__content-space dc__hover-n50 p-8 fs-13 fw-4 ${
-                                    selectedAppsMap[app.id] ? 'bcb-1 cb-5' : 'cn-9'
-                                }`}
-                                data-app-id={app.id}
-                                onClick={addApp}
+                                rootClassName="fs-13 pt-8 pr-8 pb-8 mb-0-imp dc__hover-n50"
+                                isChecked={selectedAppsMap[app.id]}
+                                value={CHECKBOX_VALUE.CHECKED}
+                                onChange={() => toggleAppSelection(app.id)}
                             >
-                                <span>{app.appName}</span>
-                                {selectedAppsMap[app.id] && (
-                                    <Close
-                                        className="icon-dim-16 cursor"
-                                        data-app-id={app.id}
-                                        onClick={removeAppSelection}
-                                    />
-                                )}
-                            </div>
+                                {app.appName}
+                            </Checkbox>
                         ))}
                 </div>
             </div>
@@ -246,7 +249,7 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
                     )}
                 </div>
                 <div>
-                    <ul role="tablist" className="tab-list mb-8">
+                    <ul role="tablist" className="tab-list dc__border-bottom mb-8">
                         {renderTabItem(CreateGroupTabs.SELECTED_APPS, selectedAppsCount)}
                         {renderTabItem(CreateGroupTabs.ALL_APPS, appList.length)}
                     </ul>

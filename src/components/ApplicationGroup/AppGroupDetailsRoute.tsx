@@ -79,7 +79,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     }, [envList, envId])
 
     useEffect(() => {
-        if (envId) {
+        if (envId && !showEmpty) {
             getSavedFilterData()
             getAppListData()
         }
@@ -480,7 +480,7 @@ export function EnvHeader({
                 <BreadCrumb breadcrumbs={breadcrumbs} />
                 <div className="dc__border-right ml-8 mr-8 h-16" />
                 <AppGroupAppFilterContext.Provider value={contextValue}>
-                    <AppGroupAppFilter />
+                    {!showEmpty && <AppGroupAppFilter />}
                 </AppGroupAppFilterContext.Provider>
             </>
         )

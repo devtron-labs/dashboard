@@ -29,13 +29,13 @@ export default function SearchBar({
     }
 
     return (
-        <div className="dc__block w-100 dc__position-rel en-2 bw-1 br-4 h-32">
+        <div className="dc__block w-100 dc__position-rel en-2 bw-1 br-4 h-32 mb-8">
             <Search className="search__icon icon-dim-18" />
             <input
                 type="text"
                 placeholder={placeholder ?? 'Search'}
                 value={searchText}
-                className="search__input"
+                className="dc__position-abs dc__no-border w-100 h-100 br-4 pt-8 pr-30 pb-8 pl-30"
                 onChange={handleSearchChange}
                 onKeyDown={handleFilterKeyPress}
                 tabIndex={4}

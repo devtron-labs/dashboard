@@ -79,11 +79,11 @@ export const BULK_CI_MESSAGING = {
 }
 
 export const BULK_CD_MESSAGING = {
-    emptyPreDeploy: {
+    [DeploymentNodeType.PRECD]: {
         title: 'does not have a pre-deployment stage',
         subTitle: 'This app does not have a pre-deployment stage',
     },
-    emptyPostDeploy: {
+    [DeploymentNodeType.POSTCD]: {
         title: 'does not have a post-deployment stage',
         subTitle: 'This app does not have a post-deployment stage',
     },
