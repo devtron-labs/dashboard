@@ -75,7 +75,7 @@ export default function BranchRegexModal({
         return (
             <div className="trigger-modal__trigger flex right">
                 <ButtonWithLoader
-                    dataTestId="branch-regex-save-next-button"
+                    data-testid="branch-regex-save-next-button"
                     rootClassName="cta flex mr-20"
                     onClick={onClickNextButton}
                     disabled={_isDisabled || savingRegexValue}
