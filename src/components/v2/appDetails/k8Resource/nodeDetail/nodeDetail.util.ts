@@ -232,6 +232,7 @@ export const getContainerSelectStyles = () => {
             backgroundColor: 'transparent',
             minHeight: '24px !important',
             cursor: 'pointer',
+            height: '28px',
         }),
         singleValue: (base) => ({
             ...base,
@@ -241,8 +242,14 @@ export const getContainerSelectStyles = () => {
             textAlign: 'left',
             marginLeft: '2px',
         }),
+        valueContainer: (base, state) => ({
+            ...base,
+            height: '28px',
+            padding: '0 6px',
+        }),
         indicatorsContainer: (provided) => ({
             ...provided,
+            height: '28px',
         }),
     }
 }
@@ -264,8 +271,14 @@ export const getShellSelectStyles = () => {
             textAlign: 'left',
             color: '#06c',
         }),
+        valueContainer: (base, state) => ({
+            ...base,
+            height: '28px',
+            padding: '0 6px',
+        }),
         indicatorsContainer: (provided) => ({
             ...provided,
+            height: '28px',
         }),
     }
 }

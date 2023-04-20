@@ -1,9 +1,9 @@
-import React, { useRef, useState } from 'react'
+import React from 'react'
 import { useOnline } from '../../../../../../common'
 import { SocketConnectionType } from '../node.type'
 import { TERMINAL_TEXT } from './constants'
 import TerminalView from './Terminal.component'
-import { TerminalWrapperProps } from './terminal.type'
+import { ConnectionStripMessageType, TerminalWrapperProps } from './terminal.type'
 import terminalStripTypeData from './terminal.utils'
 
 export default function TerminalWrapper({
@@ -40,14 +40,14 @@ export default function TerminalWrapper({
                 isTerminalTab={terminalData.isTerminalTab}
                 renderConnectionStrip={() => (
                     <RenderConnectionStrip
-                        renderStripMessage={terminalData.stripMessage}
+                        renderStripMessage={terminalData.renderConnectionStrip}
                         socketConnection={socketConnection}
                         setSocketConnection={setSocketConnection}
                     />
                 )}
                 registerLinkMatcher={terminalData.registerLinkMatcher}
                 terminalMessageData={terminalData.terminalMessageData}
-                isTerminalCleared={terminalData.terminalCleared}
+                clearTerminal={terminalData.clearTerminal}
             />
         )
     }
@@ -55,7 +55,9 @@ export default function TerminalWrapper({
     return (
         <div className={className}>
             <div className="flex bcn-0 pl-20 dc__border-top h-32">{firstStrip()}</div>
-            <div className="flex left bcn-0 pl-20 dc__border-top h-28">{secondStrip()}</div>
+            {selectionListData.secondRow && (
+                <div className="flex left bcn-0 pl-20 dc__border-top h-28">{secondStrip()}</div>
+            )}
             {typeof selectionListData.tabSwitcher.terminalTabWrapper === 'function'
                 ? selectionListData.tabSwitcher.terminalTabWrapper(renderTerminalView())
                 : renderTerminalView()}
@@ -67,11 +69,7 @@ export function RenderConnectionStrip({
     renderStripMessage,
     socketConnection,
     setSocketConnection,
-}: {
-    renderStripMessage?: any
-    socketConnection: SocketConnectionType
-    setSocketConnection: (type: SocketConnectionType) => void
-}) {
+}: ConnectionStripMessageType) {
     const isOnline = useOnline()
 
     const reconnect = () => {
@@ -87,7 +85,7 @@ export function RenderConnectionStrip({
     const renderStrip = () => {
         if (!isOnline) {
             return (
-                <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0">
+                <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0 connection-status-strip">
                     {TERMINAL_TEXT.OFFLINE_CHECK_CONNECTION}
                 </div>
             )
@@ -125,5 +123,5 @@ export function RenderConnectionStrip({
         }
     }
 
-    return <div className="">{renderStrip()}</div>
+    return <div>{renderStrip()}</div>
 }

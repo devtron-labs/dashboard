@@ -801,9 +801,9 @@ export default function ClusterTerminal({
             terminalTabWrapper: terminalTabWrapper,
             terminalData: {
                 terminalRef: terminalRef,
-                terminalCleared: terminalCleared,
+                clearTerminal: terminalCleared,
                 terminalMessageData: preFetchData,
-                stripMessage: renderStripMessage(),
+                renderConnectionStrip: renderStripMessage(),
                 setSocketConnection: setSocketConnection,
                 socketConnection: socketConnection,
                 isTerminalTab: !selectedTabIndex,

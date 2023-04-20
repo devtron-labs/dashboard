@@ -28,7 +28,7 @@ export default function TerminalView({
     renderConnectionStrip,
     registerLinkMatcher,
     terminalMessageData,
-    isTerminalCleared,
+    clearTerminal,
 }: TerminalViewType) {
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
@@ -184,12 +184,10 @@ export default function TerminalView({
 
         _socket.onclose = function (evt) {
             disableInput()
-            // if () {
-            //     _terminal.writeln('')
-            //     _terminal.writeln('---------------------------------------------')
-            //     _terminal.writeln(`Disconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`)
-            //     _terminal.writeln('---------------------------------------------')
-            // }
+            _terminal.writeln('')
+            _terminal.writeln('---------------------------------------------')
+            _terminal.writeln(`Disconnected at ${moment().format('DD-MMM-YYYY')} at ${moment().format('hh:mm A')}`)
+            _terminal.writeln('---------------------------------------------')
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
 
@@ -236,7 +234,7 @@ export default function TerminalView({
     useEffect(() => {
         terminal?.clear()
         terminal?.focus()
-    }, [isTerminalCleared])
+    }, [clearTerminal])
 
     return (
         <div className="terminal-wrapper h-100 w-100">

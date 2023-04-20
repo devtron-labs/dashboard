@@ -2,20 +2,10 @@ import React from 'react'
 import { SocketConnectionType } from '../node.type'
 
 export interface TerminalSelectionListDataType {
-    firstRow: any[]
+    firstRow: any[] 
     secondRow?: any[]
     tabSwitcher: {
-        terminalData: {
-            terminalRef: React.RefObject<HTMLDivElement>
-            sessionId: string
-            socketConnection: SocketConnectionType
-            setSocketConnection: (type: SocketConnectionType) => void
-            isTerminalTab?: boolean
-            stripMessage: any
-            registerLinkMatcher: (regex: RegExp, handler: (event: MouseEvent, uri: string) => void) => void
-            terminalMessageData: any
-            terminalCleared: boolean
-        }
+        terminalData: TerminalViewType
         terminalTabWrapper?: any
     }
 }
@@ -33,8 +23,14 @@ export interface TerminalViewType {
     socketConnection: SocketConnectionType
     setSocketConnection: (type: SocketConnectionType) => void
     isTerminalTab?: boolean
-    renderConnectionStrip: any
-    registerLinkMatcher: any
-    terminalMessageData: any
-    isTerminalCleared: boolean
+    renderConnectionStrip?: any
+    registerLinkMatcher?: any
+    terminalMessageData?: any
+    clearTerminal: boolean
+}
+
+export interface ConnectionStripMessageType {
+    renderStripMessage?: any
+    socketConnection: SocketConnectionType
+    setSocketConnection: (type: SocketConnectionType) => void
 }

@@ -16,7 +16,7 @@ import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib
 const creatableSelectWrapper = (selectData) => {
     return (
         <>
-            <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
+            <span className="bcn-2 mr-8" style={{ width: '1px', height: '16px' }} />
             <div className="cn-6 ml-8 mr-4">{selectData.title}</div>
             {selectData.showInfoTippy && (
                 <TippyCustomized
@@ -51,7 +51,8 @@ const creatableSelectWrapper = (selectData) => {
 
 const reactSelect = (selectData) => {
     return (
-        <>
+        <>  
+            {selectData.showDivider && <span className="bcn-2 mr-8" style={{ width: '1px', height: '16px' }} />}
             <div className="cn-6 mr-10">{selectData.title}</div>
             <div style={{ minWidth: '145px' }}>
                 <ReactSelect
@@ -163,7 +164,7 @@ const connectionSwitch = (switchProps) => {
 const clearTerminal = (clearProps) => {
     return (
         <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-            <div className="flex">
+            <div className="flex mr-8">
                 <Abort className="icon-dim-16 mr-4 fcn-6 cursor" onClick={clearProps.setTerminalCleared} />
             </div>
         </Tippy>
