@@ -209,7 +209,7 @@ function EnvironmentSelectorComponent({
                             }`}
                         >
                             {isGitops ? (
-                                <ArgoCD data-testid="helm-app-logo" className="icon-dim-32 ml-16 mr-8" />
+                                <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16 mr-8" />
                             ) : (
                                 <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
                             )}
