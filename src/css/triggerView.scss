@@ -150,6 +150,10 @@
     padding: 16px;
     border-radius: 4px;
     cursor: pointer;
+    
+    &.material-history__approved-image {
+        grid-template-columns: repeat(4, auto) 1fr;
+    }
 }
 
 .material-history__info {
