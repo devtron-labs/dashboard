@@ -7,7 +7,7 @@ import {
     showError,
     stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import { CreateGroupType } from './AppGroup.types'
@@ -137,8 +137,8 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
                                 data-app-id={app.id}
                                 onClick={removeAppSelection}
                             >
-                                <CheckIcon className="icon-dim-16 cursor check-icon mr-8" />
-                                <Close className="icon-dim-16 cursor delete-icon fcr-5 mr-8" />
+                                <CheckIcon className="icon-dim-16 cursor check-icon scn-6 mr-8" />
+                                <Close className="icon-dim-16 cursor delete-icon mr-8" />
                                 <span>{app.appName}</span>
                             </div>
                         ))}

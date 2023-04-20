@@ -190,6 +190,9 @@
         }
         .delete-icon {
             display: none;
+            use{
+              fill: var(--R500)
+            }
         }
         &:hover {
             .check-icon {
