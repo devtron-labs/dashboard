@@ -273,7 +273,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                         </div>
                         <div className="form__row smtp-protected-input">
                             <ProtectedInput
-                                dataTestId="add-smtp-password"
+                                dataTestid="add-smtp-password"
                                 value={this.state.form.authPassword}
                                 onChange={this.handleInputChange}
                                 name="authPassword"

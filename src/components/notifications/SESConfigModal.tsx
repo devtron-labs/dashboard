@@ -328,7 +328,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                                 AWS Region*
                             </label>
                             <ReactSelect
-                                classNamePrefix='add-ses-aws-region'
+                                classNamePrefix="add-ses-aws-region"
                                 defaultValue={this.state.form.region}
                                 components={{
                                     DropdownIndicator,
