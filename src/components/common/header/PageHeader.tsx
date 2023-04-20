@@ -100,10 +100,10 @@ function PageHeader({
         return (
             <>
                 <div className="flex left cursor mr-16" onClick={onClickHelp}>
-                    <span className="icon-dim-24 fcn-9 mr-4 ml-16">
+                    <span className="icon-dim-24 fcn-9 mr-4 ml-16" data-testid="">
                         <Question />
                     </span>
-                    <span className="fs-13 cn-9">Help</span>
+                    <span className="fs-13 cn-9" data-testid="help-dropdown">Help</span>
                     <DropDownIcon
                         style={{ ['--rotateBy' as any]: `${180 * Number(showHelpCard)}deg` }}
                         className="fcn-9 icon-dim-20 rotate pointer"
@@ -160,6 +160,7 @@ function PageHeader({
                     {isBreadcrumbs && breadCrumbs()}
                     {isTippyShown && (
                         <a
+                            data-testid="learn-more-symbol"
                             className="dc__link flex"
                             target="_blank"
                             href={tippyRedirectLink}
