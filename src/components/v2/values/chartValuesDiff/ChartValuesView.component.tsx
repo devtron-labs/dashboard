@@ -63,7 +63,9 @@ export const ChartEnvironmentSelector = ({
 
     return !isDeployChartView ? (
         <div className="chart-values__environment-container mb-12">
-            <h2 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7">Environment</h2>
+            <h2 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7" data-testid="environment-heading">
+                Environment
+            </h2>
             {isExternal ? (
                 <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9">
                     {installedAppInfo
@@ -73,7 +75,9 @@ export const ChartEnvironmentSelector = ({
                           releaseInfo.deployedAppDetail.environmentDetail.namespace}
                 </span>
             ) : (
-                <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9">{selectedEnvironment.label}</span>
+                <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9" data-testid="environemnt-value">
+                    {selectedEnvironment.label}
+                </span>
             )}
         </div>
     ) : (
@@ -107,9 +111,11 @@ export const DeploymentAppSelector = ({
 }: DeploymentAppSelectorType): JSX.Element => {
     return !isDeployChartView ? (
         <div className="chart-values__deployment-type">
-            <h2 className="fs-13 fw-4 lh-18 cn-7">Deploy app using</h2>
+            <h2 className="fs-13 fw-4 lh-18 cn-7" data-testid="deploy-app-using-heading">
+                Deploy app using
+            </h2>
             <div className="flex left">
-                <span className="fs-13 fw-6  cn-9 md-6 ">
+                <span className="fs-13 fw-6  cn-9 md-6 " data-testid="deployment-type">
                     {commonState.installedConfig.deploymentAppType === DeploymentAppType.Helm
                         ? DeploymentAppTypeNameMapping.Helm
                         : DeploymentAppTypeNameMapping.GitOps}

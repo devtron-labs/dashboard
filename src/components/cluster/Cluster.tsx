@@ -491,6 +491,7 @@ function Cluster({
                                                     <div
                                                         className="dc__truncate-text flex left cb-5 cursor"
                                                         onClick={showWindowModal}
+                                                        data-testid = {`env-${environment_name}`}
                                                     >
                                                         {environment_name}
 
