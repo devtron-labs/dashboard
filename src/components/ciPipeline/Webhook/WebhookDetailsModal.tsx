@@ -501,7 +501,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
 
     const renderCodeSnippet = (value: string, showCopyOption?: boolean): JSX.Element => {
         return (
-            <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel dc__word-break">
+            <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel dc__word-break" data-testid="sample-script">
                 {showCopyOption && (
                     <Tippy
                         className="default-tt font-open-sans"
