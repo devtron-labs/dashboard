@@ -22,4 +22,5 @@ export interface ContentCardProps {
     LinkIcon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>
     linkIconClass?: string
     linkIconPlacement?: CardLinkIconPlacement
+    datatestid?:string
 }
