@@ -42,7 +42,6 @@ import {
 } from './userGroup.service'
 import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/service'
 import { getChartGroups } from '../charts/charts.service'
-import { ChartGroup } from '../charts/charts.types'
 import {
     DirectPermissionsRoleFilter,
     ChartGroupPermissionsFilter,
@@ -55,7 +54,6 @@ import {
     DefaultUserValue,
     Custom_Roles,
     EntityTypes,
-    CustomRoleAndMeta,
     UserGroup,
 } from './userGroups.types'
 import { ACCESS_TYPE_MAP, DOCUMENTATION, HELM_APP_UNASSIGNED_PROJECT, Routes, SERVER_MODE } from '../../config'
@@ -863,20 +861,19 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         setEnvironments(envOptions)
     }, [environmentsList])
 
-    useEffect(() =>{
-        const customRoleOptions = customRoles.customRoles.map((role)=>({
-            label:role.roleDisplayName,
-            value:role.roleName,
-            description:role.roleDescription,
-            entity:role.entity,
-            accessType:role.accessType,
+    useEffect(() => {
+        const customRoleOptions = customRoles.customRoles.map((role) => ({
+            label: role.roleDisplayName,
+            value: role.roleName,
+            description: role.roleDescription,
+            entity: role.entity,
+            accessType: role.accessType,
         }))
         setPossibleRoles(customRoleOptions)
-
-    },[customRoles])
+    }, [customRoles])
 
     useEffect(() => {
-        const envOptions = envClustersList.map((cluster) => ({
+        const envOptions = envClustersList?.map((cluster) => ({
             label: cluster.clusterName,
             options: [
                 {
@@ -1598,7 +1595,7 @@ export function ParseData(dataList: any[], entity: string, accessType?: string) 
 function getMetaPossibleRoles(customRoles: Custom_Roles[], entity: string, accessType?: string ) {
     let possibleRolesMeta = {}
     customRoles.forEach((role) => {
-        if (role.entity === entity && (!(entity=== EntityTypes.DIRECT)|| role.accessType === accessType)) {
+        if (role.entity === entity && ((entity!== EntityTypes.DIRECT)|| role.accessType === accessType)) {
             possibleRolesMeta = {
                 ...possibleRolesMeta,
                 [role.roleName]: {
