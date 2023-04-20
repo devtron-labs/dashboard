@@ -309,7 +309,11 @@ export const FilterMenuList = (props): JSX.Element => {
         <components.MenuList {...props}>
             {props.children}
             <div className="flex dc__react-select__bottom bcn-0 p-8">
-                <button className="flex cta apply-filter" onClick={props.handleFilterQueryChanges}>
+                <button
+                    data-testid="external-link-filter-button"
+                    className="flex cta apply-filter"
+                    onClick={props.handleFilterQueryChanges}
+                >
                     Apply Filter
                 </button>
             </div>
