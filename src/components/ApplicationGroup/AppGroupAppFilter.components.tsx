@@ -7,7 +7,6 @@ import { ReactComponent as ShowIconFilterApplied } from '../../assets/icons/ic-g
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-outlined.svg'
-import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
@@ -98,7 +97,7 @@ export const Option = (props): JSX.Element => {
                     </div>
                 )
             } else if (props.isSelected) {
-                return <Check className="icon-dim-16 mr-4 mw-18 cursor scb-5" onClick={selectData} />
+                return <CheckIcon className="icon-dim-16 mr-4 mw-18 cursor scb-5" onClick={selectData} />
             }
         }
 
