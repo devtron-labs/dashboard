@@ -274,6 +274,7 @@ export class AppListView extends Component<AppListViewProps> {
                 <h2 className="fs-24 fw-6 lh-32 m-0 pt-40 dc__align-center">Create your first application</h2>
                 <div className="devtron-app-guided-cards-wrapper">
                     <ContentCard
+                        datatestid="deploy-basic-k8snode"
                         redirectTo={DEVTRON_NODE_DEPLOY_VIDEO}
                         isExternalRedirect={true}
                         imgSrc={NodeAppThumbnail}
@@ -284,6 +285,7 @@ export class AppListView extends Component<AppListViewProps> {
                         linkIconPlacement={CardLinkIconPlacement.BeforeLink}
                     />
                     <ContentCard
+                    datatestid="create-application"
                         redirectTo={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
                         rootClassName="ev-5"
                         imgSrc={DeployCICD}

@@ -112,7 +112,7 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
         </div>
     ) : (
         <>
-            <div className="dc__overflow-scroll">
+            <div className="dc__overflow-scroll" data-testid="app-group-container">
                 <div className="env-list-row fw-6 cn-7 fs-12 pt-8 pb-8 pr-20 pl-20 dc__uppercase bc-n50">
                     <div></div>
                     <div>{GROUP_LIST_HEADER.ENVIRONMENT}</div>
@@ -121,12 +121,17 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
                     <div>{GROUP_LIST_HEADER.APPLICATIONS}</div>
                 </div>
                 {filteredEnvList?.map((envData) => (
-                    <div key={envData.id} className="env-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 ">
+                    <div
+                        key={envData.id}
+                        className="env-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 "
+                        data-testid="env-list-row"
+                    >
                         <span className="icon-dim-24 bcb-1 flex br-6">
                             <EnvIcon className="icon-dim-16 scb-4" />
                         </span>
                         <div className="cb-5 dc__ellipsis-right">
                             <NavLink
+                                data-testid="click-on-env"
                                 to={`/application-group/${envData.id}`}
                                 data-noapp={!envData.appCount}
                                 onClick={handleClusterClick}
@@ -134,8 +139,10 @@ export default function EnvironmentsListView({ isSuperAdmin, removeAllFilters }:
                                 {envData.environment_name}
                             </NavLink>
                         </div>
-                        <div className='dc__truncate-text'>{envData.namespace}</div>
-                        <div>{envData.cluster_name}</div>
+                        <div className="dc__truncate-text" data-testid={`${envData.namespace}-namespace`}>
+                            {envData.namespace}
+                        </div>
+                        <div data-testid={`${envData.cluster_name}-cluster`}>{envData.cluster_name}</div>
                         {renderApplicationCount(envData)}
                     </div>
                 ))}

@@ -2,14 +2,13 @@ import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
     CDMdalTabType,
-    CiPipeline,
     DeploymentNodeType,
     WebhookPayloads,
     WorkflowNodeType,
     WorkflowType,
 } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
-import { BulkResponseStatus } from './Constants'
+import { AppFilterTabs, BulkResponseStatus } from './Constants'
 
 interface BulkTriggerAppDetailType {
     workFlowId: string
@@ -213,6 +212,14 @@ export interface EnvHeaderType {
     appListOptions: OptionType[]
     selectedAppList: MultiValue<OptionType>
     setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
+    selectedFilterTab: AppFilterTabs
+    setSelectedFilterTab: React.Dispatch<React.SetStateAction<AppFilterTabs>>
+    groupFilterOptions: GroupOptionType[]
+    selectedGroupFilter: MultiValue<GroupOptionType>
+    setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<GroupOptionType>>>
+    openCreateGroup: (e, groupId?: string) => void
+    openDeleteGroup: (e, groupId: string) => void
+    isSuperAdmin: boolean
 }
 
 export interface AppGroupAdminType {
@@ -220,11 +227,19 @@ export interface AppGroupAdminType {
 }
 
 export interface AppGroupDetailDefaultType {
-    filteredApps: MultiValue<OptionType>
+    filteredAppIds: string
     appGroupListData?: AppGroupListType
 }
+
+interface CIPipeline {
+  appName: string
+  appId: number
+  id: number
+  parentCiPipeline: number
+  parentAppId: number
+}
 export interface CIConfigListType {
-    pipelineList: CiPipeline[]
+    pipelineList: CIPipeline[]
     securityModuleInstalled: boolean
     blobStorageConfigured: boolean
 }
@@ -235,6 +250,26 @@ export interface AppGroupAppFilterContextType {
     setSelectedAppList: React.Dispatch<React.SetStateAction<MultiValue<OptionType>>>
     isMenuOpen: boolean
     setMenuOpen: React.Dispatch<React.SetStateAction<boolean>>
+    selectedFilterTab: AppFilterTabs
+    setSelectedFilterTab: React.Dispatch<React.SetStateAction<AppFilterTabs>>
+    groupFilterOptions: GroupOptionType[]
+    selectedGroupFilter: MultiValue<GroupOptionType>
+    setSelectedGroupFilter: React.Dispatch<React.SetStateAction<MultiValue<GroupOptionType>>>
+    openCreateGroup: (e, groupId?: string) => void
+    openDeleteGroup: (e, groupId: string) => void
+    isSuperAdmin: boolean
+}
+
+export interface CreateGroupAppListType {
+    id: string
+    appName: string
+    isSelected: boolean
+}
+
+export interface CreateGroupType {
+    appList: CreateGroupAppListType[]
+    selectedAppGroup: GroupOptionType
+    closePopup: (e, groupId?: number) => void
 }
 
 export interface ApplistEnvType {
@@ -252,16 +287,44 @@ export interface AppGroupListType {
     apps: ApplistEnvType[]
 }
 export interface ConfigAppListType extends ResponseType {
-  result?: ConfigAppList[]
+    result?: ConfigAppList[]
 }
 export interface EnvAppType extends ResponseType {
-  result?: EnvApp
+    result?: EnvApp
 }
 
 export interface AppGroupList extends ResponseType {
-  result?: AppGroupListType
+    result?: AppGroupListType
 }
 
 export interface EnvDeploymentStatusType extends ResponseType {
-  result?: EnvDeploymentStatus[]
+    result?: EnvDeploymentStatus[]
+}
+
+export interface EnvGroupListType {
+    id: number
+    name: string
+    appIds: number[]
+    description: string
+}
+
+export interface EnvGroupListResponse extends ResponseType {
+    result?: EnvGroupListType[]
+}
+
+export interface EnvGroupResponse extends ResponseType {
+    result?: EnvGroupListType
+}
+
+export interface GroupOptionType extends OptionType {
+    appIds: number[]
+    description: string
+}
+
+export interface SearchBarType {
+    placeholder: string
+    searchText: string
+    setSearchText: React.Dispatch<React.SetStateAction<string>>
+    searchApplied: boolean
+    setSearchApplied: React.Dispatch<React.SetStateAction<boolean>>
 }

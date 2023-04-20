@@ -417,7 +417,7 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
             {...props}
             className={`deploy-chart__readme-markdown ${className}`}
             dangerouslySetInnerHTML={createMarkup()}
-            data-testid="article-readme"
+            data-testid="article-for-bulk-edit"
         />
     )
 }

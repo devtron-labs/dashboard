@@ -11,9 +11,9 @@ import { CiPipeline } from '../../../app/details/triggerView/types'
 import { getTriggerHistory } from '../../../app/service'
 import { asyncWrap, mapByKey, useAsync, useInterval } from '../../../common'
 import { getCIConfigList } from '../../AppGroup.service'
-import { AppGroupDetailDefaultType, CIConfigListType } from '../../AppGroup.types'
+import { AppGroupDetailDefaultType } from '../../AppGroup.types'
 
-export default function EnvCIDetails({ filteredApps }: AppGroupDetailDefaultType) {
+export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultType) {
     const { envId, pipelineId, buildId } = useParams<{
         pipelineId: string
         buildId: string
@@ -24,58 +24,43 @@ export default function EnvCIDetails({ filteredApps }: AppGroupDetailDefaultType
     const [triggerHistory, setTriggerHistory] = useState<Map<number, History>>(new Map())
     const [fullScreenView, setFullScreenView] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
-    const [initDataResults, setInitResult] = useState<CIConfigListType>()
     const [pipelineList, setPipelineList] = useState<CiPipeline[]>([])
     const [ciGroupLoading, setCiGroupLoading] = useState(false)
+    const [securityModuleInstalled, setSecurityModuleInstalled] = useState(false)
+    const [blobStorageConfigured, setBlobStorageConfigured] = useState(false)
 
     useEffect(() => {
         try {
             setCiGroupLoading(true)
-            getCIConfigList(envId).then((result) => {
-                setInitResult(result)
+            getCIConfigList(envId, filteredAppIds).then((result) => {
+                if (result?.pipelineList.length) {
+                    const _filteredPipelines = []
+                    let selectedPipelineExist = false
+                    result.pipelineList.forEach((pipeline) => {
+                        _filteredPipelines.push(pipeline)
+                        selectedPipelineExist = selectedPipelineExist || pipeline.id === +pipelineId
+                    })
+                    _filteredPipelines.sort((a, b) => sortCallback('appName', a, b))
+                    if (!selectedPipelineExist) {
+                        replace(generatePath(path, { envId, pipelineId: _filteredPipelines[0].id }))
+                    }
+                    setPipelineList(_filteredPipelines)
+                }
+                setSecurityModuleInstalled(result?.securityModuleInstalled)
+                setBlobStorageConfigured(result?.blobStorageConfigured)
                 setCiGroupLoading(false)
             })
         } catch (error) {
-            setInitResult(null)
+            setPipelineList(null)
             showError(error)
             setHasMoreLoading(false)
         }
         return () => {
-            setInitResult(null)
+            setPipelineList(null)
             setTriggerHistory(new Map())
             setHasMoreLoading(false)
         }
-    }, [envId])
-
-    useEffect(() => {
-        if (filteredApps.length && initDataResults?.pipelineList.length) {
-            const _filteredAppMap = new Map<number, string>()
-            filteredApps.forEach((app) => {
-                _filteredAppMap.set(+app.value, app.label)
-            })
-            const _filteredPipelines = []
-            let nonWebhookCIExist = false
-            let selectedPipelineExist = false
-            initDataResults?.pipelineList.forEach((pipeline) => {
-                if (_filteredAppMap.get(+pipeline.appId)) {
-                    _filteredPipelines.push(pipeline)
-                    nonWebhookCIExist = true
-                    selectedPipelineExist = selectedPipelineExist || pipeline.id === +pipelineId
-                }
-            })
-            _filteredPipelines.sort((a, b) => sortCallback('appName', a, b))
-            if (nonWebhookCIExist) {
-                if (!selectedPipelineExist) {
-                    replace(generatePath(path, { envId, pipelineId: _filteredPipelines[0].id }))
-                }
-            } else {
-                replace(generatePath(path, { envId }))
-                setTriggerHistory(new Map())
-                setHasMoreLoading(false)
-            }
-            setPipelineList(_filteredPipelines)
-        }
-    }, [filteredApps, initDataResults?.pipelineList])
+    }, [filteredAppIds])
 
     const [loading, triggerHistoryResult, , , , dependencyState] = useAsync(
         () => getTriggerHistory(pipelineId, pagination),
@@ -154,8 +139,9 @@ export default function EnvCIDetails({ filteredApps }: AppGroupDetailDefaultType
                         fullScreenView={fullScreenView}
                         synchroniseState={synchroniseState}
                         triggerHistory={triggerHistory}
-                        isSecurityModuleInstalled={initDataResults.securityModuleInstalled || false}
-                        isBlobStorageConfigured={initDataResults?.blobStorageConfigured || false}
+                        isSecurityModuleInstalled={securityModuleInstalled}
+                        isBlobStorageConfigured={blobStorageConfigured}
+                        appIdFromParent={pipeline.appId}
                     />
                 </Route>
             )
