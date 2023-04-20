@@ -309,7 +309,7 @@ export default function UserGroupRoute() {
     const [userGroups, projects, environments, chartGroups, userRole, envClustersList] = lists
     return (
         <div className="flex h-100">
-            <div className="auth-page__body">
+            <div data-testid="auth-user-page" className="auth-page__body">
                 <UserGroupContext.Provider
                     value={{
                         fetchAppList,
