@@ -125,7 +125,7 @@ if (!window || !window._env_) {
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
         HIDE_DEPLOYMENT_GROUPS: true,
         HIDE_GITOPS_OR_HELM_OPTION: false,
-        HIDE_APPLICATION_GROUPS: true,
+        HIDE_APPLICATION_GROUPS: false,
         K8S_CLIENT: process.env.REACT_APP_K8S_CLIENT === 'true',
         USE_V2: true,
         CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000,
