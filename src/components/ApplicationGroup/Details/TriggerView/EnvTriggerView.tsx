@@ -1591,6 +1591,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                 <PopupMenu.Button
                     isKebab
                     rootClassName="h-36 popup-button-kebab dc__border-left-b4 pl-8 pr-8 dc__no-left-radius flex bcb-5"
+                    dataTestId='deploy-popup'
                 >
                     <Dropdown className="icon-dim-20 fcn-0" />
                 </PopupMenu.Button>
@@ -1600,6 +1601,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             className="flex left p-10 dc__hover-n50 pointer fs-13"
                             data-trigger-type={'PRECD'}
                             onClick={onShowBulkCDModal}
+                            data-testid="pre-deploy-popup-button"
                         >
                             Trigger Pre-deployment stage
                         </div>
@@ -1608,6 +1610,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                         className="flex left p-10 dc__hover-n50 pointer fs-13"
                         data-trigger-type={'CD'}
                         onClick={onShowBulkCDModal}
+                        data-testid="deploy-popup-button"
                     >
                         Trigger Deployment
                     </div>
@@ -1616,6 +1619,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             className="flex left p-10 dc__hover-n50 pointer fs-13"
                             data-trigger-type={'POSTCD'}
                             onClick={onShowBulkCDModal}
+                            data-testid="post-deploy-popup-button"
                         >
                             Trigger Post-deployment stage
                         </div>

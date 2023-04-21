@@ -145,7 +145,6 @@ export default function EnvironmentsList({ isSuperAdmin }: AppGroupAdminType) {
                     className="search__input"
                     onChange={handleSearchText}
                     onKeyDown={handleFilterKeyPress}
-                    data-testid="environment-search-box"
                 />
                 {searchApplied && (
                     <button className="search__clear-button" type="button" onClick={clearSearch}>

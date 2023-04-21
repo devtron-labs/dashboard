@@ -264,6 +264,7 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     rollbackMaterialList: InputMaterials[]
     fromAppGrouping: boolean
     description: string
+    index?: number
 }
 
 export interface TriggerEdgeType {

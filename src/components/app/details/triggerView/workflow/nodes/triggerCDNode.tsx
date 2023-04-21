@@ -86,7 +86,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                             <div className="workflow-node__btn-grp">
                                 <Tippy className="default-tt" arrow={true} placement="bottom" content={'Rollback'}>
                                     <button
-                                        data-testid="cd-trigger-deploy-roll-back"
+                                        data-testid={`cd-trigger-deploy-roll-back-${this.props.index}`}
                                         className="workflow-node__rollback-btn"
                                         onClick={(event) => context.onClickRollbackMaterial(+this.props.id)}
                                     >
