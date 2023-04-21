@@ -575,7 +575,7 @@ export default function ClusterTerminal({
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
                 }`}
             >
-                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalView}</div>
+                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{update && terminalView}</div>
                 {selectedTabIndex === 1 && (
                     <div className="h-100 dc__overflow-scroll">
                         <ClusterEvents terminalAccessId={terminalAccessIdRef.current} reconnectStart={reconnectStart} />
