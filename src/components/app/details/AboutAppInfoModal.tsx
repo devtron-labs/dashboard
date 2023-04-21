@@ -154,6 +154,7 @@ export default function AboutAppInfoModal({
                         disabled={submitting}
                         onClick={handleSaveAction}
                         tabIndex={5}
+                        data-testid="overview-project-save-button"
                     >
                         {submitting ? <Progressing /> : 'Save'}
                     </button>
