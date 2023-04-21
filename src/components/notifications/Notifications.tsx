@@ -31,12 +31,12 @@ export default class Notifications extends Component<NotificationsProps, {}> {
                     </p>
                     <ul className="tab-list">
                         <li className="tab-list__tab">
-                            <NavLink to={`${this.props.match.path}/channels`} className="tab-list__tab-link">
+                            <NavLink data-testid="notifications-link-button" to={`${this.props.match.path}/channels`} className="tab-list__tab-link">
                                 Notifications
                             </NavLink>
                         </li>
                         <li className="tab-list__tab">
-                            <NavLink to={`${this.props.match.path}/configurations`} className="tab-list__tab-link">
+                            <NavLink data-testid="configurations-link-button" to={`${this.props.match.path}/configurations`} className="tab-list__tab-link">
                                 Configurations
                             </NavLink>
                         </li>
