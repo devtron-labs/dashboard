@@ -36,7 +36,6 @@
 .terminal-wrapper .terminal-component {
     overflow: hidden;
     background-color: #0b0f22;
-    ;
     flex: 1;
 }
 
@@ -62,5 +61,26 @@
     100% {
         height: 22px;
         opacity: 1;
+    }
+}
+
+.connection-status-strip.unmount {
+    animation-name: connection-status-strip-unmount;
+    animation-direction: reverse;
+}
+
+@keyframes connection-status-strip-unmount {
+    0% {
+        height: 22px;
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+
+    100% {
+        height: 0px;
+        opacity: 0;
     }
 }

@@ -622,7 +622,7 @@ export default function ClusterTerminal({
     const renderErrorMessageStrip = () => {
         if (errorMessage.message === TERMINAL_STATUS.TIMEDOUT) {
             return (
-                <div className="pl-20 flex left h-24 pr-20 w-100 bcr-7 cn-0">
+                <div className="pl-20 flex left h-24 pr-20 w-100 bcr-7 cn-0 connection-status-strip">
                     {TERMINAL_TEXT.CONNECTION_TIMEOUT}&nbsp;
                     <u className="cursor" onClick={selectEventsTab}>
                         {TERMINAL_TEXT.CHECK_POD_EVENTS}
@@ -638,7 +638,7 @@ export default function ClusterTerminal({
             )
         } else if (errorMessage.message === TERMINAL_STATUS.TERMINATED) {
             return (
-                <div className="pl-20 pr-20 w-100 bcr-7 cn-0">
+                <div className="pl-20 pr-20 w-100 bcr-7 cn-0 connection-status-strip">
                     {TERMINAL_TEXT.POD_TERMINATED} {errorMessage.reason}&nbsp;
                     <u className="cursor" onClick={reconnectTerminal}>
                         {TERMINAL_TEXT.INITIATE_CONNECTION}
@@ -646,13 +646,13 @@ export default function ClusterTerminal({
                 </div>
             )
         }
-        return <div className="pl-20 pr-20 w-100 bcr-7 cn-0">{errorMessage.message} </div>
+        return <div className="pl-20 pr-20 w-100 bcr-7 cn-0 connection-status-strip">{errorMessage.message} </div>
     }
 
     const renderStripMessage = (): JSX.Element => {
         if (isFetchRetry) {
             return (
-                <div className="bcr-7 pl-20 cn-0">
+                <div className="bcr-7 pl-20 cn-0 connection-status-strip">
                     {TERMINAL_TEXT.CONCURRENT_LIMIT_REACH}&nbsp;
                     <button
                         type="button"
@@ -667,7 +667,7 @@ export default function ClusterTerminal({
             return renderErrorMessageStrip()
         } else if (socketConnection === SocketConnectionType.DISCONNECTED) {
             return (
-                <div className="bcr-7 cn-0 pl-20">
+                <div className="bcr-7 cn-0 pl-20 connection-status-strip">
                     Disconnected
                     <span>.&nbsp;</span>
                     <button

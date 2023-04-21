@@ -96,7 +96,7 @@ export function RenderConnectionStrip({
                 <div
                     className={`dc__first-letter-capitalize ${
                         socketConnection !== SocketConnectionType.CONNECTED &&
-                        `${socketConnection === SocketConnectionType.CONNECTING ? 'bcy-2' : 'bcr-7'}  pl-20`
+                        `${socketConnection === SocketConnectionType.CONNECTING ? 'bcy-2' : 'bcr-7'} connection-status-strip pl-20`
                     } ${socketConnection === SocketConnectionType.CONNECTING ? 'cn-9' : 'cn-0'} m-0 pl-20 w-100`}
                 >
                     {socketConnection !== SocketConnectionType.CONNECTED && (
