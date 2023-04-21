@@ -473,6 +473,7 @@ function Cluster({
                                         }) =>
                                             environment_name ? (
                                                 <div
+                                                    data-testid={`env-container-${environment_name}`}
                                                     className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-12 pb-12 fs-13 fw-4 pl-20 pr-20 dc__visible-hover dc__visible-hover--parent"
                                                     key={id}
                                                     onClick={() =>
@@ -529,6 +530,7 @@ function Cluster({
                                                                     content={'Delete Environment'}
                                                                 >
                                                                     <DeleteEnvironment
+                                                                        data-testid={`env-delete-button-${environment_name}`}
                                                                         className="icon-dim-20 cursor"
                                                                         onClick={showToggleConfirmation}
                                                                     />
