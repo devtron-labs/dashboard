@@ -1,9 +1,35 @@
 import React from 'react'
 import { SocketConnectionType } from '../node.type'
 
+export interface TerminalWrapperComponentType {
+    type: string
+    title?: string
+    value?: unknown
+    connectTerminal?: boolean,
+    closeTerminalModal?: (e: any, skipRedirection?: boolean) => void,
+    reconnectTerminal?: () => void, 
+    placeholder?: string,
+    options?: any,
+    showDivider?: boolean
+    defaultValue?: unknown,
+    onChange?: (selected: any) => void,
+    styles?: any,
+    components?: any
+    showInfoTippy?: boolean
+    infoContent?: any
+    showExpand?: boolean
+    isFullScreen?: boolean
+    toggleScreenView?: () => void
+    customComponent?: () => JSX.Element
+    stopTerminalConnection?: () => Promise<void>
+    resumePodConnection?: () => void
+    toggleButton?: boolean
+    setTerminalCleared?: () => void
+}
+
 export interface TerminalSelectionListDataType {
-    firstRow: any[] 
-    secondRow?: any[]
+    firstRow: TerminalWrapperComponentType[] 
+    secondRow?: TerminalWrapperComponentType[]
     tabSwitcher: {
         terminalData: TerminalViewType
         terminalTabWrapper?: any

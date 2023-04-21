@@ -5,7 +5,12 @@ import IndexStore from '../../../index.store'
 import { SocketConnectionType } from './node.type'
 import MessageUI from '../../../../common/message.ui'
 import { Option } from '../../../../common/ReactSelect.utils'
-import { getContainersData, getContainerSelectStyles, getGroupedContainerOptions, getShellSelectStyles } from '../nodeDetail.util'
+import {
+    getContainersData,
+    getContainerSelectStyles,
+    getGroupedContainerOptions,
+    getShellSelectStyles,
+} from '../nodeDetail.util'
 import { shellTypes } from '../../../../../../config/constants'
 import { OptionType } from '../../../../../app/types'
 import { AppType, Options, TerminalComponentProps } from '../../../appDetails.type'
@@ -26,14 +31,17 @@ function TerminalComponent({
     const { url } = useRouteMatch()
     const terminalRef = useRef(null)
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
-    const containers = (isResourceBrowserView ? selectedResource.containers : getContainersData(podMetaData)) as Options[]
+    const containers = (
+        isResourceBrowserView ? selectedResource.containers : getContainersData(podMetaData)
+    ) as Options[]
     const [selectedContainerName, setSelectedContainerName] = useState(containers?.[0]?.name || '')
     const [selectedTerminalType, setSelectedTerminalType] = useState(shellTypes[0])
     const [terminalCleared, setTerminalCleared] = useState(false)
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
     const defaultContainerOption = { label: selectedContainerName, value: selectedContainerName }
     const [sessionId, setSessionId] = useState<string>()
-    const connectTerminal: boolean = socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED
+    const connectTerminal: boolean =
+        socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED
     const appDetails = IndexStore.getAppDetails()
     const nodeName = isResourceBrowserView ? params.node : params.podName
 
@@ -46,12 +54,14 @@ function TerminalComponent({
         } else {
             url = `api/v1/applications/pod/exec/session/${appDetails.appId}/${appDetails.environmentId}`
         }
-        url += `/${
-            isResourceBrowserView
-                ? selectedResource.namespace
-                : appDetails.namespace
-        }/${nodeName}/${selectedTerminalType.value}/${selectedContainerName}`
+        url += `/${isResourceBrowserView ? selectedResource.namespace : appDetails.namespace}/${nodeName}/${
+            selectedTerminalType.value
+        }/${selectedContainerName}`
         return url
+    }
+
+    const handleAbort = () => {
+        setTerminalCleared(!terminalCleared)
     }
 
     const getNewSession = () => {
@@ -66,6 +76,7 @@ function TerminalComponent({
 
         get(generateSessionURL())
             .then((response: any) => {
+                handleAbort()
                 const sessionId = response?.result.SessionID
                 if (terminalRef.current) {
                     setSessionId(sessionId)
@@ -73,17 +84,7 @@ function TerminalComponent({
             })
             .catch((err) => {
                 showError(err)
-                if (err instanceof ServerErrors && Array.isArray(err.errors)) {
-                    const _invalidNameErr = err.errors[0].userMessage
-                    if (_invalidNameErr.includes('Unauthorized')) {
-                        // setErrorMessage({message: ERROR_MESSAGE.UNAUTHORIZED, reason: ''})
-                    }
-                }
             })
-    }
-
-    const handleAbort = () => {
-        setTerminalCleared(!terminalCleared)
     }
 
     useEffect(() => {
@@ -103,7 +104,6 @@ function TerminalComponent({
             }, 1000)
         }
     }, [selectedTerminalType, selectedContainerName])
-
 
     useEffect(() => {
         selectedTab(NodeDetailTab.TERMINAL, url)
