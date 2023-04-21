@@ -741,7 +741,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             <div className="form__row">
                 <p className="add-notification__title mb-16">Send to</p>
                 <CreatableSelect
-                    classNamePrefix='add-notification-send-to'
+                    classNamePrefix="add-notification-send-to"
                     placeholder="Enter email addresses or slack channels"
                     value={this.state.selectedChannels}
                     isMulti
