@@ -657,7 +657,7 @@ export function ProtectedInput({
     hidden = true,
     labelClassName = '',
     placeholder = '',
-   dataTestid = '',
+    dataTestid = '',
 }) {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
