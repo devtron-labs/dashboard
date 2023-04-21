@@ -689,18 +689,21 @@ export default function ClusterTerminal({
     const selectionListData: TerminalSelectionListDataType = {
         firstRow: [
             {
-                type: clusterName ? 'titleName' : '',
+                type: 'titleName',
+                hideTerminalStripComponent: !clusterName,
                 title: SELECT_TITLE.CLUSTER,
                 value: clusterName,
             },
             {
-                type: isNodeDetailsPage ? 'connectionButton' : '',
+                type: 'connectionButton',
+                hideTerminalStripComponent: !isNodeDetailsPage,
                 connectTerminal: connectTerminal,
                 closeTerminalModal: closeTerminalModal,
                 reconnectTerminal: reconnectTerminal,
             },
             {
-                type: !isNodeDetailsPage ? 'reactSelect' : '',
+                type: 'reactSelect',
+                hideTerminalStripComponent: isNodeDetailsPage,
                 title: SELECT_TITLE.NODE,
                 placeholder: 'Select node',
                 options: nodeGroups,
@@ -747,7 +750,8 @@ export default function ClusterTerminal({
                 },
             },
             {
-                type: !isNodeDetailsPage ? 'closeExpandView' : '',
+                type: 'closeExpandView',
+                hideTerminalStripComponent: isNodeDetailsPage,
                 showExpand: true,
                 isFullScreen: isFullScreen,
                 toggleScreenView: toggleScreenView,
@@ -760,7 +764,8 @@ export default function ClusterTerminal({
                 customComponent: renderTabs,
             },
             {
-                type: showShell && 'connectionSwitch',
+                type: 'connectionSwitch',
+                hideTerminalStripComponent: !showShell,
                 stopTerminalConnection,
                 resumePodConnection,
                 toggleButton:
@@ -768,11 +773,13 @@ export default function ClusterTerminal({
                     socketConnection === SocketConnectionType.CONNECTED,
             },
             {
-                type: showShell && 'clearButton',
+                type: 'clearButton',
+                hideTerminalStripComponent: !showShell,
                 setTerminalCleared: clearTerminal,
             },
             {
-                type: showShell && 'creatableSelect',
+                type: 'creatableSelect',
+                hideTerminalStripComponent: !showShell,
                 title: SELECT_TITLE.SHELL,
                 placeholder: 'Select Shell',
                 options: clusterShellTypes,

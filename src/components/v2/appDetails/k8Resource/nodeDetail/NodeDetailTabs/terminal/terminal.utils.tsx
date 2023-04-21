@@ -14,6 +14,7 @@ import ReactSelect from 'react-select'
 import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 
 const creatableSelectWrapper = (selectData) => {
+    if (selectData.hideTerminalStripComponent) return null
     return (
         <>
             <span className="bcn-2 mr-8" style={{ width: '1px', height: '16px' }} />
@@ -50,8 +51,9 @@ const creatableSelectWrapper = (selectData) => {
 }
 
 const reactSelect = (selectData) => {
+    if (selectData.hideTerminalStripComponent) return null
     return (
-        <>  
+        <>
             {selectData.showDivider && <span className="bcn-2 mr-8" style={{ width: '1px', height: '16px' }} />}
             <div className="cn-6 mr-10">{selectData.title}</div>
             <div style={{ minWidth: '145px' }}>
@@ -70,6 +72,7 @@ const reactSelect = (selectData) => {
 }
 
 const titleName = (titleData) => {
+    if (titleData.hideTerminalStripComponent) return null
     return (
         <>
             <div className="cn-6 mr-16">{titleData.title}</div>
@@ -80,6 +83,7 @@ const titleName = (titleData) => {
 }
 
 const connectionButton = (connectData) => {
+    if (connectData.hideTerminalStripComponent) return null
     return (
         <Tippy
             className="default-tt"
@@ -101,6 +105,7 @@ const connectionButton = (connectData) => {
 }
 
 const closeExpandView = (viewData) => {
+    if (viewData.hideTerminalStripComponent) return null
     return (
         <span className="flex dc__align-right">
             {viewData.showExpand && (
@@ -134,6 +139,7 @@ const closeExpandView = (viewData) => {
 }
 
 const connectionSwitch = (switchProps) => {
+    if (switchProps.hideTerminalStripComponent) return null
     return (
         <>
             <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
@@ -141,15 +147,14 @@ const connectionSwitch = (switchProps) => {
                 className="default-tt cursor"
                 arrow={false}
                 placement="bottom"
-                content={
-                   switchProps.toggleButton
-                        ? 'Disconnect from pod'
-                        : 'Reconnect to pod'
-                }
+                content={switchProps.toggleButton ? 'Disconnect from pod' : 'Reconnect to pod'}
             >
                 {switchProps.toggleButton ? (
                     <span className="mr-8 cursor">
-                        <div className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5" onClick={switchProps.stopTerminalConnection} />
+                        <div
+                            className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5"
+                            onClick={switchProps.stopTerminalConnection}
+                        />
                     </span>
                 ) : (
                     <span className="mr-8 flex">
@@ -162,6 +167,7 @@ const connectionSwitch = (switchProps) => {
 }
 
 const clearTerminal = (clearProps) => {
+    if (clearProps.hideTerminalStripComponent) return null
     return (
         <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
             <div className="flex mr-8">

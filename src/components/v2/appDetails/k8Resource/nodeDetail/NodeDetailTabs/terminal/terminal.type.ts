@@ -3,6 +3,7 @@ import { SocketConnectionType } from '../node.type'
 
 export interface TerminalWrapperComponentType {
     type: string
+    hideTerminalStripComponent?: boolean
     title?: string
     value?: unknown
     connectTerminal?: boolean,
