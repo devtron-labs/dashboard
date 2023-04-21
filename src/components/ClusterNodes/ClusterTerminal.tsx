@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
-import Tippy from '@tippyjs/react'
-import ReactSelect, { components } from 'react-select'
+import { components } from 'react-select'
 import { BUSYBOX_LINK, NETSHOOT_LINK, shellTypes } from '../../config/constants'
 import {
     ErrorMessageType,
     POD_LINKS,
     SocketConnectionType,
 } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
-import Terminal from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/Terminal'
 import {
     clusterDisconnectAndRetry,
     clusterTerminalDisconnect,
@@ -16,21 +14,11 @@ import {
     clusterTerminalTypeUpdate,
     clusterTerminalUpdate,
 } from './clusterNodes.service'
-import { ReactComponent as Disconnect } from '../../assets/icons/ic-disconnected.svg'
-import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import { GroupHeading, Option } from '../../components/v2/common/ReactSelect.utils'
-import { ReactComponent as Connect } from '../../assets/icons/ic-connected.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
-import { ReactComponent as FullScreen } from '../../assets/icons/ic-fullscreen-2.svg'
-import { ReactComponent as ExitScreen } from '../../assets/icons/ic-exit-fullscreen-2.svg'
-import { ReactComponent as Play } from '../../assets/icons/ic-play.svg'
-import CreatableSelect from 'react-select/creatable'
 import { clusterImageDescription, convertToOptionsList, elementDidMount } from '../common'
-import { get, ServerErrors, showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterManifest from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
-import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help-outline.svg'
 import { ClusterTerminalType } from './types'
 import {
     AUTO_SELECT,

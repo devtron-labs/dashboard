@@ -17,7 +17,7 @@ import { AppType, Options, TerminalComponentProps } from '../../../appDetails.ty
 import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
-import { get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { get, showError } from '@devtron-labs/devtron-fe-common-lib'
 
 let clusterTimeOut = undefined
 
