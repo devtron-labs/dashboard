@@ -268,7 +268,7 @@ function NavItem({ serverMode }) {
                     }
                 }}
             >
-                <div className={`flexbox flex-justify ${className || ''}`}>
+                <div className={`flexbox flex-justify ${className || ''}`} data-testid={`${route.name}-page`}>
                     <div>{route.name}</div>
                 </div>
             </NavLink>

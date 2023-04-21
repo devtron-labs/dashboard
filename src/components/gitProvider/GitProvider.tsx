@@ -121,7 +121,10 @@ export default function GitProvider({ ...props }) {
     ].concat(providerList);
 
     return (
-        <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+        <section
+            className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1"
+            data-testid="git-provider-wrapper"
+        >
             <h2 className="form__title">Git accounts</h2>
             <div className="form__subtitle">
                 Manage your organization’s git accounts. &nbsp;
@@ -134,7 +137,7 @@ export default function GitProvider({ ...props }) {
                     Learn more about git accounts
                 </a>
             </div>
-            {allProviders.map((provider,index) => {
+            {allProviders.map((provider, index) => {
                 return (
                     <>
                         <CollapsedList
@@ -169,7 +172,7 @@ export default function GitProvider({ ...props }) {
             })}
             {/* {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)} */}
         </section>
-    );
+    )
 }
 
 function CollapsedList({
@@ -242,7 +245,7 @@ function CollapsedList({
             }`}
         >
             <List
-                dataTestId={id || 'Add git account'}
+                dataTestId={name || 'Add git account'}
                 onClick={setToggleCollapse}
                 className={`${!id && !collapsed ? 'no-grid-column' : ''}`}
             >
@@ -276,7 +279,7 @@ function CollapsedList({
                             placement="bottom"
                             content={enabled ? 'Disable git account' : 'Enable git account'}
                         >
-                            <span style={{ marginLeft: 'auto' }}>
+                            <span style={{ marginLeft: 'auto' }} data-testid={`${name}-toggle-button`}>
                                 {loading ? (
                                     <Progressing />
                                 ) : (
@@ -697,6 +700,7 @@ function GitForm({
                     {id && (
                         <button
                             className={`cta delete dc__m-auto ml-0`}
+                            data-testid="delete-git-repo"
                             type="button"
                             onClick={() => toggleConfirmation(true)}
                         >
