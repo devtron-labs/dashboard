@@ -257,14 +257,16 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             .then((response) => {
                 if (response[0].result) {
                     setDescriptionText(response[0].result.description)
+                    setModifiedDescriptionText(response[0].result.description)
                     setDescriptionUpdatedBy(response[0].result.created_by.toString())
                     let _moment = moment(response[0].result.created_on, 'YYYY-MM-DDTHH:mm:ssZ')
                     const _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response[0].result.created_on
                     setDescriptionUpdatedOn(_date)
-                    setModifiedDescriptionText(response[0].result.description)
                 } else if (response[0].errors && response[0].code === 200) {
                     setDescriptionText(defaultClusterNote)
                     setModifiedDescriptionText(defaultClusterNote)
+                    setDescriptionUpdatedBy('')
+                    setDescriptionUpdatedOn('')
                 } else if (response[0].errors) { 
                     setClusterNoteError(true)
                 }
@@ -285,6 +287,10 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             const response = await patchClusterNote(requestPayload)
             if (response.result) {
                 setDescriptionText(response.result.description)
+                setDescriptionUpdatedBy(response[0].result.created_by.toString())
+                let _moment = moment(response[0].result.created_on, 'YYYY-MM-DDTHH:mm:ssZ')
+                const _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response[0].result.created_on
+                setDescriptionUpdatedOn(_date)
                 setModifiedDescriptionText(response.result.description)
             } else if (response.errors) { 
                 setClusterNoteError(true)
@@ -306,9 +312,6 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }, [clusterId])
 
     useEffect(() => {
-        if (selectedTabIndex == 0) {
-            return
-        }
         getClusterListMin()
             .then((response) => {
                 setLastDataSync(!lastDataSync)
@@ -334,7 +337,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             .catch((error) => {
                 showError(error)
             })
-    }, [selectedTabIndex])
+    }, [])
 
     useEffect(() => {
         const _lastDataSyncTime = Date()
