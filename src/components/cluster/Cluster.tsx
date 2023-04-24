@@ -765,8 +765,6 @@ function ClusterForm({
             </div>
         )
     }
-    
-
 
     const clusterTable = () => {
         return {}
@@ -774,17 +772,16 @@ function ClusterForm({
 
     const onFileChange = (e): void => {
         setUploadState(UPLOAD_STATE.UPLOADING)
-        const file = e.target.files[0];
-        const reader = new FileReader();
+        const file = e.target.files[0]
+        const reader = new FileReader()
         reader.onload = () => {
-          try {
-            const data = YAML.parseDocument(reader.result.toString());
-            setSaveYamlState(reader.result.toString())
-          } catch (e) {
-          }
-        };
+            try {
+                const data = YAML.parseDocument(reader.result.toString())
+                setSaveYamlState(reader.result.toString())
+            } catch (e) {}
+        }
         console.log(reader)
-        reader.readAsText(file);
+        reader.readAsText(file)
         setUploadState(UPLOAD_STATE.SUCCESS)
     }
 
@@ -993,7 +990,7 @@ function ClusterForm({
             <>
                 <hr />
                 <div className="code-editor-container">
-                    <CodeEditor value={saveYamlData} height={514} diffView={false} readOnly={false} mode={MODES.YAML} >
+                    <CodeEditor value={saveYamlData} height={514} diffView={false} readOnly={false} mode={MODES.YAML}>
                         <CodeEditor.Header>
                             <div className="user-list__subtitle flex p-8">
                                 <span className="flex left">Paste the contents of kubeconfig file here</span>
@@ -1064,17 +1061,13 @@ function ClusterForm({
                             <Close className="icon-dim-24" />
                         </button>
                     </div>
-                    <div className="api-token__list en-2 bw-1 bcn-0 br-8">
-
-                        <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-20 dc__uppercase">
+                    <div className="pb-8">
+                        <div className="cluster-env-list table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc border-top dc border-bottom-n1">
                             <div></div>
-                            <div>Cluster</div>
-                            <div>User</div>
-                            <div>Message</div>
+                            <div className='pl-20'>Cluster</div>
+                            <div className='pl-20'>User</div>
+                            <div className='pl-20'>Message</div>
                             <div></div>
-                        </div>
-                        <div className="dc__overflow-scroll" style={{'height': 'calc(100vh - 153px)'}}>
-                            {}
                         </div>
                     </div>
                 </div>
