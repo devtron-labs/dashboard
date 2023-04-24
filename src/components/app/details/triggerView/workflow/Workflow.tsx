@@ -185,6 +185,7 @@ export class Workflow extends Component<WorkflowProps> {
                 id={node.id}
                 title={node.title}
                 environmentName={node.environmentName}
+                description={node.description}
                 environmentId={node.environmentId}
                 triggerType={node.triggerType}
                 colourCode={node.colourCode}
@@ -209,6 +210,7 @@ export class Workflow extends Component<WorkflowProps> {
                 x={node.x}
                 y={node.y}
                 environmentId={node.environmentId}
+                description={node.description}
                 type={node.type}
                 stageIndex={node.stageIndex}
                 status={node.status}
@@ -280,7 +282,7 @@ export class Workflow extends Component<WorkflowProps> {
                             {this.props.name}
                         </Checkbox>
                     ) : (
-                        <span className="workflow__name">{this.props.name}</span>
+                            <span data-testid="workflow-heading" className="workflow__name">{this.props.name}</span>
                     )}
                 </div>
                 {isExternalCiWorkflow && <DeprecatedPipelineWarning />}

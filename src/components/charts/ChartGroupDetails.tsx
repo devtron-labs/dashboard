@@ -172,11 +172,21 @@ export default function ChartGroupDetails() {
     const renderChartGroupActionButton = () => {
         return (
             <div className="dc__page-header__cta-container flex">
-                <button type="button" className="cta flex cancel mr-16 h-32" onClick={redirectToConfigure}>
+                <button
+                    type="button"
+                    className="cta flex cancel mr-16 h-32"
+                    onClick={redirectToConfigure}
+                    data-testid="chart-group-edit-button"
+                >
                     <Pencil className="mr-5" />
                     Edit
                 </button>
-                <button className="cta flex delete h-32" type="button" onClick={() => toggleConfirmation(true)}>
+                <button
+                    className="cta flex delete h-32"
+                    type="button"
+                    data-testid="chart-group-delete-button"
+                    onClick={() => toggleConfirmation(true)}
+                >
                     {deleting ? <Progressing /> : 'Delete'}
                 </button>
             </div>
@@ -277,6 +287,7 @@ export default function ChartGroupDetails() {
                                         disabled={state.charts.filter((chart) => chart.isEnabled).length === 0}
                                         onClick={handleDeployButtonClick}
                                         className="cta dc__ellipsis-right w-100"
+                                        data-testid="group-deploy-to-button"
                                     >
                                         {loading ? <Progressing /> : 'Deploy to ...'}
                                     </button>

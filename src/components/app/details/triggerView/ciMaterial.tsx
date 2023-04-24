@@ -101,6 +101,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     rootClassName="form__checkbox-label--ignore-cache mb-0"
                     value={'CHECKED'}
                     onChange={this.context.toggleInvalidateCache}
+                    data-testid="set-clone-directory"
                 >
                     <div className="mr-5">
                         <div className="fs-13 fw-6">{IGNORE_CACHE_INFO.IgnoreCache.title}</div>
@@ -122,6 +123,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 {!this.props.isJobView && this.renderIgnoreCache()}
                 <ButtonWithLoader
                     rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
+                    dataTestId="ci-trigger-start-build-button"
                     loaderColor="#ffffff"
                     disabled={!canTrigger}
                     isLoading={this.props.isLoading}
@@ -157,6 +159,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             return (
                 <>
                     <GitInfoMaterial
+                        dataTestId='edit-branch-name'
                         material={this.props.material}
                         title={this.props.title}
                         pipelineId={this.props.pipelineId}

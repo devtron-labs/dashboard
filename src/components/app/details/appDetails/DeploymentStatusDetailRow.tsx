@@ -197,6 +197,7 @@ export function DeploymentStatusDetailRow({
                 {statusBreakDownType.time !== '' &&
                     statusBreakDownType.icon !== 'inprogress' && (
                         <span
+                            data-testid="deployment-status-kubernetes-dropdown"
                             className={`pl-8 pr-8 pt-4 pb-4 br-12 ${
                                 statusBreakDownType.icon === 'failed'
                                     ? 'bcr-1 cr-5'
