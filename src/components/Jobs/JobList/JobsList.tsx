@@ -204,6 +204,7 @@ export default function JobsList() {
                     <div className="search">
                         <Search className="search__icon icon-dim-18" />
                         <input
+                            data-testid="Search-by-job-name"
                             type="text"
                             name="app_search_input"
                             autoComplete="off"

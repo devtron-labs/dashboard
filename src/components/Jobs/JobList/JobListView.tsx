@@ -69,7 +69,7 @@ export default function JobListView(props: JobListViewProps) {
                         >
                             <div className="app-list__cell--icon">
                                 <div className="icon-dim-24 dc__icon-bg-color br-4 dc__show-first--icon p-4">
-                                    <JobIcon className="icon-dim-16" />
+                                    <JobIcon className="icon-dim-16" data-testid="job-icon" />
                                 </div>
                                 {len && (
                                     <Arrow
@@ -137,7 +137,7 @@ export default function JobListView(props: JobListViewProps) {
                         <button
                             className="app-list__cell-header flex"
                             onClick={sortByAppName}
-                            data-testid="job-name-list"
+                            data-testid="job-name"
                         >
                             {JOB_LIST_HEADERS.Name}
                             {props.sortRule.key == SortBy.APP_NAME ? (
@@ -148,16 +148,16 @@ export default function JobListView(props: JobListViewProps) {
                         </button>
                     </div>
                     <div className="app-list__cell">
-                        <span className="app-list__cell-header">{JOB_LIST_HEADERS.LastJobStatus}</span>
+                        <span className="app-list__cell-header" data-testid="last-run">{JOB_LIST_HEADERS.LastJobStatus}</span>
                     </div>
                     <div className="app-list__cell">
-                        <span className="app-list__cell-header">{JOB_LIST_HEADERS.LastRunAt}</span>
+                        <span className="app-list__cell-header" data-testid="last-run-at">{JOB_LIST_HEADERS.LastRunAt}</span>
                     </div>
                     <div className="app-list__cell">
-                        <span className="app-list__cell-header">{JOB_LIST_HEADERS.LastSuccessAt}</span>
+                        <span className="app-list__cell-header" data-testid="last-success-at">{JOB_LIST_HEADERS.LastSuccessAt}</span>
                     </div>
                     <div className="app-list__cell">
-                        <span className="app-list__cell-header">{JOB_LIST_HEADERS.Description}</span>
+                        <span className="app-list__cell-header" data-testid="description">{JOB_LIST_HEADERS.Description}</span>
                     </div>
                     <div className="app-list__cell app-list__cell--action" />
                 </div>
