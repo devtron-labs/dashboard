@@ -243,6 +243,7 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     parentEnvironmentName?: string
     fromAppGrouping: boolean
     description: string
+    index?: number
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -263,6 +264,7 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     rollbackMaterialList: InputMaterials[]
     fromAppGrouping: boolean
     description: string
+    index?: number
 }
 
 export interface TriggerEdgeType {
@@ -281,8 +283,9 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     appId?: number
     isSelected?: boolean
     fromAppGrouping?: boolean
-    handleSelectionChange?: (_appId: number)=> void
+    handleSelectionChange?: (_appId: number) => void
     isJobView?: boolean
+    index?: number
 }
 
 export interface TriggerViewContextType {

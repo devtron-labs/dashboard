@@ -238,7 +238,12 @@ export default function BulkCDTrigger({
     const renderFooterSection = (): JSX.Element => {
         return (
             <div className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width">
-                <button className="cta flex h-36" onClick={onClickStartDeploy} disabled={isDeployDisabled()}>
+                <button
+                    className="cta flex h-36"
+                    data-testid="deploy-button"
+                    onClick={onClickStartDeploy}
+                    disabled={isDeployDisabled()}
+                >
                     {isLoading ? (
                         <Progressing />
                     ) : (
