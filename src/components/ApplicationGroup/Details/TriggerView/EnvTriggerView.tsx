@@ -1591,6 +1591,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                 <PopupMenu.Button
                     isKebab
                     rootClassName="h-36 popup-button-kebab dc__border-left-b4 pl-8 pr-8 dc__no-left-radius flex bcb-5"
+                    dataTestId='deploy-popup'
                 >
                     <Dropdown className="icon-dim-20 fcn-0" />
                 </PopupMenu.Button>
@@ -1600,6 +1601,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             className="flex left p-10 dc__hover-n50 pointer fs-13"
                             data-trigger-type={'PRECD'}
                             onClick={onShowBulkCDModal}
+                            data-testid="pre-deploy-popup-button"
                         >
                             Trigger Pre-deployment stage
                         </div>
@@ -1608,6 +1610,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                         className="flex left p-10 dc__hover-n50 pointer fs-13"
                         data-trigger-type={'CD'}
                         onClick={onShowBulkCDModal}
+                        data-testid="deploy-popup-button"
                     >
                         Trigger Deployment
                     </div>
@@ -1616,6 +1619,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             className="flex left p-10 dc__hover-n50 pointer fs-13"
                             data-trigger-type={'POSTCD'}
                             onClick={onShowBulkCDModal}
+                            data-testid="post-deploy-popup-button"
                         >
                             Trigger Post-deployment stage
                         </div>
@@ -1629,12 +1633,17 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
         const _showPopupMenu = showPreDeployment || showPostDeployment
         return (
             <div className="flex dc__min-width-fit-content">
-                <button className="cta flex h-36 mr-12" onClick={onShowBulkCIModal}>
+                <button
+                    className="cta flex h-36 mr-12"
+                    data-testid="bulk-build-image-button"
+                    onClick={onShowBulkCIModal}
+                >
                     {isCILoading ? <Progressing /> : 'Build image'}
                 </button>
                 <button
                     className={`cta flex h-36 ${_showPopupMenu ? 'dc__no-right-radius' : ''}`}
                     data-trigger-type={'CD'}
+                    data-testid="bulk-deploy-button"
                     onClick={onShowBulkCDModal}
                 >
                     {isCDLoading ? (
@@ -1658,10 +1667,10 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     <Close className="icon-dim-18 scr-5 mr-16 cursor mw-18" onClick={clearAppList} />
                 </Tippy>
                 <div>
-                    <div className="fs-13 fw-6 cn-9">
+                    <div data-testid="selected-application-text" className="fs-13 fw-6 cn-9">
                         {selectedAppList.length} application{selectedAppList.length > 1 ? 's' : ''} selected
                     </div>
-                    <div className="fs-13 fw-4 cn-7 dc__ellipsis-right__2nd-line">
+                    <div className="fs-13 fw-4 cn-7 dc__ellipsis-right__2nd-line" data-testid="selected-apps-name">
                         {sortObjectArrayAlphabetically(selectedAppList, 'name').map((app, index) => (
                             <span key={`selected-app-${app['id']}`}>
                                 {app['name']}
@@ -1677,7 +1686,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
     const renderWorkflow = (): JSX.Element => {
         return (
             <>
-                {filteredWorkflows.map((workflow) => {
+                {filteredWorkflows.map((workflow, index) => {
                     return (
                         <Workflow
                             key={workflow.id}
@@ -1695,6 +1704,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             history={history}
                             location={location}
                             match={match}
+                            index={index}
                         />
                     )
                 })}
@@ -1721,6 +1731,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     isChecked={isSelectAll}
                     value={selectAllValue}
                     onChange={handleSelectAll}
+                    dataTestId="select-all-apps"
                 >
                     Select all apps
                 </Checkbox>
