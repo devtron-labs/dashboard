@@ -335,7 +335,10 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                                         onError={onImageLoadError}
                                     />
                                 </div>
-                                <div className="external-links__cell--tool__name cn-9 fs-13 dc__ellipsis-right">
+                                <div
+                                    className="external-links__cell--tool__name cn-9 fs-13 dc__ellipsis-right"
+                                    data-testid={`external-link-name-${link.name}`}
+                                >
                                     {link.name}
                                 </div>
                                 <div className="external-links__cell--tool__name cn-9 fs-13 dc__ellipsis-right">
@@ -346,14 +349,19 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                                             placement="top-start"
                                             content={link.description}
                                         >
-                                            <span>{link.description}</span>
+                                            <span data-testid={`external-link-description-${link.name}`}>
+                                                {link.description}
+                                            </span>
                                         </Tippy>
                                     ) : (
                                         '-'
                                     )}
                                 </div>
                                 {!isAppConfigView && (
-                                    <div className="external-links__cell--scope cn-9 fs-13 dc__ellipsis-right">
+                                    <div
+                                        className="external-links__cell--scope cn-9 fs-13 dc__ellipsis-right"
+                                        data-testid={`external-link-scope-${link.name}`}
+                                    >
                                         {getScopeLabel(link)}
                                     </div>
                                 )}
@@ -364,7 +372,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                                         placement="top-start"
                                         content={link.url}
                                     >
-                                        <span>{link.url}</span>
+                                        <span data-testid={`external-link-url-${link.name}`}>{link.url}</span>
                                     </Tippy>
                                 </div>
                                 <div className="external-link-actions">
@@ -373,6 +381,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                                         onClick={() => {
                                             editLink(link)
                                         }}
+                                        data-testid={`external-link-edit-button-${link.name}`}
                                     />
                                     <DeleteIcon
                                         className="icon-dim-20 cursor"
@@ -380,6 +389,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
                                             setSelectedLink(link)
                                             setShowDeleteDialog(true)
                                         }}
+                                        data-testid={`external-link-delete-button-${link.name}`}
                                     />
                                 </div>
                             </div>
@@ -397,7 +407,7 @@ function ExternalLinks({ isAppConfigView, userRole }: ExternalLinksProps) {
         return (
             <div className="external-links-wrapper">
                 <div className={`flex dc__content-space ${isAppConfigView ? 'mb-12' : 'mb-16'}`}>
-                    <h3 className="title flex left cn-9 fs-18 fw-6 lh-24 m-0">
+                    <h3 className="title flex left cn-9 fs-18 fw-6 lh-24 m-0" data-testid="external-links-heading">
                         External Links
                         <TippyCustomized
                             theme={TippyTheme.white}

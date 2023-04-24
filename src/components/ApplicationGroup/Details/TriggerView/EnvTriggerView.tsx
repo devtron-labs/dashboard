@@ -71,7 +71,7 @@ import { handleSourceNotConfigured, processWorkflowStatuses } from '../../AppGro
 import Tippy from '@tippyjs/react'
 
 let inprogressStatusTimer
-export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultType) {
+export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefaultType) {
     const { envId } = useParams<{ envId: string }>()
     const location = useLocation()
     const history = useHistory()
@@ -108,9 +108,20 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     const [selectAllValue, setSelectAllValue] = useState<CHECKBOX_VALUE>(CHECKBOX_VALUE.CHECKED)
     const abortControllerRef = useRef(new AbortController())
 
+    useEffect(() => {
+        if (envId) {
+            setPageViewType(ViewType.LOADING)
+            setSelectedAppList([])
+            getWorkflowsData()
+        }
+        return () => {
+            inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
+        }
+    }, [filteredAppIds])
+
     const getWorkflowsData = async (): Promise<void> => {
         try {
-            const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId)
+            const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
             if (showCIModal) {
                 _workflows.forEach((wf) =>
                     wf.nodes.forEach((n) => {
@@ -131,11 +142,48 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             setErrorCode(0)
             setPageViewType(ViewType.FORM)
             getWorkflowStatusData(_workflows)
+            processFilteredData(_workflows)
         } catch (error) {
             showError(error)
             setErrorCode(error['code'])
             setPageViewType(ViewType.ERROR)
         }
+    }
+
+    const processFilteredData = (_filteredWorkflows: WorkflowType[]): void => {
+        const _selectedAppList = []
+        let _preNodeExist, _postNodeExist
+        _filteredWorkflows.forEach((wf) => {
+            if (wf.isSelected) {
+                const _currentAppDetail = {
+                    id: wf.appId,
+                    name: wf.name,
+                    preNodeAvailable: false,
+                    postNodeAvailable: false,
+                }
+                for (const node of wf.nodes) {
+                    if (node.environmentId === +envId && node.type === WorkflowNodeType.CD) {
+                        _preNodeExist = _preNodeExist || !!node.preNode
+                        _postNodeExist = _postNodeExist || !!node.postNode
+                        _currentAppDetail.preNodeAvailable = !!node.preNode
+                        _currentAppDetail.postNodeAvailable = !!node.postNode
+                        break
+                    }
+                }
+                _selectedAppList.push(_currentAppDetail)
+            }
+        })
+        setShowPreDeployment(_preNodeExist)
+        setShowPostDeployment(_postNodeExist)
+        setSelectedAppList(_selectedAppList)
+        setSelectAll(_selectedAppList.length !== 0)
+        setSelectAllValue(
+            _filteredWorkflows.length === _selectedAppList.length
+                ? CHECKBOX_VALUE.CHECKED
+                : CHECKBOX_VALUE.INTERMEDIATE,
+        )
+        _filteredWorkflows.sort((a, b) => sortCallback('name', a, b))
+        setFilteredWorkflows(_filteredWorkflows)
     }
 
     const pollWorkflowStatus = (_processedWorkflowsData: ProcessWorkFlowStatusType) => {
@@ -149,7 +197,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     }
 
     const getWorkflowStatusData = (workflowsList: WorkflowType[]) => {
-        getWorkflowStatus(envId)
+        getWorkflowStatus(envId, filteredAppIds)
             .then((response) => {
                 const _processedWorkflowsData = processWorkflowStatuses(
                     response?.result?.ciWorkflowStatus ?? [],
@@ -158,6 +206,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                 )
                 pollWorkflowStatus(_processedWorkflowsData)
                 setWorkflows(_processedWorkflowsData.workflows)
+                processFilteredData(_processedWorkflowsData.workflows)
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
@@ -165,65 +214,6 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                 pollWorkflowStatus({ cicdInProgress: true, workflows: workflowsList })
             })
     }
-
-    useEffect(() => {
-        if (envId) {
-            setPageViewType(ViewType.LOADING)
-            setSelectedAppList([])
-            getWorkflowsData()
-        }
-        return () => {
-            inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
-        }
-    }, [envId])
-
-    useEffect(() => {
-        if (filteredApps.length) {
-            const _filteredAppMap = new Map<number, string>()
-            filteredApps.forEach((app) => {
-                _filteredAppMap.set(+app.value, app.label)
-            })
-            const _filteredWorkflows: WorkflowType[] = []
-            workflows.forEach((wf) => {
-                if (_filteredAppMap.get(wf.appId)) {
-                    _filteredWorkflows.push(wf)
-                }
-            })
-            const _selectedAppList = []
-            let _preNodeExist, _postNodeExist
-            _filteredWorkflows.forEach((wf) => {
-                if (wf.isSelected) {
-                    const _currentAppDetail = {
-                        id: wf.appId,
-                        name: wf.name,
-                        preNodeAvailable: false,
-                        postNodeAvailable: false,
-                    }
-                    for (const node of wf.nodes) {
-                        if (node.environmentId === +envId && node.type === WorkflowNodeType.CD) {
-                            _preNodeExist = showPreDeployment || !!node.preNode
-                            _postNodeExist = showPostDeployment || !!node.postNode
-                            _currentAppDetail.preNodeAvailable = !!node.preNode
-                            _currentAppDetail.postNodeAvailable = !!node.postNode
-                            break
-                        }
-                    }
-                    _selectedAppList.push(_currentAppDetail)
-                }
-            })
-            setShowPreDeployment(_preNodeExist)
-            setShowPostDeployment(_postNodeExist)
-            setSelectedAppList(_selectedAppList)
-            setSelectAll(_selectedAppList.length !== 0)
-            setSelectAllValue(
-                _filteredWorkflows.length === _selectedAppList.length
-                    ? CHECKBOX_VALUE.CHECKED
-                    : CHECKBOX_VALUE.INTERMEDIATE,
-            )
-            _filteredWorkflows.sort((a, b) => sortCallback('name', a, b))
-            setFilteredWorkflows(_filteredWorkflows)
-        }
-    }, [filteredApps, workflows])
 
     const clearAppList = (): void => {
         setSelectedAppList([])
@@ -647,8 +637,6 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         deploymentWithConfig?: string,
         wfrId?: number,
     ): void => {
-        ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
-        setCDLoading(true)
         let node
         for (const _wf of filteredWorkflows) {
             node = _wf.nodes.find((nd) => +nd.id == selectedCDNode.id && nd.type == selectedCDNode.type)
@@ -658,6 +646,8 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         const pipelineId = node.id
         const ciArtifact = node[materialType].find((artifact) => artifact.isSelected)
         if (_appId && pipelineId && ciArtifact.id) {
+            ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
+            setCILoading(true)
             triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
@@ -667,7 +657,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                                 : 'Deployment Initiated'
                         toast.success(msg)
                         setShowCDModal(false)
-                        setCDLoading(false)
+                        setCILoading(false)
                         setErrorCode(response.code)
                         preventBodyScroll(false)
                         getWorkflowStatusData(workflows)
@@ -675,7 +665,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                 })
                 .catch((errors: ServerErrors) => {
                     showError(errors)
-                    setCDLoading(false)
+                    setCILoading(false)
                     setErrorCode(errors.code)
                 })
         } else {
@@ -1575,7 +1565,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                                 material={material}
                                 materialType={materialType}
                                 envName={node?.environmentName}
-                                isLoading={isCDLoading}
+                                isLoading={isCILoading}
                                 changeTab={changeTab}
                                 triggerDeploy={onClickTriggerCDNode}
                                 onClickRollbackMaterial={onClickRollbackMaterial}
