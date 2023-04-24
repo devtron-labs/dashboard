@@ -407,12 +407,15 @@ function ChartValuesView({
                 (e) => e.value.toString() === commonState.installedConfig.teamId.toString(),
             )
 
-            let environment = {}
-            commonState.environments.forEach((env) => {
-                environment = (env.options as ChartValuesOptionType[]).find(
+            let environment: ChartValuesOptionType
+            for (const envList of commonState.environments) {
+                environment = (envList.options as ChartValuesOptionType[]).find(
                     (e) => e.value.toString() === commonState.installedConfig.environmentId.toString(),
                 )
-            })
+                if (environment?.value) {
+                    break
+                }
+            }
 
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
