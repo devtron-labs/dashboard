@@ -1,38 +1,34 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Progressing, useAsync } from '../../../common'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { useAsync } from '../../../common'
 import EnvironmentOverride from '../../../EnvironmentOverride/EnvironmentOverride'
 import { getConfigAppList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, ConfigAppList } from '../../AppGroup.types'
 import ApplicationRoute from './ApplicationRoutes'
 
-export default function EnvConfig({ filteredApps }: AppGroupDetailDefaultType) {
+export default function EnvConfig({ filteredAppIds }: AppGroupDetailDefaultType) {
     const { envId, appId } = useParams<{ envId: string; appId: string }>()
     const { url } = useRouteMatch()
     const history = useHistory()
     const [environments, setEnvironments] = useState([])
     const [envAppList, setEnvAppList] = useState<ConfigAppList[]>([])
-    const [loading, appList] = useAsync(() => getConfigAppList(+envId), [envId])
+    const [loading, appList] = useAsync(() => getConfigAppList(+envId, filteredAppIds), [envId, filteredAppIds])
 
     useEffect(() => {
-        if (appList?.result && filteredApps.length) {
-            const _filteredAppMap = new Map<number, string>()
-            filteredApps.forEach((app) => {
-                _filteredAppMap.set(+app.value, app.label)
-            })
-            const _envAppList = appList.result
-                .filter((app) => _filteredAppMap.get(app.id))
-                .sort((a, b) => a.name.localeCompare(b.name))
-            setEnvAppList(_envAppList)
+        if (appList?.result) {
+            const appIdExist = appList.result.some((app) => app.id === +appId)
+            appList.result.sort((a, b) => a.name.localeCompare(b.name))
+            setEnvAppList(appList.result)
             if (!appId) {
-                history.push(`${url}/${_envAppList[0].id}`)
-            } else if (!_filteredAppMap.get(+appId)) {
+                history.replace(`${url}/${appList.result[0].id}`)
+            } else if (!appIdExist) {
                 const oldUrlSubstring = `/edit/${appId}`
-                const newUrlSubstring = `/edit/${_envAppList[0].id}`
+                const newUrlSubstring = `/edit/${appList.result[0].id}`
                 history.push(`${url.replace(oldUrlSubstring, newUrlSubstring)}`)
             }
         }
-    }, [appList, filteredApps])
+    }, [appList])
 
     if (loading) {
         return (

@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
+import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerType, SourceTypeMap } from '../../config'
 import { Trash, Page, Toggle } from '../common'
 import { ReactComponent as Docker } from '../../assets/icons/misc/docker.svg'

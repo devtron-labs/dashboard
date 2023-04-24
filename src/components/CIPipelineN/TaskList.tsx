@@ -4,9 +4,9 @@ import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
 import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { PopupMenu } from '../common'
 import { ciPipelineContext } from './CIPipeline'
 import { FormErrorObjectType, FormType, StepType, TaskErrorObj, VariableType } from '../ciPipeline/types'
+import { PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 
 export function TaskList() {
     const {
@@ -155,7 +155,7 @@ export function TaskList() {
                     </Fragment>
                 ))}
             </div>
-            <div className="task-item add-task-container cb-5 fw-6 fs-13 flexbox mr-20" onClick={addNewTask}>
+            <div data-testid="sidebar-add-task-button" className="task-item add-task-container cb-5 fw-6 fs-13 flexbox mr-20" onClick={addNewTask}>
                 <Add className="add-icon" /> Add task
             </div>
         </>

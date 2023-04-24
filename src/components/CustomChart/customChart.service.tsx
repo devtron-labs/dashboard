@@ -1,5 +1,5 @@
-import { Host, Routes } from '../../config'
-import { post, get, put } from '../../services/api'
+import { Routes } from '../../config'
+import { post, get, put } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartListResponse, ChartUploadResponse, ChartUploadType } from './types'
 
 export const getChartList = (): Promise<ChartListResponse> => {

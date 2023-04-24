@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Progressing, useInterval } from '../../../common'
+import { Progressing, Host } from '@devtron-labs/devtron-fe-common-lib'
+import { useInterval } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help.svg'
-import { DOCUMENTATION, EVENT_STREAM_EVENTS_MAP, Host, LOGS_RETRY_COUNT, POD_STATUS, Routes } from '../../../../config'
+import { DOCUMENTATION, EVENT_STREAM_EVENTS_MAP, LOGS_RETRY_COUNT, POD_STATUS, Routes } from '../../../../config'
 import { default as AnsiUp } from 'ansi_up'
 import { HistoryComponentType, LogsRendererType } from './types'
 
@@ -38,7 +39,7 @@ export default function LogsRenderer({
         (!isBlobStorageConfigured || !triggerDetails.blobStorageEnabled) ? (
         renderConfigurationError(isBlobStorageConfigured)
     ) : (
-        <div className="logs__body">
+        <div className="logs__body" data-testid="check-logs-detail">
             {logs.map((log: string, index: number) => {
                 return (
                     <div className="flex top left mb-10 lh-24" key={`logs-${index}`}>

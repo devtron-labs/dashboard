@@ -1,5 +1,6 @@
 import React from 'react'
-import { ErrorScreenManager, Pagination, Progressing } from '../../common'
+import { ErrorScreenManager, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Pagination } from '../../common'
 import { Link, useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'

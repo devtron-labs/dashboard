@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { showError, Progressing, DeleteDialog, deepEqual } from '../common';
+import { deepEqual } from '../common';
+import { showError, Progressing, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { ResizableTextarea } from '../configMaps/ConfigMap';
 import { saveGroup, deleteGroup } from './userGroup.service';
 
@@ -9,7 +10,6 @@ import {
     EntityTypes,
     ActionTypes,
     CreateGroup,
-    K8sPermissionFilter,
 } from './userGroups.types';
 import './UserGroup.scss';
 import { toast } from 'react-toastify';
@@ -119,7 +119,7 @@ export default function GroupForm({
                         entity: EntityTypes.CLUSTER,
                         action: permission.action.value,
                         cluster: permission.cluster.label,
-                        group: permission.group.value === '*' ? '' : permission.group.value, 
+                        group: permission.group.value === '*' ? '' : permission.group.value,
                         kind: permission.kind.value === '*' ? '' : permission.kind.label,
                         namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
                         resource: permission.resource.find((entity) => entity.value === '*')
@@ -184,6 +184,7 @@ export default function GroupForm({
                 className="form__input mb-16"
                 disabled={!!id}
                 value={name.value}
+                data-testid="permission-group-name-textbox"
                 onChange={(e) => setName({ value: e.target.value, error: '' })}
             />
             <label htmlFor="" className="form__label">
@@ -195,6 +196,7 @@ export default function GroupForm({
                 className="w-100"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                data-testid="permission-group-description-textbox"
             />
             <AppPermissions
                 data={groupData}
@@ -211,6 +213,7 @@ export default function GroupForm({
                     <button
                         className="cta delete"
                         style={{ marginRight: 'auto' }}
+                        data-testid="permission-group-form-delete-button"
                         onClick={(e) => setDeleteConfirmationModal(true)}
                     >
                         Delete
@@ -222,10 +225,22 @@ export default function GroupForm({
                         Unsaved changes
                     </span>
                 )}
-                <button disabled={submitting} onClick={cancelCallback} type="button" className="cta cancel mr-16">
+                <button
+                    data-testid="permission-group-form-cancel-button"
+                    disabled={submitting}
+                    onClick={cancelCallback}
+                    type="button"
+                    className="cta cancel mr-16"
+                >
                     Cancel
                 </button>
-                <button disabled={submitting} type="button" className="cta" onClick={handleSubmit}>
+                <button
+                    data-testid="permission-group-form-save-button"
+                    disabled={submitting}
+                    type="button"
+                    className="cta"
+                    onClick={handleSubmit}
+                >
                     {submitting ? <Progressing /> : 'Save'}
                 </button>
             </div>

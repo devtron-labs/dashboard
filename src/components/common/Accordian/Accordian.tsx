@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
-import { Checkbox } from '../formFields/Checkbox'
+import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 
-export function Accordian({ header, options, value, onChange, onClickViewChartButton }) {
+export function Accordian({ header, options, value, onChange, onClickViewChartButton,dataTestId }) {
     const [collapsed, setCollapse] = useState<boolean>(true)
 
     const toggleDropdown = (): void => {
@@ -12,7 +12,7 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
 
     return (
         <div>
-            <div className="flex fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8 dc__content-space cursor" onClick={toggleDropdown}>
+            <div className="flex fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8 dc__content-space cursor" data-testid={dataTestId} onClick={toggleDropdown}>
                 {header}
                 <Dropdown
                     className="icon-dim-24 rotate"

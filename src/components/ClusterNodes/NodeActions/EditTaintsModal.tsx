@@ -1,6 +1,13 @@
 import React, { useState } from 'react'
-import { Drawer, Progressing, showError, stopPropagation } from '../../common'
-import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
+import {
+    showError,
+    Progressing,
+    Drawer,
+    TippyCustomized,
+    TippyTheme,
+    stopPropagation,
+    InfoColourBar,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
@@ -17,7 +24,6 @@ import { ValidationRules } from './validationRules'
 import { EDIT_TAINTS_MODAL_MESSAGING, TAINT_OPTIONS } from '../constants'
 import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
-import TippyCustomized, { TippyTheme } from '../../common/TippyCustomized'
 
 export default function EditTaintsModal({ name, version, kind, taints, closePopup }: EditTaintsModalType) {
     const { clusterId } = useParams<{ clusterId: string }>()

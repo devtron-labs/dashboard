@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
-import { Progressing, showError, VisibleModal } from '../common'
+import { showError, Progressing, VisibleModal, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import GenerateActionButton from './GenerateActionButton'
 import { getDateInMilliseconds } from './authorization.utils'
 import { RegenerateModalType, TokenResponseType } from './authorization.type'
@@ -133,6 +132,7 @@ function RegeneratedModal({
                     onCancel={() => setShowRegeneratedModal(false)}
                     onSave={handleRegenrateToken}
                     buttonText="Regenerate Token"
+                    regenerateButton={true}
                 />
             </div>
         </VisibleModal>

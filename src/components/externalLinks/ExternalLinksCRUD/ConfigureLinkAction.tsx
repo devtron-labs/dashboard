@@ -1,6 +1,13 @@
 import React, { useState } from 'react'
 import ReactSelect from 'react-select'
-import { Checkbox, CHECKBOX_VALUE } from '../../common'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    TippyCustomized,
+    TippyTheme,
+    RadioGroup,
+    RadioGroupItem,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-cross.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-help-outline.svg'
@@ -13,8 +20,6 @@ import {
 } from '../ExternalLinks.type'
 import { ToolSelectStyles } from '../ExternalLinks.utils'
 import { customOptionWithIcon, customValueContainerWithIcon, ToolsMenuList } from '../ExternalLinks.component'
-import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup'
-import TippyCustomized, { TippyTheme } from '../../common/TippyCustomized'
 import IdentifierSelector from './IdentifierSelector'
 
 export default function ConfigureLinkAction({
@@ -130,6 +135,7 @@ export default function ConfigureLinkAction({
                         MenuList: ToolsMenuList,
                     }}
                     styles={ToolSelectStyles}
+                    classNamePrefix="link-icon__select"
                 />
             </div>
             <div className="configure-link-action-content">
@@ -140,6 +146,7 @@ export default function ConfigureLinkAction({
                         value={link.name}
                         onChange={onNameChange}
                         onBlur={validateAndUpdateLinksData}
+                        data-testid="external-link-name-input"
                     />
                     {link.invalidName && getErrorLabel('name')}
                 </div>
@@ -149,6 +156,7 @@ export default function ConfigureLinkAction({
                         placeholder="Description"
                         value={link.description}
                         onChange={onDescriptionChange}
+                        data-testid="external-link-description-input"
                     />
                 </div>
                 {!isAppConfigView && (
@@ -165,6 +173,7 @@ export default function ConfigureLinkAction({
                                     className={`dc__no-text-transform ${
                                         linkScope === ExternalLinkScopeType.ClusterLevel ? 'fw-6' : 'fw-4'
                                     }`}
+                                    data-testid="specific-clusters-select"
                                 >
                                     All apps in specific clusters
                                 </span>
@@ -174,6 +183,7 @@ export default function ConfigureLinkAction({
                                     className={`dc__no-text-transform ${
                                         linkScope === ExternalLinkScopeType.AppLevel ? 'fw-6' : 'fw-4'
                                     }`}
+                                    data-testid="specific-applications-select"
                                 >
                                     Specific applications
                                 </span>
@@ -202,6 +212,7 @@ export default function ConfigureLinkAction({
                         value={link.urlTemplate}
                         onChange={onUrlTemplateChange}
                         onBlur={validateAndUpdateLinksData}
+                        data-testid="link-url-template-input"
                     />
                     {link.invalidUrlTemplate && getErrorLabel('url')}
                     {link.invalidProtocol && getErrorLabel('invalidProtocol')}
@@ -234,7 +245,7 @@ export default function ConfigureLinkAction({
                 )}
             </div>
             {showDelete && (
-                <div className="link-delete icon-dim-20 cursor">
+                <div className="link-delete icon-dim-20 cursor" data-testid="close-link">
                     <CloseIcon className="icon-dim-20 fcn-6" onClick={() => deleteLinkData(index)} />
                 </div>
             )}

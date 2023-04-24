@@ -4,7 +4,8 @@ import { DOCUMENTATION } from '../../config'
 import { getWorkflowList } from '../../services/service'
 import { OptionType } from '../app/types'
 import { CIBuildConfigType, CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { ConfirmationDialog, Progressing, showError, useForm } from '../common'
+import { useForm } from '../common'
+import { showError, Progressing, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import { saveCIConfig, updateCIConfig } from './service'
 import { CIBuildArgType, CIConfigFormProps, ProcessedWorkflowsType } from './types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
@@ -295,7 +296,7 @@ export default function CIConfigForm({
             <div className={`form__app-compose ${configOverrideView ? 'config-override-view' : ''}`}>
                 {!configOverrideView && (
                     <div className="flex dc__content-space mb-20">
-                        <h2 className="form__title m-0-imp">Build Configuration</h2>
+                        <h2 className="form__title m-0-imp" data-testid="build-configuration-heading">Build Configuration</h2>
                         <a
                             className="flex right dc__link"
                             rel="noreferrer noopener"
@@ -351,6 +352,7 @@ export default function CIConfigForm({
             {!configOverrideView && (
                 <div className="save-build-configuration form__buttons dc__position-abs bcn-0 dc__border-top">
                     <button
+                        data-testid="build_config_save_and_next_button"
                         tabIndex={5}
                         type="button"
                         className="flex cta h-36"

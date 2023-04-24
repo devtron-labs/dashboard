@@ -1,6 +1,5 @@
-export const RequestTimeout = 60000
+import { DOCUMENTATION_HOME_PAGE } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'Checking Status...'
-export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
 export const DEFAULTK8SVERSION = 'v1.16.0'
 export const TOKEN_COOKIE_NAME = 'argocd.token'
 export const DEVTRON_DEFAULT_RELEASE_NAME = 'devtron'
@@ -47,13 +46,16 @@ export const Routes = {
 
     APP: 'app',
     APP_LIST: 'app/list',
+    APP_LIST_V1: 'v1',
+    APP_LIST_V2: 'v2',
     APP_LIST_MIN: 'app/autocomplete',
     APP_DETAIL: 'app/detail',
     APP_CONFIG_STATUS: 'app/stage/status',
     APP_OTHER_ENVIRONMENT: 'app/other-env',
+    APP_OTHER_ENVIRONMENT_MIN: 'app/other-env/min',
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/edit',
-    
+
     JOB_CI_DETAIL:'job/ci-pipeline/list',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
@@ -80,6 +82,7 @@ export const Routes = {
     GIT_PROVIDER: 'git/provider',
     GIT_HOST: 'git/host',
     CHART_LIST_SUBPATH: 'list',
+    CHART_LIST_SUBPATH_MIN: 'list/min',
     GIT_PROVIDER_MIN: 'git/provider/autocomplete',
     MIGRATION_TOOLS: 'config/mig-tools',
     DATABASE: 'config/databases',
@@ -155,6 +158,7 @@ export const Routes = {
     HELM_LINK_TO_CHART_STORE_API: 'app-store/deployment/application/helm/link-to-chart-store',
     HELM_DEPLOYMENT_ROLLBACK_API: 'application/rollback',
     NAMESPACE: 'env/namespace',
+    APP_STORE_INSTALLED_APP: 'app-store/installed-app',
     APP_RELEASE_DEPLOYMENT_HISTORY_API: 'app-store/installed-app/deployment-history',
     APP_RELEASE_DEPLOYMENT_DETAIL_API: 'app-store/installed-app/deployment-history/info',
     PLUGIN_LIST: 'plugin/global/list',
@@ -175,6 +179,7 @@ export const Routes = {
     VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
     CLUSTER_LIST: 'k8s/capacity/cluster/list',
+    CLUSTER_LIST_MIN: 'k8s/capacity/cluster/list/raw',
     CLUSTER_CAPACITY: 'k8s/capacity/cluster',
     NODE_LIST: 'k8s/capacity/node/list',
     NODE_CAPACITY: 'k8s/capacity/node',
@@ -211,6 +216,10 @@ export const Routes = {
     JOB_LIST: 'job/list',
     JOB_CI_PIPELINE_LIST: 'job/ci-pipeline/list',
     USER_ROLE_GROUP: 'user/role/group',
+    APP_FILTER_LIST: 'app/app-listing/autocomplete',
+    APP_LIST_GROUP: 'app/list/group',
+    GROUPS: 'groups',
+    GROUP: 'group',
 }
 
 export const ViewType = {
@@ -246,12 +255,13 @@ export const PATTERNS = {
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
     NAMESPACE: '^[a-z0-9]+([a-z0-9-?]*[a-z0-9])?$',
     URL: /^(http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/,
-    KUBERNETES_KEY: /^((http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}\/?)*[A-Za-z0-9][A-Za-z0-9-._]{0,253}$/,
+    KUBERNETES_KEY:
+        /^((http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}\/?)*[A-Za-z0-9][A-Za-z0-9-._]{0,253}$/,
     KUBERNETES_VALUE: /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/,
     KUBERNETES_KEY_PREFIX: /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/,
     KUBERNETES_KEY_NAME: /^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$/,
     START_END_ALPHANUMERIC: /^([A-Za-z0-9]).*[A-Za-z0-9]$|^[A-Za-z0-9]{1}$/,
-    ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/ // allow alphanumeric,(.) ,(-),(_)
+    ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/, // allow alphanumeric,(.) ,(-),(_)
 }
 
 export const TriggerType = {
@@ -274,7 +284,6 @@ export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
 export const MomentDateFormat = 'ddd, DD MMM YYYY'
 export const Moment12HourExportFormat = 'DD-MMM-YYYY hh.mm A'
 
-const DOCUMENTATION_HOME_PAGE = 'https://docs.devtron.ai'
 export const DOCUMENTATION = {
     HOME_PAGE: DOCUMENTATION_HOME_PAGE,
     APP_CREATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/create-application`,
@@ -361,7 +370,7 @@ export const AppListConstants = {
         CLUTSER: 'cluster',
         NAMESPACE: 'namespace',
         ENVIRONMENT: 'environment',
-        APP_STATUS: 'appStatus'
+        APP_STATUS: 'appStatus',
     },
 }
 // APP LIST ENDS
@@ -374,7 +383,7 @@ export enum SERVER_MODE {
 export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE
 
 export enum ACCESS_TYPE_MAP {
-    DEVTRON_APPS = '', // devtron app work flow
+    DEVTRON_APPS = 'devtron-app', // devtron app work flow
     HELM_APPS = 'helm-app', //helm app work flow
 }
 
@@ -642,6 +651,7 @@ export const ModuleNameMap = {
 
 export const BUILD_STATUS = {
     NOT_TRIGGERED: 'not triggered',
+    NOT_DEPLOYED: 'not deployed'
 }
 
 export const EVENT_STREAM_EVENTS_MAP = {
@@ -770,7 +780,7 @@ export const DEPLOYMENT_STATUS = {
 
 export const HELM_DEPLOYMENT_STATUS_TEXT = {
     PROGRESSING: 'Progressing',
-    INPROGRESS: 'In progress'
+    INPROGRESS: 'In progress',
 }
 
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
@@ -780,7 +790,8 @@ export const SOURCE_NOT_CONFIGURED = 'Source not configured'
 export const DOCKER_FILE_ERROR_TITLE = 'Unable to locate Dockerfile as source is not configured for this repository'
 export const DOCKER_FILE_ERROR_MESSAGE = 'Unable to locate Dockerfile as source is not configured for this repository'
 export const DEFAULT_GIT_BRANCH_VALUE = '--'
-export const SOURCE_NOT_CONFIGURED_MESSAGE= 'Source is not configured for one or more git repositories. Please configure and try again.'
+export const SOURCE_NOT_CONFIGURED_MESSAGE =
+    'Source is not configured for one or more git repositories. Please configure and try again.'
 
 export enum MANIFEST_KEY_FIELDS {
     METADATA= 'metadata',
@@ -788,6 +799,12 @@ export enum MANIFEST_KEY_FIELDS {
 }
 
 export enum KEY_VALUE {
-  KEY= 'key',
-  VALUE= 'value'
+    KEY = 'key',
+    VALUE = 'value',
+}
+
+export enum CONFIGURATION_TYPES {
+    ENVIRONMENT = 'ENVIRONMENT',
+    NAMESPACE = 'NAMESPACE',
+    DESCRIPTION = 'DESCRIPTION'
 }

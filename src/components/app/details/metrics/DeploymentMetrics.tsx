@@ -1,18 +1,32 @@
 import React, { Component } from 'react'
 import { getDeploymentMetrics } from './deploymentMetrics.service';
-import { DatePicker, ErrorScreenManager, Progressing, showError } from '../../../common';
+import { DatePicker } from '../../../common';
+import { showError, Progressing, ErrorScreenManager, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../../../config';
 import { generatePath } from 'react-router';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts'
 import { DeploymentTable } from './DeploymentTable';
-import { getAppOtherEnvironment } from '../../../../services/service';
+import { getAppOtherEnvironmentMin } from '../../../../services/service';
 import { DeploymentTableModal } from './DeploymentTableModal';
 import { BenchmarkModal } from './BenchmarkModal';
 import moment from 'moment';
-import { DropdownIndicator, styles, BenchmarkLine, frequencyXAxisLabel, leadTimeXAxisLabel, recoveryTimeLabel, ReferenceLineLegend, renderCategoryTag, FrequencyTooltip, RecoveryTimeTooltip, LeadTimeTooltip, EliteCategoryMessage, FailureLegendEmptyState } from './deploymentMetrics.util';
+import {
+    DropdownIndicator,
+    styles,
+    BenchmarkLine,
+    frequencyXAxisLabel,
+    leadTimeXAxisLabel,
+    recoveryTimeLabel,
+    ReferenceLineLegend,
+    renderCategoryTag,
+    FrequencyTooltip,
+    RecoveryTimeTooltip,
+    LeadTimeTooltip,
+    EliteCategoryMessage,
+    FailureLegendEmptyState,
+} from './deploymentMetrics.util'
 import ReactSelect from 'react-select';
 import { Option } from '../../../v2/common/ReactSelect.utils';
-import EmptyState from '../../../EmptyState/EmptyState'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png';
 import SelectEnvImage from '../../../../assets/img/ic-empty-dep-metrics@2x.png';
 import Tippy from '@tippyjs/react';
@@ -21,7 +35,7 @@ import { ReactComponent as Deploy } from '../../../../assets/icons/ic-deploy.svg
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg';
 import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclamation.svg';
 import ReactGA from 'react-ga4';
-import './deploymentMetrics.css';
+import './deploymentMetrics.scss';
 import { DeploymentMetricsProps, DeploymentMetricsState } from './deploymentMetrics.types';
 
 
@@ -111,7 +125,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     }
 
     callGetAppOtherEnv(prevEnvId: string | undefined) {
-        getAppOtherEnvironment(this.props.match.params.appId).then((envResponse) => {
+        getAppOtherEnvironmentMin(this.props.match.params.appId).then((envResponse) => {
             let allEnv= envResponse.result?.filter(env => env.prod).map((env) => {
                 return {
                     label: env.environmentName,
@@ -127,8 +141,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                 view: this.props.match.params.envId || callAPIOnEnvOfPrevApp ? ViewType.LOADING : ViewType.FORM,
 
             });
-        }).then(() => {
-            if (prevEnvId && this.state.environments.find(e => Number(e.value) === Number(prevEnvId))) {
+            if (prevEnvId && allEnv.find(e => Number(e.value) === Number(prevEnvId))) {
                 let url = generatePath(this.props.match.path, { appId: this.props.match.params.appId, envId: prevEnvId });
                 this.props.history.push(url);
             }
@@ -195,7 +208,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     renderInputs() {
         return <div className="deployment-metrics__inputs bcn-0">
-            <div className='w-180'>
+            <div className='w-180' data-testid="select-environment">
                 <ReactSelect defaultValue={this.state.selectedEnvironment}
                     value={this.state.selectedEnvironment}
                     placeholder="Select Environment"
@@ -473,7 +486,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                     value={-1} onClick={this.handleTableFilter} />
                                 <span className="dc__tertiary-tab">All ({this.state.totalDeployments})</span>
                             </label>
-                            <label className="dc__tertiary-tab__radio">
+                            <label className="dc__tertiary-tab__radio" data-testid="success-deployment-status">
                                 <input type="radio" name="status" checked={this.state.statusFilter === 0}
                                     value={0} onClick={this.handleTableFilter} />
                                 <span className="dc__tertiary-tab">
@@ -481,7 +494,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                     Success ({this.state.totalDeployments - this.state.failedDeployments})
                                 </span>
                             </label>
-                            <label className="dc__tertiary-tab__radio">
+                            <label className="dc__tertiary-tab__radio" data-testid="failed-deployment-status">
                                 <input type="radio" name="status" checked={this.state.statusFilter === 1}
                                     value={1} onClick={this.handleTableFilter} />
                                 <span className="dc__tertiary-tab">

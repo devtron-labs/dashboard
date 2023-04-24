@@ -4,6 +4,7 @@ import {
     CDMaterialProps,
     CDMaterialState,
     CDMaterialType,
+    DeploymentNodeType,
     DeploymentWithConfigType,
     MaterialInfo,
     MATERIAL_TYPE,
@@ -21,16 +22,8 @@ import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
-import {
-    VisibleModal,
-    ScanVulnerabilitiesTable,
-    Progressing,
-    getRandomColor,
-    showError,
-    ConditionalWrap,
-    stopPropagation,
-    noop,
-} from '../../../common'
+import { ScanVulnerabilitiesTable, getRandomColor, noop } from '../../../common'
+import { showError, Progressing, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import { EmptyStateCdMaterial } from './EmptyStateCdMaterial'
 import { CDButtonLabelMap, getCommonConfigSelectStyles } from './config'
 import {
@@ -153,7 +146,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     renderGitMaterialInfo(matInfo: MaterialInfo[]) {
         return (
             <>
-                {matInfo.map((mat: MaterialInfo) => {
+                {matInfo.map((mat: MaterialInfo, index) => {
                     let _gitCommit: GitTriggers = {
                         Commit: mat.revision,
                         Author: mat.author,
@@ -175,6 +168,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             _gitCommit.Commit) && (
                             <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
                                 <GitCommitInfoGeneric
+                                    index={index}
                                     materialUrl={mat.url}
                                     showMaterialInfoHeader={true}
                                     commitInfo={_gitCommit}
@@ -351,7 +345,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return (
             <>
                 <div className="flex left column">
-                    <div className="commit-hash commit-hash--docker">
+                    <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
                         <img src={docker} alt="" className="commit-hash__icon" />
                         {mat.image}
                     </div>
@@ -433,6 +427,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 >
                     {this.renderSequentialCDCardTitle(mat)}
                     <div
+                        data-testid={`cd-material-history-image-${index}`}
                         className={`material-history__top mh-66 ${
                             !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
                         }`}
@@ -713,7 +708,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     renderTriggerModalCTA() {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
-
         return (
             <div
                 className={`trigger-modal__trigger ${
@@ -722,55 +716,57 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         : ''
                 }`}
             >
-                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) && !this.state.showConfigDiffView && (
-                    <div className="flex left dc__border br-4 h-42">
-                        <div className="flex">
-                            <ReactSelect
-                                options={getDeployConfigOptions(
-                                    this.state.isRollbackTrigger,
-                                    this.state.recentDeploymentConfig !== null,
+                {(this.state.isRollbackTrigger || this.state.isSelectImageTrigger) &&
+                    !this.state.showConfigDiffView &&
+                    this.props.stageType === DeploymentNodeType.CD && (
+                        <div className="flex left dc__border br-4 h-42">
+                            <div className="flex">
+                                <ReactSelect
+                                    options={getDeployConfigOptions(
+                                        this.state.isRollbackTrigger,
+                                        this.state.recentDeploymentConfig !== null,
+                                    )}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator,
+                                        Option,
+                                        ValueContainer: this.customValueContainer,
+                                    }}
+                                    isDisabled={this.state.checkingDiff}
+                                    isSearchable={false}
+                                    formatOptionLabel={this.formatOptionLabel}
+                                    classNamePrefix="deploy-config-select"
+                                    placeholder="Select Config"
+                                    menuPlacement="top"
+                                    value={this.state.selectedConfigToDeploy}
+                                    styles={getCommonConfigSelectStyles({
+                                        valueContainer: (base, state) => ({
+                                            ...base,
+                                            minWidth: '135px',
+                                            cursor: state.isDisabled ? 'not-allowed' : 'pointer',
+                                        }),
+                                    })}
+                                    onChange={this.handleConfigSelection}
+                                />
+                            </div>
+                            <span className="dc__border-left h-100" />
+                            <ConditionalWrap
+                                condition={!this.state.checkingDiff && this.isDeployButtonDisabled()}
+                                wrap={(children) => (
+                                    <Tippy
+                                        className="default-tt w-200"
+                                        arrow={false}
+                                        placement="top"
+                                        content={this.getTippyContent()}
+                                    >
+                                        {children}
+                                    </Tippy>
                                 )}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    DropdownIndicator,
-                                    Option,
-                                    ValueContainer: this.customValueContainer,
-                                }}
-                                isDisabled={this.state.checkingDiff}
-                                isSearchable={false}
-                                formatOptionLabel={this.formatOptionLabel}
-                                classNamePrefix="deploy-config-select"
-                                placeholder="Select Config"
-                                menuPlacement="top"
-                                value={this.state.selectedConfigToDeploy}
-                                styles={getCommonConfigSelectStyles({
-                                    valueContainer: (base, state) => ({
-                                        ...base,
-                                        minWidth: '135px',
-                                        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
-                                    }),
-                                })}
-                                onChange={this.handleConfigSelection}
-                            />
+                            >
+                                {this.renderConfigDiffStatus()}
+                            </ConditionalWrap>
                         </div>
-                        <span className="dc__border-left h-100" />
-                        <ConditionalWrap
-                            condition={!this.state.checkingDiff && this.isDeployButtonDisabled()}
-                            wrap={(children) => (
-                                <Tippy
-                                    className="default-tt w-200"
-                                    arrow={false}
-                                    placement="top"
-                                    content={this.getTippyContent()}
-                                >
-                                    {children}
-                                </Tippy>
-                            )}
-                        >
-                            {this.renderConfigDiffStatus()}
-                        </ConditionalWrap>
-                    </div>
-                )}
+                    )}
                 <ConditionalWrap
                     condition={!this.state.checkingDiff && this.isDeployButtonDisabled()}
                     wrap={(children) => (
@@ -785,7 +781,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     )}
                 >
                     <button
-                        className={`cta flex h-36 ${this.isDeployButtonDisabled() ? 'disabled-opacity' : ''}`}
+                        data-testid="cd-trigger-deploy-button"
+                        className={`cta flex ml-auto h-36 ${this.isDeployButtonDisabled() ? 'disabled-opacity' : ''}`}
                         onClick={this.deployTrigger}
                     >
                         {this.props.isLoading ? (
@@ -977,42 +974,21 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     }
 
     render() {
-        if (this.props.isFromBulkCD) {
-            return this.props.material.length > 0 ? (
-                this.renderTriggerBody()
-            ) : (
-                <EmptyStateCdMaterial materialType={this.props.materialType} />
-            )
+        if (this.props.material.length > 0) {
+            return this.props.isFromBulkCD ? this.renderTriggerBody() : this.renderCDModal()
         } else {
-            return (
-                <VisibleModal
-                    className=""
-                    parentClassName={
-                        this.state.isRollbackTrigger || this.state.isSelectImageTrigger ? 'dc__overflow-hidden' : ''
-                    }
-                    close={this.props.closeCDModal}
-                >
-                    <div
-                        className={`modal-body--cd-material h-100 ${
-                            this.state.isRollbackTrigger || this.state.isSelectImageTrigger ? 'contains-diff-view' : ''
-                        } ${this.props.material.length > 0 ? '' : 'no-material'}`}
-                        onClick={stopPropagation}
-                    >
-                        {this.props.material.length > 0 ? (
-                            this.renderCDModal()
-                        ) : (
-                            <>
-                                <div className="trigger-modal__header">
-                                    <h1 className="modal__title">{this.renderCDModalHeader()}</h1>
-                                    <button type="button" className="dc__transparent" onClick={this.props.closeCDModal}>
-                                        <img alt="close" src={close} />
-                                    </button>
-                                </div>
-                                <EmptyStateCdMaterial materialType={this.props.materialType} />
-                            </>
-                        )}
+            return this.props.isFromBulkCD ? (
+                <EmptyStateCdMaterial materialType={this.props.materialType} />
+            ) : (
+                <>
+                    <div className="trigger-modal__header">
+                        <h1 className="modal__title">{this.renderCDModalHeader()}</h1>
+                        <button type="button" className="dc__transparent" onClick={this.props.closeCDModal}>
+                            <img alt="close" src={close} />
+                        </button>
                     </div>
-                </VisibleModal>
+                    <EmptyStateCdMaterial materialType={this.props.materialType} />
+                </>
             )
         }
     }

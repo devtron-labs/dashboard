@@ -2,7 +2,13 @@ import React, { Component } from 'react'
 import { WorkflowEditProps, WorkflowEditState } from './types'
 import { Route, Switch, withRouter, NavLink } from 'react-router-dom'
 import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
-import { Progressing, showError, ErrorScreenManager, DeleteDialog } from '../common'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    DeleteDialog,
+    InfoColourBar,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { toast } from 'react-toastify'
 import { Workflow } from './Workflow'
 import { getCreateWorkflows } from '../app/details/triggerView/workflow.service'
@@ -19,12 +25,11 @@ import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import { PipelineSelect } from './PipelineSelect'
-import './workflowEditor.css'
-import { NodeAttr, PipelineType, WorkflowNodeType } from '../app/details/triggerView/types'
+import './workflowEditor.scss'
+import { PipelineType, WorkflowNodeType } from '../app/details/triggerView/types'
 import CDSuccessModal from './CDSuccessModal'
 import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 
@@ -82,7 +87,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     getWorkflows = () => {
         this.getHostURLConfig()
         this.checkGitOpsConfiguration()
-        getCreateWorkflows(this.props.match.params.appId)
+        getCreateWorkflows(this.props.match.params.appId, this.props.isJobView)
             .then((result) => {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
@@ -350,49 +355,52 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         isJobView={this.props.isJobView}
                     />
                 </Route>
-                {!this.props.isJobView && (
-                    <>
-                        <Route path={`${this.props.match.path}/webhook/:webhookId`}>
-                            <WebhookDetailsModal close={this.closePipeline} />
-                        </Route>
-                        <Route
-                            path={`${this.props.match.path}/linked-ci/:ciPipelineId`}
-                            render={({ location, history, match }: { location: any; history: any; match: any }) => {
-                                return (
-                                    <LinkedCIPipelineView
-                                        match={match}
-                                        history={history}
-                                        location={location}
-                                        appName={this.state.appName}
-                                        connectCDPipelines={this.getLen()}
-                                        close={this.closePipeline}
-                                        getWorkflows={this.getWorkflows}
-                                        deleteWorkflow={this.deleteWorkflow}
-                                    />
-                                )
-                            }}
-                        />
-                        <Route
-                            path={`${this.props.match.path}/linked-ci`}
-                            render={({ location, history, match }: { location: any; history: any; match: any }) => {
-                                return (
-                                    <LinkedCIPipeline
-                                        match={match}
-                                        history={history}
-                                        location={location}
-                                        appName={this.state.appName}
-                                        connectCDPipelines={0}
-                                        close={this.closePipeline}
-                                        getWorkflows={this.getWorkflows}
-                                    />
-                                )
-                            }}
-                        />
-                    </>
-                )}
                 <Route path={`${this.props.match.path}/deprecated-warning`}>
                     <DeprecatedWarningModal closePopup={this.closePipeline} />
                 </Route>
+                {!this.props.isJobView && [
+                    <Route
+                        key={`${this.props.match.path}/webhook/`}
+                        path={`${this.props.match.path}/webhook/:webhookId`}
+                    >
+                        <WebhookDetailsModal close={this.closePipeline} />
+                    </Route>,
+                    <Route
+                        key={`${this.props.match.path}/linked-ci/`}
+                        path={`${this.props.match.path}/linked-ci/:ciPipelineId`}
+                        render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                            return (
+                                <LinkedCIPipelineView
+                                    match={match}
+                                    history={history}
+                                    location={location}
+                                    appName={this.state.appName}
+                                    connectCDPipelines={this.getLen()}
+                                    close={this.closePipeline}
+                                    getWorkflows={this.getWorkflows}
+                                    deleteWorkflow={this.deleteWorkflow}
+                                />
+                            )
+                        }}
+                    />,
+                    <Route
+                        key={`${this.props.match.path}/linked-ci`}
+                        path={`${this.props.match.path}/linked-ci`}
+                        render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                            return (
+                                <LinkedCIPipeline
+                                    match={match}
+                                    history={history}
+                                    location={location}
+                                    appName={this.state.appName}
+                                    connectCDPipelines={0}
+                                    close={this.closePipeline}
+                                    getWorkflows={this.getWorkflows}
+                                />
+                            )
+                        }}
+                    />,
+                ]}
             </Switch>
         )
     }
@@ -407,7 +415,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         }
         return (
             <>
-                <button type="button" className="cta dc__no-decor flex mb-20" onClick={this.toggleCIMenu}>
+                <button
+                    type="button"
+                    className="cta dc__no-decor flex mb-20"
+                    data-testid="new-workflow-button"
+                    onClick={this.toggleCIMenu}
+                >
                     <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
                     New workflow
                 </button>
@@ -451,11 +464,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 <p className="form__subtitle form__subtitle--workflow-editor">
                     {this.props.isJobView
                         ? 'Configure job pipelines to be executed. Pipelines can be configured to be triggered automatically based on code change or time.'
-                        : 'Workflows consist of pipelines from build to deployment stages of an application.'}{' '}
+                        : 'Workflows consist of pipelines from build to deployment stages of an application.'}
                     <br></br>
                     {!this.props.isJobView && (
                         <a
                             className="dc__link"
+                            data-testid="learn-more-about-creating-workflow-link"
                             href={DOCUMENTATION.APP_CREATE_WORKFLOW}
                             target="blank"
                             rel="noreferrer noopener"
@@ -576,7 +590,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             )
         } else {
             return (
-                <div className="workflow-editor">
+                <div className="workflow-editor" data-testid="workflow-editor-page">
                     <h1 className="form__title form__title--artifacts">Workflow Editor</h1>
                     <p>
                         {this.props.isJobView

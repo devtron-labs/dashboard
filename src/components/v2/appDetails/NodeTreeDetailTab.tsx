@@ -38,7 +38,7 @@ function NodeTreeDetailTab({
 
     return (
         <>
-            {appDetails.resourceTree?.nodes?.length > 0 && (
+            {appDetails?.resourceTree?.nodes?.length > 0 && (
                 <>
                     <NodeTreeTabList
                         logSearchTerms={logSearchTerms}

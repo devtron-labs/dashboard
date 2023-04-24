@@ -1,9 +1,8 @@
 import React from 'react'
 import { components } from 'react-select'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/ic-chevron-down.svg'
-import { ServerErrors } from '../../modals/commonTypes'
+import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppListMin } from '../../services/service'
-import { showError } from '../common'
 
 let timeoutId
 

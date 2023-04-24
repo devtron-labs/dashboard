@@ -1,6 +1,14 @@
 import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
-import { ButtonWithLoader, ConditionalWrap, DeleteDialog, Drawer, showError, VisibleModal } from '../common'
+import { ButtonWithLoader } from '../common'
+import {
+    ServerErrors,
+    showError,
+    ConditionalWrap,
+    VisibleModal,
+    Drawer,
+    DeleteDialog,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
 import {
     BuildStageVariable,
@@ -10,6 +18,7 @@ import {
     TriggerType,
     URLS,
     ViewType,
+    SourceTypeMap,
 } from '../../config'
 import {
     deleteCIPipeline,
@@ -20,7 +29,6 @@ import {
     saveCIPipeline,
 } from '../ciPipeline/ciPipeline.service'
 import { toast } from 'react-toastify'
-import { ServerErrors } from '../../modals/commonTypes'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import {
     CIPipelineDataType,
@@ -302,6 +310,7 @@ export default function CIPipeline({
                     )}
                 >
                     <button
+                        data-testid="ci-delete-pipeline-button"
                         type="button"
                         className={`cta cta--workflow delete mr-16`}
                         disabled={!canDeletePipeline}
@@ -317,6 +326,7 @@ export default function CIPipeline({
             return (
                 <button
                     type="button"
+                    data-testid="create-build-pipeline-advanced-options-button"
                     className={`cta cta--workflow cancel mr-16`}
                     onClick={() => {
                         setIsAdvanced(true)
@@ -402,11 +412,26 @@ export default function CIPipeline({
             formData.isDockerConfigOverridden = false
             formData.dockerConfigOverride = {} as DockerConfigOverrideType
         }
+        //here we check for the case where the pipeline is multigit and user selects pullrequest or tag creation(webhook)
+        //in that case we only send the webhook data not the other one.
+        let _materials = formData.materials
+        if (formData.materials.length > 1) {
+            for (let material of formData.materials) {
+                if (material.type === SourceTypeMap.WEBHOOK) {
+                    _materials = [material]
+                    break
+                }
+            }
+        }
 
         saveCIPipeline(
-            { ...formData, scanEnabled: isSecurityModuleInstalled ? formData.scanEnabled : false },
+            {
+                ...formData,
+                materials: _materials,
+                scanEnabled: isSecurityModuleInstalled ? formData.scanEnabled : false,
+            },
             ciPipeline,
-            formData.materials,
+            _materials,
             +appId,
             +workflowId,
             false,
@@ -540,10 +565,21 @@ export default function CIPipeline({
         const _formDataErrorObj = { ...formDataErrorObj, name: validationRules.name(_formData.name) } // validating name always as it's a mandatory field
         if (stageName === BuildStageVariable.Build) {
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
+
             let valid = _formData.materials.reduce((isValid, mat) => {
-                isValid = isValid && validationRules.sourceValue(mat.regex || mat.value, mat.type !== 'WEBHOOK').isValid
+                isValid =
+                    isValid &&
+                    validationRules.sourceValue(mat.regex || mat.value, mat.type !== SourceTypeMap.WEBHOOK).isValid
                 return isValid
             }, true)
+            if (_formData.materials.length > 1) {
+                const _isWebhook = _formData.materials.some((_mat) => _mat.type === SourceTypeMap.WEBHOOK)
+                if (_isWebhook) {
+                    valid = true
+                    _formDataErrorObj.name.isValid = true
+                }
+            }
+
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid && valid
             if (!_formDataErrorObj[BuildStageVariable.Build].isValid) {
                 setShowFormError(true)
@@ -691,6 +727,7 @@ export default function CIPipeline({
         return (
             <li className="tab-list__tab">
                 <NavLink
+                    data-testid={`${toLink}-button`}
                     replace
                     className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                     activeClassName="active"
@@ -714,7 +751,9 @@ export default function CIPipeline({
                 }`}
             >
                 <div className="flex flex-align-center flex-justify bcn-0 pr-20">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">{title}</h2>
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding" data-testid="build-pipeline-heading">
+                        {title}
+                    </h2>
                     <button
                         type="button"
                         className="dc__transparent flex icon-dim-24"
@@ -811,6 +850,7 @@ export default function CIPipeline({
                                 <ButtonWithLoader
                                     rootClassName="cta cta--workflow"
                                     loaderColor="white"
+                                    dataTestId="build-pipeline-button"
                                     onClick={savePipeline}
                                     isLoading={loadingData}
                                 >

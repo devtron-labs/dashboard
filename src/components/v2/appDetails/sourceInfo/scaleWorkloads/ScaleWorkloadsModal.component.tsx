@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Checkbox, DetailsProgressing, Progressing, showError, VisibleModal } from '../../../../common'
+import { showError, Progressing, VisibleModal, DetailsProgressing, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as ScaleDown } from '../../../../../assets/icons/ic-scale-down.svg'
 import { ReactComponent as Restore } from '../../../../../assets/icons/ic-restore.svg'
 import {
     HibernateRequest,
+    LoadingText,
     ScaleWorkloadsModalProps,
     ScaleWorkloadsType,
     WorkloadCheckType,
@@ -15,6 +16,8 @@ import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import './scaleWorkloadsModal.scss'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
+import { AppType, DeploymentAppType } from '../../appDetails.type'
+import { getInstalledChartDetailWithResourceTree } from '../../appDetails.api'
 
 export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWorkloadsModalProps) {
     const [nameSelection, setNameSelection] = useState<Record<string, WorkloadCheckType>>({
@@ -34,6 +37,12 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const [fetchingLatestDetails, setFetchingLatestDetails] = useState(false)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const scaleWorkloadTabs = ['Active workloads', 'Scaled down workloads']
+    const [isFetchingDetails, setfetchingDetails] = useState(true)
+    const [canScaleWorkloads, setCanScaleWorkloads] = useState(false)
+
+    useEffect(() => {
+        _getAndSetAppDetail()
+    }, [])
 
     useEffect(() => {
         if (fetchingLatestDetails) {
@@ -72,6 +81,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                             _workloadsToRestore,
                         )
                     }
+                    setCanScaleWorkloads(true)
                 }
             })
 
@@ -79,6 +89,22 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
             setWorkloadsToRestore(_workloadsToRestore)
         }
     }, [appDetails])
+
+    const _getAndSetAppDetail = async () => {
+        try {
+            if (appDetails?.deploymentAppType === DeploymentAppType.argo_cd) {
+                const response = await getInstalledChartDetailWithResourceTree(
+                    +appDetails.installedAppId,
+                    +appDetails.environmentId,
+                )
+                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART)
+            }
+        } catch (e) {
+            showError(e)
+        } finally {
+            setfetchingDetails(false)
+        }
+    }
 
     const checkAndUpdateCurrentWorkload = (
         workloadTarget: ScaleWorkloadsType,
@@ -105,7 +131,9 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         return (
             <>
                 <div className="modal__heading flex left">
-                    <h1 className="cn-9 fw-6 fs-16 m-0">Scale workloads</h1>
+                    <h1 className="cn-9 fw-6 fs-16 m-0" data-testid="scale-workloads-heading-onclick">
+                        Scale workloads
+                    </h1>
                     <button
                         type="button"
                         className="dc__transparent p-0"
@@ -117,6 +145,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                         }}
                         onClick={() => onClose()}
                         disabled={scalingInProgress || fetchingLatestDetails}
+                        data-testid="scale-workload-close-button"
                     >
                         <Close className="icon-dim-24" />
                     </button>
@@ -167,6 +196,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                             }}
                             key={tab}
                             className="tab-list__tab"
+                            data-testid={`scale-workloads-tab-${index}`}
                         >
                             <div
                                 className={`tab-list__tab-link ${selectedDeploymentTabIndex == index ? 'active' : ''}`}
@@ -234,6 +264,9 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
         try {
             setScalingInProgress(true)
+            if (appDetails.appType != AppType.EXTERNAL_HELM_CHART) {
+                appId = `${appDetails.clusterId}|${appDetails.namespace}|${appDetails.appName}`
+            }
             const workloadUpdate = isHibernateReq ? hibernateApp : unhibernateApp
             const _workloadsList = isHibernateReq ? workloadsToScaleDown : workloadsToRestore
             const _setWorkloadsList = isHibernateReq ? setWorkloadsToScaleDown : setWorkloadsToRestore
@@ -266,6 +299,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                 _setWorkloadsList(_workloadsList)
                 history.push(`${history.location.pathname}?refetchData=true`)
             }
+            await _getAndSetAppDetail()
         } catch (e) {
             showError(e)
         } finally {
@@ -279,30 +313,51 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
             })
         }
     }
-
+    const getLoadingText = (isActiveWorkloadsTab: boolean): string => {
+        let loadingText = ''
+        if (isFetchingDetails) {
+            loadingText = LoadingText.LOOKING_FOR_SCALABLE_WORKLOADS
+        } else {
+            if (fetchingLatestDetails || scalingInProgress) {
+                if (isActiveWorkloadsTab) {
+                    loadingText = LoadingText.SCALING_DOWN_WORKLOADS
+                } else {
+                    loadingText = LoadingText.RESTORING_WORKLOADS
+                }
+            } else {
+                if (!canScaleWorkloads) {
+                    loadingText = LoadingText.NO_SCALABLE_WORKLOADS
+                } else {
+                    if (isActiveWorkloadsTab) {
+                        loadingText = LoadingText.NO_ACTIVE_WORKLOADS
+                    } else {
+                        loadingText = LoadingText.NO_SCALED_DOWN_WORKLOADS
+                    }
+                }
+            }
+        }
+        return loadingText
+    }
     const renderScaleWorkloadsList = (isActiveWorkloadsTab: boolean): JSX.Element => {
         const _nameSelection = nameSelection[isActiveWorkloadsTab ? 'scaleDown' : 'restore']
         const _workloadsList = isActiveWorkloadsTab ? workloadsToScaleDown : workloadsToRestore
         const isWorkloadPresent = _workloadsList && _workloadsList.size > 0
         const isAnySelected =
             _workloadsList && Array.from(_workloadsList.values()).some((workload) => workload.isChecked)
-
         return (
             <div className="scale-worklists-container">
-                {fetchingLatestDetails ? (
+                {fetchingLatestDetails || isFetchingDetails || scalingInProgress ? (
                     <div
                         className="flex"
                         style={{
-                            height: '234px',
+                            height: isFetchingDetails ? '275px' : '234px',
                             flexDirection: 'column',
                         }}
                     >
                         <DetailsProgressing
                             pageLoader
                             fullHeight={true}
-                            loadingText={`${
-                                isActiveWorkloadsTab ? 'Scaling down' : 'Restoring'
-                            } workloads. Please wait...`}
+                            loadingText={getLoadingText(isActiveWorkloadsTab)}
                         />
                     </div>
                 ) : (
@@ -360,11 +415,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                         ) : (
                             <MessageUI
                                 icon={MsgUIType.INFO}
-                                msg={`${
-                                    isActiveWorkloadsTab
-                                        ? 'No active workloads available'
-                                        : 'No scaled down workloads available'
-                                }`}
+                                msg={getLoadingText(isActiveWorkloadsTab)}
                                 size={20}
                                 theme="white"
                                 iconClassName="no-readme-icon"
@@ -374,7 +425,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                     flexDirection: 'column',
                                     justifyContent: 'center',
                                     minHeight: '0',
-                                    height: '234px',
+                                    height: !canScaleWorkloads ? '275px' : '234px',
                                     paddingTop: 0,
                                 }}
                             />
@@ -392,6 +443,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                 handleWorkloadUpdate(isActiveWorkloadsTab)
                             }
                         }}
+                        data-testid="scale-or-restore-workloads"
                     >
                         {scalingInProgress ? (
                             <Progressing size={24} />
@@ -415,7 +467,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         <VisibleModal className="scale-workload-modal">
             <div className={`modal__body br-4`}>
                 {renderScaleModalHeader()}
-                {renderScaleWorkloadTabs()}
+                {!isFetchingDetails && canScaleWorkloads && renderScaleWorkloadTabs()}
                 {renderScaleWorkloadsList(selectedDeploymentTabIndex === 0)}
             </div>
         </VisibleModal>

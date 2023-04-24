@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useRouteMatch, useParams, generatePath, useHistory, useLocation } from 'react-router'
-import { PopupMenu, showError, useSearchString, DeleteDialog, Checkbox, CHECKBOX_VALUE } from '../../../../common'
+import { useSearchString } from '../../../../common'
+import { showError, DeleteDialog, PopupMenu, Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import dots from '../../../assets/icons/ic-menu-dot.svg'
 import { toast } from 'react-toastify'
 import { NodeDetailTabs, NodeDetailTabsType } from '../../../../app/types'
@@ -38,6 +39,7 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
             <div className="pod-info__popup-container">
                 {kind === NodeType.Pod ? (
                     <span
+                        data-testid="view-events-button"
                         className="flex pod-info__popup-row"
                         onClickCapture={(e) => describeNode(NodeDetailTabs.EVENTS)}
                     >
@@ -47,13 +49,18 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
                     ''
                 )}
                 {kind === NodeType.Pod ? (
-                    <span className="flex pod-info__popup-row" onClick={(e) => describeNode(NodeDetailTabs.LOGS)}>
+                    <span
+                        data-testid="view-logs-button"
+                        className="flex pod-info__popup-row"
+                        onClick={(e) => describeNode(NodeDetailTabs.LOGS)}
+                    >
                         View Container Logs
                     </span>
                 ) : (
                     ''
                 )}
                 <span
+                    data-testid="delete-resource-button"
                     className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
                     onClick={(e) => {
                         setShowDeleteConfirmation(true)
@@ -101,7 +108,7 @@ function NodeDeleteComponent({ nodeDetails, appDetails }) {
     return (
         <div style={{ width: '40px' }}>
             <PopupMenu autoClose>
-                <PopupMenu.Button isKebab={true}>
+                <PopupMenu.Button dataTestId="node-resource-dot-button" isKebab={true}>
                     <img src={dots} className="pod-info__dots" />
                 </PopupMenu.Button>
                 <PopupMenu.Body>

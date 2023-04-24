@@ -1,12 +1,11 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react'
-import { Progressing, showError, useKeyDown, useAsync, useSearchString } from '../common';
+import React, { useEffect, useState, useRef } from 'react'
+import { showError, Progressing, get, Host } from '@devtron-labs/devtron-fe-common-lib'
 import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
 import { Spinner } from 'patternfly-react';
 import LogViewer from '../LogViewer/LogViewer'
 import { NoPod } from './ResourceTreeNodes'
-import { get } from '../../services/api'
 import { getNodeStatus } from './service'
-import { Routes, Host } from "../../config";
+import { Routes } from "../../config";
 import { toast } from 'react-toastify';
 import YamljsParser from 'yaml';
 import sseWorker from './grepSSEworker';
@@ -24,6 +23,7 @@ import MonacoEditor from 'react-monaco-editor';
 import { editor } from 'monaco-editor';
 import { AutoSizer } from 'react-virtualized'
 import { getSelectedNodeItems } from './details/appDetails/utils';
+import { useAsync, useKeyDown, useSearchString } from '../common';
 import { SocketConnectionType } from './details/appDetails/appDetails.type';
 
 const commandLineParser = require('command-line-parser')

@@ -1,7 +1,16 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react'
 import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { toast } from 'react-toastify'
-import { showError, Progressing, ErrorScreenManager, RadioGroup, useJsonYaml, ConditionalWrap } from '../../../common'
+import { RadioGroup, useJsonYaml } from '../../../common'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    ConditionalWrap,
+    InfoColourBar,
+    ServerErrors,
+    ForceDeleteDialog,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     getReleaseInfo,
     ReleaseInfoResponse,
@@ -24,7 +33,6 @@ import {
     installChart,
     updateChartValues,
 } from '../../../charts/charts.service'
-import { ServerErrors } from '../../../../modals/commonTypes'
 import { ConfigurationType, SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import YAML from 'yaml'
 import {
@@ -61,7 +69,6 @@ import {
     getDeploymentHistory,
 } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import { mainContext } from '../../../common/navigation/NavigationRoutes'
-import ForceDeleteDialog from '../../../common/dialogs/ForceDeleteDialog'
 import {
     ChartEnvironmentOptionType,
     ChartKind,
@@ -81,7 +88,6 @@ import NoGitOpsConfiguredWarning from '../../../workflowEditor/NoGitOpsConfigure
 import { AppMetaInfo } from '../../../app/types'
 import { getHelmAppMetaInfo } from '../../../app/service'
 import ProjectUpdateModal from './ProjectUpdateModal'
-import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 import ChartValuesEditor from './ChartValuesEditor'
 import { ChartRepoSelector } from './ChartRepoSelector'
 import { MULTI_REQUIRED_FIELDS_MSG, SOME_ERROR_MSG, TOAST_INFO } from '../../../../config/constantMessaging'
@@ -569,7 +575,7 @@ function ChartValuesView({
                     payload: false,
                 })
                 toast.success(TOAST_INFO.DELETION_INITIATED)
-                init()
+                init && init()
                 history.push(
                     isCreateValueView
                         ? getSavedValuesListURL(installedConfigFromParent.appStoreId)
@@ -934,6 +940,7 @@ function ChartValuesView({
                     commonState.openReadMe ? 'opened' : ''
                 } ${disabled ? 'disabled' : ''}`}
                 onClick={() => handleReadMeOptionClick(disabled)}
+                data-testid="readme-option"
             >
                 {commonState.openReadMe ? (
                     <>
@@ -968,6 +975,7 @@ function ChartValuesView({
                     commonState.openComparison ? 'opened' : ''
                 } ${disabled ? 'disabled' : ''}`}
                 onClick={() => handleComparisonOptionClick(disabled)}
+                data-testid="compare-values"
             >
                 {commonState.openComparison ? (
                     <Close className="option-close__icon icon-dim-16 mr-8" />
@@ -1004,11 +1012,16 @@ function ChartValuesView({
                         {ConfigurationType.GUI} (Beta)
                     </RadioGroup.Radio>
                 )}
-                <RadioGroup.Radio value={ConfigurationType.YAML.toLowerCase()}>
+                <RadioGroup.Radio value={ConfigurationType.YAML.toLowerCase()} dataTestId="yaml-radio-button">
                     <Edit className="icon-dim-12 mr-6" />
                     {ConfigurationType.YAML}
                 </RadioGroup.Radio>
-                <RadioGroup.Radio value="manifest" canSelect={isValidData()} tippyContent={MANIFEST_INFO.InfoText}>
+                <RadioGroup.Radio
+                    value="manifest"
+                    canSelect={isValidData()}
+                    tippyContent={MANIFEST_INFO.InfoText}
+                    dataTestId="manifest-radio-button"
+                >
                     Manifest output
                 </RadioGroup.Radio>
             </RadioGroup>
@@ -1321,10 +1334,19 @@ function ChartValuesView({
 
                         {!isDeployChartView && !isCreateValueView && (
                             <div className="mb-16">
-                                <div className="fs-12 fw-4 lh-20 cn-7">Project</div>
-                                <div className="flex left dc__content-space fs-13 fw-6 lh-20 cn-9">
+                                <div className="fs-12 fw-4 lh-20 cn-7" data-testid="project-heading">
+                                    Project
+                                </div>
+                                <div
+                                    className="flex left dc__content-space fs-13 fw-6 lh-20 cn-9"
+                                    data-testid="project-value"
+                                >
                                     {appMetaInfo?.projectName ? appMetaInfo.projectName : 'unassigned'}
-                                    <Edit className="icon-dim-20 cursor" onClick={toggleChangeProjectModal} />
+                                    <Edit
+                                        className="icon-dim-20 cursor"
+                                        onClick={toggleChangeProjectModal}
+                                        data-testid="edit-project-icon"
+                                    />
                                 </div>
                             </div>
                         )}

@@ -1,5 +1,5 @@
+import { EmptyState } from '@devtron-labs/devtron-fe-common-lib';
 import React from 'react';
-import EmptyState from '../../EmptyState/EmptyState';
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 
 interface EmptyChartType {

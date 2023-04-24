@@ -1,5 +1,5 @@
 import { Routes } from '../../config';
-import { post, trash } from '../../services/api';
+import { post, trash } from '@devtron-labs/devtron-fe-common-lib';
 
 export function createWorkflow(request) {
     const URL = `${Routes.WORKFLOW}`;

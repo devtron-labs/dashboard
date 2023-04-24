@@ -3,8 +3,7 @@ import './apiToken.scss'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getGeneratedAPITokenList } from './service'
-import { showError, Progressing, ErrorScreenManager, useAsync } from '../common'
-import EmptyState from '../EmptyState/EmptyState'
+import { showError, Progressing, ErrorScreenManager, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import emptyGeneratToken from '../../assets/img/ic-empty-generate-token.png'
 import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import APITokenList from './APITokenList'
@@ -108,6 +107,7 @@ function ApiTokens() {
                     <input
                         type="text"
                         placeholder="Search Token"
+                        data-testid="search-token-input"
                         value={searchText}
                         className={`search__input bcn-0 ${searchApplied ? 'search-applied' : ''}`}
                         onChange={(event) => {
@@ -133,7 +133,7 @@ function ApiTokens() {
     const renderAPITokenRoutes = (): JSX.Element => {
         return (
             <Fragment>
-                <div className="api-token-container">
+                <div data-testid="api-token-page" className="api-token-container bcn-0">
                     <Switch>
                         <Route path={`${path}/list`}>
                             <APITokenList
@@ -142,33 +142,31 @@ function ApiTokens() {
                                 reload={getData}
                             />
                         </Route>
-                        <div className='p-20 pb-0-imp'>
-                            <Route path={`${path}/create`}>
-                                <CreateAPIToken
-                                    setShowGenerateModal={setShowGenerateModal}
-                                    showGenerateModal={showGenerateModal}
-                                    handleGenerateTokenActionButton={handleActionButton}
-                                    setSelectedExpirationDate={setSelectedExpirationDate}
-                                    selectedExpirationDate={selectedExpirationDate}
-                                    tokenResponse={tokenResponse}
-                                    setTokenResponse={setTokenResponse}
-                                    reload={getData}
-                                />
-                            </Route>
-                            <Route path={`${path}/edit/:id`}>
-                                <EditAPIToken
-                                    handleRegenerateActionButton={handleActionButton}
-                                    setShowRegeneratedModal={setShowRegenerateTokenModal}
-                                    showRegeneratedModal={showRegenerateTokenModal}
-                                    setSelectedExpirationDate={setSelectedExpirationDate}
-                                    selectedExpirationDate={selectedExpirationDate}
-                                    tokenList={tokenList}
-                                    setCopied={setCopied}
-                                    copied={copied}
-                                    reload={getData}
-                                />
-                            </Route>
-                        </div>
+                        <Route path={`${path}/create`}>
+                            <CreateAPIToken
+                                setShowGenerateModal={setShowGenerateModal}
+                                showGenerateModal={showGenerateModal}
+                                handleGenerateTokenActionButton={handleActionButton}
+                                setSelectedExpirationDate={setSelectedExpirationDate}
+                                selectedExpirationDate={selectedExpirationDate}
+                                tokenResponse={tokenResponse}
+                                setTokenResponse={setTokenResponse}
+                                reload={getData}
+                            />
+                        </Route>
+                        <Route path={`${path}/edit/:id`}>
+                            <EditAPIToken
+                                handleRegenerateActionButton={handleActionButton}
+                                setShowRegeneratedModal={setShowRegenerateTokenModal}
+                                showRegeneratedModal={showRegenerateTokenModal}
+                                setSelectedExpirationDate={setSelectedExpirationDate}
+                                selectedExpirationDate={selectedExpirationDate}
+                                tokenList={tokenList}
+                                setCopied={setCopied}
+                                copied={copied}
+                                reload={getData}
+                            />
+                        </Route>
                         <Redirect to={`${path}/list`} />
                     </Switch>
                 </div>
@@ -188,14 +186,20 @@ function ApiTokens() {
                         <img src={emptyGeneratToken} alt="Empty api token links" />
                     </EmptyState.Image>
                     <EmptyState.Title>
-                        <h4 className="title">Generate a token to access the Devtron API</h4>
+                        <h4 data-testid="empty-api-token-title" className="title">
+                            Generate a token to access the Devtron API
+                        </h4>
                     </EmptyState.Title>
                     <EmptyState.Subtitle>
                         API tokens are like ordinary OAuth access tokens. They can be used instead of username and
                         password for programmatic access to API.
                     </EmptyState.Subtitle>
                     <EmptyState.Button>
-                        <button className="flex cta h-32" onClick={redirectToCreate}>
+                        <button
+                            data-testid="add-first-api-token-button"
+                            className="flex cta h-32"
+                            onClick={redirectToCreate}
+                        >
                             Generate new token
                         </button>
                     </EmptyState.Button>
@@ -205,7 +209,7 @@ function ApiTokens() {
     }
 
     if (loader) {
-        return <Progressing pageLoader />
+        return <Progressing data-testid="api-token-page-loading" pageLoader />
     } else if (errorStatusCode > 0) {
         return (
             <div className="error-screen-wrapper flex column h-100">

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Progressing, sortCallback } from '../../../common'
+import { Progressing, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as RetryIcon } from '../../../../assets/icons/ic-arrow-clockwise.svg'
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'

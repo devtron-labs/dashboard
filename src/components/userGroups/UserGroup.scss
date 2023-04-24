@@ -41,18 +41,21 @@
     margin: 0 42px;
     padding: 0 24px;
 }
+
 .user-list {
     background: white;
     border-radius: 8px;
 
     border: solid 1px var(--N200);
     margin-bottom: 16px;
+
     .user-list__form {
         flex-basis: auto;
         transition: flex-basis 0.3s;
         padding: 20px 24px;
         border-top: 1px solid var(--N100);
     }
+
     &.user-list--collapsed {
         .user-list__form {
             flex-basis: 0;
@@ -120,6 +123,7 @@
     fieldset {
         margin-top: 24px;
     }
+
     legend {
         border-bottom: unset;
         border-top: 1px solid var(--N100);
@@ -155,6 +159,7 @@
 
 .select__group {
     border-bottom: 1px solid var(--N200);
+
     .select__group-heading {
         font-size: 12px;
         font-weight: 600;

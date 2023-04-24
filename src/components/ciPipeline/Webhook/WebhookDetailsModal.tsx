@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { ButtonWithLoader, copyToClipboard, Drawer, Progressing, showError } from '../../common'
+import { ButtonWithLoader, copyToClipboard } from '../../common'
+import { showError, Progressing, Drawer, InfoColourBar, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
@@ -9,7 +10,6 @@ import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
 import { ReactComponent as Clipboard } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Tag } from '../../../assets/icons/ic-tag.svg'
-import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import './webhookDetails.scss'
 import ReactSelect from 'react-select'
 import { Option } from '../../v2/common/ReactSelect.utils'
@@ -32,7 +32,6 @@ import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from '
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
 import CodeEditor from '../../CodeEditor/CodeEditor'
-import Reload from '../../Reload/Reload'
 
 export function WebhookDetailsModal({ close }: WebhookDetailType) {
     const { appId, webhookId } = useParams<{
@@ -337,7 +336,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         return (
             <div className="mb-16">
                 <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32">
-                    <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-100-px dc__border-right">
+                    <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-100px dc__border-right">
                         api-token
                         <Tippy
                             className="default-white no-content-padding tippy-shadow w-300"
@@ -502,7 +501,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
 
     const renderCodeSnippet = (value: string, showCopyOption?: boolean): JSX.Element => {
         return (
-            <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel dc__word-break">
+            <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel dc__word-break" data-testid="sample-script">
                 {showCopyOption && (
                     <Tippy
                         className="default-tt font-open-sans"

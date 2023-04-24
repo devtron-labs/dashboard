@@ -1,6 +1,5 @@
+import { TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
-import { KEY_VALUE } from '../../config'
-import { Teams } from '../../services/service.types'
 import { DeploymentAppType } from '../v2/appDetails/appDetails.type'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
@@ -22,47 +21,6 @@ export interface LabelTags {
     tags: OptionType[]
     inputTagValue: string
     tagError: string
-}
-
-export interface TagType {
-    key: string
-    value?: string
-    description?: string
-    propagate: boolean
-    isInvalidKey?: boolean
-    isInvalidValue?: boolean
-}
-
-export interface TagErrorType {
-    isValid: boolean
-    messages: string[]
-}
-export interface TagLabelSelectType {
-    isCreateApp?: boolean
-    labelTags: TagType[]
-    setLabelTags: (tagList: TagType[]) => void
-    tabIndex?: number
-}
-
-export interface TagDetailType {
-    index: number
-    tagData: TagType
-    setTagData: (index: number, tagData: TagType) => void
-    removeTag: (index: number) => void
-    tabIndex?: number
-}
-
-export interface TagLabelValueSelectorType {
-    selectedTagIndex: number
-    tagData: TagType
-    setTagData: (index: number, tagData: TagType) => void
-    tagOptions?: OptionType[]
-    isRequired?: boolean
-    tagInputType?: KEY_VALUE
-    placeholder?: string
-    tabIndex?: number
-    refVar?: React.MutableRefObject<any>
-    dependentRef?: React.MutableRefObject<any>
 }
 
 export interface AddNewAppState {
@@ -122,6 +80,12 @@ export interface AppMetaInfo {
     projectId?: number
     projectName?: string
     labels?: TagType[]
+}
+
+export interface AppHeaderType {
+    appName: string
+    appMetaInfo: AppMetaInfo
+    reloadMandatoryProjects: boolean
 }
 
 interface ResourceTree {
@@ -471,6 +435,8 @@ export interface DeleteComponentProps {
     url?: string
     reload?: () => void
     configuration?: string
+    dataTestid?: string
+    closeCustomComponent?: () => void
 }
 
 export interface AppStatusType {
@@ -478,24 +444,14 @@ export interface AppStatusType {
     isDeploymentStatus?: boolean
     isJobView?: boolean
 }
-
-export interface ResizableTagTextAreaProps {
-  className?: string
-  minHeight?: number
-  maxHeight?: number
-  value?: string
-  onChange?: (e) => void
-  onBlur?: (e) => void
-  onFocus?: (e) => void
-  placeholder?: string
-  tabIndex?: number
-  refVar?: React.MutableRefObject<HTMLTextAreaElement>
-  dependentRef?: React.MutableRefObject<HTMLTextAreaElement>
+export interface JobPipeline {
+    ci_pipeline_id: number
+    ci_pipeline_name: string
+    started_on: string
+    status: string
+    dataTestId?: string
 }
 
-export interface JobPipeline {
-    ci_pipeline_id: number;
-    ci_pipeline_name: string;
-    started_on: string;
-    status: string;
+export interface TagChipsContainerType {
+  labelTags: TagType[]
 }

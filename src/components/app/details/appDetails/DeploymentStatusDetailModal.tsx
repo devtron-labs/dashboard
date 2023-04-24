@@ -1,10 +1,9 @@
 import React, { useEffect, useRef } from 'react'
-import { Drawer } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import DeploymentStatusDetailBreakdown from './DeploymentStatusBreakdown'
 import { DeploymentStatusDetailModalType } from './appDetails.type'
-import { URLS } from '../../../../config'
 import { useHistory, useParams } from 'react-router-dom'
+import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function DeploymentStatusDetailModal({
     appName,
@@ -55,7 +54,7 @@ export default function DeploymentStatusDetailModal({
         <Drawer position="right" width="1024px">
             <div className="deployment-status-breakdown-modal-container bcn-0" ref={appStatusDetailRef}>
                 <div className="dc__box-shadow pb-12 pt-12 bcn-0">
-                    <div className="title flex dc__content-space pl-20 pr-20 ">
+                    <div className="title flex dc__content-space pl-20 pr-20 " data-testid="app-status-cross">
                         <div>
                             <div className="cn-9 fs-16 fw-6">
                                 Deployment status: {appName} / {environmentName}

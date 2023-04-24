@@ -7,8 +7,8 @@ import CIConfig from '../ciConfig/CIConfig'
 import { deepEqual, noop } from '../common'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
-import { CIBuildConfigType, CIBuildType, DockerConfigOverrideKeys, DockerConfigOverrideType } from '../ciPipeline/types'
-import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
+import { CIBuildConfigType, CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
+import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import TargetPlatformSelector from '../ciConfig/TargetPlatformSelector'
 import { OptionType } from '../app/types'
@@ -170,7 +170,7 @@ export default function AdvancedConfigOptions({
                     </TippyCustomized>
                 </h3>
                 <p className="fs-13 fw-4 cn-7 lh-20 m-0">Override docker build configurations for this pipeline.</p>
-                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32 mt-8" onClick={addDockerArg}>
+                <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32 mt-8" onClick={addDockerArg} data-testid="create-build-pipeline-docker-args-add-parameter-button">
                     <Add className="add-icon mt-6" />
                     Add parameter
                 </div>
@@ -180,6 +180,7 @@ export default function AdvancedConfigOptions({
                             <div className="flexbox justify-space" key={`build-${index}`}>
                                 <div className="mt-8 w-100">
                                     <input
+                                        data-testid={`docker-arg-key-${index}`}
                                         className="w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
                                         autoComplete="off"
                                         placeholder="Key"
@@ -190,6 +191,7 @@ export default function AdvancedConfigOptions({
                                         }}
                                     />
                                     <textarea
+                                        data-testid={`docker-arg-value-${index}`}
                                         className="build__value w-100 dc__bottom-radius-4 dc__no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1"
                                         value={arg.value}
                                         onChange={(event) => {
@@ -233,6 +235,7 @@ export default function AdvancedConfigOptions({
                 </div>
                 <button
                     className={`allow-config-override flex h-28 ml-auto cta ${allowOverride ? 'delete' : 'ghosted'}`}
+                    data-testid={`create-build-pipeline-${allowOverride ? 'delete' : 'allow'}-override-button`}
                     onClick={toggleAllowOverride}
                 >
                     {`${allowOverride ? 'Delete' : 'Allow'} Override`}

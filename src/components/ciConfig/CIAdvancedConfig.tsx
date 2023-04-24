@@ -5,7 +5,7 @@ import { ReactComponent as Cross } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as QuestionIcon } from '../v2/assets/icons/ic-question.svg'
 import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help.svg'
 import { CIAdvancedConfigProps } from './types'
-import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
+import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import TargetPlatformSelector from './TargetPlatformSelector'
 
 export default function CIAdvancedConfig({
@@ -97,6 +97,7 @@ export default function CIAdvancedConfig({
                         <div className="flexbox justify-space" key={`build-${idx}`}>
                             <div className="mt-8 w-100">
                                 <input
+                                    data-testid={`build-pack-build-env-key${idx}`}
                                     name="arg-key"
                                     className={`w-100 dc__top-radius-4 pl-10 pr-10 pt-6 pb-6 en-2 bw-1 ${
                                         updateNotAllowed ? 'cursor-not-allowed' : ''
@@ -111,6 +112,7 @@ export default function CIAdvancedConfig({
                                     disabled={updateNotAllowed}
                                 />
                                 <textarea
+                                    data-testid={`build-pack-build-env-value${idx}`}
                                     name="arg-value"
                                     className={`build__value w-100 dc__bottom-radius-4 dc__no-top-border pl-10 pr-10 pt-6 pb-6 en-2 bw-1 ${
                                         updateNotAllowed ? 'cursor-not-allowed' : ''
@@ -155,23 +157,23 @@ export default function CIAdvancedConfig({
         renderBuildArgs()
     ) : (
         <>
-            <div onClick={toggleCollapse} className="flex left cursor mb-20">
-                <div className="icon-dim-40 mr-16">
-                    <PluginIcon />
-                </div>
-                <div>
-                    <div className="fs-14 fw-6 ">Advanced options</div>
-                    <div className="form-row__add-parameters">
-                        <span className="fs-13 fw-4 cn-7">Set target platform for build, Docker build arguments</span>
+                <div onClick={toggleCollapse} className="flex left cursor mb-20" data-testid="advanced-option-drop-down-button">
+                    <div className="icon-dim-40 mr-16">
+                        <PluginIcon />
                     </div>
+                    <div>
+                        <div className="fs-14 fw-6 ">Advanced options</div>
+                        <div className="form-row__add-parameters">
+                            <span className="fs-13 fw-4 cn-7">Set target platform for build, Docker build arguments</span>
+                        </div>
+                    </div>
+                    <span className="ml-auto">
+                        <Dropdown
+                            className="icon-dim-32 rotate "
+                            style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }}
+                        />
+                    </span>
                 </div>
-                <span className="ml-auto">
-                    <Dropdown
-                        className="icon-dim-32 rotate "
-                        style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }}
-                    />
-                </span>
-            </div>
             {isCollapsed && (
                 <>
                     {renderTargetPlatform()}
