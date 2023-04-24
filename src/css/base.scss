@@ -370,6 +370,14 @@ a:focus {
     font-family: monospace;
 }
 
+.build-context-label {
+    justify-content: none;
+    font-size: 13px;
+}
+.build-context-highlight {
+    background: #e0e0e0;
+    white-space: nowrap;
+}
 // Pop Up
 .popup {
     position: fixed;
