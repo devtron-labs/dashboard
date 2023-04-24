@@ -42,7 +42,11 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
             )
         else
             return (
-                <div data-testid="cd-trigger-status" className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
+                <div
+                    data-testid={`cd-trigger-status-${this.props.index}`}
+                    className="dc__cd-trigger-status"
+                    style={{ color: statusColor[status] }}
+                >
                     <span>
                         <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
                     </span>
@@ -82,7 +86,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                             <div className="workflow-node__btn-grp">
                                 <Tippy className="default-tt" arrow={true} placement="bottom" content={'Rollback'}>
                                     <button
-                                        data-testid="cd-trigger-deploy-roll-back"
+                                        data-testid={`cd-trigger-deploy-roll-back-${this.props.index}`}
                                         className="workflow-node__rollback-btn"
                                         onClick={(event) => context.onClickRollbackMaterial(+this.props.id)}
                                     >
@@ -90,7 +94,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                     </button>
                                 </Tippy>
                                 <button
-                                    data-testid={`${this.props.type}-trigger-select-image`}
+                                    data-testid={`${this.props.type}-trigger-select-image-${this.props.index}`}
                                     className="workflow-node__deploy-btn"
                                     onClick={(event) => {
                                         event.stopPropagation()

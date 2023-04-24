@@ -39,12 +39,12 @@ export default function TriggerResponseModal({
                 </div>
                 {responseList
                     .sort((a, b) => sortCallback('appName', a, b))
-                    .map((response) => (
+                    .map((response, index) => (
                         <div className="response-row pt-8 pb-8" key={`response-${response.appId}`}>
                             <div className="fs-13 fw-4 cn-9">{response.appName}</div>
                             <div className="flex left top fs-13 fw-4 cn-9">
                                 {renderStatusIcon(response)}
-                                <span>{response.statusText}</span>
+                                <span data-testid={`response-status-text-${index}`}>{response.statusText}</span>
                             </div>
                             <div className="fs-13 fw-4 cn-9">{response.message}</div>
                         </div>
@@ -70,7 +70,7 @@ export default function TriggerResponseModal({
                     isShowRetryButton ? 'dc__content-space' : 'right'
                 }`}
             >
-                <button className="cta cancel flex h-36" onClick={closePopup}>
+                <button className="cta cancel flex h-36" data-testid="close-popup" onClick={closePopup}>
                     Close
                 </button>
                 {isShowRetryButton && (

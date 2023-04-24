@@ -38,7 +38,9 @@ export const ValueContainer = (props): JSX.Element => {
                             ) : (
                                 <ShowIconFilter className="icon-dim-16 mr-4 mw-18" />
                             )}
-                            <span className="cn-9 ml-2">{selectorText}</span>
+                            <span data-testid="app-group-selector-text" className="cn-9 ml-2">
+                                {selectorText}
+                            </span>
                         </>
                     ) : (
                         <>
