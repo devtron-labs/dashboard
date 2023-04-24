@@ -732,14 +732,19 @@ function DockerForm({
                             name="ecr-authType"
                             onChange={(e) => onECRAuthTypeChange(e)}
                         >
-                            <RadioGroupItem value={AuthenticationType.IAM}> EC2 IAM Role </RadioGroupItem>
-                            <RadioGroupItem value={AuthenticationType.BASIC}> User auth </RadioGroupItem>
+                            <RadioGroupItem value={AuthenticationType.IAM} dataTestId="ec2-iam-role-button">
+                                EC2 IAM Role
+                            </RadioGroupItem>
+                            <RadioGroupItem value={AuthenticationType.BASIC} dataTestId="user-auth-button">
+                                User auth
+                            </RadioGroupItem>
                         </RadioGroup>
                     </div>
                     {!isIAMAuthType && (
                         <>
                             <div className="form__row">
                                 <CustomInput
+                                    dataTestid="aws-access-keyid-textbox"
                                     name="awsAccessKeyId"
                                     tabIndex={5}
                                     value={customState.awsAccessKeyId.value}
@@ -752,6 +757,7 @@ function DockerForm({
                             </div>
                             <div className="form__row">
                                 <CustomInput
+                                    dataTestid="aws-secret-access-key-textbox"
                                     name="awsSecretAccessKey"
                                     tabIndex={6}
                                     value={customState.awsSecretAccessKey.value}

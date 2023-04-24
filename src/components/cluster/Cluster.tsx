@@ -406,8 +406,12 @@ function Cluster({
                                     className="fw-6"
                                 />
                                 {clusterId && (
-                                    <div data-testid={`add-environment-button-${cluster_name}`} className="flex dc__align-right">
-                                        <div className="flex mr-16" onClick={addCluster}>
+                                    <div className="flex dc__align-right">
+                                        <div
+                                            className="flex mr-16"
+                                            data-testid={`add-environment-button-${cluster_name}`}
+                                            onClick={addCluster}
+                                        >
                                             <List.Logo>
                                                 <Add className="icon-dim-20 fcb-5 mr-8" />
                                             </List.Logo>
