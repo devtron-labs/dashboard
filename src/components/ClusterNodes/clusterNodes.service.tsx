@@ -11,7 +11,16 @@ import {
     UpdateNodeRequestBody,
     EditTaintsRequest,
     TerminalDataType,
+    ClusteNotePatchRequest,
+    ClusterNoteResponse,
 } from './types'
+
+export const getClusterNote = (clusterId: string): Promise<ClusterNoteResponse> => {
+    return get(`${Routes.CLUSTER_NOTE}?id=${clusterId}`)
+}
+export const patchClusterNote = (requestPayload: ClusteNotePatchRequest): Promise<ClusterNoteResponse> => {
+    return put(Routes.CLUSTER_NOTE, requestPayload)
+}
 
 export const getClusterList = (): Promise<ClusterListResponse> => {
     return get(Routes.CLUSTER_LIST)

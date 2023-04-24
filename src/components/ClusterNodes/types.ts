@@ -62,6 +62,13 @@ export interface ClusterDetail {
     nodeNames?: string[]
     nodeDetails?: NodeDetailsType[]
 }
+export interface ClusterNote {
+    id: number
+    cluster_id: number
+    description: string
+    created_by: number
+    created_on: string
+}
 
 export interface NodeRowDetail {
     name: string
@@ -78,6 +85,10 @@ export interface NodeRowDetail {
 
 export interface ClusterListResponse extends ResponseType {
     result?: ClusterDetail[]
+}
+
+export interface ClusterNoteResponse extends ResponseType {
+    result?: ClusterNote
 }
 export interface ClusterCapacityResponse extends ResponseType {
     result?: ClusterCapacityType
@@ -217,6 +228,11 @@ interface NodeCordonOptions {
 
 export interface NodeCordonRequest extends NodeActionRequest {
     nodeCordonOptions: NodeCordonOptions
+}
+
+export interface ClusteNotePatchRequest {
+    cluster_id: number
+    description: string
 }
 
 interface NodeDrainOptions {

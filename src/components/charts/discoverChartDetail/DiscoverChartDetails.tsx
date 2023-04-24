@@ -10,6 +10,7 @@ import { DiscoverChartDetailsProps, DeploymentProps } from './types'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import fileIcon from '../../../assets/icons/ic-file.svg'
 import { marked } from 'marked'
+import * as DOMPurify from 'dompurify';
 import { About } from './About'
 import { ChartDeploymentList } from './ChartDeploymentList'
 import { getSavedValuesListURL, getChartValuesURL } from '../charts.helper'
@@ -410,7 +411,7 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
     })
 
     function createMarkup() {
-        return { __html: marked(markdown) }
+        return { __html: DOMPurify.sanitize(marked(markdown), { USE_PROFILES: { html: true } }) }
     }
     return (
         <article

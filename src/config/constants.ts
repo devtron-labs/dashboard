@@ -22,6 +22,7 @@ export const Routes = {
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',
+    CLUSTER_NOTE: 'cluster/description',
 
     CD_CONFIG: 'app/cd-pipeline',
     EXTERNAL_CI_CONFIG: 'app/external-ci',

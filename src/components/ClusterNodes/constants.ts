@@ -361,3 +361,9 @@ export const nodeSelect = {
         marginBottom: 0,
     }),
 }
+export const CLUSTER_DESCRIPTION_UPDATE_MSG = 'Cluster description updated successfully'
+export const defaultClusterNote = 
+`## Describe this cluster
+
+Describe your Kubernetes cluster in a few words. This will help others understand the purpose and configuration of your cluster. For example, you might mention the number of worker nodes, the types of applications running on the cluster, or any relevant security considerations. Keep it concise and informative!
+`
