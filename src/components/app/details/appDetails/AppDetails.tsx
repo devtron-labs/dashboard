@@ -136,7 +136,7 @@ export default function AppDetail() {
 
     const environment = otherEnvsResult?.result?.find((env) => env.environmentId === +params.envId)
     return (
-        <div className="app-details-page-wrapper">
+        <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
             {!params.envId && otherEnvsResult?.result?.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
                     <SourceInfo appDetails={null} environments={otherEnvsResult?.result} environment={environment} />
@@ -527,8 +527,8 @@ export const Details: React.FC<DetailsType> = ({
             )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
-                    appName={appDetails.appName}
-                    environmentName={appDetails.environmentName}
+                    appName={appDetails?.appName}
+                    environmentName={appDetails?.environmentName}
                     streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                 />
@@ -587,7 +587,14 @@ export const Details: React.FC<DetailsType> = ({
                         >
                             Cancel
                         </button>
-                        <button className="cta" disabled={hibernating} onClick={handleHibernate}>
+                        <button
+                            className="cta"
+                            disabled={hibernating}
+                            data-testid={`app-details-${
+                                hibernateConfirmationModal === 'hibernate' ? 'hibernate' : 'restore'
+                            }`}
+                            onClick={handleHibernate}
+                        >
                             {hibernating ? (
                                 <Progressing />
                             ) : hibernateConfirmationModal === 'hibernate' ? (
@@ -640,12 +647,25 @@ export function EnvSelector({
         }),
         singleValue: (base, state) => ({ ...base, textAlign: 'left', fontWeight: 600, color: 'var(--B500)' }),
         indicatorsContainer: (base, state) => ({ ...base, height: '32px' }),
+        menu: (base) => ({ ...base, width: '280px' }),
     }
-    // cb-5 ml-8 fw-6
+
     const sortedEnvironments =
         environments && !environments.deploymentAppDeleteRequest
             ? sortObjectArrayAlphabetically(environments, 'environmentName')
             : environments
+
+    const formatOptionLabel = (option): JSX.Element => {
+        return (
+            <div>
+                <div className="w-100 dc__ellipsis-right">{option.label}</div>
+                {option.description && (
+                    <small className="dc__word-break-all dc__white-space-normal fs-12 cn-7">{option.description}</small>
+                )}
+            </div>
+        )
+    }
+
     return (
         <>
             <div style={{ width: 'clamp( 100px, 30%, 100px )', height: '100%', position: 'relative' }}>
@@ -664,7 +684,7 @@ export function EnvSelector({
                     ENV
                 </div>
             </div>
-            <div className="app-details__selector w-200">
+            <div data-testid="app-deployed-env-name" className="app-details__selector w-200">
                 <Select
                     placeholder="Select Environment"
                     options={
@@ -672,6 +692,7 @@ export function EnvSelector({
                             ? sortedEnvironments.map((env) => ({
                                   label: env.environmentName,
                                   value: env.environmentId,
+                                  description: env.description,
                               }))
                             : []
                     }
@@ -687,6 +708,8 @@ export function EnvSelector({
                     styles={envSelectorStyle}
                     isDisabled={disabled}
                     isSearchable={false}
+                    classNamePrefix="app-environment-select"
+                    formatOptionLabel={formatOptionLabel}
                 />
             </div>
         </>
@@ -1050,7 +1073,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
             {params.tab === NodeDetailTabs.TERMINAL && (
                 <>
                     <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                    <div style={{ width: '130px' }}>
+                    <div style={{ width: '130px' }} data-testid="terminal-select-dropdown">
                         <Select
                             placeholder="Select shell"
                             className="pl-20"

@@ -1142,7 +1142,9 @@ export function createClusterEnvGroup<T>(
         if (!acc[key]) {
             acc[key] = []
         }
-        acc[key].push(isOptionType ? { label: obj[optionName], value: obj[optionName] } : obj)
+        acc[key].push(
+            isOptionType ? { label: obj[optionName], value: obj[optionName], description: obj['description'] } : obj,
+        )
         return acc
     }, {})
 

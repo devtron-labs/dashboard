@@ -39,7 +39,7 @@ function NodeDetailComponent({
     const [resourceContainers, setResourceContainers] = useState([])
     const [isResourceDeleted, setResourceDeleted] = useState(false)
     const [isManagedFields, setManagedFields] = useState(false)
-    const [hideManagedFields, setHideManagedFields] = useState(false)
+    const [hideManagedFields, setHideManagedFields] = useState(true)
     const [fetchingResource, setFetchingResource] = useState(
         isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
     )
@@ -189,7 +189,7 @@ function NodeDetailComponent({
 
     return (
         <React.Fragment>
-            <div className="pl-20 bcn-0 flex left w-100 pr-20">
+            <div data-testid="app-resource-containor-header" className="pl-20 bcn-0 flex left w-100 pr-20">
                 {tabs &&
                     tabs.length > 0 &&
                     tabs.map((tab: string, index: number) => {
@@ -204,6 +204,7 @@ function NodeDetailComponent({
                             >
                                 <NavLink to={`${url}/${tab.toLowerCase()}`} className=" dc__no-decor flex left">
                                     <span
+                                        data-testid={`${tab.toLowerCase()}-nav-link`}
                                         className={`${
                                             tab.toLowerCase() === selectedTabName.toLowerCase() ? 'cb-5' : 'cn-9'
                                         } default-tab-cell`}
@@ -224,7 +225,9 @@ function NodeDetailComponent({
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={handleChanges}
                             >
-                                <span className="mr-5 cn-9 fs-12">Hide Managed Fields</span>
+                                <span className="mr-5 cn-9 fs-12" data-testid="hide-managed-fields">
+                                    Hide Managed Fields
+                                </span>
                             </Checkbox>
                         </div>
                     </>

@@ -40,6 +40,7 @@ export interface CDStageType {
     cdWorkflowRunnerId?: number;
 }
 export interface Environment {
+    description: string;
     id: number;
     name: string;
     namespace: string;

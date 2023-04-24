@@ -994,7 +994,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         }`}
                         onClick={stopPropagation}
                     >
-                        {this.state.isLoading ? (
+                        {this.state.loader ? (
                             <>
                                 <div className="trigger-modal__header flex right">
                                     <button type="button" className="dc__transparent" onClick={this.closeCDModal}>
@@ -1069,7 +1069,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     renderWorkflow() {
         return (
             <React.Fragment>
-                {this.state.workflows.map((workflow) => {
+                {this.state.workflows.map((workflow,index) => {
                     return (
                         <Workflow
                             key={workflow.id}
@@ -1084,6 +1084,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             location={this.props.location}
                             match={this.props.match}
                             isJobView={this.props.isJobView}
+                            index={index}
                         />
                     )
                 })}

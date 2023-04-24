@@ -407,12 +407,15 @@ function ChartValuesView({
                 (e) => e.value.toString() === commonState.installedConfig.teamId.toString(),
             )
 
-            let environment = {}
-            commonState.environments.forEach((env) => {
-                environment = (env.options as ChartValuesOptionType[]).find(
+            let environment: ChartValuesOptionType
+            for (const envList of commonState.environments) {
+                environment = (envList.options as ChartValuesOptionType[]).find(
                     (e) => e.value.toString() === commonState.installedConfig.environmentId.toString(),
                 )
-            })
+                if (environment?.value) {
+                    break
+                }
+            }
 
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
@@ -940,6 +943,7 @@ function ChartValuesView({
                     commonState.openReadMe ? 'opened' : ''
                 } ${disabled ? 'disabled' : ''}`}
                 onClick={() => handleReadMeOptionClick(disabled)}
+                data-testid="readme-option"
             >
                 {commonState.openReadMe ? (
                     <>
@@ -974,6 +978,7 @@ function ChartValuesView({
                     commonState.openComparison ? 'opened' : ''
                 } ${disabled ? 'disabled' : ''}`}
                 onClick={() => handleComparisonOptionClick(disabled)}
+                data-testid="compare-values"
             >
                 {commonState.openComparison ? (
                     <Close className="option-close__icon icon-dim-16 mr-8" />
@@ -1010,11 +1015,16 @@ function ChartValuesView({
                         {ConfigurationType.GUI} (Beta)
                     </RadioGroup.Radio>
                 )}
-                <RadioGroup.Radio value={ConfigurationType.YAML.toLowerCase()}>
+                <RadioGroup.Radio value={ConfigurationType.YAML.toLowerCase()} dataTestId="yaml-radio-button">
                     <Edit className="icon-dim-12 mr-6" />
                     {ConfigurationType.YAML}
                 </RadioGroup.Radio>
-                <RadioGroup.Radio value="manifest" canSelect={isValidData()} tippyContent={MANIFEST_INFO.InfoText}>
+                <RadioGroup.Radio
+                    value="manifest"
+                    canSelect={isValidData()}
+                    tippyContent={MANIFEST_INFO.InfoText}
+                    dataTestId="manifest-radio-button"
+                >
                     Manifest output
                 </RadioGroup.Radio>
             </RadioGroup>
@@ -1327,10 +1337,19 @@ function ChartValuesView({
 
                         {!isDeployChartView && !isCreateValueView && (
                             <div className="mb-16">
-                                <div className="fs-12 fw-4 lh-20 cn-7">Project</div>
-                                <div className="flex left dc__content-space fs-13 fw-6 lh-20 cn-9">
+                                <div className="fs-12 fw-4 lh-20 cn-7" data-testid="project-heading">
+                                    Project
+                                </div>
+                                <div
+                                    className="flex left dc__content-space fs-13 fw-6 lh-20 cn-9"
+                                    data-testid="project-value"
+                                >
                                     {appMetaInfo?.projectName ? appMetaInfo.projectName : 'unassigned'}
-                                    <Edit className="icon-dim-20 cursor" onClick={toggleChangeProjectModal} />
+                                    <Edit
+                                        className="icon-dim-20 cursor"
+                                        onClick={toggleChangeProjectModal}
+                                        data-testid="edit-project-icon"
+                                    />
                                 </div>
                             </div>
                         )}

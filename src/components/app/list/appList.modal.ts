@@ -50,18 +50,18 @@ export const createAppListPayload = (payloadParsedFromUrl, environmentClusterLis
     return { ...payloadParsedFromUrl, environments: [...new Set(environments)] }
 }
 
-export const appListModal = (appList, environmentClusterList) => {
+export const appListModal = (appList) => {
     return appList.map((app) => {
         return {
             id: app.appId || 0,
             name: app.appName || 'NA',
-            environments: app.environments.map((env) => environmentModal(env, environmentClusterList)) || [],
-            defaultEnv: getDefaultEnvironment(app.environments, environmentClusterList),
+            environments: app.environments.map((env) => environmentModal(env)) || [],
+            defaultEnv: getDefaultEnvironment(app.environments),
         }
     })
 }
 
-const environmentModal = (env, environmentClusterList) => {
+const environmentModal = (env) => {
     let status = env.status
     if (env.status.toLocaleLowerCase() == 'deployment initiated') {
         status = 'Progressing'
@@ -74,39 +74,37 @@ const environmentModal = (env, environmentClusterList) => {
             appStatus = 'notdeployed'
         }
     }
-    const envData = environmentClusterList.get(env.environmentId)
 
     return {
         id: env.environmentId || 0,
-        name: envData?.environmentName || '',
+        name: env?.environmentName || '',
         lastDeployedTime: env.lastDeployedTime ? handleUTCTime(env.lastDeployedTime, false) : '',
         status: env.status ? handleDeploymentInitiatedStatus(env.status) : 'notdeployed',
         default: env.default ? env.default : false,
         materialInfo: env.materialInfo || [],
         ciArtifactId: env.ciArtifactId || 0,
-        clusterName: envData?.clusterName || '',
-        namespace: envData?.namespace || '',
+        clusterName: env?.clusterName || '',
+        namespace: env?.namespace || '',
         appStatus: appStatus,
     }
 }
 
-const getDefaultEnvironment = (envList ,environmentClusterList): Environment => {
+const getDefaultEnvironment = (envList): Environment => {
     let env = envList[0]
     let status = env.status
-    const envData = environmentClusterList.get(env.environmentId)
     if (env.status.toLowerCase() === 'deployment initiated') {
         status = 'Progressing'
     }
     let appStatus = env.appStatus || (env.lastDeployedTime ? '' : 'notdeployed')
     return {
         id: env.environmentId as number,
-        name: envData?.environmentName,
+        name: env?.environmentName,
         lastDeployedTime: env.lastDeployedTime ? handleUTCTime(env.lastDeployedTime) : '',
         status: handleDeploymentInitiatedStatus(status),
         materialInfo: env.materialInfo || [],
         ciArtifactId: env.ciArtifactId || 0,
-        clusterName: envData?.clusterName || '',
-        namespace: envData?.namespace || '',
+        clusterName: env?.clusterName || '',
+        namespace: env?.namespace || '',
         appStatus,
     }
 }

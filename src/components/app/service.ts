@@ -23,6 +23,8 @@ export const getAppList = (request, options?) => {
     let URL = Routes.APP_LIST
     if (window._env_.USE_V2) {
         URL += `/${Routes.APP_LIST_V2}`
+    } else {
+        URL += `/${Routes.APP_LIST_V1}`
     }
     return post(URL, request, options)
 }
@@ -108,7 +110,7 @@ export function fetchAppDetailsInTime(
     envId: number | string,
     reloadTimeOut: number,
 ): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
+  return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
 }
 
 export function fetchResourceTreeInTime(
@@ -416,7 +418,7 @@ export const getPrePostCDTriggerStatus = (params) => {
 }
 
 export const getWorkflowStatus = (appId: string) => {
-    const URL = `${Routes.APP_WORKFLOW_STATUS}/${appId}`
+    const URL = `${Routes.APP_WORKFLOW_STATUS}/${appId}/${Routes.APP_LIST_V2}`
     return get(URL)
 }
 
