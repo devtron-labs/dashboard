@@ -40,7 +40,7 @@ import {
 } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
 
-let clusterTimeOut = undefined
+let clusterTimeOut 
 
 export default function ClusterTerminal({
     clusterId,
@@ -226,8 +226,7 @@ export default function ClusterTerminal({
             if (clusterTimeOut) {
                 clearTimeout(clusterTimeOut)
             }
-        }
-        if (socketConnection === SocketConnectionType.CONNECTING && terminalAccessIdRef.current) {
+        } else if (socketConnection === SocketConnectionType.CONNECTING && terminalAccessIdRef.current) {
             setErrorMessage({ message: '', reason: '' })
             prevNodeRef.current = selectedNodeName.value
             currNodeRef.current = ''
@@ -247,18 +246,13 @@ export default function ClusterTerminal({
 
     const getClusterData = (url, terminalId, count) => {
         if (terminalId !== terminalAccessIdRef.current) return
-        if (
+        else if (
             clusterTimeOut &&
             (socketConnection === SocketConnectionType.DISCONNECTED ||
                 socketConnection === SocketConnectionType.DISCONNECTING)
         ) {
             clearTimeout(clusterTimeOut)
             return
-        }
-        if (!terminalRef.current) {
-            elementDidMount('#terminal-id').then(() => {
-                preFetchData()
-            })
         }
         get(url)
             .then((response: any) => {
@@ -269,7 +263,7 @@ export default function ClusterTerminal({
                     setErrorMessage({ message: response.result?.errorReason, reason: '' })
                 } else if (status === TERMINAL_STATUS.TERMINATED) {
                     setErrorMessage({ message: status, reason: response.result?.errorReason })
-                } else if (!sessionId && count) {
+                } else if (!sessionId && count > 0) {
                     preFetchData(status)
                     clusterTimeOut = setTimeout(() => {
                         getClusterData(url, terminalId, count - 1)
@@ -302,7 +296,7 @@ export default function ClusterTerminal({
         let startingText = TERMINAL_STATUS.CREATE
         if (!_terminal) return
 
-        _terminal?.reset()
+        _terminal.reset()
 
         if (prevNodeRef.current === TERMINAL_STATUS.AUTO_SELECT_NODE) {
             _terminal.write('Selecting a node')
