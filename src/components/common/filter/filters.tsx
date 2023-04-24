@@ -134,62 +134,104 @@ export class Filter extends Component<FilterProps, FilterState>{
         }
 
 
-        return <div className={`filter ${this.props.rootClassName || ''}`} >
-            {
-                (!this.props.isDisabled || !this.props.disableTooltipMessage) &&
-                <div>
-                    {
-                        this.props.showPulsatingDot && !this.state.show &&
-                        <div className="pulse-highlight"></div>
-                    }
-                    <button data-testid={`${this.props.dataTestId}-button`} type="button" className="filter__trigger" onClick={() => this.onFilterButtonClick()}>
-                        {this.props.buttonText}
-                        {badge > 0 ? <span className="badge">{badge}</span> : null}
-                        <span className="filter-icon"><i className={faIcon}></i></span>
-                    </button>
-                </div>
-            }
-            {
-                this.props.isDisabled && this.props.disableTooltipMessage &&
-                <Tippy className="default-tt" arrow={true} placement="top" content={this.props.disableTooltipMessage} hideOnClick={false}>
-                    <button type="button" className="filter__trigger disable__button">
-                        {this.props.buttonText}
-                        <span className="filter-icon"><i className={faIcon}></i></span>
-                    </button>
-                </Tippy>
-            }
-            {
-                !this.props.isDisabled &&
-                <>
-                    {this.state.show ? <div className="dc__transparent-div" onClick={this.handleClick}></div> : null}
-                    <div className={classNames} ref={node => this.node = node}>
-                        {
-                            this.props.loading ? <Progressing /> :
-                                this.props.errored ?
-                                    <div className="flex w-100 h-100 column">
-                                        <div className="mr-8 flex">
-                                            <ErrorExclamationIcon className="icon-dim-20" />
-                                        </div>
-                                        <div className="flex">{this.props.errorMessage}</div>
-                                        <div className="flex">
-                                            <button className="btn btn-link p-0 fw-6 cb-5" onClick={() => {this.props.errorCallbackFunction();}}>Retry</button>
-                                        </div>
+        return (
+            <div className={`filter ${this.props.rootClassName || ''}`}>
+                {(!this.props.isDisabled || !this.props.disableTooltipMessage) && (
+                    <div>
+                        {this.props.showPulsatingDot && !this.state.show && <div className="pulse-highlight"></div>}
+                        <button
+                            data-testid={`${this.props.dataTestId}-button`}
+                            type="button"
+                            className="filter__trigger"
+                            onClick={() => this.onFilterButtonClick()}
+                        >
+                            {this.props.buttonText}
+                            {badge > 0 ? <span className="badge">{badge}</span> : null}
+                            <span className="filter-icon">
+                                <i className={faIcon}></i>
+                            </span>
+                        </button>
+                    </div>
+                )}
+                {this.props.isDisabled && this.props.disableTooltipMessage && (
+                    <Tippy
+                        className="default-tt"
+                        arrow={true}
+                        placement="top"
+                        content={this.props.disableTooltipMessage}
+                        hideOnClick={false}
+                    >
+                        <button type="button" className="filter__trigger disable__button">
+                            {this.props.buttonText}
+                            <span className="filter-icon">
+                                <i className={faIcon}></i>
+                            </span>
+                        </button>
+                    </Tippy>
+                )}
+                {!this.props.isDisabled && (
+                    <>
+                        {this.state.show ? (
+                            <div className="dc__transparent-div" onClick={this.handleClick}></div>
+                        ) : null}
+                        <div className={classNames} ref={(node) => (this.node = node)}>
+                            {this.props.loading ? (
+                                <Progressing />
+                            ) : this.props.errored ? (
+                                <div className="flex w-100 h-100 column">
+                                    <div className="mr-8 flex">
+                                        <ErrorExclamationIcon className="icon-dim-20" />
                                     </div>
-                                :
+                                    <div className="flex">{this.props.errorMessage}</div>
+                                    <div className="flex">
+                                        <button
+                                            className="btn btn-link p-0 fw-6 cb-5"
+                                            onClick={() => {
+                                                this.props.errorCallbackFunction()
+                                            }}
+                                        >
+                                            Retry
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
                                 <>
-                                    {this.props.searchable && <input type="text" placeholder={this.props.placeholder} className="filter__search" onChange={this.handleSearch} value={this.state.searchStr} data-testid={`${this.props.dataTestId}-search`}/>}
-                                    <div className="filter__options" data-testid={`${this.props.dataTestId}-optionlist`}>
+                                    {this.props.searchable && (
+                                        <input
+                                            type="text"
+                                            placeholder={this.props.placeholder}
+                                            className="filter__search"
+                                            onChange={this.handleSearch}
+                                            value={this.state.searchStr}
+                                            data-testid={`${this.props.dataTestId}-search`}
+                                        />
+                                    )}
+                                    <div
+                                        className="filter__options"
+                                        data-testid={`${this.props.dataTestId}-optionlist`}
+                                    >
                                         {filterOptions}
                                     </div>
-                                    {this.props.multi && <button type="button" data-testid={`${this.props.buttonText}-apply-filter-button`} className="filter__apply" disabled={isDisable} onClick={() => { this.applyFilter(); }}>
-                                        Apply Filter
-                                    </button>}
+                                    {this.props.multi && (
+                                        <button
+                                            type="button"
+                                            data-testid={`${this.props.buttonText}-apply-filter-button`}
+                                            className="filter__apply"
+                                            disabled={isDisable}
+                                            onClick={() => {
+                                                this.applyFilter()
+                                            }}
+                                        >
+                                            Apply Filter
+                                        </button>
+                                    )}
                                 </>
-                        }
-                    </div>
-                </>
-            }
-        </div>
+                            )}
+                        </div>
+                    </>
+                )}
+            </div>
+        )
     }
 
 }

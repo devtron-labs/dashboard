@@ -200,7 +200,7 @@ export const AppLevelExternalLinks = ({
 
     return (
         appLevelExternalLinks.length > 0 && (
-            <div className="app-level__external-links flex left w-100 mb-14 bcn-0">
+            <div data-testid="external-links-wrapper" className="app-level__external-links flex left w-100 mb-14 bcn-0">
                 {!isOverviewPage && (
                     <div className="app-level__external-links-icon icon-dim-20">
                         <LinkIcon className="external-links-icon icon-dim-20 fc-9" />
@@ -309,7 +309,11 @@ export const FilterMenuList = (props): JSX.Element => {
         <components.MenuList {...props}>
             {props.children}
             <div className="flex dc__react-select__bottom bcn-0 p-8">
-                <button className="flex cta apply-filter" onClick={props.handleFilterQueryChanges}>
+                <button
+                    data-testid="external-link-filter-button"
+                    className="flex cta apply-filter"
+                    onClick={props.handleFilterQueryChanges}
+                >
                     Apply Filter
                 </button>
             </div>

@@ -166,6 +166,7 @@ export const KeyValueInput: React.FC<KeyValueInputInterface> = React.memo(
                             disabled={typeof onChange !== 'function'}
                             placeholder=""
                             maxHeight={300}
+                            data-testid="Configmap-gui-value-textbox"
                         />
                     ) : (
                         <input
@@ -238,7 +239,7 @@ export function Tab({ title, active, onClick }) {
     return (
         <nav className={`form__tab white-card flex left ${active ? 'active' : ''}`} onClick={(e) => onClick(title)}>
             <div className="tab__selector"></div>
-            <div data-testid={`configmap-use-env-variable-bullet-button-${title}`} className="tab__title">{title}</div>
+            <div data-testid={`configmap-${title.toLowerCase().split(' ').join('-')}-radio-button`} className="tab__title">{title}</div>
         </nav>
     )
 }
@@ -311,7 +312,6 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
 
     return (
         <textarea
-            data-testid="Configmap-gui-value-textbox"
             ref={(el) => (_textRef.current = el)}
             value={text}
             placeholder={placeholder}
@@ -751,7 +751,7 @@ export function ConfigMapForm({
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}
                     >
-                        <span data-testid="" className="mb-0">
+                        <span className="mb-0">
                             Set SubPath (same as
                             <a
                                 href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"

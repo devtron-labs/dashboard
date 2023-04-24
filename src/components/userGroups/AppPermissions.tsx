@@ -405,13 +405,23 @@ export default function AppPermissions({
             <ul role="tablist" className="tab-list mt-12 dc__border-bottom">
                 {serverMode !== SERVER_MODE.EA_ONLY && (
                     <li className="tab-list__tab">
-                        <NavLink to={`${url}/devtron-apps`} data-testid="devtron-app-permission-tab" className="tab-list__tab-link" activeClassName="active">
+                        <NavLink
+                            to={`${url}/devtron-apps`}
+                            data-testid="devtron-app-permission-tab"
+                            className="tab-list__tab-link"
+                            activeClassName="active"
+                        >
                             Devtron Apps
                         </NavLink>
                     </li>
                 )}
                 <li className="tab-list__tab">
-                    <NavLink to={`${url}/helm-apps`} data-testid="helm-app-permission-tab" className="tab-list__tab-link" activeClassName="active">
+                    <NavLink
+                        to={`${url}/helm-apps`}
+                        data-testid="helm-app-permission-tab"
+                        className="tab-list__tab-link"
+                        activeClassName="active"
+                    >
                         Helm Apps
                     </NavLink>
                 </li>
@@ -429,7 +439,12 @@ export default function AppPermissions({
                 )}
                 {serverMode !== SERVER_MODE.EA_ONLY && (
                     <li className="tab-list__tab">
-                        <NavLink to={`${url}/chart-groups`} data-testid="chart-group-permission-tab" className="tab-list__tab-link" activeClassName="active">
+                        <NavLink
+                            to={`${url}/chart-groups`}
+                            data-testid="chart-group-permission-tab"
+                            className="tab-list__tab-link"
+                            activeClassName="active"
+                        >
                             Chart Groups
                         </NavLink>
                     </li>

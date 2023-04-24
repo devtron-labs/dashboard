@@ -29,7 +29,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps>{
         if (isClickable) {
             return (
                 <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
-                    <span>{this.props.status}</span>
+                    <span data-testid={`${this.props.title}-trigger-status-${this.props.index}`} >{this.props.status}</span>
                     {!this.props.fromAppGrouping && (
                         <>
                             {this.props.status && <span className="mr-5 ml-5">/</span>}

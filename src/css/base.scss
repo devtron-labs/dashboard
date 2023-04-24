@@ -875,6 +875,7 @@ button.anchor {
 }
 
 .override-button.cta {
+
     &.ghosted,
     &.delete {
         height: 32px;
@@ -1171,24 +1172,24 @@ button.anchor {
         overflow: hidden;
         border-radius: 4px;
 
-        input + .radio__item-label {
+        input+.radio__item-label {
             border-radius: 0;
             border: 1px solid var(--N200);
         }
-    
-        input[type='checkbox']:checked + .radio__item-label {
+
+        input[type='checkbox']:checked+.radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
-    
+
             svg path {
                 stroke: var(--N900);
             }
         }
-    
+
         .radio {
             color: var(--N500);
-    
+
             svg path {
                 stroke: var(--N500);
             }
@@ -2581,6 +2582,10 @@ textarea,
 
 .h-200 {
     height: 200px;
+}
+
+.h-250 {
+    height: 250px !important;
 }
 
 .h-300 {

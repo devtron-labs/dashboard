@@ -123,7 +123,7 @@ export function Option(props) {
 export function DropdownIndicator(props) {
     return (
         <components.DropdownIndicator {...props}>
-            <ArrowDown className="icon-dim-20 icon-n5" data-testid="overview-project-edit-dropdown"  />
+            <ArrowDown className="icon-dim-20 icon-n5" data-testid="overview-project-edit-dropdown" />
         </components.DropdownIndicator>
     )
 }

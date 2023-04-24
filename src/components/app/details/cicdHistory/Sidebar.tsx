@@ -80,7 +80,9 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
     return (
         <>
             <div className="select-pipeline-wrapper w-100 pl-16 pr-16 dc__overflow-hidden">
-                <label className="form__label" data-testid = "select-history-heading">Select {selectLabel()}</label>
+                <label className="form__label" data-testid="select-history-heading">
+                    Select {selectLabel()}
+                </label>
                 <ReactSelect
                     classNamePrefix="history-pipeline-dropdown"
                     value={selectedFilter}
@@ -104,7 +106,7 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
                     .sort(([a], [b]) => b - a)
                     .map(([triggerId, triggerDetails], index) => (
                         <HistorySummaryCard
-                            dataTestId = {`deployment-history-${index}`}
+                            dataTestId={`deployment-history-${index}`}
                             key={triggerId}
                             id={triggerId}
                             status={triggerDetails.status}

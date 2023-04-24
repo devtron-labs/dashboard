@@ -951,12 +951,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         }}
                     >
                         <RadioGroupItem dataTestId="trigger-automatic-button" value={TriggerType.Auto}>
-                            {' '}
-                            Automatic{' '}
+                            Automatic
                         </RadioGroupItem>
                         <RadioGroupItem dataTestId="trigger-manual-button" value={TriggerType.Manual}>
-                            {' '}
-                            Manual{' '}
+                            Manual
                         </RadioGroupItem>
                     </RadioGroup>
                 </div>
@@ -1067,13 +1065,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     onChange={this.handleDeploymentAppTypeChange}
                     disabled={!!this.props.match.params.cdPipelineId}
                 >
-                    <RadioGroupItem data-testid="helm-deployment-type-button" value={DeploymentAppType.Helm}>
-                        {' '}
-                        Helm{' '}
+                    <RadioGroupItem dataTestId="helm-deployment-type-button" value={DeploymentAppType.Helm}>
+                        Helm
                     </RadioGroupItem>
-                    <RadioGroupItem data-testid="gitOps-deployment-type-button" value={DeploymentAppType.GitOps}>
-                        {' '}
-                        GitOps{' '}
+                    <RadioGroupItem dataTestId="gitOps-deployment-type-button" value={DeploymentAppType.GitOps}>
+                        GitOps
                     </RadioGroupItem>
                 </RadioGroup>
             </div>

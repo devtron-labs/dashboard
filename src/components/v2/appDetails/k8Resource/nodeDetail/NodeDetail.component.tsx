@@ -39,7 +39,7 @@ function NodeDetailComponent({
     const [resourceContainers, setResourceContainers] = useState([])
     const [isResourceDeleted, setResourceDeleted] = useState(false)
     const [isManagedFields, setManagedFields] = useState(false)
-    const [hideManagedFields, setHideManagedFields] = useState(false)
+    const [hideManagedFields, setHideManagedFields] = useState(true)
     const [fetchingResource, setFetchingResource] = useState(
         isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
     )
@@ -225,7 +225,9 @@ function NodeDetailComponent({
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={handleChanges}
                             >
-                                <span className="mr-5 cn-9 fs-12">Hide Managed Fields</span>
+                                <span className="mr-5 cn-9 fs-12" data-testid="hide-managed-fields">
+                                    Hide Managed Fields
+                                </span>
                             </Checkbox>
                         </div>
                     </>

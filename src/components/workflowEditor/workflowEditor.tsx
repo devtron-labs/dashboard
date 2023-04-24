@@ -415,7 +415,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         }
         return (
             <>
-                <button type="button" className="cta dc__no-decor flex mb-20" data-testid="new-workflow-button" onClick={this.toggleCIMenu}>
+                <button
+                    type="button"
+                    className="cta dc__no-decor flex mb-20"
+                    data-testid="new-workflow-button"
+                    onClick={this.toggleCIMenu}
+                >
                     <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
                     New workflow
                 </button>
@@ -459,7 +464,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 <p className="form__subtitle form__subtitle--workflow-editor">
                     {this.props.isJobView
                         ? 'Configure job pipelines to be executed. Pipelines can be configured to be triggered automatically based on code change or time.'
-                        : 'Workflows consist of pipelines from build to deployment stages of an application.'}{' '}
+                        : 'Workflows consist of pipelines from build to deployment stages of an application.'}
                     <br></br>
                     {!this.props.isJobView && (
                         <a

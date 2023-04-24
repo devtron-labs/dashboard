@@ -278,7 +278,7 @@ export default class Navigation extends Component<
                 activeClassName="active-nav"
             >
                 <div className="short-nav__item-selected" />
-                <div className="short-nav--flex" >
+                <div className="short-nav--flex">
                     <div className={`svg-container flex ${item.iconClass}`} data-testid={item?.dataTestId}>
                         <item.icon className="icon-dim-20" />
                     </div>
@@ -321,7 +321,11 @@ export default class Navigation extends Component<
                             }}
                         >
                             <div className="short-nav--flex">
-                                <svg className="devtron-logo" data-testid="click-on-devtron-app-logo" viewBox="0 0 40 40">
+                                <svg
+                                    className="devtron-logo"
+                                    data-testid="click-on-devtron-app-logo"
+                                    viewBox="0 0 40 40"
+                                >
                                     <use href={`${NavSprite}#nav-short-devtron-logo`}></use>
                                 </svg>
                                 <div className="pl-12 pt-10 pt-0">

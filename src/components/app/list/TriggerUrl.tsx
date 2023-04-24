@@ -63,17 +63,19 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
         <VisibleModal className="" close={close}>
             <div onClick={stopPropogation} className="modal-body--ci-material h-100 dc__overflow-hidden">
                 <div className="trigger-modal__header">
-                    <h1 className="modal__title flex left fs-16">URLs</h1>
-                    <button type="button" className="dc__transparent" onClick={close}>
+                    <h1 className="modal__title flex left fs-16" data-testid="app-details-url-heading">
+                        URLs
+                    </h1>
+                    <button type="button" className="dc__transparent" onClick={close} data-testid="url-close-button">
                         <Close />
                     </button>
                 </div>
 
-                <div className="dc__overflow-scroll" style={{height: "calc(100% - 67px)"}}>
+                <div className="dc__overflow-scroll" style={{ height: 'calc(100% - 67px)' }}>
                     {loading ? (
                         <Progressing pageLoader />
                     ) : Object.values(data).every((value) => !value.length) ? (
-                        <EmptyUrlState title={errorMessage.title} subtitle={errorMessage.subtitle}/>
+                        <EmptyUrlState title={errorMessage.title} subtitle={errorMessage.subtitle} />
                     ) : (
                         Object.entries(data).map(([kind, item]) =>
                             item.length ? (
@@ -125,23 +127,23 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                 </div>
                                             )}
                                             <div className="flexbox dc__content-start items-width-1">
-                                                <span className='flex dc__align-start'>
-                                                <Tippy
-                                                    content={value.pointsTo}
-                                                    className="default-tt dc__word-break-all"
-                                                    arrow={false}
-                                                    placement="top"
-                                                >
-                                                    <span className="url-box dc__ellipsis-right mr-6">
-                                                        {value.pointsTo}
+                                                <span className="flex dc__align-start">
+                                                    <Tippy
+                                                        content={value.pointsTo}
+                                                        className="default-tt dc__word-break-all"
+                                                        arrow={false}
+                                                        placement="top"
+                                                    >
+                                                        <span className="url-box dc__ellipsis-right mr-6">
+                                                            {value.pointsTo}
+                                                        </span>
+                                                    </Tippy>
+                                                    <span className="icon-dim-16 pt-2">
+                                                        <CopyToClipboardTextWithTippy
+                                                            iconClass="pointer dc__visible-hover--child icon-dim-16"
+                                                            text={value.pointsTo}
+                                                        />
                                                     </span>
-                                                </Tippy>
-                                                <span className="icon-dim-16 pt-2">
-                                                    <CopyToClipboardTextWithTippy
-                                                        iconClass="pointer dc__visible-hover--child icon-dim-16"
-                                                        text={value.pointsTo}
-                                                    />
-                                                </span>
                                                 </span>
                                             </div>
                                         </div>

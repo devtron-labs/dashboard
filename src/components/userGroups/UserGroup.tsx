@@ -185,7 +185,7 @@ function HeaderSection(type: string) {
     const isUserPremissions = type === 'user'
 
     return (
-        <div data-testid="auth-page-header" className="auth-page__header pt-20">
+        <div data-testid={`${type}-auth-page-header`} className="auth-page__header pt-20">
             <h2 className="auth-page__header-title form__title">
                 {isUserPremissions ? 'User permissions' : 'Permission groups'}
             </h2>
@@ -195,7 +195,7 @@ function HeaderSection(type: string) {
                     : 'Permission groups allow you to easily manage user permissions by assigning desired permissions to a group and assigning these groups to users to provide all underlying permissions.'}
                 &nbsp;
                 <a
-                    data-testid="auth-page-learn-more-link"
+                    data-testid={`${type}-auth-page-learn-more-link`}
                     className="dc__link"
                     rel="noreferrer noopener"
                     href={isUserPremissions ? DOCUMENTATION.GLOBAL_CONFIG_USER : DOCUMENTATION.GLOBAL_CONFIG_GROUPS}
@@ -550,7 +550,7 @@ const UserGroupList: React.FC<{
 
     if (loading || fetchingSSOConfigList) {
         return (
-            <div className="w-100 flex mh-600">
+            <div data-testid={`${type}-permission-page-loading`} className="w-100 flex mh-600">
                 <Progressing pageLoader />
             </div>
         )
@@ -563,7 +563,7 @@ const UserGroupList: React.FC<{
         )
     } else if (!addHash) {
         return type === 'user' ? <NoUsers onClick={addNewEntry} /> : <NoGroups onClick={addNewEntry} />
-    } else if (type == 'user' && !isSSOConfigured) {
+    } else if (type === 'user' && !isSSOConfigured) {
         return <SSONotConfiguredState />
     } else {
         const filteredAndSorted = result.filter(
@@ -573,7 +573,7 @@ const UserGroupList: React.FC<{
                 userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
         )
         return (
-            <div id="auth-page__body" data-testid="user-group-page" className="auth-page__body-users__list-container">
+            <div id="auth-page__body" data-testid={`auth-${type}-page`} className="auth-page__body-users__list-container">
                 {renderHeaders(type)}
                 {result.length > 0 && (
                     <div className="flex dc__content-space">
@@ -586,6 +586,7 @@ const UserGroupList: React.FC<{
                                 ref={searchRef}
                                 type="search"
                                 placeholder={`Search ${type}`}
+                                data-testid={`${type}-search-box-input`}
                                 className="search__input bcn-0"
                                 onChange={(e) => setSearchString(e.target.value)}
                             />
@@ -686,11 +687,13 @@ const CollapsedUserOrGroup: React.FC<CollapsedUserOrGroupProps> = ({
                     {email_id ? email_id[0] : name[0]}
                 </span>
                 <span className="user-list__email-name flex left column">
-                    <span data-testid="user-display-name-list" className="user-list__title">{name || email_id}</span>
+                    <span data-testid={`${type}-display-name-list`} className="user-list__title">
+                        {name || email_id}
+                    </span>
                     <span className="user-list__subtitle">{description || email_id}</span>
                 </span>
                 <span
-                    data-testid={`user-list-${collapsed ?'expand':'collapse'}-dropdown`}
+                    data-testid={`${type}-list-${collapsed ? 'expand' : 'collapse'}-dropdown`}
                     className="user-list__direction-container flex rotate pointer"
                     onClick={onClickUserDropdownHandler}
                     style={{ ['--rotateBy' as any]: collapsed ? '0deg' : '180deg' }}
@@ -774,7 +777,7 @@ const AddUser: React.FC<AddUser> = ({
         <article className={`user-list flex column left ${collapsed ? 'user-list--collapsed' : ''} user-list--add`}>
             <div
                 className={`${collapsed ? 'pointer' : ''} user-list__header user-list__header  w-100`}
-                data-testid={collapsed ? 'add-user-button' : ''}
+                data-testid={collapsed ? `add-${type}-button` : ''}
                 onClick={!collapsed ? noop : (e) => setCollapsed(not)}
             >
                 {collapsed && <AddIcon className="add-svg mr-16" />}
@@ -1610,13 +1613,13 @@ function NoGroups({ onClick }) {
                 <img src={EmptyImage} alt="so empty" />
             </EmptyState.Image>
             <EmptyState.Title>
-                <h4>No groups</h4>
+                <h4 data-testid="empty-permission-groups-title">No groups</h4>
             </EmptyState.Title>
             <EmptyState.Subtitle>
                 Groups allow you to combine permissions and easily assign them to users
             </EmptyState.Subtitle>
             <EmptyState.Button>
-                <button onClick={onClick} className="cta flex">
+                <button data-testid="add-first-permission-group-button" onClick={onClick} className="cta flex">
                     <AddIcon className="mr-5" />
                     Add group
                 </button>
