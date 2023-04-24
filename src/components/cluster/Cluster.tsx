@@ -1,4 +1,5 @@
 import React, { useState, useMemo, Component, useRef } from 'react'
+import YAML from 'yaml'
 import {
     showError,
     Pencil,
@@ -73,6 +74,7 @@ import EmptyState from '../EmptyState/EmptyState'
 import { ChartUploadResponse, UPLOAD_STATE } from '../CustomChart/types'
 import { validate } from 'fast-json-patch'
 import { validateChart } from '../CustomChart/customChart.service'
+import { read } from 'fs'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -402,24 +404,6 @@ function Cluster({
             >
                 {!editMode ? (
                     <>
-                        {/* <List key={clusterId} onClick={clusterId ? () => {} : (e) => toggleEditMode((t) => !t)}>
-                            {!clusterId && (
-                                <List.Logo>
-                                    <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
-                                </List.Logo>
-                            )}
-                            <div className="flex left">
-                                {clusterId ? (
-                                    <ClusterIcon className="cluster-icon icon-dim-24 dc__vertical-align-middle mr-16" />
-                                ) : null}
-                                <List.Title
-                                    title={cluster_name || 'Add cluster'}
-                                    subtitle={server_url}
-                                    className="fw-6"
-                                />
-                            </div>
-                            {clusterId && <List.DropDown src={<Pencil color="#b1b7bc" onClick={handleEdit} />} />}
-                        </List> */}
                         {serverMode !== SERVER_MODE.EA_ONLY && clusterId ? <hr className="mt-0 mb-0" /> : null}
                         {serverMode !== SERVER_MODE.EA_ONLY && clusterId ? (
                             <ClusterInstallStatus
@@ -569,7 +553,7 @@ function ClusterForm({
     const [confirmation, toggleConfirmation] = useState(false)
     const inputFileRef = useRef(null)
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
-    const [loadingData, setLoadingData] = useState(false)
+    const [saveYamlData, setSaveYamlState] = useState<string>('')
 
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -781,6 +765,8 @@ function ClusterForm({
             </div>
         )
     }
+    
+
 
     const clusterTable = () => {
         return {}
@@ -788,8 +774,18 @@ function ClusterForm({
 
     const onFileChange = (e): void => {
         setUploadState(UPLOAD_STATE.UPLOADING)
-        let formData = new FormData()
-        formData.append('file', e.target.files[0])
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const data = YAML.parseDocument(reader.result.toString());
+            setSaveYamlState(reader.result.toString())
+          } catch (e) {
+          }
+        };
+        console.log(reader)
+        reader.readAsText(file);
+        setUploadState(UPLOAD_STATE.SUCCESS)
     }
 
     const handleSuccessButton = (): void => {
@@ -997,14 +993,14 @@ function ClusterForm({
             <>
                 <hr />
                 <div className="code-editor-container">
-                    <CodeEditor value={''} height={514} diffView={false} readOnly={false} mode={MODES.YAML} noParsing>
+                    <CodeEditor value={saveYamlData} height={514} diffView={false} readOnly={false} mode={MODES.YAML} >
                         <CodeEditor.Header>
                             <div className="user-list__subtitle flex p-8">
                                 <span className="flex left">Paste the contents of kubeconfig file here</span>
                                 <div className="dc__link ml-auto cursor">
                                     {uploadState !== UPLOAD_STATE.UPLOADING && (
                                         <div onClick={handleSuccessButton} className="flex">
-                                            {uploadState === UPLOAD_STATE.UPLOAD ? 'Browse file...' : 'save'}
+                                            {'Browser file...'}
                                         </div>
                                     )}
                                 </div>
@@ -1029,7 +1025,7 @@ function ClusterForm({
                         className="cta mr-32 ml-20"
                         type="button"
                         onClick={toggleGetCluster}
-                        disabled={uploadState !== UPLOAD_STATE.SUCCESS ? false : true}
+                        disabled={uploadState !== UPLOAD_STATE.SUCCESS ? true : false}
                     >
                         Get cluster
                     </button>
@@ -1068,16 +1064,19 @@ function ClusterForm({
                             <Close className="icon-dim-24" />
                         </button>
                     </div>
-                    <div className="api-token__list">
-                        <div className="api-list__row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pl-20 pr-20 dc__uppercase">
+                    <div className="api-token__list en-2 bw-1 bcn-0 br-8">
+
+                        <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-10 pb-10 pr-20 pl-20 dc__uppercase">
                             <div></div>
-                            <div>Cluster Name</div>
+                            <div>Cluster</div>
                             <div>User</div>
-                            <div>Message </div>
+                            <div>Message</div>
                             <div></div>
                         </div>
+                        <div className="dc__overflow-scroll" style={{'height': 'calc(100vh - 153px)'}}>
+                            {}
+                        </div>
                     </div>
-                    
                 </div>
             </>
         )
