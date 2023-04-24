@@ -67,7 +67,11 @@ export default function HeaderWithCreateButton({ headerName, isSuperAdmin }) {
                         </div>
                     </div>
                 </div>
-                <div className="create-modal-child cursor" onClick={redirectToHelmAppDiscover}>
+                <div
+                    className="create-modal-child cursor"
+                    onClick={redirectToHelmAppDiscover}
+                    data-testid="create-from-chart-store-button"
+                >
                     <ChartIcon className="icon-dim-20" />
                     <div className="ml-8">
                         <strong>From Chart store</strong>

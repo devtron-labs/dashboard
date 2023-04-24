@@ -255,6 +255,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                         <label className="form__row">
                             <span className="form__label">Configuration Name*</span>
                             <input
+                                data-testid="add-ses-configuration-name"
                                 ref={(node) => (this._configName = node)}
                                 className="form__input"
                                 type="text"
@@ -279,6 +280,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                         <label className="form__row">
                             <span className="form__label">Access Key ID*</span>
                             <input
+                                data-testid="add-ses-access-key"
                                 className="form__input"
                                 type="text"
                                 name="app-name"
@@ -301,6 +303,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                         <label className="form__row">
                             <span className="form__label">Secret Access Key*</span>
                             <input
+                                data-testid="add-ses-secret-access-key"
                                 className="form__input"
                                 type="text"
                                 name="app-name"
@@ -325,6 +328,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                                 AWS Region*
                             </label>
                             <ReactSelect
+                                classNamePrefix="add-ses-aws-region"
                                 defaultValue={this.state.form.region}
                                 components={{
                                     DropdownIndicator,
@@ -360,6 +364,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                         <label className="form__row">
                             <span className="form__label">Send email from*</span>
                             <input
+                                data-testid="add-ses-send-email"
                                 className="form__input"
                                 type="email"
                                 name="app-name"
@@ -404,7 +409,7 @@ export class SESConfigModal extends Component<SESConfigModalProps, SESConfigModa
                             >
                                 Cancel
                             </button>
-                            <button type="submit" className="cta" tabIndex={7} disabled={this.state.form.isLoading}>
+                            <button data-testid="add-ses-save-button" type="submit" className="cta" tabIndex={7} disabled={this.state.form.isLoading}>
                                 {this.state.form.isLoading ? <Progressing /> : 'Save'}
                             </button>
                         </div>

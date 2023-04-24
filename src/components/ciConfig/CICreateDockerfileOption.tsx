@@ -240,6 +240,7 @@ export default function CICreateDockerfileOption({
                     </div>
                 ) : (
                         <ReactSelect
+                            classNamePrefix="select-create-dockerfile-language-dropdown"
                             tabIndex={3}
                             options={languages}
                             value={selectedLanguage}
