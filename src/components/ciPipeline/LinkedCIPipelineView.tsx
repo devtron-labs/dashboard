@@ -219,7 +219,8 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 <button type="button"
                     className='cta cta--workflow delete mr-16'
                     disabled={!canDeletePipeline}
-                    onClick={() => { this.setState({ showDeleteModal: true }) }}>
+                    onClick={() => { this.setState({ showDeleteModal: true }) }}
+                    data-testid="delete-linked-pipeline">
                     Delete Pipeline
                 </button>
             </ConditionalWrap>

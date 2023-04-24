@@ -180,7 +180,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                     <span className="form__error">
                         {this.state.name.error.map((err) => {
                             return (
-                                <div>
+                                <div data-testid="chart-group-min-5-char">
                                     <Error className="form__icon form__icon--error" /> {err}
                                 </div>
                             )

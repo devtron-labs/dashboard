@@ -406,7 +406,7 @@ function Cluster({
                                     className="fw-6"
                                 />
                                 {clusterId && (
-                                    <div className="flex dc__align-right">
+                                    <div data-testid={`add-environment-button-${cluster_name}`} className="flex dc__align-right">
                                         <div className="flex mr-16" onClick={addCluster}>
                                             <List.Logo>
                                                 <Add className="icon-dim-20 fcb-5 mr-8" />
@@ -469,6 +469,7 @@ function Cluster({
                                         }) =>
                                             environment_name ? (
                                                 <div
+                                                    data-testid={`env-container-${environment_name}`}
                                                     className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-12 pb-12 fs-13 fw-4 pl-20 pr-20 dc__visible-hover dc__visible-hover--parent"
                                                     key={id}
                                                     onClick={() =>
@@ -490,6 +491,7 @@ function Cluster({
                                                     <div
                                                         className="dc__truncate-text flex left cb-5 cursor"
                                                         onClick={showWindowModal}
+                                                        data-testid = {`env-${environment_name}`}
                                                     >
                                                         {environment_name}
 
@@ -524,6 +526,7 @@ function Cluster({
                                                                     content={'Delete Environment'}
                                                                 >
                                                                     <DeleteEnvironment
+                                                                        data-testid={`env-delete-button-${environment_name}`}
                                                                         className="icon-dim-20 cursor"
                                                                         onClick={showToggleConfirmation}
                                                                     />

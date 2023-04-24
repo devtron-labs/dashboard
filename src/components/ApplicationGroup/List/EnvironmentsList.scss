@@ -156,12 +156,51 @@
 
     .tab-list__tab-link.active .tab-list__icon path {
         fill: var(--B500);
-
     }
 
     .tab-list__tab-link:hover path {
         color: var(--B500);
         text-decoration: none;
         fill: var(--B500);
+    }
+}
+
+.create-group-container,
+.env-header-tab {
+    .tab-list {
+        .tab-list__tab {
+            .tab-hover {
+                &:hover,
+                &.active {
+                    color: var(--B500);
+                }
+            }
+            .apps-tab__active-tab {
+                height: 2px;
+                background-color: var(--B500);
+                border-radius: 2px 2px 0px 0px;
+                margin-top: -1px;
+            }
+        }
+    }
+
+    .selected-app-row {
+        .check-icon {
+            display: block;
+        }
+        .delete-icon {
+            display: none;
+            use{
+              fill: var(--R500)
+            }
+        }
+        &:hover {
+            .check-icon {
+                display: none;
+            }
+            .delete-icon {
+                display: block;
+            }
+        }
     }
 }

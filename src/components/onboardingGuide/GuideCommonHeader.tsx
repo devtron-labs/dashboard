@@ -24,6 +24,7 @@ function GuideCommonHeader({
                         type="button"
                         className="w-100 flex right dc__transparent p-20"
                         onClick={onClickCloseButton}
+                        data-testid="close-button"
                     >
                         <Close className="icon-dim-24" />
                     </button>
@@ -31,7 +32,7 @@ function GuideCommonHeader({
                 <div className={`flex deploy-manage__upper top ${showCloseIcon ? '' : 'pt-64'}`}>
                     <div className="deploy__title flex center">
                         <div className="flex column">
-                            <h1 className={`${showCloseIcon ? 'fs-24' : 'fs-36'} fw-6 mb-8`}>{title}</h1>
+                            <h1 className={`${showCloseIcon ? 'fs-24' : 'fs-36'} fw-6 mb-8` } data-testid="common-heading">{title}</h1>
                             {subtitle && <p className="fs-14 cn-7">{subtitle}</p>}
                         </div>
                     </div>

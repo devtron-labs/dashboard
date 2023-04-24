@@ -153,8 +153,8 @@ export default function BulkCDTrigger({
         return (
             <EmptyView
                 imgSrc={emptyPreDeploy}
-                title={`${selectedApp.name}  ${BULK_CD_MESSAGING.emptyPreDeploy.title}`}
-                subTitle={BULK_CD_MESSAGING.emptyPreDeploy.subTitle}
+                title={`${selectedApp.name}  ${BULK_CD_MESSAGING[stage].title}`}
+                subTitle={BULK_CD_MESSAGING[stage].subTitle}
             />
         )
     }
@@ -192,7 +192,7 @@ export default function BulkCDTrigger({
                             {unauthorizedAppList[app.appId] && (
                                 <span className="flex left cy-7 fw-4 fs-12">
                                     <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4" />
-                                    {BULK_CD_MESSAGING.emptyPreDeploy.title}
+                                    {BULK_CD_MESSAGING.unauthorized.title}
                                 </span>
                             )}
                         </div>

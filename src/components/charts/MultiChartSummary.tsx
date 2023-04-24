@@ -51,7 +51,7 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
                         </div>
                     )}
                     <div className="pb-16 flex left column">
-                        <b>{charts.length} charts selected</b>
+                        <b data-testid="charts-selected-count">{charts.length} charts selected</b>
                         <span>Set default chart version and values for each chart.</span>
                     </div>
                     <div className="flexbox mb-12">
@@ -331,7 +331,7 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
                 </div>
             </div>
             {remove ? (
-                <div className="trash-container">
+                <div className="trash-container" data-testid="trash-icon">
                     <Trash className="icon-dim-20 cursor" onClick={remove} />
                 </div>
             ) : toggleChart ? (
