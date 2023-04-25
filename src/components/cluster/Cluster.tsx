@@ -35,7 +35,6 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Database } from '../../assets/icons/ic-env.svg'
-import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ClusterComponentModal } from './ClusterComponentModal'
@@ -65,16 +64,11 @@ import {
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
-import Tippy from '@tippyjs/react'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import TippyHeadless from '@tippyjs/react/headless'
 import CodeEditor from '../CodeEditor/CodeEditor'
-import { DefaultViewTabsJSON } from '../v2/utils/tabUtils/tab.json'
 import EmptyState from '../EmptyState/EmptyState'
-import { ChartUploadResponse, UPLOAD_STATE } from '../CustomChart/types'
-import { validate } from 'fast-json-patch'
-import { validateChart } from '../CustomChart/customChart.service'
-import { read } from 'fs'
+import { UPLOAD_STATE } from '../CustomChart/types'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -1060,17 +1054,34 @@ function ClusterForm({
                         >
                             <Close className="icon-dim-24" />
                         </button>
+
                     </div>
                     <div className="pb-8">
-                        <div className="cluster-env-list table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc border-top dc border-bottom-n1">
+                        <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
                             <div></div>
-                            <div className='pl-20'>Cluster</div>
-                            <div className='pl-20'>User</div>
-                            <div className='pl-20'>Message</div>
+                            <div>cluster</div>
+                            <div>User</div>
+                            <div>Message</div>
                             <div></div>
                         </div>
+                        
                     </div>
                 </div>
+                {isKubeConfigFile && (
+                    <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                        <button className="cta cancel" type="button" onClick={handleCloseButton}>
+                            Edit Kubeconfig
+                        </button>
+                        <button
+                            className="cta mr-32 ml-20"
+                            type="button"
+                            onClick={toggleGetCluster}
+                            disabled={uploadState !== UPLOAD_STATE.SUCCESS ? true : false}
+                        >
+                            Save
+                        </button>
+                    </div>
+                )}
             </>
         )
     }
