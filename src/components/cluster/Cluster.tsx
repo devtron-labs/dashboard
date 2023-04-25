@@ -1054,14 +1054,13 @@ function ClusterForm({
                         >
                             <Close className="icon-dim-24" />
                         </button>
-
                     </div>
                     <div className="pb-8">
                         <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
                             <div></div>
-                            <div>cluster</div>
-                            <div>User</div>
-                            <div>Message</div>
+                            <div>CLUSTER</div>
+                            <div>USER</div>
+                            <div>MESSAGE</div>
                             <div></div>
                         </div>
                         
