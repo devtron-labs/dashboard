@@ -365,24 +365,26 @@ export default function ResourceList() {
             }
         }
 
-        searchWorkerRef.current.postMessage({
-            type: 'start',
-            payload: {
-                searchText: _searchText,
-                list: _resourceList.data,
-                searchInKeys: [
-                    'name',
-                    'namespace',
-                    'status',
-                    'message',
-                    EVENT_LIST.dataKeys.involvedObject,
-                    'source',
-                    'reason',
-                    'type',
-                ],
-                origin: new URL(process.env.PUBLIC_URL, window.location.href).origin,
-            },
-        })
+        if(resourceList) {
+            searchWorkerRef.current.postMessage({
+                type: 'start',
+                payload: {
+                    searchText: _searchText,
+                    list: _resourceList.data,
+                    searchInKeys: [
+                        'name',
+                        'namespace',
+                        'status',
+                        'message',
+                        EVENT_LIST.dataKeys.involvedObject,
+                        'source',
+                        'reason',
+                        'type',
+                    ],
+                    origin: new URL(process.env.PUBLIC_URL, window.location.href).origin,
+                },
+            })
+        }
     }
 
     const getResourceListData = async (retainSearched?: boolean): Promise<void> => {
