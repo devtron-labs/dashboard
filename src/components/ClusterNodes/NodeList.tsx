@@ -180,6 +180,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
 
     const getNodeListData = (): void => {
         setClusterDetailsLoader(true)
+        setErrorResponseCode(null)
         Promise.all([getNodeList(clusterId), getClusterCapacity(clusterId)])
             .then((response) => {
                 setLastDataSync(!lastDataSync)
@@ -313,7 +314,6 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             setClusterAboutLoader(false)
         }).catch((error) => {
             showError(error)
-            setErrorResponseCode(error.code)
             setClusterAboutLoader(false)
         })
     }
