@@ -886,6 +886,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const toggleDescriptionView = () => {
         setModifiedDescriptionText(descriptionText)
         setEditDescriptionView(!isEditDescriptionView)
+        setSelectedTab("write")
     }
 
     const renderClusterTabs = (): JSX.Element => {
