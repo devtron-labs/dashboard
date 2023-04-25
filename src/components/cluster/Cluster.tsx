@@ -934,7 +934,7 @@ function ClusterForm({
                         </RadioGroup>
                     </div>
                     {state.authType.value === AuthenticationType.BASIC ? (
-                        <div className="form__row--flex">
+                        <div className="form__row form__row--flex">
                             <div className="w-50 mr-8">
                                 <CustomInput
                                     name="userName"
