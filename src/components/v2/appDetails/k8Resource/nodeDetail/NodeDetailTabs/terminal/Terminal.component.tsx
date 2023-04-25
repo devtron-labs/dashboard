@@ -14,10 +14,10 @@ import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
 
-let socket = undefined
-let terminal = undefined
-let fitAddon = undefined
-let clusterTimeOut = undefined
+let socket 
+let terminal 
+let fitAddon 
+let clusterTimeOut
 
 export default function TerminalView({
     terminalRef,
@@ -62,8 +62,9 @@ export default function TerminalView({
     }, [sessionId])
 
     useEffect(() => {
-        if (!popupText) return
-        setTimeout(() => setPopupText(false), 2000)
+        if (popupText){
+            setTimeout(() => setPopupText(false), 2000)
+        }
     }, [popupText])
 
     useEffect(() => {

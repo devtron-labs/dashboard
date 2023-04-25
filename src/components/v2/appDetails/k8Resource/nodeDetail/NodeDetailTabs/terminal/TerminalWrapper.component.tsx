@@ -12,6 +12,7 @@ export default function TerminalWrapper({
     setSocketConnection,
     className,
 }: TerminalWrapperProps) {
+    
     const firstStrip = () => {
         return (
             <div className="flex left w-100">
@@ -78,18 +79,12 @@ export function RenderConnectionStrip({
 
     if (!isOnline) {
         return (
-            <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0">{TERMINAL_TEXT.OFFLINE_CHECK_CONNECTION}</div>
+            <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0 connection-status-strip">{TERMINAL_TEXT.OFFLINE_CHECK_CONNECTION}</div>
         )
     }
 
     const renderStrip = () => {
-        if (!isOnline) {
-            return (
-                <div className="terminal-strip pl-20 pr-20 w-100 bcr-7 cn-0 connection-status-strip">
-                    {TERMINAL_TEXT.OFFLINE_CHECK_CONNECTION}
-                </div>
-            )
-        } else if (renderStripMessage) {
+        if (renderStripMessage) {
             return renderStripMessage
         } else {
             return (

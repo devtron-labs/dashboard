@@ -12,8 +12,17 @@ import { ReactComponent as Abort } from '../../../../../../../assets/icons/ic-ab
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    SelectWrapperType,
+    ReactSelectType,
+    WrapperTitleType,
+    ConnectionButtonType,
+    CloseExpandView,
+    ConnectionSwitchType,
+    ClearTerminalType,
+} from './terminal.type'
 
-const creatableSelectWrapper = (selectData) => {
+const creatableSelectWrapper = (selectData: SelectWrapperType) => {
     if (selectData.hideTerminalStripComponent) return null
     return (
         <>
@@ -50,7 +59,7 @@ const creatableSelectWrapper = (selectData) => {
     )
 }
 
-const reactSelect = (selectData) => {
+const reactSelect = (selectData: ReactSelectType) => {
     if (selectData.hideTerminalStripComponent) return null
     return (
         <>
@@ -71,7 +80,7 @@ const reactSelect = (selectData) => {
     )
 }
 
-const titleName = (titleData) => {
+const titleName = (titleData: WrapperTitleType) => {
     if (titleData.hideTerminalStripComponent) return null
     return (
         <>
@@ -82,7 +91,7 @@ const titleName = (titleData) => {
     )
 }
 
-const connectionButton = (connectData) => {
+const connectionButton = (connectData: ConnectionButtonType) => {
     if (connectData.hideTerminalStripComponent) return null
     return (
         <Tippy
@@ -104,7 +113,7 @@ const connectionButton = (connectData) => {
     )
 }
 
-const closeExpandView = (viewData) => {
+const closeExpandView = (viewData: CloseExpandView) => {
     if (viewData.hideTerminalStripComponent) return null
     return (
         <span className="flex dc__align-right">
@@ -138,7 +147,7 @@ const closeExpandView = (viewData) => {
     )
 }
 
-const connectionSwitch = (switchProps) => {
+const connectionSwitch = (switchProps: ConnectionSwitchType) => {
     if (switchProps.hideTerminalStripComponent) return null
     return (
         <>
@@ -166,7 +175,7 @@ const connectionSwitch = (switchProps) => {
     )
 }
 
-const clearTerminal = (clearProps) => {
+const clearTerminal = (clearProps: ClearTerminalType) => {
     if (clearProps.hideTerminalStripComponent) return null
     return (
         <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">

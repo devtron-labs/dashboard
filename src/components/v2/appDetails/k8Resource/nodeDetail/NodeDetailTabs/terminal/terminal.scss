@@ -33,10 +33,12 @@
     flex-direction: column;
 }
 
-.terminal-wrapper .terminal-component {
-    overflow: hidden;
-    background-color: #0b0f22;
-    flex: 1;
+.terminal-wrapper {
+    .terminal-component {
+        overflow: hidden;
+        background-color: #0b0f22;
+        flex: 1;
+    }
 }
 
 .connection-status-strip {

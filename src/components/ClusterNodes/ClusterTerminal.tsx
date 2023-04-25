@@ -28,6 +28,7 @@ import {
     CLUSTER_TERMINAL_MESSAGING,
     IMAGE_LIST,
     nodeSelect,
+    PRE_FETCH_DATA_MESSAGING,
     SELECT_TITLE,
 } from './constants'
 import { OptionType } from '../userGroups/userGroups.types'
@@ -244,7 +245,7 @@ export default function ClusterTerminal({
         )
     }
 
-    const getClusterData = (url, terminalId, count) => {
+    const getClusterData = (url: string, terminalId: any, count: number) => {
         if (terminalId !== terminalAccessIdRef.current) return
         else if (
             clusterTimeOut &&
@@ -299,9 +300,9 @@ export default function ClusterTerminal({
         _terminal.reset()
 
         if (prevNodeRef.current === TERMINAL_STATUS.AUTO_SELECT_NODE) {
-            _terminal.write('Selecting a node')
+            _terminal.write(PRE_FETCH_DATA_MESSAGING.SELECTING_NODE)
             if (currNodeRef.current) {
-                _terminal.write(` > ${currNodeRef.current} selected`)
+                _terminal.write(` > ${currNodeRef.current} ${PRE_FETCH_DATA_MESSAGING.SELECTED}`)
                 _terminal.writeln('')
             } else {
                 _terminal.write('...')
@@ -315,30 +316,30 @@ export default function ClusterTerminal({
 
             if (startingText) {
                 if (startingText === TERMINAL_STATUS.CREATE) {
-                    _terminal.write('Creating pod.')
+                    _terminal.write(PRE_FETCH_DATA_MESSAGING.CREATING_PODS)
                 } else if (startingText === TERMINAL_STATUS.SHELL) {
-                    _terminal.write(`Switching shell to ${selectedTerminalType.value}.`)
+                    _terminal.write(`${PRE_FETCH_DATA_MESSAGING.SWITCHING_SHELL} ${selectedTerminalType.value}.`)
                 }
             }
             if (startingText !== TERMINAL_STATUS.SHELL && podState) {
                 if (podState === CLUSTER_STATUS.RUNNING) {
-                    _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
+                    _terminal.write(PRE_FETCH_DATA_MESSAGING.SUCCEEDED_LINK)
                     _terminal.writeln('')
-                    _terminal.write('Connecting to pod terminal.')
+                    _terminal.write(PRE_FETCH_DATA_MESSAGING.CONNECTING_TO_POD)
                 }
             }
 
             if (status) {
                 if (status === TERMINAL_STATUS.TIMEDOUT) {
-                    _terminal.write(' \u001b[38;5;196mTimed out\u001b[0m')
+                    _terminal.write(PRE_FETCH_DATA_MESSAGING.TIMED_OUT_LINK)
                 } else if (status === TERMINAL_STATUS.FAILED) {
-                    _terminal.write(' \u001b[38;5;196mFailed\u001b[0m')
+                    _terminal.write(PRE_FETCH_DATA_MESSAGING.FAILED_TEXT)
                 } else if (status === TERMINAL_STATUS.SUCCEDED) {
-                    _terminal.write(' \u001b[38;5;35mSucceeded\u001b[0m')
+                    _terminal.write(PRE_FETCH_DATA_MESSAGING.SUCCEEDED_LINK)
                 }
-                _terminal.write(' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m')
+                _terminal.write(PRE_FETCH_DATA_MESSAGING.CHECK_POD_EVENTS)
                 _terminal.write(' | ')
-                _terminal.write('\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m')
+                _terminal.write(PRE_FETCH_DATA_MESSAGING.CHEKC_POD_MANIFEST)
                 _terminal.writeln('')
             } else {
                 _terminal.write('..')

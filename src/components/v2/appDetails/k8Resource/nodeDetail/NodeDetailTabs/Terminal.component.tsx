@@ -19,7 +19,7 @@ import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
 import { get, showError } from '@devtron-labs/devtron-fe-common-lib'
 
-let clusterTimeOut = undefined
+let clusterTimeOut 
 
 function TerminalComponent({
     selectedTab,

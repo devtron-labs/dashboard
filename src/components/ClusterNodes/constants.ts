@@ -361,3 +361,16 @@ export const nodeSelect = {
         marginBottom: 0,
     }),
 }
+
+export const PRE_FETCH_DATA_MESSAGING = {
+    SELECTING_NODE: 'Selecting a node',
+    SELECTED: 'selected',
+    CREATING_PODS: 'Creating pod.',
+    SWITCHING_SHELL: 'Switching shell to',
+    SUCCEEDED_LINK: ' \u001b[38;5;35mSucceeded\u001b[0m',
+    CONNECTING_TO_POD: 'Connecting to pod terminal.',
+    TIMED_OUT_LINK: ' \u001b[38;5;196mTimed out\u001b[0m',
+    FAILED_TEXT: '  \u001b[38;5;196mFailed\u001b[0m',
+    CHECK_POD_EVENTS: ' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m',
+    CHEKC_POD_MANIFEST: '\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m',
+}
