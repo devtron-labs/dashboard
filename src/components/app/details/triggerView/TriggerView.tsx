@@ -47,8 +47,10 @@ import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './
 import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
 import { handleSourceNotConfigured, processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.utils'
 import ApprovalMaterialModal from './ApprovalNode/ApprovalMaterialModal'
+import { mainContext } from '../../../common/navigation/NavigationRoutes'
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
+    static contextType?: React.Context<any> = mainContext
     timerRef
     inprogressStatusTimer
     abortController: AbortController
@@ -99,7 +101,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     getWorkflows = () => {
-        getTriggerWorkflows(this.props.match.params.appId, !this.props.isJobView, this.props.isJobView)
+        getTriggerWorkflows(
+            this.props.match.params.appId,
+            !this.props.isJobView,
+            this.props.isJobView,
+            this.context.currentServerInfo?.serverInfo?.installationType,
+        )
             .then((result) => {
                 const _filteredCIPipelines = result.filteredCIPipelines || []
                 const wf = result.workflows || []
@@ -413,6 +420,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             cdNodeId,
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             this.abortController.signal,
+            this.context.currentServerInfo?.serverInfo?.installationType,
             isApprovalNode,
         )
             .then((data) => {
@@ -1069,7 +1077,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     renderWorkflow() {
         return (
             <React.Fragment>
-                {this.state.workflows.map((workflow,index) => {
+                {this.state.workflows.map((workflow, index) => {
                     return (
                         <Workflow
                             key={workflow.id}

@@ -6,6 +6,7 @@ import { History } from './details/cicdHistory/types'
 import { AppDetails, CDMaterialResponseType, CreateAppLabelsRequest } from './types'
 import { CDModalTabType, DeploymentNodeType, DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
+import { InstallationType } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 let stageMap = {
     PRECD: 'PRE',
@@ -110,7 +111,7 @@ export function fetchAppDetailsInTime(
     envId: number | string,
     reloadTimeOut: number,
 ): Promise<AppDetailsResponse> {
-  return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
+    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
 }
 
 export function fetchResourceTreeInTime(
@@ -242,6 +243,7 @@ export function getCDMaterialList(
     cdMaterialId,
     stageType: DeploymentNodeType,
     abortSignal: AbortSignal,
+    installationType: InstallationType,
     isApprovalNode?: boolean,
 ): Promise<CDMaterialResponseType> {
     const URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
@@ -257,17 +259,30 @@ export function getCDMaterialList(
                 userApprovalConfig: null,
                 requestedUserId: 0,
             }
+        } else if (installationType === InstallationType.ENTERPRISE) {
+            return {
+                approvalUsers: response.result.approvalUsers,
+                materials: cdMaterialListModal(
+                    response.result.ci_artifacts,
+                    true,
+                    response.result.latest_wf_artifact_id,
+                    response.result.latest_wf_artifact_status,
+                ),
+                userApprovalConfig: response.result.userApprovalConfig,
+                requestedUserId: response.result.requestedUserId,
+            }
         }
+
         return {
-            approvalUsers: response.result.approvalUsers,
+            approvalUsers: [],
             materials: cdMaterialListModal(
                 response.result.ci_artifacts,
                 true,
                 response.result.latest_wf_artifact_id,
                 response.result.latest_wf_artifact_status,
             ),
-            userApprovalConfig: response.result.userApprovalConfig,
-            requestedUserId: response.result.requestedUserId,
+            userApprovalConfig: null,
+            requestedUserId: 0,
         }
     })
 }

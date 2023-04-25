@@ -80,6 +80,7 @@ import {
     TOAST_INFO,
     CONFIGMAPS_SECRETS,
 } from '../../config/constantMessaging'
+import { InstallationType } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -1500,8 +1501,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <div className="divider mt-12 mb-12"></div>
                 {this.renderPreStage()}
                 <div className="divider mt-12 mb-12"></div>
-                {this.renderManualApprovalWrapper()}
-                <div className="divider mt-12 mb-12"></div>
+                {this.props.installationType === InstallationType.ENTERPRISE && (
+                    <>
+                        {this.renderManualApprovalWrapper()}
+                        <div className="divider mt-12 mb-12"></div>
+                    </>
+                )}
                 {this.renderDeploymentStage()}
                 <div className="divider mt-12 mb-12"></div>
                 {this.renderPostStage()}

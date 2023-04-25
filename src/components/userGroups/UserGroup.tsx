@@ -80,6 +80,7 @@ import {
     TOAST_ACCESS_DENIED,
     USER_NOT_EDITABLE,
 } from '../../config/constantMessaging'
+import { InstallationType } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -573,7 +574,11 @@ const UserGroupList: React.FC<{
                 userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
         )
         return (
-            <div id="auth-page__body" data-testid={`auth-${type}-page`} className="auth-page__body-users__list-container">
+            <div
+                id="auth-page__body"
+                data-testid={`auth-${type}-page`}
+                className="auth-page__body-users__list-container"
+            >
                 {renderHeaders(type)}
                 {result.length > 0 && (
                     <div className="flex dc__content-space">
@@ -834,7 +839,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     index,
     removeRow,
 }) => {
-    const { serverMode } = useContext(mainContext)
+    const { currentServerInfo } = useContext(mainContext)
     const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps } = useUserGroupContext()
     const projectId =
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
@@ -894,7 +899,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                     ? possibleRolesMetaHelmApps[value].value
                     : possibleRolesMeta[value].value}
-                {permission.approver && ', Approver'}
+                {currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE &&
+                    permission.approver &&
+                    ', Approver'}
                 {React.cloneElement(children[1])}
             </components.ValueContainer>
         )
@@ -908,21 +915,22 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         return (
             <components.MenuList {...props}>
                 {props.children}
-                {permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && (
-                    <>
-                        <div className="w-100 dc__border-top-n1" />
-                        <components.Option {...props}>
-                            <div className="flex left top cursor" onClick={handleApproverChange}>
-                                <Checkbox
-                                    isChecked={permission.approver}
-                                    value={CHECKBOX_VALUE.CHECKED}
-                                    onChange={noop}
-                                />
-                                {formatOptionLabel(APPROVER_ACTION)}
-                            </div>
-                        </components.Option>
-                    </>
-                )}
+                {currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE &&
+                    permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && (
+                        <>
+                            <div className="w-100 dc__border-top-n1" />
+                            <components.Option {...props}>
+                                <div className="flex left top cursor" onClick={handleApproverChange}>
+                                    <Checkbox
+                                        isChecked={permission.approver}
+                                        value={CHECKBOX_VALUE.CHECKED}
+                                        onChange={noop}
+                                    />
+                                    {formatOptionLabel(APPROVER_ACTION)}
+                                </div>
+                            </components.Option>
+                        </>
+                    )}
             </components.MenuList>
         )
     }

@@ -1,4 +1,5 @@
 import { RouteComponentProps } from 'react-router';
+import { InstallationType } from '../v2/devtronStackManager/DevtronStackManager.type';
 
 export const CD_PATCH_ACTION = {
     DELETE: 1,
@@ -29,6 +30,7 @@ export interface CDPipelineProps
     getWorkflows: () => void;
     close: (showSuccessCD?: boolean, environmentId?: number, environmentName?: string, successTitle?: string, showWebhookTippy?: boolean) => void;
     refreshParentWorkflows: () => void;
+    installationType: InstallationType
 }
 
 export interface CDStageType {
