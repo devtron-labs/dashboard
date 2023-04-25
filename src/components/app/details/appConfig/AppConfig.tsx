@@ -361,8 +361,14 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                 .slice()
                 .reverse()
                 .find((stage) => stage.status)
-            _lastConfiguredStage = (lastConfiguredStage) ? lastConfiguredStage.stageName : ''
-            _configs = isUnlocked(_lastConfiguredStage)
+            if (!lastConfiguredStage) {
+                _configs = {} as AppStageUnlockedType
+                _lastConfiguredStage = ''
+            } else {
+                _lastConfiguredStage = lastConfiguredStage.stageName
+                _configs = isUnlocked(_lastConfiguredStage)
+            }
+            
         }
 
         return {
