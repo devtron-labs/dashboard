@@ -114,7 +114,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
             let { result } = await getChartVersionsMin(chartId)
             if (result?.length) {
                 setChartVersions(result)
-                selectVersion(result[0].id)
+                selectVersion(result[0]?.id)
             } else {
                 toast.error('Some error occurred. Please try reloading the page')
             }

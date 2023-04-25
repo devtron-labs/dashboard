@@ -996,7 +996,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 stageType={DeploymentNodeType[this.state.nodeType]}
                                 material={material}
                                 materialType={this.state.materialType}
-                                envName={node.environmentName}
+                                envName={node?.environmentName}
                                 isLoading={this.state.isLoading}
                                 changeTab={this.changeTab}
                                 triggerDeploy={this.onClickTriggerCDNode}

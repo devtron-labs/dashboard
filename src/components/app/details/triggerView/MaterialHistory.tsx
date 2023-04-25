@@ -63,7 +63,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
     render() {
         return (
             <>
-                {this.props.material.history.map((history,index) => {
+                {this.props.material?.history?.map((history,index) => {
                     let classes = `material-history mt-12 ${history.isSelected ? 'material-history-selected' : ''}`
                     if (this.props.selectCommit) {
                         classes = `${classes}`
