@@ -356,9 +356,9 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             (sortOrder === OrderBy.ASC && sortByColumn.sortingFieldName !== 'createdAt') ||
             (sortOrder === OrderBy.DESC && sortByColumn.sortingFieldName === 'createdAt')
         ) {
-            return firstValue.localeCompare(firstValue)
+            return firstValue.localeCompare(secondValue)
         } else {
-            return secondValue.localeCompare(secondValue)
+            return secondValue.localeCompare(firstValue)
         }
     }
 
