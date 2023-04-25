@@ -17,7 +17,7 @@
 .cluster-about-page
 {
     display: grid;
-    grid-template-rows: 78px 1fr;
+    grid-template-rows: 77px 1fr;
     overflow: hidden;
     height: 100%;
 
@@ -445,8 +445,14 @@
         padding-top: 0px !important;
         padding-bottom: 0px !important;
         .mde-header-item button {
+            padding: 10px 4px !important;
             height: inherit !important;
         }
+    }
+}
+.mde-preview {
+    .mde-preview-content {
+        padding: 0px !important;
     }
 }
 

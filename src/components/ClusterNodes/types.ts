@@ -2,6 +2,7 @@ import React from 'react'
 import { MultiValue } from 'react-select'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
+import { type } from 'os'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'VERSION_ERROR',
@@ -279,3 +280,5 @@ export interface TerminalDataType {
     namespace: string
     terminalAccessId?: number
 }
+
+export type MDEditorSelectedTabType = "write" | "preview"

@@ -1,3 +1,4 @@
+import exp from 'constants'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 import { ColumnMetadataType, EFFECT_TYPE } from './types'
 
@@ -367,3 +368,21 @@ export const defaultClusterNote =
 
 Describe your Kubernetes cluster in a few words. This will help others understand the purpose and configuration of your cluster. For example, you might mention the number of worker nodes, the types of applications running on the cluster, or any relevant security considerations. Keep it concise and informative!
 `
+export const MARKDOWN_EDITOR_COMMANDS = [[
+    'header',
+    'bold',
+    'italic',
+    'strikethrough',
+    'link',
+    'quote',
+    'code',
+    'image',
+    'unordered-list',
+    'ordered-list',
+    'checked-list',
+]]
+
+export enum MD_EDITOR_TAB {
+    WRITE = 'write',
+    PREVIEW = 'preview',
+}

@@ -26,8 +26,20 @@ import {
     ClusterListType,
     NodeDetail,
     ImageList,
+    MDEditorSelectedTabType,
 } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
+import { ReactComponent as HeaderIcon } from '../../assets/icons/mdeditor/ic-header.svg'
+import { ReactComponent as BoldIcon } from '../../assets/icons/mdeditor/ic-bold.svg'
+import { ReactComponent as ItalicIcon } from '../../assets/icons/mdeditor/ic-italic.svg'
+import { ReactComponent as LinkIcon } from '../../assets/icons/mdeditor/ic-link.svg'
+import { ReactComponent as StrikethroughIcon } from '../../assets/icons/mdeditor/ic-strikethrough.svg'
+import { ReactComponent as CodeIcon } from '../../assets/icons/mdeditor/ic-code.svg'
+import { ReactComponent as QuoteIcon } from '../../assets/icons/mdeditor/ic-quote.svg'
+import { ReactComponent as ImageIcon } from '../../assets/icons/mdeditor/ic-image.svg'
+import { ReactComponent as OrderedListIcon } from '../../assets/icons/mdeditor/ic-ordered-list.svg'
+import { ReactComponent as UnorderedListIcon } from '../../assets/icons/mdeditor/ic-unordered-list.svg'
+import { ReactComponent as CheckedListIcon } from '../../assets/icons/mdeditor/ic-checked-list.svg'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Sort } from '../../assets/icons/ic-sort-arrow.svg'
@@ -42,7 +54,7 @@ import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import ClusterTerminal from './ClusterTerminal'
-import { CLUSTER_DESCRIPTION_UPDATE_MSG, COLUMN_METADATA, NODE_SEARCH_TEXT, defaultClusterNote } from './constants'
+import { CLUSTER_DESCRIPTION_UPDATE_MSG, COLUMN_METADATA, MARKDOWN_EDITOR_COMMANDS, MD_EDITOR_TAB, NODE_SEARCH_TEXT, defaultClusterNote } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
@@ -101,7 +113,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const [clusterCreatedOn, setClusterCreatedOn] = useState<string>('')
     const [clusterCreatedBy, setClusterCreatedBy] = useState<string>('')
     const [clusterDetailsName, setClusterDetailsName] = useState<string>('')
-    const [selectedTab, setSelectedTab] = useState<'write' | 'preview'>('write')
+    const [selectedTab, setSelectedTab] = useState<MDEditorSelectedTabType>(MD_EDITOR_TAB.WRITE)
     const pageSize = 15
 
     useEffect(() => {
@@ -886,7 +898,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const toggleDescriptionView = () => {
         setModifiedDescriptionText(descriptionText)
         setEditDescriptionView(!isEditDescriptionView)
-        setSelectedTab("write")
+        setSelectedTab(MD_EDITOR_TAB.WRITE)
     }
 
     const renderClusterTabs = (): JSX.Element => {
@@ -949,14 +961,42 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             </div>
         )
     }
+
+    const editorCustomIcon = (commandName: string): JSX.Element => {
+        switch (commandName) {
+            case 'header':
+                return <HeaderIcon className="icon-dim-20 flex" />
+            case 'bold':
+                return <BoldIcon className="icon-dim-20 flex" />
+            case 'italic':
+                return <ItalicIcon className="icon-dim-20 flex" />
+            case 'strikethrough':
+                return <StrikethroughIcon className="icon-dim-20 flex" />
+            case 'link':
+                return <LinkIcon className="icon-dim-20 flex" />
+            case 'quote':
+                return <QuoteIcon className="icon-dim-20 flex" />
+            case 'code':
+                return <CodeIcon className="icon-dim-20 flex" />
+            case 'image':
+                return <ImageIcon className="icon-dim-20 flex" />
+            case 'unordered-list':
+                return <UnorderedListIcon className="icon-dim-20 flex" />
+            case 'ordered-list':
+                return <OrderedListIcon className="icon-dim-20 flex" />
+            case 'checked-list':
+                return <CheckedListIcon className="icon-dim-20 flex" />
+        }
+    }
+
     const randerClusterNote = (): JSX.Element => {
         return (
             <div className="cluster__body-details">
                 <div className="pl-16 pr-16 pt-16 pb-16">
                     {isEditDescriptionView ? (
                         <div data-color-mode="light" className="min-w-575 cluster-note__card">
-                            <div className="cluster-note__card-header h-36">
-                                <div className="flex left fs-13 fw-6 lh-20 cn-9">
+                            <div className="cluster-note__card-header h-36 fs-13">
+                                <div className="flex left fw-6 lh-20 cn-9">
                                     <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
                                     Description
                                 </div>
@@ -996,38 +1036,25 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                     preview: 'mark-down-editor-preview',
                                     textArea: 'mark-down-editor-textarea-wrapper',
                                 }}
-                                toolbarCommands={[
-                                    [
-                                        'header',
-                                        'bold',
-                                        'italic',
-                                        'strikethrough',
-                                        'link',
-                                        'quote',
-                                        'code',
-                                        'image',
-                                        'unordered-list',
-                                        'ordered-list',
-                                        'checked-list',
-                                    ],
-                                ]}
+                                getIcon={(commandName: string) => editorCustomIcon(commandName)} 
+                                toolbarCommands={MARKDOWN_EDITOR_COMMANDS}
                                 value={modifiedDescriptionText}
                                 onChange={setModifiedDescriptionText}
                                 minEditorHeight={window.innerHeight - 165}
                                 selectedTab={selectedTab}
                                 onTabChange={setSelectedTab}
-                                generateMarkdownPreview={(markdown) =>
+                                generateMarkdownPreview={(markdown : string) =>
                                     Promise.resolve(<MarkDown markdown={markdown} breaks />)
                                 }
                                 childProps={{
                                     writeButton: {
                                         className: `tab-list__tab pointer fs-13 ${
-                                            selectedTab === 'write' && 'cb-5 fw-6 active active-tab'
+                                            selectedTab === MD_EDITOR_TAB.WRITE && 'cb-5 fw-6 active active-tab'
                                         }`,
                                     },
                                     previewButton: {
                                         className: `tab-list__tab pointer fs-13 ${
-                                            selectedTab === 'preview' && 'cb-5 fw-6 active active-tab'
+                                            selectedTab === MD_EDITOR_TAB.PREVIEW && 'cb-5 fw-6 active active-tab'
                                         }`,
                                     },
                                 }}
