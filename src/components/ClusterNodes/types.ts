@@ -62,12 +62,15 @@ export interface ClusterDetail {
     nodeNames?: string[]
     nodeDetails?: NodeDetailsType[]
 }
-export interface ClusterNote {
+export interface ClusterDescriptionType {
     id: number
     cluster_id: number
+    cluster_name: string
     description: string
-    created_by: number
-    created_on: string
+    updated_by: string
+    updated_on: string
+    cluster_created_by: string
+    cluster_created_on: string
 }
 
 export interface NodeRowDetail {
@@ -87,8 +90,8 @@ export interface ClusterListResponse extends ResponseType {
     result?: ClusterDetail[]
 }
 
-export interface ClusterNoteResponse extends ResponseType {
-    result?: ClusterNote
+export interface ClusterDescriptionResponse extends ResponseType {
+    result?: ClusterDescriptionType
 }
 export interface ClusterCapacityResponse extends ResponseType {
     result?: ClusterCapacityType

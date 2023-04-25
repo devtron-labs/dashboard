@@ -361,7 +361,7 @@ export const nodeSelect = {
         marginBottom: 0,
     }),
 }
-export const CLUSTER_DESCRIPTION_UPDATE_MSG = 'Cluster description updated successfully'
+export const CLUSTER_DESCRIPTION_UPDATE_MSG = 'Cluster description updated'
 export const defaultClusterNote = 
 `## Describe this cluster
 

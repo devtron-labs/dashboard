@@ -9,7 +9,7 @@ import {
     filterImageList,
     createGroupSelectList,
 } from '../common'
-import { showError, Progressing, BreadCrumb, useBreadcrumb, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, BreadCrumb, useBreadcrumb, ConditionalWrap, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterCapacityType,
     ColumnMetadataType,
@@ -50,6 +50,8 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const location = useLocation()
     const history = useHistory()
     const [loader, setLoader] = useState(false)
+    const [errorResponseCode, setErrorResponseCode] = useState<number>()
+    const [clusterAboutLoader, setClusterAboutLoader] = useState(false)
     const [searchText, setSearchText] = useState('')
     const [clusterCapacityData, setClusterCapacityData] = useState<ClusterCapacityType>(null)
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
@@ -88,7 +90,9 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const [descriptionUpdatedBy, setDescriptionUpdatedBy] = useState<string>(defaultClusterNote)
     const [descriptionUpdatedOn, setDescriptionUpdatedOn] = useState<string>('')
     const [modifiedDescriptionText, setModifiedDescriptionText] = useState<string>('')
-    const [clusterNoteError, setClusterNoteError] = useState<boolean>(false)
+    const [clusterCreatedOn, setClusterCreatedOn] = useState<string>('')
+    const [clusterCreatedBy, setClusterCreatedBy] = useState<string>('')
+    const [clusterDetailsName, setClusterDetailsName] = useState<string>('')
     const [selectedTab, setSelectedTab] = useState<"write" | "preview">("write");
     const pageSize = 15
 
@@ -247,59 +251,71 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             })
             .catch((error) => {
                 showError(error)
+                setErrorResponseCode(error.code)
                 setLoader(false)
             })
     }
 
     const getClusterAbout = (): void => {
-        setLoader(true)
-        Promise.all([getClusterNote(clusterId)])
-            .then((response) => {
-                if (response[0].result) {
-                    setDescriptionText(response[0].result.description)
-                    setModifiedDescriptionText(response[0].result.description)
-                    setDescriptionUpdatedBy(response[0].result.created_by.toString())
-                    let _moment = moment(response[0].result.created_on, 'YYYY-MM-DDTHH:mm:ssZ')
-                    const _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response[0].result.created_on
+        setClusterAboutLoader(true)
+        setErrorResponseCode(null)
+        getClusterNote(clusterId)
+        .then((response) => {
+            if (response.result) {
+                let _moment: moment.Moment
+                let _date: string
+                if (response.result.description && response.result.updated_by && response.result.updated_on) {
+                    setDescriptionText(response.result.description)
+                    setModifiedDescriptionText(response.result.description)
+                    setDescriptionUpdatedBy(response.result.updated_by)
+                    _moment = moment(response.result.updated_on, 'YYYY-MM-DDTHH:mm:ssZ')
+                    _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.updated_on
                     setDescriptionUpdatedOn(_date)
-                } else if (response[0].errors && response[0].code === 200) {
+                } else {
                     setDescriptionText(defaultClusterNote)
                     setModifiedDescriptionText(defaultClusterNote)
                     setDescriptionUpdatedBy('')
                     setDescriptionUpdatedOn('')
-                } else if (response[0].errors) { 
-                    setClusterNoteError(true)
                 }
-                setLoader(false)
-            })
-            .catch((error) => {
-                showError(error)
-                setLoader(false)
-            })
+                _moment = moment(response.result.cluster_created_on, 'YYYY-MM-DDTHH:mm:ssZ')
+                _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.cluster_created_on
+                setClusterCreatedOn(_date)
+                setClusterCreatedBy(response.result.cluster_created_by)
+                setClusterDetailsName(response.result.cluster_name)
+            } 
+            setClusterAboutLoader(false)
+        })
+        .catch((error) => {
+            showError(error)
+            setErrorResponseCode(error.code)
+            setClusterAboutLoader(false)
+        })
     }
 
-    const updateClusterAbout = async () => {
+    const updateClusterAbout = (): void => {
         const requestPayload = {
             cluster_id: Number(clusterId),
             description: modifiedDescriptionText,
         }
-        try {
-            const response = await patchClusterNote(requestPayload)
+        setClusterAboutLoader(true)
+        patchClusterNote(requestPayload)
+        .then((response) => {
             if (response.result) {
                 setDescriptionText(response.result.description)
-                setDescriptionUpdatedBy(response[0].result.created_by.toString())
-                let _moment = moment(response[0].result.created_on, 'YYYY-MM-DDTHH:mm:ssZ')
-                const _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response[0].result.created_on
+                setDescriptionUpdatedBy(response.result.updated_by)
+                let _moment = moment(response.result.updated_on, 'YYYY-MM-DDTHH:mm:ssZ')
+                const _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.updated_on
                 setDescriptionUpdatedOn(_date)
                 setModifiedDescriptionText(response.result.description)
-            } else if (response.errors) { 
-                setClusterNoteError(true)
+                toast.success(CLUSTER_DESCRIPTION_UPDATE_MSG)
+                setEditDescriptionView(true)
             }
-            toast.success(CLUSTER_DESCRIPTION_UPDATE_MSG)
-            setEditDescriptionView(true)
-        } catch(error) {
+            setClusterAboutLoader(false)
+        }).catch((error) => {
             showError(error)
-        }
+            setErrorResponseCode(error.code)
+            setClusterAboutLoader(false)
+        })
     }
 
     useEffect(() => {
@@ -834,10 +850,6 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         )
     }
 
-    if (loader) {
-        return <Progressing pageLoader />
-    }
-
     const openTerminalComponent = (nodeData) => {
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('node', nodeData.name)
@@ -884,48 +896,38 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         )
     }
 
-    // const DescriptionToolbarTab = (): JSX.Element => {
-    //     const onClick = () => {
-    //         selectedTab === "preview" ? setSelectedTab("write") : setSelectedTab("preview");
-    //     };
-    //     return (
-    //     <ul role="tablist" className="tab-list">
-    //         <li className="tab-list__tab pointer" data-tab-index="0" onClick={onClick}>
-    //             <button className={`mb-6 fs-13 ${selectedTab === "write" && 'fw-6 active'}`}>
-    //                 Edit
-    //             </button>
-    //             {selectedTab === "write" && <div className="node-details__active-tab" />}
-    //         </li>
-    //         <li className="tab-list__tab pointer" data-tab-index="1" onClick={onClick}>
-    //             <button className={`mb-6 fs-13 ${selectedTab === "preview" && 'fw-6 active'}`}>
-    //                 Preview
-    //             </button>
-    //             {selectedTab === "preview" && <div className="node-details__active-tab" />}
-    //         </li>
-    //     </ul>
-    //     );
-        
-    // }
-    
     const randerAboutCluster = (): JSX.Element => { 
+        if (errorResponseCode) {
+            return (
+                <div className="dc__loading-wrapper">
+                    <ErrorScreenManager code={errorResponseCode} />
+                </div>
+            )
+        }
         return (
             <div className="cluster-about__body">
                 <div className="cluster-column-container">
-                    <div className="pr-16 pt-16 pl-16 pb-16">
+                    <div className="pr-16 pt-16 pl-16 pb-16 show-shimmer-loading">
                         <div className="cluster-icon-container flex br-4 cb-5 bcb-1 scb-5">
                             <ClusterIcon className="flex cluster-icon icon-dim-24" />
                         </div>
-                        <div className="fs-14 h-36 pt-8 pb-8 fw-6">default_cluster</div>
+                        <div className={`fs-14 h-36 pt-8 pb-8 fw-6 ${clusterDetailsName ? "" : "child-shimmer-loading"}`}>{ clusterDetailsName }</div>
                     </div>
                     <hr className="mt-0 mb-0" />
-                    <div className="pr-16 pt-16 pl-16">
+                    <div className="pr-16 pt-16 pl-16 show-shimmer-loading">
                         <div className="fs-12 fw-4 lh-20 cn-7">Added by</div>
-                        <div className="fs-13 fw-4 lh-20 cn-9 mt-2">Utkarsh Arya</div>
+                        <div className={`fs-13 fw-4 lh-20 cn-9 mt-2 ${clusterCreatedBy ? "" : "child-shimmer-loading"}`}>{ clusterCreatedBy }</div>
                         <div className="fs-12 fw-4 lh-20 cn-7 mt-16">Added on</div>
-                        <div className="fs-13 fw-4 lh-20 cn-9 mt-2">Fri, 09 Sep 2022, 01:11 PM</div>
+                        <div className={`fs-13 fw-4 lh-20 cn-9 mt-2  ${clusterCreatedOn ? "" : "child-shimmer-loading"}`}>{ clusterCreatedOn }</div>
                     </div>
                 </div>
-                <div className="cluster__body-details">
+                {clusterAboutLoader ? <Progressing pageLoader/>  : randerClusterNote()}
+            </div>
+        )
+    }
+    const randerClusterNote = (): JSX.Element => { 
+        return (
+            <div className="cluster__body-details">
                     <div className="pl-16 pr-16 pt-16 pb-16">
                         {isEditDescriptionView ? (
                             <div data-color-mode="light" className="min-w-575 cluster-note__card">
@@ -968,10 +970,10 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                         }
                                         childProps={{
                                             writeButton: {
-                                                className: `tab-list__tab pointer mb-6 fs-13 ${selectedTab === "write" && 'cb-5 fw-6 active'}`,
+                                                className: `tab-list__tab pointer fs-13 ${selectedTab === "write" && 'cb-5 fw-6 active active-tab'}`,
                                             },
                                             previewButton: {
-                                                className: `tab-list__tab pointer mb-6 fs-13 ${selectedTab === "preview" && 'cb-5 fw-6 active'}`,
+                                                className: `tab-list__tab pointer fs-13 ${selectedTab === "preview" && 'cb-5 fw-6 active active-tab'}`,
                                             },
                                         }}
                                 />
@@ -993,8 +995,64 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                         )}
                     </div>
                 </div>
-            </div>
         )
+    }
+    const randerDetailsCluster = (): JSX.Element => { 
+        if (errorResponseCode) {
+            return (
+                <div className="dc__loading-wrapper">
+                    <ErrorScreenManager code={errorResponseCode} />
+                </div>
+            )
+        }
+        return (
+            <div className={`node-list dc__overflow-scroll ${showTerminal ? 'show-terminal' : ''}`}>
+            {renderClusterSummary()}
+            <div
+                className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${clusterErrorList?.length ? 'with-error-bar' : ''
+                    }`}
+            >
+                <div className="pl-20 pr-20">
+                    <NodeListSearchFilter
+                        defaultVersion={defaultVersion}
+                        nodeK8sVersions={clusterCapacityData?.nodeK8sVersions}
+                        selectedVersion={selectedVersion}
+                        setSelectedVersion={setSelectedVersion}
+                        appliedColumns={appliedColumns}
+                        setAppliedColumns={setAppliedColumns}
+                        selectedSearchTextType={selectedSearchTextType}
+                        setSelectedSearchTextType={setSelectedSearchTextType}
+                        searchText={searchText}
+                        setSearchText={setSearchText}
+                        searchedTextMap={searchedTextMap}
+                        setSearchedTextMap={setSearchedTextMap}
+                    />
+                </div>
+                {noResults ? (
+                    <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
+                ) : (
+                    <>
+                        <div className="mt-16" style={{ width: '100%', overflow: 'auto hidden' }}>
+                            <div
+                                className=" fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase"
+                                style={{ width: 'max-content', minWidth: '100%' }}
+                            >
+                                {appliedColumns.map((column) => renderNodeListHeader(column))}
+                            </div>
+                            {filteredFlattenNodeList
+                                .slice(nodeListOffset, nodeListOffset + pageSize)
+                                ?.map((nodeData) => renderNodeList(nodeData))}
+                        </div>
+                        {!showTerminal && renderPagination()}
+                    </>
+                )}
+            </div>
+        </div>
+        )
+    }
+
+    if (loader){     
+        return <Progressing pageLoader/> 
     }
 
     return (
@@ -1006,51 +1064,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                 renderHeaderTabs={renderClusterTabs}
             />
             {selectedTabIndex == 0 && randerAboutCluster()}
-            {selectedTabIndex == 1 && (
-                <div className={`node-list dc__overflow-scroll ${showTerminal ? 'show-terminal' : ''}`}>
-                    {renderClusterSummary()}
-                    <div
-                        className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${
-                            clusterErrorList?.length ? 'with-error-bar' : ''
-                        }`}
-                    >
-                        <div className="pl-20 pr-20">
-                            <NodeListSearchFilter
-                                defaultVersion={defaultVersion}
-                                nodeK8sVersions={clusterCapacityData?.nodeK8sVersions}
-                                selectedVersion={selectedVersion}
-                                setSelectedVersion={setSelectedVersion}
-                                appliedColumns={appliedColumns}
-                                setAppliedColumns={setAppliedColumns}
-                                selectedSearchTextType={selectedSearchTextType}
-                                setSelectedSearchTextType={setSelectedSearchTextType}
-                                searchText={searchText}
-                                setSearchText={setSearchText}
-                                searchedTextMap={searchedTextMap}
-                                setSearchedTextMap={setSearchedTextMap}
-                            />
-                        </div>
-                        {noResults ? (
-                            <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
-                        ) : (
-                            <>
-                                <div className="mt-16" style={{ width: '100%', overflow: 'auto hidden' }}>
-                                    <div
-                                        className=" fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase"
-                                        style={{ width: 'max-content', minWidth: '100%' }}
-                                    >
-                                        {appliedColumns.map((column) => renderNodeListHeader(column))}
-                                    </div>
-                                    {filteredFlattenNodeList
-                                        .slice(nodeListOffset, nodeListOffset + pageSize)
-                                        ?.map((nodeData) => renderNodeList(nodeData))}
-                                </div>
-                                {!showTerminal && renderPagination()}
-                            </>
-                        )}
-                    </div>
-                </div>
-            )}
+            {selectedTabIndex == 1 && randerDetailsCluster()}
             {showTerminal && selectedNode && selectedTabIndex == 1 && (
                 <ClusterTerminal
                     clusterId={Number(clusterId)}
