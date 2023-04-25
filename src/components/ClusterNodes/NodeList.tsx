@@ -49,7 +49,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
-    const [loader, setLoader] = useState(false)
+    const [clusterDetailsLoader, setClusterDetailsLoader] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [clusterAboutLoader, setClusterAboutLoader] = useState(false)
     const [searchText, setSearchText] = useState('')
@@ -179,7 +179,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }
 
     const getNodeListData = (): void => {
-        setLoader(true)
+        setClusterDetailsLoader(true)
         Promise.all([getNodeList(clusterId), getClusterCapacity(clusterId)])
             .then((response) => {
                 setLastDataSync(!lastDataSync)
@@ -247,12 +247,12 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                     setClusterErrorTitle(_errorTitle)
                     setClusterErrorList(_errorList)
                 }
-                setLoader(false)
+                setClusterDetailsLoader(false)
             })
             .catch((error) => {
                 showError(error)
                 setErrorResponseCode(error.code)
-                setLoader(false)
+                setClusterDetailsLoader(false)
             })
     }
 
@@ -1005,6 +1005,9 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                 </div>
             )
         }
+        if (clusterDetailsLoader){     
+            return <Progressing pageLoader/> 
+        }
         return (
             <div className={`node-list dc__overflow-scroll ${showTerminal ? 'show-terminal' : ''}`}>
             {renderClusterSummary()}
@@ -1049,10 +1052,6 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             </div>
         </div>
         )
-    }
-
-    if (loader){     
-        return <Progressing pageLoader/> 
     }
 
     return (
