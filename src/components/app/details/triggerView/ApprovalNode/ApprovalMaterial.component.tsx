@@ -37,6 +37,7 @@ export const ApprovedTippyContent = ({
                             <span
                                 className="fs-13 fw-6 lh-20 cr-5 ml-auto cursor"
                                 onClick={requestInProgress ? noop : toggleCancelRequest}
+                                data-testid="cancel-approval-request"
                             >
                                 {requestInProgress ? <Progressing size={24} /> : 'Cancel'}
                             </span>
@@ -48,14 +49,15 @@ export const ApprovedTippyContent = ({
                             <div className="ml-auto fw-6">
                                 <span
                                     className="mr-12 cb-5 cursor"
-                                    data-id={`cancel-approved-request-${matId}`}
+                                    data-id={matId}
                                     data-request-id={userApprovalMetadata?.approvalRequestId}
                                     data-request-type={ApprovalRequestType.CANCEL}
+                                    data-testid="cancel-approval-request__yes"
                                     onClick={handleCancelRequest}
                                 >
                                     Yes
                                 </span>
-                                <span className="cn-7 cursor" onClick={toggleCancelRequest}>
+                                <span className="cn-7 cursor" onClick={toggleCancelRequest} data-testid="cancel-approval-request__no">
                                     No
                                 </span>
                             </div>

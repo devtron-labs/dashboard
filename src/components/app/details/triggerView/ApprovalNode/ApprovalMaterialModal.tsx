@@ -64,6 +64,7 @@ export default function ApprovalMaterialModal({
                         selectedTabIndex === 0 ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'
                     }`}
                     data-selected-tab="0"
+                    data-testid="all-images-tab"
                     onClick={handleTabSelected}
                 >
                     All images
@@ -73,6 +74,7 @@ export default function ApprovalMaterialModal({
                         selectedTabIndex === 1 ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'
                     }`}
                     data-selected-tab="1"
+                    data-testid="approval-requested-tab"
                     onClick={handleTabSelected}
                 >
                     Approval requested<span className="dc__badge ml-6">{approvalRequestedMaterial.length}</span>

@@ -137,6 +137,14 @@ export default function ApprovalMaterial({
             })
     }
 
+    const getRequestButtonTestId = (approvalRequestType: ApprovalRequestType) => {
+        const testId = APPROVAL_CTA_TEXT[approvalRequestType.toLowerCase()].toLowerCase().split(' ').join('-')
+        if (approvalRequestType === ApprovalRequestType.SUBMIT) {
+            return `${testId}-approval`
+        }
+        return `submit-${testId}`
+    }
+
     const getRequestButton = (mat: CDMaterialType, approvalRequestType: ApprovalRequestType) => {
         const _className = `cta flex mt-4 ml-auto mr-16 mb-16 ${
             approvalRequestType === ApprovalRequestType.CANCEL ? 'delete' : ''
@@ -154,6 +162,7 @@ export default function ApprovalMaterial({
                 data-id={mat.id}
                 data-request-id={mat.userApprovalMetadata?.approvalRequestId}
                 data-request-type={approvalRequestType}
+                data-testid={getRequestButtonTestId(approvalRequestType)}
                 onClick={requestInProgress ? noop : approvalRequest}
                 style={_style}
             >
@@ -194,11 +203,17 @@ export default function ApprovalMaterial({
                         placement="top"
                         content="You triggered the build pipeline for this image. The builder of an image cannot approve it."
                     >
-                        <span className="cb-5 dc__opacity-0_5 cursor-default">Approve</span>
+                        <span className="cb-5 dc__opacity-0_5 cursor-default" data-testid="builder-approve-disabled">
+                            Approve
+                        </span>
                     </Tippy>
                 )
             } else if (mat.userApprovalMetadata.approvedUsersData?.some((userData) => userData.userId === userId)) {
-                return <span className="cg-5 cursor-default">Approved by you</span>
+                return (
+                    <span className="cg-5 cursor-default" data-testid="approved-by-you">
+                        Approved by you
+                    </span>
+                )
             } else if (requestedUserId && userId && requestedUserId === userId) {
                 return (
                     <TippyCustomized
@@ -215,7 +230,12 @@ export default function ApprovalMaterial({
                         interactive={true}
                         visible={tippyVisible[mat.id]}
                     >
-                        <span className="cr-5" data-id={mat.id} onClick={toggleTippyVisibility}>
+                        <span
+                            className="cr-5"
+                            data-id={mat.id}
+                            onClick={toggleTippyVisibility}
+                            data-testid="cancel-request"
+                        >
                             Cancel request
                         </span>
                     </TippyCustomized>
@@ -236,13 +256,22 @@ export default function ApprovalMaterial({
                         interactive={true}
                         visible={tippyVisible[mat.id]}
                     >
-                        <span className="cg-5" data-id={mat.id} onClick={toggleTippyVisibility}>
+                        <span
+                            className="cg-5"
+                            data-id={mat.id}
+                            onClick={toggleTippyVisibility}
+                            data-testid="approve-request"
+                        >
                             Approve
                         </span>
                     </TippyCustomized>
                 )
             } else {
-                return <span className="cn-5 cursor-default">Awaiting approval</span>
+                return (
+                    <span className="cn-5 cursor-default" data-testid="awaiting-approval">
+                        Awaiting approval
+                    </span>
+                )
             }
         } else {
             return (
@@ -260,7 +289,12 @@ export default function ApprovalMaterial({
                     interactive={true}
                     visible={tippyVisible[mat.id]}
                 >
-                    <span className="cb-5" data-id={mat.id} onClick={toggleTippyVisibility}>
+                    <span
+                        className="cb-5"
+                        data-id={mat.id}
+                        onClick={toggleTippyVisibility}
+                        data-testid="request-approval"
+                    >
                         Request approval
                     </span>
                 </TippyCustomized>
@@ -301,7 +335,7 @@ export default function ApprovalMaterial({
                         trigger="click"
                         interactive={true}
                     >
-                        <div className="flex left cursor">
+                        <div className="flex left cursor" data-testid="num-of-approvals-check">
                             <ApprovalChecks className="icon-dim-16 scn-6 mr-8" />
                             <span className="fs-13 fw-4">{numOfApprovalsText}</span>
                         </div>
