@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, SourceTypeMap, ViewType } from '../../../../config'
@@ -71,9 +71,11 @@ import { handleSourceNotConfigured, processWorkflowStatuses } from '../../AppGro
 import Tippy from '@tippyjs/react'
 import ApprovalMaterialModal from '../../../app/details/triggerView/ApprovalNode/ApprovalMaterialModal'
 import { CDMaterialResponseType } from '../../../app/types'
+import { mainContext } from '../../../common/navigation/NavigationRoutes'
 
 let inprogressStatusTimer
 export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefaultType) {
+    const { currentServerInfo } = useContext(mainContext)
     const { envId } = useParams<{ envId: string }>()
     const location = useLocation()
     const history = useHistory()
@@ -124,7 +126,11 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
 
     const getWorkflowsData = async (): Promise<void> => {
         try {
-            const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
+            const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(
+                envId,
+                filteredAppIds,
+                currentServerInfo?.serverInfo?.installationType,
+            )
             if (showCIModal) {
                 _workflows.forEach((wf) =>
                     wf.nodes.forEach((n) => {
@@ -550,6 +556,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
             cdNodeId,
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             abortControllerRef.current.signal,
+            currentServerInfo?.serverInfo.installationType,
             isApprovalNode,
         )
             .then((data) => {
@@ -1655,7 +1662,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                 <PopupMenu.Button
                     isKebab
                     rootClassName="h-36 popup-button-kebab dc__border-left-b4 pl-8 pr-8 dc__no-left-radius flex bcb-5"
-                    dataTestId='deploy-popup'
+                    dataTestId="deploy-popup"
                 >
                     <Dropdown className="icon-dim-20 fcn-0" />
                 </PopupMenu.Button>
