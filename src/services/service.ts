@@ -382,7 +382,7 @@ export function getAppChartRef(appId: number): Promise<ResponseType> {
             result: { chartRefs, latestAppChartRef },
         } = response
         let selectedChartId = latestAppChartRef
-        let chart = chartRefs.find((chart) => selectedChartId === chart.id)
+        let chart = chartRefs?.find((chart) => selectedChartId === chart.id)
         return {
             code: response.code,
             status: response.status,

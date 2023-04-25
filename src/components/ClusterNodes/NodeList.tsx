@@ -224,7 +224,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                     let _errorTitle = '',
                         _errorList = [],
                         _nodeErrors = Object.keys(response[1].result.nodeErrors || {})
-                    const _nodeK8sVersions = response[1].result.nodeK8sVersions
+                    const _nodeK8sVersions = response[1].result.nodeK8sVersions || []
                     if (_nodeK8sVersions.length > 1) {
                         let diffType = '',
                             majorVersion,
@@ -472,13 +472,15 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }
 
     const alphabeticalComparatorMethod = (a, b) => {
+        const firstValue = a[sortByColumn.sortingFieldName] || ""
+        const secondValue = b[sortByColumn.sortingFieldName] || ""
         if (
             (sortOrder === OrderBy.ASC && sortByColumn.sortingFieldName !== 'createdAt') ||
             (sortOrder === OrderBy.DESC && sortByColumn.sortingFieldName === 'createdAt')
         ) {
-            return a[sortByColumn.sortingFieldName].localeCompare(b[sortByColumn.sortingFieldName])
+            return firstValue.localeCompare(secondValue)
         } else {
-            return b[sortByColumn.sortingFieldName].localeCompare(a[sortByColumn.sortingFieldName])
+            return secondValue.localeCompare(firstValue)
         }
     }
 
