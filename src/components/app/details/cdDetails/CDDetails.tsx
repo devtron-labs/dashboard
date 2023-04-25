@@ -165,7 +165,7 @@ export default function CDDetails() {
         return <Progressing pageLoader />
     } else if (
         result &&
-        (!Array.isArray(result[0]?.['value'].result) || !Array.isArray(result[1]?.['value']?.pipelines))
+        (!Array.isArray(result[0]?.['value']?.result) || !Array.isArray(result[1]?.['value']?.pipelines))
     ) {
         return <AppNotConfigured />
     } else if (!result || (envId && dependencyState[2] !== envId)) {
