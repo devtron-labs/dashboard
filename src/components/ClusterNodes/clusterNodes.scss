@@ -459,3 +459,11 @@
     border-bottom: 2px solid var(--B500) !important;
     border-radius: 0px !important;
 }
+
+.mark-down-editor__hidden {
+    display: none !important;
+}
+
+.mark-down-editor__no-border {
+    border: 0px !important;
+}

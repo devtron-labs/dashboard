@@ -1,15 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { NavLink, useLocation, useRouteMatch, useParams, useHistory } from 'react-router-dom'
-import { getClusterCapacity, getClusterListMin, getClusterNote, getNodeList, patchClusterNote } from './clusterNodes.service'
-import ReactMde from "react-mde";
-import "react-mde/lib/styles/css/react-mde-all.css";
 import {
-    handleUTCTime,
-    Pagination,
-    filterImageList,
-    createGroupSelectList,
-} from '../common'
-import { showError, Progressing, BreadCrumb, useBreadcrumb, ConditionalWrap, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+    getClusterCapacity,
+    getClusterListMin,
+    getClusterNote,
+    getNodeList,
+    patchClusterNote,
+} from './clusterNodes.service'
+import ReactMde from 'react-mde'
+import 'react-mde/lib/styles/css/react-mde-all.css'
+import { handleUTCTime, Pagination, filterImageList, createGroupSelectList } from '../common'
+import {
+    showError,
+    Progressing,
+    BreadCrumb,
+    useBreadcrumb,
+    ConditionalWrap,
+    ErrorScreenManager,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterCapacityType,
     ColumnMetadataType,
@@ -40,10 +48,10 @@ import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as CloudIcon } from '../../assets/icons/ic-cloud.svg'
 import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwise.svg'
-import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails';
-import { toast } from 'react-toastify';
-import moment from 'moment';
-import { Moment12HourFormat } from '../../config';
+import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
+import { toast } from 'react-toastify'
+import moment from 'moment'
+import { Moment12HourFormat } from '../../config'
 
 export default function NodeList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()
@@ -85,7 +93,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const [selectedNode, setSelectedNode] = useState<string>()
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const [isEditDescriptionView, setEditDescriptionView] = useState<boolean>(true)
-    const reactMdeRef = useRef(null);
+    const reactMdeRef = useRef(null)
     const [descriptionText, setDescriptionText] = useState<string>(defaultClusterNote)
     const [descriptionUpdatedBy, setDescriptionUpdatedBy] = useState<string>(defaultClusterNote)
     const [descriptionUpdatedOn, setDescriptionUpdatedOn] = useState<string>('')
@@ -93,7 +101,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const [clusterCreatedOn, setClusterCreatedOn] = useState<string>('')
     const [clusterCreatedBy, setClusterCreatedBy] = useState<string>('')
     const [clusterDetailsName, setClusterDetailsName] = useState<string>('')
-    const [selectedTab, setSelectedTab] = useState<"write" | "preview">("write");
+    const [selectedTab, setSelectedTab] = useState<'write' | 'preview'>('write')
     const pageSize = 15
 
     useEffect(() => {
@@ -142,12 +150,14 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                     appliedColumnsFromLocalStorage = JSON.parse(localStorage.appliedColumns)
                     for (const _updatedLocalMetaData of appliedColumnsFromLocalStorage as ColumnMetadataType[]) {
                         if (_updatedLocalMetaData.isSortingAllowed && !_updatedLocalMetaData.sortingFieldName) {
-                            _updatedLocalMetaData.sortingFieldName = sortableColumnMap.get(_updatedLocalMetaData.value).sortingFieldName //updating column meta data when sortingFieldName is missing
+                            _updatedLocalMetaData.sortingFieldName = sortableColumnMap.get(
+                                _updatedLocalMetaData.value,
+                            ).sortingFieldName //updating column meta data when sortingFieldName is missing
                             isMissingColumn = true
                         }
                     }
                     if (isMissingColumn) {
-                      localStorage.appliedColumns = JSON.stringify(appliedColumnsFromLocalStorage)
+                        localStorage.appliedColumns = JSON.stringify(appliedColumnsFromLocalStorage)
                     }
                 } catch (error) {}
             }
@@ -261,36 +271,36 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         setClusterAboutLoader(true)
         setErrorResponseCode(null)
         getClusterNote(clusterId)
-        .then((response) => {
-            if (response.result) {
-                let _moment: moment.Moment
-                let _date: string
-                if (response.result.description && response.result.updated_by && response.result.updated_on) {
-                    setDescriptionText(response.result.description)
-                    setModifiedDescriptionText(response.result.description)
-                    setDescriptionUpdatedBy(response.result.updated_by)
-                    _moment = moment(response.result.updated_on, 'YYYY-MM-DDTHH:mm:ssZ')
-                    _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.updated_on
-                    setDescriptionUpdatedOn(_date)
-                } else {
-                    setDescriptionText(defaultClusterNote)
-                    setModifiedDescriptionText(defaultClusterNote)
-                    setDescriptionUpdatedBy('')
-                    setDescriptionUpdatedOn('')
+            .then((response) => {
+                if (response.result) {
+                    let _moment: moment.Moment
+                    let _date: string
+                    if (response.result.description && response.result.updated_by && response.result.updated_on) {
+                        setDescriptionText(response.result.description)
+                        setModifiedDescriptionText(response.result.description)
+                        setDescriptionUpdatedBy(response.result.updated_by)
+                        _moment = moment(response.result.updated_on, 'YYYY-MM-DDTHH:mm:ssZ')
+                        _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.updated_on
+                        setDescriptionUpdatedOn(_date)
+                    } else {
+                        setDescriptionText(defaultClusterNote)
+                        setModifiedDescriptionText(defaultClusterNote)
+                        setDescriptionUpdatedBy('')
+                        setDescriptionUpdatedOn('')
+                    }
+                    _moment = moment(response.result.cluster_created_on, 'YYYY-MM-DDTHH:mm:ssZ')
+                    _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.cluster_created_on
+                    setClusterCreatedOn(_date)
+                    setClusterCreatedBy(response.result.cluster_created_by)
+                    setClusterDetailsName(response.result.cluster_name)
                 }
-                _moment = moment(response.result.cluster_created_on, 'YYYY-MM-DDTHH:mm:ssZ')
-                _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.cluster_created_on
-                setClusterCreatedOn(_date)
-                setClusterCreatedBy(response.result.cluster_created_by)
-                setClusterDetailsName(response.result.cluster_name)
-            } 
-            setClusterAboutLoader(false)
-        })
-        .catch((error) => {
-            showError(error)
-            setErrorResponseCode(error.code)
-            setClusterAboutLoader(false)
-        })
+                setClusterAboutLoader(false)
+            })
+            .catch((error) => {
+                showError(error)
+                setErrorResponseCode(error.code)
+                setClusterAboutLoader(false)
+            })
     }
 
     const updateClusterAbout = (): void => {
@@ -300,22 +310,23 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         }
         setClusterAboutLoader(true)
         patchClusterNote(requestPayload)
-        .then((response) => {
-            if (response.result) {
-                setDescriptionText(response.result.description)
-                setDescriptionUpdatedBy(response.result.updated_by)
-                let _moment = moment(response.result.updated_on, 'YYYY-MM-DDTHH:mm:ssZ')
-                const _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.updated_on
-                setDescriptionUpdatedOn(_date)
-                setModifiedDescriptionText(response.result.description)
-                toast.success(CLUSTER_DESCRIPTION_UPDATE_MSG)
-                setEditDescriptionView(true)
-            }
-            setClusterAboutLoader(false)
-        }).catch((error) => {
-            showError(error)
-            setClusterAboutLoader(false)
-        })
+            .then((response) => {
+                if (response.result) {
+                    setDescriptionText(response.result.description)
+                    setDescriptionUpdatedBy(response.result.updated_by)
+                    let _moment = moment(response.result.updated_on, 'YYYY-MM-DDTHH:mm:ssZ')
+                    const _date = _moment.isValid() ? _moment.format(Moment12HourFormat) : response.result.updated_on
+                    setDescriptionUpdatedOn(_date)
+                    setModifiedDescriptionText(response.result.description)
+                    toast.success(CLUSTER_DESCRIPTION_UPDATE_MSG)
+                    setEditDescriptionView(true)
+                }
+                setClusterAboutLoader(false)
+            })
+            .catch((error) => {
+                showError(error)
+                setClusterAboutLoader(false)
+            })
     }
 
     useEffect(() => {
@@ -872,17 +883,17 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         }
     }
 
-    const toggleDescriptionView = () => { 
+    const toggleDescriptionView = () => {
         setModifiedDescriptionText(descriptionText)
         setEditDescriptionView(!isEditDescriptionView)
     }
 
-    const renderClusterTabs = ():JSX.Element => {
+    const renderClusterTabs = (): JSX.Element => {
         return (
             <ul role="tablist" className="tab-list">
                 <li className="tab-list__tab pointer" data-tab-index="0" onClick={changeNodeTab}>
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
-                    About Cluster
+                        About Cluster
                     </div>
                     {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                 </li>
@@ -896,7 +907,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         )
     }
 
-    const randerAboutCluster = (): JSX.Element => { 
+    const randerAboutCluster = (): JSX.Element => {
         if (errorResponseCode) {
             return (
                 <div className="dc__loading-wrapper">
@@ -911,93 +922,136 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                         <div className="cluster-icon-container flex br-4 cb-5 bcb-1 scb-5">
                             <ClusterIcon className="flex cluster-icon icon-dim-24" />
                         </div>
-                        <div className={`fs-14 h-36 pt-8 pb-8 fw-6 ${clusterDetailsName ? "" : "child-shimmer-loading"}`}>{ clusterDetailsName }</div>
+                        <div
+                            className={`fs-14 h-36 pt-8 pb-8 fw-6 ${clusterDetailsName ? '' : 'child-shimmer-loading'}`}
+                        >
+                            {clusterDetailsName}
+                        </div>
                     </div>
                     <hr className="mt-0 mb-0" />
                     <div className="pr-16 pt-16 pl-16 show-shimmer-loading">
                         <div className="fs-12 fw-4 lh-20 cn-7">Added by</div>
-                        <div className={`fs-13 fw-4 lh-20 cn-9 mt-2 ${clusterCreatedBy ? "" : "child-shimmer-loading"}`}>{ clusterCreatedBy }</div>
+                        <div
+                            className={`fs-13 fw-4 lh-20 cn-9 mt-2 ${clusterCreatedBy ? '' : 'child-shimmer-loading'}`}
+                        >
+                            {clusterCreatedBy}
+                        </div>
                         <div className="fs-12 fw-4 lh-20 cn-7 mt-16">Added on</div>
-                        <div className={`fs-13 fw-4 lh-20 cn-9 mt-2  ${clusterCreatedOn ? "" : "child-shimmer-loading"}`}>{ clusterCreatedOn }</div>
+                        <div
+                            className={`fs-13 fw-4 lh-20 cn-9 mt-2  ${clusterCreatedOn ? '' : 'child-shimmer-loading'}`}
+                        >
+                            {clusterCreatedOn}
+                        </div>
                     </div>
                 </div>
-                {clusterAboutLoader ? <Progressing pageLoader/>  : randerClusterNote()}
+                {clusterAboutLoader ? <Progressing pageLoader /> : randerClusterNote()}
             </div>
         )
     }
-    const randerClusterNote = (): JSX.Element => { 
+    const randerClusterNote = (): JSX.Element => {
         return (
             <div className="cluster__body-details">
-                    <div className="pl-16 pr-16 pt-16 pb-16">
-                        {isEditDescriptionView ? (
-                            <div data-color-mode="light" className="min-w-575 cluster-note__card">
-                                <div className="cluster-note__card-header h-36">
-                                    <div className="flex left fs-13 fw-6 lh-20 cn-9">
-                                        <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
-                                        Description
+                <div className="pl-16 pr-16 pt-16 pb-16">
+                    {isEditDescriptionView ? (
+                        <div data-color-mode="light" className="min-w-575 cluster-note__card">
+                            <div className="cluster-note__card-header h-36">
+                                <div className="flex left fs-13 fw-6 lh-20 cn-9">
+                                    <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
+                                    Description
+                                </div>
+                                {descriptionUpdatedBy && descriptionUpdatedOn && (
+                                    <div className="flex left fw-4 cn-7 ml-8">
+                                        Last updated by {descriptionUpdatedBy} on {descriptionUpdatedOn}
                                     </div>
-                                        {descriptionUpdatedBy && descriptionUpdatedOn && (
-                                            <div className="flex left fw-4 cn-7 ml-8">
-                                                Last updated by {descriptionUpdatedBy} on {descriptionUpdatedOn}
-                                            </div>
-                                        )}
-                                    <div
-                                        className="dc__align-right pencil-icon cursor flex"
+                                )}
+                                <div
+                                    className="dc__align-right pencil-icon cursor flex"
+                                    onClick={toggleDescriptionView}
+                                >
+                                    <Edit className="icon-dim-16 pr-4 cn-4" /> Edit
+                                </div>
+                            </div>
+                            <ReactMde
+                                classes={{
+                                    reactMde: 'mark-down-editor-container mark-down-editor__no-border',
+                                    toolbar: 'mark-down-editor__hidden',
+                                    preview: 'mark-down-editor-preview',
+                                    textArea: 'mark-down-editor__hidden',
+                                }}
+                                value={descriptionText}
+                                minEditorHeight={window.innerHeight - 165}
+                                selectedTab="preview"
+                                generateMarkdownPreview={(markdown) =>
+                                    Promise.resolve(<MarkDown markdown={markdown} />)
+                                }
+                            />
+                        </div>
+                    ) : (
+                        <div ref={reactMdeRef} className="min-w-500">
+                            <ReactMde
+                                classes={{
+                                    reactMde: 'mark-down-editor-container',
+                                    toolbar: 'mark-down-editor-toolbar tab-list',
+                                    preview: 'mark-down-editor-preview',
+                                    textArea: 'mark-down-editor-textarea-wrapper',
+                                }}
+                                toolbarCommands={[
+                                    [
+                                        'header',
+                                        'bold',
+                                        'italic',
+                                        'strikethrough',
+                                        'link',
+                                        'quote',
+                                        'code',
+                                        'image',
+                                        'unordered-list',
+                                        'ordered-list',
+                                        'checked-list',
+                                    ],
+                                ]}
+                                value={modifiedDescriptionText}
+                                onChange={setModifiedDescriptionText}
+                                minEditorHeight={window.innerHeight - 165}
+                                selectedTab={selectedTab}
+                                onTabChange={setSelectedTab}
+                                generateMarkdownPreview={(markdown) =>
+                                    Promise.resolve(<MarkDown markdown={markdown} />)
+                                }
+                                childProps={{
+                                    writeButton: {
+                                        className: `tab-list__tab pointer fs-13 ${
+                                            selectedTab === 'write' && 'cb-5 fw-6 active active-tab'
+                                        }`,
+                                    },
+                                    previewButton: {
+                                        className: `tab-list__tab pointer fs-13 ${
+                                            selectedTab === 'preview' && 'cb-5 fw-6 active active-tab'
+                                        }`,
+                                    },
+                                }}
+                            />
+                            <div className="form cluster__description-footer pt-12 pb-12">
+                                <div className="form__buttons pl-16 pr-16">
+                                    <button
+                                        className="cta cancel flex h-36 mr-12"
+                                        type="button"
                                         onClick={toggleDescriptionView}
                                     >
-                                        <Edit className="icon-dim-16 pr-4 cn-4" /> Edit
-                                    </div>
-                                </div>
-                                <MarkDown markdown={descriptionText} className="bcn-0 pl-16 pr-16 pt-16 pb-16"/>
-                            </div>
-                        ) : (
-                            <div ref={reactMdeRef} className="min-w-500">
-                                <ReactMde
-                                        classes={{
-                                            reactMde: "mark-down-editor-container",
-                                            toolbar: "mark-down-editor-toolbar tab-list",
-                                            preview: "mark-down-editor-preview",
-                                            textArea: "mark-down-editor-textarea-wrapper",
-                                        }}
-                                        toolbarCommands={[["header", "bold", "italic", "strikethrough", "link", "quote", "code", "image", "unordered-list", "ordered-list", "checked-list"]]}
-                                        value={modifiedDescriptionText}
-                                        onChange={setModifiedDescriptionText}
-                                        minEditorHeight={window.innerHeight - 165}
-                                        selectedTab={selectedTab}
-                                        onTabChange={setSelectedTab}
-                                        generateMarkdownPreview={(markdown) =>
-                                            Promise.resolve(<MarkDown markdown={markdown} />)
-                                        }
-                                        childProps={{
-                                            writeButton: {
-                                                className: `tab-list__tab pointer fs-13 ${selectedTab === "write" && 'cb-5 fw-6 active active-tab'}`,
-                                            },
-                                            previewButton: {
-                                                className: `tab-list__tab pointer fs-13 ${selectedTab === "preview" && 'cb-5 fw-6 active active-tab'}`,
-                                            },
-                                        }}
-                                />
-                                <div className="form cluster__description-footer pt-12 pb-12">
-                                    <div className="form__buttons pl-16 pr-16">
-                                        <button
-                                            className="cta cancel flex h-36 mr-12"
-                                            type="button"
-                                            onClick={toggleDescriptionView}
-                                        >
-                                            Cancel
-                                        </button>
-                                        <button className="cta flex h-36" type="submit" onClick={updateClusterAbout}>
-                                            Save
-                                        </button>
-                                    </div>
+                                        Cancel
+                                    </button>
+                                    <button className="cta flex h-36" type="submit" onClick={updateClusterAbout}>
+                                        Save
+                                    </button>
                                 </div>
                             </div>
-                        )}
-                    </div>
+                        </div>
+                    )}
                 </div>
+            </div>
         )
     }
-    const randerDetailsCluster = (): JSX.Element => { 
+    const randerDetailsCluster = (): JSX.Element => {
         if (errorResponseCode) {
             return (
                 <div className="dc__loading-wrapper">
@@ -1005,57 +1059,58 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                 </div>
             )
         }
-        if (clusterDetailsLoader){     
-            return <Progressing pageLoader/> 
+        if (clusterDetailsLoader) {
+            return <Progressing pageLoader />
         }
         return (
             <div className={`node-list dc__overflow-scroll ${showTerminal ? 'show-terminal' : ''}`}>
-            {renderClusterSummary()}
-            <div
-                className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${clusterErrorList?.length ? 'with-error-bar' : ''
+                {renderClusterSummary()}
+                <div
+                    className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${
+                        clusterErrorList?.length ? 'with-error-bar' : ''
                     }`}
-            >
-                <div className="pl-20 pr-20">
-                    <NodeListSearchFilter
-                        defaultVersion={defaultVersion}
-                        nodeK8sVersions={clusterCapacityData?.nodeK8sVersions}
-                        selectedVersion={selectedVersion}
-                        setSelectedVersion={setSelectedVersion}
-                        appliedColumns={appliedColumns}
-                        setAppliedColumns={setAppliedColumns}
-                        selectedSearchTextType={selectedSearchTextType}
-                        setSelectedSearchTextType={setSelectedSearchTextType}
-                        searchText={searchText}
-                        setSearchText={setSearchText}
-                        searchedTextMap={searchedTextMap}
-                        setSearchedTextMap={setSearchedTextMap}
-                    />
-                </div>
-                {noResults ? (
-                    <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
-                ) : (
-                    <>
-                        <div className="mt-16" style={{ width: '100%', overflow: 'auto hidden' }}>
-                            <div
-                                className=" fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase"
-                                style={{ width: 'max-content', minWidth: '100%' }}
-                            >
-                                {appliedColumns.map((column) => renderNodeListHeader(column))}
+                >
+                    <div className="pl-20 pr-20">
+                        <NodeListSearchFilter
+                            defaultVersion={defaultVersion}
+                            nodeK8sVersions={clusterCapacityData?.nodeK8sVersions}
+                            selectedVersion={selectedVersion}
+                            setSelectedVersion={setSelectedVersion}
+                            appliedColumns={appliedColumns}
+                            setAppliedColumns={setAppliedColumns}
+                            selectedSearchTextType={selectedSearchTextType}
+                            setSelectedSearchTextType={setSelectedSearchTextType}
+                            searchText={searchText}
+                            setSearchText={setSearchText}
+                            searchedTextMap={searchedTextMap}
+                            setSearchedTextMap={setSearchedTextMap}
+                        />
+                    </div>
+                    {noResults ? (
+                        <ClusterNodeEmptyState title="No matching nodes" actionHandler={clearFilter} />
+                    ) : (
+                        <>
+                            <div className="mt-16" style={{ width: '100%', overflow: 'auto hidden' }}>
+                                <div
+                                    className=" fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase"
+                                    style={{ width: 'max-content', minWidth: '100%' }}
+                                >
+                                    {appliedColumns.map((column) => renderNodeListHeader(column))}
+                                </div>
+                                {filteredFlattenNodeList
+                                    .slice(nodeListOffset, nodeListOffset + pageSize)
+                                    ?.map((nodeData) => renderNodeList(nodeData))}
                             </div>
-                            {filteredFlattenNodeList
-                                .slice(nodeListOffset, nodeListOffset + pageSize)
-                                ?.map((nodeData) => renderNodeList(nodeData))}
-                        </div>
-                        {!showTerminal && renderPagination()}
-                    </>
-                )}
+                            {!showTerminal && renderPagination()}
+                        </>
+                    )}
+                </div>
             </div>
-        </div>
         )
     }
 
     return (
-        <div className='cluster-about-page'>
+        <div className="cluster-about-page">
             <PageHeader
                 breadCrumbs={renderBreadcrumbs}
                 isBreadcrumbs={true}
