@@ -26,7 +26,7 @@ describe('TerminalView', () => {
         const useHeightObserverMock = jest.spyOn(data, 'useHeightObserver').mockImplementation(mockUseHeightObserver)
         const { container } = render(
             <TerminalView
-                terminalRef={null}
+                terminalRef={{current: null}}
                 sessionId={''}
                 socketConnection={SocketConnectionType.CONNECTING}
                 setSocketConnection={jest.fn()}
@@ -45,7 +45,7 @@ describe('TerminalView', () => {
         const useHeightObserverMock = jest.spyOn(data, 'useHeightObserver').mockImplementation(mockUseHeightObserver)
         const { container } = render(
             <TerminalView
-                terminalRef={null}
+                terminalRef={{current: null}}
                 sessionId={''}
                 socketConnection={SocketConnectionType.CONNECTING}
                 setSocketConnection={jest.fn()}
@@ -74,7 +74,7 @@ describe('TerminalView', () => {
 
         const { getByText } = render(
             <TerminalView
-                terminalRef={null}
+                terminalRef={{current: null}}
                 sessionId={'123df5'}
                 socketConnection={SocketConnectionType.CONNECTING}
                 setSocketConnection={jest.fn()}
@@ -92,7 +92,7 @@ describe('TerminalView', () => {
         const useHeightObserverMock = jest.spyOn(data, 'useHeightObserver').mockImplementation(mockUseHeightObserver)
         const { rerender } = render(
             <TerminalView
-                terminalRef={null}
+                terminalRef={{current: null}}
                 sessionId={'123df5'}
                 socketConnection={SocketConnectionType.CONNECTING}
                 setSocketConnection={jest.fn()}
@@ -106,7 +106,7 @@ describe('TerminalView', () => {
         const newSocketConnection = SocketConnectionType.CONNECTED
         rerender(
             <TerminalView
-                terminalRef={null}
+                terminalRef={{current: null}}
                 sessionId={'123df5'}
                 socketConnection={newSocketConnection}
                 setSocketConnection={jest.fn()}

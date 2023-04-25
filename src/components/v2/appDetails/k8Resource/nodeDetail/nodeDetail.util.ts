@@ -251,6 +251,23 @@ export const getContainerSelectStyles = () => {
             ...provided,
             height: '28px',
         }),
+        group: (base) => ({
+            ...base,
+            paddingTop: 0,
+            paddingBottom: 0,
+        }),
+        groupHeading: (base) => ({
+            ...base,
+            fontWeight: 600,
+            fontSize: '12px',
+            textTransform: 'normal',
+            height: '28px',
+            color: 'var(--N900)',
+            backgroundColor: 'var(--N100)',
+            marginBottom: 0,
+            display: 'flex',
+            alignItems: 'center'
+        }),
     }
 }
 
@@ -279,7 +296,7 @@ export const getShellSelectStyles = () => {
         indicatorsContainer: (provided) => ({
             ...provided,
             height: '28px',
-        }),
+        })
     }
 }
 

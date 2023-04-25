@@ -132,7 +132,7 @@ export const selectionListDataWithTerminalWrapper = {
     tabSwitcher: {
         terminalTabWrapper: renderTerminalTabWrapper,
         terminalData: {
-            terminalRef: null,
+            terminalRef: {current: null},
             clearTerminal: true,
             terminalMessageData: jest.fn(),
             renderConnectionStrip: jest.fn(),
