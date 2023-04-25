@@ -29,6 +29,7 @@ export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string 
     branch: string
     fromAppGrouping: boolean
     isJobView?: boolean
+    index?: number
 }
 
 export class TriggerCINode extends Component<TriggerCINodeProps> {
@@ -73,7 +74,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
         else
             return (
                 <div
-                    data-testid="ci-trigger-status"
+                    data-testid={`ci-trigger-status-${this.props.index}`}
                     className="dc__cd-trigger-status"
                     style={{ color: TriggerStatus[status] }}
                 >
@@ -131,7 +132,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 {this.renderStatus()}
                 <div className="workflow-node__btn-grp">
                     <button
-                        data-testid="workflow-build-select-material-button"
+                        data-testid={`workflow-build-select-material-button-${this.props.index}`}
                         className="workflow-node__deploy-btn workflow-node__deploy-btn--ci"
                         onClick={(event) => {
                             event.stopPropagation()
