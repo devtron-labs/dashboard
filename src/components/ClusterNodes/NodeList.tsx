@@ -982,7 +982,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                 minEditorHeight={window.innerHeight - 165}
                                 selectedTab="preview"
                                 generateMarkdownPreview={(markdown) =>
-                                    Promise.resolve(<MarkDown markdown={markdown} />)
+                                    Promise.resolve(<MarkDown markdown={markdown} breaks />)
                                 }
                             />
                         </div>
@@ -1016,7 +1016,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                 selectedTab={selectedTab}
                                 onTabChange={setSelectedTab}
                                 generateMarkdownPreview={(markdown) =>
-                                    Promise.resolve(<MarkDown markdown={markdown} />)
+                                    Promise.resolve(<MarkDown markdown={markdown} breaks />)
                                 }
                                 childProps={{
                                     writeButton: {
