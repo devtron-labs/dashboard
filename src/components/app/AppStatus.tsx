@@ -30,7 +30,7 @@ export default function AppStatus({ appStatus, isDeploymentStatus = false, isJob
                 </Tippy>
             )}
             <p
-                data-testid={`${status}-${isJobView ? 'job' : 'app'}-status`}
+                data-testid={`${status}-app-status`}
                 className="dc__truncate-text dc__first-letter-capitalize  m-0"
             >
                 {isNotDeployed ? (
