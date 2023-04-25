@@ -1,6 +1,7 @@
 .terminal-view-container {
     display: flex;
     flex-direction: column;
+    max-height: calc(100vh - 48px);
     flex: 1;
 }
 
@@ -34,6 +35,7 @@
 }
 
 .terminal-wrapper {
+    max-height: 100vh;
     .terminal-component {
         overflow: hidden;
         background-color: #0b0f22;
