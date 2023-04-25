@@ -325,7 +325,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         if (selectedTabIndex == 1) {
             getNodeListData()
         }
-    }, [clusterId])
+    }, [clusterId, selectedTabIndex])
 
     useEffect(() => {
         getClusterListMin()
