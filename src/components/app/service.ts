@@ -3,19 +3,21 @@ import { get, post, trash, ServerErrors, ResponseType, sortCallback } from '@dev
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
 import { History } from './details/cicdHistory/types'
-import { AppDetails, CreateAppLabelsRequest } from './types'
-import { CDMdalTabType, DeploymentNodeType, DeploymentWithConfigType } from './details/triggerView/types'
+import { AppDetails, CDMaterialResponseType, CreateAppLabelsRequest } from './types'
+import { CDModalTabType, DeploymentNodeType, DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
+import { InstallationType } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 let stageMap = {
     PRECD: 'PRE',
     CD: 'DEPLOY',
     POSTCD: 'POST',
+    APPROVAL: 'APPROVAL',
 }
 
 export const CDModalTab = {
-    Security: <CDMdalTabType>'SECURITY',
-    Changes: <CDMdalTabType>'CHANGES',
+    Security: <CDModalTabType>'SECURITY',
+    Changes: <CDModalTabType>'CHANGES',
 }
 
 export const getAppList = (request, options?) => {
@@ -109,7 +111,7 @@ export function fetchAppDetailsInTime(
     envId: number | string,
     reloadTimeOut: number,
 ): Promise<AppDetailsResponse> {
-  return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
+    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
 }
 
 export function fetchResourceTreeInTime(
@@ -237,17 +239,51 @@ export const getCIMaterialList = (params, abortSignal: AbortSignal) => {
     })
 }
 
-export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType, abortSignal: AbortSignal) {
-    let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${stageMap[stageType]}`
+export function getCDMaterialList(
+    cdMaterialId,
+    stageType: DeploymentNodeType,
+    abortSignal: AbortSignal,
+    installationType: InstallationType,
+    isApprovalNode?: boolean,
+): Promise<CDMaterialResponseType> {
+    const URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
+        isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
+    }`
     return get(URL, {
         signal: abortSignal,
     }).then((response) => {
-        return cdMaterialListModal(
-            response.result.ci_artifacts,
-            true,
-            response.result.latest_wf_artifact_id,
-            response.result.latest_wf_artifact_status,
-        )
+        if (!response.result) {
+            return {
+                approvalUsers: [],
+                materials: [],
+                userApprovalConfig: null,
+                requestedUserId: 0,
+            }
+        } else if (installationType === InstallationType.ENTERPRISE) {
+            return {
+                approvalUsers: response.result.approvalUsers,
+                materials: cdMaterialListModal(
+                    response.result.ci_artifacts,
+                    true,
+                    response.result.latest_wf_artifact_id,
+                    response.result.latest_wf_artifact_status,
+                ),
+                userApprovalConfig: response.result.userApprovalConfig,
+                requestedUserId: response.result.requestedUserId,
+            }
+        }
+
+        return {
+            approvalUsers: [],
+            materials: cdMaterialListModal(
+                response.result.ci_artifacts,
+                true,
+                response.result.latest_wf_artifact_id,
+                response.result.latest_wf_artifact_status,
+            ),
+            userApprovalConfig: null,
+            requestedUserId: 0,
+        }
     })
 }
 
@@ -288,6 +324,7 @@ function cdMaterialListModal(
         }
 
         return {
+            index,
             id: material.id,
             deployedTime: material.deployed_time
                 ? moment(material.deployed_time).format(Moment12HourFormat)
@@ -307,8 +344,10 @@ function cdMaterialListModal(
             scanned: material.scanned,
             scanEnabled: material.scanEnabled,
             vulnerable: material.vulnerable,
-            runningOnParentCd: material?.runningOnParentCd,
+            runningOnParentCd: material.runningOnParentCd,
             artifactStatus: artifactStatusValue,
+            userApprovalMetadata: material.userApprovalMetadata,
+            triggeredBy: material.triggeredBy,
             materialInfo: material.material_info
                 ? material.material_info.map((mat) => {
                       return {

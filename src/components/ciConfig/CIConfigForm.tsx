@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION } from '../../config'
 import { getWorkflowList } from '../../services/service'
@@ -25,6 +25,7 @@ import {
 } from './CIConfig.utils'
 import { useHistory } from 'react-router-dom'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
+import { mainContext } from '../common/navigation/NavigationRoutes'
 
 export default function CIConfigForm({
     parentReloading,
@@ -45,6 +46,7 @@ export default function CIConfigForm({
     setParentState,
     setLoadingData,
 }: CIConfigFormProps) {
+    const { currentServerInfo } = useContext(mainContext)
     const history = useHistory()
     const currentMaterial =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
@@ -242,7 +244,15 @@ export default function CIConfigForm({
                     processing: true,
                 })
                 const { result } = await getWorkflowList(appId)
-                const { workflows } = processWorkflow(result, ciConfig, null, null, WorkflowCreate, WorkflowCreate.workflow)
+                const { workflows } = processWorkflow(
+                    result,
+                    ciConfig,
+                    null,
+                    null,
+                    WorkflowCreate,
+                    WorkflowCreate.workflow,
+                    currentServerInfo?.serverInfo?.installationType,
+                )
 
                 setProcessedWorkflows({ processing: false, workflows })
             } catch (err) {
@@ -296,7 +306,9 @@ export default function CIConfigForm({
             <div className={`form__app-compose ${configOverrideView ? 'config-override-view' : ''}`}>
                 {!configOverrideView && (
                     <div className="flex dc__content-space mb-20">
-                        <h2 className="form__title m-0-imp" data-testid="build-configuration-heading">Build Configuration</h2>
+                        <h2 className="form__title m-0-imp" data-testid="build-configuration-heading">
+                            Build Configuration
+                        </h2>
                         <a
                             className="flex right dc__link"
                             rel="noreferrer noopener"

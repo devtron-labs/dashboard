@@ -21,6 +21,7 @@ import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import { noop } from '../../../common'
+import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 
 export function SourceInfo({
     appDetails,
@@ -89,6 +90,19 @@ export function SourceInfo({
         showHibernateModal(isHibernated ? 'resume' : 'hibernate')
     }
 
+    const conditionalScalePodsButton = (children) => {
+        return (
+            <Tippy
+                className="default-tt w-200"
+                arrow={false}
+                placement="bottom-end"
+                content="Application deployment requiring approval cannot be hibernated."
+            >
+                <div>{children}</div>
+            </Tippy>
+        )
+    }
+
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         return (
             <div className="flex left w-100 mb-16">
@@ -146,19 +160,25 @@ export function SourceInfo({
                                     </button>
                                 )}
                                 {showHibernateModal && (
-                                    <button
-                                        data-testid="app-details-hibernate-modal-button"
-                                        className="cta cta-with-img small cancel fs-12 fw-6"
-                                        onClick={onClickShowHibernateModal}
+                                    <ConditionalWrap
+                                        condition={appDetails?.userApprovalConfig?.length > 0}
+                                        wrap={conditionalScalePodsButton}
                                     >
-                                        <ScaleDown
-                                            className={`icon-dim-16 mr-6 rotate`}
-                                            style={{
-                                                ['--rotateBy' as any]: isHibernated ? '180deg' : '0deg',
-                                            }}
-                                        />
-                                        {isHibernated ? 'Restore pod count' : 'Scale pods to 0'}
-                                    </button>
+                                        <button
+                                            data-testid="app-details-hibernate-modal-button"
+                                            className="cta cta-with-img small cancel fs-12 fw-6"
+                                            onClick={onClickShowHibernateModal}
+                                            disabled={appDetails?.userApprovalConfig?.length > 0}
+                                        >
+                                            <ScaleDown
+                                                className={`icon-dim-16 mr-6 rotate`}
+                                                style={{
+                                                    ['--rotateBy' as any]: isHibernated ? '180deg' : '0deg',
+                                                }}
+                                            />
+                                            {isHibernated ? 'Restore pod count' : 'Scale pods to 0'}
+                                        </button>
+                                    </ConditionalWrap>
                                 )}
                             </div>
                         )}

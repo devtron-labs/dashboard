@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { TOKEN_COOKIE_NAME } from '../../../config'
-import { showError, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib';
+import { showError, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
 import { useLocation } from 'react-router'
@@ -1037,16 +1037,16 @@ export const convertToOptionsList = (
     })
 }
 
-export const importComponentFromFELibrary =(componentName: string, defaultComponent?)=>{
-  try {
-    const module = require('@devtron-labs/devtron-fe-lib')
-    return module[componentName]?.default || defaultComponent || null;
-  } catch (e) {
-      if (e['code'] !== 'MODULE_NOT_FOUND') {
-          throw e;
-      }
-      return defaultComponent || null
-  }
+export const importComponentFromFELibrary = (componentName: string, defaultComponent?) => {
+    try {
+        const module = require('@devtron-labs/devtron-fe-lib')
+        return module[componentName]?.default || defaultComponent || null
+    } catch (e) {
+        if (e['code'] !== 'MODULE_NOT_FOUND') {
+            throw e
+        }
+        return defaultComponent || null
+    }
 }
 
 export const getElapsedTime = (createdAt: Date) => {
@@ -1131,13 +1131,20 @@ export const processK8SObjects = (
     return { k8SObjectMap: _k8SObjectMap, selectedResource: _selectedResource }
 }
 
-export function createClusterEnvGroup<T>(list: T[], propKey: string, isOptionType?: boolean, optionName?: string): { label: string; options: T[] }[] {
+export function createClusterEnvGroup<T>(
+    list: T[],
+    propKey: string,
+    isOptionType?: boolean,
+    optionName?: string,
+): { label: string; options: T[] }[] {
     const objList: Record<string, T[]> = list.reduce((acc, obj) => {
         const key = obj[propKey]
         if (!acc[key]) {
             acc[key] = []
         }
-        acc[key].push(isOptionType ? {label: obj[optionName], value: obj[optionName], description: obj['description']} : obj)
+        acc[key].push(
+            isOptionType ? { label: obj[optionName], value: obj[optionName], description: obj['description'] } : obj,
+        )
         return acc
     }, {})
 
@@ -1221,8 +1228,24 @@ export const handleOnBlur = (e): void => {
     }
 }
 
-export const parsePassword = (password:string): string => {
+export const parsePassword = (password: string): string => {
     return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password
+}
+
+export const getAlphabetIcon = (str: string) => {
+    if (!str) return null
+    return (
+        <span
+            className="alphabet-icon__initial fs-13 icon-dim-24 flex cn-0 mr-8"
+            style={{ backgroundColor: getRandomColor(str) }}
+        >
+            {str[0]}
+        </span>
+    )
+}
+
+export const getEmptyArrayOfLength = (length: number) => {
+    return Array.from({ length })
 }
 
 export const reloadLocation = () => {

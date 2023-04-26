@@ -1,4 +1,5 @@
 import { DeploymentAppType } from "../../../v2/appDetails/appDetails.type"
+import { UserApprovalMetadataType } from "../triggerView/types"
 
 export interface DeploymentHistorySingleValue {
     displayName: string
@@ -40,7 +41,8 @@ export interface DeploymentHistory {
     workflow_type?: string
 }
 
-export interface DeploymentDetailStepsType{
+export interface DeploymentDetailStepsType {
   deploymentStatus: string
   deploymentAppType?: DeploymentAppType
+  userApprovalMetadata: UserApprovalMetadataType
 }

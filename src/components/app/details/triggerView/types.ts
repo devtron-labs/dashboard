@@ -3,7 +3,7 @@ import { HostURLConfig } from '../../../../services/service.types'
 import { CIBuildConfigType, DockerConfigOverrideType } from '../../../ciPipeline/types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { CIMaterialType } from './MaterialHistory'
-export type CDMdalTabType = 'SECURITY' | 'CHANGES'
+export type CDModalTabType = 'SECURITY' | 'CHANGES'
 
 export interface CDMaterialProps {
     material: CDMaterialType[]
@@ -15,7 +15,7 @@ export interface CDMaterialProps {
     changeTab?: (
         materrialId: string | number,
         artifactId: number,
-        tab: CDMdalTabType,
+        tab: CDModalTabType,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
         appId?: number,
     ) => void
@@ -45,6 +45,9 @@ export interface CDMaterialProps {
     appId?: number
     pipelineId?: number
     isFromBulkCD?: boolean
+    userApprovalConfig?: UserApprovalConfigType
+    requestedUserId?: number
+    triggerType?: string
 }
 
 export enum DeploymentWithConfigType {
@@ -75,6 +78,7 @@ export interface CDMaterialState {
     specificDeploymentConfig: any
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
+    requestInProgress: boolean
 }
 
 export interface MaterialInfo {
@@ -90,10 +94,31 @@ export interface MaterialInfo {
   type?: string
 }
 
+export interface UserApprovalConfigType {
+    requiredCount: number
+}
+
+interface ApprovalUserDataType {
+    dataId: number
+    userActionTime: string
+    userComment: string
+    userEmail: string
+    userId: number
+    userResponse: number
+}
+
+export interface UserApprovalMetadataType {
+    approvalRequestId: number
+    approvalRuntimeState: number
+    approvedUsersData: ApprovalUserDataType[]
+    requestedUserData: ApprovalUserDataType
+}
+
 export interface CDMaterialType {
+    index: number
     id: string
     materialInfo: MaterialInfo[]
-    tab: CDMdalTabType
+    tab: CDModalTabType
     scanEnabled: boolean
     scanned: boolean
     vulnerabilitiesLoading: boolean
@@ -109,6 +134,8 @@ export interface CDMaterialType {
     showSourceInfo: boolean
     latest: boolean
     runningOnParentCd?: boolean
+    userApprovalMetadata?: UserApprovalMetadataType
+    triggeredBy?: number
 }
 
 interface VulnerabilityType {}
@@ -206,6 +233,9 @@ export interface NodeAttr {
     primaryBranchAfterRegex?: string
     storageConfigured?: boolean
     deploymentAppDeleteRequest?: boolean
+    approvalUsers?: string[],
+    userApprovalConfig?: UserApprovalConfigType,
+    requestedUserId?: number
 }
 
 export interface DownStreams {
@@ -294,7 +324,7 @@ export interface TriggerViewContextType {
     onClickTriggerCINode: () => void
     onClickTriggerCDNode: (nodeType: DeploymentNodeType, _appId: number) => void
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => void
-    onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType) => void
+    onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => void
     onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => void
     closeCIModal: () => void
     selectCommit: (materialId: string, hash: string) => void
@@ -349,7 +379,8 @@ export interface TriggerViewState {
     workflows: WorkflowType[]
     showCDModal: boolean
     showCIModal: boolean
-    nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD'
+    showApprovalModal: boolean
+    nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD' | 'APPROVAL'
     ciPipelineName: string
     ciNodeId: number | null
     cdNodeId: number
@@ -415,6 +446,7 @@ export enum DeploymentNodeType {
     PRECD = 'PRECD',
     CD = 'CD',
     POSTCD = 'POSTCD',
+    APPROVAL = 'APPROVAL'
 }
 
 export interface Task {
@@ -577,6 +609,7 @@ export interface CdPipeline {
     parentPipelineType?: string
     deploymentAppDeleteRequest?: boolean
     deploymentAppCreated?: boolean
+    userApprovalConfig?: UserApprovalConfigType
 }
 
 export interface CdPipelineResult {

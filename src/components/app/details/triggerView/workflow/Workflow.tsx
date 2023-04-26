@@ -6,13 +6,23 @@ import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
 import { getCIPipelineURL, RectangularEdge as Edge } from '../../../../common'
-import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType } from '../types'
+import {
+    WorkflowProps,
+    NodeAttr,
+    PipelineType,
+    WorkflowNodeType,
+    TriggerViewContextType,
+    DeploymentNodeType,
+} from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
 import { Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import { TriggerViewContext } from '../config'
 
 export class Workflow extends Component<WorkflowProps> {
+    static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
+
     goToWorkFlowEditor = (node: NodeAttr) => {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
             const ciPipelineURL = getCIPipelineURL(
@@ -20,7 +30,7 @@ export class Workflow extends Component<WorkflowProps> {
                 this.props.id,
                 true,
                 node.downstreams[0].split('-')[1],
-                this.props.isJobView
+                this.props.isJobView,
             )
             if (this.props.fromAppGrouping) {
                 window.open(
@@ -246,8 +256,14 @@ export class Workflow extends Component<WorkflowProps> {
         }, [])
     }
 
+    onClickApprovalNode = (nodeId: number) => {
+        this.context.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
+    }
+
     renderEdgeList() {
-        return this.getEdges().map((edgeNode) => {
+        const edges = this.getEdges()
+        const containsApprovalNode = edges.some((edgeNode) => edgeNode.endNode.userApprovalConfig && edgeNode.endNode.userApprovalConfig.requiredCount > 0)
+        return edges.map((edgeNode) => {
             return (
                 <Edge
                     key={`trigger-edge-${edgeNode.startNode.id}-${edgeNode.endNode.id}(${edgeNode.endNode.type})`}
@@ -256,6 +272,11 @@ export class Workflow extends Component<WorkflowProps> {
                     onClickEdge={() => {}}
                     deleteEdge={() => {}}
                     onMouseOverEdge={() => {}}
+                    containsApprovalNode={containsApprovalNode}
+                    showApprovalNode={
+                        edgeNode.endNode.userApprovalConfig && edgeNode.endNode.userApprovalConfig.requiredCount > 0
+                    }
+                    onClickApprovalNode={() => this.onClickApprovalNode(edgeNode.endNode.id)}
                 />
             )
         })

@@ -20,6 +20,7 @@ import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
 import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
+import { UserApprovalMetadataType } from '../triggerView/types'
 import { AppEnvironment } from '../../../../services/service.types'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
@@ -365,6 +366,8 @@ export const TriggerOutput: React.FC<{
                 key={triggerDetails.id}
                 triggerDetails={triggerDetails}
                 loading={triggerDetailsLoading && !triggerDetailsResult}
+                userApprovalMetadata={triggerDetailsResult?.result?.userApprovalMetadata}
+                triggeredByEmail={triggerDetailsResult?.result?.triggeredByEmail}
                 setFullScreenView={setFullScreenView}
                 setDeploymentHistoryList={setDeploymentHistoryList}
                 deploymentHistoryList={deploymentHistoryList}
@@ -383,6 +386,8 @@ const HistoryLogs: React.FC<{
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
     deploymentAppType: DeploymentAppType
     isBlobStorageConfigured: boolean
+    userApprovalMetadata: UserApprovalMetadataType
+    triggeredByEmail: string
 }> = ({
     triggerDetails,
     loading,
@@ -391,6 +396,8 @@ const HistoryLogs: React.FC<{
     setDeploymentHistoryList,
     deploymentAppType,
     isBlobStorageConfigured,
+    userApprovalMetadata,
+    triggeredByEmail,
 }) => {
     let { path } = useRouteMatch()
     const { appId, pipelineId, triggerId, envId } = useParams<{
@@ -426,6 +433,7 @@ const HistoryLogs: React.FC<{
                                 <DeploymentDetailSteps
                                     deploymentStatus={triggerDetails.status}
                                     deploymentAppType={deploymentAppType}
+                                    userApprovalMetadata={userApprovalMetadata}
                                 />
                             </Route>
                         )}
@@ -433,6 +441,9 @@ const HistoryLogs: React.FC<{
                             <GitChanges
                                 gitTriggers={triggerDetails.gitTriggers}
                                 ciMaterials={triggerDetails.ciMaterials}
+                                artifact={triggerDetails.artifact}
+                                userApprovalMetadata={userApprovalMetadata}
+                                triggeredByEmail={triggeredByEmail}
                             />
                         </Route>
                         {triggerDetails.stage === 'DEPLOY' && (

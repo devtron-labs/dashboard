@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Drawer, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { noop } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
@@ -15,6 +15,8 @@ import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
+import { CDMaterialResponseType } from '../../../app/types'
+import { mainContext } from '../../../common/navigation/NavigationRoutes'
 
 export default function BulkCDTrigger({
     stage,
@@ -29,6 +31,7 @@ export default function BulkCDTrigger({
     isLoading,
     setLoading,
 }: BulkCDTriggerType) {
+    const { currentServerInfo } = useContext(mainContext)
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
@@ -79,9 +82,14 @@ export default function BulkCDTrigger({
             if (!appDetails.warningMessage) {
                 _unauthorizedAppList[appDetails.appId] = false
                 _CDMaterialPromiseList.push(
-                    getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType, abortControllerRef.current.signal)
-                        .then((r) => {
-                            return { materialList: r, appId: appDetails.appId }
+                    getCDMaterialList(
+                        appDetails.cdPipelineId,
+                        appDetails.stageType,
+                        abortControllerRef.current.signal,
+                        currentServerInfo?.serverInfo?.installationType,
+                    )
+                        .then((data) => {
+                            return { appId: appDetails.appId, ...data }
                         })
                         .catch((e) => {
                             if (!abortControllerRef.current.signal.aborted) {
@@ -91,12 +99,17 @@ export default function BulkCDTrigger({
                 )
             }
         }
-        const _materialListMap: Record<string, any[]> = {}
+        const _cdMaterialResponse: Record<string, CDMaterialResponseType> = {}
         Promise.allSettled(_CDMaterialPromiseList)
             .then((responses) => {
                 responses.forEach((response, index) => {
                     if (response.status === 'fulfilled') {
-                        _materialListMap[response.value['appId']] = response.value['materialList']
+                        _cdMaterialResponse[response.value['appId']] = {
+                            approvalUsers: response.value['approvalUsers'],
+                            materials: response.value['materials'],
+                            userApprovalConfig: response.value['userApprovalConfig'],
+                            requestedUserId: response.value['requestedUserId'],
+                        }
                         delete _unauthorizedAppList[response.value['appId']]
                     } else {
                         const errorReason = response.reason
@@ -105,14 +118,12 @@ export default function BulkCDTrigger({
                         }
                     }
                 })
-                updateBulkInputMaterial(_materialListMap)
+                updateBulkInputMaterial(_cdMaterialResponse)
                 setUnauthorizedAppList(_unauthorizedAppList)
                 setLoading(false)
             })
             .catch((error) => {
-                if (!abortControllerRef.current.signal.aborted) {
-                    showError(error)
-                }
+                showError(error)
             })
     }
 
@@ -163,7 +174,7 @@ export default function BulkCDTrigger({
         if (isLoading) {
             return <Progressing pageLoader />
         }
-        const _material = appList.find((app) => app.appId === selectedApp.appId)?.material || []
+        const _currentApp = appList.find((app) => app.appId === selectedApp.appId) ?? {} as BulkCDDetailType
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
@@ -206,7 +217,8 @@ export default function BulkCDTrigger({
                             appId={selectedApp.appId}
                             pipelineId={+selectedApp.cdPipelineId}
                             stageType={selectedApp.stageType}
-                            material={_material}
+                            triggerType={selectedApp.triggerType}
+                            material={_currentApp.material ?? []}
                             materialType={MATERIAL_TYPE.inputMaterialList}
                             envName={selectedApp.envName}
                             isLoading={isLoading}
@@ -219,6 +231,8 @@ export default function BulkCDTrigger({
                             parentPipelineId={selectedApp.parentPipelineId}
                             parentPipelineType={selectedApp.parentPipelineType}
                             parentEnvironmentName={selectedApp.parentEnvironmentName}
+                            userApprovalConfig={_currentApp.userApprovalConfig}
+                            requestedUserId={_currentApp.requestedUserId}
                             isFromBulkCD={true}
                         />
                     )}

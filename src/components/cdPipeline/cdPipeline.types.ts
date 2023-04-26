@@ -1,4 +1,5 @@
 import { RouteComponentProps } from 'react-router';
+import { InstallationType } from '../v2/devtronStackManager/DevtronStackManager.type';
 
 export const CD_PATCH_ACTION = {
     DELETE: 1,
@@ -29,6 +30,7 @@ export interface CDPipelineProps
     getWorkflows: () => void;
     close: (showSuccessCD?: boolean, environmentId?: number, environmentName?: string, successTitle?: string, showWebhookTippy?: boolean) => void;
     refreshParentWorkflows: () => void;
+    installationType: InstallationType
 }
 
 export interface CDStageType {
@@ -75,6 +77,8 @@ export interface CDPipelineState {
     showPreStage: boolean;
     showDeploymentStage: boolean;
     showPostStage: boolean;
+    showManualApproval: boolean
+    requiredApprovals: string
     isAdvanced: boolean;
     forceDeleteDialogMessage: string;
     forceDeleteDialogTitle: string;
@@ -103,6 +107,9 @@ export interface PipelineConfig {
     isClusterCdActive: boolean
     parentPipelineId: number
     parentPipelineType: string
+    userApprovalConfig?: {
+        requiredCount: number
+    }
 }
 
 export interface BasicCDPipelineModalProps {

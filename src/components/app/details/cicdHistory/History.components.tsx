@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { not, useKeyDown } from '../../../common'
 import { useLocation } from 'react-router'
 import Tippy from '@tippyjs/react'
@@ -6,12 +6,15 @@ import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen
 import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg'
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
+import { ReactComponent as ArrowIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from './types'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { NavLink } from 'react-router-dom'
 import { TIMELINE_STATUS } from '../../../../config'
 import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { CIListItem, CopyTippyWithText } from './Artifacts'
+import { extractImage } from '../../service'
 
 export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResizeButtonType): JSX.Element => {
     const { pathname } = useLocation()
@@ -69,7 +72,9 @@ export const Scroller = ({ scrollToTop, scrollToBottom, style }: ScrollerType): 
     )
 }
 
-export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
+export const GitChanges = ({ gitTriggers, ciMaterials, artifact, userApprovalMetadata, triggeredByEmail }: GitChangesType) => {
+    const [copied, setCopied] = useState(false)
+
     if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
         return <EmptyView title="Data not available" subTitle="Source code detail is not available" />
     }
@@ -102,6 +107,29 @@ export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
                     </div>
                 ) : null
             })}
+            {artifact && userApprovalMetadata && (
+                <>
+                    <div className="flex mt-8 mb-8" style={{ width: 'min(100%, 800px)' }}>
+                        <div className="w-50 text-underline-dashed-200" />
+                        <ArrowIcon className="icon-dim-20 ml-8 mr-8" style={{ transform: 'rotate(-90deg)' }} />
+                        <div className="w-50 text-underline-dashed-200" />
+                    </div>
+                    <CIListItem type="approved-artifact" userApprovalMetadata={userApprovalMetadata} triggeredBy={triggeredByEmail} >
+                        <div className="flex column left hover-trigger">
+                            <div className="cn-9 fs-14 flex left">
+                                <CopyTippyWithText
+                                    copyText={extractImage(artifact)}
+                                    copied={copied}
+                                    setCopied={setCopied}
+                                />
+                            </div>
+                            <div className="cn-7 fs-12 flex left">
+                                <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
+                            </div>
+                        </div>
+                    </CIListItem>
+                </>
+            )}
         </div>
     )
 }

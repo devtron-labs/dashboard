@@ -369,7 +369,16 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         }, [])
     }
 
+    onClickApprovalNode = (nodeId: number) => {
+        const ciPipeline = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI)
+        this.props.history.push(`workflow/${this.props.id}/ci-pipeline/${+ciPipeline?.id}/cd-pipeline/${nodeId}`)
+    }
+
     renderEdgeList() {
+        const edges = this.getEdges()
+        const containsApprovalNode = edges.some(
+            (edgeNode) => edgeNode.endNode.userApprovalConfig && edgeNode.endNode.userApprovalConfig.requiredCount > 0,
+        )
         return this.getEdges().map((edgeNode) => {
             return (
                 <Edge
@@ -379,6 +388,11 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                     onClickEdge={() => {}}
                     deleteEdge={() => {}}
                     onMouseOverEdge={(startNode, endNode) => {}}
+                    containsApprovalNode={containsApprovalNode}
+                    showApprovalNode={
+                        edgeNode.endNode.userApprovalConfig && edgeNode.endNode.userApprovalConfig.requiredCount > 0
+                    }
+                    onClickApprovalNode={() => this.onClickApprovalNode(edgeNode.endNode.id)}
                 />
             )
         })

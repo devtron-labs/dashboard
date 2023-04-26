@@ -19,6 +19,8 @@ import {
 import {
     showError,
     Progressing,
+    Checkbox,
+    CHECKBOX_VALUE,
     ConditionalWrap,
     ErrorScreenNotAuthorized,
     get,
@@ -52,6 +54,7 @@ import {
     CreateUser,
     DefaultUserKey,
     DefaultUserValue,
+    ActionRoleType,
 } from './userGroups.types'
 import { ACCESS_TYPE_MAP, DOCUMENTATION, HELM_APP_UNASSIGNED_PROJECT, Routes, SERVER_MODE } from '../../config'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -71,8 +74,13 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
 import { getSSOConfigList } from '../login/login.service'
-import { ERROR_EMPTY_SCREEN, SSO_NOT_CONFIGURED_STATE_TEXTS, TOAST_ACCESS_DENIED, USER_NOT_EDITABLE } from '../../config/constantMessaging'
-import { group } from 'console'
+import {
+    ERROR_EMPTY_SCREEN,
+    SSO_NOT_CONFIGURED_STATE_TEXTS,
+    TOAST_ACCESS_DENIED,
+    USER_NOT_EDITABLE,
+} from '../../config/constantMessaging'
+import { InstallationType } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -125,6 +133,11 @@ const possibleRolesMeta = {
     [ActionTypes.UPDATE]: {
         value: 'Build and deploy',
         description: 'Can build and deploy apps on selected environments.',
+    },
+    [ActionTypes.APPROVER]: {
+        value: 'Approver',
+        description:
+            'Can approve images to be deployed. The user must be added as an approver for a deployment pipeline.',
     },
 }
 
@@ -233,7 +246,7 @@ export default function UserGroupRoute() {
             }, appList)
         })
         try {
-            const { result } = await getProjectFilteredApps(missingProjects,ACCESS_TYPE_MAP.DEVTRON_APPS)
+            const { result } = await getProjectFilteredApps(missingProjects, ACCESS_TYPE_MAP.DEVTRON_APPS)
             const projectsMap = mapByKey(result || [], 'projectId')
             setAppsList((appList) => {
                 return new Map(
@@ -259,7 +272,7 @@ export default function UserGroupRoute() {
     }
 
     async function fetchAppListHelmApps(projectIds: number[]) {
-            const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
+        const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
         if (missingProjects.length === 0) return
         setAppsListHelmApps((appListHelmApps) => {
             return missingProjects.reduce((appListHelmApps, projectId) => {
@@ -561,7 +574,11 @@ const UserGroupList: React.FC<{
                 userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
         )
         return (
-            <div id="auth-page__body" data-testid={`auth-${type}-page`} className="auth-page__body-users__list-container">
+            <div
+                id="auth-page__body"
+                data-testid={`auth-${type}-page`}
+                className="auth-page__body-users__list-container"
+            >
                 {renderHeaders(type)}
                 {result.length > 0 && (
                     <div className="flex dc__content-space">
@@ -806,6 +823,9 @@ const allEnvironmentsOption = {
     label: 'All environments',
     value: '*',
 }
+
+export const APPROVER_ACTION = { label: 'approver', value: 'approver' }
+
 interface DirectPermissionRow {
     permission: DirectPermissionsRoleFilter
     handleDirectPermissionChange: (...rest) => void
@@ -819,7 +839,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     index,
     removeRow,
 }) => {
-    const { serverMode } = useContext(mainContext)
+    const { currentServerInfo } = useContext(mainContext)
     const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps } = useUserGroupContext()
     const projectId =
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
@@ -879,8 +899,39 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                     ? possibleRolesMetaHelmApps[value].value
                     : possibleRolesMeta[value].value}
+                {currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE &&
+                    permission.approver &&
+                    ', Approver'}
                 {React.cloneElement(children[1])}
             </components.ValueContainer>
+        )
+    }
+
+    const handleApproverChange = () => {
+        handleDirectPermissionChange(APPROVER_ACTION, { name: APPROVER_ACTION.label })
+    }
+
+    const RoleMenuList = (props) => {
+        return (
+            <components.MenuList {...props}>
+                {props.children}
+                {currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE &&
+                    permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && (
+                        <>
+                            <div className="w-100 dc__border-top-n1" />
+                            <components.Option {...props}>
+                                <div className="flex left top cursor" onClick={handleApproverChange}>
+                                    <Checkbox
+                                        isChecked={permission.approver}
+                                        value={CHECKBOX_VALUE.CHECKED}
+                                        onChange={noop}
+                                    />
+                                    {formatOptionLabel(APPROVER_ACTION)}
+                                </div>
+                            </components.Option>
+                        </>
+                    )}
+            </components.MenuList>
         )
     }
 
@@ -1227,7 +1278,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : possibleRoles
                 ).map((role) => ({
                     label: role as string,
-                    value: role as ActionTypes.MANAGER | ActionTypes.VIEW | ActionTypes.TRIGGER | ActionTypes.ADMIN,
+                    value: role as ActionRoleType,
                 }))}
                 className="basic-multi-select"
                 classNamePrefix="select-user-role-dropdown"
@@ -1243,17 +1294,23 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
                         backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N100)' : 'white',
                         fontWeight: state.isSelected ? 600 : 'normal',
+                        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
                         marginRight: '8px',
                     }),
                     valueContainer: (base, state) => ({
                         ...base,
                         display: 'flex',
+                        flexWrap: 'nowrap',
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
                     }),
                 }}
                 components={{
                     ClearIndicator: null,
                     IndicatorSeparator: null,
                     ValueContainer: RoleValueContainer,
+                    MenuList: RoleMenuList,
                 }}
             />
             <CloseIcon className="pointer margin-top-6px" onClick={(e) => removeRow(index)} />

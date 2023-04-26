@@ -36,7 +36,11 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
             status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
         if (hideDetails)
             return (
-                <div data-testid="cd-status-not-triggered" className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
+                <div
+                    data-testid="cd-status-not-triggered"
+                    className="dc__cd-trigger-status"
+                    style={{ color: statusColor[status] }}
+                >
                     <span>{statusText}</span>
                 </div>
             )
@@ -47,14 +51,16 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                     className="dc__cd-trigger-status"
                     style={{ color: statusColor[status] }}
                 >
-                    <span>
-                        <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
-                    </span>
+                    <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
                     <span>{statusText}</span>
                     {!this.props.fromAppGrouping && (
                         <>
                             {statusText && <span className="mr-5 ml-5">/</span>}
-                            <Link data-testid={`cd-trigger-details-${this.props.environmentName}-link`} to={url} className="workflow-node__details-link">
+                            <Link
+                                data-testid={`cd-trigger-details-${this.props.environmentName}-link`}
+                                to={url}
+                                className="workflow-node__details-link"
+                            >
                                 Details
                             </Link>
                         </>

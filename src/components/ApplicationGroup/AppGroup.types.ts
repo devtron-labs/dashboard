@@ -1,8 +1,9 @@
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
-    CDMdalTabType,
+    CDModalTabType,
     DeploymentNodeType,
+    UserApprovalConfigType,
     WebhookPayloads,
     WorkflowNodeType,
     WorkflowType,
@@ -36,10 +37,14 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
     cdPipelineName?: string
     cdPipelineId?: string
     stageType?: DeploymentNodeType
+    triggerType?: string
     envName: string
     parentPipelineId?: string
     parentPipelineType?: WorkflowNodeType
     parentEnvironmentName?: string
+    approvalUsers?: string[]
+    userApprovalConfig?: UserApprovalConfigType
+    requestedUserId?: number
 }
 
 export interface ResponseRowType {
@@ -70,12 +75,12 @@ export interface BulkCDTriggerType {
     stage: DeploymentNodeType
     appList: BulkCDDetailType[]
     closePopup: (e) => void
-    updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
+    updateBulkInputMaterial: (materialList: Record<string, any>) => void
     onClickTriggerBulkCD: (appsToRetry?: Record<string, boolean>) => void
     changeTab: (
         materrialId: string | number,
         artifactId: number,
-        tab: CDMdalTabType,
+        tab: CDModalTabType,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
     ) => void
     toggleSourceInfo: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
@@ -232,11 +237,11 @@ export interface AppGroupDetailDefaultType {
 }
 
 interface CIPipeline {
-  appName: string
-  appId: number
-  id: number
-  parentCiPipeline: number
-  parentAppId: number
+    appName: string
+    appId: number
+    id: number
+    parentCiPipeline: number
+    parentAppId: number
 }
 export interface CIConfigListType {
     pipelineList: CIPipeline[]
