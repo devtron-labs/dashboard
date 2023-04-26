@@ -265,7 +265,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             }
         },
     }
-   //earlier data-testid="close-create-cutomapp-wing"
+    
     renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12 pl-20">
@@ -351,20 +351,31 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             this.changeTemplate(event.target.value)
                         }}
                     >
-                        <RadioGroupItem value={AppCreationType.Blank} dataTestId="create-from-scratch-radio-button">Create from scratch</RadioGroupItem>
-                        <RadioGroupItem value={AppCreationType.Existing} dataTestId={`clone-existing-${this.props.isJobView ? 'job' : 'application'}-radio-button`}>
+                        <RadioGroupItem value={AppCreationType.Blank} dataTestId="create-from-scratch-radio-button">
+                            Create from scratch
+                        </RadioGroupItem>
+                        <RadioGroupItem
+                            value={AppCreationType.Existing}
+                            dataTestId={`clone-existing-${this.props.isJobView ? 'job' : 'application'}-radio-button`}
+                        >
                             Clone existing {this.props.isJobView ? 'job' : 'application'}
                         </RadioGroupItem>
                     </RadioGroup>
                 </div>
                 {this.state.form.appCreationType === AppCreationType.Existing && (
                     <>
-                        <div className="form__row clone-apps dc__inline-block" data-testid={`clone-existing-${this.props.isJobView ? 'job' : 'application'}-radio-button`}>
-                            <span className="form__label dc__required-field" data-testid={`Clone-${this.props.isJobView ? 'job' : 'app'}-option`}>
+                        <div
+                            className="form__row clone-apps dc__inline-block"
+                            data-testid={`clone-existing-${this.props.isJobView ? 'job' : 'application'}-radio-button`}
+                        >
+                            <span
+                                className="form__label dc__required-field"
+                                data-testid={`Clone-${this.props.isJobView ? 'job' : 'app'}-option`}
+                            >
                                 Select an {this.props.isJobView ? 'job' : 'app'} to clone
                             </span>
                             <AsyncSelect
-                               classNamePrefix={`${this.props.isJobView ? 'job' : 'app'}-name-for-clone`}
+                                classNamePrefix={`${this.props.isJobView ? 'job' : 'app'}-name-for-clone`}
                                 loadOptions={this.loadAppListOptions}
                                 noOptionsMessage={noOptionsMessage}
                                 onChange={this.handleCloneAppChange}

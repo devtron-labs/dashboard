@@ -405,7 +405,10 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             </Link>
                         </div>
                         <div className="flex">
-                            <div data-testid={`${jobPipeline.status || "notdeployed"}-job-status`} className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start">
+                            <div
+                                data-testid={`${jobPipeline.status || 'notdeployed'}-job-status`}
+                                className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start"
+                            >
                                 {getStatusIcon(jobPipeline.status)}
                                 {jobPipeline.status === 'CANCELLED' ? (
                                     <div>Cancelled</div>
