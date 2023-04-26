@@ -1,6 +1,7 @@
 import { RouteComponentProps } from 'react-router-dom'
 import { SERVER_MODE_TYPE } from '../../config'
 import { OptionType } from '../app/types'
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
 export const POLLING_INTERVAL = 30000
 
@@ -53,6 +54,27 @@ export interface ClusterInstallStatusProps {
     agentInstallationStage: ClusterInstallStage
     envName: string | undefined
     onClick: (...args) => void
+}
+
+export interface ConfigCluster {
+    bearerToken: string
+    cert_auth_data?: string
+    cert_data?: string
+    tls_key?: string
+}
+
+export interface UserInfos {
+    username: string
+    config: ConfigCluster
+}
+
+export interface ClusterInfo {
+    UserInfos: Record<string, UserInfos>
+}
+
+
+export interface ClusterResult {
+    result?: Record<string, ClusterInfo>
 }
 
 export interface ClusterListProps extends RouteComponentProps<{}> {

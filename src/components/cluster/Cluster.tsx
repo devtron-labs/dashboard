@@ -1,4 +1,4 @@
-import React, { useState, useMemo, Component, useRef } from 'react'
+import React, { useState, useMemo, Component, useRef, useEffect } from 'react'
 import YAML from 'yaml'
 import {
     showError,
@@ -29,6 +29,8 @@ import {
     retryClusterInstall,
     deleteCluster,
     deleteEnvironment,
+    validateCluster,
+    saveClusters,
 } from './cluster.service'
 import { ResizableTextarea } from '../configMaps/ConfigMap'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -69,6 +71,9 @@ import TippyHeadless from '@tippyjs/react/headless'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import EmptyState from '../EmptyState/EmptyState'
 import { UPLOAD_STATE } from '../CustomChart/types'
+import { request } from 'http'
+import { ConfigCluster, UserInfos, ClusterInfo, ClusterResult } from './cluster.type'
+import { error } from 'console'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -130,6 +135,8 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             this.initialise()
         }
     }
+
+    
 
     initialise() {
         if (this.timerRef) clearInterval(this.timerRef)
@@ -548,6 +555,8 @@ function ClusterForm({
     const inputFileRef = useRef(null)
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
     const [saveYamlData, setSaveYamlState] = useState<string>('')
+    const [clusterName, setClusterName] = useState([])
+    const [errorMessage, setErrorMessage] = useState<string>('')
 
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -616,6 +625,50 @@ function ClusterForm({
         onValidation,
     )
 
+    const saveClustersDetails = (e) => {
+        try{
+            saveClusters(request).then((response) => {
+                console.log("response")
+
+            }, (err) => {
+                console.log("error")
+                if(err.response === 400){
+                    setErrorMessage("Bad request")
+                }
+                else if(err.response === 500){
+                    setErrorMessage("Internal Server error")
+                }
+            })
+        }
+        catch(err){
+            showError(err)
+        }
+    }
+
+    const validateClusterDetail = () => {
+        try{
+            validateCluster(request, saveYamlData).then((response)=>{
+                let count = response.result.length()
+                if(response.result > 1){
+                    setClusterName(response.result)   
+                }
+                console.log("response")
+
+            }, (err)=>{
+                // console.log("error")
+                if(err.response === 400){
+                    setErrorMessage("Bad request")
+                }
+                else if(err.response === 500){
+                    setErrorMessage("Internal Server error")
+                }
+            })
+        }
+        catch(err){
+            showError(err)
+        }
+    }
+
     const handleOnFocus = (e): void => {
         if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
             e.target.value = ''
@@ -627,6 +680,7 @@ function ClusterForm({
             e.target.value = DEFAULT_SECRET_PLACEHOLDER
         }
     }
+
 
     const getClusterPayload = () => {
         return {
@@ -774,7 +828,6 @@ function ClusterForm({
                 setSaveYamlState(reader.result.toString())
             } catch (e) {}
         }
-        console.log(reader)
         reader.readAsText(file)
         setUploadState(UPLOAD_STATE.SUCCESS)
     }
@@ -1019,6 +1072,7 @@ function ClusterForm({
                         disabled={uploadState !== UPLOAD_STATE.SUCCESS ? true : false}
                     >
                         Get cluster
+                        {validateClusterDetail}
                     </button>
                 </div>
             </>
@@ -1055,6 +1109,11 @@ function ClusterForm({
                             <Close className="icon-dim-24" />
                         </button>
                     </div>
+                    <div>
+                        <div className="cluster-create-status__title mb-0">
+                            
+                        </div>
+                    </div>
                     <div className="pb-8">
                         <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
                             <div></div>
@@ -1063,18 +1122,18 @@ function ClusterForm({
                             <div>MESSAGE</div>
                             <div></div>
                         </div>
-                        
+
                     </div>
                 </div>
                 {isKubeConfigFile && (
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
-                        <button className="cta cancel" type="button" onClick={handleCloseButton}>
+                        <button className="cta cancel" type="button" onClick={toggleGetCluster} >
                             Edit Kubeconfig
                         </button>
                         <button
                             className="cta mr-32 ml-20"
                             type="button"
-                            onClick={toggleGetCluster}
+                            onClick={handleOnSubmit}
                             disabled={uploadState !== UPLOAD_STATE.SUCCESS ? true : false}
                         >
                             Save

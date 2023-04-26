@@ -1,6 +1,8 @@
+import { request } from 'http';
 import { Routes } from '../../config';
 import { get, post, put, trash } from '../../services/api';
 import { ResponseType } from '../../services/service.types';
+import { Route } from 'react-router-dom';
 
 export function getClusterList(): Promise<any> {
     const URL = `${Routes.CLUSTER}`;
@@ -23,6 +25,16 @@ export function getClusterList(): Promise<any> {
 export function getCluster(id: number) {
     const URL = `${Routes.CLUSTER}?id=${id}`;
     return get(URL);
+}
+
+export function saveClusters(request) {
+    const URL = `${Routes.CLUSTER}`;
+    return post(URL, request);
+}
+
+export function validateCluster(request, payload) {
+    const URL = `${Routes.CLUSTER}`
+    return post(URL, request, payload);
 }
 
 export function saveCluster(request) {
