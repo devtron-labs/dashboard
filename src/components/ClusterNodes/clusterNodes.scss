@@ -23,10 +23,8 @@
 
     .cluster-about__body
     {
-        height: 100%;
         overflow: hidden;
         display: flex;
-
 
         .cluster__body-details {
             height: 100%;
@@ -63,10 +61,6 @@
     flex-shrink: 0;
     flex-basis: 240px;
     border-right: 1px solid var(--N200);
-    .cluster-icon-container {
-        width: 48px;
-        height: 48px;
-    }
 }
 
 .node-list {
@@ -422,8 +416,8 @@
 
     .mark-down-editor-toolbar {
         justify-content: space-between !important;
-        padding-left: 8px !important;
-        padding-right: 8px !important;
+        padding-left: 16px !important;
+        padding-right: 16px !important;
         background-color: white !important;
     }
 }
@@ -433,8 +427,10 @@
     .mde-tabs {
         height: inherit !important;
         button {
-            margin: 0px 8px !important;
-            margin-bottom: 1px !important;
+            padding-left: 0px !important;
+            padding-right: 0px !important;
+            margin: 0 16px 0 0px !important;
+            padding-top: 4px !important;
         }
     }
     ul.mde-header-group {

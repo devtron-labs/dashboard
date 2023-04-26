@@ -397,6 +397,11 @@ export enum MARKDOWN_EDITOR_COMMAND_TITLE {
     CHECKED_LIST = 'checked-list',
 }
 
+export enum CLUSTER_PAGE_TAB {
+    DETAILS = 'Cluster Detail',
+    ABOUT = 'About Cluster',
+}
+
 export const MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT = { 
     [MARKDOWN_EDITOR_COMMAND_TITLE.HEADER]: 'Add heading text',
     [MARKDOWN_EDITOR_COMMAND_TITLE.BOLD]: 'Add bold text',

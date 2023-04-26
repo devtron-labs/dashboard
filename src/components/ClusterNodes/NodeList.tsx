@@ -27,6 +27,7 @@ import {
     NodeDetail,
     ImageList,
     MDEditorSelectedTabType,
+    CLUSTER_PAGE_TAB_TYPE,
 } from './types'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as HeaderIcon } from '../../assets/icons/mdeditor/ic-header.svg'
@@ -54,7 +55,7 @@ import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import ClusterTerminal from './ClusterTerminal'
-import { CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG, CLUSTER_DESCRIPTION_UPDATE_MSG, COLUMN_METADATA, MARKDOWN_EDITOR_COMMANDS, MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT, MARKDOWN_EDITOR_COMMAND_TITLE, MD_EDITOR_TAB, NODE_SEARCH_TEXT, defaultClusterNote } from './constants'
+import { CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG, CLUSTER_DESCRIPTION_UPDATE_MSG, CLUSTER_PAGE_TAB, COLUMN_METADATA, MARKDOWN_EDITOR_COMMANDS, MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT, MARKDOWN_EDITOR_COMMAND_TITLE, MD_EDITOR_TAB, NODE_SEARCH_TEXT, defaultClusterNote } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
@@ -104,7 +105,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const clusterName: string = filteredFlattenNodeList[0]?.['clusterName'] || ''
     const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
     const [selectedNode, setSelectedNode] = useState<string>()
-    const [selectedTabIndex, setSelectedTabIndex] = useState(0)
+    const [selectedTabName, setSelectedTabName] = useState<CLUSTER_PAGE_TAB_TYPE>(CLUSTER_PAGE_TAB.ABOUT)
     const [isEditDescriptionView, setEditDescriptionView] = useState<boolean>(true)
     const reactMdeRef = useRef(null)
     const [descriptionText, setDescriptionText] = useState<string>(defaultClusterNote)
@@ -343,13 +344,13 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }
 
     useEffect(() => {
-        if (selectedTabIndex == 0) {
+        if (selectedTabName == CLUSTER_PAGE_TAB.ABOUT) {
             getClusterAbout()
         }
-        if (selectedTabIndex == 1) {
+        if (selectedTabName == CLUSTER_PAGE_TAB.DETAILS) {
             getNodeListData()
         }
-    }, [clusterId, selectedTabIndex])
+    }, [clusterId, selectedTabName])
 
     useEffect(() => {
         getClusterListMin()
@@ -393,9 +394,9 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const changeNodeTab = (e): void => {
         const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
         if (_tabIndex === 0) {
-            setSelectedTabIndex(0)
+            setSelectedTabName(CLUSTER_PAGE_TAB.ABOUT)
         } else if (_tabIndex === 1) {
-            setSelectedTabIndex(1)
+            setSelectedTabName(CLUSTER_PAGE_TAB.DETAILS)
         }
     }
 
@@ -915,16 +916,16 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         return (
             <ul role="tablist" className="tab-list">
                 <li className="tab-list__tab pointer" data-tab-index="0" onClick={changeNodeTab}>
-                    <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
-                        About Cluster
+                    <div className={`mb-6 fs-13 tab-hover${selectedTabName == CLUSTER_PAGE_TAB.ABOUT ? ' fw-6 active' : ' fw-4'}`}>
+                        {CLUSTER_PAGE_TAB.ABOUT}
                     </div>
-                    {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
+                    {selectedTabName == CLUSTER_PAGE_TAB.ABOUT && <div className="node-details__active-tab" />}
                 </li>
                 <li className="tab-list__tab pointer" data-tab-index="1" onClick={changeNodeTab}>
-                    <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
-                        Cluster Detail
+                    <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabName == CLUSTER_PAGE_TAB.DETAILS ? ' fw-6 active' : ' fw-4'}`}>
+                        {CLUSTER_PAGE_TAB.DETAILS}
                     </div>
-                    {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
+                    {selectedTabName == CLUSTER_PAGE_TAB.DETAILS && <div className="node-details__active-tab" />}
                 </li>
             </ul>
         )
@@ -939,10 +940,10 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             )
         }
         return (
-            <div className="cluster-about__body">
+            <div className="cluster-about__body h-100">
                 <div className="cluster-column-container">
                     <div className="pr-16 pt-16 pl-16 pb-16">
-                        <div className="cluster-icon-container flex br-4 cb-5 bcb-1 scb-5">
+                        <div className="icon-dim-48 flex br-4 cb-5 bcb-1 scb-5">
                             <ClusterIcon className="flex cluster-icon icon-dim-24" />
                         </div>
                         <div
@@ -1201,9 +1202,9 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                 showTabs={true}
                 renderHeaderTabs={renderClusterTabs}
             />
-            {selectedTabIndex == 0 && randerAboutCluster()}
-            {selectedTabIndex == 1 && randerDetailsCluster()}
-            {showTerminal && selectedNode && selectedTabIndex == 1 && (
+            {selectedTabName == CLUSTER_PAGE_TAB.ABOUT && randerAboutCluster()}
+            {selectedTabName == CLUSTER_PAGE_TAB.DETAILS && randerDetailsCluster()}
+            {showTerminal && selectedNode && selectedTabName == CLUSTER_PAGE_TAB.DETAILS && (
                 <ClusterTerminal
                     clusterId={Number(clusterId)}
                     nodeGroups={createGroupSelectList(filteredFlattenNodeList, 'name')}

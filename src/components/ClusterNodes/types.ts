@@ -2,7 +2,7 @@ import React from 'react'
 import { MultiValue } from 'react-select'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
-import { type } from 'os'
+import { CLUSTER_PAGE_TAB } from './constants'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'VERSION_ERROR',
@@ -282,3 +282,5 @@ export interface TerminalDataType {
 }
 
 export type MDEditorSelectedTabType = "write" | "preview"
+
+export type CLUSTER_PAGE_TAB_TYPE = CLUSTER_PAGE_TAB.ABOUT | CLUSTER_PAGE_TAB.DETAILS
