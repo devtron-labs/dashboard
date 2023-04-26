@@ -46,7 +46,7 @@ export async function mockTrigger(): Promise<ResponseType> {
                 gitTriggers: {
                     '46': {
                         Commit: 'ff91147fb4d25925495874b6596a55c0905836ee',
-                        Author: 'Prakash Kumar <prakash.kumar@devtron.ai>',
+                        Author: 'Test User <test@devtron.ai>',
                         Date: '2023-04-13T20:06:46+05:30',
                         Message: 'minor fix\n',
                         Changes: null,
@@ -81,7 +81,7 @@ export async function mockTrigger(): Promise<ResponseType> {
                 ],
                 triggeredBy: 30,
                 artifact: 'prakash1001/sams-repository-2:ff91147f-45-363',
-                triggeredByEmail: 'prakash.kumar@devtron.ai',
+                triggeredByEmail: 'test@devtron.ai',
                 stage: '',
                 artifactId: 301,
                 isArtifactUploaded: false,
@@ -101,7 +101,7 @@ export async function mockTrigger(): Promise<ResponseType> {
                 gitTriggers: {
                     '46': {
                         Commit: '3b0fdd9024e034b838adc530d0943cabd483c154',
-                        Author: 'Prakash Kumar <prakash.kumar@devtron.ai>',
+                        Author: 'Test User <test@devtron.ai>',
                         Date: '2023-04-13T18:12:49+05:30',
                         Message: 'minor fix in mode permissions for ssh key file\n',
                         Changes: null,
@@ -156,7 +156,7 @@ export async function mockTrigger(): Promise<ResponseType> {
                 gitTriggers: {
                     '46': {
                         Commit: 'bea4e0e0d49be8df947d5c1de88b36dbe42dbb11',
-                        Author: 'Prakash Kumar <prakash.kumar@devtron.ai>',
+                        Author: 'Test User <test@devtron.ai>',
                         Date: '2023-04-13T16:21:44+05:30',
                         Message: 'ssh key mode changed\n',
                         Changes: null,
@@ -191,7 +191,7 @@ export async function mockTrigger(): Promise<ResponseType> {
                 ],
                 triggeredBy: 30,
                 artifact: 'prakash1001/sams-repository-2:bea4e0e0-45-354',
-                triggeredByEmail: 'prakash.kumar@devtron.ai',
+                triggeredByEmail: 'test@devtron.ai',
                 stage: '',
                 artifactId: 290,
                 isArtifactUploaded: false,
@@ -211,7 +211,7 @@ export async function mockTrigger(): Promise<ResponseType> {
                 gitTriggers: {
                     '46': {
                         Commit: 'bea4e0e0d49be8df947d5c1de88b36dbe42dbb11',
-                        Author: 'Prakash Kumar <prakash.kumar@devtron.ai>',
+                        Author: 'Test User <test@devtron.ai>',
                         Date: '2023-04-13T16:21:44+05:30',
                         Message: 'ssh key mode changed\n',
                         Changes: null,
@@ -246,7 +246,7 @@ export async function mockTrigger(): Promise<ResponseType> {
                 ],
                 triggeredBy: 30,
                 artifact: '',
-                triggeredByEmail: 'prakash.kumar@devtron.ai',
+                triggeredByEmail: 'test@devtron.ai',
                 stage: '',
                 artifactId: 0,
                 isArtifactUploaded: false,
@@ -266,7 +266,7 @@ export async function mockTrigger(): Promise<ResponseType> {
                 gitTriggers: {
                     '46': {
                         Commit: 'bea4e0e0d49be8df947d5c1de88b36dbe42dbb11',
-                        Author: 'Prakash Kumar <prakash.kumar@devtron.ai>',
+                        Author: 'Test User <test@devtron.ai>',
                         Date: '2023-04-13T16:21:44+05:30',
                         Message: 'ssh key mode changed\n',
                         Changes: null,
@@ -301,7 +301,7 @@ export async function mockTrigger(): Promise<ResponseType> {
                 ],
                 triggeredBy: 30,
                 artifact: '',
-                triggeredByEmail: 'prakash.kumar@devtron.ai',
+                triggeredByEmail: 'test@devtron.ai',
                 stage: '',
                 artifactId: 0,
                 isArtifactUploaded: false,
