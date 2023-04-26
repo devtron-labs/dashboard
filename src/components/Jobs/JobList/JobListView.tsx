@@ -69,7 +69,7 @@ export default function JobListView(props: JobListViewProps) {
                         >
                             <div className="app-list__cell--icon">
                                 <div className="icon-dim-24 dc__icon-bg-color br-4 dc__show-first--icon p-4">
-                                    <JobIcon className="icon-dim-16"/>
+                                    <JobIcon className="icon-dim-16" />
                                 </div>
                                 {len && (
                                     <Arrow
@@ -88,14 +88,10 @@ export default function JobListView(props: JobListViewProps) {
                                 <AppStatus appStatus={job.defaultPipeline.status} isJobView={true} />
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
-                                <p className="dc__truncate-text m-0">
-                                    {job.defaultPipeline.lastRunAt}
-                                </p>
+                                <p className="dc__truncate-text m-0">{job.defaultPipeline.lastRunAt}</p>
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
-                                <p className="dc__truncate-text m-0">
-                                    {job.defaultPipeline.lastSuccessAt}
-                                </p>
+                                <p className="dc__truncate-text m-0">{job.defaultPipeline.lastSuccessAt}</p>
                             </div>
                             <div className="app-list__cell dc__border-bottom-n1">
                                 <p data-testid="description" className="dc__truncate-text m-0">
@@ -139,7 +135,7 @@ export default function JobListView(props: JobListViewProps) {
                         <button
                             className="app-list__cell-header flex"
                             onClick={sortByAppName}
-                            data-testid="job-name"
+                            data-testid="job-name-header"
                         >
                             {JOB_LIST_HEADERS.Name}
                             {props.sortRule.key == SortBy.APP_NAME ? (

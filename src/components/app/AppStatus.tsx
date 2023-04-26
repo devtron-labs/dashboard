@@ -29,10 +29,7 @@ export default function AppStatus({ appStatus, isDeploymentStatus = false, isJob
                     <InfoIcon className="icon-dim-16 mr-6 fcn-6" />
                 </Tippy>
             )}
-            <p
-                data-testid={`${status}-app-status`}
-                className="dc__truncate-text dc__first-letter-capitalize  m-0"
-            >
+            <p data-testid={`${status}-app-status`} className="dc__truncate-text dc__first-letter-capitalize  m-0">
                 {isNotDeployed ? (
                     <span className="cn-6">{isJobView ? YET_TO_RUN : StatusConstants.NOT_DEPLOYED.normalCase}</span>
                 ) : (
