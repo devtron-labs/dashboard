@@ -986,13 +986,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             }
         }
 
-        return node
+        return node ?? {} as NodeAttr
     }
 
     renderCDMaterial() {
         if (this.state.showCDModal) {
             const node: NodeAttr = this.getCDNode()
-            const material = node?.[this.state.materialType] || []
+            const material = node[this.state.materialType] || []
 
             return (
                 <VisibleModal className="" parentClassName="dc__overflow-hidden" close={this.closeCDModal}>
@@ -1002,7 +1002,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         }`}
                         onClick={stopPropagation}
                     >
-                        {this.state.loader ? (
+                        {this.state.isLoading ? (
                             <>
                                 <div className="trigger-modal__header flex right">
                                     <button type="button" className="dc__transparent" onClick={this.closeCDModal}>
@@ -1018,10 +1018,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 appId={Number(this.props.match.params.appId)}
                                 pipelineId={this.state.cdNodeId}
                                 stageType={DeploymentNodeType[this.state.nodeType]}
-                                triggerType={node?.triggerType}
+                                triggerType={node.triggerType}
                                 material={material}
                                 materialType={this.state.materialType}
-                                envName={node?.environmentName}
+                                envName={node.environmentName}
                                 isLoading={this.state.isLoading}
                                 changeTab={this.changeTab}
                                 triggerDeploy={this.onClickTriggerCDNode}
@@ -1029,11 +1029,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 closeCDModal={this.closeCDModal}
                                 selectImage={this.selectImage}
                                 toggleSourceInfo={this.toggleSourceInfo}
-                                parentPipelineId={node?.parentPipelineId}
-                                parentPipelineType={node?.parentPipelineType}
-                                parentEnvironmentName={node?.parentEnvironmentName}
-                                userApprovalConfig={node?.userApprovalConfig}
-                                requestedUserId={node?.requestedUserId}
+                                parentPipelineId={node.parentPipelineId}
+                                parentPipelineType={node.parentPipelineType}
+                                parentEnvironmentName={node.parentEnvironmentName}
+                                userApprovalConfig={node.userApprovalConfig}
+                                requestedUserId={node.requestedUserId}
                             />
                         )}
                     </div>
@@ -1046,15 +1046,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     renderApprovalMaterial() {
         if (this.state.showApprovalModal) {
-            let node: NodeAttr
-            if (this.state.cdNodeId) {
-                for (const _workflow of this.state.workflows) {
-                    node = _workflow.nodes.find((el) => {
-                        return +el.id == this.state.cdNodeId && el.type == this.state.nodeType
-                    })
-                    if (node) break
-                }
-            }
+            const node: NodeAttr = this.getCDNode()
 
             return (
                 <ApprovalMaterialModal

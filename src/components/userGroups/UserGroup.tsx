@@ -1300,6 +1300,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     valueContainer: (base, state) => ({
                         ...base,
                         display: 'flex',
+                        flexWrap: 'nowrap',
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
                     }),
                 }}
                 components={{
