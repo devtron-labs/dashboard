@@ -18,6 +18,34 @@ export interface ApprovalMaterialModalProps {
     pipelineId?: number
 }
 
+export interface ApprovalMaterialProps {
+    material: any[]
+    envName: string
+    stageType: DeploymentNodeType
+    changeTab: (
+        materrialId: string | number,
+        artifactId: number,
+        tab: CDModalTabType,
+        selectedCDDetail?: {
+            id: number
+            type: DeploymentNodeType
+        },
+        appId?: number,
+    ) => void
+    toggleSourceInfo: (
+        materialIndex: number,
+        selectedCDDetail?: {
+            id: number
+            type: DeploymentNodeType
+        },
+    ) => void
+    appId: number
+    pipelineId: number
+    parentEnvironmentName: string
+    node: NodeAttr
+    selectedTabIndex: number
+}
+
 export interface ApprovedTippyContentProps {
     matId: string
     requestedUserId: number

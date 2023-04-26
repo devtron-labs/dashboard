@@ -25,7 +25,7 @@ import {
     APPROVAL_REQUEST_TOAST_MSG,
     APPROVAL_RUNTIME_STATE,
 } from './Constants'
-import { ApprovalRequestType } from './Types'
+import { ApprovalMaterialProps, ApprovalRequestType } from './Types'
 import { ARTIFACT_STATUS } from '../Constants'
 
 export default function ApprovalMaterial({
@@ -39,7 +39,7 @@ export default function ApprovalMaterial({
     parentEnvironmentName,
     node,
     selectedTabIndex,
-}) {
+}: ApprovalMaterialProps) {
     const { onClickCDMaterial } = useContext(TriggerViewContext)
     const [tippyVisible, setTippyVisible] = useState<Record<string, boolean>>({})
     const [requestInProgress, setRequestInProgress] = useState(false)
