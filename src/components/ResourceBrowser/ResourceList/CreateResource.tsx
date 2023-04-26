@@ -6,8 +6,7 @@ import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import mechanicalOperation from '../../../assets/img/ic-mechanical-operation.svg'
-import { Drawer, Progressing, showError } from '../../common'
-import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
+import { showError, Progressing, Drawer, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { CreateResourcePayload, CreateResourceStatus, CreateResourceType, ResourceType } from '../Types'
 import { createNewResource } from '../ResourceBrowser.service'
@@ -84,7 +83,12 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
                     <button className="cta cancel h-36 lh-36 mr-12" type="button" disabled={loader} onClick={onClose}>
                         {CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.cancel}
                     </button>
-                    <button className="cta h-36 lh-36" disabled={loader || !resourceYAML} onClick={onSave}>
+                    <button
+                        className="cta h-36 lh-36"
+                        disabled={loader || !resourceYAML}
+                        onClick={onSave}
+                        data-testid="create-kubernetes-resource-button"
+                    >
                         {loader ? <Progressing /> : CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.apply}
                     </button>
                 </div>
@@ -96,7 +100,12 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
                         <Edit className="icon-dim-16 mr-4" />
                         {CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.editYAML}
                     </button>
-                    <button className="cta cancel h-36 lh-36 mr-12" type="button" onClick={onClose}>
+                    <button
+                        className="cta cancel h-36 lh-36 mr-12"
+                        type="button"
+                        onClick={onClose}
+                        data-testid="close-after-resource-creation"
+                    >
                         {CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.close}
                     </button>
                 </div>

@@ -2,7 +2,8 @@ import { PATTERNS } from '../../config'
 import { CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { CIBuildType, CIPipelineDataType, DockerConfigOverrideType } from '../ciPipeline/types'
-import {deepEqual, multiSelectStyles} from '../common'
+import { deepEqual } from '../common'
+import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 import { CIBuildArgType, CIConfigDiffType } from './types'
 
 export const _customStyles = {

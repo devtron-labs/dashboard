@@ -2,10 +2,10 @@ import React, { Children, Component } from 'react';
 import { AppListViewType } from '../../config';
 import noapps from '../../../../assets/img/empty-applist@2x.png';
 import noresult from '../../../../assets/img/empty-noresult@2x.png';
-import EmptyState from '../../../EmptyState/EmptyState';
 import { EmptyProps } from './types';
 import { ReactComponent as Add } from '../../../../assets/icons/ic-add.svg';
 import { DOCUMENTATION } from '../../../../config';
+import { EmptyState } from '@devtron-labs/devtron-fe-common-lib';
 
 export class Empty extends Component<EmptyProps>{
 

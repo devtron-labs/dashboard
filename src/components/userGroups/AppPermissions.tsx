@@ -148,7 +148,7 @@ export default function AppPermissions({
             if (element.entity === EntityTypes.DIRECT) {
                 const projectId = projectsMap.get(element.team)?.id
                 if (typeof projectId !== 'undefined' && projectId != null) {
-                    if (!element['accessType']) {
+                    if (element['accessType'] === ACCESS_TYPE_MAP.DEVTRON_APPS) {
                         uniqueProjectIdsDevtronApps.push(projectId)
                     } else if (element['accessType'] === ACCESS_TYPE_MAP.HELM_APPS) {
                         uniqueProjectIdsHelmApps.push(projectId)
@@ -408,13 +408,23 @@ export default function AppPermissions({
             <ul role="tablist" className="tab-list mt-12 dc__border-bottom">
                 {serverMode !== SERVER_MODE.EA_ONLY && (
                     <li className="tab-list__tab">
-                        <NavLink to={`${url}/devtron-apps`} className="tab-list__tab-link" activeClassName="active">
+                        <NavLink
+                            to={`${url}/devtron-apps`}
+                            data-testid="devtron-app-permission-tab"
+                            className="tab-list__tab-link"
+                            activeClassName="active"
+                        >
                             Devtron Apps
                         </NavLink>
                     </li>
                 )}
                 <li className="tab-list__tab">
-                    <NavLink to={`${url}/helm-apps`} className="tab-list__tab-link" activeClassName="active">
+                    <NavLink
+                        to={`${url}/helm-apps`}
+                        data-testid="helm-app-permission-tab"
+                        className="tab-list__tab-link"
+                        activeClassName="active"
+                    >
                         Helm Apps
                     </NavLink>
                 </li>
@@ -422,6 +432,7 @@ export default function AppPermissions({
                     <li className="tab-list__tab">
                         <NavLink
                             to={`${url}/kubernetes-objects`}
+                            data-testid="kube-resource-permission-tab"
                             className="tab-list__tab-link"
                             activeClassName="active"
                         >
@@ -431,7 +442,12 @@ export default function AppPermissions({
                 )}
                 {serverMode !== SERVER_MODE.EA_ONLY && (
                     <li className="tab-list__tab">
-                        <NavLink to={`${url}/chart-groups`} className="tab-list__tab-link" activeClassName="active">
+                        <NavLink
+                            to={`${url}/chart-groups`}
+                            data-testid="chart-group-permission-tab"
+                            className="tab-list__tab-link"
+                            activeClassName="active"
+                        >
                             Chart Groups
                         </NavLink>
                     </li>

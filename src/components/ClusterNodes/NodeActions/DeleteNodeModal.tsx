@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { DeleteDialog, showError } from '../../common'
-import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
+import { showError, DeleteDialog, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { NodeActionModalPropType } from '../types'
 import { useParams } from 'react-router-dom'

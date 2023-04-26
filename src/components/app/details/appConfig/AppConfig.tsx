@@ -11,16 +11,21 @@ import {
 } from '../../../../config'
 import {
     ErrorBoundary,
-    Progressing,
     usePrevious,
-    showError,
-    DeleteDialog,
-    ConfirmationDialog,
     useAsync,
-    ErrorScreenManager,
     ConditionalWrap,
 } from '../../../common'
-import { getAppConfigStatus, getAppOtherEnvironment, getWorkflowList } from '../../../../services/service'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    DeleteDialog,
+    ConfirmationDialog,
+    TippyCustomized,
+    TippyTheme,
+    InfoColourBar,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { getAppConfigStatus, getAppOtherEnvironmentMin, getWorkflowList } from '../../../../services/service'
 import { deleteApp } from './appConfig.service'
 import { ReactComponent as Next } from '../../../../assets/icons/ic-arrow-forward.svg'
 import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
@@ -32,7 +37,6 @@ import { toast } from 'react-toastify'
 import './appConfig.scss'
 import { DOCUMENTATION } from '../../../../config'
 import AppConfigurationCheckBox from './AppConfigurationCheckBox'
-import InfoColourBar from '../../../common/infocolourBar/InfoColourbar'
 import {
     AppComposeRouterProps,
     AppConfigNavigationProps,
@@ -49,7 +53,6 @@ import {
 import { getUserRole } from '../../../userGroups/userGroup.service'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
-import TippyCustomized, { TippyTheme } from '../../../common/TippyCustomized'
 import { DeleteComponentsName } from '../../../../config/constantMessaging'
 import { DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE } from '../../../../config/constantMessaging'
 
@@ -545,6 +548,7 @@ const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, current
 function renderNavItem(item: CustomNavItemsType) {
     return (
         <NavLink
+            data-testid={`${item.title.toLowerCase().split(' ').join('-')}-link`}
             key={item.title}
             onClick={(event) => {
                 if (item.isLocked) event.preventDefault()
@@ -624,7 +628,7 @@ function Navigation({
             })}
             {isJobView && <div className="h-100" />}
             <div className="cta-delete-app flex w-100 dc__position-sticky pt-2 pb-16 bcn-0">
-                <button type="button" className="flex cta delete mt-8 w-100 h-36" onClick={deleteApp}>
+                <button data-testid = "delete-job-app-button" type="button" className="flex cta delete mt-8 w-100 h-36" onClick={deleteApp}>
                     Delete {isJobView ? 'Job' : 'Application'}
                 </button>
             </div>
@@ -733,38 +737,40 @@ function AppComposeRouter({
                                 <ExternalLinks isAppConfigView={true} userRole={userRole} />
                             </Route>
                         )}
-                        {isUnlocked.workflowEditor && (
-                            <>
-                                <Route
-                                    path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
-                                    render={(props) => (
-                                        <WorkflowEdit
-                                            configStatus={1}
-                                            isCDPipeline={isCDPipeline}
-                                            respondOnSuccess={respondOnSuccess}
-                                            getWorkflows={getWorkflows}
-                                        />
-                                    )}
-                                />
-                                <Route
-                                    path={`${path}/${URLS.APP_CM_CONFIG}`}
-                                    render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} />}
-                                />
-                                <Route
-                                    path={`${path}/${URLS.APP_CS_CONFIG}`}
-                                    render={(props) => <Secret respondOnSuccess={respondOnSuccess} />}
-                                />
-                                <Route
-                                    path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
-                                    render={(props) => (
-                                        <EnvironmentOverride
-                                            environments={environments}
-                                            setEnvironments={setEnvironments}
-                                        />
-                                    )}
-                                />
-                            </>
-                        )}
+                        {isUnlocked.workflowEditor && [
+                            <Route
+                                key={`${path}/${URLS.APP_WORKFLOW_CONFIG}`}
+                                path={`${path}/${URLS.APP_WORKFLOW_CONFIG}/:workflowId(\\d+)?`}
+                                render={(props) => (
+                                    <WorkflowEdit
+                                        configStatus={1}
+                                        isCDPipeline={isCDPipeline}
+                                        respondOnSuccess={respondOnSuccess}
+                                        getWorkflows={getWorkflows}
+                                    />
+                                )}
+                            />,
+                            <Route
+                                key={`${path}/${URLS.APP_CM_CONFIG}`}
+                                path={`${path}/${URLS.APP_CM_CONFIG}`}
+                                render={(props) => <ConfigMap respondOnSuccess={respondOnSuccess} />}
+                            />,
+                            <Route
+                                key={`${path}/${URLS.APP_CS_CONFIG}`}
+                                path={`${path}/${URLS.APP_CS_CONFIG}`}
+                                render={(props) => <Secret respondOnSuccess={respondOnSuccess} />}
+                            />,
+                            <Route
+                                key={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}`}
+                                path={`${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?`}
+                                render={(props) => (
+                                    <EnvironmentOverride
+                                        environments={environments}
+                                        setEnvironments={setEnvironments}
+                                    />
+                                )}
+                            />,
+                        ]}
                     </Switch>
                 )}
             </Suspense>
@@ -819,7 +825,11 @@ const EnvOverrideRoute = ({ envOverride }: EnvironmentOverrideRouteProps) => {
             </div>
             {!collapsed && (
                 <div className="environment-routes">
-                    <NavLink className="app-compose__nav-item cursor" to={`${LINK}/deployment-template`}>
+                    <NavLink
+                        data-testid="env-deployment-template"
+                        className="app-compose__nav-item cursor"
+                        to={`${LINK}/deployment-template`}
+                    >
                         Deployment template
                     </NavLink>
                     <NavLink className="app-compose__nav-item cursor" to={`${LINK}/configmap`}>
@@ -840,7 +850,7 @@ const EnvironmentOverrides = ({ environmentResult, environmentsLoading }: Enviro
     if (Array.isArray(environmentResult?.result)) {
         const environments = environmentResult.result.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
         return (
-            <div className="w-100" style={{ height: 'calc(100% - 60px)' }}>
+            <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
                 {environments.map((env) => {
                     return (
                         !env.deploymentAppDeleteRequest && (
@@ -868,7 +878,7 @@ function EnvironmentOverrideRouter() {
     const { appId } = useParams<{ appId: string }>()
     const previousPathName = usePrevious(pathname)
     const [environmentsLoading, environmentResult, error, reloadEnvironments] = useAsync(
-        () => getAppOtherEnvironment(appId),
+        () => getAppOtherEnvironmentMin(appId),
         [appId],
         !!appId,
     )

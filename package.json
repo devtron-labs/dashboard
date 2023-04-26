@@ -44,7 +44,8 @@
         "xterm-addon-search": "^0.9.0",
         "xterm-webfont": "^2.0.0",
         "yaml": "^1.7.2",
-        "yamljs": "^0.3.0"
+        "yamljs": "^0.3.0",
+        "@devtron-labs/devtron-fe-common-lib": "0.0.7-beta-33"
     },
     "scripts": {
         "lint": "eslint src/**/*.tsx",
@@ -70,6 +71,7 @@
         "not op_mini all"
     ],
     "devDependencies": {
+        "@playwright/test": "^1.32.1",
         "@sentry/cli": "^2.2.0",
         "@testing-library/jest-dom": "^5.16.2",
         "@testing-library/react": "^12.1.4",

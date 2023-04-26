@@ -57,8 +57,9 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
                 </span>
                 {collapsed && (
                     <span className="cn-9 ml-24 w-80 dc__ellipsis-right">
-                        {isImagePullBackOff && !appDetails.externalCi && 'IMAGEPULLBACKOFF'}
-                        {conditions.length > 0 && ', '}
+                        {isImagePullBackOff &&
+                            !appDetails.externalCi &&
+                            `IMAGEPULLBACKOFF${conditions.length > 0 && ', '}`}
                         {conditions.map((condition) => condition.type).join(', ')}
                     </span>
                 )}

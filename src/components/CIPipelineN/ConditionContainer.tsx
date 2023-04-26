@@ -9,7 +9,7 @@ import {
     StepType,
     TaskErrorObj,
 } from '../ciPipeline/types'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
+import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import ReactSelect, { components } from 'react-select'

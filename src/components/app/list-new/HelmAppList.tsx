@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { ServerErrors } from '../../../modals/commonTypes'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    ServerErrors,
+    Host,
+    EmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { OrderBy, SortBy } from '../list/types'
 import { buildClusterVsNamespace, getDevtronInstalledHelmApps, AppListResponse, HelmApp } from './AppListService'
-import { showError, Progressing, ErrorScreenManager, Pagination, LazyImage, handleUTCTime } from '../../common'
-import {
-    Host,
-    SERVER_MODE,
-    URLS,
-    DOCUMENTATION,
-    checkIfDevtronOperatorHelmRelease,
-    ModuleNameMap,
-} from '../../../config'
+import { Pagination, LazyImage, handleUTCTime } from '../../common'
+import { SERVER_MODE, URLS, DOCUMENTATION, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
 import { AppListViewType } from '../config'
 import { Link } from 'react-router-dom'
 import { ReactComponent as HelpOutlineIcon } from '../../../assets/icons/ic-help-outline.svg'
@@ -21,7 +21,6 @@ import HelmCluster from '../../../assets/img/guided-helm-cluster.png'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
 import { Empty } from '../list/emptyView/Empty'
 import { AllCheckModal } from '../../checkList/AllCheckModal'
-import EmptyState from '../../EmptyState/EmptyState'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as InfoFill } from '../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as InfoFillPurple } from '../../../assets/icons/ic-info-filled-purple.svg'
@@ -32,7 +31,7 @@ import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-rig
 import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png'
 import ContentCard from '../../common/ContentCard/ContentCard'
 import { CardContentDirection, CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
-import '../list/list.css'
+import '../list/list.scss'
 import {
     APPLIST_EMPTY_STATE_MESSAGING,
     ENVIRONMENT_HEADER_TIPPY_CONTENT,
@@ -46,7 +45,7 @@ import {
 } from './Constants'
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
-import AppStatus from '../AppStatus';
+import AppStatus from '../AppStatus'
 
 export default function HelmAppList({
     serverMode,
@@ -59,7 +58,7 @@ export default function HelmAppList({
     setShowPulsatingDotState,
     masterFilters,
     syncListData,
-    isArgoInstalled
+    isArgoInstalled,
 }) {
     const [dataStateType, setDataStateType] = useState(AppListViewType.LOADING)
     const [errorResponseCode, setErrorResponseCode] = useState(0)
@@ -69,7 +68,7 @@ export default function HelmAppList({
     const [sortBy, setSortBy] = useState(SortBy.APP_NAME)
     const [sortOrder, setSortOrder] = useState(OrderBy.ASC)
     const [clusterIdsCsv, setClusterIdsCsv] = useState('')
-    const [appStatus, setAppStatus] = useState('');
+    const [appStatus, setAppStatus] = useState('')
     const [sseConnection, setSseConnection] = useState<EventSource>(undefined)
     const [externalHelmListFetchErrors, setExternalHelmListFetchErrors] = useState<string[]>([])
     const [showGuidedContentCards, setShowGuidedContentCards] = useState(false)
@@ -86,7 +85,7 @@ export default function HelmAppList({
     useEffect(() => {
         if (dataStateType === AppListViewType.LIST) {
             if (clusterIdsCsv === _getClusterIdsFromRequestUrl() && appStatus === _getAppStatusFromRequestUrl()) {
-                handleFilteration();
+                handleFilteration()
             } else {
                 init()
             }
@@ -117,7 +116,7 @@ export default function HelmAppList({
                 updateDataSyncing(false)
             }
         } else {
-            getDevtronInstalledHelmApps(clusterIdsCsv,appStatus)
+            getDevtronInstalledHelmApps(clusterIdsCsv, appStatus)
                 .then((devtronInstalledHelmAppsListResponse: AppListResponse) => {
                     setDevtronInstalledHelmAppsList(
                         devtronInstalledHelmAppsListResponse.result
@@ -136,8 +135,7 @@ export default function HelmAppList({
                     updateDataSyncing(false)
                 })
         }
-
-    }, [clusterIdsCsv,appStatus,syncListData]);
+    }, [clusterIdsCsv, appStatus, syncListData])
 
     // reset data
     function init() {
@@ -472,7 +470,7 @@ export default function HelmAppList({
         return (
             <>
                 {!clusterIdsCsv && (
-                    <div className="bcn-0">
+                    <div className="bcn-0" data-testid="helm-app-list">
                         <div className="h-8"></div>
                         <div className="cluster-select-message-strip above-header-message flex left">
                             <span className="mr-8 flex">

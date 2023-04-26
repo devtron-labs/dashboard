@@ -9,11 +9,9 @@ import { InstallationType } from '../../v2/devtronStackManager/DevtronStackManag
 import { ReactComponent as GettingStartedIcon } from '../../../assets/icons/ic-onboarding.svg'
 import { ReactComponent as Feedback } from '../../../assets/icons/ic-feedback.svg'
 import { HelpNavType, HelpOptionType } from './header.type'
-import { stopPropagation } from '../helpers/Helpers'
-import { EnterpriseHelpOptions, OSSHelpOptions } from './constants'
 import { mainContext } from '../navigation/NavigationRoutes'
-
-
+import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { EnterpriseHelpOptions, OSSHelpOptions } from './constants'
 
 function HelpNav({
     className,
@@ -98,7 +96,6 @@ function HelpNav({
                             <div className="help-card__option-name ml-12 cn-9 fs-14">{option.name}</div>
                         </a>
                         {isEnterprise && index===1 && <div className = "help__enterprise pl-8 pb-4-imp pt-4-imp dc__gap-12 flexbox dc__align-items-center h-28">Enterprise Support</div>}
-                        {option.showSeparator && <div className="help-card__option-separator" />}
                     </Fragment>
                 )
             })}
@@ -116,7 +113,7 @@ function HelpNav({
                         onClick={onClickGettingStarted}
                     >
                         <GettingStartedIcon />
-                        <div className="help-card__option-name ml-12 cn-9 fs-14">Getting started</div>
+                        <div className="help-card__option-name ml-12 cn-9 fs-14" data-testid="getting-started-link">Getting started</div>
                     </NavLink>
                 )}
                 {renderHelpOptions()}

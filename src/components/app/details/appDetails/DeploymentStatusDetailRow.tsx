@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import { useParams } from 'react-router-dom'
 import { DEPLOYMENT_STATUS, MANIFEST_STATUS_HEADERS, Moment12HourFormat, TERMINAL_STATUS_MAP, TIMELINE_STATUS } from '../../../../config'
-import { showError } from '../../../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { ShowMoreText } from '../../../common/ShowMoreText'
 import { getManualSync } from '../../service'
 import { DeploymentStatusDetailRowType } from './appDetails.type'
@@ -197,6 +197,7 @@ export function DeploymentStatusDetailRow({
                 {statusBreakDownType.time !== '' &&
                     statusBreakDownType.icon !== 'inprogress' && (
                         <span
+                            data-testid="deployment-status-kubernetes-dropdown"
                             className={`pl-8 pr-8 pt-4 pb-4 br-12 ${
                                 statusBreakDownType.icon === 'failed'
                                     ? 'bcr-1 cr-5'

@@ -6,12 +6,11 @@ import CopyToast, { handleSelectionChange } from '../CopyToast'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
 import { ErrorMessageType, ERROR_MESSAGE, POD_LINKS, SocketConnectionType, TerminalViewProps } from '../node.type'
-import { get } from '../../../../../../../services/api'
 import ReactGA from 'react-ga4'
 import IndexStore from '../../../../index.store'
-import { AppType } from '../../../../appDetails.type'
-import { elementDidMount, useOnline, showError } from '../../../../../../common'
-import { ServerErrors } from '../../../../../../../modals/commonTypes'
+import { AppType, DeploymentAppType } from '../../../../appDetails.type'
+import { elementDidMount, useOnline } from '../../../../../../common'
+import { get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { SERVER_MODE } from '../../../../../../../config'
 import { mainContext } from '../../../../../../common/navigation/NavigationRoutes'
 import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
@@ -35,7 +34,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     const autoSelectNodeRef = useRef('')
     const prevNodeRef = useRef('')
     const currNodeRef = useRef('')
-   
+
     const resizeSocket = () => {
         if (terminal && fitAddon && terminalViewProps.isTerminalTab) {
             const dim = fitAddon.proposeDimensions()
@@ -53,7 +52,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     useEffect(() => {
         resizeSocket()
     }, [terminalViewProps.isFullScreen])
-    
+
     const appDetails = IndexStore.getAppDetails()
 
     const createNewTerminal = () => {
@@ -200,7 +199,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         }
     }
 
-    const preFetchData = (podState = '', status = '') => {  
+    const preFetchData = (podState = '', status = '') => {
         const _terminal = terminal
         let startingText = TERMINAL_STATUS.CREATE
         if (!_terminal) return
@@ -221,7 +220,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             if(terminalViewProps.isShellSwitched){
                 startingText = TERMINAL_STATUS.SHELL
             }
-    
+
             if(startingText){
                 if(startingText === TERMINAL_STATUS.CREATE){
                     _terminal.write('Creating pod.')
@@ -236,7 +235,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     _terminal.write('Connecting to pod terminal.')
                 }
             }
-    
+
             if(status){
                 if (status === TERMINAL_STATUS.TIMEDOUT) {
                     _terminal.write(' \u001b[38;5;196mTimed out\u001b[0m')
@@ -393,7 +392,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     preFetchData(status)
                     clusterTimeOut = setTimeout(() => {
                         getClusterData(url, count - 1)
-                    }, 5000)
+                    }, window?._env_?.CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL || 7000)
                 } else if (sessionId) {
                     const _nodeName = response.result?.nodeName
                     if(terminalViewProps.nodeName === TERMINAL_STATUS.AUTO_SELECT_NODE){
@@ -438,7 +437,10 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         if (terminalViewProps.isClusterTerminal) {
             if (!terminalViewProps.terminalId) return
             terminalViewProps.setSocketConnection(SocketConnectionType.CONNECTING)
-            getClusterData(`user/terminal/get?namespace=${terminalViewProps.selectedNamespace}&shellName=${terminalViewProps.shell.value}&terminalAccessId=${terminalViewProps.terminalId}`, 7)
+            getClusterData(
+                `user/terminal/get?namespace=${terminalViewProps.selectedNamespace}&shellName=${terminalViewProps.shell.value}&terminalAccessId=${terminalViewProps.terminalId}`,
+                window?._env_?.CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT || 7,
+            )
         } else {
             if (
                 !terminalViewProps.nodeName ||
@@ -546,6 +548,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                         renderErrorMessageStrip(errorMessage)
                     ) : (
                         <div
+                            data-testid="terminal-strip-message"
                             className={`dc__first-letter-capitalize ${
                                 terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED &&
                                 !clusterSocketConnecting
@@ -575,6 +578,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                                 <React.Fragment>
                                     <span>.&nbsp;</span>
                                     <button
+                                        data-testid="reconnect-button"
                                         type="button"
                                         onClick={onClickResume}
                                         className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
@@ -591,10 +595,11 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }
 
     return (
-        <div className="terminal-view h-100 w-100">
+        <div data-testid={terminalViewProps.dataTestId} className="terminal-view h-100 w-100">
             {renderConnectionStrip()}
             <div
                 id="terminal-id"
+                data-testid="terminal-editor-container"
                 className={`terminal-container ml-20 ${
                     terminalViewProps.isResourceBrowserView &&
                     isOnline &&

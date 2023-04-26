@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { useRouteMatch, useLocation, useParams, useHistory } from 'react-router'
-import { useEffectAfterMount, List, showError, Progressing, useBreadcrumb, BreadCrumb } from '../../common'
+import { useEffectAfterMount, List } from '../../common'
+import { showError, Progressing, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service'
 import { getAvailableCharts } from '../../../services/service'
@@ -19,7 +20,6 @@ import './DiscoverChartDetails.scss'
 import PageHeader from '../../common/header/PageHeader'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
 import { ChartInstalledConfig, ChartKind } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
-import ChartVersionSelectorModal from './ChartVersionSelectorModal'
 import { ChartValuesType } from '../charts.types'
 import { toast } from 'react-toastify'
 
@@ -343,10 +343,10 @@ const Deployment: React.FC<DeploymentProps> = ({
                     </div>
                 )}
             </div>
-            <button type="button" className="flex cta h-36" onClick={handleDeploy}>
+            <button type="button" className="flex cta h-36" data-testid="configure-and-deploy-button"onClick={handleDeploy}>
                 Configure & Deploy
             </button>
-            <button type="button" className="flex cta h-36 cb-5 cancel mt-8" onClick={openSavedValuesList}>
+            <button type="button" className="flex cta h-36 cb-5 cancel mt-8" data-testid="preset-values-button" onClick={openSavedValuesList}>
                 Preset values
             </button>
         </div>
@@ -395,7 +395,7 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
 
         return `
           <a name="${escapedText}" rel="noreferrer noopener" class="anchor" href="#${escapedText}">
-                <h${level}>
+                <h${level} data-testid="deployment-template-readme-version">
               <span class="header-link"></span>
               ${text}
               </h${level}>
@@ -417,6 +417,7 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
             {...props}
             className={`deploy-chart__readme-markdown ${className}`}
             dangerouslySetInnerHTML={createMarkup()}
+            data-testid="article-for-bulk-edit"
         />
     )
 }

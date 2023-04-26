@@ -10,10 +10,9 @@ import { isTokenExpired } from './authorization.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import './apiToken.scss'
-import EmptyState from '../EmptyState/EmptyState'
+import { TippyCustomized, TippyTheme, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
-import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
 
 function NoMatchingResults() {
     return (
@@ -59,9 +58,9 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                 documentationLinkText="View Documentation"
             >
                 <div className="icon-dim-16 fcn-9 ml-8 cursor">
-                    <Question />    
+                    <Question />
                 </div>
-                
+
             </TippyCustomized>
         )
     }
@@ -81,21 +80,25 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
     }
 
     return (
-        <div className='bcn-0'>
-            <div className='flex dc__content-space pl-20 pr-20'>
-                <div className='flex row ml-0'>
+        <div className="bcn-0">
+            <div data-testid="api-token-page-header" className="flex dc__content-space pl-20 pr-20 pt-16 pb-16">
+                <div className="flex row ml-0">
                     <div className="cn-9 fw-6 fs-16">API tokens</div>
                     {handleQuestion()}
                 </div>
-                <div className="flex dc__align-end dc__content-end mb-8 mt-16">
+                <div className="flex dc__align-end dc__content-end">
                     {renderSearchToken()}
-                    <button className="flex cta h-32 ml-10 app-status-card__divider" onClick={handleGenerateRowAction}>
+                    <button
+                        data-testid="api-token-generate-button"
+                        className="flex cta h-32 ml-10 app-status-card__divider"
+                        onClick={handleGenerateRowAction}
+                    >
                         Generate new token
                     </button>
                 </div>
             </div>
             <div className="api-token__list">
-                <div className="api-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
+                <div className="api-list__row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pl-20 pr-20 dc__uppercase">
                     <div></div>
                     <div>Name</div>
                     <div>Last Used On</div>
@@ -110,26 +113,23 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                         tokenList.map((list, index) => (
                             <div
                                 key={`api_${index}`}
-                                className="api-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
+                                data-testid="api-list-row"
+                                className="api-list__row api-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
                                 style={{ height: '45px' }}
                             >
                                 <button
                                     type="button"
                                     className="dc__transparent cursor flex"
-                                    data-index = {index}
+                                    data-index={index}
                                     onClick={handleEditRowAction}
                                 >
                                     <Key
                                         className={`api-key-icon icon-dim-20 ${
                                             isTokenExpired(list.expireAtInMs) ? 'api-key-expired-icon' : ''
-                                            }`}
+                                        }`}
                                     />
                                 </button>
-                                <div
-                                    className={`flexbox cb-5 cursor`}
-                                    data-index = {index}
-                                    onClick={handleEditRowAction}
-                                >
+                                <div className={`flexbox cb-5 cursor`} data-index={index} onClick={handleEditRowAction}>
                                     <span className="dc__ellipsis-right">{list.name}</span>
                                 </div>
                                 <div className="dc__ellipsis-right">
@@ -150,7 +150,8 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                                     <button
                                         type="button"
                                         className="dc__transparent mr-12"
-                                        data-index = {index}
+                                        data-index={index}
+                                        data-testid="api-token-edit-button"
                                         onClick={handleEditRowAction}
                                     >
                                         <Edit className="icon-dim-20" />
@@ -158,7 +159,8 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                                     <button
                                         type="button"
                                         className="dc__transparent"
-                                        data-index = {index}
+                                        data-index={index}
+                                        data-testid="api-token-delete-button"
                                         onClick={handleDelete}
                                     >
                                         <Trash className="scn-6 icon-dim-20" />

@@ -10,19 +10,15 @@ import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-inter
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning-y6.svg'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.svg'
 import {
-    showError,
-    Progressing,
     Info,
-    ConfirmationDialog,
     Select,
     RadioGroup,
     not,
     CustomInput,
-    Checkbox,
-    CHECKBOX_VALUE,
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
 } from '../common'
+import { showError, Progressing, ConfirmationDialog, Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import { OverrideSecretForm } from './SecretOverrides'
 import { ConfigMapForm, KeyValueInput, useKeyValueYaml } from '../configMaps/ConfigMap'
 import { toast } from 'react-toastify'
@@ -129,7 +125,7 @@ export function ListComponent({ name = '', type, label = '', appChartRef }: List
 
     return (
         <div className={`white-card white-card--list ${name ? '' : 'en-3 bw-1 dashed'}`}>
-            <div className="environment-override-list pointer left flex" onClick={handleOverrideListClick}>
+            <div className="environment-override-list pointer left flex" onClick={handleOverrideListClick} data-testid="click-to-add-configmaps-secret">
                 {name ? (
                     type === 'config-map' ? (
                         <FileIcon className="icon-dim-24" />
@@ -608,8 +604,8 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                                 disabled={false}
                                 onChange={changeEditorMode}
                             >
-                                <RadioGroup.Radio value="gui">GUI</RadioGroup.Radio>
-                                <RadioGroup.Radio value="yaml">YAML</RadioGroup.Radio>
+                                <RadioGroup.Radio value="gui" dataTestId="gui-from-config-map">GUI</RadioGroup.Radio>
+                                <RadioGroup.Radio value="yaml" dataTestId="yaml-from-config-map">YAML</RadioGroup.Radio>
                             </RadioGroup>
                         </div>
                     )}
@@ -728,14 +724,14 @@ export function Override({ external, overridden, onClick, loading = false, type 
         <div className={`override-container mb-24 ${overridden ? 'override-warning' : ''}`}>
             {overridden ? <WarningIcon className="icon-dim-20" /> : <InfoIcon className="icon-dim-20" />}
             <div className="flex column left">
-                <div className="override-title">
+                <div className="override-title" data-testid="env-override-title">
                     {external
                         ? 'Nothing to override'
                         : overridden
                         ? 'Base configurations are overridden'
                         : 'Inheriting base configurations'}
                 </div>
-                <div className="override-subtitle">
+                <div className="override-subtitle" data-testid="env-override-subtitle">
                     {external
                         ? `This ${type} does not have any overridable values.`
                         : overridden
@@ -744,7 +740,11 @@ export function Override({ external, overridden, onClick, loading = false, type 
                 </div>
             </div>
             {!external && (
-                <button className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`} onClick={onClick}>
+                <button
+                    data-testid={`button-override-${overridden ? 'delete' : 'allow'}`}
+                    className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`}
+                    onClick={onClick}
+                >
                     {loading ? (
                         <Progressing />
                     ) : overridden ? (

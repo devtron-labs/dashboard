@@ -1,7 +1,6 @@
 import React, { Reducer, useEffect, useReducer, useRef } from 'react'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import { ServerErrors } from '../../../modals/commonTypes'
-import { showError } from '../../common'
+import { showError, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import * as queryString from 'query-string'
 import { URLS } from '../../../config'
 import { getInitialJobListState, jobListModal, jobListReducer, populateQueryString } from '../Utils'
@@ -9,7 +8,7 @@ import { JobListProps, JobListState, JobListStateAction, JobListStateActionTypes
 import { JobListViewType } from '../Constants'
 import { getJobs } from '../Service'
 import JobListView from './JobListView'
-import '../../app/list/list.css'
+import '../../app/list/list.scss'
 
 export default function JobListContainer({
     payloadParsedFromUrl,

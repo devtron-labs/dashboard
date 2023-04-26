@@ -1,11 +1,10 @@
-import EmptyState from '../../../EmptyState/EmptyState';
 import notScanned from '../../../../assets/img/not-scanned.png';
 import scannedDisabled from '../../../../assets/img/ic-empty-scanner-disabled.png'
 import { ReactComponent as Vulnerability } from '../../../../assets/img/ic-vulnerability-not-found.svg';
 import React from 'react';
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg';
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg';
-import { NavLink } from 'react-router-dom';
+import { EmptyState } from '@devtron-labs/devtron-fe-common-lib';
 
 export function ScanDisabledView(props) {
     return (
@@ -20,7 +19,7 @@ export function ScanDisabledView(props) {
                 Go to build pipeline configurations and enable ’Scan for vulnerabilities’
             </EmptyState.Subtitle>
             <EmptyState.Button>
-                <button className="flex cta h-36" onClick={props.redirectToCreate}>
+                <button className="flex cta h-36" data-testid="go-to-pipeline-configurations-button" onClick={props.redirectToCreate}>
                     Go to pipeline configurations
                     <Arrow className="button__icon" />
                 </button>

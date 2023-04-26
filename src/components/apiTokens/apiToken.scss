@@ -1,12 +1,14 @@
 .api-token-container {
 
+    min-height: calc(100vh - 48px);
+
     .api-token__list {
         height: 100%;
         overflow: hidden;
         min-height: 500px;
     }
 
-    .api-list-row {
+    .api-list__row {
         display: grid;
         grid-template-columns: 24px minmax(278px, 346px) 120px 130px auto minmax(80px, 90px);
         grid-column-gap: 16px;
@@ -27,9 +29,8 @@
     }
 
     .api-list-row {
-        &:hover:not(:first-of-type) {
+        &:hover {
             background-color: var(--N50);
-
             .api__row-actions {
                 display: flex;
 
@@ -38,6 +39,11 @@
                 }
             }
         }
+    }
+
+    .api__token {
+        width: 980px; 
+        padding-left: 20px;
     }
 
     .form__row {
@@ -121,5 +127,5 @@
 }
 
 .api__list__height{
-    height: calc(100vh - 141px);
+    height: calc(100vh - 149px);
 }

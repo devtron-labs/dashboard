@@ -1,13 +1,18 @@
 import React, { Component } from 'react'
 import ReactSelect, { components } from 'react-select'
-import { Progressing, Checkbox, multiSelectStyles } from '../common'
+import {
+    Progressing,
+    ConditionalWrap,
+    Checkbox,
+    InfoColourBar,
+    multiSelectStyles,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { MaterialViewProps, MaterialViewState } from './material.types'
 import { NavLink } from 'react-router-dom'
 import { URLS } from '../../config'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import { getCustomOptionSelectionStyle } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { ReactComponent as Check } from '../../assets/icons/ic-check.svg'
 import { ReactComponent as Down } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg'
 import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
@@ -15,7 +20,7 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import Tippy from '@tippyjs/react'
-import { ConditionalWrap, sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
+import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
 import DeleteComponent from '../../util/DeleteComponent'
 import { deleteMaterial } from './material.service'
 import {
@@ -25,8 +30,7 @@ import {
 } from '../../config/constantMessaging'
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import { AuthenticationType } from '../cluster/cluster.type'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import { timeStamp } from 'console'
+
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
     constructor(props) {
         super(props)
@@ -62,6 +66,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     className="white-card artifact-collapsed"
                     tabIndex={0}
                     onClick={this.props.toggleCollapse}
+                    data-testid="already-existing-git-material"
                 >
                     <span className="mr-8">
                         {this.props.material.url.includes('gitlab') ? <GitLab /> : null}
@@ -82,7 +87,11 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             )
         }
         return (
-            <div className="white-card white-card--add-new-item mb-16 dashed" onClick={this.props.toggleCollapse}>
+            <div
+                className="white-card white-card--add-new-item mb-16 dashed"
+                onClick={this.props.toggleCollapse}
+                data-testid={`add-multi-git-repo`}
+            >
                 <Add className="icon-dim-24 mr-5 fcb-5 dc__vertical-align-middle" />
                 <span className="dc__artifact-add">Add Git Repository</span>
             </div>
@@ -139,7 +148,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
             : []
         return (
             <form key={`${this.props.material.id}`} className="white-card p-20 mb-16">
-                <div className="mb-20 cn-9 fs-16 fw-6 white-card__header--form">
+                <div
+                    className="mb-20 cn-9 fs-16 fw-6 white-card__header--form"
+                    data-testid={`${this.props.material.id ? 'edit' : 'add'}-git-repository-heading`}
+                >
                     {this.props.material.id ? 'Edit Git Repository' : 'Add Git Repository'}
                     {this.props.material.id ? (
                         <button
@@ -152,10 +164,11 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </button>
                     ) : null}
                 </div>
-                <div className="form__row form-row__material">
+                <div className="form__row form-row__material" data-testid="add-git-repository-form">
                     <div className="">
                         <label className="form__label">Git Account*</label>
                         <ReactSelect
+                            classNamePrefix="material-view__select-project"
                             className="m-0"
                             tabIndex={1}
                             isMulti={false}
@@ -208,7 +221,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 to={`${URLS.GLOBAL_CONFIG_GIT}`}
                                                 className="dc__border-top dc__react-select__bottom bcn-0 p-10 cb-5 dc__block fw-5 anchor cursor dc__no-decor"
                                             >
-                                                <Add className="icon-dim-20 fcb-5 mr-12 dc__vertical-align-bottom " />
+                                                <Add
+                                                    className="icon-dim-20 fcb-5 mr-12 dc__vertical-align-bottom "
+                                                    data-testid="add-git-account-option"
+                                                />
                                                 Add Git Account
                                             </NavLink>
                                         </components.MenuList>
@@ -260,6 +276,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             placeholder={this.gitAuthType('placeholder')}
                             value={`${this.props.material.url}`}
                             onChange={this.props.handleUrlChange}
+                            data-testid={`git-repo-url-text-box`}
                         />
                         <span className="form__error">
                             {this.props.isError.url && (
@@ -292,7 +309,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 <span className="mb-4 mt-4 flex left">Set checkout path</span>
                             ) : (
                                 <>
-                                    <span className="mb-4 mt-4 flex left">
+                                    <span className="mb-4 mt-4 flex left" data-testid="set-clone-directory-checkbox">
                                         Set clone directory
                                         <Tippy
                                             className="default-tt w-200"
@@ -319,6 +336,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             placeholder="e.g. /abc"
                             value={this.props.material.checkoutPath}
                             onChange={this.props.handlePathChange}
+                            data-testid="clone-directory-path"
                         />
                     ) : (
                         ''
@@ -340,7 +358,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             rootClassName="fs-14 cn-9 flex top"
                         >
                             <div className="ml-12">
-                                <span className="mb-4 mt-4 flex left">
+                                <span className="mb-4 mt-4 flex left" data-testid="pull-submodule-recursively-checkbox">
                                     Pull submodules recursively
                                     <Tippy
                                         className="default-tt w-200"
@@ -378,17 +396,29 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 type="button"
                                 onClick={this.onClickDelete}
                                 disabled={this.props.preventRepoDelete}
+                                data-testid="git-repository-delete-button"
                             >
                                 {this.state.deleting ? <Progressing /> : 'Delete'}
                             </button>
                         </ConditionalWrap>
                     )}
                     {this.props.isMultiGit ? (
-                        <button type="button" className="cta cancel mr-16" onClick={this.props.cancel}>
+                        <button
+                            type="button"
+                            className="cta cancel mr-16"
+                            onClick={this.props.cancel}
+                            data-testid="git-repository-cancel-button"
+                        >
                             Cancel
                         </button>
                     ) : null}
-                    <button type="button" className="cta" disabled={this.props.isLoading} onClick={this.props.save}>
+                    <button
+                        type="button"
+                        className="cta"
+                        disabled={this.props.isLoading}
+                        onClick={this.props.save}
+                        data-testid="git-repository-save-button"
+                    >
                         {this.props.isLoading ? <Progressing /> : 'Save'}
                     </button>
                 </div>

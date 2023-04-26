@@ -1,5 +1,6 @@
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../config'
-import { deepEqual, showError } from '../../../common'
+import { deepEqual } from '../../../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { prepareHistoryData } from '../cdDetails/service'
 import { DeploymentWithConfigType, TriggerViewDeploymentConfigType } from './types'

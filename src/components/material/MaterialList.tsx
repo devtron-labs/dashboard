@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
-import { ErrorScreenManager, Progressing, showError, sortCallback } from '../common'
+import { showError, Progressing, ErrorScreenManager, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { AppConfigStatus, ViewType, DOCUMENTATION, AppListConstants, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
 import { withRouter } from 'react-router'
 import { CreateMaterial } from './CreateMaterial'
@@ -9,7 +9,7 @@ import { MaterialListProps, MaterialListState } from './material.types'
 import { ReactComponent as GitHub } from '../../assets/icons/ic-sample-app.svg'
 import { ReactComponent as PlayMedia } from '../../assets/icons/ic-play-media.svg'
 import { ReactComponent as Folder } from '../../assets/icons/ic-folder-filled.svg'
-import './material.css'
+import './material.scss'
 
 class MaterialList extends Component<MaterialListProps, MaterialListState> {
     constructor(props) {
@@ -110,7 +110,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     renderPageHeader() {
         return (
             <>
-                <h2 className="form__title form__title--artifacts">
+                <h2 className="form__title form__title--artifacts" data-testid={`${this.props.isJobView ? 'source-code-heading' : 'git-repositories-heading'}`}>
                     {this.props.isJobView ? 'Source code' : 'Git Repositories'}
                 </h2>
                 <p className="form__subtitle form__subtitle--artifacts">
@@ -182,7 +182,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         reload={this.getGitProviderConfig}
                         isJobView={this.props.isJobView}
                     />
-                    {this.state.materials.map((mat) => {
+                    {this.state.materials.map((mat, index) => {
                         return (
                             <UpdateMaterial
                                 key={mat.name}

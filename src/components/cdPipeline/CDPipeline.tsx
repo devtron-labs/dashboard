@@ -1,25 +1,30 @@
 import React, { Component } from 'react'
 import { SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { ServerErrors } from '../../modals/commonTypes'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import {
-    VisibleModal,
     Select,
-    Progressing,
     ButtonWithLoader,
-    showError,
     isEmpty,
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
-    Checkbox,
-    DeleteDialog,
-    CHECKBOX_VALUE,
-    sortObjectArrayAlphabetically,
-    Drawer,
+    sortObjectArrayAlphabetically
 } from '../common'
 import { toast } from 'react-toastify'
 import { Info } from '../common/icons/Icons'
-import { ErrorScreenManager } from '../common'
+import {
+    ErrorScreenManager,
+    Progressing,
+    showError,
+    VisibleModal,
+    Drawer,
+    DeleteDialog,
+    ForceDeleteDialog,
+    ServerErrors,
+    Checkbox,
+    CHECKBOX_VALUE,
+    InfoColourBar,
+    RadioGroup,
+    RadioGroupItem,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,
     saveCDPipeline,
@@ -32,6 +37,8 @@ import {
 import { CDPipelineProps, CDPipelineState, CD_PATCH_ACTION, Environment } from './cdPipeline.types'
 import { ValidationRules } from './validationRules'
 import { getEnvironmentListMinPublic } from '../../services/service'
+import { ReactComponent as Key } from '../../assets/icons/ic-key-bulb.svg'
+import { ReactComponent as File } from '../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as PrePostCD } from '../../assets/icons/ic-cd-stage.svg'
@@ -47,13 +54,11 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import config from './sampleConfig.json'
 import ReactSelect from 'react-select'
 import { styles, DropdownIndicator, Option } from './cdpipeline.util'
-import { EnvFormatOptions, formatHighlightedText, GroupHeading } from '../v2/common/ReactSelect.utils'
-import './cdPipeline.css'
+import { EnvFormatOptions, formatHighlightedTextDescription,GroupHeading } from '../v2/common/ReactSelect.utils'
+import './cdPipeline.scss'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import ForceDeleteDialog from '../common/dialogs/ForceDeleteDialog'
 import { ConditionalWrap, createClusterEnvGroup } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { PipelineType } from '../app/details/triggerView/types'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
 import { groupStyle } from '../secrets/secret.utils'
@@ -63,6 +68,7 @@ import {
     CREATE_DEPLOYMENT_PIPELINE,
     MULTI_REQUIRED_FIELDS_MSG,
     TOAST_INFO,
+    CONFIGMAPS_SECRETS,
 } from '../../config/constantMessaging'
 
 export const SwitchItemValues = {
@@ -85,8 +91,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         const parentPipelineType = parentPipelineTypeFromURL
             ? parentPipelineTypeFromURL.toLocaleUpperCase().replace('-', '_')
             : this.isWebhookCD
-            ? SourceTypeMap.WEBHOOK
-            : ''
+                ? SourceTypeMap.WEBHOOK
+                : ''
         const parentPipelineId = urlParams.get('parentPipelineId')
         this.state = {
             view: ViewType.LOADING,
@@ -194,7 +200,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                         },
                                     })
                                 })
-                                .catch((error) => {})
+                                .catch((error) => { })
                             getEnvironmentListMinPublic()
                                 .then((response) => {
                                     let list = response.result || []
@@ -206,6 +212,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                             namespace: env.namespace || '',
                                             active: false,
                                             isClusterCdActive: env.isClusterCdActive,
+                                            description: env.description,
                                         }
                                     })
                                     sortObjectArrayAlphabetically(list, 'name')
@@ -530,13 +537,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             try {
                 json = JSON.parse(jsonStr)
                 yamlStr = yamlJsParser.stringify(json, { indent: 2 })
-            } catch (error) {}
+            } catch (error) { }
         } else {
             yamlStr = event.target.value
             try {
                 json = yamlJsParser.parse(yamlStr)
                 jsonStr = JSON.stringify(json, undefined, 2)
-            } catch (error) {}
+            } catch (error) { }
         }
         let state = { ...this.state }
         let strategies = this.state.pipelineConfig.strategies.map((strategy) => {
@@ -593,7 +600,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             deploymentTemplate:
                 this.state.pipelineConfig.strategies.length > 0
                     ? this.state.pipelineConfig.strategies.find((savedStrategy) => savedStrategy.default)
-                          .deploymentTemplate
+                        .deploymentTemplate
                     : null,
             strategies: this.state.pipelineConfig.strategies.map((savedStrategy) => {
                 return {
@@ -760,8 +767,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             this.isWebhookCD && this.props.match.params.workflowId === '0'
                 ? DEPLOY_IMAGE_EXTERNALSOURCE
                 : this.props.match.params.cdPipelineId
-                ? EDIT_DEPLOYMENT_PIPELINE
-                : CREATE_DEPLOYMENT_PIPELINE
+                    ? EDIT_DEPLOYMENT_PIPELINE
+                    : CREATE_DEPLOYMENT_PIPELINE
         return (
             <>
                 <div className="p-20 flex flex-align-center flex-justify">
@@ -795,7 +802,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <Select rootClassName="mb-16" onChange={(e) => this.selectStrategy(e.target.value)}>
                     <Select.Button rootClassName="select-button--deployment-strategy">
                         <span>
-                            <Add className="icon-dim-24 mr-16 fcb-5 dc__vertical-align-middle" />
+                            <Add className="icon-dim-24 mr-16 fcb-5 dc__vertical-align-middle"/>
                             Add Deployment Strategy
                         </span>
                     </Select.Button>
@@ -879,6 +886,27 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             key === 'preStage'
                 ? this.state.pipelineConfig.runPreStageInEnv
                 : this.state.pipelineConfig.runPostStageInEnv
+        function getOptionLabel(option) {
+            if (option.type === CONFIGMAPS_SECRETS.configmaps) {
+                return (<div className="dropdown__option">
+                    <File className="icon-dim-16" />
+                    <span  className="ml-8 fs-12 dc__align-center">{option.name}</span>
+                </div>)
+            } else {
+                return (<div className="dropdown__option">
+                    <Key className="icon-dim-16" />
+                    <span className="ml-8 fs-12 dc__align-center">{option.name}</span>
+                </div>)
+            }
+        }
+
+        function getOptionValue(option) {
+            return (`${option.name}${option.type}`)
+        }
+
+        const onChangeOption = (selected) => {
+            this.handleConfigmapAndSecretsChange(selected, configmapKey)
+        }
         return (
             <div className="cd-stage mt-12">
                 <div className="form__row">
@@ -898,8 +926,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             this.handleStageConfigChange(event.target.value, key, 'triggerType')
                         }}
                     >
-                        <RadioGroupItem value={TriggerType.Auto}> Automatic </RadioGroupItem>
-                        <RadioGroupItem value={TriggerType.Manual}> Manual </RadioGroupItem>
+                        <RadioGroupItem dataTestId="trigger-automatic-button" value={TriggerType.Auto}>
+                            Automatic
+                        </RadioGroupItem>
+                        <RadioGroupItem dataTestId="trigger-manual-button" value={TriggerType.Manual}>
+                            Manual
+                        </RadioGroupItem>
                     </RadioGroup>
                 </div>
                 <div className="form__row">
@@ -907,16 +939,15 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     <ReactSelect
                         menuPortalTarget={this.state.isAdvanced ? null : document.getElementById('visible-modal')}
                         closeMenuOnScroll={true}
+                        classNamePrefix="select-config-secret-dropdown"
                         isMulti={true}
                         placeholder="Select Configmap and Secrets"
                         isClearable={true}
                         value={selections}
                         options={this.configMapAndSecrets}
-                        getOptionLabel={(option) => `${option.name}`}
-                        getOptionValue={(option) => `${option.name}`}
-                        onChange={(selected) => {
-                            this.handleConfigmapAndSecretsChange(selected, configmapKey)
-                        }}
+                        formatOptionLabel={getOptionLabel}
+                        getOptionValue={getOptionValue}
+                        onChange={onChangeOption}
                         components={{
                             IndicatorSeparator: null,
                             DropdownIndicator,
@@ -934,8 +965,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         onChange={
                             this.state.pipelineConfig[key].switch === SwitchItemValues.Config
                                 ? (resp) => {
-                                      this.handleStageConfigChange(resp, key, 'config')
-                                  }
+                                    this.handleStageConfigChange(resp, key, 'config')
+                                }
                                 : null
                         }
                     >
@@ -1010,8 +1041,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     onChange={this.handleDeploymentAppTypeChange}
                     disabled={!!this.props.match.params.cdPipelineId}
                 >
-                    <RadioGroupItem value={DeploymentAppType.Helm}> Helm </RadioGroupItem>
-                    <RadioGroupItem value={DeploymentAppType.GitOps}> GitOps </RadioGroupItem>
+                    <RadioGroupItem dataTestId="helm-deployment-type-button" value={DeploymentAppType.Helm}>
+                        Helm
+                    </RadioGroupItem>
+                    <RadioGroupItem dataTestId="gitOps-deployment-type-button" value={DeploymentAppType.GitOps}>
+                        GitOps
+                    </RadioGroupItem>
                 </RadioGroup>
             </div>
         )
@@ -1060,6 +1095,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     )}
                 >
                     <button
+                        data-testid = "cd-delete-pipeline-button"
                         type="button"
                         className={`cta cta--workflow delete mr-16`}
                         disabled={!canDeletePipeline}
@@ -1089,6 +1125,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     !this.isWebhookCD && (
                         <button
                             type="button"
+                            data-testid="cd-build-pipeline-advanced-options-button"
                             className="cta cta--workflow cancel mr-16"
                             onClick={() => {
                                 this.handleAdvanceClick()
@@ -1107,7 +1144,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     handleFormatHighlightedText = (opt: Environment, { inputValue }) => {
-        return formatHighlightedText(opt, inputValue, 'name')
+        return formatHighlightedTextDescription(opt, inputValue, 'name')
     }
 
     renderEnvNamespaceAndTriggerType() {
@@ -1125,6 +1162,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             menuPortalTarget={this.state.isAdvanced ? null : document.getElementById('visible-modal')}
                             closeMenuOnScroll={true}
                             isDisabled={!!this.props.match.params.cdPipelineId}
+                            classNamePrefix="cd-pipeline-environment-dropdown"
                             placeholder="Select Environment"
                             options={envList}
                             value={selectedEnv}
@@ -1143,6 +1181,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 control: (base) => ({ ...base, border: '1px solid #d6dbdf' }),
                             }}
                             formatOptionLabel={this.handleFormatHighlightedText}
+                            
                         />
                         {!this.state.errorForm.envNameError.isValid ? (
                             <span className="form__error">
@@ -1157,6 +1196,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             className="form__input"
                             autoComplete="off"
                             placeholder="Namespace"
+                            data-testid="cd-pipeline-namespace-textbox"
                             type="text"
                             disabled={!namespaceEditable}
                             value={
@@ -1192,6 +1232,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 mr-8 bw-1${
                             this.state.pipelineConfig.triggerType === TriggerType.Auto ? ' bcb-1 eb-2' : ' bcn-0 en-2'
                         }`}
+                        data-testid="cd-auto-mode-button"
                         onClick={() => this.handleTriggerTypeChange(TriggerType.Auto)}
                     >
                         <BotIcon className="icon-dim-20 mr-12" />
@@ -1204,6 +1245,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 ml-8 bw-1${
                             this.state.pipelineConfig.triggerType === TriggerType.Manual ? ' bcb-1 eb-2' : ' bcn-0 en-2'
                         }`}
+                        data-testid="cd-manual-mode-button"
                         onClick={() => this.handleTriggerTypeChange(TriggerType.Manual)}
                     >
                         <PersonIcon className="icon-dim-20 mr-12" />
@@ -1242,6 +1284,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         className="form__input"
                         autoComplete="off"
                         disabled={!!this.state.pipelineConfig.id}
+                        data-testid="advance-pipeline-name-textbox"
                         placeholder="Pipeline name"
                         type="text"
                         value={this.state.pipelineConfig.name}
@@ -1258,6 +1301,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
                 <div
                     className="flex left"
+                    data-testid="pre-stage-dropdown"
                     onClick={() => {
                         this.setState({ showPreStage: !this.state.showPreStage })
                     }}
@@ -1285,6 +1329,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <div className="divider mt-12 mb-12"></div>
                 <div
                     className="flex left"
+                    data-testid="deployment-stage-dropdown"
                     onClick={() => {
                         this.setState({ showDeploymentStage: !this.state.showDeploymentStage })
                     }}
@@ -1317,6 +1362,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <div className="divider mt-12 mb-12"></div>
                 <div
                     className="flex left"
+                    data-testid="post-stage-dropdown"
                     onClick={() => {
                         this.setState({ showPostStage: !this.state.showPostStage })
                     }}
@@ -1351,9 +1397,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         })
         let strategy = this.state.pipelineConfig.strategies[0]
             ? {
-                  label: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
-                  value: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
-              }
+                label: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
+                value: this.state.pipelineConfig.strategies[0]?.deploymentTemplate,
+            }
             : undefined
         return (
             <>
@@ -1367,6 +1413,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <ReactSelect
                             menuPortalTarget={document.getElementById('visible-modal')}
                             closeMenuOnScroll={true}
+                            classNamePrefix="deployment-strategy-dropdown"
                             isSearchable={false}
                             isClearable={false}
                             isMulti={false}
@@ -1432,13 +1479,13 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     </div>
 
                     <div
-                        className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
-                            this.isWebhookCD && !this.props.match.params.cdPipelineId ? 'right' : 'flex-justify'
-                        }`}
+                        className={`ci-button-container bcn-0 pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${this.isWebhookCD && !this.props.match.params.cdPipelineId ? 'right' : 'flex-justify'
+                            }`}
                     >
                         {this.renderSecondaryButton()}
                         <ButtonWithLoader
                             rootClassName="cta cta--workflow"
+                            dataTestId="create-update-pipeline-button"
                             onClick={this.savePipeline}
                             isLoading={this.state.loadingData}
                             loaderColor="white"

@@ -1,16 +1,25 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
-import { Drawer, Progressing, showError } from '../../common'
-import TagLabelSelect from './TagLabelSelect'
-import { AboutAppInfoModalProps, TagType } from '../types'
+import {
+    showError,
+    Progressing,
+    Drawer,
+    TagLabelSelect,
+    TagType,
+    DEFAULT_TAG_DATA,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { AboutAppInfoModalProps } from '../types'
 import { createAppLabels } from '../service'
 import { toast } from 'react-toastify'
-import { DEFAULT_TAG_DATA } from '../config'
+import { importComponentFromFELibrary } from '../../common'
+import '../create/createApp.scss'
 
+const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 export default function AboutTagEditModal({
     isLoading,
     appId,
     onClose,
+    appMetaInfo,
     currentLabelTags,
     getAppMetaInfoRes,
 }: AboutAppInfoModalProps) {
@@ -19,6 +28,7 @@ export default function AboutTagEditModal({
     const [labelTags, setLabelTags] = useState<TagType[]>(
         currentLabelTags?.length ? currentLabelTags : [DEFAULT_TAG_DATA],
     )
+    const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
 
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof onClose === 'function') {
@@ -68,6 +78,7 @@ export default function AboutTagEditModal({
         const payload = {
             id: parseInt(appId),
             labels: _labelTags,
+            teamId: appMetaInfo.projectId
         }
 
         try {
@@ -75,10 +86,11 @@ export default function AboutTagEditModal({
             toast.success('Successfully saved')
             // Fetch the latest project & labels details
             await getAppMetaInfoRes()
+            onClose(e)
         } catch (err) {
             showError(err)
+            setReloadMandatoryProjects(!reloadMandatoryProjects)
         } finally {
-            onClose(e)
             setSubmitting(false)
         }
     }
@@ -86,8 +98,17 @@ export default function AboutTagEditModal({
     const renderAboutModalInfo = (): JSX.Element => {
         return (
             <>
-                <div className="cn-7 p-20 dc__overflow-scroll" style={{ height: 'calc(100vh - 122px)' }}>
-                    <TagLabelSelect labelTags={labelTags} setLabelTags={setLabelTags} />
+                <div
+                    className="cn-7 p-20 dc__overflow-scroll"
+                    data-testid="tag-input-form"
+                    style={{ height: 'calc(100vh - 122px)' }}
+                >
+                    <TagsContainer
+                        labelTags={labelTags}
+                        setLabelTags={setLabelTags}
+                        selectedProjectId={appMetaInfo.projectId}
+                        reloadProjectTags={reloadMandatoryProjects}
+                    />
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">
                     <button
@@ -105,6 +126,7 @@ export default function AboutTagEditModal({
                         disabled={submitting}
                         onClick={handleSaveAction}
                         tabIndex={5}
+                        data-testid="overview-tag-save-button"
                     >
                         {submitting ? <Progressing /> : 'Save'}
                     </button>

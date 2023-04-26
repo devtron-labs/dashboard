@@ -4,7 +4,7 @@ import { Nodes } from '../app/types'
 
 export enum EntityTypes {
     CHART_GROUP = 'chart-group',
-    DIRECT = '',
+    DIRECT = 'apps',
     DOCKER = 'docker',
     GIT = 'git',
     CLUSTER = 'cluster',

@@ -8,7 +8,7 @@ import { ReactComponent as LeftIcon } from '../../../../../assets/icons/ic-arrow
 import { CompareWithBaseConfiguration, DeploymentHistoryParamsType, DeploymentTemplateOptions } from './types'
 import { Option, styles } from './utils'
 import { getDeploymentDiffSelector } from '../service'
-import { showError } from '../../../../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 
 export default function DeploymentHistoryHeader({
@@ -72,6 +72,7 @@ export default function DeploymentHistoryHeader({
     const renderGoBackToConfiguration = () => {
         return (
             <NavLink
+                data-testid="configuration-back-arrow"
                 to={``}
                 className="flex"
                 onClick={(e) => {
@@ -92,11 +93,14 @@ export default function DeploymentHistoryHeader({
     const renderCompareDeploymentConfig = () => {
         return (
             <div className="pt-12 pb-12 pl-16 compare-history__border-left pr-16">
-                <div className="cn-6 lh-1-43 ">Compare with</div>
+                <div className="cn-6 lh-1-43 " data-testid="configuration-compare-with-heading">
+                    Compare with
+                </div>
                 <div style={{ minWidth: '200px' }}>
                     {deploymentTemplateOption.length > 0 ? (
                         <ReactSelect
                             placeholder="Select Timestamp"
+                            classNamePrefix="configuration-compare-with-dropdown"
                             isSearchable={false}
                             styles={styles}
                             onChange={onClickTimeStampSelector}
@@ -125,7 +129,7 @@ export default function DeploymentHistoryHeader({
                                     </span>
                                 }
                             >
-                                <span>No options</span>
+                                <span data-testid="deployment-history-configuration-no-options">No options</span>
                             </Tippy>
                         </div>
                     )}
@@ -137,7 +141,9 @@ export default function DeploymentHistoryHeader({
     const renderBaseDeploymentConfig = () => {
         return (
             <div className="compare-history__border-left pt-12 pb-12 pl-16 pr-16">
-                <span className="cn-6">Base configuration</span>
+                <span className="cn-6" data-testid="configuration-base-configuration-heading">
+                    Base configuration
+                </span>
                 <div className="cn-9 fs-13">
                     {baseTemplateTimeStamp && moment(baseTemplateTimeStamp).format(Moment12HourFormat)}
                 </div>

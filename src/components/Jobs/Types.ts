@@ -1,5 +1,5 @@
 import { RouteComponentProps } from 'react-router-dom'
-import { ServerError } from '../../modals/commonTypes'
+import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum JobListStateActionTypes {
     view = 'view',

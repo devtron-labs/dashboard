@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import './appDetails.scss'
+<<<<<<< HEAD
 import { useLocation, useParams } from 'react-router'
+=======
+import { useParams } from 'react-router'
+>>>>>>> main
 import { AppStreamData, AppType } from './appDetails.type'
 import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
@@ -11,6 +15,7 @@ import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.compone
 import NodeTreeDetailTab from './NodeTreeDetailTab'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { getSaveTelemetry } from './appDetails.api'
+<<<<<<< HEAD
 import { DEFAULT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
 import {
     DeploymentStatusDetailsBreakdownDataType,
@@ -19,23 +24,37 @@ import {
 import { processDeploymentStatusDetailsData } from '../../app/details/appDetails/utils'
 import { getDeploymentStatusDetail } from '../../app/details/appDetails/appDetails.service'
 import DeploymentStatusDetailModal from '../../app/details/appDetails/DeploymentStatusDetailModal'
+=======
+import { Host, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+>>>>>>> main
 
 const AppDetailsComponent = ({
     externalLinks,
     monitoringTools,
     isExternalApp,
     _init,
+<<<<<<< HEAD
     isPollingRequired = true,
+=======
+    loadingDetails,
+    loadingResourceTree,
+>>>>>>> main
 }: {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isExternalApp: boolean
     _init?: () => void
+<<<<<<< HEAD
     isPollingRequired?: boolean
+=======
+    loadingDetails: boolean
+    loadingResourceTree: boolean
+>>>>>>> main
 }) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const [streamData, setStreamData] = useState<AppStreamData>(null)
     const appDetails = IndexStore.getAppDetails()
+<<<<<<< HEAD
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
     const [pollingIntervalID, setPollingIntervalID] = useState(null)
     const location = useLocation()
@@ -77,6 +96,8 @@ const AppDetailsComponent = ({
             clearPollingInterval()
         }
     }, [pollingIntervalID])
+=======
+>>>>>>> main
 
     function clearPollingInterval() {
         if (pollingIntervalID) {
@@ -84,16 +105,20 @@ const AppDetailsComponent = ({
         }
     }
     useEffect(() => {
+<<<<<<< HEAD
         return () => {
             clearDeploymentStatusTimer()
         }
     }, [])
 
     useEffect(() => {
+=======
+>>>>>>> main
         if (appDetails?.appType === AppType.EXTERNAL_HELM_CHART && params.appId) {
             getSaveTelemetry(params.appId)
         }
     }, [])
+<<<<<<< HEAD
 
     const getDeploymentDetailStepsData = (): void => {
         getDeploymentStatusDetail(params.appId, params.envId).then((deploymentStatusDetailRes) => {
@@ -111,6 +136,8 @@ const AppDetailsComponent = ({
         }
         setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
     }
+=======
+>>>>>>> main
 
     // if app type not of EA, then call stream API
     const syncSSE = useEventSource(
@@ -123,13 +150,26 @@ const AppDetailsComponent = ({
     )
 
     return (
-        <div className="helm-details">
+        <div className="helm-details" data-testid="app-details-wrapper">
             <div>
+<<<<<<< HEAD
                 <EnvironmentSelectorComponent isExternalApp={isExternalApp} _init={_init} />
                 {!appDetails.deploymentAppDeleteRequest && (
                     <EnvironmentStatusComponent
                         appStreamData={streamData}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+=======
+                <EnvironmentSelectorComponent
+                    isExternalApp={isExternalApp}
+                    _init={_init}
+                    loadingResourceTree={loadingResourceTree}
+                />
+                {!appDetails.deploymentAppDeleteRequest && (
+                    <EnvironmentStatusComponent
+                        appStreamData={streamData}
+                        loadingDetails={loadingDetails}
+                        loadingResourceTree={loadingResourceTree}
+>>>>>>> main
                     />
                 )}
             </div>
@@ -142,6 +182,7 @@ const AppDetailsComponent = ({
                     monitoringTools={monitoringTools}
                 />
             )}
+<<<<<<< HEAD
             <NodeTreeDetailTab
                 appDetails={appDetails}
                 externalLinks={externalLinks}
@@ -153,6 +194,17 @@ const AppDetailsComponent = ({
                     environmentName={appDetails.environmentName}
                     streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+=======
+            {loadingResourceTree ? (
+                <div className="bcn-0 dc__border-top h-100">
+                    <Progressing pageLoader fullHeight size={32} fillColor="var(--N500)" />
+                </div>
+            ) : (
+                <NodeTreeDetailTab
+                    appDetails={appDetails}
+                    externalLinks={externalLinks}
+                    monitoringTools={monitoringTools}
+>>>>>>> main
                 />
             )}
         </div>

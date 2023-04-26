@@ -1,6 +1,5 @@
-import {get, post, put, trash} from '../../services/api';
+import {get, post, put, trash, ResponseType} from '@devtron-labs/devtron-fe-common-lib';
 import {Routes} from '../../config';
-import {ResponseType} from '../../services/service.types';
 import {HelmApp, AppEnvironmentDetail} from '../app/list-new/AppListService';
 import {ResourceTree} from '../v2/appDetails/appDetails.type';
 
@@ -107,7 +106,7 @@ export interface UpdateAppReleaseRequest {
     appStoreVersion: number
     referenceValueId: number
     referenceValueKind: string
-} 
+}
 
 export const getReleaseInfo = (appId: string): Promise<ReleaseInfoResponse> => {
     let url = `${Routes.HELM_RELEASE_INFO_API}?appId=${appId}`

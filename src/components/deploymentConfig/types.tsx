@@ -1,5 +1,5 @@
 import React from 'react'
-import { ServerError } from '../../modals/commonTypes'
+import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
 import { AppEnvironment } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.type'

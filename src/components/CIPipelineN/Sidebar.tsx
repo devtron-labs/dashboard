@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { BuildStageVariable, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
+import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskList } from './TaskList'
 import { ciPipelineContext } from './CIPipeline'
 import { FormType } from '../ciPipeline/types'
@@ -67,8 +67,8 @@ export function Sidebar({ isJobView }: { isJobView?: boolean }) {
                                 changeTriggerType(event.target.value)
                             }}
                         >
-                            <RadioGroupItem value={TriggerType.Auto}>Automatically</RadioGroupItem>
-                            <RadioGroupItem value={TriggerType.Manual}>Manually</RadioGroupItem>
+                            <RadioGroupItem value={TriggerType.Auto} dataTestId="trigger-build-pipeline-automatically-checkbox">Automatically</RadioGroupItem>
+                            <RadioGroupItem value={TriggerType.Manual} dataTestId="trigger-build-pipeline-manually-checkbox">Manually</RadioGroupItem>
                         </RadioGroup>
                     </div>
                 </div>
