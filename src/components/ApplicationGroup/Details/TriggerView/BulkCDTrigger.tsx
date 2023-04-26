@@ -174,8 +174,7 @@ export default function BulkCDTrigger({
         if (isLoading) {
             return <Progressing pageLoader />
         }
-        const _currentApp = appList.find((app) => app.appId === selectedApp.appId)
-        const _material = _currentApp?.material || []
+        const _currentApp = appList.find((app) => app.appId === selectedApp.appId) ?? {} as BulkCDDetailType
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
@@ -219,7 +218,7 @@ export default function BulkCDTrigger({
                             pipelineId={+selectedApp.cdPipelineId}
                             stageType={selectedApp.stageType}
                             triggerType={selectedApp.triggerType}
-                            material={_material}
+                            material={_currentApp.material ?? []}
                             materialType={MATERIAL_TYPE.inputMaterialList}
                             envName={selectedApp.envName}
                             isLoading={isLoading}
@@ -232,8 +231,8 @@ export default function BulkCDTrigger({
                             parentPipelineId={selectedApp.parentPipelineId}
                             parentPipelineType={selectedApp.parentPipelineType}
                             parentEnvironmentName={selectedApp.parentEnvironmentName}
-                            userApprovalConfig={_currentApp?.userApprovalConfig}
-                            requestedUserId={_currentApp?.requestedUserId}
+                            userApprovalConfig={_currentApp.userApprovalConfig}
+                            requestedUserId={_currentApp.requestedUserId}
                             isFromBulkCD={true}
                         />
                     )}
