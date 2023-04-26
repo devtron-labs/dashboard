@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import { nodeSelect } from '../../../../../../../ClusterNodes/constants'
 import { SocketConnectionType } from '../../node.type'
 import { TERMINAL_TEXT } from '../constants'

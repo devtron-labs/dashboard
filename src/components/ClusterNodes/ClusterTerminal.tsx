@@ -15,7 +15,7 @@ import {
     clusterTerminalUpdate,
 } from './clusterNodes.service'
 import { GroupHeading, Option } from '../../components/v2/common/ReactSelect.utils'
-import { clusterImageDescription, convertToOptionsList, elementDidMount } from '../common'
+import { clusterImageDescription, convertToOptionsList } from '../common'
 import { get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterManifest from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'

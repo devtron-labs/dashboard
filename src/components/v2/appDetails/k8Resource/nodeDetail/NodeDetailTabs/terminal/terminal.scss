@@ -32,9 +32,6 @@
 .terminal-wrapper {
     display: flex;
     flex-direction: column;
-}
-
-.terminal-wrapper {
     max-height: 100vh;
     .terminal-component {
         overflow: hidden;
