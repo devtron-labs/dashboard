@@ -28,6 +28,8 @@ export interface TerminalWrapperComponentType {
     resumePodConnection?: () => void
     toggleButton?: boolean
     setTerminalCleared?: () => void
+    buttonSelectionState?: string
+    setManifestButtonState?: (button: string) => void
 }
 
 export interface TerminalSelectionListDataType {
@@ -122,4 +124,10 @@ export interface ConnectionSwitchType {
 export interface ClearTerminalType {
     hideTerminalStripComponent?: boolean
     setTerminalCleared: () => void
+}
+
+export interface EditManifestType {
+    hideTerminalStripComponent?: boolean;
+    buttonSelectionState: string
+    setManifestButtonState: (button: string) => void
 }

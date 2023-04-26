@@ -20,6 +20,7 @@ import {
     CloseExpandView,
     ConnectionSwitchType,
     ClearTerminalType,
+    EditManifestType,
 } from './terminal.type'
 
 const creatableSelectWrapper = (selectData: SelectWrapperType) => {
@@ -186,6 +187,43 @@ const clearTerminal = (clearProps: ClearTerminalType) => {
     )
 }
 
+const manifestEditButtons = ({ hideTerminalStripComponent, buttonSelectionState, setManifestButtonState }: EditManifestType) => {
+    if (hideTerminalStripComponent) {
+        return null
+    }
+
+    const selectEditMode = () => {
+        setManifestButtonState('review')
+    }
+
+    const selectReviewMode = () => {
+        setManifestButtonState('apply')
+    }
+
+    const applyChanges = () => {
+        setManifestButtonState('edit')
+    }
+
+    const renderButtons = () => {
+        switch(buttonSelectionState){
+            case 'edit':
+                return <span onClick={selectEditMode}>Edit manifest</span>
+            case 'review':
+                return <span onClick={selectReviewMode}>Review changes</span>
+            case 'apply':
+                return <span onClick={applyChanges}>Apply changes</span>
+        }
+    }
+
+    return (
+        <>
+            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+            {renderButtons()}
+            {buttonSelectionState !== 'edit' && <span>Cancel</span>}
+        </>
+    )
+}
+
 export default function terminalStripTypeData(elementData) {
     switch (elementData.type) {
         case 'creatableSelect':
@@ -202,6 +240,8 @@ export default function terminalStripTypeData(elementData) {
             return connectionSwitch(elementData)
         case 'clearButton':
             return clearTerminal(elementData)
+        case 'manifestEditButtons':
+            return manifestEditButtons(elementData)
         case 'customComponent':
             return elementData.customComponent()
         default:

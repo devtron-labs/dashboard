@@ -88,6 +88,7 @@ export default function ClusterTerminal({
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const [sessionId, setSessionId] = useState<string>()
     const [errorMessage, setErrorMessage] = useState<ErrorMessageType>({ message: '', reason: '' })
+    const [manifestButtonState, setManifestButtonState] = useState('edit')
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
     const terminalRef = useRef(null)
@@ -786,6 +787,12 @@ export default function ClusterTerminal({
                     Option,
                 },
             },
+            {
+                type: 'manifestEditButtons',
+                hideTerminalStripComponent: selectedTabIndex === 3,
+                buttonSelectionState: manifestButtonState,
+                setManifestButtonState: setManifestButtonState
+            }
         ],
         tabSwitcher: {
             terminalTabWrapper: terminalTabWrapper,
