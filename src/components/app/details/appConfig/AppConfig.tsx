@@ -552,9 +552,10 @@ const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, current
 }
 
 function renderNavItem(item: CustomNavItemsType) {
+    const linkDataTestName = item.title.toLowerCase().split(' ').join('-')
     return (
         <NavLink
-            data-testid={`${item.title.toLowerCase().split(' ').join('-')}-link`}
+            data-testid={`${linkDataTestName}-link`}
             key={item.title}
             onClick={(event) => {
                 if (item.isLocked) event.preventDefault()
@@ -563,7 +564,12 @@ function renderNavItem(item: CustomNavItemsType) {
             to={item.href}
         >
             <span className="dc__ellipsis-right nav-text">{item.title}</span>
-            {item.isLocked && <Lock className="app-compose__nav-icon icon-dim-20" />}
+            {item.isLocked && (
+                <Lock
+                    className="app-compose__nav-icon icon-dim-20"
+                    data-testid={`${item.isLocked ? linkDataTestName : 'appconfig'}-lockicon`}
+                />
+            )}
         </NavLink>
     )
 }
