@@ -89,8 +89,7 @@ export default function BulkCDTrigger({
                         currentServerInfo?.serverInfo?.installationType,
                     )
                         .then((data) => {
-                            const { materials, ...rest } = data
-                            return { materialList: data.materials, appId: appDetails.appId, ...rest }
+                            return { appId: appDetails.appId, ...data }
                         })
                         .catch((e) => {
                             if (!abortControllerRef.current.signal.aborted) {
@@ -107,7 +106,7 @@ export default function BulkCDTrigger({
                     if (response.status === 'fulfilled') {
                         _cdMaterialResponse[response.value['appId']] = {
                             approvalUsers: response.value['approvalUsers'],
-                            materials: response.value['materialList'],
+                            materials: response.value['materials'],
                             userApprovalConfig: response.value['userApprovalConfig'],
                             requestedUserId: response.value['requestedUserId'],
                         }
