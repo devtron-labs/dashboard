@@ -69,7 +69,7 @@ export default function JobListView(props: JobListViewProps) {
                         >
                             <div className="app-list__cell--icon">
                                 <div className="icon-dim-24 dc__icon-bg-color br-4 dc__show-first--icon p-4">
-                                    <JobIcon className="icon-dim-16" data-testid="job-icon" />
+                                    <JobIcon className="icon-dim-16"/>
                                 </div>
                                 {len && (
                                     <Arrow
