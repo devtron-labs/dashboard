@@ -34,14 +34,14 @@
             flex-basis: 100%;
 
             .cluster-note__card{
-                border-radius: 3px;
+                border-radius: 4px;
                 border: solid 1px var(--N200);
                 background-color: var(--white);
                 width: 100%;
             }
             .cluster-note__card-header{
                 padding: 8px 16px;
-                border-radius: 8px 8px 0 0;
+                border-radius: 4px 4px 0 0;
                 background-color: var(--N50);
                 border-bottom: 1px solid var(--N200);
                 display: flex;
@@ -70,7 +70,7 @@
 }
 
 .node-list {
-    height: calc(100vh - 48px);
+    height: calc(100vh - 77px);
 
     .list-min-height {
         min-height: calc(100vh - 250px);

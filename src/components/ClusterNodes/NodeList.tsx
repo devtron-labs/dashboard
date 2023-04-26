@@ -54,7 +54,7 @@ import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import ClusterTerminal from './ClusterTerminal'
-import { CLUSTER_DESCRIPTION_UPDATE_MSG, COLUMN_METADATA, MARKDOWN_EDITOR_COMMANDS, MD_EDITOR_TAB, NODE_SEARCH_TEXT, defaultClusterNote } from './constants'
+import { CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG, CLUSTER_DESCRIPTION_UPDATE_MSG, COLUMN_METADATA, MARKDOWN_EDITOR_COMMANDS, MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT, MARKDOWN_EDITOR_COMMAND_TITLE, MD_EDITOR_TAB, NODE_SEARCH_TEXT, defaultClusterNote } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
@@ -64,6 +64,7 @@ import { MarkDown } from '../charts/discoverChartDetail/DiscoverChartDetails'
 import { toast } from 'react-toastify'
 import moment from 'moment'
 import { Moment12HourFormat } from '../../config'
+import { deepEqual } from '../common';
 
 export default function NodeList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()
@@ -896,11 +897,18 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             history.push(match.url)
         }
     }
-
+    const isDescriptionModified: boolean = !deepEqual(descriptionText, modifiedDescriptionText)
+    
     const toggleDescriptionView = () => {
-        setModifiedDescriptionText(descriptionText)
-        setEditDescriptionView(!isEditDescriptionView)
-        setSelectedTab(MD_EDITOR_TAB.WRITE)
+        let isConfirmed: boolean = true
+        if (isDescriptionModified) {
+            isConfirmed = window.confirm(CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG)
+        }
+        if (isConfirmed) {
+            setModifiedDescriptionText(descriptionText)
+            setEditDescriptionView(!isEditDescriptionView)
+            setSelectedTab(MD_EDITOR_TAB.WRITE)
+        }
     }
 
     const renderClusterTabs = (): JSX.Element => {
@@ -933,27 +941,29 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         return (
             <div className="cluster-about__body">
                 <div className="cluster-column-container">
-                    <div className="pr-16 pt-16 pl-16 pb-16 show-shimmer-loading">
+                    <div className="pr-16 pt-16 pl-16 pb-16">
                         <div className="cluster-icon-container flex br-4 cb-5 bcb-1 scb-5">
                             <ClusterIcon className="flex cluster-icon icon-dim-24" />
                         </div>
                         <div
-                            className={`fs-14 h-36 pt-8 pb-8 fw-6 ${clusterDetailsName ? '' : 'child-shimmer-loading'}`}
+                            className="fs-14 h-36 pt-12 pb-8 fw-6 show-shimmer-loading"
                         >
-                            {clusterDetailsName}
+                            <div className={`${!clusterDetailsName && 'child-shimmer-loading'}`}>
+                                {clusterDetailsName}
+                            </div>
                         </div>
                     </div>
                     <hr className="mt-0 mb-0" />
                     <div className="pr-16 pt-16 pl-16 show-shimmer-loading">
                         <div className="fs-12 fw-4 lh-20 cn-7">Added by</div>
                         <div
-                            className={`fs-13 fw-4 lh-20 cn-9 mt-2 ${clusterCreatedBy ? '' : 'child-shimmer-loading'}`}
+                            className={`fs-13 fw-4 lh-20 cn-9 mt-2 ${!clusterCreatedBy && 'child-shimmer-loading'}`}
                         >
                             {clusterCreatedBy}
                         </div>
                         <div className="fs-12 fw-4 lh-20 cn-7 mt-16">Added on</div>
                         <div
-                            className={`fs-13 fw-4 lh-20 cn-9 mt-2  ${clusterCreatedOn ? '' : 'child-shimmer-loading'}`}
+                            className={`fs-13 fw-4 lh-20 cn-9 mt-2  ${!clusterCreatedOn && 'child-shimmer-loading'}`}
                         >
                             {clusterCreatedOn}
                         </div>
@@ -966,28 +976,72 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
 
     const editorCustomIcon = (commandName: string): JSX.Element => {
         switch (commandName) {
-            case 'header':
-                return <HeaderIcon className="icon-dim-20 flex" />
-            case 'bold':
-                return <BoldIcon className="icon-dim-20 flex" />
-            case 'italic':
-                return <ItalicIcon className="icon-dim-20 flex" />
-            case 'strikethrough':
-                return <StrikethroughIcon className="icon-dim-20 flex" />
-            case 'link':
-                return <LinkIcon className="icon-dim-20 flex" />
-            case 'quote':
-                return <QuoteIcon className="icon-dim-20 flex" />
-            case 'code':
-                return <CodeIcon className="icon-dim-20 flex" />
-            case 'image':
-                return <ImageIcon className="icon-dim-20 flex" />
-            case 'unordered-list':
-                return <UnorderedListIcon className="icon-dim-20 flex" />
-            case 'ordered-list':
-                return <OrderedListIcon className="icon-dim-20 flex" />
-            case 'checked-list':
-                return <CheckedListIcon className="icon-dim-20 flex" />
+            case MARKDOWN_EDITOR_COMMAND_TITLE.HEADER:
+                return (
+                    <Tippy className="default-tt" arrow={false} placement="bottom" content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}>
+                        <HeaderIcon className="icon-dim-16 flex" />
+                    </Tippy>
+                )
+            case MARKDOWN_EDITOR_COMMAND_TITLE.BOLD:
+                return (
+                    <Tippy className="default-tt" arrow={false} placement="bottom" content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}>
+                        <BoldIcon className="icon-dim-16 flex" />
+                    </Tippy>
+                )
+            case MARKDOWN_EDITOR_COMMAND_TITLE.ITALIC:
+                return (
+                    <Tippy className="default-tt" arrow={false} placement="bottom" content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}>
+                        <ItalicIcon className="icon-dim-16 flex" />
+                    </Tippy>
+                )
+            case MARKDOWN_EDITOR_COMMAND_TITLE.STRIKETHROUGH:
+                return (
+                    <Tippy className="default-tt" arrow={false} placement="bottom" content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}>
+                        <StrikethroughIcon className="icon-dim-16 flex" />
+                    </Tippy>
+                )
+            case MARKDOWN_EDITOR_COMMAND_TITLE.LINK:
+                return (
+                    <Tippy className="default-tt" arrow={false} placement="bottom" content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}>
+                        <LinkIcon className="icon-dim-16 flex" />
+                    </Tippy>
+                )
+            case MARKDOWN_EDITOR_COMMAND_TITLE.QUOTE:
+                return (
+                    <Tippy className="default-tt" arrow={false} placement="bottom" content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}>
+                        <QuoteIcon className="icon-dim-16 flex" />
+                    </Tippy>
+                )
+            case MARKDOWN_EDITOR_COMMAND_TITLE.CODE:
+                return (
+                    <Tippy className="default-tt" arrow={false} placement="bottom" content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}>
+                        <CodeIcon className="icon-dim-16 flex" />
+                    </Tippy>
+                )
+            case MARKDOWN_EDITOR_COMMAND_TITLE.IMAGE:
+                return (
+                    <Tippy className="default-tt" arrow={false} placement="bottom" content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}>
+                        <ImageIcon className="icon-dim-16 flex" />
+                    </Tippy>
+                )
+            case MARKDOWN_EDITOR_COMMAND_TITLE.UNORDERED_LIST:
+                return (
+                    <Tippy className="default-tt" arrow={false} placement="bottom" content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}>
+                        <UnorderedListIcon className="icon-dim-16 flex" />
+                    </Tippy>
+                )
+            case MARKDOWN_EDITOR_COMMAND_TITLE.ORDERED_LIST:
+                return (
+                    <Tippy className="default-tt" arrow={false} placement="bottom" content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}>
+                        <OrderedListIcon className="icon-dim-16 flex" />
+                    </Tippy>
+                )
+            case MARKDOWN_EDITOR_COMMAND_TITLE.CHECKED_LIST:
+                return (
+                    <Tippy className="default-tt" arrow={false} placement="bottom" content={MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT[commandName]}>
+                        <CheckedListIcon className="icon-dim-16 flex" />
+                    </Tippy>
+                )
         }
     }
 
@@ -1008,10 +1062,10 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                     </div>
                                 )}
                                 <div
-                                    className="dc__align-right pencil-icon cursor flex"
+                                    className="dc__align-right pencil-icon cursor flex fw-6 cn-7"
                                     onClick={toggleDescriptionView}
                                 >
-                                    <Edit className="icon-dim-16 pr-4 cn-4" /> Edit
+                                    <Edit className="icon-dim-16 mr-4 scn-7" /> Edit
                                 </div>
                             </div>
                             <ReactMde

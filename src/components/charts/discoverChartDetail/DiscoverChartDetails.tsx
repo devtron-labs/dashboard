@@ -25,7 +25,8 @@ import { ChartValuesType } from '../charts.types'
 import { toast } from 'react-toastify'
 
 const DiscoverDetailsContext = React.createContext(null)
-
+const uncheckedCheckboxInputElement = `<input checked="" disabled="" type="checkbox">`
+const checkedCheckboxInputElement = `<input disabled="" type="checkbox">`
 export function useDiscoverDetailsContext() {
     const context = React.useContext(DiscoverDetailsContext)
     if (!context) {
@@ -377,9 +378,26 @@ function ReadmeRowHorizontal({ readme = null, version = '', ...props }) {
     )
 }
 
+function isReadmeInputCheckbox(text: string) { 
+    if (text.includes(uncheckedCheckboxInputElement) || text.includes(checkedCheckboxInputElement)) { 
+        return true;
+    }
+    return false;
+}
 export function MarkDown({ markdown = '', className = '', breaks = false, ...props }) {
     const { hash } = useLocation()
     const renderer = new marked.Renderer()
+
+    renderer.listitem = function (text: string) {
+        if (isReadmeInputCheckbox(text)) {
+            text = text
+            .replace(uncheckedCheckboxInputElement , `<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" checked disabled>`)
+            .replace(checkedCheckboxInputElement, `<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" disabled>`);
+            return '<li style="list-style: none">' + text + '</li>';     
+        } 
+        return '<li>' + text + '</li>';     
+    };
+    
     renderer.table = function (header, body) {
         return `
         <div class="table-container">
