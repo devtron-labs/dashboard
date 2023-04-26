@@ -10,7 +10,7 @@ import { ReactComponent as DeployIcon } from '../../../../../assets/icons/ic-nav
 import { ReactComponent as ApprovalChecks } from '../../../../../assets/icons/ic-checks.svg'
 import arrow from '../../../../../assets/icons/misc/arrow-chevron-down-black.svg'
 import docker from '../../../../../assets/icons/misc/docker.svg'
-import { CDMaterialType, DeploymentNodeType, MaterialInfo } from '../types'
+import { CDMaterialType, CDModalTabType, DeploymentNodeType, MaterialInfo } from '../types'
 import { GitTriggers } from '../../cicdHistory/types'
 import GitCommitInfoGeneric from '../../../../common/GitCommitInfoGeneric'
 import { Progressing, showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
@@ -26,6 +26,7 @@ import {
     APPROVAL_RUNTIME_STATE,
 } from './Constants'
 import { ApprovalRequestType } from './Types'
+import { ARTIFACT_STATUS } from '../Constants'
 
 export default function ApprovalMaterial({
     material,
@@ -93,15 +94,17 @@ export default function ApprovalMaterial({
         if (
             mat.latest ||
             mat.runningOnParentCd ||
-            mat.artifactStatus === 'Progressing' ||
-            mat.artifactStatus === 'Degraded' ||
-            mat.artifactStatus === 'Failed'
+            mat.artifactStatus === ARTIFACT_STATUS.Progressing ||
+            mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
+            mat.artifactStatus === ARTIFACT_STATUS.Failed
         ) {
             return (
                 <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
                     {renderActiveCD(mat)}
-                    {mat.artifactStatus === 'Progressing' && renderProgressingCD()}
-                    {(mat.artifactStatus === 'Degraded' || mat.artifactStatus === 'Failed') && renderFailedCD()}
+                    {mat.artifactStatus === ARTIFACT_STATUS.Progressing && renderProgressingCD()}
+                    {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
+                        mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
+                        renderFailedCD()}
                 </div>
             )
         }
@@ -402,6 +405,29 @@ export default function ApprovalMaterial({
                 </div>
             )
     }
+
+    const handleTabSwitch = (e: any): void => {
+        e.stopPropagation()
+        const { index, id, tab } = e.currentTarget.dataset
+        changeTab(
+            index,
+            +id,
+            tab,
+            tab === CDModalTab.Changes
+                ? {
+                      id: pipelineId,
+                      type: stageType,
+                  }
+                : null,
+            appId,
+        )
+    }
+
+    const handleSourceInfoToggle = (e) => {
+        e.stopPropagation()
+        toggleSourceInfo(+e.currentTarget.dataset.index, null)
+    }
+
     return (
         <>
             {material.map((mat) => {
@@ -438,19 +464,10 @@ export default function ApprovalMaterial({
                                         <li className="tab-list__tab">
                                             <button
                                                 type="button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    changeTab(
-                                                        mat.index,
-                                                        Number(mat.id),
-                                                        CDModalTab.Changes,
-                                                        {
-                                                            id: pipelineId,
-                                                            type: stageType,
-                                                        },
-                                                        appId,
-                                                    )
-                                                }}
+                                                data-id={mat.id}
+                                                data-index={mat.index}
+                                                data-tab={CDModalTab.Changes}
+                                                onClick={handleTabSwitch}
                                                 className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
                                                     mat.tab === CDModalTab.Changes ? 'active' : ''
                                                 }`}
@@ -461,16 +478,10 @@ export default function ApprovalMaterial({
                                         <li className="tab-list__tab">
                                             <button
                                                 type="button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    changeTab(
-                                                        mat.index,
-                                                        Number(mat.id),
-                                                        CDModalTab.Security,
-                                                        null,
-                                                        appId,
-                                                    )
-                                                }}
+                                                data-id={mat.id}
+                                                data-index={mat.index}
+                                                data-tab={CDModalTab.Security}
+                                                onClick={handleTabSwitch}
                                                 className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
                                                     mat.tab === CDModalTab.Security ? 'active' : ''
                                                 }`}
@@ -490,11 +501,9 @@ export default function ApprovalMaterial({
                             <button
                                 type="button"
                                 className="material-history__changes-btn"
+                                data-index={mat.index}
                                 data-testid={mat.showSourceInfo ? 'collapse-show-info' : 'collapse-hide-info'}
-                                onClick={(event) => {
-                                    event.stopPropagation()
-                                    toggleSourceInfo(mat.index, null)
-                                }}
+                                onClick={handleSourceInfoToggle}
                             >
                                 {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
                                 <img
