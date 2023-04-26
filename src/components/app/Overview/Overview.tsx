@@ -457,7 +457,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         return (
             <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
                 <div className="flex left dc__content-space mb-12 w-100">
-                    <div className="flex left fs-14 fw-6 lh-20 cn-9">
+                    <div className="flex left fs-14 fw-6 lh-20 cn-9" data-testid="job-description-header">
                         <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
                         Description
                     </div>
@@ -466,12 +466,21 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             <button className="btn btn-link p-0 fs-14 fw-6 cn-7" onClick={handleCancel}>
                                 Cancel
                             </button>
-                            <button className="btn btn-link p-0 fs-14 fw-6 cb-5" type="submit" onClick={handleSave}>
+                            <button
+                                className="btn btn-link p-0 fs-14 fw-6 cb-5"
+                                data-testid="job-description-save-button"
+                                type="submit"
+                                onClick={handleSave}
+                            >
                                 Save
                             </button>
                         </div>
                     ) : (
-                        <div className="flex fs-14 fw-4 lh-16 cn-7 cursor ml-auto" onClick={switchToEditMode}>
+                        <div
+                            className="flex fs-14 fw-4 lh-16 cn-7 cursor ml-auto"
+                            data-testid="job-description-edit"
+                            onClick={switchToEditMode}
+                        >
                             <EditIcon className="icon-dim-16 scn-7 mr-4" />
                             Edit
                         </div>
@@ -480,6 +489,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 {editMode ? (
                     <div className="flex left flex-wrap dc__gap-8 w-100">
                         <textarea
+                            data-testid="job-description-textbox"
                             placeholder="No description"
                             value={newDescription}
                             onChange={handleDescriptionChange}
