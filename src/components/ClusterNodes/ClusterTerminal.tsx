@@ -41,7 +41,7 @@ import {
 } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
 
-let clusterTimeOut 
+let clusterTimeOut
 
 export default function ClusterTerminal({
     clusterId,
@@ -148,6 +148,7 @@ export default function ClusterTerminal({
                     .catch((error) => {
                         sessionError(error)
                         setPodCreated(false)
+                        setTerminalCleared(!terminalCleared)
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
             } else {
@@ -163,6 +164,7 @@ export default function ClusterTerminal({
                     .catch((error) => {
                         showError(error)
                         setPodCreated(false)
+                        setTerminalCleared(!terminalCleared)
                         if (error instanceof ServerErrors && Array.isArray(error.errors)) {
                             error.errors.map(({ userMessage }) => {
                                 if (userMessage === CLUSTER_STATUS.SESSION_LIMIT_REACHED) {
@@ -571,7 +573,9 @@ export default function ClusterTerminal({
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
                 }`}
             >
-                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{update && terminalView}</div>
+                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>
+                    {(!isNodeDetailsPage || connectTerminal) && terminalView}
+                </div>
                 {selectedTabIndex === 1 && (
                     <div className="h-100 dc__overflow-scroll">
                         <ClusterEvents terminalAccessId={terminalAccessIdRef.current} reconnectStart={reconnectStart} />
