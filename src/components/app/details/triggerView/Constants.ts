@@ -74,3 +74,9 @@ export const TRIGGER_VIEW_GA_EVENTS = {
         action: 'Approval Node Clicked',
     }
 }
+
+export const ARTIFACT_STATUS = {
+    Progressing: 'Progressing',
+    Degraded: 'Degraded',
+    Failed: 'Failed',
+}

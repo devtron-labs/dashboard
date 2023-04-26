@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { Drawer, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { noop } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
@@ -16,6 +16,7 @@ import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { CDMaterialResponseType } from '../../../app/types'
+import { mainContext } from '../../../common/navigation/NavigationRoutes'
 
 export default function BulkCDTrigger({
     stage,
@@ -30,6 +31,7 @@ export default function BulkCDTrigger({
     isLoading,
     setLoading,
 }: BulkCDTriggerType) {
+    const { currentServerInfo } = useContext(mainContext)
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
@@ -80,10 +82,14 @@ export default function BulkCDTrigger({
             if (!appDetails.warningMessage) {
                 _unauthorizedAppList[appDetails.appId] = false
                 _CDMaterialPromiseList.push(
-                    getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType, abortControllerRef.current.signal)
+                    getCDMaterialList(
+                        appDetails.cdPipelineId,
+                        appDetails.stageType,
+                        abortControllerRef.current.signal,
+                        currentServerInfo?.serverInfo?.installationType,
+                    )
                         .then((data) => {
-                            const { materials, ...rest } = data
-                            return { materialList: data.materials, appId: appDetails.appId, ...rest }
+                            return { appId: appDetails.appId, ...data }
                         })
                         .catch((e) => {
                             if (!abortControllerRef.current.signal.aborted) {
@@ -100,7 +106,7 @@ export default function BulkCDTrigger({
                     if (response.status === 'fulfilled') {
                         _cdMaterialResponse[response.value['appId']] = {
                             approvalUsers: response.value['approvalUsers'],
-                            materials: response.value['materialList'],
+                            materials: response.value['materials'],
                             userApprovalConfig: response.value['userApprovalConfig'],
                             requestedUserId: response.value['requestedUserId'],
                         }
@@ -158,8 +164,8 @@ export default function BulkCDTrigger({
         return (
             <EmptyView
                 imgSrc={emptyPreDeploy}
-                title={`${selectedApp.name}  ${BULK_CD_MESSAGING.emptyPreDeploy.title}`}
-                subTitle={BULK_CD_MESSAGING.emptyPreDeploy.subTitle}
+                title={`${selectedApp.name}  ${BULK_CD_MESSAGING[stage].title}`}
+                subTitle={BULK_CD_MESSAGING[stage].subTitle}
             />
         )
     }
@@ -168,8 +174,7 @@ export default function BulkCDTrigger({
         if (isLoading) {
             return <Progressing pageLoader />
         }
-        const _currentApp = appList.find((app) => app.appId === selectedApp.appId)
-        const _material = _currentApp?.material || []
+        const _currentApp = appList.find((app) => app.appId === selectedApp.appId) ?? {} as BulkCDDetailType
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
@@ -198,7 +203,7 @@ export default function BulkCDTrigger({
                             {unauthorizedAppList[app.appId] && (
                                 <span className="flex left cy-7 fw-4 fs-12">
                                     <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4" />
-                                    {BULK_CD_MESSAGING.emptyPreDeploy.title}
+                                    {BULK_CD_MESSAGING.unauthorized.title}
                                 </span>
                             )}
                         </div>
@@ -213,7 +218,7 @@ export default function BulkCDTrigger({
                             pipelineId={+selectedApp.cdPipelineId}
                             stageType={selectedApp.stageType}
                             triggerType={selectedApp.triggerType}
-                            material={_material}
+                            material={_currentApp.material ?? []}
                             materialType={MATERIAL_TYPE.inputMaterialList}
                             envName={selectedApp.envName}
                             isLoading={isLoading}
@@ -226,8 +231,8 @@ export default function BulkCDTrigger({
                             parentPipelineId={selectedApp.parentPipelineId}
                             parentPipelineType={selectedApp.parentPipelineType}
                             parentEnvironmentName={selectedApp.parentEnvironmentName}
-                            userApprovalConfig={_currentApp?.userApprovalConfig}
-                            requestedUserId={_currentApp?.requestedUserId}
+                            userApprovalConfig={_currentApp.userApprovalConfig}
+                            requestedUserId={_currentApp.requestedUserId}
                             isFromBulkCD={true}
                         />
                     )}
@@ -247,7 +252,12 @@ export default function BulkCDTrigger({
     const renderFooterSection = (): JSX.Element => {
         return (
             <div className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width">
-                <button className="cta flex h-36" onClick={onClickStartDeploy} disabled={isDeployDisabled()}>
+                <button
+                    className="cta flex h-36"
+                    data-testid="deploy-button"
+                    onClick={onClickStartDeploy}
+                    disabled={isDeployDisabled()}
+                >
                     {isLoading ? (
                         <Progressing />
                     ) : (

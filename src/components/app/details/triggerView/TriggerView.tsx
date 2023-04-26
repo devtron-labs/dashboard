@@ -47,8 +47,10 @@ import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './
 import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
 import { handleSourceNotConfigured, processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.utils'
 import ApprovalMaterialModal from './ApprovalNode/ApprovalMaterialModal'
+import { mainContext } from '../../../common/navigation/NavigationRoutes'
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
+    static contextType?: React.Context<any> = mainContext
     timerRef
     inprogressStatusTimer
     abortController: AbortController
@@ -99,7 +101,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     getWorkflows = () => {
-        getTriggerWorkflows(this.props.match.params.appId, !this.props.isJobView, this.props.isJobView)
+        getTriggerWorkflows(
+            this.props.match.params.appId,
+            !this.props.isJobView,
+            this.props.isJobView,
+            this.context.currentServerInfo?.serverInfo?.installationType,
+        )
             .then((result) => {
                 const _filteredCIPipelines = result.filteredCIPipelines || []
                 const wf = result.workflows || []
@@ -413,6 +420,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             cdNodeId,
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             this.abortController.signal,
+            this.context.currentServerInfo?.serverInfo?.installationType,
             isApprovalNode,
         )
             .then((data) => {
@@ -978,13 +986,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             }
         }
 
-        return node
+        return node ?? {} as NodeAttr
     }
 
     renderCDMaterial() {
         if (this.state.showCDModal) {
             const node: NodeAttr = this.getCDNode()
-            const material = node?.[this.state.materialType] || []
+            const material = node[this.state.materialType] || []
 
             return (
                 <VisibleModal className="" parentClassName="dc__overflow-hidden" close={this.closeCDModal}>
@@ -1010,10 +1018,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 appId={Number(this.props.match.params.appId)}
                                 pipelineId={this.state.cdNodeId}
                                 stageType={DeploymentNodeType[this.state.nodeType]}
-                                triggerType={node?.triggerType}
+                                triggerType={node.triggerType}
                                 material={material}
                                 materialType={this.state.materialType}
-                                envName={node?.environmentName}
+                                envName={node.environmentName}
                                 isLoading={this.state.isLoading}
                                 changeTab={this.changeTab}
                                 triggerDeploy={this.onClickTriggerCDNode}
@@ -1021,11 +1029,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 closeCDModal={this.closeCDModal}
                                 selectImage={this.selectImage}
                                 toggleSourceInfo={this.toggleSourceInfo}
-                                parentPipelineId={node?.parentPipelineId}
-                                parentPipelineType={node?.parentPipelineType}
-                                parentEnvironmentName={node?.parentEnvironmentName}
-                                userApprovalConfig={node?.userApprovalConfig}
-                                requestedUserId={node?.requestedUserId}
+                                parentPipelineId={node.parentPipelineId}
+                                parentPipelineType={node.parentPipelineType}
+                                parentEnvironmentName={node.parentEnvironmentName}
+                                userApprovalConfig={node.userApprovalConfig}
+                                requestedUserId={node.requestedUserId}
                             />
                         )}
                     </div>
@@ -1038,15 +1046,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     renderApprovalMaterial() {
         if (this.state.showApprovalModal) {
-            let node: NodeAttr
-            if (this.state.cdNodeId) {
-                for (const _workflow of this.state.workflows) {
-                    node = _workflow.nodes.find((el) => {
-                        return +el.id == this.state.cdNodeId && el.type == this.state.nodeType
-                    })
-                    if (node) break
-                }
-            }
+            const node: NodeAttr = this.getCDNode()
 
             return (
                 <ApprovalMaterialModal
@@ -1069,7 +1069,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     renderWorkflow() {
         return (
             <React.Fragment>
-                {this.state.workflows.map((workflow) => {
+                {this.state.workflows.map((workflow, index) => {
                     return (
                         <Workflow
                             key={workflow.id}
@@ -1084,6 +1084,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             location={this.props.location}
                             match={this.props.match}
                             isJobView={this.props.isJobView}
+                            index={index}
                         />
                     )
                 })}

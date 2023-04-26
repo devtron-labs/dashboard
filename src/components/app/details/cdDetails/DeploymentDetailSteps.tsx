@@ -112,7 +112,6 @@ export default function DeploymentDetailSteps({
                         <span className="ml-12 mr-12 fs-13">
                             <span>Approval requested by {userApprovalMetadata.requestedUserData.userEmail}</span>
                         </span>
-                        {/* <span className="pl-8 pr-8 pt-4 pb-4 br-12 bcg-1 cg-7">Wed, 05 Apr 2023, 05:03 PM</span> */}
                     </div>
                     <div className="vertical-connector" />
                     <div className="deployment-status-breakdown-row pt-8 pb-8 pl-8 pr-8 bcn-0 bw-1 border-collapse en-2">

@@ -32,9 +32,12 @@ import NoGitOpsConfiguredWarning from './NoGitOpsConfiguredWarning'
 import { WebhookDetailsModal } from '../ciPipeline/Webhook/WebhookDetailsModal'
 import DeprecatedWarningModal from './DeprecatedWarningModal'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
+import { mainContext } from '../common/navigation/NavigationRoutes'
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
+    static contextType?: React.Context<any> = mainContext
     workflowTimer = null
+
     constructor(props) {
         super(props)
         this.state = {
@@ -87,7 +90,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     getWorkflows = () => {
         this.getHostURLConfig()
         this.checkGitOpsConfiguration()
-        getCreateWorkflows(this.props.match.params.appId, this.props.isJobView)
+        getCreateWorkflows(
+            this.props.match.params.appId,
+            this.props.isJobView,
+            this.context.currentServerInfo?.serverInfo?.installationType,
+        )
             .then((result) => {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()
@@ -340,6 +347,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     downstreamNodeSize={downstreamNodeSize}
                                     getWorkflows={this.getWorkflows}
                                     refreshParentWorkflows={this.props.getWorkflows}
+                                    installationType={this.context.currentServerInfo?.serverInfo?.installationType}
                                 />
                             )
                         }}
@@ -415,7 +423,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         }
         return (
             <>
-                <button type="button" className="cta dc__no-decor flex mb-20" data-testid="new-workflow-button" onClick={this.toggleCIMenu}>
+                <button
+                    type="button"
+                    className="cta dc__no-decor flex mb-20"
+                    data-testid="new-workflow-button"
+                    onClick={this.toggleCIMenu}
+                >
                     <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
                     New workflow
                 </button>
@@ -459,7 +472,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 <p className="form__subtitle form__subtitle--workflow-editor">
                     {this.props.isJobView
                         ? 'Configure job pipelines to be executed. Pipelines can be configured to be triggered automatically based on code change or time.'
-                        : 'Workflows consist of pipelines from build to deployment stages of an application.'}{' '}
+                        : 'Workflows consist of pipelines from build to deployment stages of an application.'}
                     <br></br>
                     {!this.props.isJobView && (
                         <a

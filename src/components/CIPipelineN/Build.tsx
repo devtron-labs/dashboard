@@ -251,7 +251,7 @@ export function Build({
                                 disabled={window._env_.FORCE_SECURITY_SCANNING && formData.scanEnabled}
                                 selected={formData.scanEnabled}
                                 onSelect={handleScanToggle}
-                                dataTestId = "create-build-pipeline-scan-vulnerabilities-toggle"
+                                dataTestId="create-build-pipeline-scan-vulnerabilities-toggle"
                             />
                         </div>
                     </div>

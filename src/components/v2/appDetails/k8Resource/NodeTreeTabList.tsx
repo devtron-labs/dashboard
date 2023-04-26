@@ -119,7 +119,10 @@ export default function NodeTreeTabList({ logSearchTerms, setLogSearchTerms, tab
                                         {getTabNavLink(tab)}
                                         {tab.name !== AppDetailsTabs.log_analyzer &&
                                             tab.name !== AppDetailsTabs.k8s_Resources && (
-                                                <div className="resource-tab__close-wrapper flex br-5" data-testid="resource-tab-cross">
+                                                <div
+                                                    className="resource-tab__close-wrapper flex br-5"
+                                                    data-testid={`resource-tab-${index}-cross`}
+                                                >
                                                     <Cross
                                                         data-title={tab.title}
                                                         onClick={handleTabCloseAction}

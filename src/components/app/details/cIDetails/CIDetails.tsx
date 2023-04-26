@@ -190,6 +190,7 @@ export const Details = ({
     isSecurityModuleInstalled,
     isBlobStorageConfigured,
     isJobView,
+    appIdFromParent,
 }: BuildDetails) => {
     const { pipelineId, appId, buildId } = useParams<{ appId: string; buildId: string; pipelineId: string }>()
     const triggerDetails = triggerHistory.get(+buildId)
@@ -201,8 +202,8 @@ export const Details = ({
         setTriggerDetails,
         dependency,
     ] = useAsync(
-        () => getCIHistoricalStatus({ appId, pipelineId, buildId }),
-        [pipelineId, buildId, appId],
+        () => getCIHistoricalStatus({ appId: appId ?? appIdFromParent, pipelineId, buildId }),
+        [pipelineId, buildId, appId ?? appIdFromParent],
         !!buildId && !terminalStatus.has(triggerDetails?.status?.toLowerCase()),
     )
     useEffect(() => {
@@ -305,12 +306,13 @@ export const Details = ({
                 triggerDetails={triggerDetails}
                 isBlobStorageConfigured={isBlobStorageConfigured}
                 isJobView={isJobView}
+                appIdFromParent={appIdFromParent}
             />
         </>
     )
 }
 
-const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView }: HistoryLogsType) => {
+const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appIdFromParent }: HistoryLogsType) => {
     let { path } = useRouteMatch()
     const { pipelineId, buildId } = useParams<{ buildId: string; pipelineId: string }>()
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
@@ -356,6 +358,7 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView }: His
                             ciPipelineId={triggerDetails.ciPipelineId}
                             artifactId={triggerDetails.artifactId}
                             status={triggerDetails.status}
+                            appIdFromParent={appIdFromParent}
                         />
                     </Route>
                 )}
@@ -371,7 +374,7 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView }: His
     )
 }
 
-const SecurityTab = ({ ciPipelineId, artifactId, status }: SecurityTabType) => {
+const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: SecurityTabType) => {
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [securityData, setSecurityData] = useState({
         vulnerabilities: [],
@@ -390,7 +393,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status }: SecurityTabType) => {
     const { push } = useHistory()
     async function callGetSecurityIssues() {
         try {
-            const { result } = await getLastExecutionByArtifactId(appId, artifactId)
+            const { result } = await getLastExecutionByArtifactId(appId ?? appIdFromParent, artifactId)
             setSecurityData({
                 vulnerabilities: result.vulnerabilities,
                 lastExecution: result.lastExecution,
@@ -423,7 +426,9 @@ const SecurityTab = ({ ciPipelineId, artifactId, status }: SecurityTabType) => {
     const redirectToCreate = () => {
         if (!ciPipelineId) return
         push(
-            `${URLS.APP}/${appId}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${URLS.APP_CI_CONFIG}/${ciPipelineId}/build`,
+            `${URLS.APP}/${appId ?? appIdFromParent}/${URLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${ciPipelineId}/${
+                URLS.APP_CI_CONFIG
+            }/${ciPipelineId}/build`,
         )
     }
 
@@ -450,8 +455,10 @@ const SecurityTab = ({ ciPipelineId, artifactId, status }: SecurityTabType) => {
 
     return (
         <>
-            <div className="security__top" data-testid="security-scan-execution-heading">Latest Scan Execution</div>
-            <div className="white-card white-card--ci-scan">
+            <div className="security__top" data-testid="security-scan-execution-heading">
+                Latest Scan Execution
+            </div>
+            <div className="white-card white-card--ci-scan" data-testid="last-scan-execution">
                 <div className="security-scan__header" onClick={toggleCollapse}>
                     <Down
                         style={{ ['--rotateBy' as any]: isCollapsed ? '0deg' : '180deg' }}
@@ -498,7 +505,9 @@ const SecurityTab = ({ ciPipelineId, artifactId, status }: SecurityTabType) => {
                                             </a>
                                         </td>
                                         <td className="security-scan-table__data security-scan-table__pl">
-                                            <span className={`fill-${item.severity}`}>{item.severity}</span>
+                                            <span className={`fill-${item.severity}`} data-testid="severity-check">
+                                                {item.severity}
+                                            </span>
                                         </td>
                                         <td className="security-scan-table__data security-scan-table__pl security-scan-table--w-18">
                                             {item.package}

@@ -190,16 +190,19 @@ function NavItem({ serverMode }) {
             group: [
                 {
                     name: 'User Permissions',
+                    dataTestId: 'authorization-user-permissions-link',
                     href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
                     isAvailableInEA: true,
                 },
                 {
                     name: 'Permission Groups',
+                    dataTestId: 'authorization-permission-groups-link',
                     href: `${URLS.GLOBAL_CONFIG_AUTH}/groups`,
                     isAvailableInEA: true,
                 },
                 {
                     name: 'API Tokens',
+                    dataTestId: 'authorization-api-tokens-link',
                     href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}/list`,
                     isAvailableInEA: true,
                 },
@@ -252,6 +255,7 @@ function NavItem({ serverMode }) {
                 to={`${route.href}`}
                 key={route.href}
                 activeClassName="active-route"
+                data-testid={route.dataTestId}
                 className={`${
                     route.name === 'API tokens' &&
                     location.pathname.startsWith(`${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}`)
@@ -264,7 +268,7 @@ function NavItem({ serverMode }) {
                     }
                 }}
             >
-                <div className={`flexbox flex-justify ${className || ''}`}>
+                <div className={`flexbox flex-justify ${className || ''}`} data-testid={`${route.name}-page`}>
                     <div>{route.name}</div>
                 </div>
             </NavLink>
@@ -561,14 +565,23 @@ function ListToggle({ onSelect, enabled = false, ...props }) {
     return <Toggle dataTestId="toggle-button" {...props} onSelect={onSelect} selected={enabled} />
 }
 
-function DropDown({ className = '',dataTestid='', style = {}, src = null, ...props }) {
+function DropDown({ className = '', dataTestid = '', style = {}, src = null, ...props }) {
     if (React.isValidElement(src)) return src
-    return <img {...props} src={src || arrowTriangle} data-testid={dataTestid} alt="" className={`list__arrow ${className}`} style={style} />
+    return (
+        <img
+            {...props}
+            src={src || arrowTriangle}
+            data-testid={dataTestid}
+            alt=""
+            className={`list__arrow ${className}`}
+            style={style}
+        />
+    )
 }
 
-export function List({ dataTestId='' ,children = null, className = '', ...props }) {
+export function List({ dataTestId = '', children = null, className = '', ...props }) {
     return (
-        <div className={`list ${className}`} {...props} data-testid = {dataTestId}>
+        <div className={`list ${className}`} {...props} data-testid={dataTestId}>
             {children}
         </div>
     )
@@ -600,13 +613,13 @@ export function CustomInput({
     labelClassName = '',
     placeholder = '',
     tabIndex = 1,
-    dataTestid = ""
+    dataTestid = '',
 }) {
     return (
         <div className="flex column left top">
             <label className={`form__label ${labelClassName}`}>{label}</label>
             <input
-                data-testid= {dataTestid}
+                data-testid={dataTestid}
                 type={type}
                 name={name}
                 autoComplete="off"
@@ -644,6 +657,7 @@ export function ProtectedInput({
     hidden = true,
     labelClassName = '',
     placeholder = '',
+    dataTestid = '',
 }) {
     const [shown, toggleShown] = useState(false)
     useEffect(() => {
@@ -657,6 +671,7 @@ export function ProtectedInput({
             </label>
             <div className="dc__position-rel w-100">
                 <input
+                    data-testid={dataTestid}
                     type={shown ? 'text' : 'password'}
                     tabIndex={tabIndex}
                     className={error ? 'form__input form__input--error pl-42' : 'form__input pl-42'}

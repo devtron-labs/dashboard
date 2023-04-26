@@ -208,7 +208,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     renderInputs() {
         return <div className="deployment-metrics__inputs bcn-0">
-            <div className='w-180' data-testid = "select-environment">
+            <div className='w-180' data-testid="select-environment">
                 <ReactSelect defaultValue={this.state.selectedEnvironment}
                     value={this.state.selectedEnvironment}
                     placeholder="Select Environment"
@@ -486,7 +486,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                     value={-1} onClick={this.handleTableFilter} />
                                 <span className="dc__tertiary-tab">All ({this.state.totalDeployments})</span>
                             </label>
-                            <label className="dc__tertiary-tab__radio" data-testid = "success-deployment-status">
+                            <label className="dc__tertiary-tab__radio" data-testid="success-deployment-status">
                                 <input type="radio" name="status" checked={this.state.statusFilter === 0}
                                     value={0} onClick={this.handleTableFilter} />
                                 <span className="dc__tertiary-tab">
@@ -494,7 +494,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                                     Success ({this.state.totalDeployments - this.state.failedDeployments})
                                 </span>
                             </label>
-                            <label className="dc__tertiary-tab__radio" data-testid = "failed-deployment-status">
+                            <label className="dc__tertiary-tab__radio" data-testid="failed-deployment-status">
                                 <input type="radio" name="status" checked={this.state.statusFilter === 1}
                                     value={1} onClick={this.handleTableFilter} />
                                 <span className="dc__tertiary-tab">

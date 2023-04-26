@@ -17,7 +17,6 @@ function DeleteComponent({
     url = '',
     reload,
     configuration = '',
-    dataTestid = '',
     closeCustomComponent,
 }: DeleteComponentProps) {
     const [showCannotDeleteDialogModal, setCannotDeleteDialogModal] = useState(false)

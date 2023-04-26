@@ -43,7 +43,9 @@ export default function DeploymentHistoryDiffView({
     const renderDetailedValue = (parentClassName: string, singleValue: DeploymentHistorySingleValue , dataTestId: string) => {
         return (
             <div className={parentClassName}>
-                <div className="cn-6 pt-8 pl-16 pr-16 lh-16" data-testid = {dataTestId}>{singleValue.displayName}</div>
+                <div className="cn-6 pt-8 pl-16 pr-16 lh-16" data-testid={dataTestId}>
+                    {singleValue.displayName}
+                </div>
                 <div className="cn-9 fs-13 pb-8 pl-16 pr-16 lh-20 mh-28">{singleValue.value}</div>
             </div>
         )
@@ -69,7 +71,7 @@ export default function DeploymentHistoryDiffView({
                     previousConfigAvailable ? 'deployment-diff__upper' : ''
                 }`}
                 ref={ref}
-                data-testid = {`configuration-link-${
+                data-testid={`configuration-link-${
                     previousConfigAvailable ? 'previous-deployment' : 'no-previous-deployment'
                 }`}
             >
@@ -82,12 +84,20 @@ export default function DeploymentHistoryDiffView({
                             return (
                                 <Fragment key={`deployment-history-diff-view-${index}`}>
                                     {currentValue && currentValue.value ? (
-                                        renderDetailedValue(changeBGColor ? 'code-editor-red-diff' : '', currentValue , `configuration-deployment-template-heading-${index}`)
+                                        renderDetailedValue(
+                                            changeBGColor ? 'code-editor-red-diff' : '',
+                                            currentValue,
+                                            `configuration-deployment-template-heading-${index}`,
+                                        )
                                     ) : (
                                         <div></div>
                                     )}
                                     {baseValue && baseValue.value ? (
-                                        renderDetailedValue(changeBGColor ? 'code-editor-green-diff' : '', baseValue , `configuration-deployment-template-heading-${index}`)
+                                        renderDetailedValue(
+                                            changeBGColor ? 'code-editor-green-diff' : '',
+                                            baseValue,
+                                            `configuration-deployment-template-heading-${index}`,
+                                        )
                                     ) : (
                                         <div></div>
                                     )}
@@ -98,7 +108,10 @@ export default function DeploymentHistoryDiffView({
             </div>
 
             <div className="en-2 bw-1 br-4 mr-20 ml-20 mb-20">
-                <div className="code-editor-header-value pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0" data-testid = "configuration-link-comparison-body-heading">
+                <div
+                    className="code-editor-header-value pl-16 pr-16 pt-12 pb-12 fs-13 fw-6 cn-9 bcn-0"
+                    data-testid="configuration-link-comparison-body-heading"
+                >
                     {baseTemplateConfiguration?.codeEditorValue?.['displayName']}
                 </div>
                 {baseTemplateConfiguration?.codeEditorValue?.value && renderDeploymentDiffViaCodeEditor()}

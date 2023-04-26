@@ -537,7 +537,12 @@ export default function BulkCITrigger({
                         </div>
                     </div>
                 )}
-                <button className="cta flex h-36" onClick={onClickStartBuild} disabled={isStartBuildDisabled()}>
+                <button
+                    className="cta flex h-36"
+                    data-testid="start-build"
+                    onClick={onClickStartBuild}
+                    disabled={isStartBuildDisabled()}
+                >
                     {isLoading ? (
                         <Progressing />
                     ) : (

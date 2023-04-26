@@ -724,14 +724,14 @@ export function Override({ external, overridden, onClick, loading = false, type 
         <div className={`override-container mb-24 ${overridden ? 'override-warning' : ''}`}>
             {overridden ? <WarningIcon className="icon-dim-20" /> : <InfoIcon className="icon-dim-20" />}
             <div className="flex column left">
-                <div className="override-title" data-testid="deployment_template_on_header">
+                <div className="override-title" data-testid="env-override-title">
                     {external
                         ? 'Nothing to override'
                         : overridden
                         ? 'Base configurations are overridden'
                         : 'Inheriting base configurations'}
                 </div>
-                <div className="override-subtitle">
+                <div className="override-subtitle" data-testid="env-override-subtitle">
                     {external
                         ? `This ${type} does not have any overridable values.`
                         : overridden
@@ -740,7 +740,11 @@ export function Override({ external, overridden, onClick, loading = false, type 
                 </div>
             </div>
             {!external && (
-                <button data-testid = {`button-override-${overridden ? 'delete' : 'allow'}`} className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`} onClick={onClick}>
+                <button
+                    data-testid={`button-override-${overridden ? 'delete' : 'allow'}`}
+                    className={`cta override-button ${overridden ? 'delete scr-5' : 'ghosted'}`}
+                    onClick={onClick}
+                >
                     {loading ? (
                         <Progressing />
                     ) : overridden ? (

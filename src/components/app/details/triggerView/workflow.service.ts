@@ -16,26 +16,30 @@ import { TriggerType, TriggerTypeMap, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED 
 import { isEmpty } from '../../../common'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
+import { InstallationType } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 
 export const getTriggerWorkflows = (
     appId,
     useAppWfViewAPI: boolean,
     isJobView: boolean,
+    installationType: InstallationType,
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
-    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, useAppWfViewAPI, isJobView)
+    return getInitialWorkflows(appId, WorkflowTrigger, WorkflowTrigger.workflow, installationType, useAppWfViewAPI, isJobView)
 }
 
 export const getCreateWorkflows = (
     appId,
     isJobView: boolean,
+    installationType: InstallationType,
 ): Promise<{ appName: string; workflows: WorkflowType[] }> => {
-    return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, false, isJobView)
+    return getInitialWorkflows(appId, WorkflowCreate, WorkflowCreate.workflow, installationType, false, isJobView)
 }
 
 const getInitialWorkflows = (
     id,
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
+    installationType: InstallationType,
     useAppWfViewAPI?: boolean,
     isJobView?: boolean,
 ): Promise<{ appName: string; workflows: WorkflowType[]; filteredCIPipelines }> => {
@@ -57,6 +61,7 @@ const getInitialWorkflows = (
                 response.result?.externalCiConfig as WebhookDetailsType[],
                 dimensions,
                 workflowOffset,
+                installationType,
                 null,
                 true,
             )
@@ -70,6 +75,7 @@ const getInitialWorkflows = (
                 null,
                 dimensions,
                 workflowOffset,
+                installationType,
             )
         })
     } else {
@@ -82,6 +88,7 @@ const getInitialWorkflows = (
                     externalCIConfig.result as WebhookDetailsType[],
                     dimensions,
                     workflowOffset,
+                    installationType,
                 )
             },
         )
@@ -130,6 +137,7 @@ export function processWorkflow(
     externalCIResponse: WebhookDetailsType[],
     dimensions: WorkflowDimensions,
     workflowOffset: Offset,
+    installationType: InstallationType,
     filter?: (workflows: WorkflowType[]) => WorkflowType[],
     useParentRefFromWorkflow?: boolean,
 ): { appName: string; workflows: Array<WorkflowType>; filteredCIPipelines } {
@@ -190,7 +198,7 @@ export function processWorkflow(
                             cdPipeline.parentPipelineType = branch.parentType
                         }
 
-                        const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId)
+                        const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId, installationType)
                         wf.nodes.push(cdNode)
                     }
                 })
@@ -487,7 +495,12 @@ function webhookToNode(webhookDetails: WebhookDetailsType, dimensions: WorkflowD
     } as NodeAttr
 }
 
-function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions, parentId: number): NodeAttr {
+function cdPipelineToNode(
+    cdPipeline: CdPipeline,
+    dimensions: WorkflowDimensions,
+    parentId: number,
+    installationType: InstallationType,
+): NodeAttr {
     let trigger = cdPipeline.triggerType?.toLowerCase() ?? ''
     let preCD: NodeAttr | undefined = undefined,
         postCD: NodeAttr | undefined = undefined
@@ -557,7 +570,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         parentPipelineId: String(cdPipeline.parentPipelineId),
         parentPipelineType: cdPipeline.parentPipelineType,
         deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest,
-        userApprovalConfig: cdPipeline.userApprovalConfig
+        userApprovalConfig: installationType === InstallationType.ENTERPRISE ? cdPipeline.userApprovalConfig : null,
     } as NodeAttr
     stageIndex++
 

@@ -28,7 +28,7 @@ export default function ApprovalMaterialModal({
     pipelineId,
 }: ApprovalMaterialModalProps) {
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
-    const material = node?.[materialType] ?? []
+    const material = node[materialType] ?? []
     const approvalRequestedMaterial = [],
         remainingMaterial = []
     material.forEach((mat) => {
@@ -43,7 +43,7 @@ export default function ApprovalMaterialModal({
         return (
             <div data-testid="approval-for-deployment-heading" className="trigger-modal__header dc__no-border pb-12 cn-9">
                 <h1 className="modal__title">
-                    Approval for deployment to <span className="fw-6">{node?.environmentName ?? ''}</span>
+                    Approval for deployment to <span className="fw-6">{node.environmentName ?? ''}</span>
                 </h1>
                 <button type="button" className="dc__transparent" onClick={closeApprovalModal}>
                     <img alt="close" src={close} />
@@ -64,6 +64,7 @@ export default function ApprovalMaterialModal({
                         selectedTabIndex === 0 ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'
                     }`}
                     data-selected-tab="0"
+                    data-testid="all-images-tab"
                     onClick={handleTabSelected}
                 >
                     All images
@@ -73,6 +74,7 @@ export default function ApprovalMaterialModal({
                         selectedTabIndex === 1 ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'
                     }`}
                     data-selected-tab="1"
+                    data-testid="approval-requested-tab"
                     onClick={handleTabSelected}
                 >
                     Approval requested<span className="dc__badge ml-6">{approvalRequestedMaterial.length}</span>
@@ -82,7 +84,7 @@ export default function ApprovalMaterialModal({
     }
 
     const getApprovalUsersTippyContent = () => {
-        const approversPresent = node?.approvalUsers?.length > 0
+        const approversPresent = node.approvalUsers?.length > 0
         return (
             <div className="pl-12 pr-12 h-100 dc__overflow-hidden">
                 <div className="pt-12 pb-12 h-100 mxh-210 dc__overflow-scroll">
@@ -112,7 +114,7 @@ export default function ApprovalMaterialModal({
     }
 
     const renderModalBody = () => {
-        const totalApproverText = `${node?.approvalUsers?.length ?? 0} Approvers`
+        const totalApproverText = `${node.approvalUsers?.length ?? 0} Approvers`
         return (
             <div className="trigger-modal__body h-100vh">
                 <div className="material-list__title pb-16">
@@ -121,7 +123,7 @@ export default function ApprovalMaterialModal({
                     ) : (
                         <>
                             {`At least ${
-                                node?.userApprovalConfig?.requiredCount ?? 1
+                                node.userApprovalConfig?.requiredCount ?? 1
                             } approvals are required for an image to be deployed. `}
                             <TippyCustomized
                                 theme={TippyTheme.white}
@@ -142,13 +144,13 @@ export default function ApprovalMaterialModal({
                 </div>
                 <ApprovalMaterial
                     material={selectedTabIndex === 1 ? approvalRequestedMaterial : remainingMaterial}
-                    envName={node?.environmentName}
+                    envName={node.environmentName}
                     stageType={stageType}
                     changeTab={changeTab}
                     toggleSourceInfo={toggleSourceInfo}
                     appId={appId}
                     pipelineId={pipelineId}
-                    parentEnvironmentName={node?.parentEnvironmentName}
+                    parentEnvironmentName={node.parentEnvironmentName}
                     node={node}
                     selectedTabIndex={selectedTabIndex}
                 />

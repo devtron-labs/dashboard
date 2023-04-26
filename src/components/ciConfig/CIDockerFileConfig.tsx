@@ -240,31 +240,31 @@ export default function CIDockerFileConfig({
                             <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name || 'Not selected'}</span>
                         </div>
                     ) : (
-                        <ReactSelect
-                            className="m-0"
-                            classNamePrefix="build-config__select-repository-containing-dockerfile"
-                            tabIndex={3}
-                            isMulti={false}
-                            isClearable={false}
-                            options={sourceConfig.material}
-                            getOptionLabel={(option) => `${option.name}`}
-                            getOptionValue={(option) => `${option.checkoutPath}`}
-                            value={configOverrideView && !allowOverride ? currentMaterial : selectedMaterial}
-                            styles={{
-                                ..._multiSelectStyles,
-                                menu: (base) => ({
-                                    ...base,
-                                    marginTop: '0',
-                                }),
-                            }}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: repositoryOption,
-                                Control: repositoryControls,
-                            }}
-                            onChange={handleFileLocationChange}
-                            isDisabled={configOverrideView && !allowOverride}
-                        />
+                            <ReactSelect
+                                className="m-0"
+                                classNamePrefix="build-config__select-repository-containing-dockerfile"
+                                tabIndex={3}
+                                isMulti={false}
+                                isClearable={false}
+                                options={sourceConfig.material}
+                                getOptionLabel={(option) => `${option.name}`}
+                                getOptionValue={(option) => `${option.checkoutPath}`}
+                                value={configOverrideView && !allowOverride ? currentMaterial : selectedMaterial}
+                                styles={{
+                                    ..._multiSelectStyles,
+                                    menu: (base) => ({
+                                        ...base,
+                                        marginTop: '0',
+                                    }),
+                                }}
+                                components={{
+                                    IndicatorSeparator: null,
+                                    Option: repositoryOption,
+                                    Control: repositoryControls,
+                                }}
+                                onChange={handleFileLocationChange}
+                                isDisabled={configOverrideView && !allowOverride}
+                            />
                     )}
                     {formState.repository.error && <label className="form__error">{formState.repository.error}</label>}
                 </div>
@@ -290,24 +290,24 @@ export default function CIDockerFileConfig({
                                     {selectedMaterial?.checkoutPath}
                                 </span>
                             </Tippy>
-                            <input
-                                tabIndex={4}
-                                type="text"
-                                className="form__input file-name"
-                                data-testid="dockerfile-path-text-box"
-                                placeholder="Dockerfile"
-                                name="dockerfile"
-                                value={
-                                    configOverrideView && !allowOverride
-                                        ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath ||
-                                          'Dockerfile'
-                                        : formState.dockerfile.value
-                                }
-                                onChange={handleOnChangeConfig}
-                                autoComplete={"off"}
-                                autoFocus={!configOverrideView}
-                                disabled={configOverrideView && !allowOverride}
-                            />
+                                <input
+                                    tabIndex={4}
+                                    type="text"
+                                    className="form__input file-name"
+                                    data-testid="dockerfile-path-text-box"
+                                    placeholder="Dockerfile"
+                                    name="dockerfile"
+                                    value={
+                                        configOverrideView && !allowOverride
+                                            ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath ||
+                                            'Dockerfile'
+                                            : formState.dockerfile.value
+                                    }
+                                    onChange={handleOnChangeConfig}
+                                    autoComplete={"off"}
+                                    autoFocus={!configOverrideView}
+                                    disabled={configOverrideView && !allowOverride}
+                                />
                         </div>
                     )}
                     {formState.dockerfile.error && <label className="form__error">{formState.dockerfile.error}</label>}

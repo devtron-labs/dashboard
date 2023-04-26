@@ -148,7 +148,9 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     renderPageHeader() {
         return (
             <>
-                <h1 className="form__title">Projects</h1>
+                <h1 className="form__title" data-testid="project-list-title">
+                    Projects
+                </h1>
                 <p className="form__subtitle">
                     Manage your organization's projects.&nbsp;
                     <a

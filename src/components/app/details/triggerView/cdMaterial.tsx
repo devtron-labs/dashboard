@@ -59,6 +59,7 @@ import { submitApprovalRequest } from './ApprovalNode/Service'
 import { toast } from 'react-toastify'
 import { APPROVAL_ACTION_TYPE, APPROVAL_RUNTIME_STATE } from './ApprovalNode/Constants'
 import { ApprovedTippyContent } from './ApprovalNode/ApprovalMaterial.component'
+import { ARTIFACT_STATUS } from './Constants'
 
 export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
@@ -286,15 +287,17 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         if (
             mat.latest ||
             mat.runningOnParentCd ||
-            mat.artifactStatus === 'Progressing' ||
-            mat.artifactStatus === 'Degraded' ||
-            mat.artifactStatus === 'Failed'
+            mat.artifactStatus === ARTIFACT_STATUS.Progressing ||
+            mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
+            mat.artifactStatus === ARTIFACT_STATUS.Failed
         ) {
             return (
                 <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
                     {this.renderActiveCD(mat)}
-                    {mat.artifactStatus === 'Progressing' && this.renderProgressingCD(mat)}
-                    {(mat.artifactStatus === 'Degraded' || mat.artifactStatus === 'Failed') && this.renderFailedCD(mat)}
+                    {mat.artifactStatus === ARTIFACT_STATUS.Progressing && this.renderProgressingCD(mat)}
+                    {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
+                        mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
+                        this.renderFailedCD(mat)}
                 </div>
             )
         }

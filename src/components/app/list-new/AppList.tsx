@@ -914,6 +914,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 currentTab == AppListConstants.AppTabs.HELM_APPS ? 'active' : ''
                             }`}
                             onClick={() => changeAppTab(AppListConstants.AppTabs.HELM_APPS)}
+                            data-testid="helm-app-list-button"
                         >
                             Helm Apps
                         </a>
@@ -923,10 +924,14 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                     {lastDataSyncTimeString &&
                         (params.appType == AppListConstants.AppType.DEVTRON_APPS ||
                             (params.appType == AppListConstants.AppType.HELM_APPS && !fetchingExternalApps)) && (
-                            <span>
+                            <span data-testid="sync-now-text">
                                 {lastDataSyncTimeString}&nbsp;
                                 {!isDataSyncing && (
-                                    <button className="btn btn-link p-0 fw-6 cb-5" onClick={syncNow} data-testid="sync-now-button">
+                                    <button
+                                        className="btn btn-link p-0 fw-6 cb-5"
+                                        onClick={syncNow}
+                                        data-testid="sync-now-button"
+                                    >
                                         Sync now
                                     </button>
                                 )}

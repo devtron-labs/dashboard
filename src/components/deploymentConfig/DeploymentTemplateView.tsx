@@ -58,7 +58,7 @@ const renderReadMeOption = (openReadMe: boolean, handleReadMeClick: () => void, 
                 disabled ? 'disabled' : ''
             }`}
             onClick={handleReadMeOptionClick}
-            data-testid = {`base-deployment-template-${!openReadMe ? 'readme' : 'hidereadme'}-button`}
+            data-testid={`base-deployment-template-${!openReadMe ? 'readme' : 'hidereadme'}-button`}
         >
             {openReadMe ? (
                 <>
@@ -90,7 +90,7 @@ const renderComparisonOption = (openComparison: boolean, handleComparisonClick: 
                 disabled ? 'disabled' : ''
             }`}
             onClick={handleComparisonOptionClick}
-            data-testid = {`base-deployment-template-${!openComparison ? 'comparevalues' : 'hidecomparison'}-button`}
+            data-testid={`base-deployment-template-${!openComparison ? 'comparevalues' : 'hidecomparison'}-button`}
         >
             {openComparison ? (
                 <>
@@ -171,7 +171,7 @@ export const ChartTypeVersionOptions = ({
                     <ReactSelect
                         options={filteredCharts}
                         isMulti={false}
-                        classNamePrefix = "select-chart-version"
+                        classNamePrefix="select-chart-version"
                         getOptionLabel={(option) => `${option.version}`}
                         getOptionValue={(option) => `${option.id}`}
                         value={selectedChart}
@@ -291,7 +291,7 @@ export const DeploymentTemplateOptionsTab = ({
                             onChange={changeEditorMode}
                         >
                             <RadioGroup.Radio
-                                dataTestid = "base-deployment-template-basic-button"
+                                dataTestid="base-deployment-template-basic-button"
                                 value="gui"
                                 canSelect={!chartConfigLoading && !isBasicViewLocked && codeEditorValue}
                                 isDisabled={isBasicViewLocked}
@@ -327,7 +327,12 @@ export const DeploymentTemplateOptionsTab = ({
                     )}
                 </div>
             ) : (
-                <span className="flex fs-13 fw-6 cn-9 h-32" data-testid = {`${openComparison ? 'compare-deployment-template-heading' : 'readme-deployment-template-heading'}`}>
+                <span
+                    className="flex fs-13 fw-6 cn-9 h-32"
+                    data-testid={`${
+                        openComparison ? 'compare-deployment-template-heading' : 'readme-deployment-template-heading'
+                    }`}
+                >
                     {openComparison ? COMPARE_VALUES_TIPPY_CONTENT.comparing : README_TIPPY_CONTENT.showing}
                 </span>
             )}
@@ -654,7 +659,11 @@ export const DeploymentTemplateEditorView = ({
 
     const renderActionButton = () => {
         return (
-            <span data-testid = "base-deployment-template-switchtoadvanced-button" className="cb-5 cursor fw-6" onClick={changeEditorMode}>
+            <span
+                data-testid="base-deployment-template-switchtoadvanced-button"
+                className="cb-5 cursor fw-6"
+                onClick={changeEditorMode}
+            >
                 Switch to Advanced
             </span>
         )
@@ -856,7 +865,11 @@ export const DeploymentTemplateEditorView = ({
                             className={`row-container ${basicFieldValues?.[BASIC_FIELDS.ENABLED] ? ' mb-8' : ' mb-16'}`}
                         >
                             <label className="fw-6 fs-14 cn-9 mb-8">HTTP Requests Routes</label>
-                            <div className="mt-4" data-testid = "httprequests-routes-toggle" style={{ width: '32px', height: '20px' }}>
+                            <div
+                                className="mt-4"
+                                data-testid="httprequests-routes-toggle"
+                                style={{ width: '32px', height: '20px' }}
+                            >
                                 <Toggle
                                     selected={basicFieldValues?.[BASIC_FIELDS.ENABLED]}
                                     onSelect={handleIngressEnabledToggle}
@@ -865,12 +878,12 @@ export const DeploymentTemplateEditorView = ({
                             </div>
                         </div>
                         {basicFieldValues?.[BASIC_FIELDS.ENABLED] && (
-                            <div className="mb-12" >
+                            <div className="mb-12">
                                 <div className="row-container mb-12">
                                     {renderLabel('Host', 'Host name')}
                                     <input
                                         type="text"
-                                        data-testid = "httprequests-routes-host-textbox"
+                                        data-testid="httprequests-routes-host-textbox"
                                         name={BASIC_FIELDS.HOST}
                                         value={basicFieldValues?.[BASIC_FIELDS.HOSTS]?.[0][BASIC_FIELDS.HOST]}
                                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
@@ -882,7 +895,7 @@ export const DeploymentTemplateEditorView = ({
                                 <div className="row-container mb-4">
                                     {renderLabel('Path', 'Path where this component will listen for HTTP requests')}
                                     <div
-                                        data-testid = "httprequests-routes-addpath-button"
+                                        data-testid="httprequests-routes-addpath-button"
                                         className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120"
                                         data-name={BASIC_FIELDS.PATH}
                                         onClick={addRow}
@@ -897,7 +910,7 @@ export const DeploymentTemplateEditorView = ({
                                             <div />
                                             <input
                                                 type="text"
-                                                data-testid = "httprequests-routes-path-textbox"
+                                                data-testid="httprequests-routes-path-textbox"
                                                 name={BASIC_FIELDS.PATH}
                                                 data-index={index}
                                                 value={path}
@@ -921,7 +934,7 @@ export const DeploymentTemplateEditorView = ({
                             <div>
                                 <input
                                     type="text"
-                                    data-testid = "resources-cpu-textbox"
+                                    data-testid="resources-cpu-textbox"
                                     name={BASIC_FIELDS.RESOURCES_CPU}
                                     value={
                                         basicFieldValues?.[BASIC_FIELDS.RESOURCES][BASIC_FIELDS.LIMITS][
@@ -945,7 +958,7 @@ export const DeploymentTemplateEditorView = ({
                             {renderLabel('Memory', 'Memory available to the application', true)}
                             <div>
                                 <input
-                                    data-testid = "resources-memory-textbox"
+                                    data-testid="resources-memory-textbox"
                                     type="text"
                                     name={BASIC_FIELDS.RESOURCES_MEMORY}
                                     value={
@@ -974,7 +987,7 @@ export const DeploymentTemplateEditorView = ({
                             )}
                             <div
                                 className="pointer cb-5 fw-6 fs-13 flexbox lh-32 w-120"
-                                data-testid = "environment-variable-addvariable-button"
+                                data-testid="environment-variable-addvariable-button"
                                 data-name={BASIC_FIELDS.ENV_VARIABLES}
                                 onClick={addRow}
                             >
@@ -988,7 +1001,7 @@ export const DeploymentTemplateEditorView = ({
                                 <div>
                                     <input
                                         type="text"
-                                        data-testid = "environment-variable-name"
+                                        data-testid="environment-variable-name"
                                         name={`${BASIC_FIELDS.ENV_VARIABLES}_${BASIC_FIELDS.NAME}-${index}`}
                                         data-index={index}
                                         value={envVariable[BASIC_FIELDS.NAME]}
@@ -999,7 +1012,7 @@ export const DeploymentTemplateEditorView = ({
                                         autoComplete="off"
                                     />
                                     <textarea
-                                        data-testid = "environment-variable-value"
+                                        data-testid="environment-variable-value"
                                         name={`${BASIC_FIELDS.ENV_VARIABLES}_${BASIC_FIELDS.VALUE}-${index}`}
                                         data-index={index}
                                         value={envVariable[BASIC_FIELDS.VALUE]}
@@ -1118,8 +1131,11 @@ export const DeploymentConfigFormCTA = ({
                     <button
                         className={`form-submit-cta cta flex h-36 ${_disabled ? 'disabled' : ''}`}
                         type={_disabled ? 'button' : 'submit'}
-                        data-testid = {`${!isEnvOverride && !isCiPipeline ? "base-deployment-template-save-and-next-button" : "base-deployment-template-save-changes-button" }` }
-
+                        data-testid={`${
+                            !isEnvOverride && !isCiPipeline
+                                ? 'base-deployment-template-save-and-next-button'
+                                : 'base-deployment-template-save-changes-button'
+                        }`}
                     >
                         {loading ? (
                             <Progressing />

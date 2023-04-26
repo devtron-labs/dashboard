@@ -10,7 +10,7 @@ import { ReactComponent as DeployIcon } from '../../../../../assets/icons/ic-nav
 import { ReactComponent as ApprovalChecks } from '../../../../../assets/icons/ic-checks.svg'
 import arrow from '../../../../../assets/icons/misc/arrow-chevron-down-black.svg'
 import docker from '../../../../../assets/icons/misc/docker.svg'
-import { CDMaterialType, DeploymentNodeType, MaterialInfo } from '../types'
+import { CDMaterialType, CDModalTabType, DeploymentNodeType, MaterialInfo } from '../types'
 import { GitTriggers } from '../../cicdHistory/types'
 import GitCommitInfoGeneric from '../../../../common/GitCommitInfoGeneric'
 import { Progressing, showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
@@ -25,7 +25,8 @@ import {
     APPROVAL_REQUEST_TOAST_MSG,
     APPROVAL_RUNTIME_STATE,
 } from './Constants'
-import { ApprovalRequestType } from './Types'
+import { ApprovalMaterialProps, ApprovalRequestType } from './Types'
+import { ARTIFACT_STATUS } from '../Constants'
 
 export default function ApprovalMaterial({
     material,
@@ -38,7 +39,7 @@ export default function ApprovalMaterial({
     parentEnvironmentName,
     node,
     selectedTabIndex,
-}) {
+}: ApprovalMaterialProps) {
     const { onClickCDMaterial } = useContext(TriggerViewContext)
     const [tippyVisible, setTippyVisible] = useState<Record<string, boolean>>({})
     const [requestInProgress, setRequestInProgress] = useState(false)
@@ -93,15 +94,17 @@ export default function ApprovalMaterial({
         if (
             mat.latest ||
             mat.runningOnParentCd ||
-            mat.artifactStatus === 'Progressing' ||
-            mat.artifactStatus === 'Degraded' ||
-            mat.artifactStatus === 'Failed'
+            mat.artifactStatus === ARTIFACT_STATUS.Progressing ||
+            mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
+            mat.artifactStatus === ARTIFACT_STATUS.Failed
         ) {
             return (
                 <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
                     {renderActiveCD(mat)}
-                    {mat.artifactStatus === 'Progressing' && renderProgressingCD()}
-                    {(mat.artifactStatus === 'Degraded' || mat.artifactStatus === 'Failed') && renderFailedCD()}
+                    {mat.artifactStatus === ARTIFACT_STATUS.Progressing && renderProgressingCD()}
+                    {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
+                        mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
+                        renderFailedCD()}
                 </div>
             )
         }
@@ -137,6 +140,14 @@ export default function ApprovalMaterial({
             })
     }
 
+    const getRequestButtonTestId = (approvalRequestType: ApprovalRequestType) => {
+        const testId = APPROVAL_CTA_TEXT[approvalRequestType.toLowerCase()].toLowerCase().split(' ').join('-')
+        if (approvalRequestType === ApprovalRequestType.SUBMIT) {
+            return `${testId}-approval`
+        }
+        return `submit-${testId}`
+    }
+
     const getRequestButton = (mat: CDMaterialType, approvalRequestType: ApprovalRequestType) => {
         const _className = `cta flex mt-4 ml-auto mr-16 mb-16 ${
             approvalRequestType === ApprovalRequestType.CANCEL ? 'delete' : ''
@@ -154,6 +165,7 @@ export default function ApprovalMaterial({
                 data-id={mat.id}
                 data-request-id={mat.userApprovalMetadata?.approvalRequestId}
                 data-request-type={approvalRequestType}
+                data-testid={getRequestButtonTestId(approvalRequestType)}
                 onClick={requestInProgress ? noop : approvalRequest}
                 style={_style}
             >
@@ -194,11 +206,17 @@ export default function ApprovalMaterial({
                         placement="top"
                         content="You triggered the build pipeline for this image. The builder of an image cannot approve it."
                     >
-                        <span className="cb-5 dc__opacity-0_5 cursor-default">Approve</span>
+                        <span className="cb-5 dc__opacity-0_5 cursor-default" data-testid="builder-approve-disabled">
+                            Approve
+                        </span>
                     </Tippy>
                 )
             } else if (mat.userApprovalMetadata.approvedUsersData?.some((userData) => userData.userId === userId)) {
-                return <span className="cg-5 cursor-default">Approved by you</span>
+                return (
+                    <span className="cg-5 cursor-default" data-testid="approved-by-you">
+                        Approved by you
+                    </span>
+                )
             } else if (requestedUserId && userId && requestedUserId === userId) {
                 return (
                     <TippyCustomized
@@ -215,7 +233,12 @@ export default function ApprovalMaterial({
                         interactive={true}
                         visible={tippyVisible[mat.id]}
                     >
-                        <span className="cr-5" data-id={mat.id} onClick={toggleTippyVisibility}>
+                        <span
+                            className="cr-5"
+                            data-id={mat.id}
+                            onClick={toggleTippyVisibility}
+                            data-testid="cancel-request"
+                        >
                             Cancel request
                         </span>
                     </TippyCustomized>
@@ -236,13 +259,22 @@ export default function ApprovalMaterial({
                         interactive={true}
                         visible={tippyVisible[mat.id]}
                     >
-                        <span className="cg-5" data-id={mat.id} onClick={toggleTippyVisibility}>
+                        <span
+                            className="cg-5"
+                            data-id={mat.id}
+                            onClick={toggleTippyVisibility}
+                            data-testid="approve-request"
+                        >
                             Approve
                         </span>
                     </TippyCustomized>
                 )
             } else {
-                return <span className="cn-5 cursor-default">Awaiting approval</span>
+                return (
+                    <span className="cn-5 cursor-default" data-testid="awaiting-approval">
+                        Awaiting approval
+                    </span>
+                )
             }
         } else {
             return (
@@ -260,7 +292,12 @@ export default function ApprovalMaterial({
                     interactive={true}
                     visible={tippyVisible[mat.id]}
                 >
-                    <span className="cb-5" data-id={mat.id} onClick={toggleTippyVisibility}>
+                    <span
+                        className="cb-5"
+                        data-id={mat.id}
+                        onClick={toggleTippyVisibility}
+                        data-testid="request-approval"
+                    >
                         Request approval
                     </span>
                 </TippyCustomized>
@@ -301,7 +338,7 @@ export default function ApprovalMaterial({
                         trigger="click"
                         interactive={true}
                     >
-                        <div className="flex left cursor">
+                        <div className="flex left cursor" data-testid="num-of-approvals-check">
                             <ApprovalChecks className="icon-dim-16 scn-6 mr-8" />
                             <span className="fs-13 fw-4">{numOfApprovalsText}</span>
                         </div>
@@ -402,6 +439,29 @@ export default function ApprovalMaterial({
                 </div>
             )
     }
+
+    const handleTabSwitch = (e: any): void => {
+        e.stopPropagation()
+        const { index, id, tab } = e.currentTarget.dataset
+        changeTab(
+            index,
+            +id,
+            tab,
+            tab === CDModalTab.Changes
+                ? {
+                      id: pipelineId,
+                      type: stageType,
+                  }
+                : null,
+            appId,
+        )
+    }
+
+    const handleSourceInfoToggle = (e) => {
+        e.stopPropagation()
+        toggleSourceInfo(+e.currentTarget.dataset.index, null)
+    }
+
     return (
         <>
             {material.map((mat) => {
@@ -438,19 +498,10 @@ export default function ApprovalMaterial({
                                         <li className="tab-list__tab">
                                             <button
                                                 type="button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    changeTab(
-                                                        mat.index,
-                                                        Number(mat.id),
-                                                        CDModalTab.Changes,
-                                                        {
-                                                            id: pipelineId,
-                                                            type: stageType,
-                                                        },
-                                                        appId,
-                                                    )
-                                                }}
+                                                data-id={mat.id}
+                                                data-index={mat.index}
+                                                data-tab={CDModalTab.Changes}
+                                                onClick={handleTabSwitch}
                                                 className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
                                                     mat.tab === CDModalTab.Changes ? 'active' : ''
                                                 }`}
@@ -461,16 +512,10 @@ export default function ApprovalMaterial({
                                         <li className="tab-list__tab">
                                             <button
                                                 type="button"
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    changeTab(
-                                                        mat.index,
-                                                        Number(mat.id),
-                                                        CDModalTab.Security,
-                                                        null,
-                                                        appId,
-                                                    )
-                                                }}
+                                                data-id={mat.id}
+                                                data-index={mat.index}
+                                                data-tab={CDModalTab.Security}
+                                                onClick={handleTabSwitch}
                                                 className={`dc__transparent tab-list__tab-link tab-list__tab-link--vulnerability ${
                                                     mat.tab === CDModalTab.Security ? 'active' : ''
                                                 }`}
@@ -490,11 +535,9 @@ export default function ApprovalMaterial({
                             <button
                                 type="button"
                                 className="material-history__changes-btn"
+                                data-index={mat.index}
                                 data-testid={mat.showSourceInfo ? 'collapse-show-info' : 'collapse-hide-info'}
-                                onClick={(event) => {
-                                    event.stopPropagation()
-                                    toggleSourceInfo(mat.index, null)
-                                }}
+                                onClick={handleSourceInfoToggle}
                             >
                                 {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
                                 <img

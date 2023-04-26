@@ -266,7 +266,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                 >
                     <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
                         <div>Cluster</div>
-                        <div>Connection status</div>
+                        <div data-testid="cluster-list-connection-status">Connection status</div>
                         <div>Nodes</div>
                         <div>NODE Errors</div>
                         <div>K8S version</div>

@@ -93,14 +93,14 @@ export default function Artifacts({
                 {!isJobView && (
                     <CIListItem type="artifact">
                         <div className="flex column left hover-trigger">
-                            <div className="cn-9 fs-14 flex left" data-testid = "artifact-text-visibility">
+                            <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
                                 <CopyTippyWithText
                                     copyText={extractImage(artifact)}
                                     copied={copied}
                                     setCopied={setCopied}
                                 />
                             </div>
-                            <div className="cn-7 fs-12 flex left" data-testid = "artifact-image-text">
+                            <div className="cn-7 fs-12 flex left" data-testid="artifact-image-text">
                                 <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
                             </div>
                         </div>
@@ -209,7 +209,7 @@ const getApprovedTippyContent = (
 
 export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children }: CIListItemType) => {
     return (
-        <div className={`mb-16 ci-artifact ci-artifact--${type}`}>
+        <div className={`mb-16 ci-artifact ci-artifact--${type}`} data-testid="hover-on-report-artifact">
             {type === 'approved-artifact' ? (
                 <>
                     <TippyCustomized

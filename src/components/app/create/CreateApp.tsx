@@ -345,20 +345,28 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             this.changeTemplate(event.target.value)
                         }}
                     >
-                        <RadioGroupItem value={AppCreationType.Blank} dataTestId="create-from-scratch-radio-button">Create from scratch</RadioGroupItem>
-                        <RadioGroupItem value={AppCreationType.Existing} dataTestId="clone-existing-application-radio-button">
+                        <RadioGroupItem value={AppCreationType.Blank} dataTestId="create-from-scratch-radio-button">
+                            Create from scratch
+                        </RadioGroupItem>
+                        <RadioGroupItem
+                            value={AppCreationType.Existing}
+                            dataTestId="clone-existing-application-radio-button"
+                        >
                             Clone existing {this.props.isJobView ? 'job' : 'application'}
                         </RadioGroupItem>
                     </RadioGroup>
                 </div>
                 {this.state.form.appCreationType === AppCreationType.Existing && (
                     <>
-                        <div className="form__row clone-apps dc__inline-block" data-testid="clone-existing-application-radio-button">
+                        <div
+                            className="form__row clone-apps dc__inline-block"
+                            data-testid="clone-existing-application-radio-button"
+                        >
                             <span className="form__label dc__required-field" data-testid="Clone-app-option">
                                 Select an {this.props.isJobView ? 'job' : 'app'} to clone
                             </span>
                             <AsyncSelect
-                                classNamePrefix='app-name-for-clone'
+                                classNamePrefix="app-name-for-clone"
                                 loadOptions={this.loadAppListOptions}
                                 noOptionsMessage={noOptionsMessage}
                                 onChange={this.handleCloneAppChange}
