@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { NavLink, useHistory, useLocation } from 'react-router-dom'
 import { useRouteMatch } from 'react-router'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
-import { getClusterList } from './clusterNodes.service'
+import { getClusterList, getClusterListMin } from './clusterNodes.service'
 import { handleUTCTime, filterImageList, createGroupSelectList } from '../common'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { ClusterDetail, ClusterListResponse, ClusterListType } from './types'
+import { ClusterDetail, ClusterListType } from './types'
 import PageHeader from '../common/header/PageHeader'
 import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -22,6 +22,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     const location = useLocation()
     const history = useHistory()
     const [loader, setLoader] = useState(false)
+    const [minLoader, setMinLoader] = useState(false)
     const [noResults, setNoResults] = useState(false)
     const [searchText, setSearchText] = useState('')
     const [filteredClusterList, setFilteredClusterList] = useState<ClusterDetail[]>([])
@@ -32,23 +33,52 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     const [searchApplied, setSearchApplied] = useState(false)
     const [showTerminalModal, setShowTerminal] = useState(false)
     const [terminalclusterData, setTerminalCluster] = useState<ClusterDetail>()
+    const completeDataLoadedRef = useRef(null)
 
-    const getData = () => {
-        setLoader(true)
-        getClusterList()
-            .then((response: ClusterListResponse) => {
-                setLastDataSync(!lastDataSync)
-                if (response.result) {
-                    const sortedResult = response.result.sort((a, b) => a['name'].localeCompare(b['name']))
+    const getMinData = async () => {
+        try {
+            setMinLoader(true)
+            const { result } = await getClusterListMin()
+            setLastDataSync(!lastDataSync)
+            if (result) {
+                const sortedResult = result
+                    .sort((a, b) => a['name'].localeCompare(b['name']))
+                if (!completeDataLoadedRef.current) {
                     setClusterList(sortedResult)
                     setFilteredClusterList(sortedResult)
                 }
-                setLoader(false)
-            })
-            .catch((error) => {
-                showError(error)
-                setLoader(false)
-            })
+            }
+            setMinLoader(false)
+        } catch (error) {
+            showError(error)
+            setMinLoader(false)
+        }
+    }
+
+    const getFullData = async () => {
+        try {
+            setLoader(true)
+            const { result } = await getClusterList()
+            completeDataLoadedRef.current = true
+            setLastDataSync(!lastDataSync)
+            if (result) {
+                const sortedResult = result.sort((a, b) => a['name'].localeCompare(b['name']))
+                setClusterList(sortedResult)
+                setFilteredClusterList(sortedResult)
+            }
+            setLoader(false)
+        } catch (error) {
+            showError(error)
+            setLoader(false)
+        }
+    }
+
+    const getData = () => {
+        completeDataLoadedRef.current = false
+        setClusterList([])
+        setFilteredClusterList([])
+        getMinData()
+        getFullData()
     }
 
     useEffect(() => {
@@ -126,6 +156,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                         setSearchText(event.target.value)
                     }}
                     onKeyDown={handleFilterKeyPress}
+                    disabled={loader}
                 />
                 {searchApplied && (
                     <button className="search__clear-button" type="button" onClick={clearSearch}>
@@ -162,11 +193,12 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
         const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
         return (
             <div
+                key={`cluster-${clusterData.id}`}
                 className={`cluster-list-row fw-4 cn-9 fs-13 dc__border-bottom-n1 pt-12 pb-12 pr-20 pl-20 hover-class dc__visible-hover ${
                     clusterData.nodeCount && isSuperAdmin ? 'dc__visible-hover--parent' : ''
-                }`}
+                } ${loader ? 'show-shimmer-loading' : ''}`}
             >
-                <div className="cb-5 dc__ellipsis-right flex left">
+                <div data-testid={`cluster-row-${clusterData.name}`} className="cb-5 dc__ellipsis-right flex left">
                     <NavLink
                         to={`${match.url}/${clusterData.id}`}
                         onClick={(e) => {
@@ -176,6 +208,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                         {clusterData.name}
                     </NavLink>
                     <TerminalIcon
+                        data-testid={`cluster-terminal-${clusterData.name}`}
                         className="cursor icon-dim-16 dc__visible-hover--child ml-8"
                         onClick={() => openTerminalComponent(clusterData)}
                     />
@@ -195,8 +228,8 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                         </div>
                     )}
                 </div>
-                <div>{clusterData.nodeCount}</div>
-                <div>
+                <div className="child-shimmer-loading">{clusterData.nodeCount}</div>
+                <div className="child-shimmer-loading">
                     {errorCount > 0 && (
                         <>
                             <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
@@ -204,19 +237,46 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                         </>
                     )}
                 </div>
-                <div className="dc__ellipsis-right">
+                <div className="dc__ellipsis-right child-shimmer-loading">
                     <Tippy className="default-tt" arrow={false} content={clusterData.serverVersion}>
                         <span>{clusterData.serverVersion}</span>
                     </Tippy>
                 </div>
-                <div>{clusterData.cpu?.capacity}</div>
-                <div>{clusterData.memory?.capacity}</div>
+                <div className="child-shimmer-loading">{clusterData.cpu?.capacity}</div>
+                <div className="child-shimmer-loading">{clusterData.memory?.capacity}</div>
             </div>
         )
     }
 
-    if (loader) {
-        return <Progressing pageLoader />
+    const renderClusterList = (): JSX.Element => {
+        if (minLoader) {
+            return (
+                <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 116px)' }}>
+                    <Progressing pageLoader />
+                </div>
+            )
+        } else if (noResults) {
+            return <ClusterNodeEmptyState actionHandler={clearSearch} />
+        } else {
+            return (
+                <div
+                    data-testid="cluster-list-container"
+                    className="dc__overflow-scroll"
+                    style={{ height: `calc(${showTerminalModal ? '50vh - 125px)' : '100vh - 116px)'}` }}
+                >
+                    <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
+                        <div>Cluster</div>
+                        <div data-testid="cluster-list-connection-status">Connection status</div>
+                        <div>Nodes</div>
+                        <div>NODE Errors</div>
+                        <div>K8S version</div>
+                        <div>CPU Capacity</div>
+                        <div>Memory Capacity</div>
+                    </div>
+                    {filteredClusterList?.map((clusterData) => renderClusterRow(clusterData))}
+                </div>
+            )
+        }
     }
 
     return (
@@ -226,41 +286,29 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                 <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
                     {renderSearch()}
                     <div className="fs-13">
-                        {lastDataSyncTimeString && (
-                            <span>
-                                {lastDataSyncTimeString}
-                                <button className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getData}>
-                                    Refresh
-                                </button>
-                            </span>
-                        )}
+                        {minLoader
+                            ? 'Syncing...'
+                            : lastDataSyncTimeString && (
+                                  <span>
+                                      {lastDataSyncTimeString}
+                                      <button
+                                          data-testid="cluster-list-refresh-button"
+                                          className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13"
+                                          onClick={getData}
+                                      >
+                                          Refresh
+                                      </button>
+                                  </span>
+                              )}
                     </div>
                 </div>
-                {noResults ? (
-                    <ClusterNodeEmptyState actionHandler={clearSearch} />
-                ) : (
-                    <div
-                        className="dc__overflow-scroll"
-                        style={{ height: `calc(${showTerminalModal ? '50vh - 125px)' : '100vh - 116px)'}` }}
-                    >
-                        <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
-                            <div>Cluster</div>
-                            <div>Connection status</div>
-                            <div>Nodes</div>
-                            <div>NODE Errors</div>
-                            <div>K8S version</div>
-                            <div>CPU Capacity</div>
-                            <div>Memory Capacity</div>
-                        </div>
-                        {filteredClusterList?.map((clusterData) => renderClusterRow(clusterData))}
-                    </div>
-                )}
+                {renderClusterList()}
             </div>
             {showTerminalModal && terminalclusterData && (
                 <ClusterTerminal
                     clusterId={terminalclusterData.id}
                     clusterName={terminalclusterData.name}
-                    nodeGroups={createGroupSelectList(terminalclusterData?.nodeDetails,'nodeName')}
+                    nodeGroups={createGroupSelectList(terminalclusterData?.nodeDetails, 'nodeName')}
                     closeTerminal={closeTerminal}
                     clusterImageList={nodeImageList}
                     namespaceList={namespaceList[terminalclusterData.name]}

@@ -336,7 +336,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
         return (
             <div className="mb-16">
                 <div className="flexbox w-100 dc__position-rel en-2 bw-1 br-4 h-32">
-                    <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-100-px dc__border-right">
+                    <div className="lh-14 pt-2 pr-8 pb-2 pl-8 fs-12 br-2 flex w-100px dc__border-right">
                         api-token
                         <Tippy
                             className="default-white no-content-padding tippy-shadow w-300"
@@ -501,7 +501,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
 
     const renderCodeSnippet = (value: string, showCopyOption?: boolean): JSX.Element => {
         return (
-            <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel dc__word-break">
+            <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel dc__word-break" data-testid="sample-script">
                 {showCopyOption && (
                     <Tippy
                         className="default-tt font-open-sans"

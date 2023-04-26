@@ -96,6 +96,7 @@ function GroupPermission({
                 hideSelectedOptions={false}
                 onChange={(selected) => setUserGroups((selected || []) as any)}
                 className="basic-multi-select"
+                classNamePrefix="group-permission-dropdown"
             />
             <AppPermissions
                 data={userData}

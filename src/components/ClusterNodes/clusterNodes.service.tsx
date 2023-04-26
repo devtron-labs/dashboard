@@ -17,6 +17,10 @@ export const getClusterList = (): Promise<ClusterListResponse> => {
     return get(Routes.CLUSTER_LIST)
 }
 
+export const getClusterListMin = (): Promise<ClusterListResponse> => {
+    return get(Routes.CLUSTER_LIST_MIN)
+}
+
 export const getClusterCapacity = (clusterId: string): Promise<ClusterCapacityResponse> => {
     return get(`${Routes.CLUSTER_CAPACITY}/${clusterId}`)
 }

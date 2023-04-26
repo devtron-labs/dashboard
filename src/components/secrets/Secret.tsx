@@ -141,7 +141,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
             </p>
             <CollapsedSecretForm
                 appId={appId}
-                id={list.id || 0}
+                id={list?.id || 0}
                 title="Add Secret"
                 appChartRef={appChartRef}
                 update={update}
@@ -231,7 +231,7 @@ export function Tab({ title, active, onClick }) {
     return (
         <nav className={`form__tab white-card flex left ${active ? 'active' : ''}`} onClick={(e) => onClick(title)}>
             <div className="tab__selector"></div>
-            <div className="tab__title">{title}</div>
+            <div data-testid={`secret-${title.toLowerCase().split(' ').join('-')}-radio-button`} className="tab__title">{title}</div>
         </nav>
     )
 }
@@ -243,7 +243,7 @@ export function ListComponent({ icon = '', title, subtitle = '', onClick, classN
             onClick={typeof onClick === 'function' ? onClick : function () {}}
         >
             <img src={icon} className="configuration-list__logo icon-dim-24 fcb-5" />
-            <div className="configuration-list__info">
+            <div data-testid={`add-secret-button`} className="configuration-list__info">
                 <div className="">{title}</div>
                 {subtitle && <div className="configuration-list__subtitle">{subtitle}</div>}
             </div>
@@ -728,6 +728,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <label className="form__label">Data type</label>
                 <div className="form-row__select-external-type flex">
                     <ReactSelect
+                        
                         placeholder="Select Secret Type"
                         options={getTypeGroups()}
                         defaultValue={
@@ -742,6 +743,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                             Option: SecretOptions,
                             GroupHeading,
                         }}
+                        classNamePrefix="secret-data-type"
                     />
                 </div>
                 {isESO && (
@@ -772,6 +774,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             <div className="form-row">
                 <label className="form__label">Name*</label>
                 <input
+                    data-testid="secrets-name-textbox"
                     value={configName.value}
                     autoComplete="off"
                     onChange={props.isUpdate ? null : (e) => setName({ value: e.target.value, error: '' })}
@@ -791,6 +794,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             {selectedTab === 'Data Volume' ? (
                 <div className="form__row">
                     <CustomInput
+                        dataTestid="secrets-volume-path-textbox"
                         value={volumeMountPath.value}
                         autoComplete="off"
                         tabIndex={5}
@@ -806,6 +810,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <div className="mb-16">
                     <Checkbox
                         isChecked={isSubPathChecked}
+
                         onClick={(e) => {
                             e.stopPropagation()
                         }}
@@ -814,7 +819,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}
                     >
-                        <span className="mr-5">
+                        <span data-testid="configmap-sub-path-checkbox" className="mr-5">
                             Set SubPath (same as
                             <a
                                 href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
@@ -874,7 +879,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         disabled={isChartVersion309OrBelow}
                         onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}
                     >
-                        <span className="mr-5">
+                        <span data-testid="configmap-file-permission-checkbox" className="mr-5">
                             {' '}
                             Set File Permission (same as
                             <a
@@ -920,6 +925,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             {isHashiOrAWS || isESO ? (
                 <div className="form__row">
                     <CustomInput
+                        dataTestid="enter-role-ARN"
                         value={roleARN.value}
                         autoComplete="off"
                         tabIndex={4}
@@ -941,8 +947,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                             disabled={false}
                             onChange={changeEditorMode}
                         >
-                            <RadioGroup.Radio value={VIEW_MODE.GUI}>{VIEW_MODE.GUI.toUpperCase()}</RadioGroup.Radio>
-                            <RadioGroup.Radio value={VIEW_MODE.YAML}>{VIEW_MODE.YAML.toUpperCase()}</RadioGroup.Radio>
+                            <RadioGroup.Radio dataTestId="secrets-data-gui-togglebutton" value={VIEW_MODE.GUI}>{VIEW_MODE.GUI.toUpperCase()}</RadioGroup.Radio>
+                            <RadioGroup.Radio dataTestId="secrets-data-yaml-togglebutton" value={VIEW_MODE.YAML}>{VIEW_MODE.YAML.toUpperCase()}</RadioGroup.Radio>
                         </RadioGroup>
                     )}
                 </div>
@@ -1073,12 +1079,12 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                             ])
                     }}
                 >
-                    <img src={addIcon} alt="add" />
+                    <img data-testid="gui-add-parameters-env-link" src={addIcon} alt="add" />
                     Add parameter
                 </div>
             )}
             <div className="form__buttons">
-                <button type="button" className="cta" onClick={handleSubmit}>
+                <button data-testid="secrets-save-button" type="button" className="cta" onClick={handleSubmit}>
                     {loading ? <Progressing /> : `${props.name ? 'Update' : 'Save'} Secret`}
                 </button>
             </div>

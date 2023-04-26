@@ -365,24 +365,26 @@ export default function ResourceList() {
             }
         }
 
-        searchWorkerRef.current.postMessage({
-            type: 'start',
-            payload: {
-                searchText: _searchText,
-                list: _resourceList.data,
-                searchInKeys: [
-                    'name',
-                    'namespace',
-                    'status',
-                    'message',
-                    EVENT_LIST.dataKeys.involvedObject,
-                    'source',
-                    'reason',
-                    'type',
-                ],
-                origin: new URL(process.env.PUBLIC_URL, window.location.href).origin,
-            },
-        })
+        if(resourceList) {
+            searchWorkerRef.current.postMessage({
+                type: 'start',
+                payload: {
+                    searchText: _searchText,
+                    list: _resourceList.data,
+                    searchInKeys: [
+                        'name',
+                        'namespace',
+                        'status',
+                        'message',
+                        EVENT_LIST.dataKeys.involvedObject,
+                        'source',
+                        'reason',
+                        'type',
+                    ],
+                    origin: new URL(process.env.PUBLIC_URL, window.location.href).origin,
+                },
+            })
+        }
     }
 
     const getResourceListData = async (retainSearched?: boolean): Promise<void> => {
@@ -692,7 +694,11 @@ export default function ResourceList() {
                                     placement="top"
                                     content={K8S_RESOURCE_LIST.createResource}
                                 >
-                                    <div className="cursor cb-5 fw-6 fs-13 flexbox" onClick={showResourceModal}>
+                                    <div
+                                        className="cursor cb-5 fw-6 fs-13 flexbox"
+                                        data-testid="create-resource"
+                                        onClick={showResourceModal}
+                                    >
                                         <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
                                     </div>
                                 </Tippy>

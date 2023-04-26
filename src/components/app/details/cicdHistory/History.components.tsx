@@ -81,9 +81,11 @@ export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
                     <div
                         key={`mat-${gitTrigger?.Commit}-${index}`}
                         className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
+                        data-testid="source-code-git-hash"
                         style={{ width: 'min( 100%, 800px )' }}
                     >
                         <GitCommitInfoGeneric
+                            index={index}
                             materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger.GitRepoUrl : ciMaterial?.url}
                             showMaterialInfoHeader={true}
                             commitInfo={gitTrigger}
@@ -111,7 +113,9 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyView
                 <img src={imgSrc ?? AppNotDeployed} alt="" />
             </EmptyState.Image>
             <EmptyState.Title>
-                <h4 className="fw-6 w-300 dc__text-center lh-1-4">{title}</h4>
+                <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
+                    {title}
+                </h4>
             </EmptyState.Title>
             <EmptyState.Subtitle>{subTitle}</EmptyState.Subtitle>
             {link && (
@@ -127,12 +131,12 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyView
 }
 
 export const triggerStatus = (triggerDetailStatus: string): string => {
-    let triggerStatus = triggerDetailStatus.toUpperCase()
+    let triggerStatus = triggerDetailStatus?.toUpperCase()
     if (triggerStatus === TIMELINE_STATUS.ABORTED || triggerStatus === TIMELINE_STATUS.DEGRADED) {
         return 'Failed'
     } else if (triggerStatus === TIMELINE_STATUS.HEALTHY) {
         return 'Succeeded'
     } else {
-        return triggerDetailStatus
+        return triggerDetailStatus 
     }
 }

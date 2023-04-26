@@ -156,6 +156,7 @@ export interface RegexValueType {
 
 export interface CIMaterialState {
     regexValue: Record<number, RegexValueType>
+    savingRegexValue: boolean
     selectedCIPipeline?: any
     isBlobStorageConfigured?: boolean
 }
@@ -241,6 +242,8 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     parentPipelineType?: string
     parentEnvironmentName?: string
     fromAppGrouping: boolean
+    description: string
+    index?: number
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -260,6 +263,8 @@ export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: 
     inputMaterialList: InputMaterials[]
     rollbackMaterialList: InputMaterials[]
     fromAppGrouping: boolean
+    description: string
+    index?: number
 }
 
 export interface TriggerEdgeType {
@@ -278,8 +283,9 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
     appId?: number
     isSelected?: boolean
     fromAppGrouping?: boolean
-    handleSelectionChange?: (_appId: number)=> void
+    handleSelectionChange?: (_appId: number) => void
     isJobView?: boolean
+    index?: number
 }
 
 export interface TriggerViewContextType {
@@ -525,6 +531,7 @@ export interface CiPipelineResult {
     appWorkflowId?: number
     beforeDockerBuild?: Array<Task>
     afterDockerBuild?: Array<Task>
+    ciGitConfiguredId?: number
 }
 //End CI Response
 
@@ -551,6 +558,7 @@ export interface CdPipeline {
     id: number
     environmentId: number
     environmentName?: string
+    description?: string
     ciPipelineId: number
     triggerType: 'AUTOMATIC' | 'MANUAL'
     name: string
@@ -605,6 +613,7 @@ export interface BranchRegexModalProps {
     regexValue
     onCloseBranchRegexModal
     hideHeaderFooter?: boolean
+    savingRegexValue: boolean
 }
 export interface AppDetailsProps {
     isV2: boolean
@@ -673,4 +682,5 @@ export interface MaterialSourceProps {
         refresh: (pipelineId: number, title: string, gitMaterialId: number) => void
     }
     ciPipelineId?: number
+    fromTriggerInfo?: boolean
 }
