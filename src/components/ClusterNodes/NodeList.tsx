@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink, useLocation, useRouteMatch, useParams, useHistory } from 'react-router-dom'
-import { getClusterCapacity, getNodeList, getClusterList } from './clusterNodes.service'
+import { getClusterCapacity, getClusterListMin, getNodeList } from './clusterNodes.service'
 import {
     handleUTCTime,
     Pagination,
@@ -10,7 +10,6 @@ import {
 import { showError, Progressing, BreadCrumb, useBreadcrumb, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterCapacityType,
-    ClusterListResponse,
     ColumnMetadataType,
     TEXT_COLOR_CLASS,
     ERROR_TYPE,
@@ -180,7 +179,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                     let _errorTitle = '',
                         _errorList = [],
                         _nodeErrors = Object.keys(response[1].result.nodeErrors || {})
-                    const _nodeK8sVersions = response[1].result.nodeK8sVersions
+                    const _nodeK8sVersions = response[1].result.nodeK8sVersions || []
                     if (_nodeK8sVersions.length > 1) {
                         let diffType = '',
                             majorVersion,
@@ -239,8 +238,8 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }, [clusterId])
 
     useEffect(() => {
-        getClusterList()
-            .then((response: ClusterListResponse) => {
+        getClusterListMin()
+            .then((response) => {
                 setLastDataSync(!lastDataSync)
                 if (response.result) {
                     const optionList = response.result
@@ -351,13 +350,15 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }
 
     const alphabeticalComparatorMethod = (a, b) => {
+        const firstValue = a[sortByColumn.sortingFieldName] || ""
+        const secondValue = b[sortByColumn.sortingFieldName] || ""
         if (
             (sortOrder === OrderBy.ASC && sortByColumn.sortingFieldName !== 'createdAt') ||
             (sortOrder === OrderBy.DESC && sortByColumn.sortingFieldName === 'createdAt')
         ) {
-            return a[sortByColumn.sortingFieldName].localeCompare(b[sortByColumn.sortingFieldName])
+            return firstValue.localeCompare(secondValue)
         } else {
-            return b[sortByColumn.sortingFieldName].localeCompare(a[sortByColumn.sortingFieldName])
+            return secondValue.localeCompare(firstValue)
         }
     }
 
@@ -603,7 +604,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                         ? `${
                               fixedNodeNameColumn ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
                           } w-280 pl-20`
-                        : 'w-100-px'
+                        : 'w-100px'
                 } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${sortOrder === OrderBy.DESC ? 'desc' : ''} ${
                     column.isSortingAllowed ? ' pointer' : ''
                 } ${column.value === 'status' && 'w-180'}`}
@@ -727,7 +728,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                             className={`dc__inline-block dc__ellipsis-right list-title mr-16 pt-12 pb-12 ${
                                 column.value === 'status'
                                     ? `w-180 ${TEXT_COLOR_CLASS[nodeData['status']] || 'cn-7'}`
-                                    : 'w-100-px'
+                                    : 'w-100px'
                             }`}
                         >
                             {renderNodeRow(column, nodeData)}

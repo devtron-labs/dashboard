@@ -167,7 +167,8 @@ export async function fetchProjectsAndEnvironments(
                     label: env.environment_name,
                     active: env.active,
                     namespace: env.namespace,
-                    clusterName: env.cluster_name
+                    clusterName: env.cluster_name,
+                    description: env.description
                 }
             }), 'clusterName')
         } else {

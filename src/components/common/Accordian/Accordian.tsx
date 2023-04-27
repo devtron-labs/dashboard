@@ -3,7 +3,7 @@ import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-dow
 import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
 
-export function Accordian({ header, options, value, onChange, onClickViewChartButton }) {
+export function Accordian({ header, options, value, onChange, onClickViewChartButton,dataTestId }) {
     const [collapsed, setCollapse] = useState<boolean>(true)
 
     const toggleDropdown = (): void => {
@@ -12,7 +12,11 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
 
     return (
         <div>
-            <div className="flex fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8 dc__content-space cursor" onClick={toggleDropdown}>
+            <div
+                className="flex fs-12 h-36 pt-8 pb-8 cn-6 fw-6 ml-8 dc__content-space cursor"
+                data-testid={dataTestId}
+                onClick={toggleDropdown}
+            >
                 {header}
                 <Dropdown
                     className="icon-dim-24 rotate"
@@ -30,7 +34,10 @@ export function Accordian({ header, options, value, onChange, onClickViewChartBu
                         Add chart repository
                     </button>
                     {options.map((option) => (
-                        <div className="dc__position-rel flex left cursor dc__hover-n50">
+                        <div
+                            className="dc__position-rel flex left cursor dc__hover-n50"
+                            data-testid={`${option.label}-chart-repo`}
+                        >
                             <Checkbox
                                 rootClassName="ml-7 h-32 fs-13 mb-0 mr-10 w-100"
                                 isChecked={value.filter((event) => event === option).length}

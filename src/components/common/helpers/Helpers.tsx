@@ -14,6 +14,7 @@ import { getAggregator } from '../../app/details/appDetails/utils'
 import { SIDEBAR_KEYS } from '../../ResourceBrowser/Constants'
 import { DEFAULT_SECRET_PLACEHOLDER } from '../../cluster/cluster.type'
 import { AUTO_SELECT } from '../../ClusterNodes/constants'
+import { ToastBody3 as UpdateToast } from '../ToastBody'
 
 const commandLineParser = require('command-line-parser')
 
@@ -1102,13 +1103,19 @@ export const processK8SObjects = (
         if (!currentData) {
             _k8SObjectMap.set(groupParent, {
                 name: groupParent,
-                isExpanded: element.gvk.Kind.toLowerCase() === selectedResourceKind,
+                isExpanded:
+                element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
+                element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
+                element.gvk.Kind.toLowerCase() === selectedResourceKind,
                 child: [{ namespaced: element.namespaced, gvk: element.gvk }],
             })
         } else {
             currentData.child = [...currentData.child, { namespaced: element.namespaced, gvk: element.gvk }]
             if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
-                currentData.isExpanded = element.gvk.Kind.toLowerCase() === selectedResourceKind
+                currentData.isExpanded =
+                element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
+                element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
+                element.gvk.Kind.toLowerCase() === selectedResourceKind
             }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind) {
@@ -1130,7 +1137,7 @@ export function createClusterEnvGroup<T>(list: T[], propKey: string, isOptionTyp
         if (!acc[key]) {
             acc[key] = []
         }
-        acc[key].push(isOptionType ? {label: obj[optionName], value: obj[optionName]} : obj)
+        acc[key].push(isOptionType ? {label: obj[optionName], value: obj[optionName], description: obj['description']} : obj)
         return acc
     }, {})
 
@@ -1216,4 +1223,16 @@ export const handleOnBlur = (e): void => {
 
 export const parsePassword = (password:string): string => {
     return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password
+}
+
+export const reloadLocation = () => {
+    window.location.reload()
+}
+
+export const reloadToastBody = () => {
+    return <UpdateToast
+        onClick={reloadLocation}
+        text="You are viewing an outdated version of Devtron UI."
+        buttonText="Reload"
+    />
 }

@@ -84,6 +84,7 @@ export const cdConfigResp = {
                 ciPipelineId: 96,
                 triggerType: 'AUTOMATIC',
                 name: 'amit-16-jan-replica-amit-16-jan-erferf',
+                description: 'test',
                 strategies: [
                     {
                         deploymentTemplate: 'ROLLING',
@@ -102,6 +103,7 @@ export const cdConfigResp = {
                 environmentId: 2,
                 ciPipelineId: 96,
                 triggerType: 'AUTOMATIC',
+                description: 'test',
                 name: 'amit-16-jan-replica-amit-16-jan-erferf2',
                 strategies: [
                     {
@@ -121,6 +123,7 @@ export const cdConfigResp = {
                 environmentId: 3,
                 ciPipelineId: 106,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-deploy',
                 strategies: [
                     {
@@ -140,6 +143,7 @@ export const cdConfigResp = {
                 environmentId: 5,
                 ciPipelineId: 106,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-dep',
                 strategies: [
                     {
@@ -159,6 +163,7 @@ export const cdConfigResp = {
                 environmentId: 6,
                 ciPipelineId: 106,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-dep2',
                 strategies: [
                     {
@@ -188,6 +193,7 @@ export const cdConfigPrePostResp = {
                 environmentId: 3,
                 ciPipelineId: 106,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-deploy',
                 strategies: [
                     {
@@ -207,6 +213,7 @@ export const cdConfigPrePostResp = {
                 environmentId: 5,
                 ciPipelineId: 106,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-dep',
                 strategies: [
                     {
@@ -226,6 +233,7 @@ export const cdConfigPrePostResp = {
                 environmentId: 1,
                 ciPipelineId: 96,
                 triggerType: 'AUTOMATIC',
+                description: 'test',
                 name: 'amit-16-jan-replica-amit-16-jan-erferf',
                 strategies: [
                     {
@@ -255,6 +263,7 @@ export const cdConfigPrePostResp = {
                 environmentId: 2,
                 ciPipelineId: 96,
                 triggerType: 'AUTOMATIC',
+                description: 'test',
                 name: 'amit-16-jan-replica-amit-16-jan-erferf2',
                 strategies: [
                     {
@@ -274,6 +283,7 @@ export const cdConfigPrePostResp = {
                 environmentId: 6,
                 ciPipelineId: 106,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-dep2',
                 strategies: [
                     {
@@ -303,6 +313,7 @@ export const cdConfigPrePostRespWithPrePostSequential = {
                 environmentId: 3,
                 ciPipelineId: 106,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-deploy',
                 strategies: [
                     {
@@ -322,6 +333,7 @@ export const cdConfigPrePostRespWithPrePostSequential = {
                 environmentId: 5,
                 ciPipelineId: 106,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-dep',
                 strategies: [
                     {
@@ -341,6 +353,7 @@ export const cdConfigPrePostRespWithPrePostSequential = {
                 environmentId: 1,
                 ciPipelineId: 96,
                 triggerType: 'AUTOMATIC',
+                description: 'test',
                 name: 'amit-16-jan-replica-amit-16-jan-erferf',
                 strategies: [
                     {
@@ -370,6 +383,7 @@ export const cdConfigPrePostRespWithPrePostSequential = {
                 environmentId: 2,
                 ciPipelineId: 96,
                 triggerType: 'AUTOMATIC',
+                description: 'test',
                 name: 'amit-16-jan-replica-amit-16-jan-erferf2',
                 strategies: [
                     {
@@ -382,6 +396,7 @@ export const cdConfigPrePostRespWithPrePostSequential = {
                 preStage: {
                     status: DEFAULT_STATUS,
                     triggerType: 'AUTOMATIC',
+                    description: 'test',
                     name: 'Pre-Deployment',
                     config: 'version: 0.0.1\ncdPipelineConf:\n  -\n    beforeStages:\n      -\n        name: test-1\n        script: "date \u003e test.report\\necho \'hello\'\\n"\n        outputLocation: ./test.report\n      -\n        name: test-2\n        script: "date \u003e test2.report\\n"\n        outputLocation: ./test2.report',
                 },
@@ -399,6 +414,7 @@ export const cdConfigPrePostRespWithPrePostSequential = {
                 environmentId: 6,
                 ciPipelineId: 106,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-dep2',
                 strategies: [
                     {
@@ -559,6 +575,7 @@ export const workflowsTrigger = [
                 downstreams: [],
                 type: 'CD',
                 status: DEFAULT_STATUS,
+                description: 'test',
                 triggerType: 'Auto',
                 environmentName: '',
                 environmentId: 1,
@@ -577,7 +594,7 @@ export const workflowsTrigger = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -649,6 +666,7 @@ export const workflowsTrigger = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: '',
@@ -679,6 +697,7 @@ export const workflowsTrigger = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: '',
@@ -698,7 +717,7 @@ export const workflowsTrigger = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -773,6 +792,7 @@ export const workflowsCreate = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
                 environmentName: '',
@@ -792,7 +812,7 @@ export const workflowsCreate = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -864,6 +884,7 @@ export const workflowsCreate = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: '',
@@ -894,6 +915,7 @@ export const workflowsCreate = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: '',
@@ -913,7 +935,7 @@ export const workflowsCreate = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -984,6 +1006,7 @@ export const workflowsTriggerPrePostCD = [
                 activeOut: false,
                 downstreams: ['CD-79'],
                 type: 'PRECD',
+                description: 'test',
                 status: 'OK',
                 triggerType: 'Auto',
                 environmentId: 1,
@@ -1012,6 +1035,7 @@ export const workflowsTriggerPrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: ['POSTCD-79'],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
                 environmentName: '',
@@ -1035,6 +1059,7 @@ export const workflowsTriggerPrePostCD = [
                     activeOut: false,
                     downstreams: ['CD-79'],
                     type: 'PRECD',
+                    description: 'test',
                     status: 'OK',
                     triggerType: 'Auto',
                     environmentId: 1,
@@ -1059,6 +1084,7 @@ export const workflowsTriggerPrePostCD = [
                     activeOut: false,
                     downstreams: [],
                     type: 'POSTCD',
+                    description: 'test',
                     status: 'OK',
                     triggerType: 'Auto',
                     environmentName: '',
@@ -1084,6 +1110,7 @@ export const workflowsTriggerPrePostCD = [
                 activeOut: false,
                 downstreams: [],
                 type: 'POSTCD',
+                description: 'test',
                 status: 'OK',
                 triggerType: 'Auto',
                 environmentName: '',
@@ -1101,7 +1128,7 @@ export const workflowsTriggerPrePostCD = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1173,6 +1200,7 @@ export const workflowsTriggerPrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: '',
@@ -1203,6 +1231,7 @@ export const workflowsTriggerPrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: '',
@@ -1222,7 +1251,7 @@ export const workflowsTriggerPrePostCD = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1297,6 +1326,7 @@ export const workflowsCreatePrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
                 environmentName: '',
@@ -1316,7 +1346,7 @@ export const workflowsCreatePrePostCD = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1388,6 +1418,7 @@ export const workflowsCreatePrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: '',
@@ -1418,6 +1449,7 @@ export const workflowsCreatePrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: '',
@@ -1437,7 +1469,7 @@ export const workflowsCreatePrePostCD = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1458,6 +1490,7 @@ export const cdConfigPostResp = {
                 environmentName: 'dev2',
                 ciPipelineId: 106,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-deploy',
                 strategies: [
                     {
@@ -1478,6 +1511,7 @@ export const cdConfigPostResp = {
                 environmentName: 'dev4',
                 ciPipelineId: 106,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-dep',
                 strategies: [
                     {
@@ -1498,6 +1532,7 @@ export const cdConfigPostResp = {
                 environmentName: 'dev',
                 ciPipelineId: 96,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-amit-16-jan-erferf',
                 strategies: [
                     {
@@ -1521,6 +1556,7 @@ export const cdConfigPostResp = {
                 environmentId: 2,
                 ciPipelineId: 96,
                 triggerType: 'AUTOMATIC',
+                description: 'test',
                 name: 'amit-16-jan-replica-amit-16-jan-erferf2',
                 strategies: [
                     {
@@ -1540,6 +1576,7 @@ export const cdConfigPostResp = {
                 environmentId: 6,
                 ciPipelineId: 106,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-dep2',
                 strategies: [
                     {
@@ -1570,6 +1607,7 @@ export const cdConfigPreResp = {
                 environmentName: 'dev2',
                 ciPipelineId: 106,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-deploy',
                 strategies: [
                     {
@@ -1590,6 +1628,7 @@ export const cdConfigPreResp = {
                 environmentName: 'dev4',
                 ciPipelineId: 106,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-dep',
                 strategies: [
                     {
@@ -1610,6 +1649,7 @@ export const cdConfigPreResp = {
                 environmentName: 'dev',
                 ciPipelineId: 96,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-amit-16-jan-erferf',
                 strategies: [
                     {
@@ -1633,6 +1673,7 @@ export const cdConfigPreResp = {
                 environmentId: 2,
                 ciPipelineId: 96,
                 triggerType: 'AUTOMATIC',
+                description: 'test',
                 name: 'amit-16-jan-replica-amit-16-jan-erferf2',
                 strategies: [
                     {
@@ -1652,6 +1693,7 @@ export const cdConfigPreResp = {
                 environmentId: 6,
                 ciPipelineId: 106,
                 triggerType: 'MANUAL',
+                description: 'test',
                 name: 'amit-16-jan-replica-dep2',
                 strategies: [
                     {
@@ -1733,6 +1775,7 @@ export const workflowsTriggerPreCDResp = [
                 downstreams: ['CD-79'],
                 type: 'PRECD',
                 status: DEFAULT_STATUS,
+                description: 'test',
                 triggerType: 'Auto',
                 environmentName: 'dev',
                 environmentId: 1,
@@ -1760,6 +1803,7 @@ export const workflowsTriggerPreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: 'dev',
@@ -1784,6 +1828,7 @@ export const workflowsTriggerPreCDResp = [
                     downstreams: ['CD-79'],
                     type: 'PRECD',
                     status: DEFAULT_STATUS,
+                    description: 'test',
                     triggerType: 'Auto',
                     environmentName: 'dev',
                     environmentId: 1,
@@ -1802,7 +1847,7 @@ export const workflowsTriggerPreCDResp = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1874,6 +1919,7 @@ export const workflowsTriggerPreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: 'dev2',
@@ -1904,6 +1950,7 @@ export const workflowsTriggerPreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: 'dev4',
@@ -1923,7 +1970,7 @@ export const workflowsTriggerPreCDResp = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1998,6 +2045,7 @@ export const workflowsCreatePreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: 'dev',
@@ -2017,7 +2065,7 @@ export const workflowsCreatePreCDResp = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2089,6 +2137,7 @@ export const workflowsCreatePreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: 'dev2',
@@ -2119,6 +2168,7 @@ export const workflowsCreatePreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: 'dev4',
@@ -2138,7 +2188,7 @@ export const workflowsCreatePreCDResp = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2213,6 +2263,7 @@ export const workflowsCreatePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: 'dev',
@@ -2232,7 +2283,7 @@ export const workflowsCreatePostCD = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2304,6 +2355,7 @@ export const workflowsCreatePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: 'dev2',
@@ -2334,6 +2386,7 @@ export const workflowsCreatePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: 'dev4',
@@ -2353,7 +2406,7 @@ export const workflowsCreatePostCD = [
         startY: 0,
         height: 112,
         width: 840,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2428,6 +2481,7 @@ export const workflowsTriggerPostCD = [
                 parentPipelineType: undefined,
                 downstreams: ['POSTCD-79'],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: 'dev',
@@ -2452,6 +2506,7 @@ export const workflowsTriggerPostCD = [
                     activeOut: false,
                     downstreams: [],
                     type: 'POSTCD',
+                    description: 'test',
                     status: DEFAULT_STATUS,
                     triggerType: 'Auto',
                     environmentName: 'dev',
@@ -2477,6 +2532,7 @@ export const workflowsTriggerPostCD = [
                 activeOut: false,
                 downstreams: [],
                 type: 'POSTCD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
                 environmentName: 'dev',
@@ -2494,7 +2550,7 @@ export const workflowsTriggerPostCD = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2566,6 +2622,7 @@ export const workflowsTriggerPostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: 'dev2',
@@ -2596,6 +2653,7 @@ export const workflowsTriggerPostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
                 environmentName: 'dev4',
@@ -2615,7 +2673,7 @@ export const workflowsTriggerPostCD = [
         startY: 0,
         height: 174,
         width: 1280,
-        ciConfiguredGitMaterialId: 80,
+        ciConfiguredGitMaterialId: undefined,
         gitMaterials: [
             {
                 gitMaterialId: 80,

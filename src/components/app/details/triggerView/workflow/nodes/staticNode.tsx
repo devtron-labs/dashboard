@@ -32,7 +32,7 @@ export class StaticNode extends Component<StaticNodeProps> {
                 }`}
                 onClick={this.props.handleGoToWorkFlowEditor}
             >
-                <div className={`workflow-node__git-icon`} />
+                <div className="workflow-node__git-icon mw-16" />
                 <div className="workflow-node__title workflow-node__title--static">
                     <span>/{this.props.title}</span>
                     <CiPipelineSourceConfig

@@ -132,7 +132,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
     }
 
     deletePipeline() {
-        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, +this.props.match.params.appId, +this.props.match.params.workflowId, false, this.state.form.webhookConditionList).then((response) => {
+        deleteCIPipeline(this.state.form, this.state.ciPipeline, this.state.form.materials, +this.props.match.params.appId, +this.props.match.params.workflowId, this.state.ciPipeline.isExternal, this.state.form.webhookConditionList).then((response) => {
             if (response) {
                 toast.success("Pipeline Deleted");
                 this.setState({ loadingData: false });
@@ -219,7 +219,8 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 <button type="button"
                     className='cta cta--workflow delete mr-16'
                     disabled={!canDeletePipeline}
-                    onClick={() => { this.setState({ showDeleteModal: true }) }}>
+                    onClick={() => { this.setState({ showDeleteModal: true }) }}
+                    data-testid="delete-linked-pipeline">
                     Delete Pipeline
                 </button>
             </ConditionalWrap>
