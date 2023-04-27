@@ -74,6 +74,7 @@ import { UPLOAD_STATE } from '../CustomChart/types'
 import { request } from 'http'
 import { ConfigCluster, UserInfos, ClusterInfo, ClusterResult } from './cluster.type'
 import { error } from 'console'
+import { NoMatchingResults } from '../externalLinks/ExternalLinks.component'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -556,7 +557,7 @@ function ClusterForm({
     const [clusterName, setClusterName] = useState([])
     const [errorMessage, setErrorMessage] = useState<string>('')
     const [userName, setUserName] = useState([])
-    const [dataList, setDataList] = useState<Map<string, string[]>>(new Map())
+    const [dataList, setDataList] = useState<string[]>([])
 
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -645,23 +646,47 @@ function ClusterForm({
         }
     }
 
+    const otherResponses = (responseKey: string): boolean => {
+        const listOfResponses = [
+            'cluster_name',
+            'server_url',
+            'active',
+            'defaultClusterComponent',
+            'agentInstallationStage',
+            'k8sVersion',
+            'userName',
+            'insecureSkipTlsVerify',
+            'errorInConnecting',
+            'isCdArgoSetup',
+        ]
+        for (var responses in listOfResponses) {
+            if (responseKey === responses) return false
+        }
+        return true
+    }
+
     const validateClusterDetail = () => {
         try {
             validateCluster(request, saveYamlData).then(
                 (response) => {
                     const map = response.result
                     map.forEach((cluster, userInfoObj) => {
-                        const listOfClusters = [...map.keys()]
-                        setClusterName(listOfClusters)
-                        const map1 = userInfoObj
-                        map1.forEach((userName, userNameObj) => {
-                            const map2 = userNameObj
-                            map2.forEach((key, value) => {
-                                const listOfUserName: string[] = [...map2.keys()]
-                                setDataList(new Map(dataList.set(cluster, listOfUserName)))
-                                setErrorMessage(map2.get('errorInConnecting'))
+                        if (otherResponses(cluster)) {
+                            const _dataList = []
+                            const listOfClusters = [...map.keys()]
+                            setClusterName(listOfClusters)
+                            const map1 = userInfoObj
+                            map1.forEach((userName, userNameObj) => {
+                                const map2 = userNameObj
+                                map2.forEach((key, value) => {
+                                    const listOfUserName: string[] = [...map2.keys()]
+                                    _dataList.push({clusterName: cluster, userList: listOfUserName})
+                                    //setDataList(new Map(_dataList.set(cluster, listOfUserName)))
+                                    setDataList(_dataList)
+                                    setErrorMessage(map2.get('errorInConnecting'))
+                                })
                             })
-                        })
+                        }
                     })
                 },
                 (err) => {
@@ -1102,6 +1127,11 @@ function ClusterForm({
         )
     }
 
+    const renderDataList = () => {
+        const arr = []
+        dataList.forEach((key, value) => arr.push())
+    }
+
     const displayClusterDetails = () => {
         return (
             <>
@@ -1129,7 +1159,15 @@ function ClusterForm({
                             <div>MESSAGE</div>
                             <div></div>
                         </div>
-                        
+                        <div className="dc__overflow-scroll" style={{'height': 'calc(100vh - 153px)'}}>
+                            {(!dataList || dataList.length === 0) ? (
+                                <NoMatchingResults />
+                            ) : (
+                                dataList.map((data, index) => {
+                                    console.log(data, index)
+                                })
+                            )}
+                        </div>
                     </div>
                 </div>
                 {isKubeConfigFile && (
