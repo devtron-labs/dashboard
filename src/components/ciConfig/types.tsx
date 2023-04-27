@@ -254,6 +254,9 @@ export interface CICreateDockerfileOptionProps {
     repository: CIFormStateOptionType
     setCurrentCIBuildConfig: React.Dispatch<React.SetStateAction<CIBuildConfigType>>
     setInProgress: React.Dispatch<React.SetStateAction<boolean>>
+    formState: any
+    ciConfig: CiPipelineResult
+    handleOnChangeConfig: (e) => void 
 }
 
 export interface CIBuildpackBuildOptionsProps {
@@ -306,4 +309,14 @@ export interface TargetPlatformSelectorType {
   targetPlatform?: string
   configOverrideView?: boolean
   updateDockerConfigOverride?: (key: string, value: CIBuildConfigType | OptionType[] | boolean | string) => void
+}
+
+export interface BuildContextProps {
+    disable: boolean
+    setDisable: React.Dispatch<React.SetStateAction<boolean>>
+    formState: any
+    configOverrideView: boolean
+    allowOverride: boolean
+    ciConfig:  CiPipelineResult
+    handleOnChangeConfig: (e) => void
 }
