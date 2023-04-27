@@ -50,3 +50,17 @@ export const termialGAEvents = (actionType, terminalViewProps) => {
             }
     }
 }
+
+export const MANIFEST_SELECTION_MESSAGE = {
+    EDIT_MANIFEST: 'Edit manifest',
+    REVIEW_CHANGES: 'Review changes',
+    APPLY_CHANGES: 'Apply changes',
+    CANCEL: 'Cancel'
+}
+
+export enum EDIT_MODE_TYPE {
+    EDIT = 'edit',
+    REVIEW = 'review',
+    APPLY = 'apply',
+    NON_EDIT = 'nonEdit'
+}

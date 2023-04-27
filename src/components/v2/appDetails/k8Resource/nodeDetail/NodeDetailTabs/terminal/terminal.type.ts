@@ -2,6 +2,7 @@ import React from 'react'
 import { OptionsOrGroups, GroupBase, ActionMeta, StylesConfig } from 'react-select'
 import { SelectComponents } from 'react-select/dist/declarations/src/components'
 import { SocketConnectionType } from '../node.type'
+import { EDIT_MODE_TYPE } from './constants'
 
 export interface TerminalWrapperComponentType {
     type: string
@@ -29,7 +30,7 @@ export interface TerminalWrapperComponentType {
     toggleButton?: boolean
     setTerminalCleared?: () => void
     buttonSelectionState?: string
-    setManifestButtonState?: (button: string) => void
+    setManifestButtonState?: (button: EDIT_MODE_TYPE) => void
 }
 
 export interface TerminalSelectionListDataType {

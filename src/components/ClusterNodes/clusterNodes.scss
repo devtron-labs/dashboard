@@ -342,3 +342,8 @@
         margin-left: 8px;
     }
 }
+
+.cluster-manifest-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}

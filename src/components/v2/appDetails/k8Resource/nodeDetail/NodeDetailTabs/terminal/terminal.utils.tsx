@@ -9,6 +9,9 @@ import { ReactComponent as Connect } from '../../../../../../../assets/icons/ic-
 import { ReactComponent as Help } from '../../../../../../../assets/icons/ic-help.svg'
 import { ReactComponent as Play } from '../../../../../../../assets/icons/ic-play.svg'
 import { ReactComponent as Abort } from '../../../../../../../assets/icons/ic-abort.svg'
+import { ReactComponent as Check } from '../../../../../../../assets/icons/ic-check.svg'
+import { ReactComponent as Pencil } from '../../../../../../../assets/icons/ic-pencil.svg'
+import { ReactComponent as Edit } from '../../../../../../../assets/icons/ic-visibility-on.svg'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
@@ -22,6 +25,7 @@ import {
     ClearTerminalType,
     EditManifestType,
 } from './terminal.type'
+import { EDIT_MODE_TYPE, MANIFEST_SELECTION_MESSAGE } from './constants'
 
 const creatableSelectWrapper = (selectData: SelectWrapperType) => {
     if (selectData.hideTerminalStripComponent) return null
@@ -187,39 +191,68 @@ const clearTerminal = (clearProps: ClearTerminalType) => {
     )
 }
 
-const manifestEditButtons = ({ hideTerminalStripComponent, buttonSelectionState, setManifestButtonState }: EditManifestType) => {
+const manifestEditButtons = ({
+    hideTerminalStripComponent,
+    buttonSelectionState,
+    setManifestButtonState,
+}: EditManifestType) => {
     if (hideTerminalStripComponent) {
         return null
     }
 
     const selectEditMode = () => {
-        setManifestButtonState('review')
+        setManifestButtonState(EDIT_MODE_TYPE.EDIT)
     }
 
     const selectReviewMode = () => {
-        setManifestButtonState('apply')
+        setManifestButtonState(EDIT_MODE_TYPE.REVIEW)
     }
 
     const applyChanges = () => {
-        setManifestButtonState('edit')
+        setManifestButtonState(EDIT_MODE_TYPE.APPLY)
+    }
+
+    const cancelChanges = () => {
+        setManifestButtonState(EDIT_MODE_TYPE.NON_EDIT)
     }
 
     const renderButtons = () => {
-        switch(buttonSelectionState){
-            case 'edit':
-                return <span onClick={selectEditMode}>Edit manifest</span>
-            case 'review':
-                return <span onClick={selectReviewMode}>Review changes</span>
-            case 'apply':
-                return <span onClick={applyChanges}>Apply changes</span>
-        }
-    }
+        const buttonConfig = {
+          edit: {
+            icon: <Pencil className="icon-dim-16 mr-6" />,
+            message: MANIFEST_SELECTION_MESSAGE.REVIEW_CHANGES,
+            onClick: selectReviewMode
+          },
+          review: {
+            icon: <Check className="icon-dim-16 mr-6" />,
+            message: MANIFEST_SELECTION_MESSAGE.APPLY_CHANGES,
+            onClick: applyChanges
+          },
+          noEdit: {
+            icon: <Edit className="icon-dim-16 mr-6" />,
+            message: MANIFEST_SELECTION_MESSAGE.EDIT_MANIFEST,
+            onClick: selectEditMode
+          }
+        };
+      
+        const config = buttonConfig[buttonSelectionState] || buttonConfig.noEdit;
+      
+        return (
+          <span className="flex cb-5 ml-4 cursor fw-6 fs-12 scb-5 left" onClick={config.onClick}>
+            {config.icon}
+            {config.message}
+          </span>
+        );
+      }
+      
 
     return (
         <>
             <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
             {renderButtons()}
-            {buttonSelectionState !== 'edit' && <span>Cancel</span>}
+            {buttonSelectionState !== EDIT_MODE_TYPE.NON_EDIT && (
+                <span className='ml-12 cn-7 fw-6 fs-12 cursor' onClick={cancelChanges}>{MANIFEST_SELECTION_MESSAGE.CANCEL}</span>
+            )}
         </>
     )
 }

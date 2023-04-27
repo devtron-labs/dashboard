@@ -36,10 +36,12 @@ import { getClusterTerminalParamsData } from '../cluster/cluster.util'
 import { useHistory, useLocation } from 'react-router-dom'
 import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'
 import {
+    EDIT_MODE_TYPE,
     TERMINAL_STATUS,
     TERMINAL_TEXT,
 } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
+import YAML from 'yaml'
 
 let clusterTimeOut
 
@@ -88,12 +90,14 @@ export default function ClusterTerminal({
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const [sessionId, setSessionId] = useState<string>()
     const [errorMessage, setErrorMessage] = useState<ErrorMessageType>({ message: '', reason: '' })
-    const [manifestButtonState, setManifestButtonState] = useState('edit')
+    const [manifestButtonState, setManifestButtonState] = useState<EDIT_MODE_TYPE>(EDIT_MODE_TYPE.NON_EDIT)
+    const [manifestData, setManifestData] = useState<string>('')
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
     const terminalRef = useRef(null)
     const prevNodeRef = useRef('')
     const currNodeRef = useRef('')
+    const manifestString = manifestData ? JSON.stringify(YAML.parse(manifestData)) : ''
 
     const payload = {
         clusterId: clusterId,
@@ -101,6 +105,7 @@ export default function ClusterTerminal({
         shellName: selectedTerminalType.value,
         nodeName: selectedNodeName.value,
         namespace: selectedNamespace.value,
+        manifest: manifestString
     }
 
     useEffect(() => {
@@ -117,6 +122,7 @@ export default function ClusterTerminal({
 
     useEffect(() => {
         handleUrlChanges()
+        setManifestButtonState(EDIT_MODE_TYPE.NON_EDIT)
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
 
     useEffect(() => {
@@ -143,6 +149,7 @@ export default function ClusterTerminal({
                         setTerminalCleared(!terminalCleared)
                         socketConnecting()
                         setPodCreated(true)
+                        setManifestButtonState(EDIT_MODE_TYPE.NON_EDIT)
                         setRetry(false)
                     })
                     .catch((error) => {
@@ -190,7 +197,7 @@ export default function ClusterTerminal({
             setUpdate(false)
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
-    }, [selectedNodeName.value, selectedImage.value, isReconnect, selectedNamespace.value])
+    }, [selectedNodeName.value, selectedImage.value, isReconnect, selectedNamespace.value, manifestData])
 
     useEffect(() => {
         try {
@@ -583,7 +590,7 @@ export default function ClusterTerminal({
                 )}
                 {selectedTabIndex === 2 && (
                     <div className="h-100">
-                        <ClusterManifest terminalAccessId={terminalAccessIdRef.current} />
+                        <ClusterManifest terminalAccessId={terminalAccessIdRef.current} manifestMode={manifestButtonState} setManifestMode={setManifestButtonState}  setManifestData={setManifestData} />
                     </div>
                 )}
             </div>
@@ -599,21 +606,21 @@ export default function ClusterTerminal({
                     </div>
                     {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                 </li>
-                {terminalAccessIdRef.current && connectTerminal && (
-                    <li className="tab-list__tab fs-12" onClick={selectEventsTab}>
-                        <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
-                            {SELECT_TITLE.POD_EVENTS}
-                        </div>
-                        {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
-                    </li>
-                )}
-                {terminalAccessIdRef.current && connectTerminal && (
-                    <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
-                        <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
-                            {SELECT_TITLE.POD_MANIFEST}
-                        </div>
-                        {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
-                    </li>
+                {connectTerminal && (
+                    <>
+                        <li className="tab-list__tab fs-12" onClick={selectEventsTab}>
+                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
+                                {SELECT_TITLE.POD_EVENTS}
+                            </div>
+                            {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
+                        </li>
+                        <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
+                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
+                                {SELECT_TITLE.POD_MANIFEST}
+                            </div>
+                            {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
+                        </li>
+                    </>
                 )}
             </ul>
         )
@@ -684,7 +691,7 @@ export default function ClusterTerminal({
         }
     }
 
-    const showShell: boolean = connectTerminal && isPodCreated
+    const hideShell: boolean = !(connectTerminal && isPodCreated && !selectedTabIndex)
 
     const selectionListData: TerminalSelectionListDataType = {
         firstRow: [
@@ -765,7 +772,7 @@ export default function ClusterTerminal({
             },
             {
                 type: 'connectionSwitch',
-                hideTerminalStripComponent: !showShell,
+                hideTerminalStripComponent: hideShell ,
                 stopTerminalConnection,
                 resumePodConnection,
                 toggleButton:
@@ -774,12 +781,12 @@ export default function ClusterTerminal({
             },
             {
                 type: 'clearButton',
-                hideTerminalStripComponent: !showShell,
+                hideTerminalStripComponent: hideShell,
                 setTerminalCleared: clearTerminal,
             },
             {
                 type: 'creatableSelect',
-                hideTerminalStripComponent: !showShell,
+                hideTerminalStripComponent: hideShell,
                 title: SELECT_TITLE.SHELL,
                 placeholder: 'Select Shell',
                 options: clusterShellTypes,
@@ -793,9 +800,9 @@ export default function ClusterTerminal({
             },
             {
                 type: 'manifestEditButtons',
-                hideTerminalStripComponent: selectedTabIndex === 3,
+                hideTerminalStripComponent: selectedTabIndex !== 2,
                 buttonSelectionState: manifestButtonState,
-                setManifestButtonState: setManifestButtonState
+                setManifestButtonState: setManifestButtonState,
             }
         ],
         tabSwitcher: {

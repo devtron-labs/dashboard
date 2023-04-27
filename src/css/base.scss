@@ -350,6 +350,14 @@ a:focus {
     display: inline-flex;
 }
 
+.dc__flex-direction {
+    flex-direction: column;
+}
+
+.dc__flex-1 {
+    flex: 1;
+}
+
 //remove
 .form {
     margin: 0px;

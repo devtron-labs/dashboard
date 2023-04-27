@@ -2,6 +2,7 @@ import React from 'react'
 import { MultiValue } from 'react-select'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
+import { EDIT_MODE_TYPE } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'VERSION_ERROR',
@@ -259,4 +260,11 @@ export interface TerminalDataType {
     nodeName: string
     namespace: string
     terminalAccessId?: number
+}
+
+export interface ClusterManifestType { 
+    terminalAccessId: number,
+    manifestMode: EDIT_MODE_TYPE,
+    setManifestMode: (mode: EDIT_MODE_TYPE) => void
+    setManifestData: (manifest: string) => void
 }
