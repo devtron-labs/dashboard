@@ -191,6 +191,7 @@ export const initCurrentCIBuildConfig = (
     ciConfig: CiPipelineResult,
     selectedCIPipeline: CIPipelineDataType,
     selectedMaterial: any,
+    selectedBuildContextGitMaterial: any,
     dockerfileValue: string,
     buildContextValue: string
 ) => {
@@ -210,6 +211,7 @@ export const initCurrentCIBuildConfig = (
                 buildContext: buildContextValue,
             },
             gitMaterialId: selectedMaterial?.id,
+            buildContextGitMaterialId: selectedBuildContextGitMaterial?.id,
         }
     } else if (ciConfig?.ciBuildConfig) {
         return {
@@ -221,6 +223,7 @@ export const initCurrentCIBuildConfig = (
                 buildContext: buildContextValue,
             },
             gitMaterialId: selectedMaterial?.id,
+            buildContextGitMaterialId: selectedBuildContextGitMaterial?.id,
         }
     } else {
         return {
@@ -232,6 +235,7 @@ export const initCurrentCIBuildConfig = (
                 buildContext: buildContextValue,
             },
             gitMaterialId: selectedMaterial?.id,
+            buildContextGitMaterialId: selectedBuildContextGitMaterial?.id,
         }
     }
 }

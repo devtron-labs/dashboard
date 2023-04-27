@@ -223,8 +223,11 @@ export interface CIDockerFileConfigProps {
     allowOverride: boolean
     selectedCIPipeline: CIPipelineDataType
     currentMaterial: any
+    currentBuildContextGitMaterial: any
     selectedMaterial: any
     setSelectedMaterial: React.Dispatch<React.SetStateAction<any>>
+    selectedBuildContextGitMaterial: any
+    setSelectedBuildContextGitMaterial: React.Dispatch<React.SetStateAction<any>>
     formState: any
     updateDockerConfigOverride: (key: string, value: CIBuildConfigType | boolean | string) => void
     args: CIBuildArgType[]
