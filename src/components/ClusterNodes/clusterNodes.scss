@@ -18,38 +18,21 @@
 {
     display: grid;
     grid-template-rows: 77px 1fr;
-    overflow: hidden;
-    height: 100%;
 
-    .cluster-about__body
-    {
-        overflow: hidden;
-        display: flex;
+    .cluster__body-details {
+        flex-basis: 100%;
 
-        .cluster__body-details {
-            height: 100%;
-            overflow: auto;
-            flex-basis: 100%;
-
-            .cluster-note__card{
-                border-radius: 4px;
-                border: solid 1px var(--N200);
-                background-color: var(--white);
-                width: 100%;
-            }
-            .cluster-note__card-header{
-                padding: 8px 16px;
-                border-radius: 4px 4px 0 0;
-                background-color: var(--N50);
-                border-bottom: 1px solid var(--N200);
-                display: flex;
-                align-items: center;
-                .pencil-icon:hover{
-                    color: var(--B500);
-                    text-decoration: none;
-                    svg path {
-                        stroke: var(--B500);
-                    }
+        .cluster-note__card{
+            background-color: var(--white);
+        }
+        .cluster-note__card-header{
+            padding: 8px 16px;
+            border-radius: 4px 4px 0 0;
+            .pencil-icon:hover{
+                color: var(--B500);
+                text-decoration: none;
+                svg path {
+                    stroke: var(--B500);
                 }
             }
         }
@@ -67,7 +50,7 @@
     height: calc(100vh - 77px);
 
     .list-min-height {
-        min-height: calc(100vh - 250px);
+        min-height: calc(100vh - 279px);
         &.no-result-container {
             overflow: hidden;
             display: grid;
@@ -440,6 +423,7 @@
         align-items: center !important;
         padding-top: 0px !important;
         padding-bottom: 0px !important;
+        padding-right: 0px !important;
         .mde-header-item button {
             padding: 10px 4px !important;
             height: inherit !important;

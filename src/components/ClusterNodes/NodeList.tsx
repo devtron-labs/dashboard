@@ -55,7 +55,7 @@ import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import ClusterTerminal from './ClusterTerminal'
-import { CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG, CLUSTER_DESCRIPTION_UPDATE_MSG, CLUSTER_PAGE_TAB, COLUMN_METADATA, MARKDOWN_EDITOR_COMMANDS, MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT, MARKDOWN_EDITOR_COMMAND_TITLE, MD_EDITOR_TAB, NODE_SEARCH_TEXT, defaultClusterNote } from './constants'
+import { CLUSTER_DESCRIPTION_EMPTY_ERROR_MSG, CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG, CLUSTER_DESCRIPTION_UPDATE_MSG, CLUSTER_PAGE_TAB, COLUMN_METADATA, DEFAULT_MARKDOWN_EDITOR_PREVIEW_MESSAGE, MARKDOWN_EDITOR_COMMANDS, MARKDOWN_EDITOR_COMMAND_ICON_TIPPY_CONTENT, MARKDOWN_EDITOR_COMMAND_TITLE, MD_EDITOR_TAB, NODE_SEARCH_TEXT, defaultClusterNote } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
@@ -107,7 +107,6 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const [selectedNode, setSelectedNode] = useState<string>()
     const [selectedTabName, setSelectedTabName] = useState<CLUSTER_PAGE_TAB_TYPE>(CLUSTER_PAGE_TAB.ABOUT)
     const [isEditDescriptionView, setEditDescriptionView] = useState<boolean>(true)
-    const reactMdeRef = useRef(null)
     const [descriptionText, setDescriptionText] = useState<string>(defaultClusterNote)
     const [descriptionUpdatedBy, setDescriptionUpdatedBy] = useState<string>(defaultClusterNote)
     const [descriptionUpdatedOn, setDescriptionUpdatedOn] = useState<string>('')
@@ -316,8 +315,19 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                 setClusterAboutLoader(false)
             })
     }
-
+    const validateDescriptionText = (descriptionText: string): boolean => { 
+        let isValid = true
+        if (modifiedDescriptionText.length === 0) {
+            toast.error(CLUSTER_DESCRIPTION_EMPTY_ERROR_MSG)
+            isValid = false
+        }
+        return isValid
+    }
     const updateClusterAbout = (): void => {
+        const isValidate = validateDescriptionText(modifiedDescriptionText)
+        if (!isValidate) {
+            return
+        }
         const requestPayload = {
             cluster_id: Number(clusterId),
             description: modifiedDescriptionText,
@@ -940,7 +950,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
             )
         }
         return (
-            <div className="cluster-about__body h-100">
+            <div className="flexbox dc__overflow-hidden h-100">
                 <div className="cluster-column-container">
                     <div className="pr-16 pt-16 pl-16 pb-16">
                         <div className="icon-dim-48 flex br-4 cb-5 bcb-1 scb-5">
@@ -1048,11 +1058,11 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
 
     const randerClusterNote = (): JSX.Element => {
         return (
-            <div className="cluster__body-details">
-                <div className="pl-16 pr-16 pt-16 pb-16">
+            <div className="cluster__body-details h-100 dc__overflow-auto">
+                <div className="pl-16 pr-16 pt-16 pb-16 h-100">
                     {isEditDescriptionView ? (
-                        <div data-color-mode="light" className="min-w-575 cluster-note__card">
-                            <div className="cluster-note__card-header h-36 fs-13">
+                        <div className="min-w-575 cluster-note__card br-4 dc__border w-100">
+                            <div className="cluster-note__card-header flex bc-n50 dc__border-bottom h-36 fs-13">
                                 <div className="flex left fw-6 lh-20 cn-9">
                                     <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
                                     Description
@@ -1077,7 +1087,6 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                     textArea: 'mark-down-editor__hidden',
                                 }}
                                 value={descriptionText}
-                                minEditorHeight={window.innerHeight - 165}
                                 selectedTab="preview"
                                 generateMarkdownPreview={(markdown) =>
                                     Promise.resolve(<MarkDown markdown={markdown} breaks />)
@@ -1085,7 +1094,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                             />
                         </div>
                     ) : (
-                        <div ref={reactMdeRef} className="min-w-500">
+                        <div className="min-w-500">
                             <ReactMde
                                 classes={{
                                     reactMde: 'mark-down-editor-container',
@@ -1098,10 +1107,11 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                 value={modifiedDescriptionText}
                                 onChange={setModifiedDescriptionText}
                                 minEditorHeight={window.innerHeight - 165}
+                                minPreviewHeight={150}
                                 selectedTab={selectedTab}
                                 onTabChange={setSelectedTab}
                                 generateMarkdownPreview={(markdown : string) =>
-                                    Promise.resolve(<MarkDown markdown={markdown} breaks />)
+                                    Promise.resolve(<MarkDown markdown={markdown || DEFAULT_MARKDOWN_EDITOR_PREVIEW_MESSAGE} breaks />)
                                 }
                                 childProps={{
                                     writeButton: {
@@ -1195,7 +1205,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }
 
     return (
-        <div className="cluster-about-page">
+        <div className="cluster-about-page h-100 dc__overflow-hidden">
             <PageHeader
                 breadCrumbs={renderBreadcrumbs}
                 isBreadcrumbs={true}
