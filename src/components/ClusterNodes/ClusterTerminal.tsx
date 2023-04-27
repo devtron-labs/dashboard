@@ -572,7 +572,7 @@ export default function ClusterTerminal({
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
                 }`}
             >
-                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>
+                <div className={`${selectedTabIndex === 0 ? 'h-100 flexbox' : 'dc__hide-section'}`}>
                     {(!isNodeDetailsPage || connectTerminal) && terminalView}
                 </div>
                 {selectedTabIndex === 1 && (

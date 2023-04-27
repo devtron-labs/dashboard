@@ -43,6 +43,7 @@ function NodeDetailComponent({
     const [fetchingResource, setFetchingResource] = useState(
         isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
     )
+    const [selectedContainer, setSelectedContainer] = useState<Map<string, string>>(new Map())
     const { path, url } = useRouteMatch()
     const toggleManagedFields = (managedFieldsExist: boolean) => {
         if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
@@ -51,7 +52,7 @@ function NodeDetailComponent({
             setManagedFields(false)
         }
     }
-
+    
     useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
 
     useEffect(() => {
@@ -288,6 +289,9 @@ function NodeDetailComponent({
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
+                            selectedContainer={selectedContainer}
+                            setSelectedContainer={setSelectedContainer}
+
                         />
                     </Route>
                     <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
