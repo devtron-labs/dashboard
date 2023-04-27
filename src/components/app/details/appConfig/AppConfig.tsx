@@ -567,7 +567,7 @@ function renderNavItem(item: CustomNavItemsType) {
             {item.isLocked && (
                 <Lock
                     className="app-compose__nav-icon icon-dim-20"
-                    data-testid={`${item.isLocked ? linkDataTestName : 'appconfig'}-lockicon`}
+                    data-testid={`${linkDataTestName}-lockicon`}
                 />
             )}
         </NavLink>
