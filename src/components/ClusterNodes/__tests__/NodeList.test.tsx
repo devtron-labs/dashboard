@@ -4,7 +4,7 @@ import { BrowserRouter, Route, Router } from 'react-router-dom'
 import { createMemoryHistory } from 'history'
 import '@testing-library/jest-dom'
 import { act, render } from '@testing-library/react'
-import { clusterId } from '../__mocks__/clusterAbout.mock'
+import { clusterId, mockSuccessResponse, mockFailedResponse } from '../__mocks__/clusterAbout.mock'
 import NodeList from '../NodeList'
 
 // TODO : Breaking Because of Page Header Component and remove try catch after fixing it
@@ -22,15 +22,6 @@ describe('Test randerAboutCluster function', () => {
         it('should render with default cluster name screen', async () => {
             try {
                 let component
-                const mockSuccessResponse = {
-                    code: 200,
-                    result: {
-                        cluster_name: 'default_cluster',
-                        cluster_id: clusterId,
-                        cluster_created_on: new Date().toISOString(),
-                        cluster_created_by: "Admin",
-                    }
-                }
                 const mockJsonPromise = Promise.resolve(mockSuccessResponse)
                 const mockFetchPromise = Promise.resolve({
                     json: () => mockJsonPromise,
@@ -61,9 +52,6 @@ describe('Test randerAboutCluster function', () => {
         it('should render cluster details empty state for invalid cluster id', async () => {
             try {
                 let component
-                const mockFailedResponse = {
-                    code: 404,
-                }
                 const mockJsonPromise = Promise.resolve(mockFailedResponse)
                 const mockFetchPromise = Promise.resolve({
                     json: () => mockJsonPromise,

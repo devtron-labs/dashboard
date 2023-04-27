@@ -393,9 +393,9 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
             text = text
             .replace(uncheckedCheckboxInputElement , `<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" checked disabled>`)
             .replace(checkedCheckboxInputElement, `<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" disabled>`);
-            return '<li style="list-style: none">' + text + '</li>';     
+            return `<li style="list-style: none">${text}</li>`     
         } 
-        return '<li>' + text + '</li>';     
+        return `<li>${text}</li>`;     
     };
     
     renderer.table = function (header, body) {
