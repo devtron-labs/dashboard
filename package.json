@@ -9,7 +9,7 @@
         "@sentry/tracing": "^7.3.1",
         "@tippyjs/react": "^4.2.0",
         "@typeform/embed-react": "^2.15.0",
-        "@types/marked": "^4.0.3",
+        "@types/marked": "^4.0.8",
         "@types/react-select": "^5.0.1",
         "ansi_up": "^5.1.0",
         "command-line-parser": "^0.1.10",
@@ -18,7 +18,7 @@
         "fast-json-patch": "^3.1.1",
         "flexsearch": "^0.6.32",
         "http-proxy-middleware": "^2.0.4",
-        "marked": "^4.0.18",
+        "marked": "^4.3.0",
         "moment": "^2.29.4",
         "monaco-editor": "^0.19.3",
         "monaco-editor-webpack-plugin": "^1.8.2",
@@ -47,7 +47,7 @@
         "xterm-webfont": "^2.0.0",
         "yaml": "^1.7.2",
         "yamljs": "^0.3.0",
-        "@devtron-labs/devtron-fe-common-lib": "0.0.7-beta-33"
+        "@devtron-labs/devtron-fe-common-lib": "0.0.7-beta-35"
     },
     "scripts": {
         "lint": "eslint src/**/*.tsx",
