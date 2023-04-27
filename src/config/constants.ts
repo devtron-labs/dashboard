@@ -219,6 +219,9 @@ export const Routes = {
     APP_FILTER_LIST: 'app/app-listing/autocomplete',
     APP_LIST_GROUP: 'app/list/group',
     CUSTOM_ROLES: 'rbac/role',
+    GROUPS: 'groups',
+    GROUP: 'group',
+
 }
 
 export const ViewType = {

@@ -14,16 +14,19 @@ export interface BuildDetails {
     isSecurityModuleInstalled: boolean
     isBlobStorageConfigured: boolean
     isJobView?: boolean
+    appIdFromParent?: string
 }
 
 export interface HistoryLogsType {
     triggerDetails: History
     isBlobStorageConfigured?: boolean
     isJobView?: boolean
+    appIdFromParent?: string
 }
 
 export interface SecurityTabType {
     ciPipelineId: number
     artifactId: number
     status: string
+    appIdFromParent?: string
 }

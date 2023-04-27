@@ -996,7 +996,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 stageType={DeploymentNodeType[this.state.nodeType]}
                                 material={material}
                                 materialType={this.state.materialType}
-                                envName={node.environmentName}
+                                envName={node?.environmentName}
                                 isLoading={this.state.isLoading}
                                 changeTab={this.changeTab}
                                 triggerDeploy={this.onClickTriggerCDNode}
@@ -1020,7 +1020,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     renderWorkflow() {
         return (
             <React.Fragment>
-                {this.state.workflows.map((workflow) => {
+                {this.state.workflows.map((workflow,index) => {
                     return (
                         <Workflow
                             key={workflow.id}
@@ -1035,6 +1035,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             location={this.props.location}
                             match={this.props.match}
                             isJobView={this.props.isJobView}
+                            index={index}
                         />
                     )
                 })}
