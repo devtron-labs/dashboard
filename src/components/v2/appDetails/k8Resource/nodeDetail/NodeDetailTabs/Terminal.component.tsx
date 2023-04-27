@@ -113,7 +113,7 @@ function TerminalComponent({
         selectedTab(NodeDetailTab.TERMINAL, url)
         setSelectedContainerName(_selectedContainer)
         handleAbort()
-    }, [params.podName, params.node, selectedContainerValue])
+    }, [params.podName, params.node, _selectedContainer])
 
     const handleDisconnect = () => {
         setSocketConnection(SocketConnectionType.DISCONNECTING)
@@ -127,6 +127,9 @@ function TerminalComponent({
         setSelectedContainerName(selected.value)
         setSelectedContainer(selectedContainer.set(selectedContainerValue, selected.value))
     }
+
+    console.log(selectedContainerValue);
+    
 
     const handleShellChange = (selected: OptionType) => {
         setSelectedTerminalType(selected)
