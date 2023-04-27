@@ -128,9 +128,6 @@ function TerminalComponent({
         setSelectedContainer(selectedContainer.set(selectedContainerValue, selected.value))
     }
 
-    console.log(selectedContainerValue);
-    
-
     const handleShellChange = (selected: OptionType) => {
         setSelectedTerminalType(selected)
     }
