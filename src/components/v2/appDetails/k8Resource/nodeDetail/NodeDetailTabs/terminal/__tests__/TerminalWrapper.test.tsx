@@ -47,7 +47,7 @@ describe('TerminalWrapper', () => {
         expect(firstStrip).toBeInTheDocument()
         const secondStrip = container.querySelector('.flex.left.bcn-0.pl-20.dc__border-top.h-28')
         expect(secondStrip).not.toBeInTheDocument()
-        const terminal = container.querySelector('.terminal-wrapper.h-100.w-100')
+        const terminal = container.querySelector('.terminal-wrapper')
         expect(terminal).toBeInTheDocument()
 
         useHeightObserverMock.mockRestore()
@@ -70,7 +70,7 @@ describe('TerminalWrapper', () => {
         expect(firstStrip).toBeInTheDocument()
         const secondStrip = container.querySelector('.flex.left.bcn-0.pl-20.dc__border-top.h-28')
         expect(secondStrip).toBeInTheDocument()
-        const terminal = container.querySelector('.terminal-wrapper.h-100.w-100')
+        const terminal = container.querySelector('.terminal-wrapper')
         expect(terminal).toBeInTheDocument()
 
         useHeightObserverMock.mockRestore()
@@ -95,7 +95,7 @@ describe('TerminalWrapper', () => {
         expect(secondStrip).toBeInTheDocument()
         const terminalWrapper = container.querySelector('.cluster-terminal__wrapper')
         expect(terminalWrapper).toBeInTheDocument()
-        const terminal = container.querySelector('.terminal-wrapper.h-100.w-100')
+        const terminal = container.querySelector('.terminal-wrapper')
         expect(terminal).toBeInTheDocument()
 
         useHeightObserverMock.mockRestore()

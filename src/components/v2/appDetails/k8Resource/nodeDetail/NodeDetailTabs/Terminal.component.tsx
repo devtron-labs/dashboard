@@ -19,13 +19,15 @@ import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
 import { get, showError } from '@devtron-labs/devtron-fe-common-lib'
 
-let clusterTimeOut 
+let clusterTimeOut
 
 function TerminalComponent({
     selectedTab,
     isDeleted,
     isResourceBrowserView,
     selectedResource,
+    selectedContainer,
+    setSelectedContainer,
 }: TerminalComponentProps) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
     const { url } = useRouteMatch()
@@ -34,7 +36,9 @@ function TerminalComponent({
     const containers = (
         isResourceBrowserView ? selectedResource.containers : getContainersData(podMetaData)
     ) as Options[]
-    const [selectedContainerName, setSelectedContainerName] = useState(containers?.[0]?.name || '')
+    const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
+    const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
+    const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
     const [selectedTerminalType, setSelectedTerminalType] = useState(shellTypes[0])
     const [terminalCleared, setTerminalCleared] = useState(false)
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
@@ -101,13 +105,15 @@ function TerminalComponent({
             // Wait a short amount of time before attempting to reconnect
             clusterTimeOut = setTimeout(() => {
                 setSocketConnection(SocketConnectionType.CONNECTING)
-            }, 1000)
+            }, 300)
         }
     }, [selectedTerminalType, selectedContainerName])
 
     useEffect(() => {
         selectedTab(NodeDetailTab.TERMINAL, url)
-    }, [params.podName, params.node, selectedResource?.name])
+        setSelectedContainerName(_selectedContainer)
+        handleAbort()
+    }, [params.podName, params.node, _selectedContainer])
 
     const handleDisconnect = () => {
         setSocketConnection(SocketConnectionType.DISCONNECTING)
@@ -119,6 +125,7 @@ function TerminalComponent({
 
     const handleContainerChange = (selected: OptionType) => {
         setSelectedContainerName(selected.value)
+        setSelectedContainer(selectedContainer.set(selectedContainerValue, selected.value))
     }
 
     const handleShellChange = (selected: OptionType) => {
@@ -155,7 +162,7 @@ function TerminalComponent({
                 title: 'Container ',
                 placeholder: 'Select container',
                 options: getGroupedContainerOptions(containers),
-                defaultValue: defaultContainerOption,
+                value: defaultContainerOption,
                 onChange: handleContainerChange,
                 styles: getContainerSelectStyles(),
                 components: {
