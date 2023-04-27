@@ -254,12 +254,16 @@ export interface CICreateDockerfileOptionProps {
     currentMaterial: any
     selectedMaterial: any
     handleFileLocationChange: (selectedMaterial) => void
-    repository: CIFormStateOptionType
+    repository?: CIFormStateOptionType
     setCurrentCIBuildConfig: React.Dispatch<React.SetStateAction<CIBuildConfigType>>
     setInProgress: React.Dispatch<React.SetStateAction<boolean>>
+    currentBuildContextGitMaterial: any
+    selectedBuildContextGitMaterial: any
+    handleBuildContextPathChange: (selectedBuildContextGitMaterial) => void
     formState: any
     ciConfig: CiPipelineResult
-    handleOnChangeConfig: (e) => void 
+    handleOnChangeConfig: (e) => void
+    renderInfoCard: () => JSX.Element
 }
 
 export interface CIBuildpackBuildOptionsProps {

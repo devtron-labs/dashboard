@@ -14,10 +14,11 @@ import CIBuildpackBuildOptions, {
 } from './CIBuildpackBuildOptions'
 import { getBuildpackMetadata, getDockerfileTemplate } from './service'
 import CICreateDockerfileOption from './CICreateDockerfileOption'
-import { showError, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import {showError, ConditionalWrap, TippyCustomized, TippyTheme} from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BuildersAndFrameworksType, CIDockerFileConfigProps } from './types'
-import BuildContext from './BuildContext'
+import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 
 export default function CIDockerFileConfig({
     configOverrideView,
@@ -185,6 +186,40 @@ export default function CIDockerFileConfig({
         return ciConfig?.ciBuildConfig?.ciBuildType === id
     }
 
+    const getBuildContextAdditionalContent = ()=>{
+        return (
+            <div className="p-12 fs-13">
+                {'To build all files from the root, use (.) as the build context, or set build context by referring a subdirectory path such as '}
+                <span className= "build-context-highlight">{'/myfolder'}</span>
+                {' or '}
+                <span className= "build-context-highlight">{'/myfolder/buildhere'}</span>
+                {'if path not set, default path will be root dir of selected git repository'}
+            </div>
+        )
+    }
+
+    const renderInfoCard = (): JSX.Element => {
+        return (
+            <TippyCustomized
+                theme={TippyTheme.white}
+                className="w-300 h-100 fcv-5"
+                placement="right"
+                Icon={QuestionFilled}
+                heading={'Docker build context'}
+                infoText='Specify the set of files to be built by referring to a specific subdirectory, relative to the root of your repository.'
+                showCloseButton={true}
+                trigger="click"
+                interactive={true}
+                documentationLinkText="View Documentation"
+                additionalContent = {getBuildContextAdditionalContent()}
+            >
+                <div className="icon-dim-16 fcn-9 ml-8 cursor">
+                    <Question />
+                </div>
+            </TippyCustomized>
+        )
+    }
+
     const renderCIBuildTypeOptions = () => {
         return (
             <div className="flex mb-16">
@@ -346,6 +381,14 @@ export default function CIDockerFileConfig({
                     </div>
                 </div>
 
+                <div className="flex left row ml-0 build-context-label mb-6">
+                    <span className="dc__required-field">Build context</span>
+                    {!configOverrideView || allowOverride ? (
+                        <div className="flex row ml-0">
+                            {renderInfoCard()}
+                        </div>
+                    ) : null}
+                </div>
 
                 <div className="mb-4 form-row__docker">
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
@@ -453,15 +496,19 @@ export default function CIDockerFileConfig({
                     frameworks={buildersAndFrameworks.frameworks}
                     sourceConfig={sourceConfig}
                     currentMaterial={currentMaterial}
+                    currentBuildContextGitMaterial={currentBuildContextGitMaterial}
                     selectedMaterial={selectedMaterial}
                     handleFileLocationChange={handleFileLocationChange}
+                    handleBuildContextPathChange={handleBuildContextPathChange}
                     repository={formState.repository}
                     currentCIBuildConfig={currentCIBuildConfig}
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
                     setInProgress={setInProgress}
+                    selectedBuildContextGitMaterial={selectedBuildContextGitMaterial}
                     ciConfig={ciConfig}
                     formState={formState}
                     handleOnChangeConfig={handleOnChangeConfig}
+                    renderInfoCard={renderInfoCard}
                 />
             )}
             {ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE && (

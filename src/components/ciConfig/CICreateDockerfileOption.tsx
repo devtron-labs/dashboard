@@ -17,8 +17,7 @@ import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwi
 import { CIBuildType } from '../ciPipeline/types'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
 import { renderOptionIcon, repositoryControls, repositoryOption } from './CIBuildpackBuildOptions'
-import { USING_ROOT, _customStyles } from './CIConfig.utils'
-import BuildContext from './BuildContext'
+import { _customStyles, _multiSelectStyles } from './CIConfig.utils'
 
 export default function CICreateDockerfileOption({
     configOverrideView,
@@ -27,14 +26,17 @@ export default function CICreateDockerfileOption({
     sourceConfig,
     currentMaterial,
     selectedMaterial,
-    repository,
     handleFileLocationChange,
     currentCIBuildConfig,
     setCurrentCIBuildConfig,
     setInProgress,
-    formState,
+    selectedBuildContextGitMaterial,
+    handleBuildContextPathChange,
+    currentBuildContextGitMaterial,
     ciConfig,
+    formState,
     handleOnChangeConfig,
+    renderInfoCard
 }: CICreateDockerfileOptionProps) {
     const [languages, setLanguages] = useState<LanguageOptionType[]>([])
     const [languageFrameworks, setLanguageFrameworks] = useState<Map<string, FrameworkOptionType[]>>()
@@ -45,7 +47,6 @@ export default function CICreateDockerfileOption({
     const [copied, setCopied] = useState(false)
     const controller = new AbortController()
     const signal = controller.signal
-    const [disable, setDisable] = useState<boolean>(false)
     useEffect(() => {
         if (frameworks.length > 0) {
             const _languageFrameworks = new Map<string, FrameworkOptionType[]>()
@@ -117,6 +118,10 @@ export default function CICreateDockerfileOption({
         }
     }, [frameworks])
 
+    const handleGitRepoChange = (selectedMaterial) => {
+        handleBuildContextPathChange(selectedMaterial)
+        handleFileLocationChange(selectedMaterial)
+    }
     const getTemplateKey = (_selectedLanguage: LanguageOptionType, _selectedFramework: FrameworkOptionType) => {
         return `${_selectedLanguage.value}-${_selectedFramework?.value || 'no-framework'}`
     }
@@ -213,22 +218,6 @@ export default function CICreateDockerfileOption({
         getTemplateData(selectedLanguage, selected)
     }
 
-    useEffect(() => {
-        if (disable) {
-            if (configOverrideView) {
-                setCurrentCIBuildConfig({
-                    ...currentCIBuildConfig,
-                    dockerBuildConfig: {
-                        ...currentCIBuildConfig.dockerBuildConfig,
-                        buildContext: '.',
-                    },
-                })
-            } else {
-                formState.buildContext.value = '.'
-            }
-        }
-    }, [disable])
-
     const resetChanges = () => {
         const editorData = templateData && templateData[getTemplateKey(selectedLanguage, selectedFramework)]
         setEditorValue(editorData?.data)
@@ -246,6 +235,37 @@ export default function CICreateDockerfileOption({
     const renderLanguageOptions = (editorData: TemplateDataType) => {
         return (
             <div className="flex">
+                <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Repo to place Dockerfile</span>
+                {configOverrideView && !allowOverride ? (
+                    <div className="flex left">
+                        {selectedMaterial?.icon && (
+                            <img
+                                src={selectedMaterial.icon}
+                                alt={selectedMaterial.label}
+                                className="icon-dim-20 mr-8"
+                            />
+                        )}
+                        <span className="fs-13 fw-6 lh-20 cn-9">{selectedMaterial?.name}</span>
+                    </div>
+                ) : (
+                    <ReactSelect
+                        tabIndex={3}
+                        isSearchable={false}
+                        options={sourceConfig.material}
+                        getOptionLabel={(option) => `${option.name}`}
+                        getOptionValue={(option) => `${option.checkoutPath}`}
+                        value={configOverrideView && !allowOverride ? currentMaterial : selectedMaterial}
+                        styles={_customStyles}
+                        components={{
+                            IndicatorSeparator: null,
+                            Option: repositoryOption,
+                            Control: repositoryControls,
+                        }}
+                        onChange={handleGitRepoChange}
+                        isDisabled={configOverrideView && !allowOverride}
+                    />
+                )}
+                <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
                 <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
                 {configOverrideView && !allowOverride ? (
                     <div className="flex left">
@@ -338,60 +358,99 @@ export default function CICreateDockerfileOption({
     return (
         <>
             <div>
-                <div className="mb-16 form-row__docker">
-                    <div className="form__field mb-16">
+                <div className="flex left row ml-0 build-context-label mb-6">
+                    <span className="dc__required-field">Build context</span>
+                    {!configOverrideView || allowOverride ? (
+                        <div className="flex row ml-0">
+                            {renderInfoCard()}
+                        </div>
+                    ) : null}
+                </div>
+                <div className="mb-4 form-row__docker">
+                    <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                         <label className="form__label">{`${
                             configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
-                        } containing code`}</label>
+                        }  for BuildContext`}</label>
                         {configOverrideView && !allowOverride ? (
                             <div className="flex left">
-                                {currentMaterial?.url && renderOptionIcon(currentMaterial.url)}
-                                <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name || 'Not selected'}</span>
+                                {currentBuildContextGitMaterial?.url && renderOptionIcon(currentBuildContextGitMaterial.url)}
+                                <span className="fs-14 fw-4 lh-20 cn-9">{currentBuildContextGitMaterial?.name || 'Not selected'}</span>
                             </div>
                         ) : (
                             <ReactSelect
                                 className="m-0"
                                 tabIndex={3}
-                                isSearchable={false}
+                                isMulti={false}
+                                isClearable={false}
                                 options={sourceConfig.material}
                                 getOptionLabel={(option) => `${option.name}`}
                                 getOptionValue={(option) => `${option.checkoutPath}`}
-                                value={configOverrideView && !allowOverride ? currentMaterial : selectedMaterial}
-                                styles={getCommonSelectStyle({
-                                    control: (base, state) => ({
-                                        ...base,
-                                        minHeight: '36px',
-                                        boxShadow: 'none',
-                                        backgroundColor: 'var(--N50)',
-                                        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                        cursor: 'pointer',
-                                    }),
+                                value={configOverrideView && !allowOverride ? currentMaterial : selectedBuildContextGitMaterial}
+                                styles={{
+                                    ..._multiSelectStyles,
                                     menu: (base) => ({
                                         ...base,
                                         marginTop: '0',
-                                        minWidth: '226px',
                                     }),
-                                })}
+                                }}
                                 components={{
                                     IndicatorSeparator: null,
                                     Option: repositoryOption,
                                     Control: repositoryControls,
                                 }}
-                                onChange={handleFileLocationChange}
+                                onChange={handleBuildContextPathChange}
                                 isDisabled={configOverrideView && !allowOverride}
                             />
                         )}
-                        {repository.error && <label className="form__error">{repository.error}</label>}
+                        {formState.repository.error && (
+                            <label className="form__error">{formState.repository.error}</label>
+                        )}
                     </div>
-                    <BuildContext
-                        disable = {disable}
-                        setDisable = {setDisable}
-                        formState = {formState}
-                        configOverrideView = {configOverrideView}
-                        allowOverride = {allowOverride}
-                        ciConfig = {ciConfig}
-                        handleOnChangeConfig = {handleOnChangeConfig}
-                    />
+                    <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                        <label htmlFor="" className="form__label dc__required-field">
+                            Build Context Path (Relative )
+                        </label>
+                        {configOverrideView && !allowOverride ? (
+                            <span className="fs-14 fw-4 lh-20 cn-9">
+                                {`${selectedBuildContextGitMaterial?.checkoutPath}/${
+                                    ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || '.'
+                                }`.replace('//', '/')}
+                            </span>
+                        ) : (
+                            <div className="docker-file-container">
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="top"
+                                    content={selectedBuildContextGitMaterial?.checkoutPath}
+                                >
+                                    <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
+                                        {selectedBuildContextGitMaterial?.checkoutPath}
+                                    </span>
+                                </Tippy>
+                                <input
+                                    tabIndex={4}
+                                    type="text"
+                                    className="form__input file-name"
+                                    placeholder="Build Context"
+                                    name="buildContext"
+                                    value={
+                                        configOverrideView && !allowOverride
+                                            ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext ||
+                                            '.'
+                                            : formState.buildContext.value
+                                    }
+                                    onChange={handleOnChangeConfig}
+                                    autoComplete={'off'}
+                                    autoFocus={!configOverrideView}
+                                    disabled={configOverrideView && !allowOverride}
+                                />
+                            </div>
+                        )}
+                        {formState.buildContext.error && (
+                            <label className="form__error">{formState.buildContext.error}</label>
+                        )}
+                    </div>
                 </div>
             </div>
             <div
