@@ -238,6 +238,7 @@ export interface CIBuildConfigType {
     ciBuildType: CIBuildType
     dockerBuildConfig: DockerBuildConfigType
     gitMaterialId: number
+    buildContextGitMaterialId: number
     id?: number
 }
 
