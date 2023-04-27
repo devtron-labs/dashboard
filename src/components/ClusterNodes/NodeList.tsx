@@ -957,7 +957,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                             <ClusterIcon className="flex cluster-icon icon-dim-24" />
                         </div>
                         <div
-                            className="fs-14 h-36 pt-12 pb-8 fw-6 show-shimmer-loading"
+                            className="fs-14 lh-20 pt-12 fw-6 show-shimmer-loading"
                         >
                             <div data-testid="cluster-name" className={`${!clusterDetailsName && 'child-shimmer-loading'}`}>
                                 {clusterDetailsName}
@@ -1058,11 +1058,11 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
 
     const randerClusterNote = (): JSX.Element => {
         return (
-            <div className="cluster__body-details h-100 dc__overflow-auto">
-                <div data-testid="cluster-note-wrapper" className="pl-16 pr-16 pt-16 pb-16 h-100">
+            <div className="cluster__body-details h-100 mb-16">
+                <div data-testid="cluster-note-wrapper" className="dc__overflow-auto pl-16 pr-16 pt-16 pb-16 h-100 mb-16">
                     {isEditDescriptionView ? (
-                        <div className="min-w-575 cluster-note__card br-4 dc__border w-100">
-                            <div className="cluster-note__card-header flex bc-n50 dc__border-bottom h-36 fs-13">
+                        <div className="min-w-500 bcn-0 br-4 dc__border w-100">
+                            <div className="pt-8 pb-8 pl-16 pr-16 dc__top-radius-4 flex bc-n50 dc__border-bottom h-36 fs-13">
                                 <div className="flex left fw-6 lh-20 cn-9">
                                     <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
                                     Description
@@ -1083,11 +1083,12 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                                 classes={{
                                     reactMde: 'mark-down-editor-container mark-down-editor__no-border',
                                     toolbar: 'mark-down-editor__hidden',
-                                    preview: 'mark-down-editor-preview',
+                                    preview: 'mark-down-editor-preview dc__bottom-radius-4',
                                     textArea: 'mark-down-editor__hidden',
                                 }}
                                 value={descriptionText}
                                 selectedTab="preview"
+                                minPreviewHeight={150}
                                 generateMarkdownPreview={(markdown) =>
                                     Promise.resolve(<MarkDown markdown={markdown} breaks />)
                                 }

@@ -22,18 +22,11 @@
     .cluster__body-details {
         flex-basis: 100%;
 
-        .cluster-note__card{
-            background-color: var(--white);
-        }
-        .cluster-note__card-header{
-            padding: 8px 16px;
-            border-radius: 4px 4px 0 0;
-            .pencil-icon:hover{
-                color: var(--B500);
-                text-decoration: none;
-                svg path {
-                    stroke: var(--B500);
-                }
+        .pencil-icon:hover{
+            color: var(--B500);
+            text-decoration: none;
+            svg path {
+                stroke: var(--B500);
             }
         }
     }
