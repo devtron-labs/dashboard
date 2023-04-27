@@ -944,7 +944,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const randerAboutCluster = (): JSX.Element => {
         if (errorResponseCode) {
             return (
-                <div className="dc__loading-wrapper">
+                <div data-testid="generic-empty-state" className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )
@@ -959,7 +959,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                         <div
                             className="fs-14 h-36 pt-12 pb-8 fw-6 show-shimmer-loading"
                         >
-                            <div className={`${!clusterDetailsName && 'child-shimmer-loading'}`}>
+                            <div data-testid="cluster-name" className={`${!clusterDetailsName && 'child-shimmer-loading'}`}>
                                 {clusterDetailsName}
                             </div>
                         </div>
@@ -1059,7 +1059,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const randerClusterNote = (): JSX.Element => {
         return (
             <div className="cluster__body-details h-100 dc__overflow-auto">
-                <div className="pl-16 pr-16 pt-16 pb-16 h-100">
+                <div data-testid="cluster-note-wrapper" className="pl-16 pr-16 pt-16 pb-16 h-100">
                     {isEditDescriptionView ? (
                         <div className="min-w-575 cluster-note__card br-4 dc__border w-100">
                             <div className="cluster-note__card-header flex bc-n50 dc__border-bottom h-36 fs-13">
@@ -1149,7 +1149,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const randerDetailsCluster = (): JSX.Element => {
         if (errorResponseCode) {
             return (
-                <div className="dc__loading-wrapper">
+                <div data-testid="generic-empty-state" className="dc__loading-wrapper">
                     <ErrorScreenManager code={errorResponseCode} />
                 </div>
             )
