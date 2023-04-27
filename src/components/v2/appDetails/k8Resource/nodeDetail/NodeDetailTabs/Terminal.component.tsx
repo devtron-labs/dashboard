@@ -200,7 +200,7 @@ function TerminalComponent({
             selectionListData={selectionListData}
             socketConnection={socketConnection}
             setSocketConnection={setSocketConnection}
-            className="terminal-view-container h-100"
+            className={isResourceBrowserView ? 'k8s-resource-view-container' : 'terminal-view-container'}
         />
     )
 }
