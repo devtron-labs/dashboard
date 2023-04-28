@@ -5,7 +5,7 @@ import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as BuildpackIcon } from '../../assets/icons/ic-builpack.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import CIAdvancedConfig from './CIAdvancedConfig'
-import {CI_BUILDTYPE_ALIAS, _multiSelectStyles, USING_ROOT} from './CIConfig.utils'
+import { CI_BUILDTYPE_ALIAS, _multiSelectStyles } from './CIConfig.utils'
 import { CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import CIBuildpackBuildOptions, {
     renderOptionIcon,
@@ -193,7 +193,7 @@ export default function CIDockerFileConfig({
                 <span className= "build-context-highlight">{'/myfolder'}</span>
                 {' or '}
                 <span className= "build-context-highlight">{'/myfolder/buildhere'}</span>
-                {'if path not set, default path will be root dir of selected git repository'}
+                {'  if path not set, default path will be root dir of selected git repository'}
             </div>
         )
     }
@@ -382,7 +382,7 @@ export default function CIDockerFileConfig({
                 </div>
 
                 <div className="flex left row ml-0 build-context-label mb-6">
-                    <span className="dc__required-field">Build context</span>
+                    <span >Set Build context</span>
                     {!configOverrideView || allowOverride ? (
                         <div className="flex row ml-0">
                             {renderInfoCard()}
@@ -431,7 +431,7 @@ export default function CIDockerFileConfig({
                         )}
                     </div>
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                        <label htmlFor="" className="form__label dc__required-field">
+                        <label htmlFor="" className="form__label">
                             Build Context Path (Relative )
                         </label>
                         {configOverrideView && !allowOverride ? (
@@ -456,12 +456,12 @@ export default function CIDockerFileConfig({
                                     tabIndex={4}
                                     type="text"
                                     className="form__input file-name"
-                                    placeholder="Build Context"
+                                    placeholder="Enter Path"
                                     name="buildContext"
                                     value={
                                         configOverrideView && !allowOverride
                                             ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext ||
-                                            '.'
+                                            ''
                                             : formState.buildContext.value
                                     }
                                     onChange={handleOnChangeConfig}
@@ -471,9 +471,7 @@ export default function CIDockerFileConfig({
                                 />
                             </div>
                         )}
-                        {formState.buildContext.error && (
-                            <label className="form__error">{formState.buildContext.error}</label>
-                        )}
+
                     </div>
                 </div>
             </div>

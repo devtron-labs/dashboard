@@ -357,102 +357,7 @@ export default function CICreateDockerfileOption({
         templateData && selectedLanguage ? templateData[getTemplateKey(selectedLanguage, selectedFramework)] : null
     return (
         <>
-            <div>
-                <div className="flex left row ml-0 build-context-label mb-6">
-                    <span className="dc__required-field">Build context</span>
-                    {!configOverrideView || allowOverride ? (
-                        <div className="flex row ml-0">
-                            {renderInfoCard()}
-                        </div>
-                    ) : null}
-                </div>
-                <div className="mb-4 form-row__docker">
-                    <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                        <label className="form__label">{`${
-                            configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
-                        }  for BuildContext`}</label>
-                        {configOverrideView && !allowOverride ? (
-                            <div className="flex left">
-                                {currentBuildContextGitMaterial?.url && renderOptionIcon(currentBuildContextGitMaterial.url)}
-                                <span className="fs-14 fw-4 lh-20 cn-9">{currentBuildContextGitMaterial?.name || 'Not selected'}</span>
-                            </div>
-                        ) : (
-                            <ReactSelect
-                                className="m-0"
-                                tabIndex={3}
-                                isMulti={false}
-                                isClearable={false}
-                                options={sourceConfig.material}
-                                getOptionLabel={(option) => `${option.name}`}
-                                getOptionValue={(option) => `${option.checkoutPath}`}
-                                value={configOverrideView && !allowOverride ? currentMaterial : selectedBuildContextGitMaterial}
-                                styles={{
-                                    ..._multiSelectStyles,
-                                    menu: (base) => ({
-                                        ...base,
-                                        marginTop: '0',
-                                    }),
-                                }}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    Option: repositoryOption,
-                                    Control: repositoryControls,
-                                }}
-                                onChange={handleBuildContextPathChange}
-                                isDisabled={configOverrideView && !allowOverride}
-                            />
-                        )}
-                        {formState.repository.error && (
-                            <label className="form__error">{formState.repository.error}</label>
-                        )}
-                    </div>
-                    <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                        <label htmlFor="" className="form__label dc__required-field">
-                            Build Context Path (Relative )
-                        </label>
-                        {configOverrideView && !allowOverride ? (
-                            <span className="fs-14 fw-4 lh-20 cn-9">
-                                {`${selectedBuildContextGitMaterial?.checkoutPath}/${
-                                    ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || '.'
-                                }`.replace('//', '/')}
-                            </span>
-                        ) : (
-                            <div className="docker-file-container">
-                                <Tippy
-                                    className="default-tt"
-                                    arrow={false}
-                                    placement="top"
-                                    content={selectedBuildContextGitMaterial?.checkoutPath}
-                                >
-                                    <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
-                                        {selectedBuildContextGitMaterial?.checkoutPath}
-                                    </span>
-                                </Tippy>
-                                <input
-                                    tabIndex={4}
-                                    type="text"
-                                    className="form__input file-name"
-                                    placeholder="Build Context"
-                                    name="buildContext"
-                                    value={
-                                        configOverrideView && !allowOverride
-                                            ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext ||
-                                            '.'
-                                            : formState.buildContext.value
-                                    }
-                                    onChange={handleOnChangeConfig}
-                                    autoComplete={'off'}
-                                    autoFocus={!configOverrideView}
-                                    disabled={configOverrideView && !allowOverride}
-                                />
-                            </div>
-                        )}
-                        {formState.buildContext.error && (
-                            <label className="form__error">{formState.buildContext.error}</label>
-                        )}
-                    </div>
-                </div>
-            </div>
+
             <div
                 className={`create-dockerfile-option dc__border br-4 dc__overflow-hidden ${
                     configOverrideView ? '' : 'mb-16'
@@ -496,6 +401,97 @@ export default function CICreateDockerfileOption({
                         </div>
                     </CodeEditor.Header>
                 </CodeEditor>
+            </div>
+            <div className="flex left row ml-0 build-context-label mb-6">
+                <span >Set Build context</span>
+                {!configOverrideView || allowOverride ? (
+                    <div className="flex row ml-0">
+                        {renderInfoCard()}
+                    </div>
+                ) : null}
+            </div>
+            <div className="mb-4 form-row__docker">
+                <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                    <label className="form__label">{`${
+                        configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
+                    }  for BuildContext`}</label>
+                    {configOverrideView && !allowOverride ? (
+                        <div className="flex left">
+                            {currentBuildContextGitMaterial?.url && renderOptionIcon(currentBuildContextGitMaterial.url)}
+                            <span className="fs-14 fw-4 lh-20 cn-9">{currentBuildContextGitMaterial?.name || 'Not selected'}</span>
+                        </div>
+                    ) : (
+                        <ReactSelect
+                            className="m-0"
+                            tabIndex={3}
+                            isMulti={false}
+                            isClearable={false}
+                            options={sourceConfig.material}
+                            getOptionLabel={(option) => `${option.name}`}
+                            getOptionValue={(option) => `${option.checkoutPath}`}
+                            value={configOverrideView && !allowOverride ? currentMaterial : selectedBuildContextGitMaterial}
+                            styles={{
+                                ..._multiSelectStyles,
+                                menu: (base) => ({
+                                    ...base,
+                                    marginTop: '0',
+                                }),
+                            }}
+                            components={{
+                                IndicatorSeparator: null,
+                                Option: repositoryOption,
+                                Control: repositoryControls,
+                            }}
+                            onChange={handleBuildContextPathChange}
+                            isDisabled={configOverrideView && !allowOverride}
+                        />
+                    )}
+                    {formState.repository.error && (
+                        <label className="form__error">{formState.repository.error}</label>
+                    )}
+                </div>
+                <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                    <label htmlFor="" className="form__label">
+                        Build Context Path (Relative )
+                    </label>
+                    {configOverrideView && !allowOverride ? (
+                        <span className="fs-14 fw-4 lh-20 cn-9">
+                                {`${selectedBuildContextGitMaterial?.checkoutPath}/${
+                                    ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || '.'
+                                }`.replace('//', '/')}
+                            </span>
+                    ) : (
+                        <div className="docker-file-container">
+                            <Tippy
+                                className="default-tt"
+                                arrow={false}
+                                placement="top"
+                                content={selectedBuildContextGitMaterial?.checkoutPath}
+                            >
+                                    <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
+                                        {selectedBuildContextGitMaterial?.checkoutPath}
+                                    </span>
+                            </Tippy>
+                            <input
+                                tabIndex={4}
+                                type="text"
+                                className="form__input file-name"
+                                placeholder="Enter Path"
+                                name="buildContext"
+                                value={
+                                    configOverrideView && !allowOverride
+                                        ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext ||
+                                        ''
+                                        : formState.buildContext.value
+                                }
+                                onChange={handleOnChangeConfig}
+                                autoComplete={'off'}
+                                autoFocus={!configOverrideView}
+                                disabled={configOverrideView && !allowOverride}
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
         </>
     )

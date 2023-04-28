@@ -22,7 +22,6 @@ import {
     getTargetPlatformMap,
     initCurrentCIBuildConfig,
     processBuildArgs,
-    USING_ROOT,
 } from './CIConfig.utils'
 import { useHistory } from 'react-router-dom'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
@@ -293,7 +292,7 @@ export default function CIConfigForm({
                         ...currentCIBuildConfig,
                         dockerBuildConfig: {
                             ...currentCIBuildConfig.dockerBuildConfig,
-                            buildContext: e.target.value == USING_ROOT ? '.' : e.target.value,
+                            buildContext: e.target.value,
                          },
                     })
                     break
