@@ -45,7 +45,7 @@ export default function ApprovalMaterialModal({
                 <h1 className="modal__title">
                     Approval for deployment to <span className="fw-6">{node.environmentName ?? ''}</span>
                 </h1>
-                <button type="button" className="dc__transparent" onClick={closeApprovalModal}>
+                <button data-testid="close-approval-node-box" type="button" className="dc__transparent" onClick={closeApprovalModal}>
                     <img alt="close" src={close} />
                 </button>
             </div>
