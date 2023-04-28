@@ -66,8 +66,8 @@ export default function CreateAppGroup({ appList, selectedAppGroup, closePopup }
 
     const renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-17 pr-20 pb-17 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Save filter</h2>
+            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">Save filter</h2>
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"
