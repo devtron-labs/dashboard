@@ -1,8 +1,13 @@
-.terminal-view-container {
+.k8s-resource-view-container {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 118px);
-    flex: 1;
+}
+
+.terminal-view-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 146px);
 }
 
 .terminal-view-wrapper {
