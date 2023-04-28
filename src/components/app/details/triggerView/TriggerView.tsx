@@ -474,7 +474,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         cdNodeId: cdNodeId,
                         nodeType: 'CD',
                         showCDModal: true,
-                        isLoading: false,
+                        loader: false,
                     },
                     () => {
                         preventBodyScroll(true)
