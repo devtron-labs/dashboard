@@ -418,9 +418,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
         return []
     }
 
-    async function repoChartLoadOptions(inputValue: string, callback) {
-        const matchedCharts = (await getChartsByKeyword(inputValue)).result
-        callback(filterMatchedCharts(matchedCharts))
+    async function repoChartLoadOptions(inputValue: string): Promise<any[]> {
+        const {result: matchedCharts} = await getChartsByKeyword(inputValue)
+        return filterMatchedCharts(matchedCharts)
     }
 
     function repoChartOptionLabel(props) {

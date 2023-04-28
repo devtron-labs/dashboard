@@ -839,6 +839,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
 
     const RoleValueContainer = ({
         children,
+        getClassNames,
         getValue,
         clearValue,
         cx,
@@ -858,6 +859,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         return (
             <components.ValueContainer
                 {...{
+                    getClassNames,
                     getValue,
                     clearValue,
                     cx,
@@ -873,6 +875,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     theme,
                     ...props,
                 }}
+                {...props}
             >
                 {value === '*'
                     ? 'Admin'

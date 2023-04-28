@@ -64,12 +64,12 @@ export function ChartRepoSelector({
         return []
     }
 
-    async function repoChartLoadOptions(inputValue: string, callback) {
+    async function repoChartLoadOptions(inputValue: string) {
         try {
             const { result } = await getChartsByKeyword(inputValue)
-            callback(filterMatchedCharts(result))
+            return filterMatchedCharts(result)
         } catch (err) {
-            callback(filterMatchedCharts([]))
+            return filterMatchedCharts([])
         }
     }
 

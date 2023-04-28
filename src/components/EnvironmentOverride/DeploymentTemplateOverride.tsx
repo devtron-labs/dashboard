@@ -308,7 +308,7 @@ export default function DeploymentTemplateOverride({
             }
         }
 
-        if (statesToUpdate !== {}) {
+        if (Object.keys(statesToUpdate).length > 0) {
             dispatch({
                 type: 'multipleOptions',
                 value: statesToUpdate,
