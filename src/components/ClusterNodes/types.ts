@@ -64,14 +64,17 @@ export interface ClusterDetail {
     nodeDetails?: NodeDetailsType[]
 }
 export interface ClusterDescriptionType {
+    clusterId: number
+    clusterName:   string
+    clusterCreatedBy: string
+    clusterCreatedOn: string
+    clusterNote?: ClusterNoteType
+}
+export interface ClusterNoteType {
     id: number
-    cluster_id: number
-    cluster_name: string
     description: string
-    updated_by: string
-    updated_on: string
-    cluster_created_by: string
-    cluster_created_on: string
+    updatedBy: string
+    updatedOn: string
 }
 
 export interface NodeRowDetail {
@@ -94,9 +97,15 @@ export interface ClusterListResponse extends ResponseType {
 export interface ClusterDescriptionResponse extends ResponseType {
     result?: ClusterDescriptionType
 }
+
+export interface ClusterNoteResponse extends ResponseType {
+    result?: ClusterNoteType
+}
+
 export interface ClusterCapacityResponse extends ResponseType {
     result?: ClusterCapacityType
 }
+
 export interface NodeListResponse extends ResponseType {
     result?: NodeRowDetail[]
 }
@@ -161,6 +170,14 @@ export interface ClusterListType {
     imageList: ClusterImageList[]
     isSuperAdmin: boolean
     namespaceList: string[]
+}
+
+export interface ClusterDetailsPropType extends ClusterListType { 
+    clusterId: string
+}
+
+export interface ClusterAboutPropType {
+    clusterId: string
 }
 
 export interface SelectGroupType {

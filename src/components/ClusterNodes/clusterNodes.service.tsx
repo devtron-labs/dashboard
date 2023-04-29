@@ -13,12 +13,13 @@ import {
     TerminalDataType,
     ClusteNotePatchRequest,
     ClusterDescriptionResponse,
+    ClusterNoteResponse,
 } from './types'
 
 export const getClusterNote = (clusterId: string): Promise<ClusterDescriptionResponse> => {
-    return get(`${Routes.CLUSTER_NOTE}?id=${clusterId}`)
+    return get(`${Routes.CLUSTER_DESCRIPTION}?id=${clusterId}`)
 }
-export const patchClusterNote = (requestPayload: ClusteNotePatchRequest): Promise<ClusterDescriptionResponse> => {
+export const patchClusterNote = (requestPayload: ClusteNotePatchRequest): Promise<ClusterNoteResponse> => {
     return put(Routes.CLUSTER_NOTE, requestPayload)
 }
 

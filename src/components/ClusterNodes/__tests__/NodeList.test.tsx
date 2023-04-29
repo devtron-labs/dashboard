@@ -1,77 +1,60 @@
-//@ts-nocheck
 import React from 'react'
-import { BrowserRouter, Route, Router } from 'react-router-dom'
-import { createMemoryHistory } from 'history'
+import { BrowserRouter } from 'react-router-dom'
 import '@testing-library/jest-dom'
 import { act, render } from '@testing-library/react'
-import { clusterId, mockSuccessResponse, mockFailedResponse } from '../__mocks__/clusterAbout.mock'
-import NodeList from '../NodeList'
+import { clusterId, mockFailedResponse, mockSuccessResponseWithOutNote, mockSuccessResponseWithNote, mockMarkDownEditorComponent } from '../__mocks__/clusterAbout.mock'
+import ClusterAbout from '../ClusterAbout'
+import ApiMethods from '@devtron-labs/devtron-fe-common-lib'
 
-// TODO : Breaking Because of Page Header Component and remove try catch after fixing it
+jest.mock('../../charts/discoverChartDetail/DiscoverChartDetails', () => ({
+    MarkDown: jest.fn(() => mockMarkDownEditorComponent),
+}))
+
 describe('Test randerAboutCluster function', () => {
-        const requestPayload = { body: undefined, credentials: 'include', method: 'GET', signal: null as AbortSignal | null }
-        beforeAll(() => {
-            global.fetch = jest.fn()
-            requestPayload.signal = new AbortController().signal
+    afterEach(() => {
+        jest.clearAllMocks()
+    })
+
+    it('should render with default cluster without notes', async () => {
+        let component
+        const mockJsonPromise = Promise.resolve(mockSuccessResponseWithNote)
+        jest.spyOn(ApiMethods, 'get').mockImplementation((url: string) => mockJsonPromise)
+        await act(async () => {
+            component = render(<ClusterAbout clusterId={clusterId} />, { wrapper: BrowserRouter })
         })
+        expect(ApiMethods.get).toHaveBeenCalledTimes(1)
+        expect(ApiMethods.get).toHaveBeenCalledWith(`cluster/description?id=${clusterId}`)
+        expect(component.container).toBeInTheDocument()
+        expect(component.getByTestId('mark-down-test-response')).toBeVisible()
+        expect(component.getByTestId('cluster-name')).toBeVisible()
+        expect(component.getByTestId('cluster-name')).toHaveTextContent(mockSuccessResponseWithNote.result.clusterName)
+    })
 
-        afterEach(() => {
-            jest.resetAllMocks()
+    it('should render with default cluster with notes', async () => {
+        let component
+        const mockJsonPromise = Promise.resolve(mockSuccessResponseWithOutNote)
+        jest.spyOn(ApiMethods, 'get').mockImplementation((url: string) => mockJsonPromise)
+        await act(async () => {
+            component = render(<ClusterAbout clusterId={clusterId} />, { wrapper: BrowserRouter })
         })
+        expect(ApiMethods.get).toHaveBeenCalledTimes(1)
+        expect(ApiMethods.get).toHaveBeenCalledWith(`cluster/description?id=${clusterId}`)
+        expect(component.container).toBeInTheDocument()
+        expect(component.getByTestId('mark-down-test-response')).toBeVisible()
+        expect(component.getByTestId('cluster-name')).toBeVisible()
+        expect(component.getByTestId('cluster-name')).toHaveTextContent(mockSuccessResponseWithOutNote.result.clusterName)
+    })
 
-        it('should render with default cluster name screen', async () => {
-            try {
-                let component
-                const mockJsonPromise = Promise.resolve(mockSuccessResponse)
-                const mockFetchPromise = Promise.resolve({
-                    json: () => mockJsonPromise,
-                })
-                jest.spyOn(global, 'fetch').mockImplementation(mockFetchPromise)
-                await act(async () => {
-                    
-                    component = render(
-                        <Router history={createMemoryHistory({ initialEntries: [`clusters/${clusterId}`] })}>
-                            <Route path="clusters/:clusterId">
-                                <NodeList
-                                    imageList={[]}
-                                    isSuperAdmin={true}
-                                    namespaceList={['']}
-                                />
-                            </Route>
-                        </Router>,
-                        { wrapper: BrowserRouter },
-                    )
-                })    
-                expect(component.container).toBeInTheDocument()
-                expect(global.fetch).toHaveBeenCalledWith(`undefined/cluster/description?id=${clusterId}`, requestPayload)
-            } catch (error) {
-                console.log(error)
-            }
-        });
-
-        it('should render cluster details empty state for invalid cluster id', async () => {
-            try {
-                let component
-                const mockJsonPromise = Promise.resolve(mockFailedResponse)
-                const mockFetchPromise = Promise.resolve({
-                    json: () => mockJsonPromise,
-                })
-                jest.spyOn(global, 'fetch').mockImplementation(() => mockFetchPromise)
-                await act(async () => {
-                    component = render(
-                        <Router history={ createMemoryHistory({ initialEntries: ["clusters/10010101010"] }) }>
-                            <Route path="clusters/:clusterId">
-                                <NodeList imageList={[]} isSuperAdmin={true} namespaceList={[]} />
-                            </Route>
-                        </Router>,
-                        { wrapper: BrowserRouter },
-                    )
-                })
-                expect(component.container).toBeInTheDocument()
-                expect(global.fetch).toHaveBeenCalledWith(`undefined/cluster/description?id=10010101010`, requestPayload)
-                expect(component.getByTestId('generic-empty-state')).toBeVisible()
-            } catch (error) {
-                console.log(error)
-            }
-        });
-});
+    it('should render cluster details empty state for invalid cluster id', async () => {
+        let component
+        const mockJsonPromise = Promise.reject(mockFailedResponse)
+        jest.spyOn(ApiMethods, 'get').mockImplementation((url: string) => mockJsonPromise)
+        await act(async () => {
+            component = render(<ClusterAbout clusterId='10010101010' />, { wrapper: BrowserRouter })
+        })
+        expect(ApiMethods.get).toHaveBeenCalledTimes(1)
+        expect(ApiMethods.get).toHaveBeenCalledWith('cluster/description?id=10010101010')
+        expect(component.container).toBeInTheDocument()
+        expect(component.getByTestId('generic-empty-state')).toBeVisible()
+    })
+})
