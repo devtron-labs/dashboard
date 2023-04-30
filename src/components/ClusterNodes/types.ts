@@ -252,7 +252,7 @@ export interface NodeCordonRequest extends NodeActionRequest {
 }
 
 export interface ClusteNotePatchRequest {
-    cluster_id: number
+    clusterId: number
     description: string
 }
 

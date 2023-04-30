@@ -444,4 +444,5 @@
 .cluster-column-container {
     max-height: 100%;
     flex-basis: 240px;
+    flex-shrink: 0;
 }
