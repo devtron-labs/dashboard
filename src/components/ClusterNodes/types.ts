@@ -178,6 +178,7 @@ export interface ClusterDetailsPropType extends ClusterListType {
 
 export interface ClusterAboutPropType {
     clusterId: string
+    isSuperAdmin: boolean
 }
 
 export interface SelectGroupType {

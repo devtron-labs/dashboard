@@ -20,7 +20,7 @@ describe('Test randerAboutCluster function', () => {
         const mockJsonPromise = Promise.resolve(mockSuccessResponseWithNote)
         jest.spyOn(ApiMethods, 'get').mockImplementation((url: string) => mockJsonPromise)
         await act(async () => {
-            component = render(<ClusterAbout clusterId={clusterId} />, { wrapper: BrowserRouter })
+            component = render(<ClusterAbout clusterId={clusterId} isSuperAdmin={true} />, { wrapper: BrowserRouter })
         })
         expect(ApiMethods.get).toHaveBeenCalledTimes(1)
         expect(ApiMethods.get).toHaveBeenCalledWith(`cluster/description?id=${clusterId}`)
@@ -35,7 +35,7 @@ describe('Test randerAboutCluster function', () => {
         const mockJsonPromise = Promise.resolve(mockSuccessResponseWithOutNote)
         jest.spyOn(ApiMethods, 'get').mockImplementation((url: string) => mockJsonPromise)
         await act(async () => {
-            component = render(<ClusterAbout clusterId={clusterId} />, { wrapper: BrowserRouter })
+            component = render(<ClusterAbout clusterId={clusterId} isSuperAdmin={true} />, { wrapper: BrowserRouter })
         })
         expect(ApiMethods.get).toHaveBeenCalledTimes(1)
         expect(ApiMethods.get).toHaveBeenCalledWith(`cluster/description?id=${clusterId}`)
@@ -50,7 +50,7 @@ describe('Test randerAboutCluster function', () => {
         const mockJsonPromise = Promise.reject(mockFailedResponse)
         jest.spyOn(ApiMethods, 'get').mockImplementation((url: string) => mockJsonPromise)
         await act(async () => {
-            component = render(<ClusterAbout clusterId='10010101010' />, { wrapper: BrowserRouter })
+            component = render(<ClusterAbout clusterId='10010101010' isSuperAdmin={true} />, { wrapper: BrowserRouter })
         })
         expect(ApiMethods.get).toHaveBeenCalledTimes(1)
         expect(ApiMethods.get).toHaveBeenCalledWith('cluster/description?id=10010101010')

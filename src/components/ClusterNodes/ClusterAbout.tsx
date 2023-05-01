@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { getClusterNote, patchClusterNote } from './clusterNodes.service'
 import ReactMde from 'react-mde'
 import 'react-mde/lib/styles/css/react-mde-all.css'
-import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, toastAccessDenied } from '@devtron-labs/devtron-fe-common-lib'
 import { ClusterAboutPropType, MDEditorSelectedTabType } from './types'
 import { ReactComponent as HeaderIcon } from '../../assets/icons/mdeditor/ic-header.svg'
 import { ReactComponent as BoldIcon } from '../../assets/icons/mdeditor/ic-bold.svg'
@@ -37,7 +37,7 @@ import moment from 'moment'
 import { Moment12HourFormat } from '../../config'
 import { deepEqual } from '../common'
 
-export default function ClusterAbout({ clusterId }: ClusterAboutPropType) {
+export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPropType) {
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [clusterAboutLoader, setClusterAboutLoader] = useState(false)
     const [isEditDescriptionView, setEditDescriptionView] = useState<boolean>(true)
@@ -49,6 +49,14 @@ export default function ClusterAbout({ clusterId }: ClusterAboutPropType) {
     const [clusterCreatedBy, setClusterCreatedBy] = useState<string>('')
     const [clusterDetailsName, setClusterDetailsName] = useState<string>('')
     const [selectedTab, setSelectedTab] = useState<MDEditorSelectedTabType>(MD_EDITOR_TAB.WRITE)
+
+    const isAuthorized = (): boolean => {
+        if (!isSuperAdmin) {
+            toastAccessDenied()
+            return false
+        }
+        return true
+    }
 
     const getClusterAbout = (): void => {
         setClusterAboutLoader(true)
@@ -132,14 +140,16 @@ export default function ClusterAbout({ clusterId }: ClusterAboutPropType) {
     const isDescriptionModified: boolean = !deepEqual(descriptionText, modifiedDescriptionText)
 
     const toggleDescriptionView = () => {
-        let isConfirmed: boolean = true
-        if (isDescriptionModified) {
-            isConfirmed = window.confirm(CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG)
-        }
-        if (isConfirmed) {
-            setModifiedDescriptionText(descriptionText)
-            setEditDescriptionView(!isEditDescriptionView)
-            setSelectedTab(MD_EDITOR_TAB.WRITE)
+        if (isAuthorized()) { 
+            let isConfirmed: boolean = true
+            if (isDescriptionModified) {
+                isConfirmed = window.confirm(CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG)
+            }
+            if (isConfirmed) {
+                setModifiedDescriptionText(descriptionText)
+                setEditDescriptionView(!isEditDescriptionView)
+                setSelectedTab(MD_EDITOR_TAB.WRITE)
+            }
         }
     }
 
@@ -383,7 +393,7 @@ export default function ClusterAbout({ clusterId }: ClusterAboutPropType) {
                     <div className="icon-dim-48 flex br-4 cb-5 bcb-1 scb-5">
                         <ClusterIcon className="flex cluster-icon icon-dim-24" />
                     </div>
-                    <div className="fs-14 lh-20 pt-12 fw-6 show-shimmer-loading">
+                    <div className="fs-14 lh-20 pt-12 fw-6 cn-9 show-shimmer-loading">
                         <div
                             data-testid="cluster-name"
                             className={!clusterDetailsName ? 'child-shimmer-loading' : 'dc__break-word'}

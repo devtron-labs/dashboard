@@ -133,7 +133,9 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                 showTabs={true}
                 renderHeaderTabs={renderClusterTabs}
             />
-            {selectedTabName === CLUSTER_PAGE_TAB.ABOUT && <ClusterAbout clusterId={clusterId} />}
+            {selectedTabName === CLUSTER_PAGE_TAB.ABOUT && (
+                <ClusterAbout clusterId={clusterId} isSuperAdmin={isSuperAdmin} />
+            )}
             {selectedTabName === CLUSTER_PAGE_TAB.DETAILS && (
                 <ClusterDetails
                     imageList={imageList}
