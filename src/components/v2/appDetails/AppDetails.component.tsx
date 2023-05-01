@@ -63,7 +63,7 @@ const AppDetailsComponent = ({
     async function callAppDetailsAPI() {
         try {
             // Deployment details status for Helm apps
-            getDeploymentStatusDetail(params.appId, params.envId, '', true).then((res) => {
+           await getDeploymentStatusDetail(params.appId, params.envId, '', true).then((res) => {
                 setDeploymentStatusDetailsBreakdownData(processDeploymentStatusDetailsData(res.result))
             })
         } catch (error) {}
