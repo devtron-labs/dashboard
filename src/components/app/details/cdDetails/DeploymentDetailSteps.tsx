@@ -63,7 +63,7 @@ export default function DeploymentDetailSteps({
                 clearTimeout(initTimer)
             }
         }
-    }, [installedAppVersionHistoryId])
+    }, [])
 
     const redirectToDeploymentStatus = () => {
         isHelm
