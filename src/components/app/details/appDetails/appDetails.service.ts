@@ -28,7 +28,7 @@ export function getDeploymentStatusDetail(
     } else {
       appendUrl = Routes.DEPLOYMENT_STATUS
     }
-    return get(`${appendUrl}/${appId}/${envId}${triggerId ? `?wfrId=${triggerId}` : ``}`)
+    return get(`${appendUrl}/${appId}/${envId}${triggerId ? `?wfrId=${triggerId}` : ''}`)
 }
 
 export function getModuleConfigured(moduleName: string): Promise<ModuleConfigResponse> {

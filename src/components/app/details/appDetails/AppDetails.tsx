@@ -385,7 +385,6 @@ export const Details: React.FC<DetailsType> = ({
         }
     }, [appDetailsError])
 
-    // useInterval(polling, interval);
     useEffect(() => {
         if (isPollingRequired) {
             callAppDetailsAPI(true)

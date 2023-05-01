@@ -11,7 +11,7 @@ import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.compone
 import NodeTreeDetailTab from './NodeTreeDetailTab'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { getSaveTelemetry } from './appDetails.api'
-import { Host, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentStatusDetail } from '../../app/details/appDetails/appDetails.service'
 import { DEFAULT_STATUS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
 import DeploymentStatusDetailModal from '../../app/details/appDetails/DeploymentStatusDetailModal'
@@ -74,7 +74,6 @@ const AppDetailsComponent = ({
           clearInterval(pollingIntervalID)
       }
   }
-    // useInterval(polling, interval);
     useEffect(() => {
         if (isPollingRequired) {
             callAppDetailsAPI()

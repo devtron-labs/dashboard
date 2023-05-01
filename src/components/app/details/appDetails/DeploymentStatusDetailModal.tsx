@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import DeploymentStatusDetailBreakdown from './DeploymentStatusBreakdown'
 import { DeploymentStatusDetailModalType } from './appDetails.type'
-import { useHistory, useParams } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import './appDetails.scss'
 import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
 

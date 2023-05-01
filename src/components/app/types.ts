@@ -1,6 +1,6 @@
 import { TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
-import { AppEnvironment, AppOtherEnvironment } from '../../services/service.types'
+import { AppEnvironment } from '../../services/service.types'
 import { DeploymentAppType } from '../v2/appDetails/appDetails.type'
 import { DeploymentStatusDetailsBreakdownDataType } from './details/appDetails/appDetails.type'
 

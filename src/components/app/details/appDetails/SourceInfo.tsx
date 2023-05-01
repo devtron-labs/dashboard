@@ -56,22 +56,6 @@ export function SourceInfo({
         })
     }
 
-    const showDeploymentDetailedStatus = (e): void => {
-        // Do not open the status modal for helm type apps
-        if (appDetails?.deploymentAppType === DeploymentAppType.helm) {
-            return
-        }
-
-        e.stopPropagation()
-        history.push({
-            search: DEPLOYMENT_STATUS_QUERY_PARAM,
-        })
-        ReactGA.event({
-            category: 'App Details',
-            action: 'Deployment status clicked',
-        })
-    }
-
     const onClickShowCommitInfo = (): void => {
         showCommitInfo(true)
     }

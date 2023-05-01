@@ -4,11 +4,10 @@ import moment from 'moment'
 import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
-import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, URLS } from '../../../../config'
-import { DeploymentStatusCardType } from './appDetails.type'
+import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { useHistory } from 'react-router'
 import { noop } from '../../../common'
-import { Link } from 'react-router-dom'
+import { DeploymentStatusCardType } from './appDetails.type'
 
 function DeploymentStatusCard({ deploymentStatusDetailsBreakdownData, loadingResourceTree }: DeploymentStatusCardType) {
     const history = useHistory()
