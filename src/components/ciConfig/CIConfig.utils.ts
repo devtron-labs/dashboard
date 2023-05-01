@@ -441,6 +441,9 @@ export const getCIConfigDiffValues = (
     const globalCIBuildType = globalCIConfig.ciBuildConfig?.ciBuildType
     const ciBuildTypeOverride = ciConfigOverride?.ciBuildConfig?.ciBuildType
     let globalGitMaterialName, currentMaterialName
+    let globalBuildContextGitMaterialName,currentBuildContextGitMaterialName
+    let globalBuildContext = globalCIConfig.ciBuildConfig?.dockerBuildConfig?.buildContext,
+        currentBuildContext = ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
     if (
         materials &&
         (globalCIBuildType !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE ||
@@ -453,6 +456,14 @@ export const getCIConfigDiffValues = (
 
             if (gitMaterial.gitMaterialId === ciConfigOverride?.ciBuildConfig?.gitMaterialId) {
                 currentMaterialName = gitMaterial.materialName
+            }
+
+            if (gitMaterial.gitMaterialId === globalCIConfig.ciBuildConfig?.buildContextGitMaterialId) {
+                globalBuildContextGitMaterialName = gitMaterial.materialName
+            }
+
+            if (gitMaterial.gitMaterialId === ciConfigOverride?.ciBuildConfig?.buildContextGitMaterialId) {
+                currentBuildContextGitMaterialName = gitMaterial.materialName
             }
         }
     }
@@ -503,6 +514,19 @@ export const getCIConfigDiffValues = (
         baseValue: globalCIConfig.ciBuildConfig?.dockerBuildConfig?.targetPlatform,
         overridenValue: ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform,
     })
+    ciConfigDiffValues.push({
+        configName: 'Repo containing build context',
+        changeBGColor: currentBuildContextGitMaterialName === globalBuildContextGitMaterialName,
+        baseValue: globalBuildContextGitMaterialName,
+        overridenValue: currentBuildContextGitMaterialName,
+    })
+    ciConfigDiffValues.push({
+        configName: 'Build context',
+        changeBGColor: globalBuildContext === currentBuildContext,
+        baseValue: globalBuildContext == '' ? '.' : globalBuildContext,
+        overridenValue: currentBuildContext == '' ? '.' : currentBuildContext,
+    })
+
     return ciConfigDiffValues
 }
 const getTargetPlatformChangeBGColor = (
