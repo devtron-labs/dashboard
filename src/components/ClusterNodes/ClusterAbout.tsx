@@ -88,7 +88,6 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
                 setClusterAboutLoader(false)
             })
             .catch((error) => {
-                showError(error)
                 setErrorResponseCode(error.code)
                 setClusterAboutLoader(false)
             })
