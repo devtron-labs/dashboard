@@ -6,7 +6,7 @@ import { ReactComponent as Alert } from '../../../assets/icons/ic-alert-triangle
 import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
 import IndexStore from '../../index.store'
 import { URLS } from '../../../../../config'
-import { AppType } from '../../../appDetails/appDetails.type'
+import { AppType, DeploymentAppType } from '../../../appDetails/appDetails.type'
 import { useSharedState } from '../../../utils/useSharedState'
 import { Link } from 'react-router-dom'
 import { useRouteMatch, useHistory, useParams } from 'react-router'
@@ -33,6 +33,7 @@ function EnvironmentStatusComponent({
     const history = useHistory()
     const params = useParams<{ appId: string; envId: string }>()
     const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
+    const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
 
     const onClickUpgrade = () => {
         let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
@@ -229,7 +230,7 @@ function EnvironmentStatusComponent({
                 <div className="flex left ml-20 mb-16 lh-20">
                     {renderStatusBlock()}
                     {renderHelmConfigApplyStatusBlock()}
-                    {renderLastUpdatedBlock()}
+                    {isGitops && renderLastUpdatedBlock()}
                     {renderChartUsedBlock()}
                     {renderUpgraderChartBlock()}
                 </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './appDetails.scss'
 import { useLocation, useParams } from 'react-router'
-import { AppStreamData, AppType } from './appDetails.type'
+import { AppStreamData, AppType, DeploymentAppType } from './appDetails.type'
 import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component'
@@ -41,7 +41,6 @@ const AppDetailsComponent = ({
     const params = useParams<{ appId: string; envId: string; nodeType: string; installedAppVersionHistoryId: string }>()
     const [streamData, setStreamData] = useState<AppStreamData>(null)
     const appDetails = IndexStore.getAppDetails()
-
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
     const [pollingIntervalID, setPollingIntervalID] = useState(null)
     const location = useLocation()

@@ -137,7 +137,6 @@ function ChartDeploymentHistory({
         }
         getDeploymentData(selectedDeploymentTabIndex, index)
         setSelectedDeploymentHistoryIndex(index)
-        // history.replace(`${url}?installedAppVersionHistoryId=${deploymentVersion}`)
     }
 
     async function checkAndFetchDeploymentDetail(
