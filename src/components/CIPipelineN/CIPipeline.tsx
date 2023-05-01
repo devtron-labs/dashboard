@@ -750,8 +750,8 @@ export default function CIPipeline({
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
                 }`}
             >
-                <div className="flex flex-align-center flex-justify bcn-0 pr-20">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding" data-testid="build-pipeline-heading">
+                <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20">
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>
                     <button

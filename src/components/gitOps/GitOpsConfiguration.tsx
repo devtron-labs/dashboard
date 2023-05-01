@@ -458,7 +458,7 @@ class GitOpsConfiguration extends Component<GitOpsProps, GitOpsState> {
             )
         }
         return (
-            <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+            <section className="global-configuration__component flex-1">
                 <h2 className="form__title" data-testid="gitops-heading">
                     GitOps
                 </h2>
