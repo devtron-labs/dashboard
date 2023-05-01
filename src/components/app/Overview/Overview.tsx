@@ -179,9 +179,12 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const renderSideInfoColumn = () => {
         return (
             <div className="pt-16 pb-16 pl-20 pr-20 dc__border-right">
-                <div className="mb-16" data-testid="overview-app">
+                <div className="mb-16" data-testid={`overview-${isJobOverview ? 'job' : 'app'}`}>
                     {isJobOverview ? 'Job name' : 'App name'}
-                    <div className="fs-13 fw-4 lh-20 cn-9" data-testid="overview-appName">
+                    <div
+                        className="fs-13 fw-4 lh-20 cn-9"
+                        data-testid={`overview-${isJobOverview ? 'job' : 'app'}Name`}
+                    >
                         {appMetaInfo?.appName}
                     </div>
                 </div>
@@ -371,30 +374,41 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
 
     const renderWorkflowComponent = () => {
         if (!Array.isArray(jobPipelines) || !jobPipelines.length) {
-            return <div className="fs-13 fw-4 cn-7">No job pipelines are configured</div>
+            return (
+                <div className="fs-13 fw-4 cn-7" data-testid="overview-no-pipelines">
+                    No job pipelines are configured
+                </div>
+            )
         }
 
         return (
             <div className="env-deployments-info-wrapper w-100">
-                <div className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space">
+                <div
+                    className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space"
+                    data-testid="overview-configured-pipeline"
+                >
                     <div className="m-tb-8">Pipeline name</div>
                     <div className="flex">
                         <div className="m-tb-8 mr-16 w-150">Last run status</div>
                         <div className="w-150 m-tb-8">Last run at</div>
                     </div>
                 </div>
-                {jobPipelines.map((jobPipeline) => (
+                {jobPipelines.map((jobPipeline, index) => (
                     <div key={jobPipeline.ci_pipeline_id} className="dc__content-space flex">
                         <div className="h-20 m-tb-8 cb-5 fs-13">
                             <Link
                                 to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ci_pipeline_id}/`}
                                 className="fs-13"
+                                data-testid={`overview-link-pipeline${index}`}
                             >
                                 {jobPipeline.ci_pipeline_name}
                             </Link>
                         </div>
                         <div className="flex">
-                            <div className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start">
+                            <div
+                                data-testid={`${jobPipeline.status || 'notdeployed'}-job-status`}
+                                className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start"
+                            >
                                 {getStatusIcon(jobPipeline.status)}
                                 {jobPipeline.status === 'CANCELLED' ? (
                                     <div>Cancelled</div>
@@ -417,7 +431,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const renderWorkflowsStatus = () => {
         return (
             <div className="flex column left pt-16 pb-16 pl-20 pr-20">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
+                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12" data-testid="job-pipeline">
                     <WorkflowIcon className="icon-dim-20 scn-9 mr-8" />
                     Job pipelines
                 </div>
@@ -443,7 +457,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         return (
             <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
                 <div className="flex left dc__content-space mb-12 w-100">
-                    <div className="flex left fs-14 fw-6 lh-20 cn-9">
+                    <div className="flex left fs-14 fw-6 lh-20 cn-9" data-testid="job-description-header">
                         <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
                         Description
                     </div>
@@ -452,12 +466,21 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                             <button className="btn btn-link p-0 fs-14 fw-6 cn-7" onClick={handleCancel}>
                                 Cancel
                             </button>
-                            <button className="btn btn-link p-0 fs-14 fw-6 cb-5" type="submit" onClick={handleSave}>
+                            <button
+                                className="btn btn-link p-0 fs-14 fw-6 cb-5"
+                                data-testid="job-description-save-button"
+                                type="submit"
+                                onClick={handleSave}
+                            >
                                 Save
                             </button>
                         </div>
                     ) : (
-                        <div className="flex fs-14 fw-4 lh-16 cn-7 cursor ml-auto" onClick={switchToEditMode}>
+                        <div
+                            className="flex fs-14 fw-4 lh-16 cn-7 cursor ml-auto"
+                            data-testid="job-description-edit"
+                            onClick={switchToEditMode}
+                        >
                             <EditIcon className="icon-dim-16 scn-7 mr-4" />
                             Edit
                         </div>
@@ -466,6 +489,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 {editMode ? (
                     <div className="flex left flex-wrap dc__gap-8 w-100">
                         <textarea
+                            data-testid="job-description-textbox"
                             placeholder="No description"
                             value={newDescription}
                             onChange={handleDescriptionChange}
