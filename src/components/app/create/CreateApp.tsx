@@ -269,7 +269,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">
                     Create {this.props.isJobView ? 'job' : 'application'}
                 </h2>
                 <button
