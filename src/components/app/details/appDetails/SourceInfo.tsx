@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Link, useHistory } from 'react-router-dom'
-import { URLS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
+import { URLS } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
@@ -32,7 +32,6 @@ export function SourceInfo({
     loadingDetails = false,
     loadingResourceTree = false,
 }: SourceInfoType) {
-    const history = useHistory()
     const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions
