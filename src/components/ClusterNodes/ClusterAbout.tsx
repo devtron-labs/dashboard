@@ -378,13 +378,16 @@ export default function ClusterAbout({ clusterId }: ClusterAboutPropType) {
     }
     return (
         <div className="flexbox dc__overflow-hidden h-100">
-            <div className="cluster-column-container bcn-0 dc__border-right">
+            <div className="cluster-column-container w-250 bcn-0 dc__border-right">
                 <div className="pr-16 pt-16 pl-16 pb-16">
                     <div className="icon-dim-48 flex br-4 cb-5 bcb-1 scb-5">
                         <ClusterIcon className="flex cluster-icon icon-dim-24" />
                     </div>
                     <div className="fs-14 lh-20 pt-12 fw-6 show-shimmer-loading">
-                        <div data-testid="cluster-name" className={`${!clusterDetailsName && 'child-shimmer-loading'}`}>
+                        <div
+                            data-testid="cluster-name"
+                            className={!clusterDetailsName ? 'child-shimmer-loading' : 'dc__break-word'}
+                        >
                             {clusterDetailsName}
                         </div>
                     </div>
@@ -392,11 +395,11 @@ export default function ClusterAbout({ clusterId }: ClusterAboutPropType) {
                 <hr className="mt-0 mb-0" />
                 <div className="pr-16 pt-16 pl-16 show-shimmer-loading">
                     <div className="fs-12 fw-4 lh-20 cn-7">Added by</div>
-                    <div className={`fs-13 fw-4 lh-20 cn-9 mt-2 ${!clusterCreatedBy && 'child-shimmer-loading'}`}>
+                    <div className={!clusterCreatedBy ? 'child-shimmer-loading fs-13 fw-4 lh-20 cn-9 mt-2' : 'fs-13 fw-4 lh-20 cn-9 mt-2'}>
                         {clusterCreatedBy}
                     </div>
                     <div className="fs-12 fw-4 lh-20 cn-7 mt-16">Added on</div>
-                    <div className={`fs-13 fw-4 lh-20 cn-9 mt-2  ${!clusterCreatedOn && 'child-shimmer-loading'}`}>
+                    <div className={!clusterCreatedOn ? 'child-shimmer-loading' : 'fs-13 fw-4 lh-20 cn-9 mt-2'}>
                         {clusterCreatedOn}
                     </div>
                 </div>

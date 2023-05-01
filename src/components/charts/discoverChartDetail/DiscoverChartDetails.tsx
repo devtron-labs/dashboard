@@ -398,6 +398,10 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
         return `<li>${text}</li>`;     
     };
     
+    renderer.image = function (href: string, title: string, text: string) { 
+        return `<img src="${href}" alt="${text}" title="${title}" class="max-w-100">`
+    }
+
     renderer.table = function (header, body) {
         return `
         <div class="table-container">
