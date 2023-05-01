@@ -1,7 +1,6 @@
 //@ts-nocheck
 
 import React from 'react'
-import moment from 'moment'
 import { Link, useHistory } from 'react-router-dom'
 import { URLS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { EnvSelector } from './AppDetails'
@@ -12,7 +11,7 @@ import { ReactComponent as Question } from '../../../../assets/icons/ic-help-out
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { useParams } from 'react-router'
-import { Nodes } from '../../types'
+import { Nodes, SourceInfoType } from '../../types'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
@@ -20,19 +19,6 @@ import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import DeploymentStatusCard from './DeploymentStatusCard'
 import { noop } from '../../../common'
-
-export interface SourceInfoType{
-  appDetails
-  setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
-  environment: AppOtherEnvironment
-  environments
-  showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
-  showUrlInfo?: React.Dispatch<React.SetStateAction<boolean>>
-  showHibernateModal?: React.Dispatch<React.SetStateAction<'' | 'resume' | 'hibernate'>>
-  deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
-  loadingDetails?: boolean
-  loadingResourceTree?: boolean
-}
 
 export function SourceInfo({
     appDetails,
