@@ -136,7 +136,9 @@ export const triggerStatus = (triggerDetailStatus: string): string => {
         return 'Failed'
     } else if (triggerStatus === TIMELINE_STATUS.HEALTHY) {
         return 'Succeeded'
-    } else {
-        return triggerDetailStatus 
+    }else if (triggerStatus === TIMELINE_STATUS.INPROGRESS) {
+      return 'Inprogress'
+  } else {
+        return triggerDetailStatus
     }
 }

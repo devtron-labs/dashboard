@@ -44,4 +44,7 @@ export interface DeploymentDetailStepsType{
   deploymentStatus?: string
   deploymentAppType?: DeploymentAppType
   isHelm?: boolean
+  installedAppVersionHistoryId?: number
+  setDeploymentStatusDetailsBreakdownData?
+  deploymentStatusDetailsBreakdownData?
 }

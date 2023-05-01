@@ -38,7 +38,7 @@ const AppDetailsComponent = ({
     loadingResourceTree: boolean
     isPollingRequired?: boolean
 }) => {
-    const params = useParams<{ appId: string; envId: string; nodeType: string }>()
+    const params = useParams<{ appId: string; envId: string; nodeType: string; installedAppVersionHistoryId: string }>()
     const [streamData, setStreamData] = useState<AppStreamData>(null)
     const appDetails = IndexStore.getAppDetails()
 
@@ -59,6 +59,8 @@ const AppDetailsComponent = ({
             clearTimeout(deploymentStatusTimer)
         }
     }
+
+    console.log(params)
 
     async function callAppDetailsAPI() {
         try {

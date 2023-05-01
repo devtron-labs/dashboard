@@ -21,6 +21,7 @@ export function getDeploymentStatusDetail(
     envId: string,
     triggerId?: string,
     isHelm?: boolean,
+    installedAppVersionHistoryId?: number
 ): Promise<DeploymentStatusDetailsResponse> {
     let appendUrl
     if (isHelm) {
@@ -28,7 +29,7 @@ export function getDeploymentStatusDetail(
     } else {
       appendUrl = Routes.DEPLOYMENT_STATUS
     }
-    return get(`${appendUrl}/${appId}/${envId}${triggerId ? `?wfrId=${triggerId}` : ''}`)
+    return get(`${appendUrl}/${appId}/${envId}${triggerId ? `?wfrId=${triggerId}` : ``}${installedAppVersionHistoryId ? `?installedAppVersionHistoryId=${installedAppVersionHistoryId}` : ''}`)
 }
 
 export function getModuleConfigured(moduleName: string): Promise<ModuleConfigResponse> {

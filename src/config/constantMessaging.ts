@@ -163,7 +163,7 @@ export const APP_GROUP_CI_DETAILS = {
 }
 
 export const DEPLOYMENT_HISTORY_TABS = {
-  SOURCE : 0,
+  SOURCE : 1,
 }
 
 export const CONFIGMAPS_SECRETS = {

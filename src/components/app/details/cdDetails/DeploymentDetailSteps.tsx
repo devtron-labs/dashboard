@@ -16,6 +16,9 @@ export default function DeploymentDetailSteps({
     deploymentStatus,
     deploymentAppType,
     isHelm,
+    installedAppVersionHistoryId,
+    deploymentStatusDetailsBreakdownData,
+    setDeploymentStatusDetailsBreakdownData
 }: DeploymentDetailStepsType) {
     const history = useHistory()
     const { url } = useRouteMatch()
@@ -23,12 +26,10 @@ export default function DeploymentDetailSteps({
     const [deploymentListLoader, setDeploymentListLoader] = useState<boolean>(
         deploymentStatus?.toUpperCase() !== TIMELINE_STATUS.ABORTED,
     )
-    const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
-        useState<DeploymentStatusDetailsBreakdownDataType>(processDeploymentStatusDetailsData())
-
     let initTimer = null
     const getDeploymentDetailStepsData = (): void => {
-        getDeploymentStatusDetail(appId, envId, triggerId, isHelm)
+      setDeploymentListLoader(true)
+        getDeploymentStatusDetail(appId, envId, triggerId, isHelm, installedAppVersionHistoryId)
             .then((deploymentStatusDetailRes) => {
                 const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(
                     deploymentStatusDetailRes.result,
@@ -62,7 +63,7 @@ export default function DeploymentDetailSteps({
                 clearTimeout(initTimer)
             }
         }
-    }, [])
+    }, [installedAppVersionHistoryId])
 
     const redirectToDeploymentStatus = () => {
         isHelm
