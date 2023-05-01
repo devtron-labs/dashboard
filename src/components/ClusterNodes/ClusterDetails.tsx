@@ -137,8 +137,8 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
             if (!ob.hasOwnProperty(i)) continue
             const currentElement = ob[i]
             if (typeof currentElement == 'object' && currentElement !== null && !Array.isArray(currentElement)) {
-                var flatObject = flattenObject(currentElement)
-                for (var x in flatObject) {
+                let flatObject = flattenObject(currentElement)
+                for (let x in flatObject) {
                     if (!flatObject.hasOwnProperty(x)) continue
 
                     toReturn[i + '.' + x] = flatObject[x]
@@ -179,8 +179,8 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                         let diffType = '',
                             majorVersion,
                             minorVersion
-                        for (let index = 0; index < _nodeK8sVersions.length; index++) {
-                            const elementArr = _nodeK8sVersions[index].split('.')
+                        for (const _nodeK8sVersion of _nodeK8sVersions) {
+                            const elementArr = _nodeK8sVersion.split('.')
                             if (!majorVersion) {
                                 majorVersion = elementArr[0]
                             }
@@ -206,14 +206,14 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
 
                     if (_nodeErrors.length > 0) {
                         _errorTitle += (_errorTitle ? ', ' : '') + _nodeErrors.join(', ')
-                        for (let i = 0; i < _nodeErrors.length; i++) {
-                            const _errorLength = response[1].result.nodeErrors[_nodeErrors[i]].length
+                        for ( const _nodeError of _nodeErrors) {
+                            const _errorLength = response[1].result.nodeErrors[_nodeError].length
                             _errorList.push({
-                                errorText: `${_nodeErrors[i]} on ${
+                                errorText: `${_nodeError} on ${
                                     _errorLength === 1 ? `${_errorLength} node` : `${_errorLength} nodes`
                                 }`,
                                 errorType: ERROR_TYPE.OTHER,
-                                filterText: response[1].result.nodeErrors[_nodeErrors[i]],
+                                filterText: response[1].result.nodeErrors[_nodeError],
                             })
                         }
                     }
@@ -254,8 +254,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
 
     const handleFilterChanges = (): void => {
         let _flattenNodeList = []
-        for (let index = 0; index < flattenNodeList.length; index++) {
-            const element = flattenNodeList[index]
+        for (const element of flattenNodeList) {
             if (selectedVersion.value !== defaultVersion.value && element['k8sVersion'] !== selectedVersion.value) {
                 continue
             }
@@ -356,8 +355,8 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
         } else {
             const _searchedTextMap = new Map()
             const searchedLabelArr = filterText.split(',')
-            for (let index = 0; index < searchedLabelArr.length; index++) {
-                const currentItem = searchedLabelArr[index].trim()
+            for (const selectedVersion of searchedLabelArr) {
+                const currentItem = selectedVersion.trim()
                 _searchedTextMap.set(currentItem, true)
             }
             setSelectedSearchTextType('name')
@@ -401,8 +400,8 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                 </div>
                 {!collapsedErrorSection && (
                     <>
-                        {clusterErrorList.map((error) => (
-                            <div className="fw-4 fs-13 cn-9 mb-8">
+                        {clusterErrorList.map((error, index) => (
+                            <div key={`error-${index}`} className="fw-4 fs-13 cn-9 mb-8">
                                 {error.errorText}
                                 {error.errorType === ERROR_TYPE.OTHER ? (
                                     <span
@@ -529,14 +528,11 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
     }
 
     const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => {
+        const nodeColumnClassName = fixedNodeNameColumn ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
         return (
             <div
                 className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 ${
-                    column.label === 'Node'
-                        ? `${
-                              fixedNodeNameColumn ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
-                          } w-280 pl-20`
-                        : 'w-100px'
+                    column.label === 'Node' ? `${nodeColumnClassName} w-280 pl-20` : 'w-100px'
                 } ${sortByColumn.value === column.value ? 'sort-by' : ''} ${sortOrder === OrderBy.DESC ? 'desc' : ''} ${
                     column.isSortingAllowed ? ' pointer' : ''
                 } ${column.value === 'status' && 'w-180'}`}

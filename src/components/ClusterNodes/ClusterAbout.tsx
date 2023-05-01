@@ -298,6 +298,7 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
                                     </div>
                                 )}
                                 <div
+                                    data-testid="description-edit-button"
                                     className="dc__align-right pencil-icon cursor flex fw-6 cn-7"
                                     onClick={toggleDescriptionView}
                                 >
@@ -360,13 +361,19 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
                             <div className="form cluster__description-footer pt-12 pb-12">
                                 <div className="form__buttons pl-16 pr-16">
                                     <button
+                                        data-testid="description-edit-cancel-button"
                                         className="cta cancel flex h-36 mr-12"
                                         type="button"
                                         onClick={toggleDescriptionView}
                                     >
                                         Cancel
                                     </button>
-                                    <button className="cta flex h-36" type="submit" onClick={updateClusterAbout}>
+                                    <button
+                                        data-testid="description-save-cancel-button"
+                                        className="cta flex h-36"
+                                        type="submit"
+                                        onClick={updateClusterAbout}
+                                    >
                                         Save
                                     </button>
                                 </div>
@@ -394,7 +401,7 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
                     </div>
                     <div className="fs-14 lh-20 pt-12 fw-6 cn-9 show-shimmer-loading">
                         <div
-                            data-testid="cluster-name"
+                            data-testid={!clusterDetailsName ? 'cluster-name-loading' : 'cluster-name'}
                             className={!clusterDetailsName ? 'child-shimmer-loading' : 'dc__break-word'}
                         >
                             {clusterDetailsName}
@@ -404,11 +411,21 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
                 <hr className="mt-0 mb-0" />
                 <div className="pr-16 pt-16 pl-16 show-shimmer-loading">
                     <div className="fs-12 fw-4 lh-20 cn-7">Added by</div>
-                    <div className={!clusterCreatedBy ? 'child-shimmer-loading fs-13 fw-4 lh-20 cn-9 mt-2' : 'fs-13 fw-4 lh-20 cn-9 mt-2'}>
+                    <div
+                        data-testid="cluster-created-by"
+                        className={
+                            !clusterCreatedBy
+                                ? 'child-shimmer-loading fs-13 fw-4 lh-20 cn-9 mt-2'
+                                : 'fs-13 fw-4 lh-20 cn-9 mt-2'
+                        }
+                    >
                         {clusterCreatedBy}
                     </div>
                     <div className="fs-12 fw-4 lh-20 cn-7 mt-16">Added on</div>
-                    <div className={!clusterCreatedOn ? 'child-shimmer-loading' : 'fs-13 fw-4 lh-20 cn-9 mt-2'}>
+                    <div
+                        data-testid="cluster-created-on"
+                        className={!clusterCreatedOn ? 'child-shimmer-loading' : 'fs-13 fw-4 lh-20 cn-9 mt-2'}
+                    >
                         {clusterCreatedOn}
                     </div>
                 </div>

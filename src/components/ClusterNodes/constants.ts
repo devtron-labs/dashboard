@@ -1,4 +1,3 @@
-import exp from 'constants'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 import { ColumnMetadataType, EFFECT_TYPE } from './types'
 
@@ -368,7 +367,8 @@ export const DEFAULT_MARKDOWN_EDITOR_PREVIEW_MESSAGE =
 Nothing to preview
 `
 export const CLUSTER_DESCRIPTION_UPDATE_MSG = 'Saved changes'
-export const CLUSTER_DESCRIPTION_EMPTY_ERROR_MSG = "Description cannot be empty. Please provide a description or cancel the changes."
+export const CLUSTER_DESCRIPTION_EMPTY_ERROR_MSG =
+    'Description cannot be empty. Please provide a description or cancel the changes.'
 export const CLUSTER_DESCRIPTION_UNSAVED_CHANGES_MSG = 'Are you sure you want to discard your changes?'
 export const defaultClusterNote = 
 `## Describe this cluster

@@ -68,6 +68,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                 ':clusterId': {
                     component: (
                         <ReactSelect
+                            classNamePrefix='cluster-select-header'
                             options={clusterList}
                             onChange={onClusterChange}
                             components={{
@@ -101,7 +102,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     const renderClusterTabs = (): JSX.Element => {
         return (
             <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab pointer" data-tab-index="0" onClick={changeNodeTab}>
+                <li className="tab-list__tab pointer" data-tab-index="0" data-testid="cluster-about-tab" onClick={changeNodeTab}>
                     <div
                         className={`mb-6 fs-13 tab-hover${
                             selectedTabName == CLUSTER_PAGE_TAB.ABOUT ? ' fw-6 active' : ' fw-4'
@@ -111,7 +112,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                     </div>
                     {selectedTabName == CLUSTER_PAGE_TAB.ABOUT && <div className="node-details__active-tab" />}
                 </li>
-                <li className="tab-list__tab pointer" data-tab-index="1" onClick={changeNodeTab}>
+                <li className="tab-list__tab pointer" data-tab-index="1" data-testid="cluster-details-tab" onClick={changeNodeTab}>
                     <div
                         className={`mb-6 flexbox fs-13 tab-hover${
                             selectedTabName == CLUSTER_PAGE_TAB.DETAILS ? ' fw-6 active' : ' fw-4'
