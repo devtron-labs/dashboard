@@ -3,7 +3,7 @@
 import React from 'react'
 import moment from 'moment'
 import { Link, useHistory } from 'react-router-dom'
-import { URLS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
+import { URLS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { EnvSelector } from './AppDetails'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
@@ -21,6 +21,19 @@ import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots
 import DeploymentStatusCard from './DeploymentStatusCard'
 import { noop } from '../../../common'
 
+export interface SourceInfoType{
+  appDetails
+  setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
+  environment: AppOtherEnvironment
+  environments
+  showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
+  showUrlInfo?: React.Dispatch<React.SetStateAction<boolean>>
+  showHibernateModal?: React.Dispatch<React.SetStateAction<'' | 'resume' | 'hibernate'>>
+  deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
+  loadingDetails?: boolean
+  loadingResourceTree?: boolean
+}
+
 export function SourceInfo({
     appDetails,
     setDetailed = null,
@@ -32,7 +45,7 @@ export function SourceInfo({
     deploymentStatusDetailsBreakdownData = null,
     loadingDetails = false,
     loadingResourceTree = false,
-}) {
+}: SourceInfoType) {
     const history = useHistory()
     const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
@@ -279,7 +292,7 @@ export function SourceInfo({
                                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                 loadingResourceTree={loadingResourceTree}
                             />
-                             <div style={{ marginLeft: 'auto' }} className="flex right">
+                             <div className="flex right ml-auto">
                                 {appDetails?.appStoreChartId && (
                                     <>
                                         <span className="mr-8 fs-12 cn-7">Chart:</span>

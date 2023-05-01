@@ -225,8 +225,8 @@ export const Details: React.FC<DetailsType> = ({
     }, [appDetails])
 
     const getDeploymentDetailStepsData = (): void => {
-       // Deployments details status for Helm apps
-        getDeploymentStatusDetail(params.appId, params.envId, '', true).then((deploymentStatusDetailRes) => {
+       // Deployments status details for Devtron apps
+        getDeploymentStatusDetail(params.appId, params.envId).then((deploymentStatusDetailRes) => {
             processDeploymentStatusData(deploymentStatusDetailRes.result)
         })
     }

@@ -13,7 +13,6 @@ export default function DeploymentStatusDetailModal({
     deploymentStatusDetailsBreakdownData,
 }: DeploymentStatusDetailModalType) {
     const history = useHistory()
-    const { appId, envId} = useParams<{appId: string , envId: string}>()
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
 
     const closeStatusModal = () => {

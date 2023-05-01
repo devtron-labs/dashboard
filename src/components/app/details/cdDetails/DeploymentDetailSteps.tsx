@@ -12,11 +12,17 @@ import mechanicalOperation from '../../../../assets/img/ic-mechanical-operation.
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, TIMELINE_STATUS, URLS } from '../../../../config'
 
-export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppType, isHelm}: DeploymentDetailStepsType) {
+export default function DeploymentDetailSteps({
+    deploymentStatus,
+    deploymentAppType,
+    isHelm,
+}: DeploymentDetailStepsType) {
     const history = useHistory()
     const { url } = useRouteMatch()
     const { appId, envId, triggerId } = useParams<{ appId: string; envId?: string; triggerId?: string }>()
-    const [deploymentListLoader, setDeploymentListLoader] = useState<boolean>(deploymentStatus?.toUpperCase() !== TIMELINE_STATUS.ABORTED)
+    const [deploymentListLoader, setDeploymentListLoader] = useState<boolean>(
+        deploymentStatus?.toUpperCase() !== TIMELINE_STATUS.ABORTED,
+    )
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>(processDeploymentStatusDetailsData())
 
@@ -59,10 +65,15 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
     }, [])
 
     const redirectToDeploymentStatus = () => {
-        history.push({
-            pathname: `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}/${URLS.APP_DETAILS_K8}`,
-            search: DEPLOYMENT_STATUS_QUERY_PARAM
-        })
+        isHelm
+            ? history.push({
+                  pathname: `${URLS.APP}/${URLS.DEVTRON_CHARTS}/${URLS.APP_DEPLOYMNENT_HISTORY}/${appId}/env/${envId}/${URLS.DETAILS}/${URLS.APP_DETAILS_K8}`,
+                  search: DEPLOYMENT_STATUS_QUERY_PARAM,
+              })
+            : history.push({
+                  pathname: `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}/${URLS.APP_DETAILS_K8}`,
+                  search: DEPLOYMENT_STATUS_QUERY_PARAM,
+              })
     }
 
     return deploymentStatus?.toUpperCase() === TIMELINE_STATUS.ABORTED ||

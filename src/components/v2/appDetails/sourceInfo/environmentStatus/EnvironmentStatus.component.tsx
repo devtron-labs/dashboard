@@ -14,20 +14,15 @@ import Tippy from '@tippyjs/react'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
 import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
-import { DeploymentStatusDetailsBreakdownDataType } from '../../../../app/details/appDetails/appDetails.type'
 import { noop, useAsync } from '../../../../common'
+import { EnvironmentStatusComponentType } from '../environment.type'
 
 function EnvironmentStatusComponent({
     appStreamData,
     loadingDetails,
     loadingResourceTree,
     deploymentStatusDetailsBreakdownData
-}: {
-    appStreamData: any
-    loadingDetails: boolean
-    loadingResourceTree: boolean
-    deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
-}) {
+}: EnvironmentStatusComponentType) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
     const [showNotes, setShowNotes] = useState(false)
@@ -38,7 +33,6 @@ function EnvironmentStatusComponent({
     const history = useHistory()
     const params = useParams<{ appId: string; envId: string }>()
     const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
-
 
     const onClickUpgrade = () => {
         let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
