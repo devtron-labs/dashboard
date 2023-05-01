@@ -177,4 +177,5 @@ export interface DetailsType {
 
 export interface DeploymentStatusCardType {
   deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
+  loadingResourceTree?: boolean
 }

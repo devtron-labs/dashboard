@@ -187,6 +187,7 @@ export const Routes = {
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
     TELEMETRY_EVENT: 'telemetry/event',
     DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
+    HELM_DEPLOYMENT_STATUS: 'app-store/deployment-status/timeline',
     MANUAL_SYNC: 'app/deployment-status/manual-sync',
     MODULE_CONFIGURED: 'module/config',
     SSO: 'sso',

@@ -32,6 +32,7 @@ import {
 } from './chartDeploymentHistory.service'
 import IndexStore from '../appDetails/index.store'
 import { DEPLOYMENT_HISTORY_TABS, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
+import DeploymentDetailSteps from '../../app/details/cdDetails/DeploymentDetailSteps'
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
     loading?: boolean
@@ -63,7 +64,7 @@ function ChartDeploymentHistory({
     const history = useHistory()
     const { url } = useRouteMatch()
 
-    const deploymentTabs: string[] = ['Source', 'values.yaml', 'Helm generated manifest']
+    const deploymentTabs: string[] = ['Steps', 'Source', 'values.yaml', 'Helm generated manifest']
 
     // component load
     useEffect(() => {
@@ -364,7 +365,9 @@ function ChartDeploymentHistory({
 
         return (
             <div className={`trigger-outputs-container ${selectedDeploymentTabIndex == 0 ? 'pt-20' : ''}`}>
-                {selectedDeploymentTabIndex === 0 && (
+              {selectedDeploymentTabIndex === 0 &&
+               <DeploymentDetailSteps isHelm={true}/>}
+                {selectedDeploymentTabIndex === 1 && (
                     <div
                         className="ml-20 w-100 p-16 bcn-0 br-4 en-2 bw-1 pb-12 mb-12"
                         style={{ width: 'min( 100%, 800px )' }}
@@ -434,7 +437,7 @@ function ChartDeploymentHistory({
                         </div>
                     </div>
                 )}
-                {(selectedDeploymentTabIndex === 1 || selectedDeploymentTabIndex === 2) && renderCodeEditor()}
+                {(selectedDeploymentTabIndex === 2 || selectedDeploymentTabIndex === 3) && renderCodeEditor()}
             </div>
         )
     }

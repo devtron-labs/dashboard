@@ -16,8 +16,11 @@ export function isDatasourceHealthy(datasourceId: number | string) {
     return fetchWithFullRoute(URL, 'GET');
 }
 
-export function getDeploymentStatusDetail(appId: string, envId: string, triggerId?: string): Promise<DeploymentStatusDetailsResponse> {
-  return get(`${Routes.DEPLOYMENT_STATUS}/${appId}/${envId}${triggerId ? `?wfrId=${triggerId}` : ``}`)
+export function getDeploymentStatusDetail(appId: string, envId: string, triggerId?: string, isHelm?: boolean): Promise<DeploymentStatusDetailsResponse> {
+
+    return get(`${isHelm ? Routes.HELM_DEPLOYMENT_STATUS : Routes.DEPLOYMENT_STATUS}/${appId}/${envId}${triggerId ? `?wfrId=${triggerId}` : ``}`)
+
+
 }
 
 export function getModuleConfigured(moduleName: string): Promise<ModuleConfigResponse> {

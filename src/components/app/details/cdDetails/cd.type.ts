@@ -41,6 +41,7 @@ export interface DeploymentHistory {
 }
 
 export interface DeploymentDetailStepsType{
-  deploymentStatus: string
+  deploymentStatus?: string
   deploymentAppType?: DeploymentAppType
+  isHelm?: boolean
 }

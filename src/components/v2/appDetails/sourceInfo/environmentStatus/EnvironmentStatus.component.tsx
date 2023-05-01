@@ -13,25 +13,21 @@ import { useRouteMatch, useHistory, useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
-<<<<<<< HEAD
-import { useAsync } from '../../../../common'
 import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
 import { DeploymentStatusDetailsBreakdownDataType } from '../../../../app/details/appDetails/appDetails.type'
-
-function EnvironmentStatusComponent({ appStreamData, deploymentStatusDetailsBreakdownData }: { appStreamData: any, deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType }) {
-=======
 import { noop, useAsync } from '../../../../common'
 
 function EnvironmentStatusComponent({
     appStreamData,
     loadingDetails,
     loadingResourceTree,
+    deploymentStatusDetailsBreakdownData
 }: {
     appStreamData: any
     loadingDetails: boolean
     loadingResourceTree: boolean
+    deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
 }) {
->>>>>>> main
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
     const [showNotes, setShowNotes] = useState(false)
@@ -156,65 +152,13 @@ function EnvironmentStatusComponent({
         )
     }
 
-<<<<<<< HEAD
-                {appDetails?.lastDeployedTime && (
-                    // <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12">
-                    //     <div className="cn-9 lh-1-33 flex left">
-                    //         <span>Last updated</span>
-                    //         <Tippy
-                    //             className="default-tt cursor"
-                    //             arrow={false}
-                    //             content={'When was this app last updated'}
-                    //         >
-                    //             <Question className="cursor icon-dim-16 ml-4" />
-                    //         </Tippy>
-                    //     </div>
-                    //     <div className=" fw-6 fs-14">
-                    //         {moment(appDetails?.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()}
-                    //     </div>
-                    //     {appDetails?.lastDeployedBy && appDetails?.lastDeployedBy}
-                    //     {appDetails.appType == AppType.EXTERNAL_HELM_CHART && (
-                    //         <div>
-                    //             <Link
-                    //                 className="cb-5 fw-6"
-                    //                 to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/${appDetails.appId}/${appDetails.appName}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
-                    //             >
-                    //                 Details
-                    //             </Link>
-                    //         </div>
-                    //     )}
-                    // </div>
 
-                    <DeploymentStatusCard
-                        deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                    />
-                )}
-=======
     const renderLastUpdatedBlock = () => {
         return (
             appDetails?.lastDeployedTime && (
-                <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12 en-2 bw-1">
-                    <div className="cn-9 flex left">
-                        <span data-testid="last-updated-heading">Last updated</span>
-                        <Tippy className="default-tt cursor" arrow={false} content={'When was this app last updated'}>
-                            <Question className="cursor icon-dim-16 ml-4" />
-                        </Tippy>
-                    </div>
-                    <div className=" fw-6 fs-14" data-testid="last-updated-time">
-                        {moment(appDetails?.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()}
-                    </div>
-                    {appDetails?.lastDeployedBy && appDetails?.lastDeployedBy}
-                    {appDetails.appType == AppType.EXTERNAL_HELM_CHART && (
-                        <div>
-                            <Link
-                                className="cb-5 fw-6"
-                                to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/${appDetails.appId}/${appDetails.appName}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
-                            >
-                                Details
-                            </Link>
-                        </div>
-                    )}
-                </div>
+              <DeploymentStatusCard
+              deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+          />
             )
         )
     }
@@ -265,7 +209,6 @@ function EnvironmentStatusComponent({
             )
         )
     }
->>>>>>> main
 
     const renderUpgraderChartBlock = () => {
         return (

@@ -12,17 +12,17 @@ import mechanicalOperation from '../../../../assets/img/ic-mechanical-operation.
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, TIMELINE_STATUS, URLS } from '../../../../config'
 
-export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppType }: DeploymentDetailStepsType) {
+export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppType, isHelm}: DeploymentDetailStepsType) {
     const history = useHistory()
     const { url } = useRouteMatch()
     const { appId, envId, triggerId } = useParams<{ appId: string; envId?: string; triggerId?: string }>()
-    const [deploymentListLoader, setDeploymentListLoader] = useState<boolean>(deploymentStatus.toUpperCase() !== TIMELINE_STATUS.ABORTED)
+    const [deploymentListLoader, setDeploymentListLoader] = useState<boolean>(deploymentStatus?.toUpperCase() !== TIMELINE_STATUS.ABORTED)
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>(processDeploymentStatusDetailsData())
 
     let initTimer = null
     const getDeploymentDetailStepsData = (): void => {
-        getDeploymentStatusDetail(appId, envId, triggerId)
+        getDeploymentStatusDetail(appId, envId, triggerId, isHelm)
             .then((deploymentStatusDetailRes) => {
                 const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(
                     deploymentStatusDetailRes.result,
@@ -65,7 +65,7 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
         })
     }
 
-    return deploymentStatus.toUpperCase() === TIMELINE_STATUS.ABORTED ||
+    return deploymentStatus?.toUpperCase() === TIMELINE_STATUS.ABORTED ||
         deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ? (
         <div className="flexbox deployment-aborted" data-testid="deployment-history-steps-failed-message">
             <CDEmptyState

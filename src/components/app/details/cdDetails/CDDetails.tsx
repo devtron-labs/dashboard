@@ -406,6 +406,7 @@ const HistoryLogs: React.FC<{
 
     return (
         <>
+        {console.log(deploymentAppType, triggerDetails.status)}
             <div className="trigger-outputs-container">
                 {loading ? (
                     <Progressing pageLoader />
@@ -426,6 +427,7 @@ const HistoryLogs: React.FC<{
                                 <DeploymentDetailSteps
                                     deploymentStatus={triggerDetails.status}
                                     deploymentAppType={deploymentAppType}
+                                    isHelm={false}
                                 />
                             </Route>
                         )}

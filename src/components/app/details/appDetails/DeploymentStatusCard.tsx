@@ -4,28 +4,35 @@ import moment from 'moment'
 import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Timer } from '../../../../assets/icons/ic-timer.svg'
-import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
+import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, URLS } from '../../../../config'
 import { DeploymentStatusCardType } from './appDetails.type'
 import { useHistory } from 'react-router'
+import { noop } from '../../../common'
+import { Link } from 'react-router-dom'
 
 function DeploymentStatusCard({
     deploymentStatusDetailsBreakdownData,
+    loadingResourceTree,
 }: DeploymentStatusCardType) {
-  const history = useHistory()
+    const history = useHistory()
 
-  const showDeploymentDetailedStatus = (e): void => {
-    e.stopPropagation()
-    history.push({
-        search: DEPLOYMENT_STATUS_QUERY_PARAM,
-    })
-    // ReactGA.event({
-    //     category: 'App Details',
-    //     action: 'Deployment status clicked',
-    // })
-}
+    const showDeploymentDetailedStatus = (e): void => {
+        e.stopPropagation()
+        history.push({
+            search: DEPLOYMENT_STATUS_QUERY_PARAM,
+        })
+        // ReactGA.event({
+        //     category: 'App Details',
+        //     action: 'Deployment status clicked',
+        // })
+    }
     return (
         <div>
-            <div onClick={showDeploymentDetailedStatus} className="flex left bcn-0 p-16 br-4 mw-382 en-2 bw-1 cursor mr-12">
+            <div
+                data-testid="deployment-status-card"
+                onClick={loadingResourceTree ? noop : showDeploymentDetailedStatus}
+                className="flex left bcn-0 p-16 br-4 mw-382 en-2 bw-1 cursor mr-12"
+            >
                 <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
                     <CD className="icon-dim-32" />
                 </div>
@@ -44,6 +51,7 @@ function DeploymentStatusCard({
                     </div>
                     <div className="flexbox">
                         <span
+                            data-testid="deployment-status-name"
                             className={`app-summary__status-name fs-14 mr-8 fw-6 f-${
                                 deploymentStatusDetailsBreakdownData.deploymentStatus
                             } ${
@@ -58,13 +66,13 @@ function DeploymentStatusCard({
                             className={`${deploymentStatusDetailsBreakdownData.deploymentStatus} icon-dim-20 mt-2`}
                         ></div>
                     </div>
-                        <div>
-                            <span className="cb-5 fw-6 pointer">Details</span>
-                        </div>
+                    <div>
+                        <span className="cb-5 fw-6 pointer">Details</span>
+                    </div>
                 </div>
                 <div className="flex left column mw-140">
                     <div className="fs-12 fw-4 cn-9">Deployment triggered</div>
-                    <div className="flexbox">
+                    <div className="flexbox" data-testid="last-updated-time">
                         <span className="fs-13 mr-5 fw-6 cn-9">
                             {deploymentStatusDetailsBreakdownData.deploymentTriggerTime
                                 ? moment(

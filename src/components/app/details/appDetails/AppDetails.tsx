@@ -225,7 +225,8 @@ export const Details: React.FC<DetailsType> = ({
     }, [appDetails])
 
     const getDeploymentDetailStepsData = (): void => {
-        getDeploymentStatusDetail(params.appId, params.envId).then((deploymentStatusDetailRes) => {
+       // Deployments details status for Helm apps
+        getDeploymentStatusDetail(params.appId, params.envId, '', true).then((deploymentStatusDetailRes) => {
             processDeploymentStatusData(deploymentStatusDetailRes.result)
         })
     }
@@ -466,17 +467,7 @@ export const Details: React.FC<DetailsType> = ({
                     showCommitInfo={isAppDeployment && appDetails?.dataSource !== 'EXTERNAL' ? showCommitInfo : null}
                     showUrlInfo={isAppDeployment ? setUrlInfo : null}
                     showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
-<<<<<<< HEAD
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData} />
-=======
-                    deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
-                    deploymentStatusText={deploymentStatusDetailsBreakdownData.deploymentStatusText}
-                    deploymentTriggerTime={deploymentStatusDetailsBreakdownData.deploymentTriggerTime}
-                    triggeredBy={deploymentStatusDetailsBreakdownData.triggeredBy}
-                    loadingDetails={loadingDetails}
-                    loadingResourceTree={loadingResourceTree}
-                />
->>>>>>> main
             </div>
             <SyncErrorComponent
                 showApplicationDetailedModal={showApplicationDetailedModal}
