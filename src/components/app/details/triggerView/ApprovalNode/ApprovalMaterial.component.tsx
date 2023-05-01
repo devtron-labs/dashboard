@@ -26,11 +26,11 @@ export const ApprovedTippyContent = ({
     }
 
     return (
-        <div className="pl-12 pr-12 h-100 dc__overflow-hidden">
-            <div className="pt-12 pb-12 h-100 mxh-210 dc__overflow-scroll">
+        <div className="pl-12 h-100 dc__overflow-hidden">
+            <div className="pt-12 pb-12 pr-12 h-100 mxh-210 dc__overflow-scroll">
                 <div>
                     <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">Approval requested by</h5>
-                    <span className="flex left mb-8">
+                    <span className="flex left mb-8 fs-13 fw-4">
                         {getAlphabetIcon(userApprovalMetadata?.requestedUserData?.userEmail)}
                         {requestedBySelf ? 'You' : userApprovalMetadata?.requestedUserData?.userEmail}
                         {requestedBySelf && !cancelState && (
@@ -57,7 +57,11 @@ export const ApprovedTippyContent = ({
                                 >
                                     Yes
                                 </span>
-                                <span className="cn-7 cursor" onClick={toggleCancelRequest} data-testid="cancel-approval-request__no">
+                                <span
+                                    className="cn-7 cursor"
+                                    onClick={toggleCancelRequest}
+                                    data-testid="cancel-approval-request__no"
+                                >
                                     No
                                 </span>
                             </div>
@@ -70,7 +74,7 @@ export const ApprovedTippyContent = ({
                         <ol className="p-0 dc__list-style-none">
                             {userApprovalMetadata.approvedUsersData.map((_approver) => {
                                 return (
-                                    <li key={_approver.userEmail} className="flex left mb-8">
+                                    <li key={_approver.userEmail} className="flex left mb-8 fs-13 fw-4">
                                         {getAlphabetIcon(_approver.userEmail)}
                                         {_approver.userId === requestedUserId ? 'You' : _approver.userEmail}
                                     </li>

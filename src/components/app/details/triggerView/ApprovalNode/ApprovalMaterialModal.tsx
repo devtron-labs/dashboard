@@ -8,6 +8,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { EmptyView } from '../../cicdHistory/History.components'
 import { ReactComponent as ApproversIcon } from '../../../../../assets/icons/ic-users.svg'
+import { ReactComponent as APITokenIcon } from '../../../../../assets/icons/ic-key-bulb.svg'
 import noartifact from '../../../../../assets/img/no-artifact@2x.png'
 import close from '../../../../../assets/icons/ic-close.svg'
 import { ApprovalMaterialModalProps } from './Types'
@@ -41,11 +42,19 @@ export default function ApprovalMaterialModal({
 
     const renderModalHeader = () => {
         return (
-            <div data-testid="approval-for-deployment-heading" className="trigger-modal__header dc__no-border pb-12 cn-9">
+            <div
+                data-testid="approval-for-deployment-heading"
+                className="trigger-modal__header dc__no-border pb-12 cn-9"
+            >
                 <h1 className="modal__title">
                     Approval for deployment to <span className="fw-6">{node.environmentName ?? ''}</span>
                 </h1>
-                <button data-testid="close-approval-node-box" type="button" className="dc__transparent" onClick={closeApprovalModal}>
+                <button
+                    data-testid="close-approval-node-box"
+                    type="button"
+                    className="dc__transparent"
+                    onClick={closeApprovalModal}
+                >
                     <img alt="close" src={close} />
                 </button>
             </div>
@@ -67,7 +76,7 @@ export default function ApprovalMaterialModal({
                     data-testid="all-images-tab"
                     onClick={handleTabSelected}
                 >
-                    All images
+                    Request approval
                 </li>
                 <li
                     className={`tab-list__tab cursor pb-8 ${
@@ -77,28 +86,67 @@ export default function ApprovalMaterialModal({
                     data-testid="approval-requested-tab"
                     onClick={handleTabSelected}
                 >
-                    Approval requested<span className="dc__badge ml-6">{approvalRequestedMaterial.length}</span>
+                    Approval pending<span className="dc__badge ml-6">{approvalRequestedMaterial.length}</span>
                 </li>
             </ul>
         )
     }
 
+    const getApproversInfoMsg = () => {
+        return (
+            <div className="fs-12 fw-4 bcv-1 cn-9 lh-20 pt-8 pb-8 pl-12 pr-12">
+                ‘Approver’ role can be provided to users via&nbsp;
+                <Link to="/global-config/auth/users" className="fs-13 cb-5 lh-20">
+                    User Permissions.
+                </Link>
+            </div>
+        )
+    }
+
     const getApprovalUsersTippyContent = () => {
         const approversPresent = node.approvalUsers?.length > 0
+        const users = [],
+            apiTokens = []
+
+        if (approversPresent) {
+            for (const approver of node.approvalUsers) {
+                if (approver.startsWith('API-TOKEN:')) {
+                    apiTokens.push(approver.split(':')[1])
+                } else {
+                    users.push(approver)
+                }
+            }
+        }
+
         return (
-            <div className="pl-12 pr-12 h-100 dc__overflow-hidden">
-                <div className="pt-12 pb-12 h-100 mxh-210 dc__overflow-scroll">
+            <div className="h-100 dc__overflow-hidden">
+                <div className="h-100 mxh-210 dc__overflow-scroll">
                     {approversPresent ? (
-                        <ol className="p-0 dc__list-style-none">
-                            {node.approvalUsers.sort().map((_approver) => {
-                                return (
-                                    <li key={_approver} className="flex left mb-8">
-                                        {getAlphabetIcon(_approver)}
-                                        {_approver}
-                                    </li>
-                                )
-                            })}
-                        </ol>
+                        <>
+                            {getApproversInfoMsg()}
+                            <div className="fs-13 fw-6 cn-9 pt-12 pl-12">Users</div>
+                            <ol className="pt-8 pl-12 pr-12 dc__list-style-none">
+                                {users.sort().map((_approver) => {
+                                    return (
+                                        <li key={_approver} className="flex left mb-8 fs-13 fw-4">
+                                            {getAlphabetIcon(_approver)}
+                                            {_approver}
+                                        </li>
+                                    )
+                                })}
+                            </ol>
+                            <div className="fs-13 fw-6 cn-9 mt-12 pl-12">API Tokens</div>
+                            <ol className="pt-8 pl-12 pr-12 dc__list-style-none">
+                                {apiTokens.sort().map((_approver) => {
+                                    return (
+                                        <li key={_approver} className="flex left mb-8 fs-13 fw-4">
+                                            <APITokenIcon className="icon-dim-20 mr-8" />
+                                            {_approver}
+                                        </li>
+                                    )
+                                })}
+                            </ol>
+                        </>
                     ) : (
                         <div className="fs-13 fw-4 cn-7 lh-20">
                             No users have ‘Approver’ permission for this application and environment. ‘Approver’ role
@@ -119,7 +167,7 @@ export default function ApprovalMaterialModal({
             <div className="trigger-modal__body h-100vh">
                 <div className="material-list__title pb-16">
                     {selectedTabIndex === 0 ? (
-                        'Request approval for an image to deploy or rollback'
+                        'Request approval for an image to deploy or rollback to'
                     ) : (
                         <>
                             {`At least ${

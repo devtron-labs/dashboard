@@ -8,6 +8,7 @@ import { ReactComponent as World } from '../../../../../assets/icons/ic-world.sv
 import { ReactComponent as Failed } from '../../../../../assets/icons/ic-rocket-fail.svg'
 import { ReactComponent as DeployIcon } from '../../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as ApprovalChecks } from '../../../../../assets/icons/ic-checks.svg'
+import { ReactComponent as CancelIcon } from '../../../../../assets/icons/ic-cross.svg'
 import arrow from '../../../../../assets/icons/misc/arrow-chevron-down-black.svg'
 import docker from '../../../../../assets/icons/misc/docker.svg'
 import { CDMaterialType, CDModalTabType, DeploymentNodeType, MaterialInfo } from '../types'
@@ -149,7 +150,7 @@ export default function ApprovalMaterial({
     }
 
     const getRequestButton = (mat: CDMaterialType, approvalRequestType: ApprovalRequestType) => {
-        const _className = `cta flex mt-4 ml-auto mr-16 mb-16 ${
+        const _className = `cta flex h-32 mt-4 ml-auto mr-16 mb-16 ${
             approvalRequestType === ApprovalRequestType.CANCEL ? 'delete' : ''
         }`
         const _style =
@@ -234,11 +235,12 @@ export default function ApprovalMaterial({
                         visible={tippyVisible[mat.id]}
                     >
                         <span
-                            className="cr-5"
+                            className="flex right cr-5"
                             data-id={mat.id}
                             onClick={toggleTippyVisibility}
                             data-testid="cancel-request"
                         >
+                            <CancelIcon className="icon-dim-16 fcr-5 scr-5 mr-4" />
                             Cancel request
                         </span>
                     </TippyCustomized>
@@ -251,7 +253,7 @@ export default function ApprovalMaterial({
                         placement="bottom-end"
                         iconClass="fcv-5"
                         heading="Approve image"
-                        infoText="Are you sure you want to approve deploying this image to cd-devtroncd?"
+                        infoText={`Are you sure you want to approve deploying this image to ${envName}?`}
                         additionalContent={getRequestButton(mat, ApprovalRequestType.APPROVE)}
                         showCloseButton={true}
                         onClose={() => handleOnClose(mat.id)}

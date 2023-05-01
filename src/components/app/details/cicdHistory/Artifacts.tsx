@@ -167,17 +167,13 @@ const CIProgressView = (): JSX.Element => {
     )
 }
 
-const getApprovedTippyContent = (
-    approvalRequested: string,
-    approvedBy: string[],
-    deployedBy: string
-) => {
+const getApprovedTippyContent = (approvalRequested: string, approvedBy: string[], deployedBy: string) => {
     return (
-        <div className="pl-12 pr-12 h-100 dc__overflow-hidden">
-            <div className="pt-12 pb-12 h-100 mxh-210 dc__overflow-scroll">
+        <div className="pl-12 h-100 dc__overflow-hidden">
+            <div className="pt-12 pb-12 pr-12 h-100 mxh-210 dc__overflow-scroll">
                 <div>
                     <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">Approval requested by</h5>
-                    <span className="flex left mb-8">
+                    <span className="flex left mb-8 fs-13 fw-4">
                         {getAlphabetIcon(approvalRequested)}
                         {approvalRequested}
                     </span>
@@ -187,7 +183,7 @@ const getApprovedTippyContent = (
                     <ol className="p-0 dc__list-style-none">
                         {approvedBy.map((_approver) => {
                             return (
-                                <li key={_approver} className="flex left mb-8">
+                                <li key={_approver} className="flex left mb-8 fs-13 fw-4">
                                     {getAlphabetIcon(_approver)}
                                     {_approver}
                                 </li>
@@ -196,8 +192,8 @@ const getApprovedTippyContent = (
                     </ol>
                 </div>
                 <div className="mt-12">
-                    <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">Deployed by</h5>
-                    <span className="flex left mt-8">
+                    <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">Deployment initiated by</h5>
+                    <span className="flex left mt-8 fs-13 fw-4">
                         {getAlphabetIcon(deployedBy)}
                         {deployedBy}
                     </span>

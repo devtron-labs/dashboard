@@ -80,7 +80,6 @@ import {
     TOAST_INFO,
     CONFIGMAPS_SECRETS,
 } from '../../config/constantMessaging'
-import { InstallationType } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -933,7 +932,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             this.handleConfigmapAndSecretsChange(selected, configmapKey)
         }
         return (
-            <div className="cd-stage mt-12">
+            <div className="cd-stage mt-12 ml-60">
                 <div className="form__row">
                     <img
                         src={trash}
@@ -1312,26 +1311,24 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     renderManualApproval = () => {
         return (
-            <CommonRadioGroup
-                className="manual-approvals-switch flex left"
-                name="required-approvals"
-                initialTab={this.state.requiredApprovals}
-                disabled={false}
-                onChange={this.onChangeRequiredApprovals}
-            >
-                {getEmptyArrayOfLength(6).map((e, idx) => {
-                    return (
-                        <CommonRadioGroup.Radio dataTestId={`number-of-approvers-${1+idx}`} value={`${idx + 1}`}>
-                            {idx === 0 ? (
-                                <ApprovalIcon className="icon-dim-12 mr-6" />
-                            ) : (
-                                <MultiApprovalIcon className="icon-dim-12 mr-6" />
-                            )}
-                            {idx + 1}
-                        </CommonRadioGroup.Radio>
-                    )
-                })}
-            </CommonRadioGroup>
+            <div className="flex left">
+                <MultiApprovalIcon className="icon-dim-20 mr-8" />
+                <CommonRadioGroup
+                    className="manual-approvals-switch flex left"
+                    name="required-approvals"
+                    initialTab={this.state.requiredApprovals}
+                    disabled={false}
+                    onChange={this.onChangeRequiredApprovals}
+                >
+                    {getEmptyArrayOfLength(6).map((e, idx) => {
+                        return (
+                            <CommonRadioGroup.Radio dataTestId={`number-of-approvers-${1 + idx}`} value={`${idx + 1}`}>
+                                {idx + 1}
+                            </CommonRadioGroup.Radio>
+                        )
+                    })}
+                </CommonRadioGroup>
+            </div>
         )
     }
 
@@ -1343,7 +1340,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <ApprovalIcon className="icon-dim-24" />
                     </div>
                     <div className="ml-16 mr-16 flex-1">
-                        <h4 data-testId="manual-approval-heading" className="fs-14 fw-6 lh-1-43 cn-9 mb-4">Manual approval</h4>
+                        <h4 data-testId="manual-approval-heading" className="fs-14 fw-6 lh-1-43 cn-9 mb-4">
+                            Manual approval for deployment
+                        </h4>
                         <div className="form__label form__label--sentence m-0">
                             When enabled, only approved images will be available to be deployed by this deployment
                             pipeline.
@@ -1453,11 +1452,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     </div>
                 </div>
                 {this.state.showDeploymentStage && (
-                    <>
+                    <div className="ml-60">
                         {this.renderEnvNamespaceAndTriggerType()}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && this.renderDeploymentAppType()}
                         {this.renderDeploymentStrategy()}
-                    </>
+                    </div>
                 )}
             </>
         )
@@ -1501,12 +1500,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 <div className="divider mt-12 mb-12"></div>
                 {this.renderPreStage()}
                 <div className="divider mt-12 mb-12"></div>
-                {this.props.installationType === InstallationType.ENTERPRISE && (
-                    <>
-                        {this.renderManualApprovalWrapper()}
-                        <div className="divider mt-12 mb-12"></div>
-                    </>
-                )}
+                {this.renderManualApprovalWrapper()}
+                <div className="divider mt-12 mb-12"></div>
                 {this.renderDeploymentStage()}
                 <div className="divider mt-12 mb-12"></div>
                 {this.renderPostStage()}

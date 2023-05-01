@@ -1268,11 +1268,25 @@ button.anchor {
             }
         }
 
+        input + .radio__item-label {
+            padding: 4px 8px;
+        }
+
         .radio {
             color: var(--N500);
 
             svg path {
                 fill: var(--N500);
+            }
+
+            &:first-child input+.radio__item-label {
+                border-top-left-radius: 4px !important;
+                border-bottom-left-radius: 4px !important;
+            }
+
+            &:last-child input+.radio__item-label {
+                border-top-right-radius: 4px !important;
+                border-bottom-right-radius: 4px !important;
             }
 
             &:hover:not(.disabled) {

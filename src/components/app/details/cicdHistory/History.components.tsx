@@ -72,7 +72,13 @@ export const Scroller = ({ scrollToTop, scrollToBottom, style }: ScrollerType): 
     )
 }
 
-export const GitChanges = ({ gitTriggers, ciMaterials, artifact, userApprovalMetadata, triggeredByEmail }: GitChangesType) => {
+export const GitChanges = ({
+    gitTriggers,
+    ciMaterials,
+    artifact,
+    userApprovalMetadata,
+    triggeredByEmail,
+}: GitChangesType) => {
     const [copied, setCopied] = useState(false)
 
     if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
@@ -109,12 +115,16 @@ export const GitChanges = ({ gitTriggers, ciMaterials, artifact, userApprovalMet
             })}
             {artifact && userApprovalMetadata && (
                 <>
-                    <div className="flex mt-8 mb-8" style={{ width: 'min(100%, 800px)' }}>
-                        <div className="w-50 text-underline-dashed-200" />
-                        <ArrowIcon className="icon-dim-20 ml-8 mr-8" style={{ transform: 'rotate(-90deg)' }} />
-                        <div className="w-50 text-underline-dashed-200" />
+                    <div className="flex mb-12" style={{ width: 'min(100%, 800px)' }}>
+                        <div className="w-50 text-underline-dashed-300" />
+                        <ArrowIcon className="icon-dim-16 ml-8 mr-8" style={{ transform: 'rotate(-90deg)' }} />
+                        <div className="w-50 text-underline-dashed-300" />
                     </div>
-                    <CIListItem type="approved-artifact" userApprovalMetadata={userApprovalMetadata} triggeredBy={triggeredByEmail} >
+                    <CIListItem
+                        type="approved-artifact"
+                        userApprovalMetadata={userApprovalMetadata}
+                        triggeredBy={triggeredByEmail}
+                    >
                         <div className="flex column left hover-trigger">
                             <div className="cn-9 fs-14 flex left">
                                 <CopyTippyWithText
