@@ -10,10 +10,7 @@ import { useHistory } from 'react-router'
 import { noop } from '../../../common'
 import { Link } from 'react-router-dom'
 
-function DeploymentStatusCard({
-    deploymentStatusDetailsBreakdownData,
-    loadingResourceTree,
-}: DeploymentStatusCardType) {
+function DeploymentStatusCard({ deploymentStatusDetailsBreakdownData, loadingResourceTree }: DeploymentStatusCardType) {
     const history = useHistory()
 
     const showDeploymentDetailedStatus = (e): void => {
@@ -21,10 +18,6 @@ function DeploymentStatusCard({
         history.push({
             search: DEPLOYMENT_STATUS_QUERY_PARAM,
         })
-        // ReactGA.event({
-        //     category: 'App Details',
-        //     action: 'Deployment status clicked',
-        // })
     }
     return (
         <div>
