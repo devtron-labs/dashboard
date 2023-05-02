@@ -199,7 +199,7 @@ export default function ApprovalMaterial({
                         visible={tippyVisible[mat.id]}
                     >
                         <span
-                            className="flex right cr-5"
+                            className="flex right dc_width-max-content ml-auto cr-5 cursor"
                             data-id={mat.id}
                             onClick={toggleTippyVisibility}
                             data-testid="cancel-request"
@@ -226,7 +226,7 @@ export default function ApprovalMaterial({
                         visible={tippyVisible[mat.id]}
                     >
                         <span
-                            className="cg-5"
+                            className="cg-5 cursor"
                             data-id={mat.id}
                             onClick={toggleTippyVisibility}
                             data-testid="approve-request"
@@ -259,7 +259,7 @@ export default function ApprovalMaterial({
                     visible={tippyVisible[mat.id]}
                 >
                     <span
-                        className="cb-5"
+                        className="cb-5 cursor"
                         data-id={mat.id}
                         onClick={toggleTippyVisibility}
                         data-testid="request-approval"
@@ -318,7 +318,7 @@ export default function ApprovalMaterial({
                 )}
                 <div />
                 {!hideSelector && (
-                    <div className="material-history__select-text fs-13 dc__no-text-transform w-auto">
+                    <div className="material-history__select-text fs-13 dc__no-text-transform w-auto cursor-default">
                         {mat.vulnerable ? (
                             <span className="material-history__scan-error">
                                 {APPROVAL_MODAL_CTA_TEXT.vulnerability.found}
@@ -453,12 +453,9 @@ export default function ApprovalMaterial({
                     <div key={`material-history-${mat.index}`} className="material-history material-history--cd">
                         {renderSequentialCDCardTitle(mat)}
                         <div
-                            className={`material-history__top mh-66 ${
+                            className={`material-history__top cursor-default mh-66 ${
                                 !isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
                             }`}
-                            style={{
-                                cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}`,
-                            }}
                         >
                             {renderMaterialInfo(mat)}
                         </div>
