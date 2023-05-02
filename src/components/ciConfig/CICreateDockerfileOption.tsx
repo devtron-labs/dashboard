@@ -13,6 +13,7 @@ import {
     ValueContainerWithIcon,
 } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Clipboard } from '../../assets/icons/ic-copy.svg'
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
 import { CIBuildType } from '../ciPipeline/types'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
@@ -337,6 +338,7 @@ export default function CICreateDockerfileOption({
         )
     }
 
+    const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
     const handleCopyToClipboard = (e) => {
         e.stopPropagation()
         copyToClipboard(editorValue, () => setCopied(true))
@@ -406,14 +408,21 @@ export default function CICreateDockerfileOption({
                 </CodeEditor>
             </div>
             <div className="flex left row ml-0 build-context-label mb-6">
-                <span >Set Build context</span>
+                <span >
+                     <Dropdown
+                         onClick = {()=>{setIsCollapsed(!isCollapsed)}}
+                         className="icon-dim-30 rotate "
+                         style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }}
+                     />
+                    Set Build context
+                </span>
                 {!configOverrideView || allowOverride ? (
                     <div className="flex row ml-0">
                         {renderInfoCard()}
                     </div>
                 ) : null}
             </div>
-            <div className="mb-4 form-row__docker">
+            {isCollapsed && <div className="mb-4 form-row__docker">
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                     <label className="form__label">{`${
                         configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
@@ -496,6 +505,7 @@ export default function CICreateDockerfileOption({
                     )}
                 </div>
             </div>
+            }
         </>
     )
 }

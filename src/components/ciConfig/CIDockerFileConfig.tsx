@@ -385,7 +385,7 @@ export default function CIDockerFileConfig({
                     ) : null}
                 </div>
 
-                isCollapsed&&<div className="mb-4 form-row__docker">
+                {isCollapsed && <div className="mb-4 form-row__docker">
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                         <label className="form__label">{`${
                             configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
@@ -469,6 +469,7 @@ export default function CIDockerFileConfig({
 
                     </div>
                 </div>
+                }
             </div>
         )
     }
