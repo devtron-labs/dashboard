@@ -56,7 +56,7 @@ export const Routes = {
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/edit',
 
-    JOB_CI_DETAIL:'job/ci-pipeline/list',
+    JOB_CI_DETAIL: 'job/ci-pipeline/list',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
@@ -219,8 +219,10 @@ export const Routes = {
     USER_ROLE_GROUP: 'user/role/group',
     APP_FILTER_LIST: 'app/app-listing/autocomplete',
     APP_LIST_GROUP: 'app/list/group',
+    CUSTOM_ROLES: 'rbac/role',
     GROUPS: 'groups',
     GROUP: 'group',
+
 }
 
 export const ViewType = {
