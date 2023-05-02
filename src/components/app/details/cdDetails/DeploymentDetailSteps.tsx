@@ -3,7 +3,6 @@ import { useHistory, useParams, useRouteMatch } from 'react-router'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { getDeploymentStatusDetail } from '../appDetails/appDetails.service'
-import { DeploymentStatusDetailsBreakdownDataType } from '../appDetails/appDetails.type'
 import DeploymentStatusDetailBreakdown from '../appDetails/DeploymentStatusBreakdown'
 import { processDeploymentStatusDetailsData } from '../appDetails/utils'
 import { DeploymentDetailStepsType } from './cd.type'
@@ -11,14 +10,13 @@ import CDEmptyState from './CDEmptyState'
 import mechanicalOperation from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, TIMELINE_STATUS, URLS } from '../../../../config'
+import { DeploymentStatusDetailsBreakdownDataType } from '../appDetails/appDetails.type'
 
 export default function DeploymentDetailSteps({
     deploymentStatus,
     deploymentAppType,
     isHelm,
     installedAppVersionHistoryId,
-    deploymentStatusDetailsBreakdownData,
-    setDeploymentStatusDetailsBreakdownData
 }: DeploymentDetailStepsType) {
     const history = useHistory()
     const { url } = useRouteMatch()
@@ -26,6 +24,9 @@ export default function DeploymentDetailSteps({
     const [deploymentListLoader, setDeploymentListLoader] = useState<boolean>(
         deploymentStatus?.toUpperCase() !== TIMELINE_STATUS.ABORTED,
     )
+    const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
+        useState<DeploymentStatusDetailsBreakdownDataType>(processDeploymentStatusDetailsData())
+
     let initTimer = null
     const getDeploymentDetailStepsData = (): void => {
       setDeploymentListLoader(true)
@@ -63,7 +64,7 @@ export default function DeploymentDetailSteps({
                 clearTimeout(initTimer)
             }
         }
-    }, [])
+    }, [installedAppVersionHistoryId])
 
     const redirectToDeploymentStatus = () => {
         isHelm

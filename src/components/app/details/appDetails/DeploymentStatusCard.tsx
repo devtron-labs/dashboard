@@ -44,7 +44,7 @@ function DeploymentStatusCard({ deploymentStatusDetailsBreakdownData, loadingRes
                     <span
                         data-testid="deployment-status-name"
                         className={`app-summary__status-name fs-14 mr-8 fw-6 f-${
-                            deploymentStatusDetailsBreakdownData.deploymentStatus
+                            deploymentStatusDetailsBreakdownData.deploymentStatus?.toLowerCase()
                         } ${
                             deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS
                                 ? 'dc__loading-dots'

@@ -163,6 +163,7 @@ export const APP_GROUP_CI_DETAILS = {
 }
 
 export const DEPLOYMENT_HISTORY_TABS = {
+  STEPS: 0,
   SOURCE : 1,
 }
 

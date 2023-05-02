@@ -33,9 +33,6 @@ import {
 import IndexStore from '../appDetails/index.store'
 import { DEPLOYMENT_HISTORY_TABS, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
 import DeploymentDetailSteps from '../../app/details/cdDetails/DeploymentDetailSteps'
-import { triggerStatus } from '../../app/details/cicdHistory/History.components'
-import { DeploymentStatusDetailsBreakdownDataType } from '../../app/details/appDetails/appDetails.type'
-import { processDeploymentStatusDetailsData } from '../../app/details/appDetails/utils'
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
     loading?: boolean
@@ -68,8 +65,6 @@ function ChartDeploymentHistory({
     const { url } = useRouteMatch()
 
     const deploymentTabs: string[] = ['Steps', 'Source', 'values.yaml', 'Helm generated manifest']
-    const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
-    useState<DeploymentStatusDetailsBreakdownDataType>(processDeploymentStatusDetailsData())
 
     // component load
     useEffect(() => {
@@ -118,7 +113,7 @@ function ChartDeploymentHistory({
     }, [])
 
     const getDeploymentData = (_selectedDeploymentTabIndex: number, _selectedDeploymentHistoryIndex: number) => {
-        if (_selectedDeploymentTabIndex !== DEPLOYMENT_HISTORY_TABS.SOURCE) { // Checking if the tab in not source, then fetching api for all except source tab
+        if (_selectedDeploymentTabIndex !== DEPLOYMENT_HISTORY_TABS.STEPS && _selectedDeploymentTabIndex !== DEPLOYMENT_HISTORY_TABS.SOURCE) { // Checking if the tab in not source, then fetching api for all except source tab
             checkAndFetchDeploymentDetail(deploymentHistoryArr[_selectedDeploymentHistoryIndex].version)
         }
     }
@@ -131,7 +126,7 @@ function ChartDeploymentHistory({
         setSelectedDeploymentTabIndex(index)
     }
 
-    function onClickDeploymentHistorySidebar(index: number, deploymentVersion: number) {   // This will call whenever we change the deployment from sidebar
+    function onClickDeploymentHistorySidebar(index: number) {   // This will call whenever we change the deployment from sidebar
         if (selectedDeploymentHistoryIndex == index) {
             return
         }
@@ -209,7 +204,7 @@ function ChartDeploymentHistory({
                     return (
                         <React.Fragment key={deployment.version}>
                             <div
-                                onClick={() => onClickDeploymentHistorySidebar(index, deployment.version)}
+                                onClick={() => onClickDeploymentHistorySidebar(index)}
                                 className={`w-100 ci-details__build-card ${
                                     selectedDeploymentHistoryIndex == index ? 'active' : ''
                                 }`}
@@ -224,7 +219,7 @@ function ChartDeploymentHistory({
                                         gridColumnGap: '12px',
                                     }}
                                 >
-                                    <div className={`dc__app-summary__icon icon-dim-22 ${triggerStatus(deploymentStatusDetailsBreakdownData.deploymentStatus)?.toLocaleLowerCase().replace(/\s+/g, '')}`}></div>
+                                    <div className={`dc__app-summary__icon icon-dim-22                                     `}></div>
                                     <div className="flex column left dc__ellipsis-right">
                                         <div className="cn-9 fs-14">
                                             {moment(new Date(deployment.deployedAt.seconds * 1000)).format(
@@ -372,7 +367,7 @@ function ChartDeploymentHistory({
 
             <div className={`trigger-outputs-container ${selectedDeploymentTabIndex === DEPLOYMENT_HISTORY_TABS.SOURCE ? 'pt-20' : ''}`}>
               {selectedDeploymentTabIndex === 0 &&
-               <DeploymentDetailSteps isHelm={true} installedAppVersionHistoryId={deployment.version} setDeploymentStatusDetailsBreakdownData={setDeploymentStatusDetailsBreakdownData} deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}/>}
+               <DeploymentDetailSteps isHelm={true} installedAppVersionHistoryId={deployment.version} />}
                 {selectedDeploymentTabIndex === 1 && (
                     <div
                         className="ml-20 w-100 p-16 bcn-0 br-4 en-2 bw-1 pb-12 mb-12"
