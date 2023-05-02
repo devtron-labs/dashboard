@@ -1038,15 +1038,15 @@ export const convertToOptionsList = (
 }
 
 export const importComponentFromFELibrary =(componentName: string, defaultComponent?)=>{
-  try {
-    const module = require('@devtron-labs/devtron-fe-lib')
-    return module[componentName]?.default || defaultComponent || null;
-  } catch (e) {
-      if (e['code'] !== 'MODULE_NOT_FOUND') {
-          throw e;
-      }
-      return defaultComponent || null
-  }
+  // try {
+  //   const module = require('@devtron-labs/devtron-fe-lib')
+  //   return module[componentName]?.default || defaultComponent || null;
+  // } catch (e) {
+  //     if (e['code'] !== 'MODULE_NOT_FOUND') {
+  //         throw e;
+  //     }
+  //     return defaultComponent || null
+  // }
 }
 
 export const getElapsedTime = (createdAt: Date) => {
