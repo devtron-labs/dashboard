@@ -64,11 +64,10 @@ function ChartDeploymentHistory({
     const [showDockerInfo, setShowDockerInfo] = useState(false)
     const history = useHistory()
     const { url } = useRouteMatch()
-    const isArgoCDType = false
+    const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>('Source')
 
     // Checking if deployment app type is argocd only then show step tab
     const deploymentTabs = installedAppInfo?.deploymentType === 'argo_cd' ? ['Steps', 'Source', 'values.yaml', 'Helm generated manifest'] : ['Source', 'values.yaml', 'Helm generated manifest']
-    const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>('Source')
 
     // component load
     useEffect(() => {
