@@ -64,10 +64,11 @@ function ChartDeploymentHistory({
     const [showDockerInfo, setShowDockerInfo] = useState(false)
     const history = useHistory()
     const { url } = useRouteMatch()
+    const isArgoCDType = false
 
     // Checking if deployment app type is argocd only then show step tab
     const deploymentTabs = installedAppInfo?.deploymentType === 'argo_cd' ? ['Steps', 'Source', 'values.yaml', 'Helm generated manifest'] : ['Source', 'values.yaml', 'Helm generated manifest']
-    const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>(  installedAppInfo?.deploymentType === 'argo_cd' ? 'Steps' : 'Source' )
+    const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>('Source')
 
     // component load
     useEffect(() => {
@@ -79,7 +80,7 @@ function ChartDeploymentHistory({
                     ) || []
                 setDeploymentHistoryArr(_deploymentHistoryArr)
                 setInstalledAppInfo(deploymentHistoryResponse.result?.installedAppInfo)
-
+                setSelectedDeploymentTabName(deploymentHistoryResponse.result?.installedAppInfo?.deploymentType === 'argo_cd' ? 'Steps' : 'Source')
                 // init deployment manifest details map
                 const _deploymentManifestDetails = new Map<number, DeploymentManifestDetail>()
                 _deploymentHistoryArr.forEach(({ version }) => {
@@ -612,7 +613,7 @@ function ChartDeploymentHistory({
 
     return (
         <>
-            {isLoading ? (
+            {isLoading || !installedAppInfo ? (
                 <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>
