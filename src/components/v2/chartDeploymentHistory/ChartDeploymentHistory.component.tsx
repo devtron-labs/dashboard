@@ -136,7 +136,7 @@ function ChartDeploymentHistory({
                         setRollbackDialogTitle(`Rollback ${appDetails.appName}`)
                     }
                 }
-                if (_deploymentHistoryArr[0]?.status !== 'Succeeded' || deploymentHistoryArr[0]?.status !== 'Failed') {
+                if (_deploymentHistoryArr[0]?.status !== 'Succeeded') {
                     initTimer = setTimeout(() => {
                         getDeploymentHistoryData()
                     }, 10000)
