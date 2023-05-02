@@ -369,7 +369,7 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
                                         Cancel
                                     </button>
                                     <button
-                                        data-testid="description-save-cancel-button"
+                                        data-testid="description-edit-save-button"
                                         className="cta flex h-36"
                                         type="submit"
                                         onClick={updateClusterAbout}
