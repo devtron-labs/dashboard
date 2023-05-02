@@ -4,6 +4,7 @@ import { ReactComponent as FileIcon } from '../../assets/icons/ic-file-text.svg'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as BuildpackIcon } from '../../assets/icons/ic-builpack.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
+import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import CIAdvancedConfig from './CIAdvancedConfig'
 import { CI_BUILDTYPE_ALIAS, _multiSelectStyles } from './CIConfig.utils'
 import { CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
@@ -87,7 +88,7 @@ export default function CIDockerFileConfig({
         },
     ]
     // const [spanValue,setSpanValue] = useState<string>(" Set build context ")
-    const [disable,setDisable] = useState<boolean>(formState.buildContext ? false : true)
+    const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
     useEffect(() => { 
         setInProgress(true)
         Promise.all([getDockerfileTemplate(), getBuildpackMetadata()])
@@ -104,22 +105,6 @@ export default function CIDockerFileConfig({
                 setInProgress(false)
             })
     }, [])
-
-    useEffect(() => {
-        if (disable) {
-            if (configOverrideView) {
-                setCurrentCIBuildConfig({
-                    ...currentCIBuildConfig,
-                    dockerBuildConfig: {
-                        ...currentCIBuildConfig.dockerBuildConfig,
-                        buildContext: '.',
-                    },
-                })
-            } else {
-                formState.buildContext.value = '.'
-            }
-        }
-    }, [disable])
 
     useEffect(() => {
         if (configOverrideView && updateDockerConfigOverride && currentCIBuildConfig) {
@@ -382,7 +367,14 @@ export default function CIDockerFileConfig({
                 </div>
 
                 <div className="flex left row ml-0 build-context-label mb-6">
-                    <span >Set Build context</span>
+                    <span >
+                         <Dropdown
+                             onClick = {()=>{setIsCollapsed(!isCollapsed)}}
+                             className="icon-dim-30 rotate "
+                             style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }}
+                         />
+                        Set Build context
+                    </span>
                     {!configOverrideView || allowOverride ? (
                         <div className="flex row ml-0">
                             {renderInfoCard()}
@@ -390,7 +382,7 @@ export default function CIDockerFileConfig({
                     ) : null}
                 </div>
 
-                <div className="mb-4 form-row__docker">
+                isCollapsed&&<div className="mb-4 form-row__docker">
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                         <label className="form__label">{`${
                             configOverrideView && !allowOverride ? 'Repository' : 'Select repository'

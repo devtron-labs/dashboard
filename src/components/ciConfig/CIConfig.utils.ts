@@ -5,9 +5,6 @@ import { CIBuildType, CIPipelineDataType, DockerConfigOverrideType } from '../ci
 import { deepEqual } from '../common'
 import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 import { CIBuildArgType, CIConfigDiffType } from './types'
-import React from 'react'
-
-
 
 export const USING_ROOT = 'Using root(.)'
 
@@ -134,11 +131,7 @@ export const CI_CONFIG_FORM_VALIDATION = {
         required: false,
     },
     buildContext: {
-        required: true,
-        validatior: {
-            error: 'buildContext is required',
-            regex: PATTERNS.STRING,
-        },
+        required: false,
     }
 }
 
@@ -514,19 +507,26 @@ export const getCIConfigDiffValues = (
         baseValue: globalCIConfig.ciBuildConfig?.dockerBuildConfig?.targetPlatform,
         overridenValue: ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform,
     })
-    ciConfigDiffValues.push({
-        configName: 'Repo containing build context',
-        changeBGColor: currentBuildContextGitMaterialName === globalBuildContextGitMaterialName,
-        baseValue: globalBuildContextGitMaterialName,
-        overridenValue: currentBuildContextGitMaterialName,
-    })
-    ciConfigDiffValues.push({
-        configName: 'Build context',
-        changeBGColor: globalBuildContext === currentBuildContext,
-        baseValue: globalBuildContext == '' ? '.' : globalBuildContext,
-        overridenValue: currentBuildContext == '' ? '.' : currentBuildContext,
-    })
-
+    if (
+        globalCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE &&
+        ciBuildTypeOverride !== CIBuildType.BUILDPACK_BUILD_TYPE
+    ) {
+        ciConfigDiffValues.push({
+            configName: 'Repo containing build context',
+            changeBGColor: currentBuildContextGitMaterialName === globalBuildContextGitMaterialName,
+            baseValue: globalBuildContextGitMaterialName,
+            overridenValue: currentBuildContextGitMaterialName,
+        })
+        ciConfigDiffValues.push({
+            configName: 'Build context',
+            changeBGColor: globalBuildContext === currentBuildContext,
+            baseValue: globalBuildContext == '' ? '.' : globalBuildContext,
+            overridenValue: currentBuildContext == '' ? '.' : currentBuildContext,
+        })
+    }
+    console.log(globalCIConfig)
+    console.log(ciConfigOverride)
+    console.log(ciConfigDiffValues)
     return ciConfigDiffValues
 }
 const getTargetPlatformChangeBGColor = (
