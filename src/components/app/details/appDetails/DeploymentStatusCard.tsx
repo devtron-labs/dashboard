@@ -56,7 +56,7 @@ function DeploymentStatusCard({ deploymentStatusDetailsBreakdownData, loadingRes
                     <div className={`${deploymentStatusDetailsBreakdownData.deploymentStatus} icon-dim-20 mt-2`}></div>
                 </div>
                 <div>
-                    <span className="cb-5 fw-6 pointer">Details</span>
+                    <span  data-testid="deployment-status-deatils" className="cb-5 fw-6 pointer">Details</span>
                 </div>
             </div>
             <div className="flex left column mw-140">

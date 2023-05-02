@@ -208,6 +208,7 @@ function ChartDeploymentHistory({
                                 className={`w-100 ci-details__build-card ${
                                     selectedDeploymentHistoryIndex == index ? 'active' : ''
                                 }`}
+                                data-testid={`chart-deployment-history-sidebar-row-${index}`}
                             >
                                 <div
                                     className="w-100"
@@ -219,7 +220,7 @@ function ChartDeploymentHistory({
                                         gridColumnGap: '12px',
                                     }}
                                 >
-                                    <div className={`dc__app-summary__icon icon-dim-22                                     `}></div>
+                                    <div className={`dc__app-summary__icon icon-dim-22 f-${deployment?.status}`}></div>
                                     <div className="flex column left dc__ellipsis-right">
                                         <div className="cn-9 fs-14">
                                             {moment(new Date(deployment.deployedAt.seconds * 1000)).format(
