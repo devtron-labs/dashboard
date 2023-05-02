@@ -1,15 +1,16 @@
 import React, { useState } from 'react'
 import {
+    EmptyState,
     Progressing,
     stopPropagation,
     TippyCustomized,
     TippyTheme,
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { EmptyView } from '../../cicdHistory/History.components'
 import { ReactComponent as ApproversIcon } from '../../../../../assets/icons/ic-users.svg'
 import { ReactComponent as APITokenIcon } from '../../../../../assets/icons/ic-key-bulb.svg'
 import noartifact from '../../../../../assets/img/no-artifact@2x.png'
+import norequests from '../../../../../assets/img/no-pending-action@2x.png'
 import close from '../../../../../assets/icons/ic-close.svg'
 import { ApprovalMaterialModalProps } from './Types'
 import ApprovalMaterial from './ApprovalMaterial'
@@ -47,7 +48,8 @@ export default function ApprovalMaterialModal({
                 className="trigger-modal__header dc__no-border pb-12 cn-9"
             >
                 <h1 className="modal__title">
-                    Approval for deployment to <span className="fw-6">{node.environmentName ?? ''}</span>
+                    Approval for deployment to&nbsp;
+                    <span className="fw-6">{!isLoading && node.environmentName ? node.environmentName : ''}</span>
                 </h1>
                 <button
                     data-testid="close-approval-node-box"
@@ -209,20 +211,40 @@ export default function ApprovalMaterialModal({
     const renderEmpty = () => {
         if (selectedTabIndex === 0) {
             return (
-                <EmptyView
-                    title="No image available"
-                    subTitle="Trigger build pipeline and find the image here"
-                    imgSrc={noartifact}
-                />
+                <EmptyState>
+                    <EmptyState.Image>
+                        <img src={noartifact} alt="" />
+                    </EmptyState.Image>
+                    <EmptyState.Title>
+                        <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
+                            No image available
+                        </h4>
+                    </EmptyState.Title>
+                    <EmptyState.Subtitle>Trigger build pipeline and find the image here</EmptyState.Subtitle>
+                </EmptyState>
             )
         }
 
         return (
-            <EmptyView
-                title="No approvals requested"
-                subTitle="Images for which approval is requested will be available here. All users having ‘Approver’ permission for this application and environment can approve."
-                imgSrc={noartifact}
-            />
+            <EmptyState>
+                <EmptyState.Image>
+                    <img src={norequests} alt="" />
+                </EmptyState.Image>
+                <EmptyState.Title>
+                    <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
+                        No images are pending for approval
+                    </h4>
+                </EmptyState.Title>
+                <EmptyState.Subtitle>
+                    Images for which approval is requested will be available here. All users having ‘Approver’
+                    permission for this application and environment can approve.
+                </EmptyState.Subtitle>
+                <EmptyState.Button>
+                    <button className="cta ghosted flex h-36" data-selected-tab="0" onClick={handleTabSelected}>
+                        View images for approval
+                    </button>
+                </EmptyState.Button>
+            </EmptyState>
         )
     }
 

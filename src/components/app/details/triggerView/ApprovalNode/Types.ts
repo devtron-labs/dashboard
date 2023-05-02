@@ -59,3 +59,8 @@ export enum ApprovalRequestType {
     APPROVE = 'APPROVE',
     CANCEL = 'CANCEL',
 }
+
+export interface DeploymentEnvStateProps {
+    envStateText: string
+    envName: string
+}

@@ -10,6 +10,7 @@ import {
     MATERIAL_TYPE,
     STAGE_TYPE,
     TriggerViewContextType,
+    UserApprovalMetadataType,
 } from './types'
 import { GitTriggers } from '../cicdHistory/types'
 import close from '../../../../assets/icons/ic-close.svg'
@@ -25,6 +26,7 @@ import { ReactComponent as ApprovalChecks } from '../../../../assets/icons/ic-ch
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
+import noapprovedimages from '../../../../assets/img/no-approved-images@2x.png'
 import { ScanVulnerabilitiesTable, getRandomColor, noop } from '../../../common'
 import {
     showError,
@@ -32,6 +34,7 @@ import {
     ConditionalWrap,
     TippyCustomized,
     TippyTheme,
+    EmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import {
@@ -400,15 +403,52 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    renderMaterialInfo(
-        mat: CDMaterialType,
-        hideSelector?: boolean,
-        disableSelection?: boolean,
-        isImageApprover?: boolean,
-    ) {
-        const isApprovalRequester =
-            mat.userApprovalMetadata?.requestedUserData &&
-            mat.userApprovalMetadata.requestedUserData.userId === this.props.requestedUserId
+    renderApprovalInfo = (mat: CDMaterialType) => {
+        return (
+            <TippyCustomized
+                theme={TippyTheme.white}
+                className="w-300 h-100"
+                placement="top-start"
+                Icon={ApprovalChecks}
+                heading="Approved"
+                additionalContent={
+                    <ApprovedTippyContent
+                        matId={mat.id}
+                        requestedUserId={this.props.requestedUserId}
+                        userApprovalMetadata={mat.userApprovalMetadata}
+                        cancelRequest={this.expireRequest}
+                        requestInProgress={false}
+                    />
+                }
+                showCloseButton={true}
+                trigger="click"
+                interactive={true}
+            >
+                <div className="flex left cursor">
+                    <ApprovalChecks className="icon-dim-16 scg-5 mr-8" />
+                    <span className="fs-13 fw-4">Approved</span>
+                </div>
+            </TippyCustomized>
+        )
+    }
+
+    isApprovalRequester = (userApprovalMetadata: UserApprovalMetadataType) => {
+        return (
+            userApprovalMetadata?.requestedUserData &&
+            userApprovalMetadata.requestedUserData.userId === this.props.requestedUserId
+        )
+    }
+
+    isImageApprover = (userApprovalMetadata: UserApprovalMetadataType) => {
+        return (
+            userApprovalMetadata?.approvedUsersData &&
+            userApprovalMetadata.approvedUsersData.some((_approver) => _approver.userId === this.props.requestedUserId)
+        )
+    }
+
+    renderMaterialInfo(mat: CDMaterialType, hideSelector?: boolean, disableSelection?: boolean) {
+        const isApprovalRequester = this.isApprovalRequester(mat.userApprovalMetadata)
+        const isImageApprover = this.isImageApprover(mat.userApprovalMetadata)
 
         return (
             <>
@@ -421,33 +461,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <span className="last-deployed-status">Last Run</span>
                     )}
                 </div>
-                {(this.props.stageType === DeploymentNodeType.CD || this.state.isRollbackTrigger) &&
-                    this.props.userApprovalConfig?.requiredCount > 0 && (
-                        <TippyCustomized
-                            theme={TippyTheme.white}
-                            className="w-300 h-100"
-                            placement="top-start"
-                            Icon={ApprovalChecks}
-                            heading="Approved"
-                            additionalContent={
-                                <ApprovedTippyContent
-                                    matId={mat.id}
-                                    requestedUserId={this.props.requestedUserId}
-                                    userApprovalMetadata={mat.userApprovalMetadata}
-                                    cancelRequest={this.expireRequest}
-                                    requestInProgress={false}
-                                />
-                            }
-                            showCloseButton={true}
-                            trigger="click"
-                            interactive={true}
-                        >
-                            <div className="flex left cursor">
-                                <ApprovalChecks className="icon-dim-16 scg-5 mr-8" />
-                                <span className="fs-13 fw-4">Approved</span>
-                            </div>
-                        </TippyCustomized>
-                    )}
+                {!disableSelection &&
+                    (this.props.stageType === DeploymentNodeType.CD || this.state.isRollbackTrigger) &&
+                    this.props.userApprovalConfig?.requiredCount > 0 &&
+                    this.renderApprovalInfo(mat)}
                 {this.props.materialType === MATERIAL_TYPE.none ? (
                     <div />
                 ) : (
@@ -481,7 +498,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <div />
                 )}
                 {!hideSelector && (
-                    <div className="material-history__select-text w-auto dc__no-text-transform flex right">
+                    <div className="material-history__select-text fs-13 w-auto dc__no-text-transform flex right">
                         {this.props.materialType !== 'none' &&
                             isApprovalRequester &&
                             !isImageApprover &&
@@ -530,7 +547,16 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                 <span className="dc__opacity-0_5">Select</span>
                             </Tippy>
                         ) : (
-                            'Select'
+                            <span
+                                onClick={(event) => {
+                                    event.stopPropagation()
+                                    if (!disableSelection && !isImageApprover && !mat.vulnerable) {
+                                        this.handleImageSelection(mat.index, mat)
+                                    }
+                                }}
+                            >
+                                Select
+                            </span>
                         )}
                     </div>
                 )}
@@ -538,26 +564,29 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    renderMaterial = (materialList: CDMaterialType[], disableSelection?: boolean, isApprovalConfigured?: boolean) => {
-        return materialList.map((mat, index) => {
-            const isImageApprover =
-                mat.userApprovalMetadata?.approvedUsersData &&
-                mat.userApprovalMetadata.approvedUsersData.some(
-                    (_approver) => _approver.userId === this.props.requestedUserId,
-                )
-            let isMaterialInfoAvailable = true
-            for (const materialInfo of mat.materialInfo) {
+    isMaterialInfoAvailable = (materialInfo: MaterialInfo[]) => {
+        let isMaterialInfoAvailable = true
+        if (materialInfo) {
+            for (const _info of materialInfo) {
                 isMaterialInfoAvailable =
                     isMaterialInfoAvailable &&
-                    !!(
-                        materialInfo.webhookData ||
-                        materialInfo.author ||
-                        materialInfo.message ||
-                        materialInfo.modifiedTime ||
-                        materialInfo.revision
-                    )
+                    !!(_info.webhookData || _info.author || _info.message || _info.modifiedTime || _info.revision)
                 if (!isMaterialInfoAvailable) break
             }
+        }
+
+        return isMaterialInfoAvailable
+    }
+
+    renderMaterial = (materialList: CDMaterialType[], disableSelection?: boolean, isApprovalConfigured?: boolean) => {
+        return materialList.map((mat) => {
+            const isMaterialInfoAvailable = this.isMaterialInfoAvailable(mat.materialInfo)
+            const borderBottom = !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
+            const disabledClassPostfix = disableSelection ? '-disabled' : ''
+            const approvedImageClass = isApprovalConfigured
+                ? `material-history__approved-image${disabledClassPostfix}`
+                : ''
+
             return (
                 <div
                     key={`material-history-${mat.index}`}
@@ -568,20 +597,12 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     {this.renderSequentialCDCardTitle(mat)}
                     <div
                         data-testid={`cd-material-history-image-${mat.index}`}
-                        className={`material-history__top mh-66 ${
-                            !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
-                        } ${isApprovalConfigured ? 'material-history__approved-image' : ''}`}
+                        className={`material-history__top mh-66 ${borderBottom} ${approvedImageClass}`}
                         style={{
                             cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}`,
                         }}
-                        onClick={(event) => {
-                            event.stopPropagation()
-                            if (!disableSelection && !isImageApprover && !mat.vulnerable) {
-                                this.handleImageSelection(mat.index, mat)
-                            }
-                        }}
                     >
-                        {this.renderMaterialInfo(mat, false, disableSelection, isImageApprover)}
+                        {this.renderMaterialInfo(mat, false, disableSelection)}
                     </div>
                     {mat.showSourceInfo && (
                         <>
@@ -721,11 +742,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             : 'Select Image'}
                     </div>
                 )}
-                {this.props.userApprovalConfig?.requiredCount > 0 && materialList.length <= 0 ? (
-                    <EmptyView title="No image available" subTitle={this.getEmptyStateSubtitle()} imgSrc={noartifact} />
-                ) : (
-                    this.renderMaterial(materialList, false, isApprovalConfigured)
-                )}
+                {this.props.userApprovalConfig?.requiredCount > 0 && materialList.length <= 0
+                    ? this.renderEmptyState(consumedImage.length > 0)
+                    : this.renderMaterial(materialList, false, isApprovalConfigured)}
             </>
         )
     }
@@ -1180,30 +1199,61 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         } else if (this.state.isRollbackTrigger) {
             return 'Approved images which have been previously deployed will be available here for rollback.'
         } else {
-            return 'Approved images will be available here for deployment.'
+            return 'Images will be available here for deployment after approval.'
         }
     }
 
-    renderEmptyState = () => {
+    viewImagesForApproval = () => {
+        this.context.onClickCDMaterial(this.props.pipelineId, DeploymentNodeType.CD, true)
+    }
+
+    renderEmptyState = (consumedImagePresent?: boolean) => {
         if (this.props.userApprovalConfig?.requiredCount > 0) {
             return (
-                <>
-                    <div className="material-list__title pt-16 pl-20 pr-20">Approved images</div>
-                    <EmptyView title="No image available" subTitle={this.getEmptyStateSubtitle()} imgSrc={noartifact} />
-                </>
+                <EmptyState>
+                    <EmptyState.Image>
+                        <img
+                            src={this.props.triggerType === TriggerTypeMap.automatic ? noartifact : noapprovedimages}
+                            alt=""
+                        />
+                    </EmptyState.Image>
+                    <EmptyState.Title>
+                        <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
+                            {this.props.triggerType === TriggerTypeMap.automatic
+                                ? 'No image available'
+                                : 'No approved images'}
+                        </h4>
+                    </EmptyState.Title>
+                    <EmptyState.Subtitle>{this.getEmptyStateSubtitle()}</EmptyState.Subtitle>
+                    <EmptyState.Button>
+                        <button
+                            className="cta ghosted flex h-36"
+                            data-selected-tab="0"
+                            onClick={this.viewImagesForApproval}
+                        >
+                            {consumedImagePresent ? 'View all images' : 'View images for approval'}
+                        </button>
+                    </EmptyState.Button>
+                </EmptyState>
             )
         }
 
         return (
-            <EmptyView
-                title="No image available"
-                subTitle={
-                    this.props.materialType == MATERIAL_TYPE.rollbackMaterialList
+            <EmptyState>
+                <EmptyState.Image>
+                    <img src={noartifact} alt="" />
+                </EmptyState.Image>
+                <EmptyState.Title>
+                    <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
+                        No image available
+                    </h4>
+                </EmptyState.Title>
+                <EmptyState.Subtitle>
+                    {this.props.materialType == MATERIAL_TYPE.rollbackMaterialList
                         ? 'Previously deployed images will be available here for rollback.'
-                        : 'Please Trigger CI Pipeline and find the image here for deployment.'
-                }
-                imgSrc={noartifact}
-            />
+                        : 'Please Trigger CI Pipeline and find the image here for deployment.'}
+                </EmptyState.Subtitle>
+            </EmptyState>
         )
     }
 

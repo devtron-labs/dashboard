@@ -18,6 +18,7 @@ import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentTy
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { ARTIFACTS_EMPTY_STATE_TEXTS } from './Constants'
 import { extractImage } from '../../service'
+import { APPROVAL_INFO_TEXTS } from '../triggerView/ApprovalNode/Constants'
 
 export default function Artifacts({
     status,
@@ -169,17 +170,17 @@ const CIProgressView = (): JSX.Element => {
 
 const getApprovedTippyContent = (approvalRequested: string, approvedBy: string[], deployedBy: string) => {
     return (
-        <div className="pl-12 h-100 dc__overflow-hidden">
-            <div className="pt-12 pb-12 pr-12 h-100 mxh-210 dc__overflow-scroll">
+        <div className="h-100 dc__overflow-hidden">
+            <div className="pt-12 pb-12 pl-12 pr-12 h-100 mxh-210 dc__overflow-scroll">
                 <div>
-                    <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">Approval requested by</h5>
+                    <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">{APPROVAL_INFO_TEXTS.requestedBy}</h5>
                     <span className="flex left mb-8 fs-13 fw-4">
                         {getAlphabetIcon(approvalRequested)}
                         {approvalRequested}
                     </span>
                 </div>
                 <div className="mt-12">
-                    <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">Approved by</h5>
+                    <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">{APPROVAL_INFO_TEXTS.approvedBy}</h5>
                     <ol className="p-0 dc__list-style-none">
                         {approvedBy.map((_approver) => {
                             return (
@@ -192,7 +193,7 @@ const getApprovedTippyContent = (approvalRequested: string, approvedBy: string[]
                     </ol>
                 </div>
                 <div className="mt-12">
-                    <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">Deployment initiated by</h5>
+                    <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">{APPROVAL_INFO_TEXTS.deploymentBy}</h5>
                     <span className="flex left mt-8 fs-13 fw-4">
                         {getAlphabetIcon(deployedBy)}
                         {deployedBy}
@@ -223,11 +224,12 @@ export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children }
                         trigger="click"
                         interactive={true}
                     >
-                        <div className="flex left dc_width-max-content dc__border-bottom-n1 pt-8 pb-8 pl-16 pr-16 h-36 cursor">
+                        <div className="flex left dc_width-max-content pl-16 pr-16 h-36 cursor">
                             <ApprovedIcon className="icon-dim-16 mr-8" />
-                            {userApprovalMetadata.approvedUsersData.length} Approved
+                            <span>{userApprovalMetadata.approvedUsersData.length} Approved</span>
                         </div>
                     </TippyCustomized>
+                    <div className="dc__border-bottom-n1" />
                     <div className="approved-artifact pt-16 pb-16 pl-16 pr-16 flex-align-center">
                         <div className="bcn-1 flex br-4 icon-dim-40">
                             <img src={docker} className="icon-dim-24" />
