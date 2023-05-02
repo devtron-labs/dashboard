@@ -33,6 +33,7 @@ import {
 import IndexStore from '../appDetails/index.store'
 import { DEPLOYMENT_HISTORY_TAB, DEPLOYMENT_HISTORY_TABS, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
 import DeploymentDetailSteps from '../../app/details/cdDetails/DeploymentDetailSteps'
+import { DeploymentAppType } from '../values/chartValuesDiff/ChartValuesView.type'
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
     loading?: boolean
@@ -56,7 +57,6 @@ function ChartDeploymentHistory({
     const [installedAppInfo, setInstalledAppInfo] = useState<InstalledAppInfo>()
     const [selectedDeploymentHistoryIndex, setSelectedDeploymentHistoryIndex] = useState<number>(0)
     const [selectedDeploymentTabIndex, setSelectedDeploymentTabIndex] = useState<number>(0)
-
     const [deploymentManifestDetails, setDeploymentManifestDetails] = useState<Map<number, DeploymentManifestDetail>>()
     const [rollbackDialogTitle, setRollbackDialogTitle] = useState('Rollback')
     const [showRollbackConfirmation, setShowRollbackConfirmation] = useState(false)
@@ -66,8 +66,8 @@ function ChartDeploymentHistory({
     const { url } = useRouteMatch()
     const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>('Source')
 
-    // Checking if deployment app type is argocd only then show step tab
-    const deploymentTabs = installedAppInfo?.deploymentType === 'argo_cd' ? ['Steps', 'Source', 'values.yaml', 'Helm generated manifest'] : ['Source', 'values.yaml', 'Helm generated manifest']
+    // Checking if deployment app type is argocd only then show steps tab
+    const deploymentTabs = installedAppInfo?.deploymentType === DeploymentAppType.GitOps ? [DEPLOYMENT_HISTORY_TAB.STEPS, DEPLOYMENT_HISTORY_TAB.SOURCE, DEPLOYMENT_HISTORY_TAB.VALUES_YAML, DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST] : [DEPLOYMENT_HISTORY_TAB.SOURCE, DEPLOYMENT_HISTORY_TAB.VALUES_YAML, DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST]
 
     // component load
     useEffect(() => {
@@ -79,7 +79,7 @@ function ChartDeploymentHistory({
                     ) || []
                 setDeploymentHistoryArr(_deploymentHistoryArr)
                 setInstalledAppInfo(deploymentHistoryResponse.result?.installedAppInfo)
-                setSelectedDeploymentTabName(deploymentHistoryResponse.result?.installedAppInfo?.deploymentType === 'argo_cd' ? 'Steps' : 'Source')
+                setSelectedDeploymentTabName(deploymentHistoryResponse.result?.installedAppInfo?.deploymentType === DeploymentAppType.GitOps ? DEPLOYMENT_HISTORY_TAB.STEPS : DEPLOYMENT_HISTORY_TAB.SOURCE)
                 // init deployment manifest details map
                 const _deploymentManifestDetails = new Map<number, DeploymentManifestDetail>()
                 _deploymentHistoryArr.forEach(({ version }) => {
