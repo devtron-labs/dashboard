@@ -512,13 +512,13 @@ export const getCIConfigDiffValues = (
         ciConfigDiffValues.push(
             {
                 configName: 'Repo containing build context',
-                changeBGColor: currentBuildContextGitMaterialName === globalBuildContextGitMaterialName,
+                changeBGColor: globalCIConfig.ciBuildConfig?.buildContextGitMaterialId !== ciConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
                 baseValue: globalBuildContextGitMaterialName,
                 overridenValue: currentBuildContextGitMaterialName,
             },
             {
                 configName: 'Build context',
-                changeBGColor: globalBuildContext === currentBuildContext,
+                changeBGColor: globalBuildContext !== currentBuildContext,
                 baseValue: globalBuildContext == '' ? '.' : globalBuildContext,
                 overridenValue: currentBuildContext == '' ? '.' : currentBuildContext,
             },
