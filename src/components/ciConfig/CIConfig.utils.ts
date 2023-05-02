@@ -6,8 +6,6 @@ import { deepEqual } from '../common'
 import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 import { CIBuildArgType, CIConfigDiffType } from './types'
 
-export const USING_ROOT = 'Using root(.)'
-
 export const _customStyles = {
     control: (base) => ({
         ...base,
@@ -511,22 +509,21 @@ export const getCIConfigDiffValues = (
         globalCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE &&
         ciBuildTypeOverride !== CIBuildType.BUILDPACK_BUILD_TYPE
     ) {
-        ciConfigDiffValues.push({
-            configName: 'Repo containing build context',
-            changeBGColor: currentBuildContextGitMaterialName === globalBuildContextGitMaterialName,
-            baseValue: globalBuildContextGitMaterialName,
-            overridenValue: currentBuildContextGitMaterialName,
-        })
-        ciConfigDiffValues.push({
-            configName: 'Build context',
-            changeBGColor: globalBuildContext === currentBuildContext,
-            baseValue: globalBuildContext == '' ? '.' : globalBuildContext,
-            overridenValue: currentBuildContext == '' ? '.' : currentBuildContext,
-        })
+        ciConfigDiffValues.push(
+            {
+                configName: 'Repo containing build context',
+                changeBGColor: currentBuildContextGitMaterialName === globalBuildContextGitMaterialName,
+                baseValue: globalBuildContextGitMaterialName,
+                overridenValue: currentBuildContextGitMaterialName,
+            },
+            {
+                configName: 'Build context',
+                changeBGColor: globalBuildContext === currentBuildContext,
+                baseValue: globalBuildContext == '' ? '.' : globalBuildContext,
+                overridenValue: currentBuildContext == '' ? '.' : currentBuildContext,
+            },
+        )
     }
-    console.log(globalCIConfig)
-    console.log(ciConfigOverride)
-    console.log(ciConfigDiffValues)
     return ciConfigDiffValues
 }
 const getTargetPlatformChangeBGColor = (
