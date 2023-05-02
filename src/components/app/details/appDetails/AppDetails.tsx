@@ -300,8 +300,8 @@ export const Details: React.FC<DetailsType> = ({
             })
     }
 
-    function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppType) {
-        getDeploymentStatusDetail(params.appId, params.envId)
+    async function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppType) {
+       await getDeploymentStatusDetail(params.appId, params.envId)
             .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
                     if (deploymentAppType === DeploymentAppType.helm) {

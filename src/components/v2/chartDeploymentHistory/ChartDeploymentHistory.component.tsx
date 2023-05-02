@@ -67,12 +67,24 @@ function ChartDeploymentHistory({
     const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>('Source')
 
     // Checking if deployment app type is argocd only then show steps tab
-    const deploymentTabs = installedAppInfo?.deploymentType === DeploymentAppType.GitOps ? [DEPLOYMENT_HISTORY_TAB.STEPS, DEPLOYMENT_HISTORY_TAB.SOURCE, DEPLOYMENT_HISTORY_TAB.VALUES_YAML, DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST] : [DEPLOYMENT_HISTORY_TAB.SOURCE, DEPLOYMENT_HISTORY_TAB.VALUES_YAML, DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST]
-  // component load
-  useEffect(() => {
-    getDeploymentHistoryData()
-  }, [])
-  let initTimer = null
+    const deploymentTabs =
+        installedAppInfo?.deploymentType === DeploymentAppType.GitOps
+            ? [
+                  DEPLOYMENT_HISTORY_TAB.STEPS,
+                  DEPLOYMENT_HISTORY_TAB.SOURCE,
+                  DEPLOYMENT_HISTORY_TAB.VALUES_YAML,
+                  DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST,
+              ]
+            : [
+                  DEPLOYMENT_HISTORY_TAB.SOURCE,
+                  DEPLOYMENT_HISTORY_TAB.VALUES_YAML,
+                  DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST,
+              ]
+    // component load
+    useEffect(() => {
+        getDeploymentHistoryData()
+    }, [])
+    let initTimer = null
 
     const getDeploymentHistoryData = () => {
         getDeploymentHistory(appId, isExternal)
@@ -122,10 +134,10 @@ function ChartDeploymentHistory({
                     }, 10000)
                 }
                 return (): void => {
-                  if (initTimer) {
-                      clearTimeout(initTimer)
-                  }
-              }
+                    if (initTimer) {
+                        clearTimeout(initTimer)
+                    }
+                }
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
@@ -245,7 +257,15 @@ function ChartDeploymentHistory({
                                         gridColumnGap: '12px',
                                     }}
                                 >
-                                    <div className={`dc__app-summary__icon icon-dim-22 ${deployment?.status ? deployment?.status.toLowerCase() : ''} ${installedAppInfo?.deploymentType === DeploymentAppType.Helm ? 'succeeded' : ''}`}></div>
+                                    <div
+                                        className={`dc__app-summary__icon icon-dim-22 ${
+                                            deployment?.status ? deployment?.status.toLowerCase() : ''
+                                        } ${
+                                            installedAppInfo?.deploymentType === DeploymentAppType.Helm
+                                                ? 'succeeded'
+                                                : ''
+                                        }`}
+                                    ></div>
                                     <div className="flex column left dc__ellipsis-right">
                                         <div className="cn-9 fs-14">
                                             {moment(new Date(deployment.deployedAt.seconds * 1000)).format(
