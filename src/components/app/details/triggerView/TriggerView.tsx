@@ -405,7 +405,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType) {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.ImageClicked)
-        this.setState({ isLoading: true, showCDModal: true })
+        this.setState({ loader: true, showCDModal: true })
         this.abortController = new AbortController()
         getCDMaterialList(cdNodeId, nodeType, this.abortController.signal)
             .then((data) => {
@@ -425,7 +425,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     cdNodeId: cdNodeId,
                     nodeType,
                     showCDModal: true,
-                    isLoading: false,
+                    loader: false,
                 })
                 preventBodyScroll(true)
             })
@@ -449,7 +449,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
         const _offset = offset || 1
         const _size = size || 20
-        this.setState({ isLoading: true, showCDModal: true })
+        this.setState({ loader: true, showCDModal: true })
         this.abortController = new AbortController()
         getRollbackMaterialList(cdNodeId, _offset, _size, this.abortController.signal)
             .then((response) => {
@@ -474,7 +474,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         cdNodeId: cdNodeId,
                         nodeType: 'CD',
                         showCDModal: true,
-                        isLoading: false,
+                        loader: false,
                     },
                     () => {
                         preventBodyScroll(true)
@@ -978,7 +978,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         }`}
                         onClick={stopPropagation}
                     >
-                        {this.state.isLoading ? (
+                        {this.state.loader ? (
                             <>
                                 <div className="trigger-modal__header flex right">
                                     <button type="button" className="dc__transparent" onClick={this.closeCDModal}>
@@ -996,7 +996,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 stageType={DeploymentNodeType[this.state.nodeType]}
                                 material={material}
                                 materialType={this.state.materialType}
-                                envName={node.environmentName}
+                                envName={node?.environmentName}
                                 isLoading={this.state.isLoading}
                                 changeTab={this.changeTab}
                                 triggerDeploy={this.onClickTriggerCDNode}
@@ -1020,7 +1020,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     renderWorkflow() {
         return (
             <React.Fragment>
-                {this.state.workflows.map((workflow) => {
+                {this.state.workflows.map((workflow,index) => {
                     return (
                         <Workflow
                             key={workflow.id}
@@ -1035,6 +1035,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             location={this.props.location}
                             match={this.props.match}
                             isJobView={this.props.isJobView}
+                            index={index}
                         />
                     )
                 })}

@@ -47,6 +47,7 @@ export default function CICreateDockerfileOption({
     const [copied, setCopied] = useState(false)
     const controller = new AbortController()
     const signal = controller.signal
+
     useEffect(() => {
         if (frameworks.length > 0) {
             const _languageFrameworks = new Map<string, FrameworkOptionType[]>()
@@ -268,7 +269,7 @@ export default function CICreateDockerfileOption({
                 <div className="h-22 dc__border-right-n1 mr-8 ml-8" />
                 <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Language</span>
                 {configOverrideView && !allowOverride ? (
-                    <div className="flex left">
+                    <div className="flex left" data-testid="select-create-dockerfile-language-dropdown">
                         {selectedLanguage?.icon && (
                             <img
                                 src={selectedLanguage.icon}
@@ -279,21 +280,22 @@ export default function CICreateDockerfileOption({
                         <span className="fs-13 fw-6 lh-20 cn-9">{selectedLanguage?.label}</span>
                     </div>
                 ) : (
-                    <ReactSelect
-                        tabIndex={3}
-                        options={languages}
-                        value={selectedLanguage}
-                        isSearchable={false}
-                        styles={_customStyles}
-                        components={{
-                            IndicatorSeparator: null,
-                            DropdownIndicator,
-                            Option: OptionWithIcon,
-                            ValueContainer: ValueContainerWithIcon,
-                        }}
-                        onChange={handleLanguageSelection}
-                        isDisabled={configOverrideView && !allowOverride}
-                    />
+                        <ReactSelect
+                            classNamePrefix="select-create-dockerfile-language-dropdown"
+                            tabIndex={3}
+                            options={languages}
+                            value={selectedLanguage}
+                            isSearchable={false}
+                            styles={_customStyles}
+                            components={{
+                                IndicatorSeparator: null,
+                                DropdownIndicator,
+                                Option: OptionWithIcon,
+                                ValueContainer: ValueContainerWithIcon,
+                            }}
+                            onChange={handleLanguageSelection}
+                            isDisabled={configOverrideView && !allowOverride}
+                        />
                 )}
                 {languageFrameworks?.get(selectedLanguage?.value)?.[0]?.value && (
                     <>
@@ -302,20 +304,21 @@ export default function CICreateDockerfileOption({
                         {configOverrideView && !allowOverride ? (
                             <span className="fs-13 fw-6 lh-20 cn-9">{selectedFramework?.label}</span>
                         ) : (
-                            <ReactSelect
-                                tabIndex={3}
-                                options={languageFrameworks?.get(selectedLanguage?.value) || []}
-                                value={selectedFramework}
-                                isSearchable={false}
-                                styles={_customStyles}
-                                components={{
-                                    IndicatorSeparator: null,
-                                    DropdownIndicator,
-                                    Option,
-                                }}
-                                onChange={handleFrameworkSelection}
-                                isDisabled={configOverrideView && !allowOverride}
-                            />
+                                <ReactSelect
+                                    tabIndex={3}
+                                    options={languageFrameworks?.get(selectedLanguage?.value) || []}
+                                    value={selectedFramework}
+                                    classNamePrefix="build-config__select-framework"
+                                    isSearchable={false}
+                                    styles={_customStyles}
+                                    components={{
+                                        IndicatorSeparator: null,
+                                        DropdownIndicator,
+                                        Option,
+                                    }}
+                                    onChange={handleFrameworkSelection}
+                                    isDisabled={configOverrideView && !allowOverride}
+                                />
                         )}
                     </>
                 )}

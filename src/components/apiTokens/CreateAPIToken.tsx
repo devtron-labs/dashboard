@@ -233,9 +233,9 @@ function CreateAPIToken({
     }
 
     return (
-        <div className='bcn-0 api__token'>
-            <div className='flex dc__content-space pt-16 pb-16 dc__gap-8'>
-                <div className='flex row ml-0 h-32'>
+        <div className="bcn-0 api__token">
+            <div className="flex dc__content-space pt-16 pb-16 dc__gap-8">
+                <div className="flex row ml-0 h-32">
                     <div className="cn-9 fw-6 fs-16">
                         <span className="cb-5 cursor" onClick={redirectToTokenList}>
                             {API_COMPONENTS.TITLE}
@@ -247,15 +247,14 @@ function CreateAPIToken({
             </div>
 
             <div className="bcn-0">
-                <div className='pb-20'>
+                <div className="pb-20">
                     <div>
                         <label className="form__row w-400">
-                            <span className="form__label dc__required-field">
-                                Name
-                            </span>
+                            <span className="form__label dc__required-field">Name</span>
                             <input
                                 tabIndex={1}
                                 placeholder="Name"
+                                data-testid="api-token-name-textbox"
                                 className="form__input"
                                 name="name"
                                 value={formData.name}
@@ -275,6 +274,7 @@ function CreateAPIToken({
                             <textarea
                                 tabIndex={1}
                                 placeholder="Enter a description to remember where you have used this token"
+                                data-testid="api-token-description-textbox"
                                 className="form__textarea"
                                 value={formData.description}
                                 name="description"
@@ -312,10 +312,16 @@ function CreateAPIToken({
                                 onChange={handlePermissionType}
                             >
                                 {PermissionType.map(({ label, value }) => (
-                                    <RadioGroupItem value={value}>
+                                    <RadioGroupItem
+                                        dataTestId={`${
+                                            value === 'SPECIFIC' ? 'specific-user' : 'super-admin'
+                                        }-permission-radio-button`}
+                                        value={value}
+                                    >
                                         <span
-                                            className={`dc__no-text-transform ${adminPermission === value ? 'fw-6' : 'fw-4'
-                                                }`}
+                                            className={`dc__no-text-transform ${
+                                                adminPermission === value ? 'fw-6' : 'fw-4'
+                                            }`}
                                         >
                                             {label}
                                         </span>

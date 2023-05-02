@@ -548,6 +548,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                         renderErrorMessageStrip(errorMessage)
                     ) : (
                         <div
+                            data-testid="terminal-strip-message"
                             className={`dc__first-letter-capitalize ${
                                 terminalViewProps.socketConnection !== SocketConnectionType.CONNECTED &&
                                 !clusterSocketConnecting
@@ -577,6 +578,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                                 <React.Fragment>
                                     <span>.&nbsp;</span>
                                     <button
+                                        data-testid="reconnect-button"
                                         type="button"
                                         onClick={onClickResume}
                                         className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
@@ -593,10 +595,11 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }
 
     return (
-        <div className="terminal-view h-100 w-100">
+        <div data-testid={terminalViewProps.dataTestId} className="terminal-view h-100 w-100">
             {renderConnectionStrip()}
             <div
                 id="terminal-id"
+                data-testid="terminal-editor-container"
                 className={`terminal-container ml-20 ${
                     terminalViewProps.isResourceBrowserView &&
                     isOnline &&

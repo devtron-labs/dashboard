@@ -146,7 +146,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     renderGitMaterialInfo(matInfo: MaterialInfo[]) {
         return (
             <>
-                {matInfo.map((mat: MaterialInfo) => {
+                {matInfo.map((mat: MaterialInfo, index) => {
                     let _gitCommit: GitTriggers = {
                         Commit: mat.revision,
                         Author: mat.author,
@@ -168,6 +168,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             _gitCommit.Commit) && (
                             <div className="bcn-0 pt-12 br-4 pb-12 en-2 bw-1 m-12">
                                 <GitCommitInfoGeneric
+                                    index={index}
                                     materialUrl={mat.url}
                                     showMaterialInfoHeader={true}
                                     commitInfo={_gitCommit}
@@ -344,7 +345,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return (
             <>
                 <div className="flex left column">
-                    <div className="commit-hash commit-hash--docker">
+                    <div data-testid="cd-trigger-modal-image-value" className="commit-hash commit-hash--docker">
                         <img src={docker} alt="" className="commit-hash__icon" />
                         {mat.image}
                     </div>
@@ -426,6 +427,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 >
                     {this.renderSequentialCDCardTitle(mat)}
                     <div
+                        data-testid={`cd-material-history-image-${index}`}
                         className={`material-history__top mh-66 ${
                             !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
                         }`}
@@ -779,6 +781,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     )}
                 >
                     <button
+                        data-testid="cd-trigger-deploy-button"
                         className={`cta flex ml-auto h-36 ${this.isDeployButtonDisabled() ? 'disabled-opacity' : ''}`}
                         onClick={this.deployTrigger}
                     >

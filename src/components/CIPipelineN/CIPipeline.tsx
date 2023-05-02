@@ -310,6 +310,7 @@ export default function CIPipeline({
                     )}
                 >
                     <button
+                        data-testid="ci-delete-pipeline-button"
                         type="button"
                         className={`cta cta--workflow delete mr-16`}
                         disabled={!canDeletePipeline}
@@ -325,6 +326,7 @@ export default function CIPipeline({
             return (
                 <button
                     type="button"
+                    data-testid="create-build-pipeline-advanced-options-button"
                     className={`cta cta--workflow cancel mr-16`}
                     onClick={() => {
                         setIsAdvanced(true)
@@ -725,6 +727,7 @@ export default function CIPipeline({
         return (
             <li className="tab-list__tab">
                 <NavLink
+                    data-testid={`${toLink}-button`}
                     replace
                     className="tab-list__tab-link fs-13 pt-5 pb-5 flexbox"
                     activeClassName="active"
@@ -747,8 +750,10 @@ export default function CIPipeline({
                     isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
                 }`}
             >
-                <div className="flex flex-align-center flex-justify bcn-0 pr-20">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">{title}</h2>
+                <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20">
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
+                        {title}
+                    </h2>
                     <button
                         type="button"
                         className="dc__transparent flex icon-dim-24"
@@ -845,6 +850,7 @@ export default function CIPipeline({
                                 <ButtonWithLoader
                                     rootClassName="cta cta--workflow"
                                     loaderColor="white"
+                                    dataTestId="build-pipeline-button"
                                     onClick={savePipeline}
                                     isLoading={loadingData}
                                 >

@@ -122,8 +122,8 @@ export default function BulkCDTrigger({
 
     const renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-17 pr-20 pb-17 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Deploy to {appList[0].envName}</h2>
+            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">Deploy to {appList[0].envName}</h2>
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"
@@ -153,8 +153,8 @@ export default function BulkCDTrigger({
         return (
             <EmptyView
                 imgSrc={emptyPreDeploy}
-                title={`${selectedApp.name}  ${BULK_CD_MESSAGING.emptyPreDeploy.title}`}
-                subTitle={BULK_CD_MESSAGING.emptyPreDeploy.subTitle}
+                title={`${selectedApp.name}  ${BULK_CD_MESSAGING[stage].title}`}
+                subTitle={BULK_CD_MESSAGING[stage].subTitle}
             />
         )
     }
@@ -192,7 +192,7 @@ export default function BulkCDTrigger({
                             {unauthorizedAppList[app.appId] && (
                                 <span className="flex left cy-7 fw-4 fs-12">
                                     <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4" />
-                                    {BULK_CD_MESSAGING.emptyPreDeploy.title}
+                                    {BULK_CD_MESSAGING.unauthorized.title}
                                 </span>
                             )}
                         </div>
@@ -238,7 +238,12 @@ export default function BulkCDTrigger({
     const renderFooterSection = (): JSX.Element => {
         return (
             <div className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width">
-                <button className="cta flex h-36" onClick={onClickStartDeploy} disabled={isDeployDisabled()}>
+                <button
+                    className="cta flex h-36"
+                    data-testid="deploy-button"
+                    onClick={onClickStartDeploy}
+                    disabled={isDeployDisabled()}
+                >
                     {isLoading ? (
                         <Progressing />
                     ) : (

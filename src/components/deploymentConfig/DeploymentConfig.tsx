@@ -223,7 +223,16 @@ export default function DeploymentConfig({
             setFetchedValues({})
             toast.success(
                 <div className="toast">
-                    <div className="toast__title">{chartConfig.id ? 'Updated' : 'Saved'}</div>
+                    <div
+                        className="toast__title"
+                        data-testid={`${
+                            chartConfig.id
+                                ? 'update-base-deployment-template-popup'
+                                : 'saved-base-deployment-template-popup'
+                        }`}
+                    >
+                        {chartConfig.id ? 'Updated' : 'Saved'}
+                    </div>
                     <div className="toast__subtitle">Changes will be reflected after next deployment.</div>
                 </div>,
             )
@@ -381,10 +390,20 @@ export default function DeploymentConfig({
                     <p>Changes will only be applied to environments using default configuration.</p>
                     <p>Environments using overriden configurations will not be updated.</p>
                     <ConfirmationDialog.ButtonGroup>
-                        <button type="button" className="cta cancel" onClick={closeConfirmationDialog}>
+                        <button
+                            data-testid="base-deployment-template-cancel-button"
+                            type="button"
+                            className="cta cancel"
+                            onClick={closeConfirmationDialog}
+                        >
                             Cancel
                         </button>
-                        <button type="button" className="cta" onClick={save}>
+                        <button
+                            data-testid="base_deployment_template_update_button"
+                            type="button"
+                            className="cta"
+                            onClick={save}
+                        >
                             {loading ? <Progressing /> : chartConfig.id ? 'Update' : 'Save'}
                         </button>
                     </ConfirmationDialog.ButtonGroup>

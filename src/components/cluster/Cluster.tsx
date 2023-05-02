@@ -212,7 +212,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 'Clusters' +
                 (this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT ? '' : ' and Environments')
             return (
-                <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+                <section className="global-configuration__component flex-1">
                     <h2 className="form__title">{moduleBasedTitle}</h2>
                     <p className="form__subtitle">
                         Manage your organization’s {moduleBasedTitle.toLowerCase()}. &nbsp;
@@ -407,7 +407,11 @@ function Cluster({
                                 />
                                 {clusterId && (
                                     <div className="flex dc__align-right">
-                                        <div className="flex mr-16" onClick={addCluster}>
+                                        <div
+                                            className="flex mr-16"
+                                            data-testid={`add-environment-button-${cluster_name}`}
+                                            onClick={addCluster}
+                                        >
                                             <List.Logo>
                                                 <Add className="icon-dim-20 fcb-5 mr-8" />
                                             </List.Logo>
@@ -469,6 +473,7 @@ function Cluster({
                                         }) =>
                                             environment_name ? (
                                                 <div
+                                                    data-testid={`env-container-${environment_name}`}
                                                     className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-12 pb-12 fs-13 fw-4 pl-20 pr-20 dc__visible-hover dc__visible-hover--parent"
                                                     key={id}
                                                     onClick={() =>
@@ -490,6 +495,7 @@ function Cluster({
                                                     <div
                                                         className="dc__truncate-text flex left cb-5 cursor"
                                                         onClick={showWindowModal}
+                                                        data-testid = {`env-${environment_name}`}
                                                     >
                                                         {environment_name}
 
@@ -524,6 +530,7 @@ function Cluster({
                                                                     content={'Delete Environment'}
                                                                 >
                                                                     <DeleteEnvironment
+                                                                        data-testid={`env-delete-button-${environment_name}`}
                                                                         className="icon-dim-20 cursor"
                                                                         onClick={showToggleConfirmation}
                                                                     />
@@ -531,23 +538,21 @@ function Cluster({
                                                             )}
                                                         </div>
                                                     </div>
-                                                    {confirmation && (
-                                                        <DeleteComponent
-                                                            setDeleting={clusterDelete}
-                                                            deleteComponent={deleteEnvironment}
-                                                            payload={getEnvironmentPayload()}
-                                                            title={environment_name}
-                                                            toggleConfirmation={toggleConfirmation}
-                                                            component={DeleteComponentsName.Environment}
-                                                            confirmationDialogDescription={
-                                                                DC_ENVIRONMENT_CONFIRMATION_MESSAGE
-                                                            }
-                                                            reload={reload}
-                                                        />
-                                                    )}
                                                 </div>
                                             ) : null,
                                     )}
+                                {confirmation && (
+                                    <DeleteComponent
+                                        setDeleting={clusterDelete}
+                                        deleteComponent={deleteEnvironment}
+                                        payload={getEnvironmentPayload()}
+                                        title={environment.environment_name}
+                                        toggleConfirmation={toggleConfirmation}
+                                        component={DeleteComponentsName.Environment}
+                                        confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
+                                        reload={reload}
+                                    />
+                                )}
                             </div>
                         ) : (
                             clusterId && renderNoEnvironmentTab()
@@ -929,7 +934,7 @@ function ClusterForm({
                         </RadioGroup>
                     </div>
                     {state.authType.value === AuthenticationType.BASIC ? (
-                        <div className="form__row--flex">
+                        <div className="form__row form__row--flex">
                             <div className="w-50 mr-8">
                                 <CustomInput
                                     name="userName"
@@ -1096,7 +1101,7 @@ function Environment({
         <div>
             <div className="bcn-0">
                 <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12">
-                    <div className="fs-16 fw-6 lh-1-43 ml-20 title-padding">
+                    <div className="fs-16 fw-6 lh-1-43 ml-20">
                         {id ? 'Edit Environment' : 'Add Environment'}
                     </div>
                     <button type="button" className="dc__transparent flex icon-dim-24" onClick={hideClusterDrawer}>
@@ -1108,6 +1113,7 @@ function Environment({
                 <div className="dc__overflow-scroll p-20">
                     <div className="mb-16">
                         <CustomInput
+                        dataTestid="environment-name"
                             labelClassName="dc__required-field"
                             autoComplete="off"
                             disabled={!!environment_name}
@@ -1121,6 +1127,7 @@ function Environment({
                     </div>
                     <div className="mb-16">
                         <CustomInput
+                        dataTestid="enter-namespace"
                             labelClassName="dc__required-field"
                             disabled={!!namespace}
                             name="namespace"
@@ -1134,6 +1141,7 @@ function Environment({
                     <div className="mb-16 flex left">
                         <label className="pr-16 flex cursor">
                             <input
+                                data-testid="production"
                                 type="radio"
                                 name="isProduction"
                                 checked={state.isProduction.value === 'true'}
@@ -1144,8 +1152,9 @@ function Environment({
                         </label>
                         <label className="flex cursor">
                             <input
+                                data-testid="nonProduction"
                                 type="radio"
-                                name="isProduction"
+                                name="isNonProduction"
                                 checked={state.isProduction.value === 'false'}
                                 value="false"
                                 onChange={handleOnChange}
@@ -1165,7 +1174,6 @@ function Environment({
                         />
                     </div>
                 </div>
-
                 <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0 bcn-0">
                     {id && (
                         <button
@@ -1185,6 +1193,7 @@ function Environment({
                         type="submit"
                         disabled={loading}
                         onClick={handleOnSubmit}
+                        data-testid="save-and-update-environment"
                     >
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}
                     </button>

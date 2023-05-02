@@ -86,7 +86,7 @@ function EnvironmentSelectorComponent({
                     className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
                     onClick={showDeleteConfitmationPopup}
                 >
-                    <span>Delete application</span>
+                    <span data-testid="delete-helm-app-button">Delete application</span>
                     <Trash className="icon-dim-20 scr-5" />
                 </span>
             </div>
@@ -139,6 +139,7 @@ function EnvironmentSelectorComponent({
                                 left: '50%',
                                 transform: 'translate(-50%, -50%)',
                             }}
+                            data-testid="env-heading-app-details"
                         >
                             ENV
                         </div>
@@ -191,6 +192,7 @@ function EnvironmentSelectorComponent({
                                 <div
                                     className="bw-1 eb-2 br-4 bcn-0 pl-12 pr-12 pt-4 pb-4"
                                     style={{ minWidth: '200px' }}
+                                    data-testid="env-name-app-details"
                                 >
                                     {appDetails.environmentName || <span>&nbsp;</span>}
                                 </div>
@@ -207,9 +209,9 @@ function EnvironmentSelectorComponent({
                             }`}
                         >
                             {isGitops ? (
-                                <ArgoCD className="icon-dim-32 ml-16 mr-8" />
+                                <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16 mr-8" />
                             ) : (
-                                <Helm className="icon-dim-32 ml-16" />
+                                <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
                             )}
                         </Tippy>
                     )}
@@ -226,7 +228,7 @@ function EnvironmentSelectorComponent({
             {!loadingResourceTree && (
                 <div className="flex">
                     {!appDetails.deploymentAppDeleteRequest && (
-                        <button className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2" onClick={showInfoUrl}>
+                        <button className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2" onClick={showInfoUrl} data-testid="url-button-app-details">
                             <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
                             Urls
                         </button>
@@ -235,6 +237,7 @@ function EnvironmentSelectorComponent({
                         <button
                             className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
                             onClick={() => setWorkloadsModal(true)}
+                            data-testid="scale-workload-button-app-details"
                         >
                             <ScaleObjects className="mr-4" /> Scale workloads
                         </button>
@@ -248,7 +251,7 @@ function EnvironmentSelectorComponent({
                             deployedAppDetail[0],
                         )
                     ) && (
-                        <div>
+                        <div data-testid="dot-button-app-details">
                             <PopupMenu autoClose>
                                 <PopupMenu.Button rootClassName="flex" isKebab={true}>
                                     <Dots className="pod-info__dots ml-8 icon-dim-20 icon-color-n6" />

@@ -108,18 +108,18 @@ export function SourceInfo({
                         }`}
                     >
                         {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (
-                            <ArgoCD className="icon-dim-32 ml-16" />
+                            <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />
                         ) : (
-                            <Helm className="icon-dim-32 ml-16" />
+                            <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
                         )}
                     </Tippy>
                 )}
                 {appDetails?.deploymentAppDeleteRequest && (
-                    <>
+                    <div data-testid="deleteing-argocd-pipeline">
                         <Trash className="icon-dim-16 mr-8 ml-12" />
                         <span className="cr-5 fw-6">Deleting deployment pipeline </span>
                         <span className="dc__loading-dots cr-5" />
-                    </>
+                    </div>
                 )}
                 {!loadingResourceTree && environment && (
                     <>
@@ -129,15 +129,17 @@ export function SourceInfo({
                                     <button
                                         className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                         onClick={onClickShowUrlInfo}
+                                        data-testid="app-details-urls"
                                     >
                                         <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
                                         URLs
                                     </button>
                                 )}
-                                {showCommitInfo && (
+                                {appDetails?.dataSource !== 'EXTERNAL' && showCommitInfo && (
                                     <button
                                         className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                         onClick={onClickShowCommitInfo}
+                                        data-testid="app-details-commit-info"
                                     >
                                         <CommitIcon className="icon-dim-16 mr-6" />
                                         commit info
@@ -145,6 +147,7 @@ export function SourceInfo({
                                 )}
                                 {showHibernateModal && (
                                     <button
+                                        data-testid="app-details-hibernate-modal-button"
                                         className="cta cta-with-img small cancel fs-12 fw-6"
                                         onClick={onClickShowHibernateModal}
                                     >
@@ -208,6 +211,7 @@ export function SourceInfo({
                     {!appDetails?.deploymentAppDeleteRequest && environment && (
                         <div className="flex left w-100">
                             <div
+                                data-testid="app-status-card"
                                 onClick={loadingResourceTree ? noop : showApplicationDetailedModal}
                                 className="pointer flex left bcn-0 p-16 br-8 mw-340 mr-12 en-2 bw-1 lh-20"
                             >
@@ -242,13 +246,16 @@ export function SourceInfo({
                                     ) : (
                                         <>
                                             <div
+                                                data-testid="app-status-name"
                                                 className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}
                                             >
                                                 {isHibernated ? 'Hibernating' : status}
                                             </div>
                                             <div className="flex left">
                                                 {appDetails?.deploymentAppType === DeploymentAppType.helm ? (
-                                                    <span className="cb-5 fw-6">Details</span>
+                                                    <span data-testid="app-status-card-details" className="cb-5 fw-6">
+                                                        Details
+                                                    </span>
                                                 ) : (
                                                     <>
                                                         {message && (
@@ -257,6 +264,7 @@ export function SourceInfo({
                                                             </span>
                                                         )}
                                                         <span
+                                                            data-testid="app-status-card-details"
                                                             className={`${
                                                                 message?.length > 30 ? 'more-message' : ''
                                                             } cb-5 fw-6`}
@@ -271,6 +279,7 @@ export function SourceInfo({
                                 </div>
                             </div>
                             <div
+                                data-testid="deployment-status-card"
                                 onClick={loadingResourceTree ? noop : showDeploymentDetailedStatus}
                                 className={`flex left bcn-0 p-16 br-8 mw-382 en-2 bw-1 ${
                                     appDetails?.deploymentAppType === DeploymentAppType.helm ? '' : 'cursor'
@@ -294,6 +303,7 @@ export function SourceInfo({
                                     </div>
                                     <div className="flexbox h-20">
                                         <span
+                                            data-testid="deployment-status-name"
                                             className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatus} ${
                                                 deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS
                                                     ? 'dc__loading-dots'

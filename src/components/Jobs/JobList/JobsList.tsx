@@ -204,6 +204,7 @@ export default function JobsList() {
                     <div className="search">
                         <Search className="search__icon icon-dim-18" />
                         <input
+                            data-testid="Search-by-job-name"
                             type="text"
                             name="app_search_input"
                             autoComplete="off"
@@ -231,6 +232,7 @@ export default function JobsList() {
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
                         isFirstLetterCapitalize={true}
+                        dataTestId="job-status-filter"
                     />
                     <span className="filter-divider" />
                     <Filter
@@ -243,6 +245,7 @@ export default function JobsList() {
                         type={JobsFilterTypeText.PROJECT}
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
+                        dataTestId="job-projects-filter"
                     />
                     {showExportCsvButton && (
                         <>

@@ -80,8 +80,11 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
     return (
         <>
             <div className="select-pipeline-wrapper w-100 pl-16 pr-16 dc__overflow-hidden">
-                <label className="form__label">Select {selectLabel()}</label>
+                <label className="form__label" data-testid="select-history-heading">
+                    Select {selectLabel()}
+                </label>
                 <ReactSelect
+                    classNamePrefix="history-pipeline-dropdown"
                     value={selectedFilter}
                     options={
                         type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI
@@ -101,8 +104,9 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
             <div className="flex column top left" style={{ overflowY: 'auto' }}>
                 {Array.from(triggerHistory)
                     .sort(([a], [b]) => b - a)
-                    .map(([triggerId, triggerDetails]) => (
+                    .map(([triggerId, triggerDetails], index) => (
                         <HistorySummaryCard
+                            dataTestId={`deployment-history-${index}`}
                             key={triggerId}
                             id={triggerId}
                             status={triggerDetails.status}
@@ -136,6 +140,7 @@ const HistorySummaryCard = React.memo(
         artifact,
         type,
         stage,
+        dataTestId
     }: HistorySummaryCardType): JSX.Element => {
         const { path } = useRouteMatch()
         const { pathname } = useLocation()
@@ -174,7 +179,7 @@ const HistorySummaryCard = React.memo(
                     </TippyHeadless>
                 )}
             >
-                <NavLink to={getPath} className="w-100 ci-details__build-card-container" activeClassName="active">
+                <NavLink to={getPath} className="w-100 ci-details__build-card-container" data-testid={dataTestId} activeClassName="active">
                     <div className="w-100 ci-details__build-card">
                         <div
                             className={`dc__app-summary__icon icon-dim-20 ${triggerStatus(status)
