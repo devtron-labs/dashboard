@@ -13,7 +13,6 @@ interface UpdateMaterialProps {
     providers: any[]
     isGitProviderValid
     isCheckoutPathValid
-    isFilePathValid
     refreshMaterials: () => void
     isWorkflowEditorUnlocked: boolean
     reload: () => void
@@ -45,7 +44,6 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 gitProvider: undefined,
                 url: undefined,
                 checkoutPath: undefined,
-                includeExcludeFile: undefined,
             },
         }
         this.handleProviderChange = this.handleProviderChange.bind(this)
@@ -157,10 +155,6 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 ...this.state.material,
                 includeExcludeFilePath: event.target.value,
             },
-            isError: {
-                ...this.state.isError,
-                includeExcludeFile: this.props.isFilePathValid(event.target.value),
-            },
         })
     }
 
@@ -190,11 +184,10 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                     gitProvider: this.props.isGitProviderValid(this.state.material.gitProvider),
                     url: this.isGitUrlValid(this.state.material.url, this.state.material?.gitProvider?.id),
                     checkoutPath: this.props.isCheckoutPathValid(this.state.material.checkoutPath),
-                    includeExcludeFile: this.props.isFilePathValid(this.state.material.includeExcludeFilePath)
                 },
             },
             () => {
-                if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath || this.state.isError.includeExcludeFile) return
+                if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return
 
                 this.setState({ isLoading: true, isChecked: true })
                 let payload = {
@@ -238,7 +231,6 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 gitProvider: this.props.isGitProviderValid(this.props.material.gitProvider),
                 url: this.isGitUrlValid(this.props.material.url, this.state.material?.gitProvider?.id),
                 checkoutPath: this.props.isCheckoutPathValid(this.props.material.checkoutPath),
-                includeExcludeFile: this.props.isFilePathValid(this.state.material.includeExcludeFilePath)
             },
         })
     }

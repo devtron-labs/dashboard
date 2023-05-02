@@ -12,7 +12,6 @@ interface CreateMaterialProps {
     refreshMaterials: () => void;
     isGitProviderValid;
     isCheckoutPathValid;
-    isFilePathValid;
     isWorkflowEditorUnlocked: boolean;
     reload: () => void
     isJobView?: boolean
@@ -40,7 +39,6 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 gitProvider: undefined,
                 url: undefined,
                 checkoutPath: undefined,
-                includeExcludeFile: undefined
             },
         }
 
@@ -129,14 +127,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             material: {
                 ...this.state.material,
                 includeExcludeFilePath: event.target.value
-            },
-            isError: {
-                ...this.state.isError,
-                includeExcludeFile: this.props.isFilePathValid(event.target.value)
-                
             }
-        } , () => {
-            console.log(this.state.isError.includeExcludeFile)
         })
     }
 
@@ -169,12 +160,11 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 gitProvider: this.props.isGitProviderValid(this.state.material.gitProvider),
                 url: this.isGitUrlValid(this.state.material.url, this.state.material?.gitProvider?.id ),
                 checkoutPath: this.props.isCheckoutPathValid(this.state.material.checkoutPath),
-                includeExcludeFile: this.props.isFilePathValid(this.state.material.includeExcludeFilePath)
-                
+
             }
 
         }, () => {
-            if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath || this.state.isError.includeExcludeFile) return;
+            if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return;
 
             this.setState({
                 isLoading: true,
@@ -217,7 +207,6 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 gitProvider: undefined,
                 url: undefined,
                 checkoutPath: undefined,
-                includeExcludeFile: undefined
             }
         });
     }

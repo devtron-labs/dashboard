@@ -151,39 +151,39 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
     tippyContent = () => {
         return (
             <div className="p-12 fs-13">
-                <span>
-                    {INCLUDE_EXCLUDE_TIPPY.lineOne}<br/><br/>
-                </span>
-                <span>
-                    {INCLUDE_EXCLUDE_TIPPY.lineTwo}<br/><br/>
-                </span>
-                <span>
-                    {INCLUDE_EXCLUDE_TIPPY.lineThree}<br/>
-                </span>
-                <span>
-                    {INCLUDE_EXCLUDE_TIPPY.lineFour}<br/>
-                </span>
+                <div className="mb-20">
+                    {INCLUDE_EXCLUDE_TIPPY.lineOne}
+                </div>
+                <div className="mb-20">
+                    {INCLUDE_EXCLUDE_TIPPY.lineTwo}
+                </div>
+                <div>
+                    {INCLUDE_EXCLUDE_TIPPY.lineThree}
+                </div>
+                <div>
+                    {INCLUDE_EXCLUDE_TIPPY.lineFour}
+                </div>
             </div>
         )
     }
 
     // True if rest all folders should be include , false if rest all should be excluded.
     isIncludeOrExclude = () : boolean => {
-        const filePath = this.props.material.includeExcludeFilePath.split(/\r?\n/);
-        let include : number = 0 ;
-        let exclude : number = 0 ;
-        filePath.forEach((path) =>  {
-            if(path.charAt(0) === '/'){
-                include++;
-            }else {
-                exclude++;
+        const filePath = this.props.material.includeExcludeFilePath.split(/\r?\n/)
+        let include: number = 0
+        let exclude: number = 0
+        filePath.forEach((path) => {
+            if (path.charAt(0) === '!') {
+                exclude++
+            } else {
+                include++
             }
         })
 
-        if(include===0) {
-            return true ;
+        if (include === 0) {
+            return true
         } else {
-            return false ;
+            return false
         }
     }
 
@@ -416,7 +416,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
 
                         <textarea
-                            className="form__textarea dc__no-border-imp w-872-imp" 
+                            className="form__textarea dc__no-border-imp w-872-imp"
                             autoComplete={'off'}
                             autoFocus
                             placeholder={"Example: \nto include type /foldername \nto exclude type !/foldername"}
@@ -425,7 +425,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             onChange={this.props.handleFileChange}
                             data-testid="clone-directory-path"
                         />
-                        {!this.props.isError.includeExcludeFile && this.props.material.includeExcludeFilePath?.length ? (
+                        {this.props.material.includeExcludeFilePath?.length>0 && (
                             <div className="flex left h-36 p-8 bcy-1 dc__border-top">
                                 <span className="fw-4 fs-13">
                                     <Info className="icon-dim-16 mr-6 mt-6" />
@@ -435,21 +435,11 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     {this.isIncludeOrExclude() ? "included" : "excluded"}
                                 </span>
                             </div>
-                        ) : (
-                            ''
                         )}
                     </div>
                 ) : (
                     ''
                 )}
-                <span className="form__error ml-35">
-                    {this.props.isError.includeExcludeFile && (
-                        <>
-                            {' '}
-                            <img src={error} className="form__icon" /> {this.props.isError.includeExcludeFile}
-                        </>
-                    )}
-                </span>
                 <label>
                     <div className="pt-16">
                         <Checkbox

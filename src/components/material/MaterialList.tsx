@@ -23,7 +23,6 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
         }
         this.isGitProviderValid = this.isGitProviderValid.bind(this)
         this.isCheckoutPathValid = this.isCheckoutPathValid.bind(this)
-        this.isFilePathValid = this.isFilePathValid.bind(this)
         this.refreshMaterials = this.refreshMaterials.bind(this)
     }
 
@@ -36,10 +35,9 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                 let materials = sourceConfigRes.result.material || []
                 let providers = providersRes.result
                 materials = materials.map((mat) => {
-                    console.log(mat.filterPattern)
                     return {
                         ...mat,
-                        // includeExcludeFilePath: mat.filterPattern.toString(),
+                        includeExcludeFilePath: mat.filterPattern?.length ? mat.filterPattern.join('\n') : '',
                         gitProvider: providers.find((p) => mat.gitProviderId === p.id),
                     }
                 })
@@ -102,16 +100,6 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             }
             return undefined
         }
-    }
-
-    isFilePathValid(filePath: string) {
-        const filePaths = filePath.split(/\r?\n/);
-        for(let i = 0 ; i<filePaths.length ; i++) {
-            if (filePaths[i].length && !filePaths[i].startsWith('/') && !filePaths[i].startsWith('!/')) {
-                return "Invalid Path. Path should start with '/' OR '!/'"
-            }
-        }
-        return undefined
     }
 
     isGitProviderValid(provider) {
@@ -191,7 +179,6 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         refreshMaterials={this.refreshMaterials}
                         isGitProviderValid={this.isGitProviderValid}
                         isCheckoutPathValid={this.isCheckoutPathValid}
-                        isFilePathValid={this.isFilePathValid}
                         isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
                         reload={this.getGitProviderConfig}
                         isJobView={this.props.isJobView}
@@ -208,7 +195,6 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                                 refreshMaterials={this.refreshMaterials}
                                 isGitProviderValid={this.isGitProviderValid}
                                 isCheckoutPathValid={this.isCheckoutPathValid}
-                                isFilePathValid={this.isFilePathValid}
                                 isWorkflowEditorUnlocked={this.props.isWorkflowEditorUnlocked}
                                 reload={this.getGitProviderConfig}
                                 toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}

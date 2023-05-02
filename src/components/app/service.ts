@@ -200,6 +200,7 @@ const processMaterialHistory = (material) => {
                           data: history.WebhookData.data,
                       }
                     : null,
+                    excluded: history.Excluded,
             }
         })
     }

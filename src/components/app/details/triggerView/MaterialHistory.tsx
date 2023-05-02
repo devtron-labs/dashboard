@@ -18,6 +18,7 @@ export interface CommitHistory {
     isSelected: boolean
     showChanges: boolean
     webhookData: WebhookData
+    excluded?: boolean
 }
 
 export interface CIMaterialType {
@@ -54,16 +55,16 @@ export interface MaterialHistoryProps {
 }
 
 export class MaterialHistory extends Component<MaterialHistoryProps> {
-    onClickMaterialHistory = (e, _commitId) => {
+    onClickMaterialHistory = (e, _commitId, isExcluded) => {
         e.stopPropagation()
-        if (this.props.selectCommit) {
+        if (this.props.selectCommit && !isExcluded) {
             this.props.selectCommit(this.props.material.id.toString(), _commitId, this.props.ciPipelineId)
         }
     }
     render() {
         return (
             <>
-                {this.props.material?.history?.map((history,index) => {
+                {this.props.material?.history?.map((history, index) => {
                     let classes = `material-history mt-12 ${history.isSelected ? 'material-history-selected' : ''}`
                     if (this.props.selectCommit) {
                         classes = `${classes}`
@@ -77,7 +78,7 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                             data-testid={`material-history-${index}`}
                             key={_commitId}
                             className={`${classes} `}
-                            onClick={(e) => this.onClickMaterialHistory(e, _commitId)}
+                            onClick={(e) => this.onClickMaterialHistory(e, _commitId, history.excluded)}
                         >
                             <GitCommitInfoGeneric
                                 index={index}
@@ -87,7 +88,8 @@ export class MaterialHistory extends Component<MaterialHistoryProps> {
                                 materialSourceType={this.props.material.type}
                                 selectedCommitInfo={this.props.selectCommit}
                                 materialSourceValue={this.props.material.value}
-                                canTriggerBuild={true}
+                                canTriggerBuild={!history.excluded}
+                                isExcluded={history.excluded}
                             />
                         </div>
                     )

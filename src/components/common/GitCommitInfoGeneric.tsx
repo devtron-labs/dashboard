@@ -11,6 +11,7 @@ import { SourceTypeMap, Moment12HourFormat } from '../../config'
 import { createGitCommitUrl } from '../common/helpers/git'
 import { GitMaterialInfoHeader } from './GitMaterialInfo'
 import moment from 'moment'
+import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function GitCommitInfoGeneric({
     materialSourceType,
@@ -20,7 +21,8 @@ export default function GitCommitInfoGeneric({
     materialUrl,
     showMaterialInfoHeader,
     canTriggerBuild = false,
-    index
+    index,
+    isExcluded = false
 }) {
     const [showSeeMore, setShowSeeMore] = useState(true)
     let _lowerCaseCommitInfo = _lowerCaseObject(commitInfo)
@@ -157,6 +159,13 @@ export default function GitCommitInfoGeneric({
         )
     }
 
+    const matSelectionText = (): JSX.Element => {
+        if (isExcluded) {
+            return <span className="cr-5 cursor-not-allowed">Excluded</span>
+        }
+        return <span>Select</span>
+    }
+
     return (
         <>
             {showMaterialInfoHeader && (_isWebhook || _lowerCaseCommitInfo.commit) && (
@@ -178,7 +187,7 @@ export default function GitCommitInfoGeneric({
                                     target="_blank"
                                     rel="noopener"
                                     className="commit-hash"
-                                    onClick={(e) => e.stopPropagation()}
+                                    onClick={stopPropagation}
                                     data-testid={`deployment-history-source-code-material-history${index}`}
                                 >
                                     <div
@@ -191,8 +200,12 @@ export default function GitCommitInfoGeneric({
                                 </a>
                             ) : null}
                             {selectedCommitInfo ? (
-                                <div className="material-history__select-text ">
-                                    {_lowerCaseCommitInfo.isselected ? <Check className="dc__align-right" /> : 'Select'}
+                                <div className="material-history__select-text dc_max-width__max-content">
+                                    {_lowerCaseCommitInfo.isselected ? (
+                                        <Check className="dc__align-right" />
+                                    ) : (
+                                        matSelectionText()
+                                    )}
                                 </div>
                             ) : null}
                         </div>
@@ -262,7 +275,7 @@ export default function GitCommitInfoGeneric({
                                                 target="_blank"
                                                 rel="noopener"
                                                 className="commit-hash"
-                                                onClick={(e) => e.stopPropagation()}
+                                                onClick={stopPropagation}
                                             >
                                                 <Commit className="commit-hash__icon" />
                                                 {_webhookData.data['source checkout']}
@@ -295,7 +308,7 @@ export default function GitCommitInfoGeneric({
                                                 target="_blank"
                                                 rel="noopener"
                                                 className="commit-hash"
-                                                onClick={(e) => e.stopPropagation()}
+                                                onClick={stopPropagation}
                                             >
                                                 <Commit className="commit-hash__icon" />
                                                 {_webhookData.data['target checkout']}

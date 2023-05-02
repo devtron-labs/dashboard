@@ -50,7 +50,6 @@ interface MaterialError {
     gitProvider: undefined | string
     url: undefined | string
     checkoutPath: undefined | string
-    includeExcludeFile: undefined | string
 }
 
 export interface UpdateMaterialState {

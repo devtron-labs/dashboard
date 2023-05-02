@@ -333,6 +333,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             showChanges: true,
                             webhookData: _result.WebhookData,
                             isSelected: true,
+                            excluded: _result.Excluded,
                         },
                     ]
                     _selectedMaterial.isMaterialLoading = false
@@ -765,11 +766,15 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     node.inputMaterialList.map((material) => {
                         if (material.id == materialId && material.isSelected) {
                             material.history.map((hist) => {
-                                if (material.type == SourceTypeMap.WEBHOOK) {
-                                    hist.isSelected =
-                                        hist.webhookData && hist.webhookData.id && hash == hist.webhookData.id
+                                if (!hist.excluded) {
+                                    if (material.type == SourceTypeMap.WEBHOOK) {
+                                        hist.isSelected =
+                                            hist.webhookData && hist.webhookData.id && hash == hist.webhookData.id
+                                    } else {
+                                        hist.isSelected = hash == hist.commit
+                                    }
                                 } else {
-                                    hist.isSelected = hash == hist.commit
+                                    hist.isSelected = false
                                 }
                             })
                         }
