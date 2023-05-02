@@ -332,7 +332,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             changes: _result.Changes || [],
                             showChanges: true,
                             webhookData: _result.WebhookData,
-                            isSelected: true,
+                            isSelected: _result.Excluded,
                             excluded: _result.Excluded,
                         },
                     ]
@@ -379,7 +379,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
         if (commitHash && _selectedMaterial) {
             const commitInLocalHistory = _selectedMaterial.history.find((material) => material.commit === commitHash)
             if (commitInLocalHistory) {
-                _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: true }]
+                _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: !commitInLocalHistory.excluded }]
                 _selectedMaterial.isMaterialLoading = false
 
                 setFilteredWorkflows(_workflows)
@@ -701,7 +701,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
             ]
             if (_inputMaterial) {
                 if (_inputMaterial.value === DEFAULT_GIT_BRANCH_VALUE) continue
-                const history = _inputMaterial.history.filter((hstry) => hstry.isSelected)
+                const history = _inputMaterial.history.filter((hstry) => hstry.isSelected && !hstry.excluded)
                 if (!history.length) {
                     history.push(_inputMaterial.history[0])
                 }
@@ -1207,7 +1207,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     node.inputMaterialList[i].value,
                 ]
                 if (node.inputMaterialList[i].value === DEFAULT_GIT_BRANCH_VALUE) continue
-                const history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected)
+                const history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected && !hstry.excluded)
                 if (!history.length) {
                     history.push(node.inputMaterialList[i].history[0])
                 }

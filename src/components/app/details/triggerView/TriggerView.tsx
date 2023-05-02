@@ -171,7 +171,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             changes: _result.Changes || [],
                             showChanges: true,
                             webhookData: _result.WebhookData,
-                            isSelected: true,
+                            isSelected: !_result.Excluded,
                             excluded: _result.Excluded,
                         },
                     ]
@@ -217,7 +217,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         if (commitHash && _selectedMaterial) {
             const commitInLocalHistory = _selectedMaterial.history.find((material) => material.commit === commitHash)
             if (commitInLocalHistory) {
-                _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: true }]
+                _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: !commitInLocalHistory.excluded }]
                 _selectedMaterial.isMaterialLoading = false
 
                 this.setState({
@@ -573,7 +573,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             ]
             if (node.inputMaterialList[i]) {
                 if (node.inputMaterialList[i].value === DEFAULT_GIT_BRANCH_VALUE) continue
-                const history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected)
+                const history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected && !hstry.excluded)
                 if (!history.length) {
                     history.push(node.inputMaterialList[i].history[0])
                 }
