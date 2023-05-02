@@ -56,7 +56,6 @@ function ChartDeploymentHistory({
     const [deploymentHistoryArr, setDeploymentHistoryArr] = useState<ChartDeploymentDetail[]>([])
     const [installedAppInfo, setInstalledAppInfo] = useState<InstalledAppInfo>()
     const [selectedDeploymentHistoryIndex, setSelectedDeploymentHistoryIndex] = useState<number>(0)
-    const [selectedDeploymentTabIndex, setSelectedDeploymentTabIndex] = useState<number>(0)
     const [deploymentManifestDetails, setDeploymentManifestDetails] = useState<Map<number, DeploymentManifestDetail>>()
     const [rollbackDialogTitle, setRollbackDialogTitle] = useState('Rollback')
     const [showRollbackConfirmation, setShowRollbackConfirmation] = useState(false)
@@ -64,7 +63,7 @@ function ChartDeploymentHistory({
     const [showDockerInfo, setShowDockerInfo] = useState(false)
     const history = useHistory()
     const { url } = useRouteMatch()
-    const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>('Source')
+    const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>()
 
     // Checking if deployment app type is argocd only then show steps tab
     const deploymentTabs =
@@ -83,6 +82,11 @@ function ChartDeploymentHistory({
     // component load
     useEffect(() => {
         getDeploymentHistoryData()
+        return (): void => {
+          if (initTimer) {
+              clearTimeout(initTimer)
+          }
+      }
     }, [])
     let initTimer = null
 
@@ -95,11 +99,16 @@ function ChartDeploymentHistory({
                     ) || []
                 setDeploymentHistoryArr(_deploymentHistoryArr)
                 setInstalledAppInfo(deploymentHistoryResponse.result?.installedAppInfo)
-                setSelectedDeploymentTabName(
-                    deploymentHistoryResponse.result?.installedAppInfo?.deploymentType === DeploymentAppType.GitOps
-                        ? DEPLOYMENT_HISTORY_TAB.STEPS
-                        : DEPLOYMENT_HISTORY_TAB.SOURCE,
-                )
+                    setSelectedDeploymentTabName((prevValue) => {
+                        if (!prevValue) {
+                            return deploymentHistoryResponse.result?.installedAppInfo?.deploymentType ===
+                            DeploymentAppType.GitOps
+                                ? DEPLOYMENT_HISTORY_TAB.STEPS
+                                : DEPLOYMENT_HISTORY_TAB.SOURCE
+                        }
+                        return prevValue
+                    })
+
                 // init deployment manifest details map
                 const _deploymentManifestDetails = new Map<number, DeploymentManifestDetail>()
                 _deploymentHistoryArr.forEach(({ version }) => {
@@ -127,16 +136,10 @@ function ChartDeploymentHistory({
                         setRollbackDialogTitle(`Rollback ${appDetails.appName}`)
                     }
                 }
-
-                if (deploymentHistoryArr[0]?.status !== 'Succeedeed') {
+                if (_deploymentHistoryArr[0]?.status !== 'Succeeded' || deploymentHistoryArr[0]?.status !== 'Failed') {
                     initTimer = setTimeout(() => {
                         getDeploymentHistoryData()
                     }, 10000)
-                }
-                return (): void => {
-                    if (initTimer) {
-                        clearTimeout(initTimer)
-                    }
                 }
             })
             .catch((errors: ServerErrors) => {
@@ -148,18 +151,17 @@ function ChartDeploymentHistory({
 
 
 
-    const getDeploymentData = (_selectedDeploymentTabIndex: number, _selectedDeploymentHistoryIndex: number) => {
-        if (_selectedDeploymentTabIndex !== DEPLOYMENT_HISTORY_TABS.STEPS || _selectedDeploymentTabIndex !== DEPLOYMENT_HISTORY_TABS.SOURCE) { // Checking if the tab in not source, then fetching api for all except source tab
+    const getDeploymentData = (_selectedDeploymentTabName: string, _selectedDeploymentHistoryIndex: number) => {
+        if (_selectedDeploymentTabName !== DEPLOYMENT_HISTORY_TAB.STEPS || _selectedDeploymentTabName !== DEPLOYMENT_HISTORY_TAB.SOURCE) { // Checking if the tab in not source, then fetching api for all except source tab
             checkAndFetchDeploymentDetail(deploymentHistoryArr[_selectedDeploymentHistoryIndex].version)
         }
     }
 
-    function onClickDeploymentTabs(index: number, tabName: string) {  // This will call whenever we change the tabs internally eg, source,value etc
-        if (selectedDeploymentTabIndex == index) {
+    function onClickDeploymentTabs( tabName: string) {  // This will call whenever we change the tabs internally eg, source,value etc
+        if (selectedDeploymentTabName == tabName) {
             return
         }
-        getDeploymentData(index, selectedDeploymentHistoryIndex)
-        setSelectedDeploymentTabIndex(index)
+        getDeploymentData(tabName, selectedDeploymentHistoryIndex)
         setSelectedDeploymentTabName(tabName)
     }
 
@@ -167,7 +169,7 @@ function ChartDeploymentHistory({
         if (selectedDeploymentHistoryIndex == index) {
             return
         }
-        getDeploymentData(selectedDeploymentTabIndex, index)
+        getDeploymentData(selectedDeploymentTabName, index)
         setSelectedDeploymentHistoryIndex(index)
     }
 
@@ -315,9 +317,9 @@ function ChartDeploymentHistory({
             <ul className="tab-list deployment-tab-list dc__border-bottom mr-20">
                 { deploymentTabs.map((tab, index) => {
                     return (
-                        <li onClick={() => onClickDeploymentTabs(index, tab)} key={index} className="tab-list__tab">
+                        <li onClick={() => onClickDeploymentTabs(tab)} key={index} className="tab-list__tab">
                             <div
-                                className={`tab-list__tab-link ${selectedDeploymentTabIndex == index ? 'active' : ''}`}
+                                className={`tab-list__tab-link ${selectedDeploymentTabName == tab ? 'active' : ''}`}
                                 data-testid={`nav-bar-option-${index}`}
                             >
 
@@ -362,13 +364,13 @@ function ChartDeploymentHistory({
         } else if (
             !selectedDeploymentManifestDetail.loading &&
             ((selectedDeploymentManifestDetail.error && selectedDeploymentManifestDetail.errorCode === 404) ||
-                (selectedDeploymentTabIndex === 1 && !selectedDeploymentManifestDetail.valuesYaml) ||
-                (selectedDeploymentTabIndex === 2 && !selectedDeploymentManifestDetail.manifest))
+                (selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML && !selectedDeploymentManifestDetail.valuesYaml) ||
+                (selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST && !selectedDeploymentManifestDetail.manifest))
         ) {
             return (
                 <div className="flex h-100">
                     <CDEmptyState
-                        subtitle={`${deploymentTabs[selectedDeploymentTabIndex]} ${ERROR_EMPTY_SCREEN.TAB_NOT_AVAILABLE_POSTFIX}`}
+                        subtitle={`${deploymentTabs[selectedDeploymentTabName]} ${ERROR_EMPTY_SCREEN.TAB_NOT_AVAILABLE_POSTFIX}`}
                     />
                 </div>
             )
@@ -393,7 +395,7 @@ function ChartDeploymentHistory({
             <div className="bcn-0 border-btm">
                 <CodeEditor
                     value={
-                        selectedDeploymentTabIndex === 1
+                        selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
                             ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
                             : getEditorValue(selectedDeploymentManifestDetail.manifest)
                     }
