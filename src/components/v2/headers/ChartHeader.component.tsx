@@ -72,7 +72,7 @@ function ChartHeaderComponent({ errorResponseCode }: ChartHeaderComponentType) {
                         <li className="tab-list__tab">
                             <NavLink
                                 activeClassName="active"
-                                to={`${match.url}/${URLS.APP_DEPLOYMNENT_HISTORY}?installedAppVersionHistoryId=16`}
+                                to={`${match.url}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
                                 className="tab-list__tab-link"
                                 onClick={(event) => {
                                     ReactGA.event({

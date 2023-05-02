@@ -167,6 +167,13 @@ export const DEPLOYMENT_HISTORY_TABS = {
   SOURCE : 1,
 }
 
+export const DEPLOYMENT_HISTORY_TAB = {
+  STEPS: 'Steps',
+  SOURCE : 'Source',
+  VALUES_YAML: 'values.yaml',
+  HELM_GENERATED_MANIFEST: 'Helm generated manifest'
+}
+
 export const CONFIGMAPS_SECRETS = {
     configmaps: "configmaps",
     secrets: "secrets"

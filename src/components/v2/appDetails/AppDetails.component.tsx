@@ -38,7 +38,7 @@ const AppDetailsComponent = ({
     loadingResourceTree: boolean
     isPollingRequired?: boolean
 }) => {
-    const params = useParams<{ appId: string; envId: string; nodeType: string; installedAppVersionHistoryId: string }>()
+    const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const [streamData, setStreamData] = useState<AppStreamData>(null)
     const appDetails = IndexStore.getAppDetails()
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
@@ -53,13 +53,6 @@ const AppDetailsComponent = ({
         })
     let deploymentStatusTimer = null
 
-    const clearDeploymentStatusTimer = (): void => {
-        if (deploymentStatusTimer) {
-            clearTimeout(deploymentStatusTimer)
-        }
-    }
-
-    console.log(params)
 
     async function callAppDetailsAPI() {
         try {
@@ -85,11 +78,18 @@ const AppDetailsComponent = ({
         }
     }, [isPollingRequired])
 
+
+    const clearDeploymentStatusTimer = (): void => {
+        if (deploymentStatusTimer) {
+            clearTimeout(deploymentStatusTimer)
+        }
+    }
+
     useEffect(() => {
-      return () => {
-          clearDeploymentStatusTimer()
-      }
-  }, [pollingIntervalID])
+        return () => {
+            clearDeploymentStatusTimer()
+        }
+    }, [pollingIntervalID])
 
     useEffect(() => {
         if (appDetails?.appType === AppType.EXTERNAL_HELM_CHART && params.appId) {
@@ -98,7 +98,7 @@ const AppDetailsComponent = ({
     }, [])
 
     const getDeploymentDetailStepsData = (): void => {
-        getDeploymentStatusDetail(params.appId, params.envId).then((deploymentStatusDetailRes) => {
+        getDeploymentStatusDetail(params.appId, params.envId, '', true).then((deploymentStatusDetailRes) => {
             processDeploymentStatusData(deploymentStatusDetailRes.result)
         })
     }

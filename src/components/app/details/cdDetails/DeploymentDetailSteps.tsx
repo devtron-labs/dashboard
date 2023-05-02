@@ -29,7 +29,6 @@ export default function DeploymentDetailSteps({
 
     let initTimer = null
     const getDeploymentDetailStepsData = (): void => {
-      setDeploymentListLoader(true)
         getDeploymentStatusDetail(appId, envId, triggerId, isHelm, installedAppVersionHistoryId)
             .then((deploymentStatusDetailRes) => {
                 const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(

@@ -31,7 +31,7 @@ import {
     RollbackReleaseRequest,
 } from './chartDeploymentHistory.service'
 import IndexStore from '../appDetails/index.store'
-import { DEPLOYMENT_HISTORY_TABS, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
+import { DEPLOYMENT_HISTORY_TAB, DEPLOYMENT_HISTORY_TABS, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
 import DeploymentDetailSteps from '../../app/details/cdDetails/DeploymentDetailSteps'
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
@@ -56,6 +56,7 @@ function ChartDeploymentHistory({
     const [installedAppInfo, setInstalledAppInfo] = useState<InstalledAppInfo>()
     const [selectedDeploymentHistoryIndex, setSelectedDeploymentHistoryIndex] = useState<number>(0)
     const [selectedDeploymentTabIndex, setSelectedDeploymentTabIndex] = useState<number>(0)
+
     const [deploymentManifestDetails, setDeploymentManifestDetails] = useState<Map<number, DeploymentManifestDetail>>()
     const [rollbackDialogTitle, setRollbackDialogTitle] = useState('Rollback')
     const [showRollbackConfirmation, setShowRollbackConfirmation] = useState(false)
@@ -64,7 +65,9 @@ function ChartDeploymentHistory({
     const history = useHistory()
     const { url } = useRouteMatch()
 
-    const deploymentTabs: string[] = ['Steps', 'Source', 'values.yaml', 'Helm generated manifest']
+    // Checking if deployment app type is argocd only then show step tab
+    const deploymentTabs = installedAppInfo?.deploymentAppType === 'argo_cd' ? ['Steps', 'Source', 'values.yaml', 'Helm generated manifest'] : ['Source', 'values.yaml', 'Helm generated manifest']
+    const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>(  installedAppInfo?.deploymentAppType === 'argo_cd' ? 'Steps' : 'Source' )
 
     // component load
     useEffect(() => {
@@ -113,17 +116,18 @@ function ChartDeploymentHistory({
     }, [])
 
     const getDeploymentData = (_selectedDeploymentTabIndex: number, _selectedDeploymentHistoryIndex: number) => {
-        if (_selectedDeploymentTabIndex !== DEPLOYMENT_HISTORY_TABS.STEPS && _selectedDeploymentTabIndex !== DEPLOYMENT_HISTORY_TABS.SOURCE) { // Checking if the tab in not source, then fetching api for all except source tab
+        if (_selectedDeploymentTabIndex !== DEPLOYMENT_HISTORY_TABS.STEPS || _selectedDeploymentTabIndex !== DEPLOYMENT_HISTORY_TABS.SOURCE) { // Checking if the tab in not source, then fetching api for all except source tab
             checkAndFetchDeploymentDetail(deploymentHistoryArr[_selectedDeploymentHistoryIndex].version)
         }
     }
 
-    function onClickDeploymentTabs(index: number) {  // This will call whenever we change the tabs internally eg, source,value etc
+    function onClickDeploymentTabs(index: number, tabName: string) {  // This will call whenever we change the tabs internally eg, source,value etc
         if (selectedDeploymentTabIndex == index) {
             return
         }
         getDeploymentData(index, selectedDeploymentHistoryIndex)
         setSelectedDeploymentTabIndex(index)
+        setSelectedDeploymentTabName(tabName)
     }
 
     function onClickDeploymentHistorySidebar(index: number) {   // This will call whenever we change the deployment from sidebar
@@ -220,7 +224,7 @@ function ChartDeploymentHistory({
                                         gridColumnGap: '12px',
                                     }}
                                 >
-                                    <div className={`dc__app-summary__icon icon-dim-22 f-${deployment?.status}`}></div>
+                                    <div className={`dc__app-summary__icon icon-dim-22 ${deployment?.status ? deployment?.status.toLowerCase() : ''}`}></div>
                                     <div className="flex column left dc__ellipsis-right">
                                         <div className="cn-9 fs-14">
                                             {moment(new Date(deployment.deployedAt.seconds * 1000)).format(
@@ -268,13 +272,14 @@ function ChartDeploymentHistory({
     function renderSelectedDeploymentTabs() {
         return (
             <ul className="tab-list deployment-tab-list dc__border-bottom mr-20">
-                {deploymentTabs.map((tab, index) => {
+                { deploymentTabs.map((tab, index) => {
                     return (
-                        <li onClick={() => onClickDeploymentTabs(index)} key={index} className="tab-list__tab">
+                        <li onClick={() => onClickDeploymentTabs(index, tab)} key={index} className="tab-list__tab">
                             <div
                                 className={`tab-list__tab-link ${selectedDeploymentTabIndex == index ? 'active' : ''}`}
                                 data-testid={`nav-bar-option-${index}`}
                             >
+
                                 {tab}
                             </div>
                         </li>
@@ -365,11 +370,10 @@ function ChartDeploymentHistory({
         const chartMetadata = deployment.chartMetadata
 
         return (
-
-            <div className={`trigger-outputs-container ${selectedDeploymentTabIndex === DEPLOYMENT_HISTORY_TABS.SOURCE ? 'pt-20' : ''}`}>
-              {selectedDeploymentTabIndex === 0 &&
+            <div className={`trigger-outputs-container ${selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE ? 'pt-20' : ''}`}>
+              {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.STEPS &&
                <DeploymentDetailSteps isHelm={true} installedAppVersionHistoryId={deployment.version} />}
-                {selectedDeploymentTabIndex === 1 && (
+                {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE && (
                     <div
                         className="ml-20 w-100 p-16 bcn-0 br-4 en-2 bw-1 pb-12 mb-12"
                         style={{ width: 'min( 100%, 800px )' }}
@@ -439,7 +443,7 @@ function ChartDeploymentHistory({
                         </div>
                     </div>
                 )}
-                {(selectedDeploymentTabIndex === 2 || selectedDeploymentTabIndex === 3) && renderCodeEditor()}
+                {(selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST || selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML ) && renderCodeEditor()}
             </div>
         )
     }
