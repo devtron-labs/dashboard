@@ -51,7 +51,7 @@ export interface InstalledAppInfo {
     clusterId: number
     teamId: number
     teamName: string
-    deploymentAppType?: string
+    deploymentType?: string
 }
 
 export interface HelmAppDetail {

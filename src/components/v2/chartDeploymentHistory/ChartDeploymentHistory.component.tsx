@@ -66,8 +66,8 @@ function ChartDeploymentHistory({
     const { url } = useRouteMatch()
 
     // Checking if deployment app type is argocd only then show step tab
-    const deploymentTabs = installedAppInfo?.deploymentAppType === 'argo_cd' ? ['Steps', 'Source', 'values.yaml', 'Helm generated manifest'] : ['Source', 'values.yaml', 'Helm generated manifest']
-    const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>(  installedAppInfo?.deploymentAppType === 'argo_cd' ? 'Steps' : 'Source' )
+    const deploymentTabs = installedAppInfo?.deploymentType === 'argo_cd' ? ['Steps', 'Source', 'values.yaml', 'Helm generated manifest'] : ['Source', 'values.yaml', 'Helm generated manifest']
+    const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>(  installedAppInfo?.deploymentType === 'argo_cd' ? 'Steps' : 'Source' )
 
     // component load
     useEffect(() => {
