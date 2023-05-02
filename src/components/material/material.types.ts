@@ -14,6 +14,8 @@ export interface GitMaterialType {
     gitProvider: { id: number; name: string; url?: string; authMode?: string }
     url: string
     checkoutPath: string
+    filterPattern?: []
+    includeExcludeFilePath?: string
     active: boolean
     fetchSubmodules: boolean
     isUsedInCiConfig?: boolean
@@ -34,9 +36,12 @@ export interface CreateMaterialState {
         checkoutPath: string
         active: boolean
         fetchSubmodules: boolean
+        includeExcludeFilePath: string
     }
     isCollapsed: boolean
     isChecked: boolean
+    isExcludeRepoChecked: boolean
+    isLearnHowClicked: boolean
     isLoading: boolean
     isError: MaterialError
 }
@@ -45,12 +50,15 @@ interface MaterialError {
     gitProvider: undefined | string
     url: undefined | string
     checkoutPath: undefined | string
+    includeExcludeFile: undefined | string
 }
 
 export interface UpdateMaterialState {
     material: GitMaterialType
     isCollapsed: boolean
     isChecked: boolean
+    isExcludeRepoChecked: boolean
+    isLearnHowClicked: boolean
     isLoading: boolean
     isError: MaterialError
 }
@@ -58,6 +66,8 @@ export interface UpdateMaterialState {
 export interface MaterialViewProps {
     isMultiGit: boolean
     isChecked: boolean
+    isExcludeRepoChecked: boolean
+    isLearnHowClicked: boolean
     material: GitMaterialType
     isCollapsed: boolean
     isLoading: boolean
@@ -65,8 +75,11 @@ export interface MaterialViewProps {
     providers: any[]
     handleProviderChange: (selected, url) => void
     handleCheckoutPathCheckbox: (event) => void
+    handleExcludeRepoCheckbox: (event) => void
+    handleLearnHowClick: (event) => void
     handleUrlChange: (event) => void
     handlePathChange: (event) => void
+    handleFileChange: (event) => void
     toggleCollapse: (event) => void
     save: (event) => void
     cancel: (event) => void

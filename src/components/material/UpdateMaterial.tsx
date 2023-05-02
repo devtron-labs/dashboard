@@ -13,6 +13,7 @@ interface UpdateMaterialProps {
     providers: any[]
     isGitProviderValid
     isCheckoutPathValid
+    isFilePathValid
     refreshMaterials: () => void
     isWorkflowEditorUnlocked: boolean
     reload: () => void
@@ -30,17 +31,21 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 gitProvider: this.props.material.gitProvider,
                 url: this.props.material.url,
                 checkoutPath: this.props.material.checkoutPath,
+                includeExcludeFilePath: this.props.material.includeExcludeFilePath,
                 active: this.props.material.active,
                 fetchSubmodules: this.props.material.fetchSubmodules,
                 isUsedInCiConfig: this.props.material.isUsedInCiConfig,
             },
             isCollapsed: true,
             isChecked: true,
+            isExcludeRepoChecked: true,
+            isLearnHowClicked: false,
             isLoading: false,
             isError: {
                 gitProvider: undefined,
                 url: undefined,
                 checkoutPath: undefined,
+                includeExcludeFile: undefined,
             },
         }
         this.handleProviderChange = this.handleProviderChange.bind(this)
@@ -50,6 +55,9 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         this.save = this.save.bind(this)
         this.cancel = this.cancel.bind(this)
         this.handleCheckoutPathCheckbox = this.handleCheckoutPathCheckbox.bind(this)
+        this.handleExcludeRepoCheckbox = this.handleExcludeRepoCheckbox.bind(this)
+        this.handleLearnHowClick = this.handleLearnHowClick.bind(this)
+        this.handleFileChange = this.handleFileChange.bind(this)
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -95,6 +103,18 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         })
     }
 
+    handleExcludeRepoCheckbox(event): void {
+        this.setState({
+            isExcludeRepoChecked: !this.state.isExcludeRepoChecked
+        })
+    }
+
+    handleLearnHowClick(event): void {
+        this.setState({
+            isLearnHowClicked: !this.state.isLearnHowClicked
+        })
+    }
+
     handleSubmoduleCheckbox = (event): void => {
         this.setState({
             material: {
@@ -131,6 +151,19 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
         })
     }
 
+    handleFileChange(event) {
+        this.setState({
+            material: {
+                ...this.state.material,
+                includeExcludeFilePath: event.target.value,
+            },
+            isError: {
+                ...this.state.isError,
+                includeExcludeFile: this.props.isFilePathValid(event.target.value),
+            },
+        })
+    }
+
     handleUrlChange(event) {
         this.setState({
             material: {
@@ -157,10 +190,11 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                     gitProvider: this.props.isGitProviderValid(this.state.material.gitProvider),
                     url: this.isGitUrlValid(this.state.material.url, this.state.material?.gitProvider?.id),
                     checkoutPath: this.props.isCheckoutPathValid(this.state.material.checkoutPath),
+                    includeExcludeFile: this.props.isFilePathValid(this.state.material.includeExcludeFilePath)
                 },
             },
             () => {
-                if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return
+                if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath || this.state.isError.includeExcludeFile) return
 
                 this.setState({ isLoading: true, isChecked: true })
                 let payload = {
@@ -169,6 +203,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                         id: this.state.material.id,
                         url: this.state.material.url,
                         checkoutPath: this.state.material.checkoutPath,
+                        filterPattern: this.state.material.includeExcludeFilePath.split(/\r?\n/),
                         gitProviderId: this.state.material.gitProvider.id,
                         fetchSubmodules: this.state.material.fetchSubmodules ? true : false,
                     },
@@ -195,6 +230,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 gitProvider: this.props.material.gitProvider,
                 url: this.props.material.url,
                 checkoutPath: this.props.material.checkoutPath,
+                includeExcludeFilePath: this.props.material.includeExcludeFilePath,
             },
             isCollapsed: true,
             isLoading: false,
@@ -202,6 +238,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 gitProvider: this.props.isGitProviderValid(this.props.material.gitProvider),
                 url: this.isGitUrlValid(this.props.material.url, this.state.material?.gitProvider?.id),
                 checkoutPath: this.props.isCheckoutPathValid(this.props.material.checkoutPath),
+                includeExcludeFile: this.props.isFilePathValid(this.state.material.includeExcludeFilePath)
             },
         })
     }
@@ -213,13 +250,18 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 isError={this.state.isError}
                 isCollapsed={this.state.isCollapsed}
                 isChecked={this.state.isChecked}
+                isExcludeRepoChecked={this.state.isExcludeRepoChecked}
+                isLearnHowClicked={this.state.isLearnHowClicked}
+                handleLearnHowClick={this.handleLearnHowClick}
                 isLoading={this.state.isLoading}
                 isMultiGit={this.props.isMultiGit}
                 providers={this.props.providers}
                 handleCheckoutPathCheckbox={this.handleCheckoutPathCheckbox}
+                handleExcludeRepoCheckbox={this.handleExcludeRepoCheckbox}
                 handleProviderChange={this.handleProviderChange}
                 handleUrlChange={this.handleUrlChange}
                 handlePathChange={this.handlePathChange}
+                handleFileChange={this.handleFileChange}
                 toggleCollapse={this.toggleCollapse}
                 save={this.save}
                 cancel={this.cancel}

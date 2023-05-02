@@ -6,6 +6,9 @@ import {
     Checkbox,
     InfoColourBar,
     multiSelectStyles,
+    TippyCustomized,
+    TippyTheme,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MaterialViewProps, MaterialViewState } from './material.types'
 import { NavLink } from 'react-router-dom'
@@ -19,6 +22,7 @@ import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import Tippy from '@tippyjs/react'
 import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
 import DeleteComponent from '../../util/DeleteComponent'
@@ -28,8 +32,10 @@ import {
     DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE,
     DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE,
 } from '../../config/constantMessaging'
-import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
+import { ReactComponent as Info } from '../../assets/icons/info-filled-grey.svg'
 import { AuthenticationType } from '../cluster/cluster.type'
+import { INCLUDE_EXCLUDE_TIPPY, LEARN_HOW, INFO_BAR } from './constants'
+import { EDIT_TAINTS_MODAL_MESSAGING } from '../ClusterNodes/constants'
 
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
     constructor(props) {
@@ -73,8 +79,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         {this.props.material.url.includes('github') ? <GitHub /> : null}
                         {this.props.material.url.includes('bitbucket') ? <BitBucket /> : null}
                         {this.props.material.url.includes('gitlab') ||
-                        this.props.material.url.includes('github') ||
-                        this.props.material.url.includes('bitbucket') ? null : (
+                            this.props.material.url.includes('github') ||
+                            this.props.material.url.includes('bitbucket') ? null : (
                             <Git />
                         )}
                     </span>
@@ -142,6 +148,45 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         }
     }
 
+    tippyContent = () => {
+        return (
+            <div className="p-12 fs-13">
+                <span>
+                    {INCLUDE_EXCLUDE_TIPPY.lineOne}<br/><br/>
+                </span>
+                <span>
+                    {INCLUDE_EXCLUDE_TIPPY.lineTwo}<br/><br/>
+                </span>
+                <span>
+                    {INCLUDE_EXCLUDE_TIPPY.lineThree}<br/>
+                </span>
+                <span>
+                    {INCLUDE_EXCLUDE_TIPPY.lineFour}<br/>
+                </span>
+            </div>
+        )
+    }
+
+    // True if rest all folders should be include , false if rest all should be excluded.
+    isIncludeOrExclude = () : boolean => {
+        const filePath = this.props.material.includeExcludeFilePath.split(/\r?\n/);
+        let include : number = 0 ;
+        let exclude : number = 0 ;
+        filePath.forEach((path) =>  {
+            if(path.charAt(0) === '/'){
+                include++;
+            }else {
+                exclude++;
+            }
+        })
+
+        if(include===0) {
+            return true ;
+        } else {
+            return false ;
+        }
+    }
+
     renderForm() {
         const sortedProviders: any[] = this.props.providers
             ? sortObjectArrayAlphabetically(this.props.providers, 'name')
@@ -204,8 +249,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />
                                             ) : null}
                                             {props.data.url.includes('gitlab') ||
-                                            props.data.url.includes('github') ||
-                                            props.data.url.includes('bitbucket') ? null : (
+                                                props.data.url.includes('github') ||
+                                                props.data.url.includes('bitbucket') ? null : (
                                                 <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
                                             )}
 
@@ -296,69 +341,180 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         iconClass="icon-dim-20"
                     />
                 )}
-                <label className="form__row">
+                <div className="flex left">
                     <Checkbox
-                        isChecked={this.props.isChecked}
+                        isChecked={this.props.isExcludeRepoChecked}
                         value={'CHECKED'}
                         tabIndex={3}
-                        onChange={this.props.handleCheckoutPathCheckbox}
-                        rootClassName="fs-14 cn-9 mb-8 flex top"
+                        onChange={this.props.handleExcludeRepoCheckbox}
+                        rootClassName="fs-14 cn-9 mb-8 flex top dc_max-width__max-content"
                     >
                         <div className="ml-12">
-                            {this.props.isJobView ? (
-                                <span className="mb-4 mt-4 flex left">Set checkout path</span>
-                            ) : (
-                                <>
-                                    <span className="mb-4 mt-4 flex left" data-testid="set-clone-directory-checkbox">
-                                        Set clone directory
-                                        <Tippy
-                                            className="default-tt w-200"
-                                            arrow={false}
-                                            placement="bottom"
-                                            content={'Devtron will create the directory and clone the code in it'}
-                                        >
-                                            <Question className="icon-dim-16 ml-4" />
-                                        </Tippy>
-                                    </span>
-                                    <div className="fs-12 cn-7">
-                                        Eg. If your app needs code from multiple git repositories for CI
-                                    </div>
-                                </>
-                            )}
+                            <span className="mt-1 flex left">
+                                Exclude specific file/folder in this repo
+                            </span>
                         </div>
                     </Checkbox>
-                    {this.props.isChecked ? (
-                        <input
-                            className="form__input"
+                    <span>
+                        <TippyCustomized
+                            theme={TippyTheme.white}
+                            className="w-300 h-100 fcv-5"
+                            placement="bottom"
+                            Icon={QuestionFilled}
+                            heading="Exclude file/folders"
+                            infoText=""
+                            showCloseButton={true}
+                            additionalContent={this.tippyContent()}
+                            trigger="click"
+                            interactive={true}
+                        >
+                            <Question onClick={stopPropagation} className="icon-dim-16 ml-4 cursor" />
+                        </TippyCustomized>
+                    </span>
+                </div>
+                {this.props.isExcludeRepoChecked ? (
+                    <div className="dc__border br-4 mt-8 ml-35 w-874-imp">
+                        <div className="p-8 dc__border-bottom">
+                            <p className="fw-4 fs-13 mb-0-imp">
+                                Enter file or folder paths to be included or excluded.
+                                <a
+                                    className="dc__link ml-4 cursor"
+                                    onClick={this.props.handleLearnHowClick}
+                                    rel="noopener noreferer"
+                                    target="_blank"
+                                >
+                                    {!this.props.isLearnHowClicked ? `Learn how` : `Hide info`}
+                                </a>
+                            </p>
+                            {this.props.isLearnHowClicked && (
+                                <div className="ml-8">
+
+                                    <div className="flex left">
+                                        <div className="dc__bullet mr-6 ml-6"></div>
+                                        <span className="fs-13 fw-4">{LEARN_HOW.infoList.lineOne.partOne}</span>
+                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__border">{LEARN_HOW.infoList.lineOne.partTwo}</span>
+                                        <span className="ml-4 fs-13 fw-4">{LEARN_HOW.infoList.lineOne.partThree}</span>
+                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__border">{LEARN_HOW.infoList.lineOne.partFour}</span>
+                                        <br/>
+                                    </div>
+                                    <div className="flex left">
+                                        <div className="dc__bullet mr-6 ml-6"></div>
+                                        <span className="fs-13 fw-4">{LEARN_HOW.infoList.lineTwo}</span>
+                                        <br/>
+                                    </div>
+                                    <div className="flex left mt-2">
+                                        <div className="dc__bullet mr-6 ml-6"></div>
+                                        <span className="fs-13 fw-4">{LEARN_HOW.infoList.lineThree}</span>
+                                        <br/>
+                                    </div>
+                                    <div className="ml-10 mt-4 dc__ff-monospace fs-13 fw-4">
+                                        {LEARN_HOW.example.lineOne}<br/>
+                                        {LEARN_HOW.example.lineTwo}<br/>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <textarea
+                            className="form__textarea dc__no-border-imp w-872-imp" 
                             autoComplete={'off'}
                             autoFocus
-                            type="text"
-                            placeholder="e.g. /abc"
-                            value={this.props.material.checkoutPath}
-                            onChange={this.props.handlePathChange}
+                            placeholder={"Example: \nto include type /foldername \nto exclude type !/foldername"}
+                            rows={3}
+                            value={this.props.material.includeExcludeFilePath}
+                            onChange={this.props.handleFileChange}
                             data-testid="clone-directory-path"
                         />
-                    ) : (
-                        ''
-                    )}
-                    <span className="form__error">
-                        {this.props.isError.checkoutPath && (
-                            <>
-                                {' '}
-                                <img src={error} className="form__icon" /> {this.props.isError.checkoutPath}
-                            </>
+                        {!this.props.isError.includeExcludeFile && this.props.material.includeExcludeFilePath?.length ? (
+                            <div className="flex left h-36 p-8 bcy-1 dc__border-top">
+                                <span className="fw-4 fs-13">
+                                    <Info className="icon-dim-16 mr-6 mt-6" />
+                                </span>
+                                    {INFO_BAR.infoMessage}
+                                <span className={`ml-4 fw-6 ${this.isIncludeOrExclude() ? "cg-5" : "cr-5"}`}>
+                                    {this.isIncludeOrExclude() ? "included" : "excluded"}
+                                </span>
+                            </div>
+                        ) : (
+                            ''
                         )}
-                    </span>
+                    </div>
+                ) : (
+                    ''
+                )}
+                <span className="form__error ml-35">
+                    {this.props.isError.includeExcludeFile && (
+                        <>
+                            {' '}
+                            <img src={error} className="form__icon" /> {this.props.isError.includeExcludeFile}
+                        </>
+                    )}
+                </span>
+                <label>
+                    <div className="pt-16">
+                        <Checkbox
+                            isChecked={this.props.isChecked}
+                            value={'CHECKED'}
+                            tabIndex={4}
+                            onChange={this.props.handleCheckoutPathCheckbox}
+                            rootClassName="fs-14 cn-9 mb-8 flex top"
+                        >
+                            <div className="ml-12">
+                                {this.props.isJobView ? (
+                                    <span className="mb-4 mt-4 flex left">Set checkout path</span>
+                                ) : (
+                                    <>
+                                        <span className="mb-4 flex left" data-testid="set-clone-directory-checkbox">
+                                            Set clone directory
+                                            <Tippy
+                                                className="default-tt w-200"
+                                                arrow={false}
+                                                placement="bottom"
+                                                content={'Devtron will create the directory and clone the code in it'}
+                                            >
+                                                <Question className="icon-dim-16 ml-4" />
+                                            </Tippy>
+                                        </span>
+                                        <div className="fs-12 cn-7">
+                                            Eg. If your app needs code from multiple git repositories for CI
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </Checkbox>
+                        {this.props.isChecked ? (
+                            <input
+                                className="form__input ml-35 w-874-imp"
+                                autoComplete={'off'}
+                                autoFocus
+                                type="text"
+                                placeholder="e.g. /abc"
+                                value={this.props.material.checkoutPath}
+                                onChange={this.props.handlePathChange}
+                                data-testid="clone-directory-path"
+                            />
+                        ) : (
+                            ''
+                        )}
+                        <span className="form__error ml-35">
+                            {this.props.isError.checkoutPath && (
+                                <>
+                                    {' '}
+                                    <img src={error} className="form__icon" /> {this.props.isError.checkoutPath}
+                                </>
+                            )}
+                        </span>
+                    </div>
                     <div className="pt-16 ">
                         <Checkbox
                             isChecked={this.props.material.fetchSubmodules}
                             value={'CHECKED'}
-                            tabIndex={4}
+                            tabIndex={5}
                             onChange={this.props.handleSubmoduleCheckbox}
                             rootClassName="fs-14 cn-9 flex top"
                         >
                             <div className="ml-12">
-                                <span className="mb-4 mt-4 flex left" data-testid="pull-submodule-recursively-checkbox">
+                                <span className="mb-4 flex left" data-testid="pull-submodule-recursively-checkbox">
                                     Pull submodules recursively
                                     <Tippy
                                         className="default-tt w-200"

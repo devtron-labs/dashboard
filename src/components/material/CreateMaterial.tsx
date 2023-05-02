@@ -12,6 +12,7 @@ interface CreateMaterialProps {
     refreshMaterials: () => void;
     isGitProviderValid;
     isCheckoutPathValid;
+    isFilePathValid;
     isWorkflowEditorUnlocked: boolean;
     reload: () => void
     isJobView?: boolean
@@ -28,14 +29,18 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 checkoutPath: "",
                 active: true,
                 fetchSubmodules: false,
+                includeExcludeFilePath: "",
             },
             isCollapsed: this.props.isMultiGit ? true : false,
             isChecked: false,
+            isExcludeRepoChecked: false,
+            isLearnHowClicked: false,
             isLoading: false,
             isError: {
                 gitProvider: undefined,
                 url: undefined,
                 checkoutPath: undefined,
+                includeExcludeFile: undefined
             },
         }
 
@@ -47,12 +52,27 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         this.cancel = this.cancel.bind(this);
         this.handleCheckoutPathCheckbox = this.handleCheckoutPathCheckbox.bind(this);
         this.handleSubmoduleCheckbox = this.handleSubmoduleCheckbox.bind(this);
+        this.handleExcludeRepoCheckbox = this.handleExcludeRepoCheckbox.bind(this);
+        this.handleLearnHowClick = this.handleLearnHowClick.bind(this);
+        this.handleFileChange = this.handleFileChange.bind(this);
     }
 
     handleCheckoutPathCheckbox(event): void {
         this.setState({
             isChecked: !this.state.isChecked
         });
+    }
+
+    handleExcludeRepoCheckbox(event): void {
+        this.setState({
+            isExcludeRepoChecked: !this.state.isExcludeRepoChecked
+        })
+    }
+
+    handleLearnHowClick(event): void {
+        this.setState({
+            isLearnHowClicked: !this.state.isLearnHowClicked
+        })
     }
 
     handleSubmoduleCheckbox(event): void {
@@ -104,6 +124,22 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         });
     }
 
+    handleFileChange(event) {
+        this.setState({
+            material: {
+                ...this.state.material,
+                includeExcludeFilePath: event.target.value
+            },
+            isError: {
+                ...this.state.isError,
+                includeExcludeFile: this.props.isFilePathValid(event.target.value)
+                
+            }
+        } , () => {
+            console.log(this.state.isError.includeExcludeFile)
+        })
+    }
+
 
     handleUrlChange(event) {
 
@@ -132,11 +168,13 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             isError: {
                 gitProvider: this.props.isGitProviderValid(this.state.material.gitProvider),
                 url: this.isGitUrlValid(this.state.material.url, this.state.material?.gitProvider?.id ),
-                checkoutPath: this.props.isCheckoutPathValid(this.state.material.checkoutPath)
+                checkoutPath: this.props.isCheckoutPathValid(this.state.material.checkoutPath),
+                includeExcludeFile: this.props.isFilePathValid(this.state.material.includeExcludeFilePath)
+                
             }
 
         }, () => {
-            if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return;
+            if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath || this.state.isError.includeExcludeFile) return;
 
             this.setState({
                 isLoading: true,
@@ -147,7 +185,8 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                     url: this.state.material.url,
                     checkoutPath: this.state.material.checkoutPath,
                     gitProviderId: this.state.material.gitProvider.id,
-                    fetchSubmodules: this.state.material.fetchSubmodules
+                    fetchSubmodules: this.state.material.fetchSubmodules,
+                    filterPattern: this.state.material.includeExcludeFilePath.split(/\r?\n/),
                 }]
             }
             createMaterial(payload).then((response) => {
@@ -168,6 +207,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 gitProvider: undefined,
                 url: '',
                 checkoutPath: '',
+                includeExcludeFilePath: '',
                 active: true,
                 fetchSubmodules: false
             },
@@ -177,6 +217,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 gitProvider: undefined,
                 url: undefined,
                 checkoutPath: undefined,
+                includeExcludeFile: undefined
             }
         });
     }
@@ -186,9 +227,13 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             <MaterialView
                 isMultiGit={this.props.isMultiGit}
                 isChecked={this.state.isChecked}
+                isExcludeRepoChecked={this.state.isExcludeRepoChecked}
+                isLearnHowClicked={this.state.isLearnHowClicked}
+                handleLearnHowClick={this.handleLearnHowClick}
                 material={this.state.material}
                 isCollapsed={this.state.isCollapsed}
                 handleCheckoutPathCheckbox={this.handleCheckoutPathCheckbox}
+                handleExcludeRepoCheckbox={this.handleExcludeRepoCheckbox}
                 handleSubmoduleCheckbox={this.handleSubmoduleCheckbox}
                 isLoading={this.state.isLoading}
                 isError={this.state.isError}
@@ -196,6 +241,7 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 handleProviderChange={this.handleProviderChange}
                 handleUrlChange={this.handleUrlChange}
                 handlePathChange={this.handlePathChange}
+                handleFileChange={this.handleFileChange}
                 toggleCollapse={this.toggleCollapse}
                 save={this.save}
                 cancel={this.cancel}
