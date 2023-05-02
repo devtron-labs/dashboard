@@ -120,7 +120,6 @@ export default function CICreateDockerfileOption({
     }, [frameworks])
 
     const handleGitRepoChange = (selectedMaterial) => {
-        handleBuildContextPathChange(selectedMaterial)
         handleFileLocationChange(selectedMaterial)
     }
     const getTemplateKey = (_selectedLanguage: LanguageOptionType, _selectedFramework: FrameworkOptionType) => {
@@ -443,7 +442,7 @@ export default function CICreateDockerfileOption({
                                 getOptionValue={(option) => `${option.checkoutPath}`}
                                 value={
                                     configOverrideView && !allowOverride
-                                        ? currentMaterial
+                                        ? currentBuildContextGitMaterial
                                         : selectedBuildContextGitMaterial
                                 }
                                 styles={{
