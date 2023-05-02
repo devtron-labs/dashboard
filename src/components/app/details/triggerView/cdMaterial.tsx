@@ -62,7 +62,7 @@ import Tippy from '@tippyjs/react'
 import { EmptyView } from '../cicdHistory/History.components'
 import { submitApprovalRequest } from './ApprovalNode/Service'
 import { toast } from 'react-toastify'
-import { APPROVAL_ACTION_TYPE, APPROVAL_RUNTIME_STATE } from './ApprovalNode/Constants'
+import { APPROVAL_ACTION_TYPE, APPROVAL_RUNTIME_STATE, EMPTY_VIEW_TEXTS } from './ApprovalNode/Constants'
 import { ApprovedTippyContent } from './ApprovalNode/ApprovalMaterial.component'
 import { ARTIFACT_STATUS } from './Constants'
 
@@ -1234,11 +1234,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     getEmptyStateSubtitle = () => {
         if (this.props.triggerType === TriggerTypeMap.automatic) {
-            return `Deployment to ${this.props.envName} is set to Automatic. Deployment of an image is initiated as soon as it receives the required number of approvals.`
+            return EMPTY_VIEW_TEXTS.noImage.cdAutoMode(this.props.envName)
         } else if (this.state.isRollbackTrigger) {
-            return 'Approved images which have been previously deployed will be available here for rollback.'
+            return EMPTY_VIEW_TEXTS.noImage.rollbackSubtitle
         } else {
-            return 'Images will be available here for deployment after approval.'
+            return EMPTY_VIEW_TEXTS.noImage.cdSubtitle
         }
     }
 
@@ -1259,8 +1259,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <EmptyState.Title>
                         <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
                             {this.props.triggerType === TriggerTypeMap.automatic
-                                ? 'No image available'
-                                : 'No approved images'}
+                                ? EMPTY_VIEW_TEXTS.noImage.title
+                                : EMPTY_VIEW_TEXTS.noApprovedImages.title}
                         </h4>
                     </EmptyState.Title>
                     <EmptyState.Subtitle>{this.getEmptyStateSubtitle()}</EmptyState.Subtitle>
@@ -1270,7 +1270,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             data-selected-tab="0"
                             onClick={this.viewImagesForApproval}
                         >
-                            {consumedImagePresent ? 'View all images' : 'View images for approval'}
+                            {consumedImagePresent
+                                ? EMPTY_VIEW_TEXTS.noImage.label
+                                : EMPTY_VIEW_TEXTS.noApprovedImages.label}
                         </button>
                     </EmptyState.Button>
                 </EmptyState>

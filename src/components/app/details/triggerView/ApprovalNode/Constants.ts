@@ -18,6 +18,23 @@ export const APPROVAL_REQUEST_TOAST_MSG = {
     cancel: 'Image approval request cancelled',
 }
 
+export const APPROVAL_MODAL_TEXT = {
+    heading: 'Approval for deployment to',
+    tab: {
+        first: 'Request approval',
+        second: 'Approval pending',
+    },
+    approverInfoMsg: '‘Approver’ role can be provided to users via',
+    noApproverInfoMsg:
+        'No users have ‘Approver’ permission for this application and environment. ‘Approver’ role can be provided to users via',
+    permissions: 'User Permissions.',
+    apiTokenPrefix: 'API-TOKEN:',
+    approverGroups: {
+        user: 'Users',
+        token: 'API Tokens',
+    },
+}
+
 export const APPROVAL_MODAL_CTA_TEXT = {
     imageBuilderTippy: 'You triggered the build pipeline for this image. The builder of an image cannot approve it.',
     approvedByYou: 'Approved by you',
@@ -70,4 +87,27 @@ export const DEPLOYMENT_ENV_TEXT = {
     active: 'Active on',
     failed: 'Last deployment failed on',
     deploying: 'Deploying on',
+}
+
+export const EMPTY_VIEW_TEXTS = {
+    noImage: {
+        title: 'No image available',
+        subTitle: 'Trigger build pipeline and find the image here',
+        cdAutoMode: (envName: string): string =>
+            `Deployment to ${envName} is set to Automatic. Deployment of an image is initiated as soon as it receives the required number of approvals.`,
+        cdSubtitle: 'Images will be available here for deployment after approval.',
+        rollbackSubtitle: 'Approved images which have been previously deployed will be available here for rollback.',
+        label: 'View all images',
+    },
+    noApprovedImages: {
+        title: 'No approved images',
+        subTitle: 'Trigger build pipeline and find the image here',
+        label: 'View images for approval',
+    },
+    noPendingImages: {
+        title: 'No images are pending for approval',
+        subTitle:
+            'Images for which approval is requested will be available here. All users having ‘Approver’ permission for this application and environment can approve.',
+        label: 'View images for approval',
+    },
 }

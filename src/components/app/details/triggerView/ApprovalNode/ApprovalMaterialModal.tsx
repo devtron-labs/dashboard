@@ -16,7 +16,7 @@ import { ApprovalMaterialModalProps } from './Types'
 import ApprovalMaterial from './ApprovalMaterial'
 import { getAlphabetIcon } from '../../../../common'
 import { Link } from 'react-router-dom'
-import { APPROVAL_RUNTIME_STATE } from './Constants'
+import { APPROVAL_MODAL_TEXT, APPROVAL_RUNTIME_STATE, EMPTY_VIEW_TEXTS } from './Constants'
 
 export default function ApprovalMaterialModal({
     isLoading,
@@ -48,7 +48,7 @@ export default function ApprovalMaterialModal({
                 className="trigger-modal__header dc__no-border pb-12 cn-9"
             >
                 <h1 className="modal__title">
-                    Approval for deployment to&nbsp;
+                    {APPROVAL_MODAL_TEXT.heading}&nbsp;
                     <span className="fw-6">{!isLoading && node.environmentName ? node.environmentName : ''}</span>
                 </h1>
                 <button
@@ -78,7 +78,7 @@ export default function ApprovalMaterialModal({
                     data-testid="all-images-tab"
                     onClick={handleTabSelected}
                 >
-                    Request approval
+                    {APPROVAL_MODAL_TEXT.tab.first}
                 </li>
                 <li
                     className={`tab-list__tab cursor pb-8 ${
@@ -88,7 +88,8 @@ export default function ApprovalMaterialModal({
                     data-testid="approval-requested-tab"
                     onClick={handleTabSelected}
                 >
-                    Approval pending<span className="dc__badge ml-6">{approvalRequestedMaterial.length}</span>
+                    {APPROVAL_MODAL_TEXT.tab.second}
+                    <span className="dc__badge ml-6">{approvalRequestedMaterial.length}</span>
                 </li>
             </ul>
         )
@@ -97,9 +98,9 @@ export default function ApprovalMaterialModal({
     const getApproversInfoMsg = () => {
         return (
             <div className="fs-12 fw-4 bcv-1 cn-9 lh-20 pt-8 pb-8 pl-12 pr-12">
-                ‘Approver’ role can be provided to users via&nbsp;
+                {APPROVAL_MODAL_TEXT.approverInfoMsg}&nbsp;
                 <Link to="/global-config/auth/users" className="fs-13 cb-5 lh-20">
-                    User Permissions.
+                    {APPROVAL_MODAL_TEXT.permissions}
                 </Link>
             </div>
         )
@@ -112,7 +113,7 @@ export default function ApprovalMaterialModal({
 
         if (approversPresent) {
             for (const approver of node.approvalUsers) {
-                if (approver.startsWith('API-TOKEN:')) {
+                if (approver.startsWith(APPROVAL_MODAL_TEXT.apiTokenPrefix)) {
                     apiTokens.push(approver.split(':')[1])
                 } else {
                     users.push(approver)
@@ -126,7 +127,7 @@ export default function ApprovalMaterialModal({
                     {approversPresent ? (
                         <>
                             {getApproversInfoMsg()}
-                            <div className="fs-13 fw-6 cn-9 pt-12 pl-12">Users</div>
+                            <div className="fs-13 fw-6 cn-9 pt-12 pl-12">{APPROVAL_MODAL_TEXT.approverGroups.user}</div>
                             <ol className="pt-8 pl-12 pr-12 dc__list-style-none">
                                 {users.sort().map((_approver) => {
                                     return (
@@ -137,7 +138,9 @@ export default function ApprovalMaterialModal({
                                     )
                                 })}
                             </ol>
-                            <div className="fs-13 fw-6 cn-9 mt-12 pl-12">API Tokens</div>
+                            <div className="fs-13 fw-6 cn-9 mt-12 pl-12">
+                                {APPROVAL_MODAL_TEXT.approverGroups.token}
+                            </div>
                             <ol className="pt-8 pl-12 pr-12 dc__list-style-none">
                                 {apiTokens.sort().map((_approver) => {
                                     return (
@@ -151,10 +154,9 @@ export default function ApprovalMaterialModal({
                         </>
                     ) : (
                         <div className="fs-13 fw-4 cn-7 lh-20">
-                            No users have ‘Approver’ permission for this application and environment. ‘Approver’ role
-                            can be provided to users via&nbsp;
+                            {APPROVAL_MODAL_TEXT.noApproverInfoMsg}&nbsp;
                             <Link to="/global-config/auth/users" className="fs-13 cb-5 lh-20">
-                                User Permissions.
+                                {APPROVAL_MODAL_TEXT.permissions}
                             </Link>
                         </div>
                     )}
@@ -217,10 +219,10 @@ export default function ApprovalMaterialModal({
                     </EmptyState.Image>
                     <EmptyState.Title>
                         <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
-                            No image available
+                            {EMPTY_VIEW_TEXTS.noImage.title}
                         </h4>
                     </EmptyState.Title>
-                    <EmptyState.Subtitle>Trigger build pipeline and find the image here</EmptyState.Subtitle>
+                    <EmptyState.Subtitle>{EMPTY_VIEW_TEXTS.noImage.subTitle}</EmptyState.Subtitle>
                 </EmptyState>
             )
         }
@@ -232,16 +234,13 @@ export default function ApprovalMaterialModal({
                 </EmptyState.Image>
                 <EmptyState.Title>
                     <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
-                        No images are pending for approval
+                        {EMPTY_VIEW_TEXTS.noPendingImages.title}
                     </h4>
                 </EmptyState.Title>
-                <EmptyState.Subtitle>
-                    Images for which approval is requested will be available here. All users having ‘Approver’
-                    permission for this application and environment can approve.
-                </EmptyState.Subtitle>
+                <EmptyState.Subtitle>{EMPTY_VIEW_TEXTS.noPendingImages.subTitle}</EmptyState.Subtitle>
                 <EmptyState.Button>
                     <button className="cta ghosted flex h-36" data-selected-tab="0" onClick={handleTabSelected}>
-                        View images for approval
+                        {EMPTY_VIEW_TEXTS.noPendingImages.label}
                     </button>
                 </EmptyState.Button>
             </EmptyState>
