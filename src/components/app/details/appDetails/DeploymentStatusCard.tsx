@@ -43,9 +43,7 @@ function DeploymentStatusCard({ deploymentStatusDetailsBreakdownData, loadingRes
                 <div className="flexbox">
                     <span
                         data-testid="deployment-status-name"
-                        className={`app-summary__status-name fs-14 mr-8 fw-6 f-${
-                            deploymentStatusDetailsBreakdownData.deploymentStatus?.toLowerCase()
-                        } ${
+                        className={`app-summary__status-name fs-14 mr-8 fw-6 f-${deploymentStatusDetailsBreakdownData.deploymentStatus?.toLowerCase()} ${
                             deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS
                                 ? 'dc__loading-dots'
                                 : ''
@@ -56,7 +54,9 @@ function DeploymentStatusCard({ deploymentStatusDetailsBreakdownData, loadingRes
                     <div className={`${deploymentStatusDetailsBreakdownData.deploymentStatus} icon-dim-20 mt-2`}></div>
                 </div>
                 <div>
-                    <span  data-testid="deployment-status-deatils" className="cb-5 fw-6 pointer">Details</span>
+                    <span data-testid="deployment-status-deatils" className="cb-5 fw-6 pointer">
+                        Details
+                    </span>
                 </div>
             </div>
             <div className="flex left column mw-140">

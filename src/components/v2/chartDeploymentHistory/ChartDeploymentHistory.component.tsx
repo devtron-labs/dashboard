@@ -68,9 +68,13 @@ function ChartDeploymentHistory({
 
     // Checking if deployment app type is argocd only then show steps tab
     const deploymentTabs = installedAppInfo?.deploymentType === DeploymentAppType.GitOps ? [DEPLOYMENT_HISTORY_TAB.STEPS, DEPLOYMENT_HISTORY_TAB.SOURCE, DEPLOYMENT_HISTORY_TAB.VALUES_YAML, DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST] : [DEPLOYMENT_HISTORY_TAB.SOURCE, DEPLOYMENT_HISTORY_TAB.VALUES_YAML, DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST]
+  // component load
+  useEffect(() => {
+    getDeploymentHistoryData()
+  }, [])
+  let initTimer = null
 
-    // component load
-    useEffect(() => {
+    const getDeploymentHistoryData = () => {
         getDeploymentHistory(appId, isExternal)
             .then((deploymentHistoryResponse: ChartDeploymentHistoryResponse) => {
                 const _deploymentHistoryArr =
@@ -79,7 +83,11 @@ function ChartDeploymentHistory({
                     ) || []
                 setDeploymentHistoryArr(_deploymentHistoryArr)
                 setInstalledAppInfo(deploymentHistoryResponse.result?.installedAppInfo)
-                setSelectedDeploymentTabName(deploymentHistoryResponse.result?.installedAppInfo?.deploymentType === DeploymentAppType.GitOps ? DEPLOYMENT_HISTORY_TAB.STEPS : DEPLOYMENT_HISTORY_TAB.SOURCE)
+                setSelectedDeploymentTabName(
+                    deploymentHistoryResponse.result?.installedAppInfo?.deploymentType === DeploymentAppType.GitOps
+                        ? DEPLOYMENT_HISTORY_TAB.STEPS
+                        : DEPLOYMENT_HISTORY_TAB.SOURCE,
+                )
                 // init deployment manifest details map
                 const _deploymentManifestDetails = new Map<number, DeploymentManifestDetail>()
                 _deploymentHistoryArr.forEach(({ version }) => {
@@ -107,13 +115,26 @@ function ChartDeploymentHistory({
                         setRollbackDialogTitle(`Rollback ${appDetails.appName}`)
                     }
                 }
+
+                if (deploymentHistoryArr[0]?.status !== 'Succeedeed') {
+                    initTimer = setTimeout(() => {
+                        getDeploymentHistoryData()
+                    }, 10000)
+                }
+                return (): void => {
+                  if (initTimer) {
+                      clearTimeout(initTimer)
+                  }
+              }
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
                 setErrorResponseCode(errors.code)
                 setIsLoading(false)
             })
-    }, [])
+    }
+
+
 
     const getDeploymentData = (_selectedDeploymentTabIndex: number, _selectedDeploymentHistoryIndex: number) => {
         if (_selectedDeploymentTabIndex !== DEPLOYMENT_HISTORY_TABS.STEPS || _selectedDeploymentTabIndex !== DEPLOYMENT_HISTORY_TABS.SOURCE) { // Checking if the tab in not source, then fetching api for all except source tab
@@ -224,7 +245,7 @@ function ChartDeploymentHistory({
                                         gridColumnGap: '12px',
                                     }}
                                 >
-                                    <div className={`dc__app-summary__icon icon-dim-22 ${deployment?.status ? deployment?.status.toLowerCase() : ''}`}></div>
+                                    <div className={`dc__app-summary__icon icon-dim-22 ${deployment?.status ? deployment?.status.toLowerCase() : ''} ${installedAppInfo?.deploymentType === DeploymentAppType.Helm ? 'succeeded' : ''}`}></div>
                                     <div className="flex column left dc__ellipsis-right">
                                         <div className="cn-9 fs-14">
                                             {moment(new Date(deployment.deployedAt.seconds * 1000)).format(
