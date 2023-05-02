@@ -22,7 +22,7 @@ function DeploymentStatusCard({ deploymentStatusDetailsBreakdownData, loadingRes
         <div
             data-testid="deployment-status-card"
             onClick={loadingResourceTree ? noop : showDeploymentDetailedStatus}
-            className="flex left bcn-0 p-16 br-4 mw-382 en-2 bw-1 cursor mr-12"
+            className="source-info-container flex left bcn-0 p-16 br-8 mw-382 cursor mr-12"
         >
             <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
                 <CD className="icon-dim-32" />

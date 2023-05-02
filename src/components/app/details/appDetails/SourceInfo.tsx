@@ -149,7 +149,7 @@ export function SourceInfo({
     const shimmerLoaderBlocks = () => {
         return (
             <div className="flex left mb-16">
-                <div className="bcn-0 w-220 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
+                <div className="bcn-0 w-220 mh-92 mr-12 br-8 dc__position-rel">
                     <div className="flex left w-85 dc__place-abs-shimmer-center ml-16">
                         <div className="shimmer-loading icon-dim-48 br-4 mr-16" />
                         <div>
@@ -158,7 +158,7 @@ export function SourceInfo({
                         </div>
                     </div>
                 </div>
-                <div className="bcn-0 w-400 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
+                <div className="bcn-0 w-400 mh-92 mr-12 br-8 dc__position-rel">
                     <div className="flex left w-85 dc__place-abs-shimmer-center ml-16">
                         <div className="flex left">
                             <div className="shimmer-loading icon-dim-48 br-4 mr-16" />
@@ -191,7 +191,7 @@ export function SourceInfo({
                             <div
                                 data-testid="app-status-card"
                                 onClick={loadingResourceTree ? noop : showApplicationDetailedModal}
-                                className="pointer flex left bcn-0 p-16 br-8 mw-340 mr-12 en-2 bw-1 lh-20"
+                                className="pointer flex left bcn-0 p-16 br-8 mw-340 mr-12 lh-20"
                             >
                                 <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
                                     {loadingResourceTree ? (

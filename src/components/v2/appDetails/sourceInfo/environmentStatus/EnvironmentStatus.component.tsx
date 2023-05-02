@@ -49,19 +49,19 @@ function EnvironmentStatusComponent({
     const shimmerLoaderBlocks = () => {
         return (
             <div className="flex left ml-20 mb-16">
-                <div className="bcn-0 w-150 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
+                <div className="bcn-0 w-150 mh-92  mr-12 br-8 dc__position-rel">
                     <div className="flex left column mt-6 w-85 ml-16 dc__place-abs-shimmer-center">
                         <div className="shimmer-loading w-80px h-20 br-2 mb-6" />
                         <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
                     </div>
                 </div>
-                <div className="bcn-0 w-150 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
+                <div className="bcn-0 w-150 mh-92  mr-12 br-8 dc__position-rel">
                     <div className="flex left column mt-6 w-85 ml-16 dc__place-abs-shimmer-center">
                         <div className="shimmer-loading w-80px h-20 br-2 mb-6" />
                         <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
                     </div>
                 </div>
-                <div className="bcn-0 w-150 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
+                <div className="bcn-0 w-150 mh-92  mr-12 br-8 dc__position-rel">
                     <div className="flex left column mt-6 w-85 ml-16 dc__place-abs-shimmer-center">
                         <div className="shimmer-loading w-80px h-20 br-2 mb-6" />
                         <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
@@ -74,7 +74,7 @@ function EnvironmentStatusComponent({
     const renderStatusBlock = () => {
         return (
             <div
-                className="app-status-card bcn-0 mr-12 br-8 p-16 cursor en-2 bw-1"
+                className="app-status-card bcn-0 mr-12 br-8 p-16 cursor  "
                 onClick={loadingResourceTree ? noop : handleShowAppStatusDetail}
             >
                 <div className="cn-9 flex left">
@@ -116,7 +116,7 @@ function EnvironmentStatusComponent({
     const renderHelmConfigApplyStatusBlock = () => {
         return (
             appDetails?.appType == AppType.EXTERNAL_HELM_CHART && (
-                <div className="app-status-card bcn-0 mr-12 br-8 p-16 en-2 bw-1">
+                <div className="app-status-card bcn-0 mr-12 br-8 p-16  ">
                     <div className="cn-9 flex left">
                         <span>Config apply status</span>
                         <Tippy
@@ -161,7 +161,7 @@ function EnvironmentStatusComponent({
     const renderChartUsedBlock = () => {
         return (
             appDetails?.appStoreAppName && (
-                <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12 en-2 bw-1">
+                <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12  ">
                     <div className="cn-9 flex left">
                         <span data-testid="chart-used-heading">Chart used</span>
                         <Tippy
@@ -208,7 +208,7 @@ function EnvironmentStatusComponent({
     const renderUpgraderChartBlock = () => {
         return (
             appDetails?.deprecated && (
-                <div className="app-status-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12 en-2 bw-1">
+                <div className="app-status-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12  ">
                     <div className="cn-9 flex left">
                         <span>Chart deprecated</span>
                         <Alert className="icon-dim-16 ml-4" />
