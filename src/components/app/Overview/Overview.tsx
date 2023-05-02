@@ -463,7 +463,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     </div>
                     {editMode ? (
                         <div className="flex left ml-auto dc__gap-8">
-                            <button className="btn btn-link p-0 fs-14 fw-6 cn-7" onClick={handleCancel}>
+                            <button
+                                className="btn btn-link p-0 fs-14 fw-6 cn-7"
+                                data-testid="cancel-button"
+                                onClick={handleCancel}
+                            >
                                 Cancel
                             </button>
                             <button
@@ -497,7 +501,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                         />
                     </div>
                 ) : (
-                    <div className="flex left flex-wrap fs-13 dc__gap-8 w-100">
+                    <div className="flex left flex-wrap fs-13 dc__gap-8 w-100" data-testid="job-description-text">
                         {newDescription ? newDescription : <span className="cn-7 fs-13">No description</span>}
                     </div>
                 )}
