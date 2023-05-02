@@ -235,7 +235,7 @@ export default function CICreateDockerfileOption({
     const renderLanguageOptions = (editorData: TemplateDataType) => {
         return (
             <div className="flex">
-                <span className="fs-13 fw-4 lh-20 cn-7 mr-8">Repo to place Dockerfile</span>
+                <span className="fs-13 fw-4 lh-20 cn-7 ">Repo to place Dockerfile</span>
                 {configOverrideView && !allowOverride ? (
                     <div className="flex left">
                         {selectedMaterial?.icon && (
