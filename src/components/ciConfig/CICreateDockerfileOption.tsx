@@ -7,7 +7,6 @@ import { copyToClipboard } from '../common'
 import { showError, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import {
     DropdownIndicator,
-    getCommonSelectStyle,
     Option,
     OptionWithIcon,
     ValueContainerWithIcon,
