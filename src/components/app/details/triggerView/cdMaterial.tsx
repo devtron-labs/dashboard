@@ -730,7 +730,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 Not finding the image you’re looking for? Images will be available here for deployment after
                 approval.&nbsp;
                 <span className="cb-5 cursor" onClick={this.viewImagesForApproval}>
-                    View all images
+                    View images for approval
                 </span>
             </span>
         )

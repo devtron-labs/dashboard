@@ -421,7 +421,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node.inputMaterialList = data.materials
                             node.approvalUsers = data.approvalUsers
-                            node.userApprovalConfig = data.userApprovalConfig
+                            node.userApprovalConfig =
+                                data.userApprovalConfig ?? workflow.approvalConfiguredIdsMap[cdNodeId]
                             node.requestedUserId = data.requestedUserId
                         }
                         return node
@@ -467,10 +468,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
+                            node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
+                            node.requestedUserId = response.result.requestedUserId
+
                             if (!offset && !size) {
-                                node.rollbackMaterialList = response.result
+                                node.rollbackMaterialList = response.result.materials
                             } else {
-                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result)
+                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result.materials)
                             }
                         }
                         return node

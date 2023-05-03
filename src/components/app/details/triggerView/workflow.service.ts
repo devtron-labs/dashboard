@@ -157,7 +157,6 @@ export function processWorkflow(
         ?.sort((a, b) => a.id - b.id)
         .forEach((workflow) => {
             const wf = toWorkflowType(workflow, ciResponse)
-            workflows.push(wf)
             const _wfTree = workflow.tree ?? []
             _wfTree
                 .sort((a, b) => a.id - b.id)
@@ -192,8 +191,18 @@ export function processWorkflow(
 
                         const cdNode = cdPipelineToNode(cdPipeline, dimensions, branch.parentId)
                         wf.nodes.push(cdNode)
+
+                        if (cdPipeline.userApprovalConfig?.requiredCount > 0) {
+                            wf.approvalConfiguredIdsMap = {
+                                ...wf.approvalConfiguredIdsMap,
+                                [cdPipeline.id]: cdPipeline.userApprovalConfig,
+                            }
+                        }
                     }
                 })
+            
+            // set updated wf to workflows
+            workflows.push(wf)
         })
 
     addDownstreams(workflows)
@@ -394,6 +403,7 @@ function toWorkflowType(workflow: Workflow, ciResponse: CiPipelineResult): Workf
         height: 0,
         width: 0,
         dag: [],
+        approvalConfiguredIdsMap: {},
     } as WorkflowType
 }
 

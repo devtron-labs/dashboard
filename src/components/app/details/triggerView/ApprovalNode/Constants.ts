@@ -97,7 +97,7 @@ export const EMPTY_VIEW_TEXTS = {
             `Deployment to ${envName} is set to Automatic. Deployment of an image is initiated as soon as it receives the required number of approvals.`,
         cdSubtitle: 'Images will be available here for deployment after approval.',
         rollbackSubtitle: 'Approved images which have been previously deployed will be available here for rollback.',
-        label: 'View all images',
+        label: 'View images for approval',
     },
     noApprovedImages: {
         title: 'No approved images',
