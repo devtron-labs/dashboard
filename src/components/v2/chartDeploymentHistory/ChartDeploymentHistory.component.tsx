@@ -31,7 +31,7 @@ import {
     RollbackReleaseRequest,
 } from './chartDeploymentHistory.service'
 import IndexStore from '../appDetails/index.store'
-import { DEPLOYMENT_HISTORY_TAB, DEPLOYMENT_HISTORY_TABS, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
+import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
 import DeploymentDetailSteps from '../../app/details/cdDetails/DeploymentDetailSteps'
 import { DeploymentAppType } from '../values/chartValuesDiff/ChartValuesView.type'
 
@@ -659,7 +659,7 @@ function ChartDeploymentHistory({
 
     return (
         <>
-            {isLoading || !installedAppInfo ? (
+            {isLoading ? (
                 <div className="dc__loading-wrapper">
                     <Progressing pageLoader />
                 </div>

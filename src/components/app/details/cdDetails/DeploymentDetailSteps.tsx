@@ -15,7 +15,7 @@ import { DeploymentStatusDetailsBreakdownDataType } from '../appDetails/appDetai
 export default function DeploymentDetailSteps({
     deploymentStatus,
     deploymentAppType,
-    isHelm,
+    isHelm = false,
     installedAppVersionHistoryId,
 }: DeploymentDetailStepsType) {
     const history = useHistory()
