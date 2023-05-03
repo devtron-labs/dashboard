@@ -109,14 +109,20 @@ export default function ApprovalMaterialModal({
     const getApproversList = (approvers: string[], isAPIToken?: boolean) => {
         return (
             <ol className="pt-8 pl-12 pr-12 dc__list-style-none">
-                {approvers.sort().map((_approver) => {
-                    return (
-                        <li key={_approver} className="flex left mb-8 fs-13 fw-4">
-                            {isAPIToken ? <APITokenIcon className="icon-dim-20 mr-8" /> : getAlphabetIcon(_approver)}
-                            {_approver}
-                        </li>
-                    )
-                })}
+                {approvers
+                    .sort((a, b) => a.localeCompare(b))
+                    .map((_approver) => {
+                        return (
+                            <li key={_approver} className="flex left mb-8 fs-13 fw-4">
+                                {isAPIToken ? (
+                                    <APITokenIcon className="icon-dim-20 mr-8" />
+                                ) : (
+                                    getAlphabetIcon(_approver)
+                                )}
+                                {_approver}
+                            </li>
+                        )
+                    })}
             </ol>
         )
     }
