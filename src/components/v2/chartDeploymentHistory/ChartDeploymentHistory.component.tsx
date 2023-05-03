@@ -9,7 +9,7 @@ import {
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
-import { Moment12HourFormat, URLS } from '../../../config'
+import { DEPLOYMENT_STATUS, Moment12HourFormat, URLS } from '../../../config'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -99,15 +99,15 @@ function ChartDeploymentHistory({
                     ) || []
                 setDeploymentHistoryArr(_deploymentHistoryArr)
                 setInstalledAppInfo(deploymentHistoryResponse.result?.installedAppInfo)
-                    setSelectedDeploymentTabName((prevValue) => {
-                        if (!prevValue) {
-                            return deploymentHistoryResponse.result?.installedAppInfo?.deploymentType ===
+                setSelectedDeploymentTabName((prevValue) => {
+                    if (!prevValue) {
+                        return deploymentHistoryResponse.result?.installedAppInfo?.deploymentType ===
                             DeploymentAppType.GitOps
-                                ? DEPLOYMENT_HISTORY_TAB.STEPS
-                                : DEPLOYMENT_HISTORY_TAB.SOURCE
-                        }
-                        return prevValue
-                    })
+                            ? DEPLOYMENT_HISTORY_TAB.STEPS
+                            : DEPLOYMENT_HISTORY_TAB.SOURCE
+                    }
+                    return prevValue
+                })
 
                 // init deployment manifest details map
                 const _deploymentManifestDetails = new Map<number, DeploymentManifestDetail>()
@@ -136,7 +136,11 @@ function ChartDeploymentHistory({
                         setRollbackDialogTitle(`Rollback ${appDetails.appName}`)
                     }
                 }
-                if (_deploymentHistoryArr[0]?.status !== 'Succeeded') {
+                if (
+                    selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.STEPS &&
+                    (_deploymentHistoryArr[0]?.status.toLowerCase() !== DEPLOYMENT_STATUS.SUCCEEDED ||
+                        _deploymentHistoryArr[0]?.status.toLowerCase() !== DEPLOYMENT_STATUS.FAILED)
+                ) {
                     initTimer = setTimeout(() => {
                         getDeploymentHistoryData()
                     }, 10000)
