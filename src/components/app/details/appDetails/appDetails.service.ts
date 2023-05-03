@@ -21,11 +21,11 @@ export function getDeploymentStatusDetail(
     appId: string,
     envId: string,
     triggerId?: string,
-    isGitops?: boolean,
+    isHelmApps?: boolean,
     installedAppVersionHistoryId?: number
 ): Promise<DeploymentStatusDetailsResponse> {
     let appendUrl
-    if (isGitops) {
+    if (isHelmApps) {
         appendUrl = Routes.HELM_DEPLOYMENT_STATUS_TIMELINE_INSTALLED_APP
     } else {
       appendUrl = Routes.DEPLOYMENT_STATUS

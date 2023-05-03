@@ -64,7 +64,7 @@ function ChartDeploymentHistory({
     const history = useHistory()
     const { url } = useRouteMatch()
     const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>()
-
+    let initTimer = null
     // Checking if deployment app type is argocd only then show steps tab
     const deploymentTabs =
         installedAppInfo?.deploymentType === DeploymentAppType.GitOps
@@ -81,14 +81,16 @@ function ChartDeploymentHistory({
               ]
     // component load
     useEffect(() => {
-        getDeploymentHistoryData()
+      getDeploymentHistoryData()
+
         return (): void => {
           if (initTimer) {
               clearTimeout(initTimer)
           }
       }
+
     }, [])
-    let initTimer = null
+
 
     const getDeploymentHistoryData = () => {
         getDeploymentHistory(appId, isExternal)
@@ -419,7 +421,7 @@ function ChartDeploymentHistory({
         return (
             <div className={`trigger-outputs-container ${selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE ? 'pt-20' : ''}`}>
               {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.STEPS &&
-               <DeploymentDetailSteps isGitops={installedAppInfo?.deploymentType === DeploymentAppType.GitOps} installedAppVersionHistoryId={deployment.version} />}
+               <DeploymentDetailSteps isHelmApps={true} isGitops={installedAppInfo?.deploymentType === DeploymentAppType.GitOps}  installedAppVersionHistoryId={deployment.version} />}
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE && (
                     <div
                         className="ml-20 w-100 p-16 bcn-0 br-4 en-2 bw-1 pb-12 mb-12"
