@@ -452,7 +452,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
             const _workflows = [...filteredWorkflows].map((wf) => {
                 wf.nodes.map((node) => {
                     if (node.type === 'CI' && +node.id == +ciNodeId) {
-                        const selectedCIPipeline = filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
+                        const selectedCIPipeline = filteredCIPipelines.get(wf.appId)?.find((_ci) => _ci.id === +ciNodeId)
                         if (selectedCIPipeline?.ciMaterial) {
                             for (const mat of selectedCIPipeline.ciMaterial) {
                                 if (mat.isRegex && mat.gitMaterialId === response.result[0].gitMaterialId) {
@@ -549,6 +549,8 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
             const _workflows = [...filteredWorkflows].map((workflow) => {
                 workflow.nodes.map((node) => {
                     if (node.type === 'CI' && +node.id == +ciNodeId) {
+                      _workflowId = workflow.id
+                      _appID = workflow.appId
                         const selectedCIPipeline = filteredCIPipelines.get(_appID)?.find((_ci) => _ci.id === +ciNodeId)
                         if (selectedCIPipeline?.ciMaterial) {
                             for (const mat of selectedCIPipeline.ciMaterial) {
@@ -561,8 +563,6 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                                 }
                             }
                         }
-                        _workflowId = workflow.id
-                        _appID = workflow.appId
                         if (preserveMaterialSelection) {
                             const selectMaterial = node.inputMaterialList.find((mat) => mat.isSelected)
                             node.inputMaterialList = response.result.map((material) => {

@@ -219,7 +219,8 @@ export default function GitInfoMaterial({
         toggleWebhookModal(selectedMaterial.id)
     }
 
-    const toggleExclude = (): void => {
+    const toggleExclude = (e): void => {
+        fromBulkCITrigger && stopPropagation(e)
         const _showAllCommits = !showAllCommits
         setShowAllCommits(_showAllCommits)
         triggerViewContext.getFilteredMaterial(pipelineId, selectedMaterial.gitMaterialId, _showAllCommits)
