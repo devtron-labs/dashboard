@@ -204,7 +204,7 @@ export default function CIDockerFileConfig({
                 documentationLinkText="View Documentation"
                 additionalContent={getBuildContextAdditionalContent()}
             >
-                <div className="icon-dim-16 fcn-9 ml-8 cursor">
+                <div className="icon-dim-16 fcn-5 ml-8 cursor">
                     <Question />
                 </div>
             </TippyCustomized>
