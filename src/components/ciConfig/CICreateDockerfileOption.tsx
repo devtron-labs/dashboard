@@ -240,12 +240,12 @@ export default function CICreateDockerfileOption({
                     <div className="flex left">
                         {selectedMaterial?.icon && (
                             <img
-                                src={selectedMaterial.icon}
-                                alt={selectedMaterial.label}
+                                src={currentMaterial.icon}
+                                alt={currentMaterial.label}
                                 className="icon-dim-20 mr-8"
                             />
                         )}
-                        <span className="fs-13 fw-6 lh-20 cn-9">{selectedMaterial?.name}</span>
+                        <span className="fs-13 fw-6 lh-20 cn-9">{currentMaterial?.name}</span>
                     </div>
                 ) : (
                     <ReactSelect
