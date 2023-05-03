@@ -81,7 +81,11 @@ export default function HeaderWithCreateButton({ headerName, isSuperAdmin }) {
                     </div>
                 </div>
                 {isSuperAdmin && (
-                    <div className="create-modal-child cursor" onClick={openCreateJobModel}>
+                    <div
+                        className="create-modal-child cursor"
+                        onClick={openCreateJobModel}
+                        data-testid="create-job-button-in-dropdown"
+                    >
                         <JobIcon className="icon-dim-20 scn-7" />
                         <div className="ml-8">
                             <strong>Job</strong>

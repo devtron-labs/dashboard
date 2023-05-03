@@ -251,7 +251,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     const renderClusterList = (): JSX.Element => {
         if (minLoader) {
             return (
-                <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 116px)' }}>
+                <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 112px)' }}>
                     <Progressing pageLoader />
                 </div>
             )
@@ -262,7 +262,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                 <div
                     data-testid="cluster-list-container"
                     className="dc__overflow-scroll"
-                    style={{ height: `calc(${showTerminalModal ? '50vh - 125px)' : '100vh - 116px)'}` }}
+                    style={{ height: `calc(${showTerminalModal ? '50vh - 112px)' : '100vh - 112px)'}` }}
                 >
                     <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
                         <div>Cluster</div>
@@ -282,7 +282,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     return (
         <div>
             <PageHeader headerName="Clusters" />
-            <div className={`cluster-list bcn-0 ${noResults ? 'no-result-container' : ''}`}>
+            <div className={`cluster-list-main-container bcn-0 ${noResults ? 'no-result-container' : ''}`}>
                 <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
                     {renderSearch()}
                     <div className="fs-13">

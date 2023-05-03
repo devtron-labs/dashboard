@@ -187,7 +187,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             return <ErrorScreenManager code={this.state.code} />
         } else {
             return (
-                <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+                <section className="global-configuration__component flex-1">
                     {this.renderPageHeader()}
                     {this.renderAddProject()}
                     {this.state.projects.map((project, index) => {
