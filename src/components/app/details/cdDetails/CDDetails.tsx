@@ -426,6 +426,7 @@ const HistoryLogs: React.FC<{
                                 <DeploymentDetailSteps
                                     deploymentStatus={triggerDetails.status}
                                     deploymentAppType={deploymentAppType}
+                                    isGitops={deploymentAppType === DeploymentAppType.helm}
                                 />
                             </Route>
                         )}
