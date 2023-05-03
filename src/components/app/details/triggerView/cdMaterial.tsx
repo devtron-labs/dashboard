@@ -395,7 +395,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     getExpireRequestButton = (mat: CDMaterialType) => {
         return (
             <button
-                className="cta delete flex mt-4 ml-auto mr-16 mb-16"
+                className="cta delete flex h-32 mt-4 ml-auto mr-16 mb-16"
                 data-id={mat.id}
                 data-request-id={mat.userApprovalMetadata?.approvalRequestId}
                 onClick={this.state.requestInProgress ? noop : this.expireRequest}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import {
-    EmptyState,
+    GenericEmptyState,
     Progressing,
     stopPropagation,
     TippyCustomized,
@@ -106,6 +106,21 @@ export default function ApprovalMaterialModal({
         )
     }
 
+    const getApproversList = (approvers: any[], isAPIToken?: boolean) => {
+        return (
+            <ol className="pt-8 pl-12 pr-12 dc__list-style-none">
+                {approvers.sort().map((_approver) => {
+                    return (
+                        <li key={_approver} className="flex left mb-8 fs-13 fw-4">
+                            {isAPIToken ? <APITokenIcon className="icon-dim-20 mr-8" /> : getAlphabetIcon(_approver)}
+                            {_approver}
+                        </li>
+                    )
+                })}
+            </ol>
+        )
+    }
+
     const getApprovalUsersTippyContent = () => {
         const approversPresent = node.approvalUsers?.length > 0
         const users = [],
@@ -128,29 +143,11 @@ export default function ApprovalMaterialModal({
                         <>
                             {getApproversInfoMsg()}
                             <div className="fs-13 fw-6 cn-9 pt-12 pl-12">{APPROVAL_MODAL_TEXT.approverGroups.user}</div>
-                            <ol className="pt-8 pl-12 pr-12 dc__list-style-none">
-                                {users.sort().map((_approver) => {
-                                    return (
-                                        <li key={_approver} className="flex left mb-8 fs-13 fw-4">
-                                            {getAlphabetIcon(_approver)}
-                                            {_approver}
-                                        </li>
-                                    )
-                                })}
-                            </ol>
+                            {getApproversList(users)}
                             <div className="fs-13 fw-6 cn-9 mt-12 pl-12">
                                 {APPROVAL_MODAL_TEXT.approverGroups.token}
                             </div>
-                            <ol className="pt-8 pl-12 pr-12 dc__list-style-none">
-                                {apiTokens.sort().map((_approver) => {
-                                    return (
-                                        <li key={_approver} className="flex left mb-8 fs-13 fw-4">
-                                            <APITokenIcon className="icon-dim-20 mr-8" />
-                                            {_approver}
-                                        </li>
-                                    )
-                                })}
-                            </ol>
+                            {getApproversList(apiTokens, true)}
                         </>
                     ) : (
                         <div className="fs-13 fw-4 cn-7 lh-20">
@@ -210,40 +207,34 @@ export default function ApprovalMaterialModal({
         )
     }
 
+    const renderViewImagesButton = () => {
+        return (
+            <button className="cta ghosted flex h-36" data-selected-tab="0" onClick={handleTabSelected}>
+                {EMPTY_VIEW_TEXTS.noPendingImages.label}
+            </button>
+        )
+    }
+
     const renderEmpty = () => {
         if (selectedTabIndex === 0) {
             return (
-                <EmptyState>
-                    <EmptyState.Image>
-                        <img src={noartifact} alt="" />
-                    </EmptyState.Image>
-                    <EmptyState.Title>
-                        <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
-                            {EMPTY_VIEW_TEXTS.noImage.title}
-                        </h4>
-                    </EmptyState.Title>
-                    <EmptyState.Subtitle>{EMPTY_VIEW_TEXTS.noImage.subTitle}</EmptyState.Subtitle>
-                </EmptyState>
+                <GenericEmptyState
+                    image={noartifact}
+                    title={EMPTY_VIEW_TEXTS.noImage.title}
+                    subTitle={EMPTY_VIEW_TEXTS.noImage.subTitle}
+                    isButtonAvailable={false}
+                />
             )
         }
 
         return (
-            <EmptyState>
-                <EmptyState.Image>
-                    <img src={norequests} alt="" />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
-                        {EMPTY_VIEW_TEXTS.noPendingImages.title}
-                    </h4>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>{EMPTY_VIEW_TEXTS.noPendingImages.subTitle}</EmptyState.Subtitle>
-                <EmptyState.Button>
-                    <button className="cta ghosted flex h-36" data-selected-tab="0" onClick={handleTabSelected}>
-                        {EMPTY_VIEW_TEXTS.noPendingImages.label}
-                    </button>
-                </EmptyState.Button>
-            </EmptyState>
+            <GenericEmptyState
+                image={norequests}
+                title={EMPTY_VIEW_TEXTS.noPendingImages.title}
+                subTitle={EMPTY_VIEW_TEXTS.noPendingImages.subTitle}
+                isButtonAvailable={true}
+                renderButton={renderViewImagesButton}
+            />
         )
     }
 
