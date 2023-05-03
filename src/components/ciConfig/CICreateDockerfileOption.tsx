@@ -355,7 +355,9 @@ export default function CICreateDockerfileOption({
             })
         }
     }
-
+    const toggleCollapse = (e) => {
+        setIsCollapsed(!isCollapsed)
+    }
     const editorData =
         templateData && selectedLanguage ? templateData[getTemplateKey(selectedLanguage, selectedFramework)] : null
     return (
@@ -404,20 +406,22 @@ export default function CICreateDockerfileOption({
                     </CodeEditor.Header>
                 </CodeEditor>
             </div>
-            <div className="flex left row ml-0 build-context-label mb-6">
-                <span>
-                    <Dropdown
-                        onClick={() => {
-                            setIsCollapsed(!isCollapsed)
-                        }}
-                        className="icon-dim-30 rotate "
-                        style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }}
-                    />
-                    Set Build context
-                </span>
-                {!configOverrideView || allowOverride ? <div className="flex row ml-0">{renderInfoCard()}</div> : null}
-            </div>
-            {isCollapsed && (
+            {(!configOverrideView || allowOverride) && (
+                <div className="flex left row ml-0 build-context-label fs-13 mb-6">
+                    <span className="flex">
+                        <Dropdown
+                            onClick={toggleCollapse}
+                            className="icon-dim-26 rotate "
+                            style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }}
+                        />
+                        Set Build context
+                    </span>
+                    {!configOverrideView || allowOverride ? (
+                        <div className="flex row ml-0">{renderInfoCard()}</div>
+                    ) : null}
+                </div>
+            )}
+            {(!configOverrideView || allowOverride ? isCollapsed : true) && (
                 <div className="mb-4 form-row__docker">
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                         <label className="form__label">{`${

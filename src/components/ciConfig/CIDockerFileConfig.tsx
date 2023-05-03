@@ -185,6 +185,10 @@ export default function CIDockerFileConfig({
         )
     }
 
+    const toggleCollapse = (e) => {
+        setIsCollapsed(!isCollapsed)
+    }
+
     const renderInfoCard = (): JSX.Element => {
         return (
             <TippyCustomized
@@ -192,7 +196,7 @@ export default function CIDockerFileConfig({
                 className="w-300 h-100 fcv-5"
                 placement="right"
                 Icon={QuestionFilled}
-                heading={'Docker build context'}
+                heading="Docker build context"
                 infoText="Specify the set of files to be built by referring to a specific subdirectory, relative to the root of your repository."
                 showCloseButton={true}
                 trigger="click"
@@ -371,28 +375,28 @@ export default function CIDockerFileConfig({
                     </div>
                 </div>
 
-                <div className="flex left row ml-0 build-context-label mb-6">
-                    <span>
-                        <Dropdown
-                            onClick={() => {
-                                setIsCollapsed(!isCollapsed)
-                            }}
-                            className="icon-dim-30 rotate "
-                            style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }}
-                        />
-                        Set Build context
-                    </span>
-                    {!configOverrideView || allowOverride ? (
-                        <div className="flex row ml-0">{renderInfoCard()}</div>
-                    ) : null}
-                </div>
+                {(!configOverrideView || allowOverride) && (
+                    <div className="flex left row ml-0 build-context-label fs-13 mb-6">
+                        <span className="flex">
+                            <Dropdown
+                                onClick={toggleCollapse}
+                                className="icon-dim-26 rotate "
+                                style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }}
+                            />
+                            Set Build context
+                        </span>
+                        {!configOverrideView || allowOverride ? (
+                            <div className="flex row ml-0">{renderInfoCard()}</div>
+                        ) : null}
+                    </div>
+                )}
 
-                {isCollapsed && (
+                {(!configOverrideView || allowOverride ? isCollapsed : true) && (
                     <div className="mb-4 form-row__docker">
                         <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                             <label className="form__label">{`${
-                                configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
-                            }  for BuildContext`}</label>
+                                configOverrideView && !allowOverride ? 'Repository' : 'Select repo'
+                            }  containing build context`}</label>
                             {configOverrideView && !allowOverride ? (
                                 <div className="flex left">
                                     {currentBuildContextGitMaterial?.url &&
@@ -469,7 +473,7 @@ export default function CIDockerFileConfig({
                                                 : formState.buildContext.value
                                         }
                                         onChange={handleOnChangeConfig}
-                                        autoComplete={'off'}
+                                        autoComplete="off"
                                         autoFocus={!configOverrideView}
                                         disabled={configOverrideView && !allowOverride}
                                     />
