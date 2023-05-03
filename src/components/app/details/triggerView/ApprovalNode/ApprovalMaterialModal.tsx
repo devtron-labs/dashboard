@@ -106,7 +106,7 @@ export default function ApprovalMaterialModal({
         )
     }
 
-    const getApproversList = (approvers: any[], isAPIToken?: boolean) => {
+    const getApproversList = (approvers: string[], isAPIToken?: boolean) => {
         return (
             <ol className="pt-8 pl-12 pr-12 dc__list-style-none">
                 {approvers.sort().map((_approver) => {
@@ -123,8 +123,8 @@ export default function ApprovalMaterialModal({
 
     const getApprovalUsersTippyContent = () => {
         const approversPresent = node.approvalUsers?.length > 0
-        const users = [],
-            apiTokens = []
+        const users: string[] = [],
+            apiTokens: string[] = []
 
         if (approversPresent) {
             for (const approver of node.approvalUsers) {

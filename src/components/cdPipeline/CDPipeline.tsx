@@ -58,13 +58,8 @@ import error from '../../assets/icons/misc/errorInfo.svg'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import config from './sampleConfig.json'
 import ReactSelect from 'react-select'
-import { styles, DropdownIndicator, Option, NUMBER_OF_APPROVALS } from './cdpipeline.util'
-import {
-    EnvFormatOptions,
-    formatHighlightedTextDescription,
-    formatHighlightedText,
-    GroupHeading,
-} from '../v2/common/ReactSelect.utils'
+import { styles, DropdownIndicator, Option } from './cdpipeline.util'
+import { EnvFormatOptions, formatHighlightedTextDescription, GroupHeading } from '../v2/common/ReactSelect.utils'
 import './cdPipeline.scss'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionalWrap, createClusterEnvGroup, getEmptyArrayOfLength } from '../common/helpers/Helpers'
@@ -1322,7 +1317,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 >
                     {getEmptyArrayOfLength(6).map((e, idx) => {
                         return (
-                            <CommonRadioGroup.Radio dataTestId={`number-of-approvers-${1 + idx}`} value={`${idx + 1}`}>
+                            <CommonRadioGroup.Radio
+                                key={`number-of-approvers-${idx}`}
+                                dataTestId={`number-of-approvers-${1 + idx}`}
+                                value={`${idx + 1}`}
+                            >
                                 {idx + 1}
                             </CommonRadioGroup.Radio>
                         )

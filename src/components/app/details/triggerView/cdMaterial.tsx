@@ -308,21 +308,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
     }
 
-    async handleImageSelection(index: number, selectedMaterial: CDMaterialType) {
-        this.props.selectImage(
-            index,
-            this.props.materialType,
-            this.props.isFromBulkCD ? { id: this.props.pipelineId, type: this.props.stageType } : null,
-        )
-        if (
-            (this.props.materialType === 'none' || this.state.isSelectImageTrigger) &&
-            this.state.selectedMaterial?.image !== selectedMaterial.image
-        ) {
-            this.setState({
-                selectedMaterial,
-            })
-        }
-
+    checkForConfigDiff = async (selectedMaterial: CDMaterialType) => {
         if (this.state.isRollbackTrigger && this.state.selectedMaterial?.wfrId !== selectedMaterial.wfrId) {
             const isSpecificTriggerConfig =
                 this.state.selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
@@ -366,6 +352,25 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 })
             }
         }
+    }
+
+    handleImageSelection(index: number, selectedMaterial: CDMaterialType) {
+        this.props.selectImage(
+            index,
+            this.props.materialType,
+            this.props.isFromBulkCD ? { id: this.props.pipelineId, type: this.props.stageType } : null,
+        )
+        if (
+            (this.props.materialType === 'none' || this.state.isSelectImageTrigger) &&
+            this.state.selectedMaterial?.image !== selectedMaterial.image
+        ) {
+            this.setState({
+                selectedMaterial,
+            })
+        }
+
+        // Check for config diff
+        this.checkForConfigDiff(selectedMaterial)
     }
 
     expireRequest = (e: any) => {
@@ -448,6 +453,62 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
+    renderMaterialCTA = (
+        mat: CDMaterialType,
+        isApprovalRequester: boolean,
+        isImageApprover: boolean,
+        disableSelection: boolean,
+    ) => {
+        if (mat.vulnerable) {
+            return <span className="material-history__scan-error">Security Issues Found</span>
+        } else if (disableSelection || isImageApprover) {
+            return (
+                <Tippy
+                    className="default-tt w-200"
+                    arrow={false}
+                    placement="top"
+                    content={
+                        !mat.latest && isImageApprover
+                            ? 'This image was approved by you. An image cannot be deployed by its approver.'
+                            : 'An image can be deployed only once after it has been approved. This image would need to be approved again for it to be eligible for deployment.'
+                    }
+                >
+                    <span className="dc__opacity-0_5">Select</span>
+                </Tippy>
+            )
+        } else if (mat.isSelected) {
+            return (
+                <Check
+                    className={`${
+                        this.props.materialType !== 'none' &&
+                        isApprovalRequester &&
+                        !isImageApprover &&
+                        !disableSelection
+                            ? ''
+                            : 'dc__align-right'
+                    } icon-dim-24 cursor`}
+                />
+            )
+        } else {
+            const cursorClass = mat.isSelected ? 'cursor-default' : 'cursor'
+            const selectClassName = mat.vulnerable ? 'cursor-not-allowed' : cursorClass
+
+            return (
+                <span
+                    className={selectClassName}
+                    onClick={(event) => {
+                        event.stopPropagation()
+                        if (!disableSelection && !isImageApprover && !mat.vulnerable) {
+                            this.handleImageSelection(mat.index, mat)
+                        }
+                    }}
+                >
+                    Select
+                </span>
+            )
+        }
+    }
+
     renderMaterialInfo(
         mat: CDMaterialType,
         isApprovalConfigured: boolean,
@@ -527,47 +588,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                                     </span>
                                 </TippyCustomized>
                             )}
-                        {mat.vulnerable ? (
-                            <span className="material-history__scan-error">Security Issues Found</span>
-                        ) : mat.isSelected ? (
-                            <Check
-                                className={`${
-                                    this.props.materialType !== 'none' &&
-                                    isApprovalRequester &&
-                                    !isImageApprover &&
-                                    !disableSelection
-                                        ? ''
-                                        : 'dc__align-right'
-                                } icon-dim-24 cursor`}
-                            />
-                        ) : disableSelection || isImageApprover ? (
-                            <Tippy
-                                className="default-tt w-200"
-                                arrow={false}
-                                placement="top"
-                                content={
-                                    !mat.latest && isImageApprover
-                                        ? 'This image was approved by you. An image cannot be deployed by its approver.'
-                                        : 'An image can be deployed only once after it has been approved. This image would need to be approved again for it to be eligible for deployment.'
-                                }
-                            >
-                                <span className="dc__opacity-0_5">Select</span>
-                            </Tippy>
-                        ) : (
-                            <span
-                                className={`${
-                                    mat.vulnerable ? 'cursor-not-allowed' : mat.isSelected ? 'cursor-default' : 'cursor'
-                                }`}
-                                onClick={(event) => {
-                                    event.stopPropagation()
-                                    if (!disableSelection && !isImageApprover && !mat.vulnerable) {
-                                        this.handleImageSelection(mat.index, mat)
-                                    }
-                                }}
-                            >
-                                Select
-                            </span>
-                        )}
+                        {this.renderMaterialCTA(mat, isApprovalRequester, isImageApprover, disableSelection)}
                     </div>
                 )}
             </>
@@ -588,20 +609,24 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         return isMaterialInfoAvailable
     }
 
+    getApprovedImageClass = (disableSelection: boolean, isApprovalConfigured: boolean) => {
+        const disabledClassPostfix = disableSelection ? '-disabled' : ''
+        return isApprovalConfigured ? `material-history__approved-image${disabledClassPostfix}` : ''
+    }
+
     renderMaterial = (materialList: CDMaterialType[], disableSelection: boolean, isApprovalConfigured: boolean) => {
         return materialList.map((mat) => {
             const isMaterialInfoAvailable = this.isMaterialInfoAvailable(mat.materialInfo)
             const borderBottom = !this.state.isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
-            const disabledClassPostfix = disableSelection ? '-disabled' : ''
-            const approvedImageClass = isApprovalConfigured
-                ? `material-history__approved-image${disabledClassPostfix}`
-                : ''
+            const approvedImageClass = this.getApprovedImageClass(disableSelection, isApprovalConfigured)
 
             return (
                 <div
                     key={`material-history-${mat.index}`}
                     className={`material-history material-history--cd ${
-                        mat.isSelected ? 'material-history-selected' : ''
+                        mat.isSelected && !disableSelection && !this.isImageApprover(mat.userApprovalMetadata)
+                            ? 'material-history-selected'
+                            : ''
                     }`}
                 >
                     {this.renderSequentialCDCardTitle(mat)}
@@ -711,7 +736,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    renderMaterialList = (isApprovalConfigured: boolean) => {
+    getConsumedAndAvailableMaterialList = (isApprovalConfigured: boolean) => {
         const consumedImage = []
         let materialList = []
 
@@ -747,6 +772,15 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 break
             }
         }
+
+        return {
+            consumedImage,
+            materialList,
+        }
+    }
+
+    renderMaterialList = (isApprovalConfigured: boolean) => {
+        const { consumedImage, materialList } = this.getConsumedAndAvailableMaterialList(isApprovalConfigured)
 
         return (
             <>
