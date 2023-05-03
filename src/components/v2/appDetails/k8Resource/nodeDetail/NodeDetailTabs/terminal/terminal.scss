@@ -13,21 +13,8 @@
 .terminal-view-wrapper {
     position: relative;
     min-height: 600px;
-    background: #0b0f22;
+    background: var(--terminal-bg);
     flex: 1;
-}
-
-.connection-status {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background: #0a0f22;
-}
-
-.terminal-container {
-    height: calc(100% - 30px);
-    width: auto;
-    overflow: hidden;
 }
 
 .terminal-strip {
@@ -42,7 +29,7 @@
     flex: 1;
     .terminal-component {
         overflow: hidden;
-        background-color: #0b0f22;
+        background-color: var(--terminal-bg);
         flex: 1;
     }
 }

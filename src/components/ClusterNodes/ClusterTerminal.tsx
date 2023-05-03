@@ -247,7 +247,7 @@ export default function ClusterTerminal({
         )
     }
 
-    const getClusterData = (url: string, terminalId: any, count: number) => {
+    const getClusterData = (url: string, terminalId: number, count: number) => {
         if (terminalId !== terminalAccessIdRef.current) return
         else if (
             clusterTimeOut &&
@@ -374,6 +374,7 @@ export default function ClusterTerminal({
                 await clusterTerminalDisconnect(terminalAccessIdRef.current)
             }
             socketDisconnecting()
+            terminalAccessIdRef.current = null
             toggleOptionChange()
             setUpdate(false)
         } catch (error) {
@@ -599,20 +600,20 @@ export default function ClusterTerminal({
                     {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                 </li>
                 {terminalAccessIdRef.current && connectTerminal && (
-                    <li className="tab-list__tab fs-12" onClick={selectEventsTab}>
-                        <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
-                            {SELECT_TITLE.POD_EVENTS}
-                        </div>
-                        {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
-                    </li>
-                )}
-                {terminalAccessIdRef.current && connectTerminal && (
-                    <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
-                        <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
-                            {SELECT_TITLE.POD_MANIFEST}
-                        </div>
-                        {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
-                    </li>
+                    <>
+                        <li className="tab-list__tab fs-12" onClick={selectEventsTab}>
+                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
+                                {SELECT_TITLE.POD_EVENTS}
+                            </div>
+                            {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
+                        </li>
+                        <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
+                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
+                                {SELECT_TITLE.POD_MANIFEST}
+                            </div>
+                            {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
+                        </li>
+                    </>
                 )}
             </ul>
         )
@@ -623,14 +624,14 @@ export default function ClusterTerminal({
             return (
                 <div className="pl-20 flex left h-24 pr-20 w-100 bcr-7 cn-0 connection-status-strip">
                     {TERMINAL_TEXT.CONNECTION_TIMEOUT}&nbsp;
-                    <u className="cursor" onClick={selectEventsTab}>
+                    <span className="cursor dc__underline" onClick={selectEventsTab}>
                         {TERMINAL_TEXT.CHECK_POD_EVENTS}
-                    </u>
+                    </span>
                     &nbsp;
                     {TERMINAL_TEXT.FOR_ERRORS}&nbsp;
-                    <u className="cursor" onClick={socketConnecting}>
+                    <span className="cursor dc__underline" onClick={socketConnecting}>
                         {TERMINAL_TEXT.RETRY_CONNECTION}
-                    </u>
+                    </span>
                     &nbsp;
                     {TERMINAL_TEXT.CASE_OF_ERROR}
                 </div>
@@ -639,9 +640,9 @@ export default function ClusterTerminal({
             return (
                 <div className="pl-20 pr-20 w-100 bcr-7 cn-0 connection-status-strip">
                     {TERMINAL_TEXT.POD_TERMINATED} {errorMessage.reason}&nbsp;
-                    <u className="cursor" onClick={reconnectTerminal}>
+                    <span className="cursor dc__underline" onClick={reconnectTerminal}>
                         {TERMINAL_TEXT.INITIATE_CONNECTION}
-                    </u>
+                    </span>
                 </div>
             )
         }

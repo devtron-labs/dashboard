@@ -1,12 +1,12 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import '@testing-library/jest-dom'
-import TerminalView from '../Terminal.component'
 import { SocketConnectionType } from '../../node.type'
 import * as data from '../../../../../../../../components/common/helpers/Helpers'
 import { mockUseHeightObserver, renderStrip } from '../__mocks__/terminalWrapper.mock'
 import { WebSocket, Server } from 'mock-socket'
 import { BrowserRouter } from 'react-router-dom'
+import TerminalView from '../Terminal'
 
 describe('TerminalView', () => {
     let mockServer

@@ -2,7 +2,7 @@ import React from 'react'
 import { useOnline } from '../../../../../../common'
 import { SocketConnectionType } from '../node.type'
 import { TERMINAL_TEXT } from './constants'
-import TerminalView from './Terminal.component'
+import TerminalView from './Terminal'
 import { ConnectionStripMessageType, TerminalWrapperProps } from './terminal.type'
 import terminalStripTypeData from './terminal.utils'
 
