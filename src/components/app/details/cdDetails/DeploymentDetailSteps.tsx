@@ -52,7 +52,7 @@ export default function DeploymentDetailSteps({
         if (deploymentAppType === DeploymentAppType.helm) {
             history.replace(`${url.replace('deployment-steps', 'source-code')}`)
         }
-        if (isGitops && deploymentStatus !== 'Aborted') {
+        if (deploymentStatus !== 'Aborted') {
             getDeploymentDetailStepsData()
         }
         return (): void => {
