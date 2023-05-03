@@ -441,7 +441,7 @@ export default function CIDockerFileConfig({
                         </div>
                         <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                             <label htmlFor="" className="form__label">
-                                Build Context Path (Relative )
+                                Build Context Path (Relative)
                             </label>
                             {configOverrideView && !allowOverride ? (
                                 <span className="fs-14 fw-4 lh-20 cn-9">

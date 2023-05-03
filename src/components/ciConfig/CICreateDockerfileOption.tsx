@@ -235,7 +235,7 @@ export default function CICreateDockerfileOption({
     const renderLanguageOptions = (editorData: TemplateDataType) => {
         return (
             <div className="flex">
-                <span className="fs-13 fw-4 lh-20 cn-7 ">Repo to place Dockerfile</span>
+                <span className={`fs-13 fw-4 lh-20 cn-7 ${configOverrideView && !allowOverride ? 'mr-8' : ''}`}>Repo to place Dockerfile</span>
                 {configOverrideView && !allowOverride ? (
                     <div className="flex left">
                         {selectedMaterial?.icon && (
@@ -364,7 +364,7 @@ export default function CICreateDockerfileOption({
         <>
             <div
                 className={`create-dockerfile-option dc__border br-4 dc__overflow-hidden ${
-                    configOverrideView ? '' : 'mb-16'
+                    configOverrideView ? 'mb-12' : 'mb-16'
                 }`}
             >
                 <CodeEditor
@@ -471,7 +471,7 @@ export default function CICreateDockerfileOption({
                     </div>
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                         <label htmlFor="" className="form__label">
-                            Build Context Path (Relative )
+                            Build Context Path (Relative)
                         </label>
                         {configOverrideView && !allowOverride ? (
                             <span className="fs-14 fw-4 lh-20 cn-9">
