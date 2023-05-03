@@ -212,7 +212,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 'Clusters' +
                 (this.props.serverMode === SERVER_MODE.EA_ONLY || window._env_.K8S_CLIENT ? '' : ' and Environments')
             return (
-                <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+                <section className="global-configuration__component flex-1">
                     <h2 className="form__title">{moduleBasedTitle}</h2>
                     <p className="form__subtitle">
                         Manage your organization’s {moduleBasedTitle.toLowerCase()}. &nbsp;
@@ -1101,7 +1101,7 @@ function Environment({
         <div>
             <div className="bcn-0">
                 <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12">
-                    <div className="fs-16 fw-6 lh-1-43 ml-20 title-padding">
+                    <div className="fs-16 fw-6 lh-1-43 ml-20">
                         {id ? 'Edit Environment' : 'Add Environment'}
                     </div>
                     <button type="button" className="dc__transparent flex icon-dim-24" onClick={hideClusterDrawer}>
