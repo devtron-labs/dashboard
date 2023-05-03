@@ -56,7 +56,7 @@ export const Routes = {
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/edit',
 
-    JOB_CI_DETAIL:'job/ci-pipeline/list',
+    JOB_CI_DETAIL: 'job/ci-pipeline/list',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
@@ -220,6 +220,7 @@ export const Routes = {
     APP_LIST_GROUP: 'app/list/group',
     GROUPS: 'groups',
     GROUP: 'group',
+    EDIT: 'edit',
 }
 
 export const ViewType = {
@@ -651,7 +652,7 @@ export const ModuleNameMap = {
 
 export const BUILD_STATUS = {
     NOT_TRIGGERED: 'not triggered',
-    NOT_DEPLOYED: 'not deployed'
+    NOT_DEPLOYED: 'not deployed',
 }
 
 export const EVENT_STREAM_EVENTS_MAP = {
@@ -794,8 +795,8 @@ export const SOURCE_NOT_CONFIGURED_MESSAGE =
     'Source is not configured for one or more git repositories. Please configure and try again.'
 
 export enum MANIFEST_KEY_FIELDS {
-    METADATA= 'metadata',
-    MANAGED_FIELDS= 'managedFields'
+    METADATA = 'metadata',
+    MANAGED_FIELDS = 'managedFields',
 }
 
 export enum KEY_VALUE {
@@ -806,5 +807,17 @@ export enum KEY_VALUE {
 export enum CONFIGURATION_TYPES {
     ENVIRONMENT = 'ENVIRONMENT',
     NAMESPACE = 'NAMESPACE',
-    DESCRIPTION = 'DESCRIPTION'
+    DESCRIPTION = 'DESCRIPTION',
+}
+
+export const ManifestMessaging = {
+    POD_NAME_EXIST_IN_NAMESPACE: 'Pod with provided name already exists in namespace',
+    POD_NAME: 'A pod named',
+    ALREADY_EXIST: 'already exists in',
+    NAMESPACE: 'namespace',
+    CONTINUE_TERMINATE_EXISTING_POD:
+        'Continuing will terminate the existing pod and create a new one with the provided manifest.',
+    CREATE_PIPELINE_USING_HELM: 'Are you sure you want to create this deployment pipeline using helm?',
+    CANCEL: 'Cancel',
+    TERMINATE_EXISTING_POD: 'Terminate existing pod',
 }

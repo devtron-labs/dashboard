@@ -24,8 +24,11 @@ import {
     ConnectionSwitchType,
     ClearTerminalType,
     EditManifestType,
+    DebugModeType,
 } from './terminal.type'
-import { EDIT_MODE_TYPE, MANIFEST_SELECTION_MESSAGE } from './constants'
+import { EDIT_MODE_TYPE, MANIFEST_SELECTION_MESSAGE, TERMINAL_WRAPPER_COMPONENT_TYPE } from './constants'
+import Toggle from '../../../../../../common/Toggle/Toggle'
+import { CLUSTER_TERMINAL_MESSAGING } from '../../../../../../ClusterNodes/constants'
 
 const creatableSelectWrapper = (selectData: SelectWrapperType) => {
     if (selectData.hideTerminalStripComponent) return null
@@ -191,6 +194,37 @@ const clearTerminal = (clearProps: ClearTerminalType) => {
     )
 }
 
+const debugModeToggleButton = (selectData: DebugModeType) => {
+    if (selectData.hideTerminalStripComponent) return null
+    return (
+        <>
+            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+            {selectData.showInfoTippy && (
+                <TippyCustomized
+                    theme={TippyTheme.white}
+                    heading="Debug mode"
+                    placement="top"
+                    interactive={true}
+                    trigger="click"
+                    className="w-300"
+                    Icon={Help}
+                    showCloseButton={true}
+                    iconClass="icon-dim-20 fcv-5"
+                    additionalContent={
+                        <div className="p-12 w-300 fs-13 fw-4">{CLUSTER_TERMINAL_MESSAGING.DEBUG_MODE_TEXT}</div>
+                    }
+                >
+                    <HelpIcon className="icon-dim-16 mr-8 cursor" />
+                </TippyCustomized>
+            )}
+            <span>Debug Mode</span>
+            <span className="toggle-icon-dim ml-8">
+                <Toggle onSelect={selectData.onToggle} selected={selectData.isEnabled} />
+            </span>
+        </>
+    )
+}
+
 const manifestEditButtons = ({
     hideTerminalStripComponent,
     buttonSelectionState,
@@ -218,40 +252,41 @@ const manifestEditButtons = ({
 
     const renderButtons = () => {
         const buttonConfig = {
-          edit: {
-            icon: <Pencil className="icon-dim-16 mr-6" />,
-            message: MANIFEST_SELECTION_MESSAGE.REVIEW_CHANGES,
-            onClick: selectReviewMode
-          },
-          review: {
-            icon: <Check className="icon-dim-16 mr-6" />,
-            message: MANIFEST_SELECTION_MESSAGE.APPLY_CHANGES,
-            onClick: applyChanges
-          },
-          noEdit: {
-            icon: <Edit className="icon-dim-16 mr-6" />,
-            message: MANIFEST_SELECTION_MESSAGE.EDIT_MANIFEST,
-            onClick: selectEditMode
-          }
-        };
-      
-        const config = buttonConfig[buttonSelectionState] || buttonConfig.noEdit;
-      
+            edit: {
+                icon: <Pencil className="icon-dim-16 mr-6" />,
+                message: MANIFEST_SELECTION_MESSAGE.REVIEW_CHANGES,
+                onClick: selectReviewMode,
+            },
+            review: {
+                icon: <Check className="icon-dim-16 mr-6" />,
+                message: MANIFEST_SELECTION_MESSAGE.APPLY_CHANGES,
+                onClick: applyChanges,
+            },
+            noEdit: {
+                icon: <Edit className="icon-dim-16 mr-6" />,
+                message: MANIFEST_SELECTION_MESSAGE.EDIT_MANIFEST,
+                onClick: selectEditMode,
+            },
+        }
+
+        const config = buttonConfig[buttonSelectionState] || buttonConfig.noEdit
+
         return (
-          <span className="flex cb-5 ml-4 cursor fw-6 fs-12 scb-5 left" onClick={config.onClick}>
-            {config.icon}
-            {config.message}
-          </span>
-        );
-      }
-      
+            <span className="flex cb-5 ml-4 cursor fw-6 fs-12 scb-5 left" onClick={config.onClick}>
+                {config.icon}
+                {config.message}
+            </span>
+        )
+    }
 
     return (
         <>
             <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
             {renderButtons()}
             {buttonSelectionState !== EDIT_MODE_TYPE.NON_EDIT && (
-                <span className='ml-12 cn-7 fw-6 fs-12 cursor' onClick={cancelChanges}>{MANIFEST_SELECTION_MESSAGE.CANCEL}</span>
+                <span className="ml-12 cn-7 fw-6 fs-12 cursor" onClick={cancelChanges}>
+                    {MANIFEST_SELECTION_MESSAGE.CANCEL}
+                </span>
             )}
         </>
     )
@@ -259,23 +294,25 @@ const manifestEditButtons = ({
 
 export default function terminalStripTypeData(elementData) {
     switch (elementData.type) {
-        case 'creatableSelect':
+        case TERMINAL_WRAPPER_COMPONENT_TYPE.CREATABLE_SELECT:
             return creatableSelectWrapper(elementData)
-        case 'connectionButton':
+        case TERMINAL_WRAPPER_COMPONENT_TYPE.CONNECTION_BUTTON:
             return connectionButton(elementData)
-        case 'titleName':
+        case TERMINAL_WRAPPER_COMPONENT_TYPE.TITLE_NAME:
             return titleName(elementData)
-        case 'closeExpandView':
+        case TERMINAL_WRAPPER_COMPONENT_TYPE.CLOSE_EXPAND_VIEW:
             return closeExpandView(elementData)
-        case 'reactSelect':
+        case TERMINAL_WRAPPER_COMPONENT_TYPE.REACT_SELECT:
             return reactSelect(elementData)
-        case 'connectionSwitch':
+        case TERMINAL_WRAPPER_COMPONENT_TYPE.CONNCTION_SWITCH:
             return connectionSwitch(elementData)
-        case 'clearButton':
+        case TERMINAL_WRAPPER_COMPONENT_TYPE.CLEAR_BUTTON:
             return clearTerminal(elementData)
-        case 'manifestEditButtons':
+        case TERMINAL_WRAPPER_COMPONENT_TYPE.MANIFEST_EDIT_BUTTONS:
             return manifestEditButtons(elementData)
-        case 'customComponent':
+        case TERMINAL_WRAPPER_COMPONENT_TYPE.DEBUG_MODE_TOGGLE_BUTTON:
+            return debugModeToggleButton(elementData)
+        case TERMINAL_WRAPPER_COMPONENT_TYPE.CUSTOM_COMPONENT:
             return elementData.customComponent()
         default:
             return null

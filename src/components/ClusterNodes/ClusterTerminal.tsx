@@ -8,6 +8,7 @@ import {
 } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
 import {
     clusterDisconnectAndRetry,
+    clusterManifestEdit,
     clusterTerminalDisconnect,
     clusterTerminalStart,
     clusterTerminalStop,
@@ -15,11 +16,11 @@ import {
     clusterTerminalUpdate,
 } from './clusterNodes.service'
 import { GroupHeading, Option } from '../../components/v2/common/ReactSelect.utils'
-import { clusterImageDescription, convertToOptionsList } from '../common'
+import { clusterImageDescription, convertToOptionsList, useJsonYaml } from '../common'
 import { get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
-import ClusterManifest from './ClusterManifest'
+import ClusterManifest, { ManifestPopupMenu } from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
-import { ClusterTerminalType } from './types'
+import { ClusterTerminalType, NodeTaintType } from './types'
 import {
     AUTO_SELECT,
     clusterImageSelect,
@@ -33,12 +34,13 @@ import {
 } from './constants'
 import { OptionType } from '../userGroups/userGroups.types'
 import { getClusterTerminalParamsData } from '../cluster/cluster.util'
-import { useHistory, useLocation } from 'react-router-dom'
+import { generatePath, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'
 import {
     EDIT_MODE_TYPE,
     TERMINAL_STATUS,
     TERMINAL_TEXT,
+    TERMINAL_WRAPPER_COMPONENT_TYPE,
 } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
 import YAML from 'yaml'
@@ -54,10 +56,12 @@ export default function ClusterTerminal({
     isNodeDetailsPage,
     namespaceList,
     node,
+    taints,
     setSelectedNode,
 }: ClusterTerminalType) {
     const location = useLocation()
     const history = useHistory()
+    const { path } = useRouteMatch()
     const queryParams = new URLSearchParams(location.search)
     const terminalAccessIdRef = useRef()
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
@@ -81,6 +85,7 @@ export default function ClusterTerminal({
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
     const [selectedImage, setImage] = useState<OptionType>(queryParamsData.selectedImage || imageList[0])
     const [selectedNamespace, setNamespace] = useState(queryParamsData.selectedNamespace || defaultNameSpace)
+    const [resourceData, setResourceData] = useState(null)
     const [update, setUpdate] = useState<boolean>(false)
     const [isFullScreen, setFullScreen] = useState<boolean>(false)
     const [isFetchRetry, setRetry] = useState<boolean>(false)
@@ -92,12 +97,19 @@ export default function ClusterTerminal({
     const [errorMessage, setErrorMessage] = useState<ErrorMessageType>({ message: '', reason: '' })
     const [manifestButtonState, setManifestButtonState] = useState<EDIT_MODE_TYPE>(EDIT_MODE_TYPE.NON_EDIT)
     const [manifestData, setManifestData] = useState<string>('')
+    const [showPodExistPopup, setShowPodExistPopup] = useState<boolean>()
+    const [forceDelete, setForceDelete] = useState<boolean>()
+    const [manifestErrors, setManifestErrors] = useState<string[]>()
+    const [debugMode, setDebugMode] = useState<boolean>(selectedNodeName.value !== AUTO_SELECT.value)
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
     const terminalRef = useRef(null)
     const prevNodeRef = useRef('')
     const currNodeRef = useRef('')
-    const manifestString = manifestData ? JSON.stringify(YAML.parse(manifestData)) : ''
+    const isManifestUpdated = useRef(false)
+    const preventUpdateCall: boolean =
+        (autoSelectNodeRef.current === AUTO_SELECT.value && selectedNodeName.value !== AUTO_SELECT.value) ||
+        isManifestUpdated.current
 
     const payload = {
         clusterId: clusterId,
@@ -105,7 +117,10 @@ export default function ClusterTerminal({
         shellName: selectedTerminalType.value,
         nodeName: selectedNodeName.value,
         namespace: selectedNamespace.value,
-        manifest: manifestString
+        manifest: manifestData,
+        debugNode: debugMode,
+        podName: resourceData?.podName || '',
+        taints: taints.get(selectedNodeName.value),
     }
 
     useEffect(() => {
@@ -122,11 +137,69 @@ export default function ClusterTerminal({
 
     useEffect(() => {
         handleUrlChanges()
-        setManifestButtonState(EDIT_MODE_TYPE.NON_EDIT)
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
 
     useEffect(() => {
-        if (autoSelectNodeRef.current === AUTO_SELECT.value && selectedNodeName.value !== AUTO_SELECT.value) {
+        if (resourceData && update && manifestData) {
+            try {
+                socketDisconnecting()
+                const abortController = new AbortController()
+                clusterManifestEdit(
+                    { ...payload, id: terminalAccessIdRef.current, forceDelete: forceDelete },
+                    { signal: abortController.signal },
+                )
+                    .then((response) => {
+                        if (abortController.signal.aborted) {
+                            return
+                        } else if (response.result?.podExists) {
+                            setShowPodExistPopup(response.result.podExists)
+                        } else if (response.result?.errors) {
+                            const errors = response.result.errors
+                            setManifestErrors(errors)
+                            setManifestButtonState(EDIT_MODE_TYPE.EDIT)
+                            setManifestData('')
+                        } else {
+                            const result = response.result
+                            setResourceData(result)
+                            isManifestUpdated.current = true
+                            setSelectedTabIndex(0)
+                            setDebugMode(false)
+                            const nodeName = result.nodeName
+                            setSelectedNodeName(nodeName ? { label: nodeName, value: nodeName } : AUTO_SELECT)
+                            const containers = result.containers
+                            const image = containers[0].Image
+                            if (image) {
+                                setImage({ label: image, value: image })
+                            }
+                            const namespace = result.namespace
+                            setNamespace(namespace ? { label: namespace, value: namespace } : defaultNameSpace)
+                            setManifestButtonState(EDIT_MODE_TYPE.NON_EDIT)
+                            terminalAccessIdRef.current = result.terminalAccessId
+                            socketConnecting()
+                            setShowPodExistPopup(false)
+                            setManifestErrors([])
+                        }
+                    })
+                    .catch((error) => {
+                        showError(error)
+                        setManifestButtonState(EDIT_MODE_TYPE.EDIT)
+                        setManifestData('')
+                    })
+                    .finally(() => {
+                        isManifestUpdated.current = false
+                    })
+
+                return () => {
+                    abortController.abort()
+                }
+            } catch (error) {
+                showError(error)
+            }
+        }
+    }, [manifestData, forceDelete])
+
+    useEffect(() => {
+        if (preventUpdateCall) {
             autoSelectNodeRef.current = selectedNodeName.value
             return
         }
@@ -135,6 +208,7 @@ export default function ClusterTerminal({
             isShellSwitched.current = false
             autoSelectNodeRef.current = selectedNodeName.value
             setSelectedTabIndex(0)
+            setManifestButtonState(EDIT_MODE_TYPE.NON_EDIT)
             if (update) {
                 socketDisconnecting()
                 clusterTerminalUpdate(
@@ -142,6 +216,7 @@ export default function ClusterTerminal({
                     { signal: abortController.signal },
                 )
                     .then((response) => {
+                        setResourceData(response.result)
                         terminalAccessIdRef.current = response.result.terminalAccessId
                         if (abortController.signal.aborted) {
                             return
@@ -149,7 +224,6 @@ export default function ClusterTerminal({
                         setTerminalCleared(!terminalCleared)
                         socketConnecting()
                         setPodCreated(true)
-                        setManifestButtonState(EDIT_MODE_TYPE.NON_EDIT)
                         setRetry(false)
                     })
                     .catch((error) => {
@@ -161,7 +235,11 @@ export default function ClusterTerminal({
             } else {
                 clusterTerminalStart(payload, { signal: abortController.signal })
                     .then((response) => {
+                        setResourceData(response.result)
                         terminalAccessIdRef.current = response.result.terminalAccessId
+                        if (abortController.signal.aborted) {
+                            return
+                        }
                         setUpdate(true)
                         socketConnecting()
                         setConnectTerminal(true)
@@ -197,7 +275,7 @@ export default function ClusterTerminal({
             setUpdate(false)
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
-    }, [selectedNodeName.value, selectedImage.value, isReconnect, selectedNamespace.value, manifestData])
+    }, [selectedNodeName.value, selectedImage.value, isReconnect, selectedNamespace.value, debugMode])
 
     useEffect(() => {
         try {
@@ -206,6 +284,7 @@ export default function ClusterTerminal({
                 socketDisconnecting()
                 clusterTerminalTypeUpdate({ ...payload, terminalAccessId: terminalAccessIdRef.current })
                     .then((response) => {
+                        setResourceData(response.result)
                         terminalAccessIdRef.current = response.result.terminalAccessId
                         socketConnecting()
                     })
@@ -249,7 +328,11 @@ export default function ClusterTerminal({
         if (!terminalAccessIdRef.current) return
         setSocketConnection(SocketConnectionType.CONNECTING)
         getClusterData(
-            `user/terminal/get?namespace=${selectedNamespace.value}&shellName=${selectedTerminalType.value}&terminalAccessId=${terminalAccessIdRef.current}`,
+            `user/terminal/get?namespace=${selectedNamespace.value}&shellName=${
+                selectedTerminalType.value
+            }&terminalAccessId=${terminalAccessIdRef.current}&containerName=${
+                resourceData.containers?.[0].ContainerName || ''
+            }`,
             terminalAccessIdRef.current,
             window?._env_?.CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT || 7,
         )
@@ -365,6 +448,7 @@ export default function ClusterTerminal({
                 setSelectedNodeName({ label: node, value: node })
             }
         } else {
+            setManifestData('')
             setReconnect(!isReconnect)
             setNamespace(defaultNameSpace)
             setImage(imageList[0])
@@ -382,6 +466,7 @@ export default function ClusterTerminal({
                 await clusterTerminalDisconnect(terminalAccessIdRef.current)
             }
             socketDisconnecting()
+            terminalAccessIdRef.current = null
             toggleOptionChange()
             setUpdate(false)
         } catch (error) {
@@ -436,12 +521,16 @@ export default function ClusterTerminal({
         queryParams.set('image', selectedImage.value)
         queryParams.set('namespace', selectedNamespace.value)
         queryParams.set('shell', selectedTerminalType.value)
-        if (!isNodeDetailsPage) {
+        if (isNodeDetailsPage) {
+            const url =
+                generatePath(path, { clusterId, nodeName: selectedNodeName.value }) + '?' + queryParams.toString()
+            history.replace(url)
+        } else {
             queryParams.set('node', selectedNodeName.value)
+            history.replace({
+                search: queryParams.toString(),
+            })
         }
-        history.replace({
-            search: queryParams.toString(),
-        })
     }
 
     const reconnectTerminal = (): void => {
@@ -473,6 +562,9 @@ export default function ClusterTerminal({
     const onChangeNodes = (selected): void => {
         setSelectedNodeName(selected)
         autoSelectNodeRef.current = null
+        if (selected.value === AUTO_SELECT.value) {
+            setDebugMode(false)
+        }
         if (setSelectedNode) {
             setSelectedNode(selected.value)
         }
@@ -590,7 +682,13 @@ export default function ClusterTerminal({
                 )}
                 {selectedTabIndex === 2 && (
                     <div className="h-100">
-                        <ClusterManifest terminalAccessId={terminalAccessIdRef.current} manifestMode={manifestButtonState} setManifestMode={setManifestButtonState}  setManifestData={setManifestData} />
+                        <ClusterManifest
+                            terminalAccessId={terminalAccessIdRef.current}
+                            manifestMode={manifestButtonState}
+                            setManifestMode={setManifestButtonState}
+                            setManifestData={setManifestData}
+                            errorMessage={manifestErrors}
+                        />
                     </div>
                 )}
             </div>
@@ -696,20 +794,20 @@ export default function ClusterTerminal({
     const selectionListData: TerminalSelectionListDataType = {
         firstRow: [
             {
-                type: 'titleName',
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.TITLE_NAME,
                 hideTerminalStripComponent: !clusterName,
                 title: SELECT_TITLE.CLUSTER,
                 value: clusterName,
             },
             {
-                type: 'connectionButton',
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CONNECTION_BUTTON,
                 hideTerminalStripComponent: !isNodeDetailsPage,
                 connectTerminal: connectTerminal,
                 closeTerminalModal: closeTerminalModal,
                 reconnectTerminal: reconnectTerminal,
             },
             {
-                type: 'reactSelect',
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.REACT_SELECT,
                 hideTerminalStripComponent: isNodeDetailsPage,
                 title: SELECT_TITLE.NODE,
                 placeholder: 'Select node',
@@ -725,7 +823,7 @@ export default function ClusterTerminal({
                 },
             },
             {
-                type: 'creatableSelect',
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CREATABLE_SELECT,
                 showInfoTippy: false,
                 title: SELECT_TITLE.NAMESPACE,
                 placeholder: 'Select Namespace',
@@ -740,7 +838,7 @@ export default function ClusterTerminal({
                 },
             },
             {
-                type: 'creatableSelect',
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CREATABLE_SELECT,
                 title: SELECT_TITLE.IMAGE,
                 placeholder: 'Select Image',
                 options: imageList,
@@ -757,7 +855,7 @@ export default function ClusterTerminal({
                 },
             },
             {
-                type: 'closeExpandView',
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CLOSE_EXPAND_VIEW,
                 hideTerminalStripComponent: isNodeDetailsPage,
                 showExpand: true,
                 isFullScreen: isFullScreen,
@@ -767,12 +865,12 @@ export default function ClusterTerminal({
         ],
         secondRow: [
             {
-                type: 'customComponent',
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CUSTOM_COMPONENT,
                 customComponent: renderTabs,
             },
             {
-                type: 'connectionSwitch',
-                hideTerminalStripComponent: hideShell ,
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CONNCTION_SWITCH,
+                hideTerminalStripComponent: hideShell,
                 stopTerminalConnection,
                 resumePodConnection,
                 toggleButton:
@@ -780,12 +878,12 @@ export default function ClusterTerminal({
                     socketConnection === SocketConnectionType.CONNECTED,
             },
             {
-                type: 'clearButton',
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CLEAR_BUTTON,
                 hideTerminalStripComponent: hideShell,
                 setTerminalCleared: clearTerminal,
             },
             {
-                type: 'creatableSelect',
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CREATABLE_SELECT,
                 hideTerminalStripComponent: hideShell,
                 title: SELECT_TITLE.SHELL,
                 placeholder: 'Select Shell',
@@ -799,11 +897,18 @@ export default function ClusterTerminal({
                 },
             },
             {
-                type: 'manifestEditButtons',
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.DEBUG_MODE_TOGGLE_BUTTON,
+                hideTerminalStripComponent: hideShell || selectedNodeName.value === AUTO_SELECT.value,
+                showInfoTippy: true,
+                onToggle: setDebugMode,
+                isEnabled: debugMode,
+            },
+            {
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.MANIFEST_EDIT_BUTTONS,
                 hideTerminalStripComponent: selectedTabIndex !== 2,
                 buttonSelectionState: manifestButtonState,
                 setManifestButtonState: setManifestButtonState,
-            }
+            },
         ],
         tabSwitcher: {
             terminalTabWrapper: terminalTabWrapper,
@@ -822,13 +927,23 @@ export default function ClusterTerminal({
     }
 
     return (
-        <TerminalWrapper
-            selectionListData={selectionListData}
-            socketConnection={socketConnection}
-            setSocketConnection={setSocketConnection}
-            className={`${
-                isFullScreen || isNodeDetailsPage ? 'cluster-full_screen' : 'cluster-terminal-view-container'
-            } ${isNodeDetailsPage ? '' : 'node-terminal'}`}
-        />
+        <>
+            <TerminalWrapper
+                selectionListData={selectionListData}
+                socketConnection={socketConnection}
+                setSocketConnection={setSocketConnection}
+                className={`${
+                    isFullScreen || isNodeDetailsPage ? 'cluster-full_screen' : 'cluster-terminal-view-container'
+                } ${isNodeDetailsPage ? '' : 'node-terminal'}`}
+            />
+            {showPodExistPopup && (
+                <ManifestPopupMenu
+                    closePopup={setShowPodExistPopup}
+                    podName={resourceData?.podName}
+                    namespace={selectedNamespace.label}
+                    forceDeletePod={setForceDelete}
+                />
+            )}
+        </>
     )
 }

@@ -1,24 +1,24 @@
 import React, { useRef } from 'react'
 import { nodeSelect } from '../../../../../../../ClusterNodes/constants'
 import { SocketConnectionType } from '../../node.type'
-import { TERMINAL_TEXT } from '../constants'
+import { TERMINAL_TEXT, TERMINAL_WRAPPER_COMPONENT_TYPE } from '../constants'
 import { TerminalSelectionListDataType } from '../terminal.type'
 
 export const selectionListData: TerminalSelectionListDataType = {
     firstRow: [
         {
-            type: 'titleName',
+            type: TERMINAL_WRAPPER_COMPONENT_TYPE.TITLE_NAME,
             hideTerminalStripComponent: false,
             title: 'Cluster',
             value: 'default_cluster',
         },
         {
-            type: 'connectionButton',
+            type: TERMINAL_WRAPPER_COMPONENT_TYPE.CONNECTION_BUTTON,
             hideTerminalStripComponent: true,
             connectTerminal: false,
         },
         {
-            type: 'reactSelect',
+            type: TERMINAL_WRAPPER_COMPONENT_TYPE.REACT_SELECT,
             title: 'Node',
             placeholder: 'Select node',
             options: [
@@ -73,18 +73,18 @@ export const selectionListDataWithSecondStrip = {
     ...selectionListData,
     secondRow: [
         {
-            type: 'titleName',
+            type: TERMINAL_WRAPPER_COMPONENT_TYPE.TITLE_NAME,
             hideTerminalStripComponent: false,
             title: 'Cluster',
             value: 'default_cluster',
         },
         {
-            type: 'connectionButton',
+            type: TERMINAL_WRAPPER_COMPONENT_TYPE.CONNECTION_BUTTON,
             hideTerminalStripComponent: true,
             connectTerminal: false,
         },
         {
-            type: 'reactSelect',
+            type: TERMINAL_WRAPPER_COMPONENT_TYPE.REACT_SELECT,
             title: 'Node',
             placeholder: 'Select node',
             options: [
@@ -132,7 +132,7 @@ export const selectionListDataWithTerminalWrapper = {
     tabSwitcher: {
         terminalTabWrapper: renderTerminalTabWrapper,
         terminalData: {
-            terminalRef: {current: null},
+            terminalRef: { current: null },
             clearTerminal: true,
             terminalMessageData: jest.fn(),
             renderConnectionStrip: jest.fn(),

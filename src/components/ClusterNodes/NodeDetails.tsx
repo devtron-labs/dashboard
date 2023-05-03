@@ -1,11 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import {
-    ButtonWithLoader,
-    copyToClipboard,
-    handleUTCTime,
-    ToastBodyWithButton,
-    filterImageList,
-} from '../common'
+import { ButtonWithLoader, copyToClipboard, handleUTCTime, ToastBodyWithButton, filterImageList } from '../common'
 import {
     showError,
     Progressing,
@@ -56,16 +50,17 @@ import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterTerminal from './ClusterTerminal'
 import EditTaintsModal from './NodeActions/EditTaintsModal'
-import { CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
+import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
 import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
+import { createTaintsList } from '../cluster/cluster.util'
 
 export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
-    const selectedNodeName: SelectGroupType = {label: '', options:[{label: nodeName,value: nodeName}]}
+    const selectedNodeName: SelectGroupType = { label: '', options: [{ label: nodeName, value: nodeName }] }
     const nodeListRef = useRef([selectedNodeName])
-    const [loader, setLoader] = useState(false)
+    const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
@@ -96,7 +91,6 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const { push } = useHistory()
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
-        setLoader(true)
         getNodeCapacity(clusterId, nodeName)
             .then((response: NodeDetailResponse) => {
                 setLastDataSync(!lastDataSync)
@@ -134,8 +128,11 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     }
 
     useEffect(() => {
-        getData(patchData)
-    }, [])
+        nodeListRef.current = [selectedNodeName]
+        if (nodeName !== AUTO_SELECT.value) {
+            getData(patchData)
+        }
+    }, [nodeName])
 
     useEffect(() => {
         if (imageList?.length && nodeDetail?.k8sVersion) {
@@ -171,39 +168,42 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
 
     const changeNodeTab = (e): void => {
         const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
-        let _searchParam = '?tab='
-        if (_tabIndex === 0) {
-            _searchParam += NODE_DETAILS_TABS.summary.toLowerCase()
-        } else if (_tabIndex === 1) {
-            _searchParam += NODE_DETAILS_TABS.yaml.toLowerCase()
-        } else if (_tabIndex === 2) {
-            _searchParam += NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')
-        } else if (_tabIndex === 3) {
-            _searchParam += NODE_DETAILS_TABS.debug.toLowerCase()
+        if (nodeName !== AUTO_SELECT.value) {
+            let _searchParam = '?tab='
+            if (_tabIndex === 0) {
+                _searchParam += NODE_DETAILS_TABS.summary.toLowerCase()
+            } else if (_tabIndex === 1) {
+                _searchParam += NODE_DETAILS_TABS.yaml.toLowerCase()
+            } else if (_tabIndex === 2) {
+                _searchParam += NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')
+            } else if (_tabIndex === 3) {
+                _searchParam += NODE_DETAILS_TABS.debug.toLowerCase()
+            }
+            push({
+                pathname: location.pathname,
+                search: _searchParam,
+            })
         }
-        push({
-            pathname: location.pathname,
-            search: _searchParam,
-        })
     }
 
     const renderNodeDetailsTabs = (): JSX.Element => {
+        const cursorValue = nodeName === AUTO_SELECT.value ? 'cursor-not-allowed' : 'cursor'
         return (
             <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab pointer" data-tab-index="0" onClick={changeNodeTab}>
+                <li className={`tab-list__tab pointer ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
                         {NODE_DETAILS_TABS.summary}
                     </div>
                     {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                 </li>
-                <li className="tab-list__tab pointer" data-tab-index="1" onClick={changeNodeTab}>
+                <li className={`tab-list__tab pointer ${cursorValue}`} data-tab-index="1" onClick={changeNodeTab}>
                     <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
                         <Edit className="icon-dim-16 mt-2 mr-5 edit-yaml-icon" />
                         {NODE_DETAILS_TABS.yaml}
                     </div>
                     {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
                 </li>
-                <li className="tab-list__tab pointer" data-tab-index="2" onClick={changeNodeTab}>
+                <li className={`tab-list__tab pointer ${cursorValue}`} data-tab-index="2" onClick={changeNodeTab}>
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
                         {NODE_DETAILS_TABS.nodeConditions}
                     </div>
@@ -238,7 +238,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                     linked: true,
                 },
                 ':nodeName': {
-                    component: nodeName,
+                    component: nodeName === AUTO_SELECT.value ? 'Selecting node. . . .' : nodeName,
                     linked: false,
                 },
             },
@@ -966,6 +966,10 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                 clusterImageList={nodeImageList}
                 isNodeDetailsPage={true}
                 namespaceList={namespaceList[nodeDetail.clusterName]}
+                taints={createTaintsList(
+                    [{ nodeName: nodeName, nodeGroup: '', taints: nodeDetail.taints }],
+                    'nodeName',
+                )}
             />
         )
     }

@@ -18,6 +18,7 @@ import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
 import { get, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { TERMINAL_WRAPPER_COMPONENT_TYPE } from './terminal/constants'
 
 let clusterTimeOut
 
@@ -147,17 +148,17 @@ function TerminalComponent({
     const selectionListData: TerminalSelectionListDataType = {
         firstRow: [
             {
-                type: 'connectionButton',
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CONNECTION_BUTTON,
                 connectTerminal: connectTerminal,
                 closeTerminalModal: handleDisconnect,
                 reconnectTerminal: handleConnect,
             },
             {
-                type: 'clearButton',
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CLEAR_BUTTON,
                 setTerminalCleared: handleAbort,
             },
             {
-                type: 'reactSelect',
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.REACT_SELECT,
                 showDivider: true,
                 title: 'Container ',
                 placeholder: 'Select container',
@@ -171,7 +172,7 @@ function TerminalComponent({
                 },
             },
             {
-                type: 'reactSelect',
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.REACT_SELECT,
                 showDivider: true,
                 placeholder: 'Select Shell',
                 options: shellTypes,

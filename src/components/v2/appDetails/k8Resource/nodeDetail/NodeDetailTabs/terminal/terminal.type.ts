@@ -2,10 +2,10 @@ import React from 'react'
 import { OptionsOrGroups, GroupBase, ActionMeta, StylesConfig } from 'react-select'
 import { SelectComponents } from 'react-select/dist/declarations/src/components'
 import { SocketConnectionType } from '../node.type'
-import { EDIT_MODE_TYPE } from './constants'
+import { EDIT_MODE_TYPE, TERMINAL_WRAPPER_COMPONENT_TYPE } from './constants'
 
 export interface TerminalWrapperComponentType {
-    type: string
+    type: TERMINAL_WRAPPER_COMPONENT_TYPE
     hideTerminalStripComponent?: boolean
     title?: string
     value?: unknown
@@ -31,6 +31,8 @@ export interface TerminalWrapperComponentType {
     setTerminalCleared?: () => void
     buttonSelectionState?: string
     setManifestButtonState?: (button: EDIT_MODE_TYPE) => void
+    onToggle?: (value: boolean) => void
+    isEnabled?: boolean
 }
 
 export interface TerminalSelectionListDataType {
@@ -128,7 +130,14 @@ export interface ClearTerminalType {
 }
 
 export interface EditManifestType {
-    hideTerminalStripComponent?: boolean;
+    hideTerminalStripComponent?: boolean
     buttonSelectionState: string
     setManifestButtonState: (button: string) => void
+}
+
+export interface DebugModeType {
+    hideTerminalStripComponent?: boolean
+    showInfoTippy?: boolean
+    onToggle: (value: boolean) => void
+    isEnabled: boolean
 }

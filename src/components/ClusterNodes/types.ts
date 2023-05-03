@@ -49,6 +49,7 @@ export interface ClusterCapacityType {
 export interface NodeDetailsType {
     nodeName: string
     nodeGroup: string
+    taints?: NodeTaintType[]
 }
 export interface ClusterDetail {
     id: number
@@ -149,9 +150,16 @@ export interface ClusterListType {
     namespaceList: string[]
 }
 
+export interface NodeTaintType {
+    effect: string
+    key: string
+    value: string
+}
+
 export interface SelectGroupType {
     label: string
     options: OptionType[]
+    taints?: NodeTaintType[]
 }
 
 export interface ClusterTerminalType {
@@ -165,6 +173,7 @@ export interface ClusterTerminalType {
     node?: string
     setSelectedNode?: React.Dispatch<React.SetStateAction<string>>
     nodeGroups?: SelectGroupType[]
+    taints: Map<string, NodeTaintType[]>
 }
 
 export const TEXT_COLOR_CLASS = {
@@ -267,4 +276,26 @@ export interface ClusterManifestType {
     manifestMode: EDIT_MODE_TYPE,
     setManifestMode: (mode: EDIT_MODE_TYPE) => void
     setManifestData: (manifest: string) => void
+    errorMessage?: string[]
+}
+
+export interface ClusterEditManifestType {
+    id?: number
+    clusterId: number
+    baseImage: string
+    shellName: string
+    nodeName: string
+    namespace: string
+    terminalAccessId?: number
+    podName: string
+    manifest: string
+    forceDelete?: boolean
+}
+
+
+export interface ManifestPopuptype {
+    closePopup: (isClose: boolean) => void,
+    podName: string, 
+    namespace: string, 
+    forceDeletePod: (deletePod: boolean) => void
 }

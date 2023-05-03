@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { NavLink, useLocation, useRouteMatch, useParams, useHistory } from 'react-router-dom'
 import { getClusterCapacity, getClusterListMin, getNodeList } from './clusterNodes.service'
-import {
-    handleUTCTime,
-    Pagination,
-    filterImageList,
-    createGroupSelectList,
-} from '../common'
+import { handleUTCTime, Pagination, filterImageList, createGroupSelectList } from '../common'
 import { showError, Progressing, BreadCrumb, useBreadcrumb, ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterCapacityType,
@@ -35,6 +30,7 @@ import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as CloudIcon } from '../../assets/icons/ic-cloud.svg'
 import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwise.svg'
+import { createTaintsList } from '../cluster/cluster.util'
 
 export default function NodeList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const match = useRouteMatch()
@@ -120,12 +116,14 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                     appliedColumnsFromLocalStorage = JSON.parse(localStorage.appliedColumns)
                     for (const _updatedLocalMetaData of appliedColumnsFromLocalStorage as ColumnMetadataType[]) {
                         if (_updatedLocalMetaData.isSortingAllowed && !_updatedLocalMetaData.sortingFieldName) {
-                            _updatedLocalMetaData.sortingFieldName = sortableColumnMap.get(_updatedLocalMetaData.value).sortingFieldName //updating column meta data when sortingFieldName is missing
+                            _updatedLocalMetaData.sortingFieldName = sortableColumnMap.get(
+                                _updatedLocalMetaData.value,
+                            ).sortingFieldName //updating column meta data when sortingFieldName is missing
                             isMissingColumn = true
                         }
                     }
                     if (isMissingColumn) {
-                      localStorage.appliedColumns = JSON.stringify(appliedColumnsFromLocalStorage)
+                        localStorage.appliedColumns = JSON.stringify(appliedColumnsFromLocalStorage)
                     }
                 } catch (error) {}
             }
@@ -350,8 +348,8 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
     }
 
     const alphabeticalComparatorMethod = (a, b) => {
-        const firstValue = a[sortByColumn.sortingFieldName] || ""
-        const secondValue = b[sortByColumn.sortingFieldName] || ""
+        const firstValue = a[sortByColumn.sortingFieldName] || ''
+        const secondValue = b[sortByColumn.sortingFieldName] || ''
         if (
             (sortOrder === OrderBy.ASC && sortByColumn.sortingFieldName !== 'createdAt') ||
             (sortOrder === OrderBy.DESC && sortByColumn.sortingFieldName === 'createdAt')
@@ -834,6 +832,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
                     namespaceList={namespaceList[clusterName]}
                     node={selectedNode}
                     setSelectedNode={setSelectedNode}
+                    taints={createTaintsList(filteredFlattenNodeList, 'name')}
                 />
             )}
         </div>

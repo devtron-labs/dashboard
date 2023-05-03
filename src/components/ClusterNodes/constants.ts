@@ -288,6 +288,8 @@ export const CLUSTER_TERMINAL_MESSAGING = {
     BUSYBOX: 'busybox',
     DEBUG_CLUSTER: ') which can be used to debug clusters and workloads.',
     PUBLIC_IMAGE: 'You can use publicly available custom images as well.',
+    DEBUG_MODE_TEXT:
+        'Running a pod in a debug mode means that the pod can access the host’s resources and kernel capabilities.',
 }
 
 export const SELECT_TITLE = {
@@ -374,3 +376,6 @@ export const PRE_FETCH_DATA_MESSAGING = {
     CHECK_POD_EVENTS: ' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m',
     CHEKC_POD_MANIFEST: '\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m',
 }
+
+export const defaultManifestErrorText =
+    "# Please edit the object below. Lines beginning with a '#' will be ignored,\n# and an empty file will abort the edit. If an error occurs while saving this file will be\n# reopened with the relevant failures.\n# \n"
