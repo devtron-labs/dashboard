@@ -93,7 +93,7 @@ export function DeploymentStatusDetailRow({
                                                 className="app-status-row pt-8 pb-8"
                                                 key={`${nodeDetails.resourceKind}/${nodeDetails.resourceName}`}
                                             >
-                                                <div>{nodeDetails.resourceKind}</div>
+                                                <div className="dc__break-word">{nodeDetails.resourceKind}</div>
                                                 <div className="dc__break-word">{nodeDetails.resourceName}</div>
                                                 <div
                                                     className={`app-summary__status-name f-${

@@ -265,7 +265,7 @@ function ChartDeploymentHistory({
                                 >
                                     <div
                                         className={`dc__app-summary__icon icon-dim-22 ${
-                                            deployment?.status ? deployment?.status.toLowerCase() : ''
+                                            deployment?.status && installedAppInfo?.deploymentType === DeploymentAppType.GitOps ? deployment?.status.toLowerCase() : ''
                                         } ${
                                             installedAppInfo?.deploymentType === DeploymentAppType.Helm
                                                 ? 'succeeded'
@@ -419,7 +419,7 @@ function ChartDeploymentHistory({
         return (
             <div className={`trigger-outputs-container ${selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE ? 'pt-20' : ''}`}>
               {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.STEPS &&
-               <DeploymentDetailSteps isHelm={true} installedAppVersionHistoryId={deployment.version} />}
+               <DeploymentDetailSteps isGitops={installedAppInfo?.deploymentType === DeploymentAppType.GitOps} installedAppVersionHistoryId={deployment.version} />}
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE && (
                     <div
                         className="ml-20 w-100 p-16 bcn-0 br-4 en-2 bw-1 pb-12 mb-12"

@@ -2,6 +2,7 @@ import { Routes } from '../../../../config'
 import { get } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchWithFullRoute } from '../../../../services/fetchWithFullRoute'
 import { DeploymentStatusDetailsResponse, ModuleConfigResponse } from './appDetails.type'
+import { noop } from '../../../common'
 
 export function isDatasourceConfigured(envName: string) {
     const root = process.env.REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '')
@@ -20,16 +21,16 @@ export function getDeploymentStatusDetail(
     appId: string,
     envId: string,
     triggerId?: string,
-    isHelm?: boolean,
+    isGitops?: boolean,
     installedAppVersionHistoryId?: number
 ): Promise<DeploymentStatusDetailsResponse> {
     let appendUrl
-    if (isHelm) {
-        appendUrl = Routes.HELM_DEPLOYMENT_STATUS
+    if (isGitops) {
+        appendUrl = Routes.HELM_DEPLOYMENT_STATUS_TIMELINE_INSTALLED_APP
     } else {
       appendUrl = Routes.DEPLOYMENT_STATUS
     }
-    return get(`${appendUrl}/${appId}/${envId}${triggerId ? `?wfrId=${triggerId}` : ``}${installedAppVersionHistoryId ? `?installedAppVersionHistoryId=${installedAppVersionHistoryId}` : ''}`)
+      return get(`${appendUrl}/${appId}/${envId}${triggerId ? `?wfrId=${triggerId}` : ``}${installedAppVersionHistoryId ? `?installedAppVersionHistoryId=${installedAppVersionHistoryId}` : ''}`)
 }
 
 export function getModuleConfigured(moduleName: string): Promise<ModuleConfigResponse> {

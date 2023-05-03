@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from 'react'
 import './appDetails.scss'
 import { useLocation, useParams } from 'react-router'
-import { AppStreamData, AppType } from './appDetails.type'
+import { AppStreamData, AppType, DeploymentAppType } from './appDetails.type'
 import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component'
 import SyncErrorComponent from './SyncError.component'
-import { useEventSource } from '../../common'
+import { noop, useEventSource } from '../../common'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import NodeTreeDetailTab from './NodeTreeDetailTab'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { getSaveTelemetry } from './appDetails.api'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentStatusDetail } from '../../app/details/appDetails/appDetails.service'
-import { DEFAULT_STATUS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
+import { DEFAULT_STATUS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, HELM_DEPLOYMENT_STATUS_TEXT } from '../../../config'
 import DeploymentStatusDetailModal from '../../app/details/appDetails/DeploymentStatusDetailModal'
 import {
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
 } from '../../app/details/appDetails/appDetails.type'
 import { processDeploymentStatusDetailsData } from '../../app/details/appDetails/utils'
+import { useSharedState } from '../utils/useSharedState'
 
 const AppDetailsComponent = ({
     externalLinks,
@@ -40,7 +41,7 @@ const AppDetailsComponent = ({
 }) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const [streamData, setStreamData] = useState<AppStreamData>(null)
-    const appDetails = IndexStore.getAppDetails()
+    const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
     const [pollingIntervalID, setPollingIntervalID] = useState(null)
     const location = useLocation()
@@ -53,14 +54,34 @@ const AppDetailsComponent = ({
         })
     let deploymentStatusTimer = null
 
+    async function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppType) {
+      await getDeploymentStatusDetail(params.appId, params.envId, '', true)
+          .then((deploymentStatusDetailRes) => {
+              if (deploymentStatusDetailRes.result) {
+                  if (deploymentAppType === DeploymentAppType.helm) {
+                      setDeploymentStatusDetailsBreakdownData({
+                          ...deploymentStatusDetailsBreakdownData,
+                          deploymentStatus:
+                              DEPLOYMENT_STATUS[deploymentStatusDetailRes.result.wfrStatus?.toUpperCase()],
+                          deploymentStatusText:
+                              deploymentStatusDetailRes.result.wfrStatus === HELM_DEPLOYMENT_STATUS_TEXT.PROGRESSING
+                                  ? HELM_DEPLOYMENT_STATUS_TEXT.INPROGRESS
+                                  : deploymentStatusDetailRes.result.wfrStatus,
+                          deploymentTriggerTime: deploymentStatusDetailRes.result.deploymentStartedOn,
+                          deploymentEndTime: deploymentStatusDetailRes.result.deploymentFinishedOn,
+                          triggeredBy: deploymentStatusDetailRes.result.triggeredBy,
+                      })
+                  } else {
+                      processDeploymentStatusData(deploymentStatusDetailRes.result)
+                  }
+              }
+          })
+          .catch(noop)
 
+  }
+{console.log(appDetails)}
     async function callAppDetailsAPI() {
-        try {
-            // Deployment details status for Helm apps
-           await getDeploymentStatusDetail(params.appId, params.envId, '', true).then((res) => {
-                setDeploymentStatusDetailsBreakdownData(processDeploymentStatusDetailsData(res.result))
-            })
-        } catch (error) {}
+      _getDeploymentStatusDetail(appDetails?.deploymentAppType)
     }
 
     function clearPollingInterval() {
@@ -98,9 +119,9 @@ const AppDetailsComponent = ({
     }, [])
 
     const getDeploymentDetailStepsData = (): void => {
-        getDeploymentStatusDetail(params.appId, params.envId, '', true).then((deploymentStatusDetailRes) => {
-            processDeploymentStatusData(deploymentStatusDetailRes.result)
-        })
+            getDeploymentStatusDetail(params.appId, params.envId, '', true).then((deploymentStatusDetailRes) => {
+                processDeploymentStatusData(deploymentStatusDetailRes.result)
+            })
     }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {

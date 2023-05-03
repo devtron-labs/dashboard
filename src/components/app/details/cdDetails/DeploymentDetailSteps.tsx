@@ -15,7 +15,7 @@ import { DeploymentStatusDetailsBreakdownDataType } from '../appDetails/appDetai
 export default function DeploymentDetailSteps({
     deploymentStatus,
     deploymentAppType,
-    isHelm = false,
+    isGitops = false,
     installedAppVersionHistoryId,
 }: DeploymentDetailStepsType) {
     const history = useHistory()
@@ -29,7 +29,7 @@ export default function DeploymentDetailSteps({
 
     let initTimer = null
     const getDeploymentDetailStepsData = (): void => {
-        getDeploymentStatusDetail(appId, envId, triggerId, isHelm, installedAppVersionHistoryId)
+        getDeploymentStatusDetail(appId, envId, triggerId, isGitops, installedAppVersionHistoryId)
             .then((deploymentStatusDetailRes) => {
                 const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(
                     deploymentStatusDetailRes.result,
@@ -55,7 +55,7 @@ export default function DeploymentDetailSteps({
             }
             return
         }
-        if (deploymentStatus !== 'Aborted') {
+        if (isGitops && deploymentStatus !== 'Aborted') {
             getDeploymentDetailStepsData()
         }
         return (): void => {
@@ -66,7 +66,7 @@ export default function DeploymentDetailSteps({
     }, [installedAppVersionHistoryId])
 
     const redirectToDeploymentStatus = () => {
-        isHelm
+      isGitops
             ? history.push({
                   pathname: `${URLS.APP}/${URLS.DEVTRON_CHARTS}/${URLS.APP_DEPLOYMNENT_HISTORY}/${appId}/env/${envId}/${URLS.DETAILS}/${URLS.APP_DETAILS_K8}`,
                   search: DEPLOYMENT_STATUS_QUERY_PARAM,
