@@ -79,8 +79,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         {this.props.material.url.includes('github') ? <GitHub /> : null}
                         {this.props.material.url.includes('bitbucket') ? <BitBucket /> : null}
                         {this.props.material.url.includes('gitlab') ||
-                            this.props.material.url.includes('github') ||
-                            this.props.material.url.includes('bitbucket') ? null : (
+                        this.props.material.url.includes('github') ||
+                        this.props.material.url.includes('bitbucket') ? null : (
                             <Git />
                         )}
                     </span>
@@ -151,24 +151,16 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
     tippyContent = () => {
         return (
             <div className="p-12 fs-13">
-                <div className="mb-20">
-                    {INCLUDE_EXCLUDE_TIPPY.lineOne}
-                </div>
-                <div className="mb-20">
-                    {INCLUDE_EXCLUDE_TIPPY.lineTwo}
-                </div>
-                <div>
-                    {INCLUDE_EXCLUDE_TIPPY.lineThree}
-                </div>
-                <div>
-                    {INCLUDE_EXCLUDE_TIPPY.lineFour}
-                </div>
+                <div className="mb-20">{INCLUDE_EXCLUDE_TIPPY.lineOne}</div>
+                <div className="mb-20">{INCLUDE_EXCLUDE_TIPPY.lineTwo}</div>
+                <div>{INCLUDE_EXCLUDE_TIPPY.lineThree}</div>
+                <div>{INCLUDE_EXCLUDE_TIPPY.lineFour}</div>
             </div>
         )
     }
 
     // True if rest all folders should be include , false if rest all should be excluded.
-    isIncludeOrExclude = () : boolean => {
+    isIncludeOrExclude = (): boolean => {
         const filePath = this.props.material.includeExcludeFilePath.split(/\r?\n/)
         let include: number = 0
         let exclude: number = 0
@@ -249,8 +241,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />
                                             ) : null}
                                             {props.data.url.includes('gitlab') ||
-                                                props.data.url.includes('github') ||
-                                                props.data.url.includes('bitbucket') ? null : (
+                                            props.data.url.includes('github') ||
+                                            props.data.url.includes('bitbucket') ? null : (
                                                 <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
                                             )}
 
@@ -350,9 +342,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         rootClassName="fs-14 cn-9 mb-8 flex top dc_max-width__max-content"
                     >
                         <div className="ml-12">
-                            <span className="mt-1 flex left">
-                                Exclude specific file/folder in this repo
-                            </span>
+                            <span className="mt-1 flex left">Exclude specific file/folder in this repo</span>
                         </div>
                     </Checkbox>
                     <span>
@@ -388,28 +378,33 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             </p>
                             {this.props.isLearnHowClicked && (
                                 <div className="ml-8">
-
                                     <div className="flex left">
                                         <div className="dc__bullet mr-6 ml-6"></div>
                                         <span className="fs-13 fw-4">{LEARN_HOW.infoList.lineOne.partOne}</span>
-                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__border">{LEARN_HOW.infoList.lineOne.partTwo}</span>
+                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__border">
+                                            {LEARN_HOW.infoList.lineOne.partTwo}
+                                        </span>
                                         <span className="ml-4 fs-13 fw-4">{LEARN_HOW.infoList.lineOne.partThree}</span>
-                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__border">{LEARN_HOW.infoList.lineOne.partFour}</span>
-                                        <br/>
+                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__border">
+                                            {LEARN_HOW.infoList.lineOne.partFour}
+                                        </span>
+                                        <br />
                                     </div>
                                     <div className="flex left">
                                         <div className="dc__bullet mr-6 ml-6"></div>
                                         <span className="fs-13 fw-4">{LEARN_HOW.infoList.lineTwo}</span>
-                                        <br/>
+                                        <br />
                                     </div>
                                     <div className="flex left mt-2">
                                         <div className="dc__bullet mr-6 ml-6"></div>
                                         <span className="fs-13 fw-4">{LEARN_HOW.infoList.lineThree}</span>
-                                        <br/>
+                                        <br />
                                     </div>
                                     <div className="ml-10 mt-4 dc__ff-monospace fs-13 fw-4">
-                                        {LEARN_HOW.example.lineOne}<br/>
-                                        {LEARN_HOW.example.lineTwo}<br/>
+                                        {LEARN_HOW.example.lineOne}
+                                        <br />
+                                        {LEARN_HOW.example.lineTwo}
+                                        <br />
                                     </div>
                                 </div>
                             )}
@@ -419,20 +414,20 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             className="form__textarea dc__no-border-imp w-872-imp"
                             autoComplete={'off'}
                             autoFocus
-                            placeholder={"Example: \nto include type /foldername \nto exclude type !/foldername"}
+                            placeholder={'Example: \nto include type /foldername \nto exclude type !/foldername'}
                             rows={3}
                             value={this.props.material.includeExcludeFilePath}
                             onChange={this.props.handleFileChange}
                             data-testid="clone-directory-path"
                         />
-                        {this.props.material.includeExcludeFilePath?.length>0 && (
+                        {this.props.material.includeExcludeFilePath?.length > 0 && (
                             <div className="flex left h-36 p-8 bcy-1 dc__border-top">
                                 <span className="fw-4 fs-13">
                                     <Info className="icon-dim-16 mr-6 mt-6" />
                                 </span>
-                                    {INFO_BAR.infoMessage}
-                                <span className={`ml-4 fw-6 ${this.isIncludeOrExclude() ? "cg-5" : "cr-5"}`}>
-                                    {this.isIncludeOrExclude() ? "included" : "excluded"}
+                                {INFO_BAR.infoMessage}
+                                <span className={`ml-4 fw-6 ${this.isIncludeOrExclude() ? 'cg-5' : 'cr-5'}`}>
+                                    {this.isIncludeOrExclude() ? 'included' : 'excluded'}
                                 </span>
                             </div>
                         )}

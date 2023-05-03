@@ -161,7 +161,7 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
         return (
             <>
                 <section
-                    className="mt-16 mb-16 ml-20 mr-20 global-configuration__component"
+                    className="global-configuration__component"
                     data-testid="section-host-url"
                 >
                     <h2 className="form__title" data-testid="host-url-heading">
