@@ -7,11 +7,13 @@ import { ReactComponent as MessageIcon } from '../../assets/icons/ic-message.svg
 import { ReactComponent as BranchIcon } from '../../assets/icons/ic-branch.svg'
 import { ReactComponent as BranchMain } from '../../assets/icons/ic-branch-main.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle.svg'
+import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import { SourceTypeMap, Moment12HourFormat } from '../../config'
 import { createGitCommitUrl } from '../common/helpers/git'
 import { GitMaterialInfoHeader } from './GitMaterialInfo'
 import moment from 'moment'
 import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
 
 export default function GitCommitInfoGeneric({
     materialSourceType,
@@ -73,8 +75,8 @@ export default function GitCommitInfoGeneric({
                     </div>
                 ) : null}
                 {_webhookData.data.message ? (
-                    <div className="material-history__text flex left material-history-text--padded">
-                        <MessageIcon className="icon-dim-16 mr-8" />
+                    <div className="material-history__text flex left top material-history-text--padded">
+                        <MessageIcon className="icon-dim-16 mw-16 mr-8 mt-2" />
                         {_webhookData.data.message}
                     </div>
                 ) : null}
@@ -161,8 +163,22 @@ export default function GitCommitInfoGeneric({
 
     const matSelectionText = (): JSX.Element => {
         if (isExcluded) {
-            return <span className="cr-5 cursor-not-allowed">Excluded</span>
+            return (
+                <Tippy
+                    className="default-tt w-200 dc__align-center fw-4 fs-12"
+                    arrow={false}
+                    placement="left"
+                    content="Not available for build as this commit contains changes in excluded files or folders"
+                    interactive={true}
+                >
+                    <span className="flex left cr-5 cursor-not-allowed">
+                        <Abort className="mr-8 fcr-5" />
+                        Excluded
+                    </span>
+                </Tippy>
+            )
         }
+
         return <span>Select</span>
     }
 
@@ -221,8 +237,8 @@ export default function GitCommitInfoGeneric({
                         </div>
                     ) : null}
                     {_lowerCaseCommitInfo.message ? (
-                        <div className="material-history__text material-history-text--padded flex left">
-                            <MessageIcon className="icon-dim-16 mr-8" />
+                        <div className="material-history__text flex left top material-history-text--padded">
+                            <MessageIcon className="icon-dim-16 mw-16 mr-8 mt-2" />
                             {_lowerCaseCommitInfo.message}
                         </div>
                     ) : null}

@@ -15,6 +15,7 @@ export const TriggerViewContext = createContext<TriggerViewContextType>({
     toggleChanges: (materialId: string, hash: string) => {},
     toggleInvalidateCache: () => {},
     getMaterialByCommit: (ciNodeId: number, pipelineName: string, materialId: number, commitHash: string) => {},
+    getFilteredMaterial: (ciNodeId: number, materialId: number, showExcluded: boolean) => {},
 })
 
 export enum WorkflowDimensionType {

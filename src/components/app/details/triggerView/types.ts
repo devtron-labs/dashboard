@@ -302,6 +302,7 @@ export interface TriggerViewContextType {
     toggleChanges: (materialId: string, hash: string) => void
     toggleInvalidateCache: () => void
     getMaterialByCommit: (ciNodeId: number, pipelineName: string, materialId: number, commitHash: string) => void
+    getFilteredMaterial: (ciNodeId: number, materialId: number, showExcluded: boolean) => void
 }
 
 export interface TriggerViewRouterProps {
@@ -671,6 +672,7 @@ export interface EmptyStateCIMaterialProps {
     toggleWebHookModal?: () => void
     clearSearch?: () => void
     handleGoToWorkFlowEditor?: (e?: any) => void
+    showAllCommits?: boolean
 }
 
 export interface MaterialSourceProps {

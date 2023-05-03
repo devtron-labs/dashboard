@@ -337,11 +337,13 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                         },
                     ]
                     _selectedMaterial.isMaterialLoading = false
+                    _selectedMaterial.showAllCommits = false
                 } else {
                     _selectedMaterial.history = []
                     _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
                     _selectedMaterial.noSearchResult = true
                     _selectedMaterial.isMaterialLoading = false
+                    _selectedMaterial.showAllCommits = false
                 }
                 setFilteredWorkflows(workflows)
             })
@@ -365,6 +367,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
                         if (material.isSelected && material.searchText !== commitHash) {
                             material.isMaterialLoading = true
+                            material.showAllCommits = false
                             material.searchText = commitHash
                             _selectedMaterial = material
                         }
@@ -381,7 +384,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
             if (commitInLocalHistory) {
                 _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: !commitInLocalHistory.excluded }]
                 _selectedMaterial.isMaterialLoading = false
-
+                _selectedMaterial.showAllCommits = false
                 setFilteredWorkflows(_workflows)
             } else {
                 setFilteredWorkflows(_workflows)
@@ -400,6 +403,93 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                 setErrorCode(errors.code)
             })
         }
+    }
+
+    const getFilteredMaterial = async (ciNodeId: number, ciPipelineMaterialId: number, showExcluded: boolean) => {
+        const _workflows = [...filteredWorkflows].map((wf) => {
+            wf.nodes = wf.nodes.map((node) => {
+                if (node.id === ciNodeId.toString() && node.type === 'CI') {
+                    node.inputMaterialList = node.inputMaterialList.map((material) => {
+                        if (material.gitMaterialId === ciPipelineMaterialId) {
+                            material.isMaterialLoading = true
+                            material.showAllCommits = showExcluded
+                        }
+                        return material
+                    })
+                    return node
+                }
+                return node
+            })
+            return wf
+        })
+        setFilteredWorkflows(_workflows)
+        abortControllerRef.current = new AbortController()
+        getMaterialHistory(
+            ciNodeId.toString(),
+            abortControllerRef.current.signal,
+            ciPipelineMaterialId,
+            showExcluded,
+        ).catch((errors: ServerErrors) => {
+            if (!abortControllerRef.current.signal.aborted) {
+                showError(errors)
+            }
+        })
+    }
+
+    const getMaterialHistory = (
+        ciNodeId: string,
+        abortSignal: AbortSignal,
+        materialId?: number,
+        showExcluded?: boolean,
+    ) => {
+        const params = {
+            pipelineId: ciNodeId,
+            materialId: materialId,
+            showExcluded: showExcluded,
+        }
+        return getCIMaterialList(params, abortSignal).then((response) => {
+            let showRegexModal = false
+            const _workflows = [...filteredWorkflows].map((wf) => {
+                wf.nodes.map((node) => {
+                    if (node.type === 'CI' && +node.id == +ciNodeId) {
+                        const selectedCIPipeline = filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
+                        if (selectedCIPipeline?.ciMaterial) {
+                            for (const mat of selectedCIPipeline.ciMaterial) {
+                                if (mat.isRegex && mat.gitMaterialId === response.result[0].gitMaterialId) {
+                                    node.isRegex = !!response.result[0].regex
+                                    if (response.result[0].value) {
+                                        node.branch = response.result[0].value
+                                    } else {
+                                        showRegexModal = !response.result[0].value
+                                    }
+                                    break
+                                }
+                            }
+                        }
+                        node.inputMaterialList = node.inputMaterialList.map((mat) => {
+                            if (mat.id === response.result[0].id) {
+                                return {
+                                    ...response.result[0],
+                                    isSelected: mat.isSelected,
+                                    isMaterialLoading: false,
+                                    searchText: mat.searchText,
+                                    showAllCommits: showExcluded,
+                                }
+                            } else return mat
+                        })
+                    }
+                    return node
+                })
+                return wf
+            })
+            setFilteredWorkflows(_workflows)
+            if (!showBulkCIModal) {
+                setShowCIModal(!showRegexModal)
+                setShowMaterialRegexModal(showRegexModal)
+            }
+            getWorkflowStatusData(_workflows)
+            preventBodyScroll(true)
+        })
     }
 
     //NOTE: GIT MATERIAL ID
@@ -1596,7 +1686,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                 <PopupMenu.Button
                     isKebab
                     rootClassName="h-36 popup-button-kebab dc__border-left-b4 pl-8 pr-8 dc__no-left-radius flex bcb-5"
-                    dataTestId='deploy-popup'
+                    dataTestId="deploy-popup"
                 >
                     <Dropdown className="icon-dim-20 fcn-0" />
                 </PopupMenu.Button>
@@ -1756,6 +1846,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     toggleChanges: toggleChanges,
                     toggleInvalidateCache: toggleInvalidateCache,
                     getMaterialByCommit: getMaterialByCommit,
+                    getFilteredMaterial: getFilteredMaterial,
                 }}
             >
                 {renderWorkflow()}

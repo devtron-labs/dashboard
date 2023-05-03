@@ -217,6 +217,7 @@ const processCIMaterialResponse = (response) => {
                 gitURL: material.gitMaterialUrl || '',
                 lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
                 isMaterialLoading: false,
+                showAllCommits: false,
                 history: processMaterialHistory(material),
             }
         })
@@ -226,16 +227,20 @@ const processCIMaterialResponse = (response) => {
 }
 
 export const getCIMaterialList = (params, abortSignal: AbortSignal) => {
-    return get(`${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`, {
-        signal: abortSignal,
-    }).then((response) => {
-        const materials = processCIMaterialResponse(response)
-        return {
-            code: response.code,
-            status: response.status,
-            result: materials,
-        }
-    })
+  let url = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`
+  if (params.materialId) {
+      url += `/${params.materialId}${params.showExcluded ? '?showAll=true' : ''} `
+  }
+  return get(url, {
+      signal: abortSignal,
+  }).then((response) => {
+      const materials = processCIMaterialResponse(response)
+      return {
+          code: response.code,
+          status: response.status,
+          result: materials,
+      }
+  })
 }
 
 export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType, abortSignal: AbortSignal) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { PopupMenu, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { SourceTypeMap } from '../../config'
 import { MaterialHistory, CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import MaterialSource from '../app/details/triggerView/MaterialSource'
@@ -13,6 +13,10 @@ import { ReactComponent as BranchFixed } from '../../assets/icons/misc/branch.sv
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { ReactComponent as Edit } from '../../assets/icons/misc/editBlack.svg'
+import { ReactComponent as Hide } from '../../assets/icons/ic-visibility-off.svg'
+import { ReactComponent as Show } from '../../assets/icons/ic-visibility-on.svg'
+import { ReactComponent as ShowIconFilter } from '../../assets/icons/ic-group-filter.svg'
+import { ReactComponent as ShowIconFilterApplied } from '../../assets/icons/ic-group-filter-applied.svg'
 import Tippy from '@tippyjs/react'
 import { getCIPipelineURL } from '../common'
 import { useHistory } from 'react-router'
@@ -20,7 +24,7 @@ import { useLocation } from 'react-router-dom'
 import { TriggerViewContext } from '../app/details/triggerView/config'
 
 export default function GitInfoMaterial({
-    dataTestId="",
+    dataTestId = '',
     material,
     title,
     pipelineId,
@@ -41,6 +45,7 @@ export default function GitInfoMaterial({
 }) {
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
+    const [showAllCommits, setShowAllCommits] = useState(false)
     const { push } = useHistory()
     const location = useLocation()
     const triggerViewContext = useContext(TriggerViewContext)
@@ -53,6 +58,7 @@ export default function GitInfoMaterial({
             setSearchText(selectedMaterial.searchText)
             setSearchApplied(true)
         }
+        setShowAllCommits(selectedMaterial?.showAllCommits ?? false)
     }, [selectedMaterial])
 
     const onClickCloseButton = (): void => {
@@ -63,7 +69,7 @@ export default function GitInfoMaterial({
     function renderMaterialHeader() {
         return (
             <div className={`trigger-modal__header ${fromBulkCITrigger ? 'bcn-0' : ''}`}>
-                <h1  data-testid="build-deploy-pipeline-name-heading" className="modal__title flex left fs-16">
+                <h1 data-testid="build-deploy-pipeline-name-heading" className="modal__title flex left fs-16">
                     {showWebhookModal ? (
                         <button type="button" className="dc__transparent flex" onClick={hideWebhookModal}>
                             <Back className="mr-16" />
@@ -213,6 +219,12 @@ export default function GitInfoMaterial({
         toggleWebhookModal(selectedMaterial.id)
     }
 
+    const toggleExclude = (): void => {
+        const _showAllCommits = !showAllCommits
+        setShowAllCommits(_showAllCommits)
+        triggerViewContext.getFilteredMaterial(pipelineId, selectedMaterial.gitMaterialId, _showAllCommits)
+    }
+
     function renderMaterialHistory(selectedMaterial: CIMaterialType) {
         let anyCommit = selectedMaterial.history?.length > 0
         const isWebhook = selectedMaterial.type === SourceTypeMap.WEBHOOK
@@ -224,7 +236,35 @@ export default function GitInfoMaterial({
                         style={{ backgroundColor: 'var(--window-bg)', top: 0 }}
                     >
                         {renderBranchChangeHeader(selectedMaterial)}
-                        {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && <>{renderSearch()}</>}
+                        {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && (
+                            <div className="flex right mr-20">
+                                {renderSearch()}
+                                <PopupMenu autoClose>
+                                    <PopupMenu.Button rootClassName="mw-18" isKebab>
+                                        {showAllCommits ? (
+                                            <ShowIconFilterApplied className="icon-dim-20" />
+                                        ) : (
+                                            <ShowIconFilter className="icon-dim-20" />
+                                        )}
+                                    </PopupMenu.Button>
+                                    <PopupMenu.Body>
+                                        <div className="flex left p-10 pointer" onClick={toggleExclude}>
+                                            {showAllCommits ? (
+                                                <>
+                                                    <Hide className="icon-dim-16 mr-10" />
+                                                    Hide excluded commits
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Show className="icon-dim-16 mr-10" />
+                                                    Show excluded commits
+                                                </>
+                                            )}
+                                        </div>
+                                    </PopupMenu.Body>
+                                </PopupMenu>
+                            </div>
+                        )}
                     </div>
                 )}
 

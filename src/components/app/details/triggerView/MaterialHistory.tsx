@@ -44,6 +44,7 @@ export interface CIMaterialType {
     isRegex: boolean
     isDockerFileError?: boolean
     dockerFileErrorMsg?: string
+    showAllCommits?: boolean
 }
 
 export interface MaterialHistoryProps {
