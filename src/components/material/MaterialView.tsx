@@ -32,7 +32,8 @@ import {
     DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE,
     DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE,
 } from '../../config/constantMessaging'
-import { ReactComponent as Info } from '../../assets/icons/info-filled-grey.svg'
+import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
+import { ReactComponent as InfoOutlined } from '../../assets/icons/ic-info-outlined.svg';
 import { AuthenticationType } from '../cluster/cluster.type'
 import { INCLUDE_EXCLUDE_TIPPY, LEARN_HOW, INFO_BAR } from './constants'
 
@@ -422,7 +423,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         {this.props.material.includeExcludeFilePath?.length > 0 && (
                             <div className="flex left h-36 p-8 bcy-1 dc__border-top">
                                 <span className="fw-4 fs-13">
-                                    <Info className="icon-dim-16 mr-6 mt-6" />
+                                    <InfoOutlined className="icon-dim-16 mr-6 mt-6 fcn-6" />
                                 </span>
                                 {INFO_BAR.infoMessage}
                                 <span className={`ml-4 fw-6 ${this.isIncludeOrExclude() ? 'cg-5' : 'cr-5'}`}>
