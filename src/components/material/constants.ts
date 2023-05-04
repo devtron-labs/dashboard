@@ -14,7 +14,7 @@ export const LEARN_HOW = {
             partFour: "!/folder/subfolder/*",
         },
         lineTwo: "For multiple inputs, enter paths in separate lines.",
-        lineThree: "In case of any conflict, the path defined later will hold more importance. In the below example ‘docs/**’ folder will be included. */",
+        lineThree: "In case of any conflict, the path defined later will hold more importance. In the below example ‘docs/**’ folder will be included.",
     },
     example: {
         lineOne: "!/sub-project/docs/**",
