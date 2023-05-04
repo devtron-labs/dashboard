@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { showError, EmptyState, TippyCustomized, TippyTheme, getAlphabetIcon } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, EmptyState, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { copyToClipboard, importComponentFromFELibrary } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
@@ -7,7 +7,6 @@ import { ReactComponent as Download } from '../../../../assets/icons/ic-download
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help.svg'
-import { ReactComponent as ApprovedIcon } from '../../../../assets/icons/ic-checks.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import folder from '../../../../assets/icons/ic-folder.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
@@ -19,7 +18,7 @@ import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { ARTIFACTS_EMPTY_STATE_TEXTS } from './Constants'
 import { extractImage } from '../../service'
 
-const APPROVAL_INFO_TEXTS = importComponentFromFELibrary('APPROVAL_INFO_TEXTS')
+const ApprovedTippyContent = importComponentFromFELibrary('ApprovedTippyContent')
 
 export default function Artifacts({
     status,
@@ -169,67 +168,21 @@ const CIProgressView = (): JSX.Element => {
     )
 }
 
-const getApprovedTippyContent = (approvalRequested: string, approvedBy: string[], deployedBy: string) => {
-    return (
-        <div className="h-100 dc__overflow-hidden">
-            <div className="pt-12 pb-12 pl-12 pr-12 h-100 mxh-210 dc__overflow-scroll">
-                <div>
-                    <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">{APPROVAL_INFO_TEXTS.requestedBy}</h5>
-                    <span className="flex left mb-8 fs-13 fw-4">
-                        {getAlphabetIcon(approvalRequested)}
-                        {approvalRequested}
-                    </span>
-                </div>
-                <div className="mt-12">
-                    <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">{APPROVAL_INFO_TEXTS.approvedBy}</h5>
-                    <ol className="p-0 dc__list-style-none">
-                        {approvedBy.map((_approver) => {
-                            return (
-                                <li key={_approver} className="flex left mb-8 fs-13 fw-4">
-                                    {getAlphabetIcon(_approver)}
-                                    {_approver}
-                                </li>
-                            )
-                        })}
-                    </ol>
-                </div>
-                <div className="mt-12">
-                    <h5 className="fs-13 fw-6 lh-20 mt-0 mb-8">{APPROVAL_INFO_TEXTS.deploymentBy}</h5>
-                    <span className="flex left mt-8 fs-13 fw-4">
-                        {getAlphabetIcon(deployedBy)}
-                        {deployedBy}
-                    </span>
-                </div>
-            </div>
-        </div>
-    )
-}
-
 export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children }: CIListItemType) => {
     return (
         <div className={`mb-16 ci-artifact ci-artifact--${type}`} data-testid="hover-on-report-artifact">
             {type === 'approved-artifact' ? (
                 <>
-                    <TippyCustomized
-                        theme={TippyTheme.white}
-                        className="w-300 h-100"
-                        placement="top-start"
-                        Icon={ApprovedIcon}
-                        heading="Approved"
-                        additionalContent={getApprovedTippyContent(
-                            userApprovalMetadata.requestedUserData?.userEmail,
-                            userApprovalMetadata.approvedUsersData?.map((_approver) => _approver.userEmail),
-                            triggeredBy,
-                        )}
-                        showCloseButton={true}
-                        trigger="click"
-                        interactive={true}
-                    >
-                        <div className="flex left dc_width-max-content pl-16 pr-16 h-36 cursor">
-                            <ApprovedIcon className="icon-dim-16 mr-8" />
-                            <span>{userApprovalMetadata.approvedUsersData.length} Approved</span>
-                        </div>
-                    </TippyCustomized>
+                    {ApprovedTippyContent && (
+                        <ApprovedTippyContent
+                            matId={null}
+                            requestedUserId={null}
+                            userApprovalMetadata={userApprovalMetadata}
+                            cancelRequest={noop}
+                            requestInProgress={false}
+                            triggeredBy={triggeredBy}
+                        />
+                    )}
                     <div className="dc__border-bottom-n1" />
                     <div className="approved-artifact pt-16 pb-16 pl-16 pr-16 flex-align-center">
                         <div className="bcn-1 flex br-4 icon-dim-40">

@@ -130,7 +130,7 @@ export default function DeploymentDetailSteps({
                     {approverDetailsExpanded && (
                         <div className="bcn-0 en-2 detail-tab_border bw-1">
                             <ol className="pt-12 pb-4 pl-12 pr-12 mb-0 dc__list-style-none">
-                                {userApprovalMetadata.approvedUsersData.map((_approver, idx) => {
+                                {userApprovalMetadata.approvedUsersData.map((_approver) => {
                                     return (
                                         <li key={_approver.userEmail} className="flex left mb-8 fs-13 fw-4">
                                             {getAlphabetIcon(_approver.userEmail)}
