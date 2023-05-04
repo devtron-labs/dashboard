@@ -365,13 +365,16 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     //NOTE: GIT MATERIAL ID
-    refreshMaterial(ciNodeId: number, pipelineName: string, gitMaterialId: number) {
+    refreshMaterial(ciNodeId: number, gitMaterialId: number) {
+        let showExcluded = false
         const workflows = [...this.state.workflows].map((wf) => {
             wf.nodes = wf.nodes.map((node) => {
                 if (node.id === ciNodeId.toString() && node.type === 'CI') {
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
-                        material.isMaterialLoading =
-                            material.gitMaterialId === gitMaterialId ? true : material.isMaterialLoading
+                        if (material.gitMaterialId === gitMaterialId) {
+                            material.isMaterialLoading = true
+                            showExcluded = material.showAllCommits
+                        }
                         return material
                     })
                     return node
@@ -384,14 +387,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.abortController = new AbortController()
         refreshGitMaterial(gitMaterialId.toString(), this.abortController.signal)
             .then((response) => {
-                this.updateCIMaterialList(ciNodeId.toString(), pipelineName, true, this.abortController.signal).catch(
-                    (errors: ServerErrors) => {
-                        if (!this.abortController.signal.aborted) {
-                            showError(errors)
-                            this.setState({ code: errors.code })
-                        }
-                    },
-                )
+                this.getMaterialHistory(
+                    ciNodeId.toString(),
+                    this.abortController.signal,
+                    gitMaterialId,
+                    showExcluded,
+                ).catch((errors: ServerErrors) => {
+                    if (!this.abortController.signal.aborted) {
+                        showError(errors)
+                        this.setState({ code: errors.code })
+                    }
+                })
             })
             .catch((error: ServerErrors) => {
                 if (!this.abortController.signal.aborted) {

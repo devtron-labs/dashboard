@@ -52,7 +52,7 @@ export default function MaterialSource({
 
     const handleRefreshAction = (e) => {
         e.stopPropagation()
-        refreshMaterial.refresh(refreshMaterial.pipelineId, refreshMaterial.title, Number(e.currentTarget.dataset.id))
+        refreshMaterial.refresh(refreshMaterial.pipelineId, Number(e.currentTarget.dataset.id))
     }
 
     const renderRefreshButton = (mat: CIMaterialType) => {

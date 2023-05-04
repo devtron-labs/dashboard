@@ -498,18 +498,16 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
     }
 
     //NOTE: GIT MATERIAL ID
-    const refreshMaterial = (
-        ciNodeId: number,
-        pipelineName: string,
-        gitMaterialId: number,
-        abortController?: AbortController,
-    ) => {
+    const refreshMaterial = (ciNodeId: number, gitMaterialId: number, abortController?: AbortController) => {
+        let showExcluded = false
         const _workflows = [...filteredWorkflows].map((wf) => {
             wf.nodes = wf.nodes.map((node) => {
                 if (node.id === ciNodeId.toString() && node.type === 'CI') {
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
-                        material.isMaterialLoading =
-                            material.gitMaterialId === gitMaterialId ? true : material.isMaterialLoading
+                        if (material.gitMaterialId === gitMaterialId) {
+                            material.isMaterialLoading = true
+                            showExcluded = material.showAllCommits
+                        }
                         return material
                     })
                     return node
@@ -522,14 +520,16 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
         abortControllerRef.current = abortController ?? new AbortController()
         refreshGitMaterial(gitMaterialId.toString(), abortControllerRef.current.signal)
             .then((response) => {
-                updateCIMaterialList(ciNodeId.toString(), pipelineName, true, abortControllerRef.current.signal).catch(
-                    (errors: ServerErrors) => {
-                        if (!abortControllerRef.current.signal.aborted) {
-                            showError(errors)
-                            setErrorCode(errors.code)
-                        }
-                    },
-                )
+                getMaterialHistory(
+                    ciNodeId.toString(),
+                    abortControllerRef.current.signal,
+                    gitMaterialId,
+                    showExcluded,
+                ).catch((errors: ServerErrors) => {
+                    if (!abortControllerRef.current.signal.aborted) {
+                        showError(errors)
+                    }
+                })
             })
             .catch((error: ServerErrors) => {
                 if (!abortControllerRef.current.signal.aborted) {

@@ -290,7 +290,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
 
 export interface TriggerViewContextType {
     invalidateCache: boolean
-    refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => void
+    refreshMaterial: (ciNodeId: number, materialId: number) => void
     onClickTriggerCINode: () => void
     onClickTriggerCDNode: (nodeType: DeploymentNodeType, _appId: number) => void
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => void
@@ -687,8 +687,7 @@ export interface MaterialSourceProps {
     selectMaterial: (materialId: string, ciPipelineId?: number) => void
     refreshMaterial?: {
         pipelineId: number
-        title: string
-        refresh: (pipelineId: number, title: string, gitMaterialId: number) => void
+        refresh: (pipelineId: number, gitMaterialId: number) => void
     }
     ciPipelineId?: number
     fromTriggerInfo?: boolean

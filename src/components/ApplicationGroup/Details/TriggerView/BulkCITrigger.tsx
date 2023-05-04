@@ -58,7 +58,6 @@ export default function BulkCITrigger({
         selectMaterial: (materialId, pipelineId?: number) => void
         refreshMaterial: (
             ciNodeId: number,
-            pipelineName: string,
             materialId: number,
             abortController?: AbortController,
         ) => void
@@ -406,9 +405,9 @@ export default function BulkCITrigger({
         }
     }
 
-    const _refreshMaterial = (pipelineId: number, title: string, gitMaterialId: number) => {
+    const _refreshMaterial = (pipelineId: number, gitMaterialId: number) => {
         abortControllerRef.current = new AbortController()
-        refreshMaterial(pipelineId, title, gitMaterialId, abortControllerRef.current)
+        refreshMaterial(pipelineId, gitMaterialId, abortControllerRef.current)
     }
 
     const renderSelectedAppMaterial = (appId: number, selectedMaterialList: any[]): JSX.Element | null => {
@@ -420,7 +419,6 @@ export default function BulkCITrigger({
                         selectMaterial={selectMaterial}
                         refreshMaterial={{
                             refresh: _refreshMaterial,
-                            title: selectedApp.ciPipelineName,
                             pipelineId: +selectedApp.ciPipelineId,
                         }}
                         ciPipelineId={+selectedApp.ciPipelineId}

@@ -3,7 +3,7 @@ import { DeploymentNodeType, TriggerViewContextType } from './types'
 
 export const TriggerViewContext = createContext<TriggerViewContextType>({
     invalidateCache: false,
-    refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => {},
+    refreshMaterial: (ciNodeId: number, materialId: number) => {},
     onClickTriggerCINode: () => {},
     onClickTriggerCDNode: (nodeType: DeploymentNodeType, _appId: number) => {},
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => {},

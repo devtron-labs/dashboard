@@ -96,7 +96,6 @@ export default function GitInfoMaterial({
     function renderMaterialSource() {
         const refreshMaterial = {
             refresh: triggerViewContext.refreshMaterial,
-            title: title,
             pipelineId: pipelineId,
         }
         return (
