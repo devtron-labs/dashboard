@@ -289,6 +289,10 @@
         height: calc(100vh - 108px);
     }
 
+    &.cluster-details-full-screen {
+        height: calc(100vh - 136px);
+    }
+
     &.node-details-full-screen {
         height: calc(100vh - 137px);
     }
@@ -300,9 +304,14 @@
     height: 0;
     z-index: 1;
 
+    &.cluster-details-terminal {
+        top: 76px;
+        height: calc(100vh - 76px);
+    }
+
     &.node-terminal {
-       top: 76px;
-       height: calc(100vh - 76px);
+       top: 48px;
+       height: calc(100vh - 48px);
     }
 }
 

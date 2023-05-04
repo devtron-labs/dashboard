@@ -192,6 +192,7 @@ export interface ClusterTerminalType {
     nodeList?: string[]
     closeTerminal?: (skipRedirection?: boolean) => void
     clusterImageList: ImageList[]
+    isClusterDetailsPage?: boolean
     isNodeDetailsPage?: boolean
     namespaceList: string[]
     node?: string

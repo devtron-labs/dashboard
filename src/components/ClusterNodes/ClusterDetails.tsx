@@ -764,6 +764,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                 <ClusterTerminal
                     clusterId={Number(clusterId)}
                     nodeGroups={createGroupSelectList(filteredFlattenNodeList, 'name')}
+                    isClusterDetailsPage={true}
                     closeTerminal={closeTerminal}
                     clusterImageList={nodeImageList}
                     namespaceList={namespaceList[clusterName]}
