@@ -364,7 +364,7 @@ export default function ClusterTerminal({
         }
     }
 
-    async function closeTerminalModal(e: any, skipRedirection?: boolean): Promise<void> {
+    async function closeTerminalModal(e: any, skipRedirection?: boolean) {
         try {
             if (!isNodeDetailsPage && typeof closeTerminal === 'function') {
                 closeTerminal(skipRedirection)
