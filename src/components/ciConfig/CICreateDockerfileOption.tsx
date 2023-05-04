@@ -263,6 +263,7 @@ export default function CICreateDockerfileOption({
                         }}
                         onChange={handleGitRepoChange}
                         isDisabled={configOverrideView && !allowOverride}
+                        classNamePrefix="build-config__select-repository-containing-code"
                     />
                 )}
                 <div className="h-22 dc__border-right-n1 mr-8 ml-8" />

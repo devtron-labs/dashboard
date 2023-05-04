@@ -381,6 +381,7 @@ export default function CIDockerFileConfig({
                             <Dropdown
                                 onClick={toggleCollapse}
                                 className="icon-dim-26 rotate "
+                                data-testid="set-build-context-button"
                                 style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }}
                             />
                             Set Build context
@@ -408,6 +409,7 @@ export default function CIDockerFileConfig({
                             ) : (
                                 <ReactSelect
                                     className="m-0"
+                                    classNamePrefix="build-config__select-repository-containing-build-context"
                                     tabIndex={3}
                                     isMulti={false}
                                     isClearable={false}
