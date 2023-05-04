@@ -13,7 +13,11 @@ import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLi
 import { getSaveTelemetry } from './appDetails.api'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentStatusDetail } from '../../app/details/appDetails/appDetails.service'
-import { DEFAULT_STATUS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, HELM_DEPLOYMENT_STATUS_TEXT } from '../../../config'
+import {
+    DEFAULT_STATUS,
+    DEPLOYMENT_STATUS,
+    DEPLOYMENT_STATUS_QUERY_PARAM,
+} from '../../../config'
 import DeploymentStatusDetailModal from '../../app/details/appDetails/DeploymentStatusDetailModal'
 import {
     DeploymentStatusDetailsBreakdownDataType,
@@ -21,7 +25,7 @@ import {
 } from '../../app/details/appDetails/appDetails.type'
 import { processDeploymentStatusDetailsData } from '../../app/details/appDetails/utils'
 import { useSharedState } from '../utils/useSharedState'
-
+let deploymentStatusTimer = null
 const AppDetailsComponent = ({
     externalLinks,
     monitoringTools,
@@ -29,7 +33,6 @@ const AppDetailsComponent = ({
     _init,
     loadingDetails,
     loadingResourceTree,
-    isPollingRequired = true,
 }: {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
@@ -37,13 +40,11 @@ const AppDetailsComponent = ({
     _init?: () => void
     loadingDetails: boolean
     loadingResourceTree: boolean
-    isPollingRequired?: boolean
 }) => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const [streamData, setStreamData] = useState<AppStreamData>(null)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
-    const [pollingIntervalID, setPollingIntervalID] = useState(null)
     const location = useLocation()
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
@@ -52,65 +53,6 @@ const AppDetailsComponent = ({
             deploymentStatus: DEFAULT_STATUS,
             deploymentStatusText: DEFAULT_STATUS,
         })
-    let deploymentStatusTimer = null
-
-    async function _getDeploymentStatusDetail(deploymentAppType: DeploymentAppType) {
-      await getDeploymentStatusDetail(params.appId, params.envId, '', true)
-          .then((deploymentStatusDetailRes) => {
-              if (deploymentStatusDetailRes.result) {
-                  if (deploymentAppType === DeploymentAppType.helm) {
-                      setDeploymentStatusDetailsBreakdownData({
-                          ...deploymentStatusDetailsBreakdownData,
-                          deploymentStatus:
-                              DEPLOYMENT_STATUS[deploymentStatusDetailRes.result.wfrStatus?.toUpperCase()],
-                          deploymentStatusText:
-                              deploymentStatusDetailRes.result.wfrStatus === HELM_DEPLOYMENT_STATUS_TEXT.PROGRESSING
-                                  ? HELM_DEPLOYMENT_STATUS_TEXT.INPROGRESS
-                                  : deploymentStatusDetailRes.result.wfrStatus,
-                          deploymentTriggerTime: deploymentStatusDetailRes.result.deploymentStartedOn,
-                          deploymentEndTime: deploymentStatusDetailRes.result.deploymentFinishedOn,
-                          triggeredBy: deploymentStatusDetailRes.result.triggeredBy,
-                      })
-                  } else {
-                      processDeploymentStatusData(deploymentStatusDetailRes.result)
-                  }
-              }
-          })
-          .catch(noop)
-
-  }
-{console.log(appDetails)}
-    async function callAppDetailsAPI() {
-      _getDeploymentStatusDetail(appDetails?.deploymentAppType)
-    }
-
-    function clearPollingInterval() {
-      if (pollingIntervalID) {
-          clearInterval(pollingIntervalID)
-      }
-  }
-    useEffect(() => {
-        if (isPollingRequired) {
-            callAppDetailsAPI()
-            const intervalID = setInterval(callAppDetailsAPI, 30000)
-            setPollingIntervalID(intervalID)
-        } else {
-            clearPollingInterval()
-        }
-    }, [isPollingRequired])
-
-
-    const clearDeploymentStatusTimer = (): void => {
-        if (deploymentStatusTimer) {
-            clearTimeout(deploymentStatusTimer)
-        }
-    }
-
-    useEffect(() => {
-        return () => {
-            clearDeploymentStatusTimer()
-        }
-    }, [pollingIntervalID])
 
     useEffect(() => {
         if (appDetails?.appType === AppType.EXTERNAL_HELM_CHART && params.appId) {
@@ -118,10 +60,26 @@ const AppDetailsComponent = ({
         }
     }, [])
 
+    useEffect(() => {
+      // Get deployment status timeline on argocd apps
+        if (appDetails?.deploymentAppType === DeploymentAppType.argo_cd) {
+            getDeploymentDetailStepsData()
+        }
+        return () => {
+          clearDeploymentStatusTimer()
+        }
+    }, [appDetails.appId])
+
+    const clearDeploymentStatusTimer = (): void => {
+        if (deploymentStatusTimer) {
+            clearTimeout(deploymentStatusTimer)
+        }
+    }
+
     const getDeploymentDetailStepsData = (): void => {
-            getDeploymentStatusDetail(params.appId, params.envId, '', true).then((deploymentStatusDetailRes) => {
-                processDeploymentStatusData(deploymentStatusDetailRes.result)
-            })
+        getDeploymentStatusDetail(params.appId, params.envId, '', true).then((deploymentStatusDetailRes) => {
+            processDeploymentStatusData(deploymentStatusDetailRes.result)
+        })
     }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
@@ -132,6 +90,10 @@ const AppDetailsComponent = ({
             deploymentStatusTimer = setTimeout(() => {
                 getDeploymentDetailStepsData()
             }, 10000)
+        } else {
+            deploymentStatusTimer = setTimeout(() => {
+                getDeploymentDetailStepsData()
+            }, 30000)
         }
         setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
     }
