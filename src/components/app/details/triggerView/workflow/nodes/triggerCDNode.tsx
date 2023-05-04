@@ -38,7 +38,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
         if (hideDetails)
             return (
                 <div
-                    data-testid="cd-status-not-triggered"
+                    data-testid={`cd-trigger-status-${this.props.index}`}
                     className="dc__cd-trigger-status"
                     style={{ color: statusColor[status] }}
                 >
