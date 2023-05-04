@@ -6,7 +6,6 @@ import { History } from './details/cicdHistory/types'
 import { AppDetails, CDMaterialResponseType, CreateAppLabelsRequest } from './types'
 import { CDModalTabType, DeploymentNodeType, DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
-import { InstallationType } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 let stageMap = {
     PRECD: 'PRE',
@@ -243,7 +242,6 @@ export function getCDMaterialList(
     cdMaterialId,
     stageType: DeploymentNodeType,
     abortSignal: AbortSignal,
-    installationType: InstallationType,
     isApprovalNode?: boolean,
 ): Promise<CDMaterialResponseType> {
     const URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
@@ -259,30 +257,18 @@ export function getCDMaterialList(
                 userApprovalConfig: null,
                 requestedUserId: 0,
             }
-        } else if (installationType === InstallationType.ENTERPRISE) {
-            return {
-                approvalUsers: response.result.approvalUsers,
-                materials: cdMaterialListModal(
-                    response.result.ci_artifacts,
-                    true,
-                    response.result.latest_wf_artifact_id,
-                    response.result.latest_wf_artifact_status,
-                ),
-                userApprovalConfig: response.result.userApprovalConfig,
-                requestedUserId: response.result.requestedUserId,
-            }
         }
 
         return {
-            approvalUsers: [],
+            approvalUsers: response.result.approvalUsers,
             materials: cdMaterialListModal(
                 response.result.ci_artifacts,
                 true,
                 response.result.latest_wf_artifact_id,
                 response.result.latest_wf_artifact_status,
             ),
-            userApprovalConfig: null,
-            requestedUserId: 0,
+            userApprovalConfig: response.result.userApprovalConfig,
+            requestedUserId: response.result.requestedUserId,
         }
     })
 }
@@ -300,7 +286,10 @@ export function getRollbackMaterialList(
         return {
             code: response.code,
             status: response.status,
-            result: cdMaterialListModal(response?.result.ci_artifacts, offset === 1 ? true : false),
+            result: {
+                materials: cdMaterialListModal(response.result?.ci_artifacts, offset === 1 ? true : false),
+                requestedUserId: response.result?.requestedUserId,
+            }
         }
     })
 }

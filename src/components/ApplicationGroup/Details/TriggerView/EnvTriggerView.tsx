@@ -71,11 +71,9 @@ import { handleSourceNotConfigured, processWorkflowStatuses } from '../../AppGro
 import Tippy from '@tippyjs/react'
 import ApprovalMaterialModal from '../../../app/details/triggerView/ApprovalNode/ApprovalMaterialModal'
 import { CDMaterialResponseType } from '../../../app/types'
-import { mainContext } from '../../../common/navigation/NavigationRoutes'
 
 let inprogressStatusTimer
 export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefaultType) {
-    const { currentServerInfo } = useContext(mainContext)
     const { envId } = useParams<{ envId: string }>()
     const location = useLocation()
     const history = useHistory()
@@ -126,11 +124,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
 
     const getWorkflowsData = async (): Promise<void> => {
         try {
-            const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(
-                envId,
-                filteredAppIds,
-                currentServerInfo?.serverInfo?.installationType,
-            )
+            const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
             if (showCIModal) {
                 _workflows.forEach((wf) =>
                     wf.nodes.forEach((n) => {
@@ -556,7 +550,6 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
             cdNodeId,
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             abortControllerRef.current.signal,
-            currentServerInfo?.serverInfo.installationType,
             isApprovalNode,
         )
             .then((data) => {
@@ -618,10 +611,13 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     const nodes = workflow.nodes.map((node) => {
                         if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
                             _selectedNode = node
+                            node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
+                            node.requestedUserId = response.result.requestedUserId
+
                             if (!offset && !size) {
-                                node.rollbackMaterialList = response.result
+                                node.rollbackMaterialList = response.result.materials
                             } else {
-                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result)
+                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result.materials)
                             }
                         }
                         return node

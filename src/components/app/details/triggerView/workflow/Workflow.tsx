@@ -266,6 +266,7 @@ export class Workflow extends Component<WorkflowProps> {
         return edges.map((edgeNode) => {
             return (
                 <Edge
+                    dataTestId="approval-node-button"
                     key={`trigger-edge-${edgeNode.startNode.id}-${edgeNode.endNode.id}(${edgeNode.endNode.type})`}
                     startNode={edgeNode.startNode}
                     endNode={edgeNode.endNode}

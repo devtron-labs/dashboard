@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Drawer, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { noop } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
@@ -16,7 +16,6 @@ import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { CDMaterialResponseType } from '../../../app/types'
-import { mainContext } from '../../../common/navigation/NavigationRoutes'
 
 export default function BulkCDTrigger({
     stage,
@@ -31,7 +30,6 @@ export default function BulkCDTrigger({
     isLoading,
     setLoading,
 }: BulkCDTriggerType) {
-    const { currentServerInfo } = useContext(mainContext)
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
@@ -82,12 +80,7 @@ export default function BulkCDTrigger({
             if (!appDetails.warningMessage) {
                 _unauthorizedAppList[appDetails.appId] = false
                 _CDMaterialPromiseList.push(
-                    getCDMaterialList(
-                        appDetails.cdPipelineId,
-                        appDetails.stageType,
-                        abortControllerRef.current.signal,
-                        currentServerInfo?.serverInfo?.installationType,
-                    )
+                    getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType, abortControllerRef.current.signal)
                         .then((data) => {
                             return { appId: appDetails.appId, ...data }
                         })
@@ -174,7 +167,7 @@ export default function BulkCDTrigger({
         if (isLoading) {
             return <Progressing pageLoader />
         }
-        const _currentApp = appList.find((app) => app.appId === selectedApp.appId) ?? {} as BulkCDDetailType
+        const _currentApp = appList.find((app) => app.appId === selectedApp.appId) ?? ({} as BulkCDDetailType)
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">

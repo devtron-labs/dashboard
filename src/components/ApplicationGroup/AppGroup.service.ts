@@ -26,7 +26,7 @@ import {
 } from './AppGroup.types'
 import { getModuleConfigured } from '../app/details/appDetails/appDetails.service'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
-import { InstallationType, ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 
 const getFilteredAppQueryString = (appIds: string): string => {
     let _appIdsQueryParam = ''
@@ -64,7 +64,7 @@ export const getWorkflowStatus = (envID: string, appIds: string) => {
     return get(`${Routes.ENV_WORKFLOW}/${envID}/${Routes.WORKFLOW_STATUS}${getFilteredAppQueryString(appIds)}`)
 }
 
-export const getWorkflows = (envID: string, appIds: string, installationType: InstallationType): Promise<WorkflowsResponseType> => {
+export const getWorkflows = (envID: string, appIds: string): Promise<WorkflowsResponseType> => {
     const _workflows: WorkflowType[] = []
     const _filteredCIPipelines: Map<string, any> = new Map()
     return Promise.all([
@@ -88,7 +88,6 @@ export const getWorkflows = (envID: string, appIds: string, installationType: In
                 externalCIConfig.result,
                 WorkflowTrigger,
                 WorkflowTrigger.workflow,
-                installationType,
                 filterChildAndSiblingCD(envID),
             )
             _workflows.push(...processWorkflowData.workflows)

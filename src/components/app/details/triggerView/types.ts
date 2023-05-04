@@ -357,6 +357,7 @@ export interface WorkflowType {
     showTippy?: boolean
     appId?: number
     isSelected?: boolean
+    approvalConfiguredIdsMap?: Record<number, UserApprovalConfigType>
 }
 
 export interface WebhookPayloadDataResponse {

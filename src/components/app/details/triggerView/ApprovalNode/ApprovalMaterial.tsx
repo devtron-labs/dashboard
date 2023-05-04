@@ -4,13 +4,12 @@ import { getLoginInfo, noop, ScanVulnerabilitiesTable, useAsync } from '../../..
 import { getModuleInfo } from '../../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleNameMap, TriggerTypeMap } from '../../../../../config'
 import { ModuleStatus } from '../../../../v2/devtronStackManager/DevtronStackManager.type'
-import { ReactComponent as World } from '../../../../../assets/icons/ic-world.svg'
-import { ReactComponent as Failed } from '../../../../../assets/icons/ic-rocket-fail.svg'
 import { ReactComponent as DeployIcon } from '../../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as ApprovalChecks } from '../../../../../assets/icons/ic-checks.svg'
+import { ReactComponent as CancelIcon } from '../../../../../assets/icons/ic-cross.svg'
 import arrow from '../../../../../assets/icons/misc/arrow-chevron-down-black.svg'
 import docker from '../../../../../assets/icons/misc/docker.svg'
-import { CDMaterialType, CDModalTabType, DeploymentNodeType, MaterialInfo } from '../types'
+import { CDMaterialType, DeploymentNodeType, MaterialInfo } from '../types'
 import { GitTriggers } from '../../cicdHistory/types'
 import GitCommitInfoGeneric from '../../../../common/GitCommitInfoGeneric'
 import { Progressing, showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
@@ -18,14 +17,16 @@ import { submitApprovalRequest } from './Service'
 import { TriggerViewContext } from '../config'
 import Tippy from '@tippyjs/react'
 import { toast } from 'react-toastify'
-import { ApprovedTippyContent } from './ApprovalMaterial.component'
+import { ApprovedTippyContent, DeploymentEnvState } from './ApprovalMaterial.component'
 import {
     APPROVAL_ACTION_TYPE,
     APPROVAL_CTA_TEXT,
+    APPROVAL_MODAL_CTA_TEXT,
     APPROVAL_REQUEST_TOAST_MSG,
     APPROVAL_RUNTIME_STATE,
+    DEPLOYMENT_ENV_TEXT,
 } from './Constants'
-import { ApprovalRequestType } from './Types'
+import { ApprovalMaterialProps, ApprovalRequestType } from './Types'
 import { ARTIFACT_STATUS } from '../Constants'
 
 export default function ApprovalMaterial({
@@ -39,7 +40,7 @@ export default function ApprovalMaterial({
     parentEnvironmentName,
     node,
     selectedTabIndex,
-}) {
+}: ApprovalMaterialProps) {
     const { onClickCDMaterial } = useContext(TriggerViewContext)
     const [tippyVisible, setTippyVisible] = useState<Record<string, boolean>>({})
     const [requestInProgress, setRequestInProgress] = useState(false)
@@ -47,48 +48,6 @@ export default function ApprovalMaterial({
     const email: string = loginInfo ? loginInfo['email'] || loginInfo['sub'] : ''
     const [, securityModuleRes] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY), [])
     const isSecurityModuleInstalled = securityModuleRes?.status === ModuleStatus.INSTALLED
-
-    const renderActiveEnv = (envName: string) => {
-        return (
-            <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
-                <div className="fw-4 fs-11 lh-16 flex">
-                    <World className="icon-dim-16 mr-4 scg-5" />
-                    Active on <span className="fw-6 ml-4">{envName} </span>
-                </div>
-            </span>
-        )
-    }
-
-    const renderActiveCD = (mat) => {
-        return (
-            <>
-                {mat.latest && renderActiveEnv(envName)}
-                {mat.runningOnParentCd && renderActiveEnv(parentEnvironmentName)}
-            </>
-        )
-    }
-
-    const renderFailedCD = () => {
-        return (
-            <span className="bcr-1 br-4 er-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
-                <div className="fw-4 fs-11 lh-16 flex">
-                    <Failed className="icon-dim-16 mr-4" />
-                    Last deployment failed on <span className="fw-6 ml-4">{envName} </span>
-                </div>
-            </span>
-        )
-    }
-
-    const renderProgressingCD = () => {
-        return (
-            <span className="bcy-1 br-4 ey-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
-                <div className="fw-4 fs-11 lh-16 flex">
-                    <div className={`dc__app-summary__icon icon-dim-16 mr-6 progressing progressing--node`}></div>
-                    Deploying on <span className="fw-6 ml-4">{envName} </span>
-                </div>
-            </span>
-        )
-    }
 
     const renderSequentialCDCardTitle = (mat) => {
         if (
@@ -100,11 +59,17 @@ export default function ApprovalMaterial({
         ) {
             return (
                 <div className="bcn-0 p-8 br-4 dc__border-bottom flex left">
-                    {renderActiveCD(mat)}
-                    {mat.artifactStatus === ARTIFACT_STATUS.Progressing && renderProgressingCD()}
+                    {mat.latest && <DeploymentEnvState envStateText={DEPLOYMENT_ENV_TEXT.active} envName={envName} />}
+                    {mat.runningOnParentCd && (
+                        <DeploymentEnvState envStateText={DEPLOYMENT_ENV_TEXT.active} envName={parentEnvironmentName} />
+                    )}
+                    {mat.artifactStatus === ARTIFACT_STATUS.Progressing && (
+                        <DeploymentEnvState envStateText={DEPLOYMENT_ENV_TEXT.deploying} envName={envName} />
+                    )}
                     {(mat.artifactStatus === ARTIFACT_STATUS.Degraded ||
-                        mat.artifactStatus === ARTIFACT_STATUS.Failed) &&
-                        renderFailedCD()}
+                        mat.artifactStatus === ARTIFACT_STATUS.Failed) && (
+                        <DeploymentEnvState envStateText={DEPLOYMENT_ENV_TEXT.failed} envName={envName} />
+                    )}
                 </div>
             )
         }
@@ -140,8 +105,16 @@ export default function ApprovalMaterial({
             })
     }
 
+    const getRequestButtonTestId = (approvalRequestType: ApprovalRequestType) => {
+        const testId = APPROVAL_CTA_TEXT[approvalRequestType.toLowerCase()].toLowerCase().split(' ').join('-')
+        if (approvalRequestType === ApprovalRequestType.SUBMIT) {
+            return `${testId}-approval`
+        }
+        return `submit-${testId}`
+    }
+
     const getRequestButton = (mat: CDMaterialType, approvalRequestType: ApprovalRequestType) => {
-        const _className = `cta flex mt-4 ml-auto mr-16 mb-16 ${
+        const _className = `cta flex h-32 mt-4 ml-auto mr-16 mb-16 ${
             approvalRequestType === ApprovalRequestType.CANCEL ? 'delete' : ''
         }`
         const _style =
@@ -157,6 +130,7 @@ export default function ApprovalMaterial({
                 data-id={mat.id}
                 data-request-id={mat.userApprovalMetadata?.approvalRequestId}
                 data-request-type={approvalRequestType}
+                data-testid={getRequestButtonTestId(approvalRequestType)}
                 onClick={requestInProgress ? noop : approvalRequest}
                 style={_style}
             >
@@ -195,13 +169,19 @@ export default function ApprovalMaterial({
                         className="default-tt w-200"
                         arrow={false}
                         placement="top"
-                        content="You triggered the build pipeline for this image. The builder of an image cannot approve it."
+                        content={APPROVAL_MODAL_CTA_TEXT.imageBuilderTippy}
                     >
-                        <span className="cb-5 dc__opacity-0_5 cursor-default">Approve</span>
+                        <span className="cb-5 dc__opacity-0_5 cursor-default" data-testid="builder-approve-disabled">
+                            {APPROVAL_MODAL_CTA_TEXT.approveRequest.label}
+                        </span>
                     </Tippy>
                 )
             } else if (mat.userApprovalMetadata.approvedUsersData?.some((userData) => userData.userId === userId)) {
-                return <span className="cg-5 cursor-default">Approved by you</span>
+                return (
+                    <span className="cg-5 cursor-default" data-testid="approved-by-you">
+                        {APPROVAL_MODAL_CTA_TEXT.approvedByYou}
+                    </span>
+                )
             } else if (requestedUserId && userId && requestedUserId === userId) {
                 return (
                     <TippyCustomized
@@ -209,8 +189,8 @@ export default function ApprovalMaterial({
                         className="w-300 h-100 dc__align-left"
                         placement="bottom-end"
                         iconClass="fcv-5"
-                        heading="Cancel approval request"
-                        infoText="Are you sure you want to cancel approval request for this image? A new approval request would need to be raised if you want to deploy this image."
+                        heading={APPROVAL_MODAL_CTA_TEXT.cancelRequest.heading}
+                        infoText={APPROVAL_MODAL_CTA_TEXT.cancelRequest.infoText}
                         additionalContent={getRequestButton(mat, ApprovalRequestType.CANCEL)}
                         showCloseButton={true}
                         onClose={() => handleOnClose(mat.id)}
@@ -218,8 +198,14 @@ export default function ApprovalMaterial({
                         interactive={true}
                         visible={tippyVisible[mat.id]}
                     >
-                        <span className="cr-5" data-id={mat.id} onClick={toggleTippyVisibility}>
-                            Cancel request
+                        <span
+                            className="flex right dc_width-max-content ml-auto cr-5 cursor"
+                            data-id={mat.id}
+                            onClick={toggleTippyVisibility}
+                            data-testid="cancel-request"
+                        >
+                            <CancelIcon className="icon-dim-16 fcr-5 scr-5 mr-4" />
+                            {APPROVAL_MODAL_CTA_TEXT.cancelRequest.label}
                         </span>
                     </TippyCustomized>
                 )
@@ -230,8 +216,8 @@ export default function ApprovalMaterial({
                         className="w-300 h-100 dc__align-left"
                         placement="bottom-end"
                         iconClass="fcv-5"
-                        heading="Approve image"
-                        infoText="Are you sure you want to approve deploying this image to cd-devtroncd?"
+                        heading={APPROVAL_MODAL_CTA_TEXT.approveRequest.heading}
+                        infoText={`${APPROVAL_MODAL_CTA_TEXT.approveRequest.infoText} ${envName}?`}
                         additionalContent={getRequestButton(mat, ApprovalRequestType.APPROVE)}
                         showCloseButton={true}
                         onClose={() => handleOnClose(mat.id)}
@@ -239,13 +225,22 @@ export default function ApprovalMaterial({
                         interactive={true}
                         visible={tippyVisible[mat.id]}
                     >
-                        <span className="cg-5" data-id={mat.id} onClick={toggleTippyVisibility}>
-                            Approve
+                        <span
+                            className="cg-5 cursor"
+                            data-id={mat.id}
+                            onClick={toggleTippyVisibility}
+                            data-testid="approve-request"
+                        >
+                            {APPROVAL_MODAL_CTA_TEXT.approveRequest.label}
                         </span>
                     </TippyCustomized>
                 )
             } else {
-                return <span className="cn-5 cursor-default">Awaiting approval</span>
+                return (
+                    <span className="cn-5 cursor-default" data-testid="awaiting-approval">
+                        {APPROVAL_MODAL_CTA_TEXT.awaiting}
+                    </span>
+                )
             }
         } else {
             return (
@@ -254,8 +249,8 @@ export default function ApprovalMaterial({
                     className="w-300 h-100 dc__align-left"
                     placement="bottom-end"
                     iconClass="fcv-5"
-                    heading="Request approval"
-                    infoText="Request approval for deploying this image. All users having ‘Approver’ permission for this application and environment can approve."
+                    heading={APPROVAL_MODAL_CTA_TEXT.requestApproval.heading}
+                    infoText={APPROVAL_MODAL_CTA_TEXT.requestApproval.infoText}
                     additionalContent={getRequestButton(mat, ApprovalRequestType.SUBMIT)}
                     showCloseButton={true}
                     onClose={() => handleOnClose(mat.id)}
@@ -263,8 +258,13 @@ export default function ApprovalMaterial({
                     interactive={true}
                     visible={tippyVisible[mat.id]}
                 >
-                    <span className="cb-5" data-id={mat.id} onClick={toggleTippyVisibility}>
-                        Request approval
+                    <span
+                        className="cb-5 cursor"
+                        data-id={mat.id}
+                        onClick={toggleTippyVisibility}
+                        data-testid="request-approval"
+                    >
+                        {APPROVAL_MODAL_CTA_TEXT.requestApproval.label}
                     </span>
                 </TippyCustomized>
             )
@@ -304,7 +304,7 @@ export default function ApprovalMaterial({
                         trigger="click"
                         interactive={true}
                     >
-                        <div className="flex left cursor">
+                        <div className="flex left cursor" data-testid="num-of-approvals-check">
                             <ApprovalChecks className="icon-dim-16 scn-6 mr-8" />
                             <span className="fs-13 fw-4">{numOfApprovalsText}</span>
                         </div>
@@ -318,9 +318,11 @@ export default function ApprovalMaterial({
                 )}
                 <div />
                 {!hideSelector && (
-                    <div className="material-history__select-text dc__no-text-transform w-auto">
+                    <div className="material-history__select-text fs-13 dc__no-text-transform w-auto cursor-default">
                         {mat.vulnerable ? (
-                            <span className="material-history__scan-error">Security vulnerability found</span>
+                            <span className="material-history__scan-error">
+                                {APPROVAL_MODAL_CTA_TEXT.vulnerability.found}
+                            </span>
                         ) : (
                             getApprovalCTA(mat)
                         )}
@@ -375,13 +377,13 @@ export default function ApprovalMaterial({
         if (!mat.scanned) {
             return (
                 <div className="security-tab-empty">
-                    <p className="security-tab-empty__title">Image was not scanned</p>
+                    <p className="security-tab-empty__title">{APPROVAL_MODAL_CTA_TEXT.vulnerability.notScanned}</p>
                 </div>
             )
         } else if (!mat.scanEnabled) {
             return (
                 <div className="security-tab-empty">
-                    <p className="security-tab-empty__title">Scan is Disabled</p>
+                    <p className="security-tab-empty__title">{APPROVAL_MODAL_CTA_TEXT.vulnerability.scanDisabled}</p>
                 </div>
             )
         } else if (mat.vulnerabilitiesLoading) {
@@ -393,14 +395,17 @@ export default function ApprovalMaterial({
         } else if (!mat.vulnerabilitiesLoading && mat.vulnerabilities.length === 0) {
             return (
                 <div className="security-tab-empty">
-                    <p className="security-tab-empty__title">No vulnerabilities Found</p>
+                    <p className="security-tab-empty__title">{APPROVAL_MODAL_CTA_TEXT.vulnerability.notFound}</p>
                     <p className="security-tab-empty__subtitle">{mat.lastExecution}</p>
                 </div>
             )
         } else
             return (
                 <div className="security-tab">
-                    <p className="security-tab__last-scanned">Scanned on {mat.lastExecution} </p>
+                    <p className="security-tab__last-scanned">
+                        {APPROVAL_MODAL_CTA_TEXT.vulnerability.scanned}&nbsp;
+                        {mat.lastExecution}
+                    </p>
                     <ScanVulnerabilitiesTable vulnerabilities={mat.vulnerabilities} />
                 </div>
             )
@@ -448,12 +453,9 @@ export default function ApprovalMaterial({
                     <div key={`material-history-${mat.index}`} className="material-history material-history--cd">
                         {renderSequentialCDCardTitle(mat)}
                         <div
-                            className={`material-history__top mh-66 ${
+                            className={`material-history__top cursor-default mh-66 ${
                                 !isSecurityModuleInstalled && mat.showSourceInfo ? 'dc__border-bottom' : ''
                             }`}
-                            style={{
-                                cursor: `${mat.vulnerable ? 'not-allowed' : mat.isSelected ? 'default' : 'pointer'}`,
-                            }}
                         >
                             {renderMaterialInfo(mat)}
                         </div>
@@ -505,7 +507,9 @@ export default function ApprovalMaterial({
                                 data-testid={mat.showSourceInfo ? 'collapse-show-info' : 'collapse-hide-info'}
                                 onClick={handleSourceInfoToggle}
                             >
-                                {mat.showSourceInfo ? 'Hide Source Info' : 'Show Source Info'}
+                                {mat.showSourceInfo
+                                    ? APPROVAL_MODAL_CTA_TEXT.sourceInfo.hide
+                                    : APPROVAL_MODAL_CTA_TEXT.sourceInfo.show}
                                 <img
                                     src={arrow}
                                     alt=""

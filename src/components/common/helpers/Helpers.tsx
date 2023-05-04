@@ -1104,18 +1104,18 @@ export const processK8SObjects = (
             _k8SObjectMap.set(groupParent, {
                 name: groupParent,
                 isExpanded:
-                element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
-                element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
-                element.gvk.Kind.toLowerCase() === selectedResourceKind,
+                    element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
+                    element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
+                    element.gvk.Kind.toLowerCase() === selectedResourceKind,
                 child: [{ namespaced: element.namespaced, gvk: element.gvk }],
             })
         } else {
             currentData.child = [...currentData.child, { namespaced: element.namespaced, gvk: element.gvk }]
             if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
                 currentData.isExpanded =
-                element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
-                element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
-                element.gvk.Kind.toLowerCase() === selectedResourceKind
+                    element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
+                    element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
+                    element.gvk.Kind.toLowerCase() === selectedResourceKind
             }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind) {
@@ -1236,7 +1236,7 @@ export const getAlphabetIcon = (str: string) => {
     if (!str) return null
     return (
         <span
-            className="alphabet-icon__initial fs-13 icon-dim-24 flex cn-0 mr-8"
+            className="alphabet-icon__initial fs-13 icon-dim-20 flex cn-0 mr-8"
             style={{ backgroundColor: getRandomColor(str) }}
         >
             {str[0]}
@@ -1253,9 +1253,11 @@ export const reloadLocation = () => {
 }
 
 export const reloadToastBody = () => {
-    return <UpdateToast
-        onClick={reloadLocation}
-        text="You are viewing an outdated version of Devtron UI."
-        buttonText="Reload"
-    />
+    return (
+        <UpdateToast
+            onClick={reloadLocation}
+            text="You are viewing an outdated version of Devtron UI."
+            buttonText="Reload"
+        />
+    )
 }

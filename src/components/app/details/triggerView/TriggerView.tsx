@@ -47,10 +47,8 @@ import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './
 import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
 import { handleSourceNotConfigured, processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.utils'
 import ApprovalMaterialModal from './ApprovalNode/ApprovalMaterialModal'
-import { mainContext } from '../../../common/navigation/NavigationRoutes'
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
-    static contextType?: React.Context<any> = mainContext
     timerRef
     inprogressStatusTimer
     abortController: AbortController
@@ -101,12 +99,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     getWorkflows = () => {
-        getTriggerWorkflows(
-            this.props.match.params.appId,
-            !this.props.isJobView,
-            this.props.isJobView,
-            this.context.currentServerInfo?.serverInfo?.installationType,
-        )
+        getTriggerWorkflows(this.props.match.params.appId, !this.props.isJobView, this.props.isJobView)
             .then((result) => {
                 const _filteredCIPipelines = result.filteredCIPipelines || []
                 const wf = result.workflows || []
@@ -420,7 +413,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             cdNodeId,
             isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
             this.abortController.signal,
-            this.context.currentServerInfo?.serverInfo?.installationType,
             isApprovalNode,
         )
             .then((data) => {
@@ -429,7 +421,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node.inputMaterialList = data.materials
                             node.approvalUsers = data.approvalUsers
-                            node.userApprovalConfig = data.userApprovalConfig
+                            node.userApprovalConfig =
+                                data.userApprovalConfig ?? workflow.approvalConfiguredIdsMap[cdNodeId]
                             node.requestedUserId = data.requestedUserId
                         }
                         return node
@@ -475,10 +468,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
+                            node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
+                            node.requestedUserId = response.result.requestedUserId
+
                             if (!offset && !size) {
-                                node.rollbackMaterialList = response.result
+                                node.rollbackMaterialList = response.result.materials
                             } else {
-                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result)
+                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result.materials)
                             }
                         }
                         return node
@@ -986,7 +982,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             }
         }
 
-        return node ?? {} as NodeAttr
+        return node ?? ({} as NodeAttr)
     }
 
     renderCDMaterial() {

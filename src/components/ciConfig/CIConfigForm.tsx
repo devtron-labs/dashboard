@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { DOCUMENTATION } from '../../config'
 import { getWorkflowList } from '../../services/service'
@@ -25,7 +25,6 @@ import {
 } from './CIConfig.utils'
 import { useHistory } from 'react-router-dom'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
-import { mainContext } from '../common/navigation/NavigationRoutes'
 
 export default function CIConfigForm({
     parentReloading,
@@ -46,7 +45,6 @@ export default function CIConfigForm({
     setParentState,
     setLoadingData,
 }: CIConfigFormProps) {
-    const { currentServerInfo } = useContext(mainContext)
     const history = useHistory()
     const currentMaterial =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
@@ -251,7 +249,6 @@ export default function CIConfigForm({
                     null,
                     WorkflowCreate,
                     WorkflowCreate.workflow,
-                    currentServerInfo?.serverInfo?.installationType,
                 )
 
                 setProcessedWorkflows({ processing: false, workflows })

@@ -1,20 +1,22 @@
 import React, { useState } from 'react'
 import {
+    GenericEmptyState,
     Progressing,
     stopPropagation,
     TippyCustomized,
     TippyTheme,
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { EmptyView } from '../../cicdHistory/History.components'
 import { ReactComponent as ApproversIcon } from '../../../../../assets/icons/ic-users.svg'
+import { ReactComponent as APITokenIcon } from '../../../../../assets/icons/ic-key-bulb.svg'
 import noartifact from '../../../../../assets/img/no-artifact@2x.png'
+import norequests from '../../../../../assets/img/no-pending-action@2x.png'
 import close from '../../../../../assets/icons/ic-close.svg'
 import { ApprovalMaterialModalProps } from './Types'
 import ApprovalMaterial from './ApprovalMaterial'
 import { getAlphabetIcon } from '../../../../common'
 import { Link } from 'react-router-dom'
-import { APPROVAL_RUNTIME_STATE } from './Constants'
+import { APPROVAL_MODAL_TEXT, APPROVAL_RUNTIME_STATE, EMPTY_VIEW_TEXTS } from './Constants'
 
 export default function ApprovalMaterialModal({
     isLoading,
@@ -41,11 +43,20 @@ export default function ApprovalMaterialModal({
 
     const renderModalHeader = () => {
         return (
-            <div className="trigger-modal__header dc__no-border pb-12 cn-9">
+            <div
+                data-testid="approval-for-deployment-heading"
+                className="trigger-modal__header dc__no-border pb-12 cn-9"
+            >
                 <h1 className="modal__title">
-                    Approval for deployment to <span className="fw-6">{node.environmentName ?? ''}</span>
+                    {APPROVAL_MODAL_TEXT.heading}&nbsp;
+                    <span className="fw-6">{!isLoading && node.environmentName ? node.environmentName : ''}</span>
                 </h1>
-                <button type="button" className="dc__transparent" onClick={closeApprovalModal}>
+                <button
+                    data-testid="close-approval-node-box"
+                    type="button"
+                    className="dc__transparent"
+                    onClick={closeApprovalModal}
+                >
                     <img alt="close" src={close} />
                 </button>
             </div>
@@ -64,45 +75,91 @@ export default function ApprovalMaterialModal({
                         selectedTabIndex === 0 ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'
                     }`}
                     data-selected-tab="0"
+                    data-testid="all-images-tab"
                     onClick={handleTabSelected}
                 >
-                    All images
+                    {APPROVAL_MODAL_TEXT.tab.first}
                 </li>
                 <li
                     className={`tab-list__tab cursor pb-8 ${
                         selectedTabIndex === 1 ? 'active-tab fw-6 cb-5' : 'fw-4 cn-9'
                     }`}
                     data-selected-tab="1"
+                    data-testid="approval-requested-tab"
                     onClick={handleTabSelected}
                 >
-                    Approval requested<span className="dc__badge ml-6">{approvalRequestedMaterial.length}</span>
+                    {APPROVAL_MODAL_TEXT.tab.second}
+                    <span className="dc__badge ml-6">{approvalRequestedMaterial.length}</span>
                 </li>
             </ul>
         )
     }
 
+    const getApproversInfoMsg = () => {
+        return (
+            <div className="fs-12 fw-4 bcv-1 cn-9 lh-20 pt-8 pb-8 pl-12 pr-12">
+                {APPROVAL_MODAL_TEXT.approverInfoMsg}&nbsp;
+                <Link to="/global-config/auth/users" className="fs-13 cb-5 lh-20">
+                    {APPROVAL_MODAL_TEXT.permissions}
+                </Link>
+            </div>
+        )
+    }
+
+    const getApproversList = (approvers: string[], isAPIToken?: boolean) => {
+        return (
+            <ol className="pt-8 pl-12 pr-12 dc__list-style-none">
+                {approvers
+                    .sort((a, b) => a.localeCompare(b))
+                    .map((_approver) => {
+                        return (
+                            <li key={_approver} className="flex left mb-8 fs-13 fw-4">
+                                {isAPIToken ? (
+                                    <APITokenIcon className="icon-dim-20 mr-8" />
+                                ) : (
+                                    getAlphabetIcon(_approver)
+                                )}
+                                {_approver}
+                            </li>
+                        )
+                    })}
+            </ol>
+        )
+    }
+
     const getApprovalUsersTippyContent = () => {
         const approversPresent = node.approvalUsers?.length > 0
+        const users: string[] = [],
+            apiTokens: string[] = []
+
+        if (approversPresent) {
+            for (const approver of node.approvalUsers) {
+                if (approver.startsWith(APPROVAL_MODAL_TEXT.apiTokenPrefix)) {
+                    apiTokens.push(approver.split(':')[1])
+                } else {
+                    users.push(approver)
+                }
+            }
+        }
+
         return (
-            <div className="pl-12 pr-12 h-100 dc__overflow-hidden">
-                <div className="pt-12 pb-12 h-100 mxh-210 dc__overflow-scroll">
+            <div className="h-100 dc__overflow-hidden">
+                <div className="h-100 mxh-210 dc__overflow-scroll">
                     {approversPresent ? (
-                        <ol className="p-0 dc__list-style-none">
-                            {node.approvalUsers.sort().map((_approver) => {
-                                return (
-                                    <li key={_approver} className="flex left mb-8">
-                                        {getAlphabetIcon(_approver)}
-                                        {_approver}
-                                    </li>
-                                )
-                            })}
-                        </ol>
+                        <>
+                            {getApproversInfoMsg()}
+                            <div className="fs-13 fw-6 cn-9 pt-12 pl-12">{APPROVAL_MODAL_TEXT.approverGroups.user}</div>
+                            {getApproversList(users)}
+                            <div className="fs-13 fw-6 cn-9 mt-12 pl-12">
+                                {APPROVAL_MODAL_TEXT.approverGroups.token}
+                            </div>
+                            {getApproversList(apiTokens, true)}
+                        </>
                     ) : (
                         <div className="fs-13 fw-4 cn-7 lh-20">
-                            No users have ‘Approver’ permission for this application and environment. ‘Approver’ role
-                            can be provided to users via&nbsp;
+                            {APPROVAL_MODAL_TEXT.noApproverInfoMsg}&nbsp;
                             <Link to="/global-config/auth/users" className="fs-13 cb-5 lh-20">
-                                User Permissions.
+                                {APPROVAL_MODAL_TEXT.permissions}
                             </Link>
                         </div>
                     )}
@@ -117,7 +174,7 @@ export default function ApprovalMaterialModal({
             <div className="trigger-modal__body h-100vh">
                 <div className="material-list__title pb-16">
                     {selectedTabIndex === 0 ? (
-                        'Request approval for an image to deploy or rollback'
+                        'Request approval for an image to deploy or rollback to'
                     ) : (
                         <>
                             {`At least ${
@@ -156,22 +213,33 @@ export default function ApprovalMaterialModal({
         )
     }
 
+    const renderViewImagesButton = () => {
+        return (
+            <button className="cta ghosted flex h-36" data-selected-tab="0" onClick={handleTabSelected}>
+                {EMPTY_VIEW_TEXTS.noPendingImages.label}
+            </button>
+        )
+    }
+
     const renderEmpty = () => {
         if (selectedTabIndex === 0) {
             return (
-                <EmptyView
-                    title="No image available"
-                    subTitle="Trigger build pipeline and find the image here"
-                    imgSrc={noartifact}
+                <GenericEmptyState
+                    image={noartifact}
+                    title={EMPTY_VIEW_TEXTS.noImage.title}
+                    subTitle={EMPTY_VIEW_TEXTS.noImage.subTitle}
+                    isButtonAvailable={false}
                 />
             )
         }
 
         return (
-            <EmptyView
-                title="No approvals requested"
-                subTitle="Images for which approval is requested will be available here. All users having ‘Approver’ permission for this application and environment can approve."
-                imgSrc={noartifact}
+            <GenericEmptyState
+                image={norequests}
+                title={EMPTY_VIEW_TEXTS.noPendingImages.title}
+                subTitle={EMPTY_VIEW_TEXTS.noPendingImages.subTitle}
+                isButtonAvailable={true}
+                renderButton={renderViewImagesButton}
             />
         )
     }

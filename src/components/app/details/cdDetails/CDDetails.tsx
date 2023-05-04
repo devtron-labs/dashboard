@@ -331,7 +331,7 @@ export const TriggerOutput: React.FC<{
                                     activeClassName="active"
                                     to={`source-code`}
                                 >
-                                    Source code
+                                    Source
                                 </NavLink>
                             </li>
                             {triggerDetails.stage == 'DEPLOY' && (
