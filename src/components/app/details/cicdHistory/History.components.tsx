@@ -6,7 +6,6 @@ import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen
 import { ReactComponent as ZoomOut } from '../../../../assets/icons/ic-exit-fullscreen.svg'
 import { ReactComponent as DropDownIcon } from '../../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import { ReactComponent as ArrowIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from './types'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
@@ -114,31 +113,24 @@ export const GitChanges = ({
                 ) : null
             })}
             {artifact && userApprovalMetadata && (
-                <>
-                    <div className="flex mb-12" style={{ width: 'min(100%, 800px)' }}>
-                        <div className="w-50 text-underline-dashed-300" />
-                        <ArrowIcon className="icon-dim-16 ml-8 mr-8" style={{ transform: 'rotate(-90deg)' }} />
-                        <div className="w-50 text-underline-dashed-300" />
-                    </div>
-                    <CIListItem
-                        type="approved-artifact"
-                        userApprovalMetadata={userApprovalMetadata}
-                        triggeredBy={triggeredByEmail}
-                    >
-                        <div className="flex column left hover-trigger">
-                            <div className="cn-9 fs-14 flex left">
-                                <CopyTippyWithText
-                                    copyText={extractImage(artifact)}
-                                    copied={copied}
-                                    setCopied={setCopied}
-                                />
-                            </div>
-                            <div className="cn-7 fs-12 flex left">
-                                <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
-                            </div>
+                <CIListItem
+                    type="approved-artifact"
+                    userApprovalMetadata={userApprovalMetadata}
+                    triggeredBy={triggeredByEmail}
+                >
+                    <div className="flex column left hover-trigger">
+                        <div className="cn-9 fs-14 flex left">
+                            <CopyTippyWithText
+                                copyText={extractImage(artifact)}
+                                copied={copied}
+                                setCopied={setCopied}
+                            />
                         </div>
-                    </CIListItem>
-                </>
+                        <div className="cn-7 fs-12 flex left">
+                            <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
+                        </div>
+                    </div>
+                </CIListItem>
             )}
         </div>
     )
@@ -175,6 +167,6 @@ export const triggerStatus = (triggerDetailStatus: string): string => {
     } else if (triggerStatus === TIMELINE_STATUS.HEALTHY) {
         return 'Succeeded'
     } else {
-        return triggerDetailStatus 
+        return triggerDetailStatus
     }
 }
