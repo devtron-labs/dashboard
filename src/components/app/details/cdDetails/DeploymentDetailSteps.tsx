@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { getAlphabetIcon, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { getDeploymentStatusDetail } from '../appDetails/appDetails.service'
 import { DeploymentStatusDetailsBreakdownDataType } from '../appDetails/appDetails.type'
@@ -13,7 +13,6 @@ import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forwa
 import { ReactComponent as Check } from '../../../../assets/icons/ic-check.svg'
 import { ReactComponent as ChevronDown } from '../../../../assets/icons/appstatus/ic-chevron-down.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, TIMELINE_STATUS, URLS } from '../../../../config'
-import { getAlphabetIcon } from '../../../common'
 
 export default function DeploymentDetailSteps({
     deploymentStatus,

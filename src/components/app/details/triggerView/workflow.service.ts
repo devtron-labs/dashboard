@@ -12,10 +12,11 @@ import {
     WorkflowNodeType,
 } from './types'
 import { WorkflowTrigger, WorkflowCreate, Offset, WorkflowDimensions, WorkflowDimensionType } from './config'
-import { TriggerType, TriggerTypeMap, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
+import { TriggerType, DEFAULT_STATUS, GIT_BRANCH_NOT_CONFIGURED } from '../../../../config'
 import { isEmpty } from '../../../common'
 import { WebhookDetailsType } from '../../../ciPipeline/Webhook/types'
 import { getExternalCIList } from '../../../ciPipeline/Webhook/webhook.service'
+import { TriggerTypeMap } from '@devtron-labs/devtron-fe-common-lib'
 
 export const getTriggerWorkflows = (
     appId,
@@ -200,7 +201,7 @@ export function processWorkflow(
                         }
                     }
                 })
-            
+
             // set updated wf to workflows
             workflows.push(wf)
         })

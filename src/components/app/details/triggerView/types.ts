@@ -3,7 +3,13 @@ import { HostURLConfig } from '../../../../services/service.types'
 import { CIBuildConfigType, DockerConfigOverrideType } from '../../../ciPipeline/types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { CIMaterialType } from './MaterialHistory'
-export type CDModalTabType = 'SECURITY' | 'CHANGES'
+import {
+    CDMaterialType,
+    CDModalTabType,
+    CommonNodeAttr,
+    DeploymentNodeType,
+    UserApprovalConfigType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CDMaterialProps {
     material: CDMaterialType[]
@@ -81,65 +87,6 @@ export interface CDMaterialState {
     requestInProgress: boolean
 }
 
-export interface MaterialInfo {
-  revision: string
-  modifiedTime: string | Date
-  author: string
-  message: string
-  commitLink: string
-  tag: string
-  webhookData: string
-  branch: string
-  url?: string
-  type?: string
-}
-
-export interface UserApprovalConfigType {
-    requiredCount: number
-}
-
-interface ApprovalUserDataType {
-    dataId: number
-    userActionTime: string
-    userComment: string
-    userEmail: string
-    userId: number
-    userResponse: number
-}
-
-export interface UserApprovalMetadataType {
-    approvalRequestId: number
-    approvalRuntimeState: number
-    approvedUsersData: ApprovalUserDataType[]
-    requestedUserData: ApprovalUserDataType
-}
-
-export interface CDMaterialType {
-    index: number
-    id: string
-    materialInfo: MaterialInfo[]
-    tab: CDModalTabType
-    scanEnabled: boolean
-    scanned: boolean
-    vulnerabilitiesLoading: boolean
-    lastExecution: string //timestamp
-    vulnerabilities: VulnerabilityType[]
-    vulnerable: boolean
-    deployedTime: string
-    deployedBy?: string
-    wfrId?: number
-    buildTime: string
-    image: string
-    isSelected: boolean
-    showSourceInfo: boolean
-    latest: boolean
-    runningOnParentCd?: boolean
-    userApprovalMetadata?: UserApprovalMetadataType
-    triggeredBy?: number
-}
-
-interface VulnerabilityType {}
-
 export interface CIMaterialRouterProps {
     appId: string
     envId: string
@@ -188,55 +135,7 @@ export interface CIMaterialState {
     isBlobStorageConfigured?: boolean
 }
 
-export interface NodeAttr {
-    connectingCiPipelineId?: number
-    parents: string | number[] | string[]
-    x: number
-    y: number
-    title: string
-    description?: string
-    triggerType?: string
-    id: string
-    icon?: string
-    status?: string
-    isSource: boolean
-    isGitSource: boolean
-    isRoot: boolean
-    downstreams: string[]
-    type: 'CI' | 'GIT' | 'PRECD' | 'CD' | 'POSTCD' | 'WEBHOOK'
-    parentCiPipeline?: number
-    parentAppId?: number
-    url?: string
-    branch?: string
-    sourceType?: string
-    colorCode?: string
-    isExternalCI?: boolean
-    isLinkedCI?: boolean
-    environmentName?: string //used for CDs
-    environmentId?: number
-    inputMaterialList?: any[]
-    rollbackMaterialList?: any[] //used for CDs
-    linkedCount?: number //used for CI
-    deploymentStrategy?: string
-    height: number
-    width: number
-    preNode?: NodeAttr //used for CDs
-    postNode?: NodeAttr //used for CDs
-    stageIndex?: number //used for CDs
-    sourceNodes?: Array<NodeAttr> //used for CI
-    downstreamNodes?: Array<NodeAttr>
-    parentPipelineId?: string
-    parentPipelineType?: string
-    parentEnvironmentName?: string
-    isRegex?: boolean
-    regex?: string
-    primaryBranchAfterRegex?: string
-    storageConfigured?: boolean
-    deploymentAppDeleteRequest?: boolean
-    approvalUsers?: string[],
-    userApprovalConfig?: UserApprovalConfigType,
-    requestedUserId?: number
-}
+export interface NodeAttr extends CommonNodeAttr {}
 
 export interface DownStreams {
     id: string
@@ -441,13 +340,6 @@ export enum WorkflowNodeType {
     PRE_CD = 'PRECD',
     CD = 'CD',
     POST_CD = 'POSTCD',
-}
-
-export enum DeploymentNodeType {
-    PRECD = 'PRECD',
-    CD = 'CD',
-    POSTCD = 'POSTCD',
-    APPROVAL = 'APPROVAL'
 }
 
 export interface Task {

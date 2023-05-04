@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { DeploymentNodeType, TriggerCDNodeProps } from '../../types'
+import { TriggerCDNodeProps } from '../../types'
 import { statusColor, statusIcon } from '../../../../config'
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
 import { URLS, DEFAULT_STATUS } from '../../../../../../config'
@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom'
 import { TriggerViewContext } from '../../config'
 import { triggerStatus } from '../../../cicdHistory/History.components'
 import { envDescriptionTippy } from './workflow.utils'
+import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     constructor(props) {

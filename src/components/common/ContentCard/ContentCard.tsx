@@ -1,8 +1,9 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { ConditionalWrap, noop } from '../helpers/Helpers'
+import { ConditionalWrap } from '../helpers/Helpers'
 import { CardContentDirection, CardLinkIconPlacement, ContentCardProps } from './ContentCard.types'
 import './ContentCard.scss'
+import { noop } from '@devtron-labs/devtron-fe-common-lib'
 
 /**
  * Note: This component is created to be used at some places for a specific use case where a clickable card is required

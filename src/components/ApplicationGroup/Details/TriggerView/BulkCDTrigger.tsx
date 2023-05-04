@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Drawer, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { noop } from '../../../common'
+import {
+    CDMaterialResponseType,
+    DeploymentNodeType,
+    Drawer,
+    noop,
+    Progressing,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
@@ -10,12 +16,11 @@ import emptyPreDeploy from '../../../../assets/img/empty-pre-deploy.png'
 import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
 import { getCDMaterialList } from '../../../app/service'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
-import { DeploymentNodeType, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
+import { MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
-import { CDMaterialResponseType } from '../../../app/types'
 
 export default function BulkCDTrigger({
     stage,

@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useRef, useContext } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, SourceTypeMap, ViewType } from '../../../../config'
 import {
+    CDMaterialResponseType,
+    CDModalTab,
+    DeploymentNodeType,
     ServerErrors,
     ErrorScreenManager,
     PopupMenu,
@@ -20,7 +23,6 @@ import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { CIMaterialType } from '../../../app/details/triggerView/MaterialHistory'
 import {
     CIMaterialRouterProps,
-    DeploymentNodeType,
     MATERIAL_TYPE,
     NodeAttr,
     WorkflowNodeType,
@@ -28,7 +30,6 @@ import {
 } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import {
-    CDModalTab,
     getCDMaterialList,
     getCIMaterialList,
     getGitMaterialByCommitHash,
@@ -37,7 +38,13 @@ import {
     triggerCDNode,
     triggerCINode,
 } from '../../../app/service'
-import { createGitCommitUrl, ISTTimeModal, preventBodyScroll, sortObjectArrayAlphabetically } from '../../../common'
+import {
+    createGitCommitUrl,
+    importComponentFromFELibrary,
+    ISTTimeModal,
+    preventBodyScroll,
+    sortObjectArrayAlphabetically,
+} from '../../../common'
 import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING, TIME_STAMP_ORDER } from '../../../app/details/triggerView/Constants'
 import { toast } from 'react-toastify'
@@ -69,8 +76,11 @@ import {
 } from '../../AppGroup.types'
 import { handleSourceNotConfigured, processWorkflowStatuses } from '../../AppGroup.utils'
 import Tippy from '@tippyjs/react'
-import ApprovalMaterialModal from '../../../app/details/triggerView/ApprovalNode/ApprovalMaterialModal'
-import { CDMaterialResponseType } from '../../../app/types'
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
+
+const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
+const updateNodeData = importComponentFromFELibrary('updateNodeData')
 
 let inprogressStatusTimer
 export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefaultType) {
@@ -558,9 +568,10 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node[MATERIAL_TYPE.inputMaterialList] = data.materials
-                            node.approvalUsers = data.approvalUsers
-                            node.userApprovalConfig = data.userApprovalConfig
-                            node.requestedUserId = data.requestedUserId
+                            if (updateNodeData) {
+                                node = updateNodeData(node, workflow.approvalConfiguredIdsMap[cdNodeId], data)
+                            }
+
                             _selectedNode = node
                             _workflowId = workflow.id
                             _appID = workflow.appId
@@ -610,9 +621,10 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                 const _workflows = [...filteredWorkflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
+                            if (updateNodeData) {
+                                node = updateNodeData(node, workflow.approvalConfiguredIdsMap[cdNodeId], response.result)
+                            }
                             _selectedNode = node
-                            node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
-                            node.requestedUserId = response.result.requestedUserId
 
                             if (!offset && !size) {
                                 node.rollbackMaterialList = response.result.materials
@@ -1620,7 +1632,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
     }
 
     const renderApprovalMaterial = () => {
-        if (showApprovalModal) {
+        if (ApprovalMaterialModal && showApprovalModal) {
             let node: NodeAttr, _appID
             if (selectedCDNode?.id) {
                 for (const _wf of filteredWorkflows) {
@@ -1645,6 +1657,9 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     changeTab={changeTab}
                     closeApprovalModal={closeApprovalModal}
                     toggleSourceInfo={toggleSourceInfo}
+                    onClickCDMaterial={onClickCDMaterial}
+                    getModuleInfo={getModuleInfo}
+                    GitCommitInfoGeneric={GitCommitInfoGeneric}
                 />
             )
         }

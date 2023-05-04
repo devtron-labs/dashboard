@@ -1,5 +1,5 @@
 import React, { useState, useMemo, Component, useRef, useEffect } from 'react'
-import { Pencil, useForm, CustomPassword, Toggle, useAsync } from '../common'
+import { Pencil, useForm, CustomPassword, useAsync } from '../common'
 import {
     showError,
     Progressing,
@@ -10,6 +10,7 @@ import {
     RadioGroupItem,
     Drawer,
     stopPropagation,
+    Toggle,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import {

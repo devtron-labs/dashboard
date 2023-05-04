@@ -20,8 +20,7 @@ import ReactGA from 'react-ga4'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
-import { noop } from '../../../common'
-import { ConditionalWrap } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap, noop } from '@devtron-labs/devtron-fe-common-lib'
 
 export function SourceInfo({
     appDetails,

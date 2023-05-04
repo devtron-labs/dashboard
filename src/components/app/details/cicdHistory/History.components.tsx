@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { not, useKeyDown } from '../../../common'
+import { useKeyDown } from '../../../common'
 import { useLocation } from 'react-router'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg'
@@ -12,7 +12,7 @@ import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { NavLink } from 'react-router-dom'
 import { TIMELINE_STATUS } from '../../../../config'
-import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { EmptyState, not } from '@devtron-labs/devtron-fe-common-lib'
 import { CIListItem, CopyTippyWithText } from './Artifacts'
 import { extractImage } from '../../service'
 

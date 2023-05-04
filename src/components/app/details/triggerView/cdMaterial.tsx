@@ -3,14 +3,10 @@ import ReactSelect, { components } from 'react-select'
 import {
     CDMaterialProps,
     CDMaterialState,
-    CDMaterialType,
-    DeploymentNodeType,
     DeploymentWithConfigType,
-    MaterialInfo,
     MATERIAL_TYPE,
     STAGE_TYPE,
     TriggerViewContextType,
-    UserApprovalMetadataType,
 } from './types'
 import { GitTriggers } from '../cicdHistory/types'
 import close from '../../../../assets/icons/ic-close.svg'
@@ -28,8 +24,9 @@ import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
 import noapprovedimages from '../../../../assets/img/no-approved-images@2x.png'
-import { ScanVulnerabilitiesTable, getRandomColor, noop } from '../../../common'
+import { importComponentFromFELibrary } from '../../../common'
 import {
+    CDMaterialType,
     showError,
     Progressing,
     ConditionalWrap,
@@ -37,17 +34,20 @@ import {
     TippyTheme,
     EmptyState,
     InfoColourBar,
+    noop,
+    MaterialInfo,
+    UserApprovalMetadataType,
+    DeploymentNodeType,
+    getRandomColor,
+    CDModalTab,
+    TriggerTypeMap,
+    ScanVulnerabilitiesTable,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
-import {
-    CDModalTab,
-    getLatestDeploymentConfig,
-    getRecentDeploymentConfig,
-    getSpecificDeploymentConfig,
-} from '../../service'
+import { getLatestDeploymentConfig, getRecentDeploymentConfig, getSpecificDeploymentConfig } from '../../service'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap, TriggerTypeMap } from '../../../../config'
+import { ModuleNameMap } from '../../../../config'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
 import {
@@ -59,12 +59,14 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
-import { EmptyView } from '../cicdHistory/History.components'
-import { submitApprovalRequest } from './ApprovalNode/Service'
 import { toast } from 'react-toastify'
-import { APPROVAL_ACTION_TYPE, APPROVAL_RUNTIME_STATE, EMPTY_VIEW_TEXTS } from './ApprovalNode/Constants'
-import { ApprovedTippyContent } from './ApprovalNode/ApprovalMaterial.component'
 import { ARTIFACT_STATUS } from './Constants'
+
+const ApprovedTippyContent = importComponentFromFELibrary('ApprovedTippyContent')
+const submitApprovalRequest = importComponentFromFELibrary('submitApprovalRequest')
+const APPROVAL_ACTION_TYPE = importComponentFromFELibrary('APPROVAL_ACTION_TYPE')
+const APPROVAL_RUNTIME_STATE = importComponentFromFELibrary('APPROVAL_RUNTIME_STATE')
+const EMPTY_VIEW_TEXTS = importComponentFromFELibrary('EMPTY_VIEW_TEXTS')
 
 export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext

@@ -4,13 +4,12 @@ import LoginIcons from '../../assets/icons/LoginSprite.svg'
 import { Switch, Redirect, NavLink } from 'react-router-dom'
 import { Route } from 'react-router'
 import { toast } from 'react-toastify'
-import { ServerErrors, Host, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { getCookie, ServerErrors, Host, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME } from '../../config'
-import { getCookie } from '../common'
 import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
-import './login.scss'
 import { dashboardAccessed } from '../../services/service'
+import './login.scss'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
     constructor(props) {

@@ -1,8 +1,7 @@
 import { CSSProperties } from 'react'
 import { TERMINAL_STATUS_MAP } from '../../../../config'
 import { OptionType } from '../../types'
-import { UserApprovalMetadataType } from '../triggerView/types'
-
+import { UserApprovalMetadataType } from '@devtron-labs/devtron-fe-common-lib'
 export interface WebHookData {
     Id: number
     EventActionType: string

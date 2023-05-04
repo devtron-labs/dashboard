@@ -269,11 +269,6 @@ export const TriggerType = {
     Manual: 'MANUAL',
 }
 
-export const TriggerTypeMap = {
-    automatic: 'Auto',
-    manual: 'Manual',
-}
-
 export const SourceTypeMap = {
     BranchFixed: 'SOURCE_TYPE_BRANCH_FIXED',
     WEBHOOK: 'WEBHOOK',

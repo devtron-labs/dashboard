@@ -81,7 +81,6 @@ export interface CDPipelineState {
     showPreStage: boolean
     showDeploymentStage: boolean
     showPostStage: boolean
-    showManualApproval: boolean
     requiredApprovals: string
     isAdvanced: boolean
     forceDeleteDialogMessage: string

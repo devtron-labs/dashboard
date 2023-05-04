@@ -1,4 +1,4 @@
-import { VulnerabilityType } from '../common';
+import { VulnerabilityType } from '@devtron-labs/devtron-fe-common-lib';
 import { RouteComponentProps } from 'react-router-dom';
 
 export interface SecurityPolicyClusterState {

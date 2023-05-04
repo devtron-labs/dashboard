@@ -1,5 +1,6 @@
 import { createContext } from 'react'
-import { DeploymentNodeType, TriggerViewContextType } from './types'
+import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { TriggerViewContextType } from './types'
 
 export const TriggerViewContext = createContext<TriggerViewContextType>({
     invalidateCache: false,

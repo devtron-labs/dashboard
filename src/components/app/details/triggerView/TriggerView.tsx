@@ -6,6 +6,8 @@ import {
     ErrorScreenManager,
     stopPropagation,
     VisibleModal,
+    DeploymentNodeType,
+    CDModalTab,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getCDMaterialList,
@@ -15,13 +17,12 @@ import {
     triggerCINode,
     getWorkflowStatus,
     refreshGitMaterial,
-    CDModalTab,
     getGitMaterialByCommitHash,
 } from '../../service'
-import { createGitCommitUrl, ISTTimeModal, preventBodyScroll } from '../../../common'
+import { createGitCommitUrl, importComponentFromFELibrary, ISTTimeModal, preventBodyScroll } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { DeploymentNodeType, MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
+import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import { CDMaterial } from './cdMaterial'
 import {
@@ -46,7 +47,11 @@ import { TriggerViewContext } from './config'
 import { HOST_ERROR_MESSAGE, TIME_STAMP_ORDER, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import { APP_DETAILS, CI_CONFIGURED_GIT_MATERIAL_ERROR } from '../../../../config/constantMessaging'
 import { handleSourceNotConfigured, processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.utils'
-import ApprovalMaterialModal from './ApprovalNode/ApprovalMaterialModal'
+import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+
+const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
+const updateNodeData = importComponentFromFELibrary('updateNodeData')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -420,10 +425,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node.inputMaterialList = data.materials
-                            node.approvalUsers = data.approvalUsers
-                            node.userApprovalConfig =
-                                data.userApprovalConfig ?? workflow.approvalConfiguredIdsMap[cdNodeId]
-                            node.requestedUserId = data.requestedUserId
+                            if (updateNodeData) {
+                                node = updateNodeData(node, workflow.approvalConfiguredIdsMap[cdNodeId], data)
+                            }
                         }
                         return node
                     })
@@ -468,13 +472,18 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
-                            node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
-                            node.requestedUserId = response.result.requestedUserId
-
                             if (!offset && !size) {
                                 node.rollbackMaterialList = response.result.materials
                             } else {
                                 node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result.materials)
+                            }
+
+                            if (updateNodeData) {
+                                node = updateNodeData(
+                                    node,
+                                    workflow.approvalConfiguredIdsMap[cdNodeId],
+                                    response.result,
+                                )
                             }
                         }
                         return node
@@ -1041,7 +1050,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     renderApprovalMaterial() {
-        if (this.state.showApprovalModal) {
+        if (ApprovalMaterialModal && this.state.showApprovalModal) {
             const node: NodeAttr = this.getCDNode()
 
             return (
@@ -1055,6 +1064,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     changeTab={this.changeTab}
                     closeApprovalModal={this.closeApprovalModal}
                     toggleSourceInfo={this.toggleSourceInfo}
+                    onClickCDMaterial={this.onClickCDMaterial}
+                    getModuleInfo={getModuleInfo}
+                    GitCommitInfoGeneric={GitCommitInfoGeneric}
                 />
             )
         }

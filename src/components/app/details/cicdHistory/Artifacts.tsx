@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { showError, EmptyState, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
-import { copyToClipboard, getAlphabetIcon } from '../../../common'
+import { showError, EmptyState, TippyCustomized, TippyTheme, getAlphabetIcon } from '@devtron-labs/devtron-fe-common-lib'
+import { copyToClipboard, importComponentFromFELibrary } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'
@@ -18,7 +18,8 @@ import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentTy
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { ARTIFACTS_EMPTY_STATE_TEXTS } from './Constants'
 import { extractImage } from '../../service'
-import { APPROVAL_INFO_TEXTS } from '../triggerView/ApprovalNode/Constants'
+
+const APPROVAL_INFO_TEXTS = importComponentFromFELibrary('APPROVAL_INFO_TEXTS')
 
 export default function Artifacts({
     status,

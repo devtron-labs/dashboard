@@ -7,8 +7,6 @@ import {
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
     sortObjectArrayAlphabetically,
-    RadioGroup as CommonRadioGroup,
-    Toggle,
 } from '../common'
 import { toast } from 'react-toastify'
 import { Info } from '../common/icons/Icons'
@@ -48,9 +46,6 @@ import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg'
 import { ReactComponent as BotIcon } from '../../assets/icons/ic-bot.svg'
 import { ReactComponent as PersonIcon } from '../../assets/icons/ic-person.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as ApprovalIcon } from '../../assets/icons/ic-user-circle.svg'
-import { ReactComponent as MultiApprovalIcon } from '../../assets/icons/ic-users.svg'
-import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-filled.svg'
 import yamlJsParser from 'yaml'
 import settings from '../../assets/icons/ic-settings.svg'
 import trash from '../../assets/icons/misc/delete.svg'
@@ -62,7 +57,7 @@ import { styles, DropdownIndicator, Option } from './cdpipeline.util'
 import { EnvFormatOptions, formatHighlightedTextDescription, GroupHeading } from '../v2/common/ReactSelect.utils'
 import './cdPipeline.scss'
 import dropdown from '../../assets/icons/ic-chevron-down.svg'
-import { ConditionalWrap, createClusterEnvGroup, getEmptyArrayOfLength } from '../common/helpers/Helpers'
+import { ConditionalWrap, createClusterEnvGroup, importComponentFromFELibrary } from '../common/helpers/Helpers'
 import Tippy from '@tippyjs/react'
 import { PipelineType } from '../app/details/triggerView/types'
 import { DeploymentAppType } from '../v2/values/chartValuesDiff/ChartValuesView.type'
@@ -75,6 +70,8 @@ import {
     TOAST_INFO,
     CONFIGMAPS_SECRETS,
 } from '../../config/constantMessaging'
+
+const ManualApproval = importComponentFromFELibrary('ManualApproval')
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -149,8 +146,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             showPreStage: false,
             showDeploymentStage: true,
             showPostStage: false,
-            showManualApproval: false,
-            requiredApprovals: '1',
+            requiredApprovals: '',
             showDeleteModal: false,
             shouldDeleteApp: true,
             showForceDeleteDialog: false,
@@ -353,8 +349,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             showPreStage,
             showPostStage,
             showError: false,
-            showManualApproval: pipelineConfigFromRes.userApprovalConfig?.requiredCount >= 1,
-            requiredApprovals: `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || 1}`,
+            requiredApprovals: `${pipelineConfigFromRes.userApprovalConfig?.requiredCount || ''}`,
         })
     }
 
@@ -619,9 +614,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     default: savedStrategy.default,
                 }
             }),
-            userApprovalConfig: this.state.showManualApproval
+            userApprovalConfig: !!this.state.requiredApprovals
                 ? {
-                      requiredCount: parseInt(this.state.requiredApprovals),
+                      requiredCount: +this.state.requiredApprovals,
                   }
                 : null,
         }
@@ -1293,78 +1288,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         )
     }
 
-    toggleManualApproval = (): void => {
-        this.setState({
-            showManualApproval: !this.state.showManualApproval,
-            requiredApprovals: `${this.state.pipelineConfig.userApprovalConfig?.requiredCount || 1}`,
-        })
-    }
-
-    onChangeRequiredApprovals = (e: any): void => {
-        this.setState({ requiredApprovals: e.currentTarget.value })
-    }
-
-    renderManualApproval = () => {
-        return (
-            <div className="flex left">
-                <MultiApprovalIcon className="icon-dim-20 mr-8" />
-                <CommonRadioGroup
-                    className="manual-approvals-switch flex left"
-                    name="required-approvals"
-                    initialTab={this.state.requiredApprovals}
-                    disabled={false}
-                    onChange={this.onChangeRequiredApprovals}
-                >
-                    {getEmptyArrayOfLength(6).map((e, idx) => {
-                        return (
-                            <CommonRadioGroup.Radio
-                                key={`number-of-approvers-${idx}`}
-                                dataTestId={`number-of-approvers-${1 + idx}`}
-                                value={`${idx + 1}`}
-                            >
-                                {idx + 1}
-                            </CommonRadioGroup.Radio>
-                        )
-                    })}
-                </CommonRadioGroup>
-            </div>
-        )
-    }
-
-    renderManualApprovalWrapper = () => {
-        return (
-            <>
-                <div className="flex left">
-                    <div className="icon-dim-44 bcn-1 br-8 flex">
-                        <ApprovalIcon className="icon-dim-24" />
-                    </div>
-                    <div className="ml-16 mr-16 flex-1">
-                        <h4 data-testId="manual-approval-heading" className="fs-14 fw-6 lh-1-43 cn-9 mb-4">
-                            Manual approval for deployment
-                        </h4>
-                        <div className="form__label form__label--sentence m-0">
-                            When enabled, only approved images will be available to be deployed by this deployment
-                            pipeline.
-                        </div>
-                    </div>
-                    <div style={{ width: '32px', height: '20px' }}>
-                        <Toggle selected={this.state.showManualApproval} onSelect={this.toggleManualApproval} />
-                    </div>
-                </div>
-                {this.state.showManualApproval && (
-                    <div className="mt-5 mb-16 ml-60">
-                        <div className="cn-9 fs-13 fw-4 lh-20 mb-6">Required number of approvals</div>
-                        {this.renderManualApproval()}
-                        <div className="flex left mt-12">
-                            <InfoIcon className="manual-approval-info-icon icon-dim-20 mr-8" /> All users having
-                            ‘Approver’ permission for this application and environment can approve.
-                        </div>
-                    </div>
-                )}
-            </>
-        )
-    }
-
     renderPipelineNameInput = () => {
         return (
             <div className="form__row">
@@ -1492,19 +1415,31 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         )
     }
 
+    onChangeRequiredApprovals = (requiredCount: string): void => {
+        this.setState({ requiredApprovals: requiredCount })
+    }
+
     renderAdvancedCD() {
         return (
             <>
                 {this.renderPipelineNameInput()}
-                <div className="divider mt-12 mb-12"></div>
+                <div className="divider mt-12 mb-12" />
                 {this.renderPreStage()}
-                <div className="divider mt-12 mb-12"></div>
-                {this.renderManualApprovalWrapper()}
-                <div className="divider mt-12 mb-12"></div>
+                <div className="divider mt-12 mb-12" />
+                {ManualApproval && (
+                    <>
+                        <ManualApproval
+                            requiredApprovals={this.state.requiredApprovals}
+                            currentRequiredCount={this.state.pipelineConfig.userApprovalConfig?.requiredCount}
+                            onChangeRequiredApprovals={this.onChangeRequiredApprovals}
+                        />
+                        <div className="divider mt-12 mb-12" />
+                    </>
+                )}
                 {this.renderDeploymentStage()}
-                <div className="divider mt-12 mb-12"></div>
+                <div className="divider mt-12 mb-12" />
                 {this.renderPostStage()}
-                <div className="divider mt-12 mb-12"></div>
+                <div className="divider mt-12 mb-12" />
             </>
         )
     }

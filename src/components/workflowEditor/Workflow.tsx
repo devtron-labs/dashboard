@@ -10,6 +10,7 @@ import {
     getExCIPipelineURL,
     getWebhookDetailsURL,
     ConditionalWrap,
+    importComponentFromFELibrary,
 } from '../common'
 import { RouteComponentProps } from 'react-router'
 import {
@@ -28,6 +29,9 @@ import Tippy from '@tippyjs/react'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
 import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../config'
+import { noop } from '@devtron-labs/devtron-fe-common-lib'
+
+const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 
 export interface WorkflowProps
     extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }> {
@@ -369,31 +373,34 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         }, [])
     }
 
-    onClickApprovalNode = (nodeId: number) => {
+    onClickNodeEdge = (nodeId: number) => {
         const ciPipeline = this.props.nodes.find((nd) => nd.type == WorkflowNodeType.CI)
         this.props.history.push(`workflow/${this.props.id}/ci-pipeline/${+ciPipeline?.id}/cd-pipeline/${nodeId}`)
     }
 
     renderEdgeList() {
         const edges = this.getEdges()
-        const containsApprovalNode = edges.some(
-            (edgeNode) => edgeNode.endNode.userApprovalConfig && edgeNode.endNode.userApprovalConfig.requiredCount > 0,
-        )
         return this.getEdges().map((edgeNode) => {
+            if (ApprovalNodeEdge) {
+                return (
+                    <ApprovalNodeEdge
+                        key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
+                        startNode={edgeNode.startNode}
+                        endNode={edgeNode.endNode}
+                        onClickEdge={() => this.onClickNodeEdge(edgeNode.endNode.id)}
+                        edges={edges}
+                    />
+                )
+            }
+
             return (
                 <Edge
-                    dataTestId="approval-node-button"
                     key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
                     startNode={edgeNode.startNode}
                     endNode={edgeNode.endNode}
-                    onClickEdge={() => {}}
-                    deleteEdge={() => {}}
-                    onMouseOverEdge={(startNode, endNode) => {}}
-                    containsApprovalNode={containsApprovalNode}
-                    showApprovalNode={
-                        edgeNode.endNode.userApprovalConfig && edgeNode.endNode.userApprovalConfig.requiredCount > 0
-                    }
-                    onClickApprovalNode={() => this.onClickApprovalNode(edgeNode.endNode.id)}
+                    onClickEdge={noop}
+                    deleteEdge={noop}
+                    onMouseOverEdge={noop}
                 />
             )
         })

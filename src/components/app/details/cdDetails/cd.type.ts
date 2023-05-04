@@ -1,5 +1,5 @@
 import { DeploymentAppType } from "../../../v2/appDetails/appDetails.type"
-import { UserApprovalMetadataType } from "../triggerView/types"
+import { UserApprovalMetadataType } from "@devtron-labs/devtron-fe-common-lib"
 
 export interface DeploymentHistorySingleValue {
     displayName: string

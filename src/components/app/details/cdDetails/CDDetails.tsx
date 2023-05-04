@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Reload, UserApprovalMetadataType } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { useAsync, useInterval, useScrollable, mapByKey, asyncWrap } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
@@ -20,7 +20,6 @@ import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
 import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
-import { UserApprovalMetadataType } from '../triggerView/types'
 import { AppEnvironment } from '../../../../services/service.types'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])

@@ -1,7 +1,6 @@
 import { TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { DeploymentAppType } from '../v2/appDetails/appDetails.type'
-import { UserApprovalConfigType } from './details/triggerView/types'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: (e) => void
@@ -455,11 +454,4 @@ export interface JobPipeline {
 
 export interface TagChipsContainerType {
   labelTags: TagType[]
-}
-
-export interface CDMaterialResponseType {
-    approvalUsers: string[]
-    materials: any[]
-    userApprovalConfig: UserApprovalConfigType
-    requestedUserId: number
 }

@@ -1,13 +1,11 @@
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { MultiValue } from 'react-select'
 import {
     CDModalTabType,
     DeploymentNodeType,
+    ResponseType,
     UserApprovalConfigType,
-    WebhookPayloads,
-    WorkflowNodeType,
-    WorkflowType,
-} from '../app/details/triggerView/types'
+} from '@devtron-labs/devtron-fe-common-lib'
+import { MultiValue } from 'react-select'
+import { WebhookPayloads, WorkflowNodeType, WorkflowType } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 

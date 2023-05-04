@@ -14,7 +14,8 @@ import { useRouteMatch, useHistory, useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
-import { noop, useAsync } from '../../../../common'
+import { useAsync } from '../../../../common'
+import { noop } from '@devtron-labs/devtron-fe-common-lib'
 
 function EnvironmentStatusComponent({
     appStreamData,

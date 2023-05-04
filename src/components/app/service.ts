@@ -1,10 +1,20 @@
 import { Routes, Moment12HourFormat, SourceTypeMap } from '../../config'
-import { get, post, trash, ServerErrors, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    post,
+    trash,
+    ServerErrors,
+    ResponseType,
+    sortCallback,
+    DeploymentNodeType,
+    CDModalTab,
+    CDMaterialResponseType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
 import { History } from './details/cicdHistory/types'
-import { AppDetails, CDMaterialResponseType, CreateAppLabelsRequest } from './types'
-import { CDModalTabType, DeploymentNodeType, DeploymentWithConfigType } from './details/triggerView/types'
+import { AppDetails, CreateAppLabelsRequest } from './types'
+import { DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
 
 let stageMap = {
@@ -12,11 +22,6 @@ let stageMap = {
     CD: 'DEPLOY',
     POSTCD: 'POST',
     APPROVAL: 'APPROVAL',
-}
-
-export const CDModalTab = {
-    Security: <CDModalTabType>'SECURITY',
-    Changes: <CDModalTabType>'CHANGES',
 }
 
 export const getAppList = (request, options?) => {
@@ -289,7 +294,7 @@ export function getRollbackMaterialList(
             result: {
                 materials: cdMaterialListModal(response.result?.ci_artifacts, offset === 1 ? true : false),
                 requestedUserId: response.result?.requestedUserId,
-            }
+            },
         }
     })
 }
