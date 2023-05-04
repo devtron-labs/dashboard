@@ -1,4 +1,4 @@
-import { Routes, Moment12HourFormat, SourceTypeMap } from '../../config'
+import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
 import { get, post, trash, ServerErrors, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
@@ -181,15 +181,21 @@ const gitTriggersModal = (triggers, materials) => {
     })
 }
 
-const processMaterialHistory = (material) => {
+const processMaterialHistoryAndSelectionError = (material) => {
+    const data = {
+        isMaterialSelectionError: true,
+        materialSelectionErrorMsg: NO_COMMIT_SELECTED,
+        history: [],
+    }
     if (material.history) {
         let selectedIndex
-        return material.history.map((history, index) => {
+        const matHistory = []
+        for (let index = 0; index < material.history.length; index++) {
+            const history = material.history[index]
             if (!selectedIndex && !history.Excluded) {
                 selectedIndex = index
             }
-
-            return {
+            matHistory.push({
                 commitURL: material.gitMaterialUrl ? createGitCommitUrl(material.gitMaterialUrl, history.Commit) : '',
                 changes: history.Changes || [],
                 author: history.Author,
@@ -206,10 +212,15 @@ const processMaterialHistory = (material) => {
                       }
                     : null,
                 excluded: history.Excluded,
-            }
-        })
+            })
+        }
+        if (selectedIndex >= 0) {
+            data.isMaterialSelectionError = false
+            data.materialSelectionErrorMsg = ''
+        }
+        data.history = matHistory
     }
-    return []
+    return data
 }
 
 const processCIMaterialResponse = (response) => {
@@ -223,7 +234,7 @@ const processCIMaterialResponse = (response) => {
                 lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
                 isMaterialLoading: false,
                 showAllCommits: false,
-                history: processMaterialHistory(material),
+                ...processMaterialHistoryAndSelectionError(material),
             }
         })
     }

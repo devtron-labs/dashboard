@@ -505,7 +505,9 @@ export default function BulkCITrigger({
             (app) =>
                 app.errorMessage &&
                 (app.errorMessage !== SOURCE_NOT_CONFIGURED ||
-                    !app.material.some((_mat) => !_mat.isBranchError && !_mat.isRepoError)),
+                    !app.material.some(
+                        (_mat) => !_mat.isBranchError && !_mat.isRepoError && !_mat.isMaterialSelectionError,
+                    )),
         )
     }
 

@@ -452,7 +452,9 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
             const _workflows = [...filteredWorkflows].map((wf) => {
                 wf.nodes.map((node) => {
                     if (node.type === 'CI' && +node.id == +ciNodeId) {
-                        const selectedCIPipeline = filteredCIPipelines.get(wf.appId)?.find((_ci) => _ci.id === +ciNodeId)
+                        const selectedCIPipeline = filteredCIPipelines
+                            .get(wf.appId)
+                            ?.find((_ci) => _ci.id === +ciNodeId)
                         if (selectedCIPipeline?.ciMaterial) {
                             for (const mat of selectedCIPipeline.ciMaterial) {
                                 if (mat.isRegex && mat.gitMaterialId === response.result[0].gitMaterialId) {
@@ -549,8 +551,8 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
             const _workflows = [...filteredWorkflows].map((workflow) => {
                 workflow.nodes.map((node) => {
                     if (node.type === 'CI' && +node.id == +ciNodeId) {
-                      _workflowId = workflow.id
-                      _appID = workflow.appId
+                        _workflowId = workflow.id
+                        _appID = workflow.appId
                         const selectedCIPipeline = filteredCIPipelines.get(_appID)?.find((_ci) => _ci.id === +ciNodeId)
                         if (selectedCIPipeline?.ciMaterial) {
                             for (const mat of selectedCIPipeline.ciMaterial) {
@@ -1399,6 +1401,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             _mat.isBranchError ||
                             _mat.isRepoError ||
                             _mat.isDockerFileError ||
+                            _mat.isMaterialSelectionError ||
                             (_mat.type === SourceTypeMap.WEBHOOK && _mat.history.length === 0)
                         )
                     })
@@ -1409,6 +1412,8 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             errorMessage = invalidInputMaterial.dockerFileErrorMsg
                         } else if (invalidInputMaterial.isBranchError) {
                             errorMessage = invalidInputMaterial.branchErrorMsg
+                        } else if (invalidInputMaterial.isMaterialSelectionError) {
+                            errorMessage = invalidInputMaterial.materialSelectionErrorMsg
                         } else {
                             errorMessage = CI_MATERIAL_EMPTY_STATE_MESSAGING.NoMaterialFound
                         }

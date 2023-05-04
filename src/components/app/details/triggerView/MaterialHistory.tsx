@@ -45,6 +45,8 @@ export interface CIMaterialType {
     isDockerFileError?: boolean
     dockerFileErrorMsg?: string
     showAllCommits?: boolean
+    isMaterialSelectionError?: boolean
+    materialSelectionErrorMsg: string
 }
 
 export interface MaterialHistoryProps {

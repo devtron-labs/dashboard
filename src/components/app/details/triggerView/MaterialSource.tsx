@@ -20,6 +20,8 @@ export default function MaterialSource({
             return mat.dockerFileErrorMsg
         } else if (mat.isBranchError) {
             return mat.branchErrorMsg
+        } else if (mat.isMaterialSelectionError) {
+            return mat.materialSelectionErrorMsg
         } else {
             return ''
         }
@@ -31,7 +33,7 @@ export default function MaterialSource({
                     <div className="material-last-update__fetching dc__loading-dots">Fetching</div>
                 </div>
             )
-        } else if (mat.isBranchError || mat.isRepoError || mat.isDockerFileError) {
+        } else if (mat.isBranchError || mat.isRepoError || mat.isDockerFileError || mat.isMaterialSelectionError) {
             return (
                 <div className="flex fs-10">
                     <Error className="form__icon--error icon-dim-14 mr-5" />
@@ -50,11 +52,7 @@ export default function MaterialSource({
 
     const handleRefreshAction = (e) => {
         e.stopPropagation()
-        refreshMaterial.refresh(
-            refreshMaterial.pipelineId,
-            refreshMaterial.title,
-            Number(e.currentTarget.dataset.id),
-        )
+        refreshMaterial.refresh(refreshMaterial.pipelineId, refreshMaterial.title, Number(e.currentTarget.dataset.id))
     }
 
     const renderRefreshButton = (mat: CIMaterialType) => {
