@@ -384,8 +384,8 @@ export default function ClusterTerminal({
     }
 
     async function stopTerminalConnection(): Promise<void> {
-        setSocketConnection(SocketConnectionType.DISCONNECTING)
         try {
+            setSocketConnection(SocketConnectionType.DISCONNECTING)
             await clusterTerminalStop(terminalAccessIdRef.current)
         } catch (error) {
             showError(error)
@@ -395,14 +395,13 @@ export default function ClusterTerminal({
     async function disconnectRetry(): Promise<void> {
         try {
             setPodCreated(true)
-            clusterDisconnectAndRetry(payload).then((response) => {
-                terminalAccessIdRef.current = response.result.terminalAccessId
-                setSocketConnection(SocketConnectionType.DISCONNECTED)
-                setUpdate(true)
-                socketConnecting()
-                setRetry(false)
-                setConnectTerminal(true)
-            })
+            const response = await clusterDisconnectAndRetry(payload)
+            terminalAccessIdRef.current = response.result.terminalAccessId
+            setSocketConnection(SocketConnectionType.DISCONNECTED)
+            setUpdate(true)
+            socketConnecting()
+            setRetry(false)
+            setConnectTerminal(true)
             toggleOptionChange()
         } catch (error) {
             setPodCreated(false)
