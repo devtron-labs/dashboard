@@ -751,7 +751,7 @@ export function useEventSource(
     const eventSourceRef = useRef(null)
 
     function closeEventSource() {
-        if (eventSourceRef.current && eventSourceRef.current.close) eventSourceRef.current.close()
+        if (eventSourceRef.current?.close) eventSourceRef.current.close()
     }
 
     function handleMessage(event) {
@@ -1255,7 +1255,7 @@ export function useHeightObserver(callback): [RefObject<HTMLDivElement>] {
     }, [callback])
 
     const handleHeightChange = useCallback(() => {
-        callbackRef.current && callbackRef.current(ref.current.clientHeight)
+        callbackRef.current?.(ref.current.clientHeight)
     }, [callbackRef])
 
     useLayoutEffect(() => {

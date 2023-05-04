@@ -170,7 +170,7 @@ function NodeDetailComponent({
         )
     })
     const isDeleted =
-        (currentTab && currentTab[0] ? currentTab[0].isDeleted : false) ||
+        (currentTab?.[0] ? currentTab[0].isDeleted : false) ||
         (isResourceBrowserView && isResourceDeleted) ||
         (!isResourceBrowserView &&
             (appDetails.resourceTree.nodes?.findIndex(
