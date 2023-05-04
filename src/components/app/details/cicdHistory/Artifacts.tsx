@@ -18,7 +18,7 @@ import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { ARTIFACTS_EMPTY_STATE_TEXTS } from './Constants'
 import { extractImage } from '../../service'
 
-const ApprovedTippyContent = importComponentFromFELibrary('ApprovedTippyContent')
+const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 
 export default function Artifacts({
     status,
@@ -173,15 +173,19 @@ export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children }
         <div className={`mb-16 ci-artifact ci-artifact--${type}`} data-testid="hover-on-report-artifact">
             {type === 'approved-artifact' ? (
                 <>
-                    {ApprovedTippyContent && (
-                        <ApprovedTippyContent
-                            matId={null}
-                            requestedUserId={null}
-                            userApprovalMetadata={userApprovalMetadata}
-                            cancelRequest={noop}
-                            requestInProgress={false}
-                            triggeredBy={triggeredBy}
-                        />
+                    {ApprovalInfoTippy && (
+                        <div className="flex left pl-16">
+                            <ApprovalInfoTippy
+                                matId={null}
+                                appId={null}
+                                requestedUserId={null}
+                                stageType={null}
+                                userApprovalMetadata={userApprovalMetadata}
+                                cancelRequest={noop}
+                                requestInProgress={false}
+                                triggeredBy={triggeredBy}
+                            />
+                        </div>
                     )}
                     <div className="dc__border-bottom-n1" />
                     <div className="approved-artifact pt-16 pb-16 pl-16 pr-16 flex-align-center">

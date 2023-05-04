@@ -51,7 +51,6 @@ import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
-const updateNodeData = importComponentFromFELibrary('updateNodeData')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -425,9 +424,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node.inputMaterialList = data.materials
-                            if (updateNodeData) {
-                                node = updateNodeData(node, workflow.approvalConfiguredIdsMap[cdNodeId], data)
-                            }
+                            node.approvalUsers = data.approvalUsers
+                            node.userApprovalConfig =
+                                data.userApprovalConfig ?? workflow.approvalConfiguredIdsMap[cdNodeId]
+                            node.requestedUserId = data.requestedUserId
                         }
                         return node
                     })
@@ -472,18 +472,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 const workflows = [...this.state.workflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
+                            node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
+                            node.requestedUserId = response.result.requestedUserId
+
                             if (!offset && !size) {
                                 node.rollbackMaterialList = response.result.materials
                             } else {
                                 node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result.materials)
-                            }
-
-                            if (updateNodeData) {
-                                node = updateNodeData(
-                                    node,
-                                    workflow.approvalConfiguredIdsMap[cdNodeId],
-                                    response.result,
-                                )
                             }
                         }
                         return node

@@ -36,7 +36,6 @@ import {
     DeploymentNodeType,
     getRandomColor,
     CDModalTab,
-    TriggerTypeMap,
     ScanVulnerabilitiesTable,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
@@ -905,6 +904,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     renderTriggerModalCTA(isApprovalConfigured: boolean) {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
         const hideConfigDiffSelector = isApprovalConfigured && this.props.material.length <= 1
+        const disableDeployButton =
+            this.isDeployButtonDisabled() ||
+            (this.props.material.length > 0 && this.isImageApprover(this.props.material[0]?.userApprovalMetadata))
 
         return (
             <div
@@ -950,7 +952,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             </div>
                             <span className="dc__border-left h-100" />
                             <ConditionalWrap
-                                condition={!this.state.checkingDiff && this.isDeployButtonDisabled()}
+                                condition={!this.state.checkingDiff && disableDeployButton}
                                 wrap={(children) => (
                                     <Tippy
                                         className="default-tt w-200"
@@ -981,8 +983,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 >
                     <button
                         data-testid="cd-trigger-deploy-button"
-                        className={`cta flex ml-auto h-36 ${this.isDeployButtonDisabled() ? 'disabled-opacity' : ''}`}
-                        onClick={this.deployTrigger}
+                        className={`cta flex ml-auto h-36 ${disableDeployButton ? 'disabled-opacity' : ''}`}
+                        onClick={disableDeployButton ? noop : this.deployTrigger}
                     >
                         {this.props.isLoading ? (
                             <Progressing />
@@ -1189,10 +1191,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    renderEmptyState = (isApprovalConfigured: boolean, consumedImagePresent?: boolean) => {
+    renderEmptyState = (isApprovalConfigured: boolean, consumedImagePresent?: boolean, applyMargin?: boolean) => {
         if (isApprovalConfigured && ApprovalEmptyState) {
             return (
                 <ApprovalEmptyState
+                    className={applyMargin ? 'ml-15-perc' : ''}
                     consumedImagePresent={consumedImagePresent}
                     triggerType={this.props.triggerType}
                     isRollbackTrigger={this.state.isRollbackTrigger}
@@ -1230,7 +1233,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 : this.renderCDModal(isApprovalConfigured)
         } else {
             return this.props.isFromBulkCD ? (
-                this.renderEmptyState(isApprovalConfigured)
+                this.renderEmptyState(isApprovalConfigured, false, true)
             ) : (
                 <>
                     <div className="trigger-modal__header">

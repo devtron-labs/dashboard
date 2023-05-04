@@ -80,7 +80,6 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
-const updateNodeData = importComponentFromFELibrary('updateNodeData')
 
 let inprogressStatusTimer
 export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefaultType) {
@@ -568,9 +567,9 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node[MATERIAL_TYPE.inputMaterialList] = data.materials
-                            if (updateNodeData) {
-                                node = updateNodeData(node, workflow.approvalConfiguredIdsMap[cdNodeId], data)
-                            }
+                            node.approvalUsers = data.approvalUsers
+                            node.userApprovalConfig = data.userApprovalConfig
+                            node.requestedUserId = data.requestedUserId
 
                             _selectedNode = node
                             _workflowId = workflow.id
@@ -621,9 +620,8 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                 const _workflows = [...filteredWorkflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
-                            if (updateNodeData) {
-                                node = updateNodeData(node, workflow.approvalConfiguredIdsMap[cdNodeId], response.result)
-                            }
+                            node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
+                            node.requestedUserId = response.result.requestedUserId
                             _selectedNode = node
 
                             if (!offset && !size) {

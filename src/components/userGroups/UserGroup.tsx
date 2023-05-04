@@ -11,12 +11,11 @@ import {
     sortBySelected,
     mapByKey,
     sortObjectArrayAlphabetically,
+    importComponentFromFELibrary,
 } from '../common'
 import {
     showError,
     Progressing,
-    Checkbox,
-    CHECKBOX_VALUE,
     ConditionalWrap,
     ErrorScreenNotAuthorized,
     get,
@@ -80,6 +79,8 @@ import {
     TOAST_ACCESS_DENIED,
     USER_NOT_EDITABLE,
 } from '../../config/constantMessaging'
+
+const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 
 interface UserGroup {
     appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
@@ -897,7 +898,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                     ? possibleRolesMetaHelmApps[value].value
                     : possibleRolesMeta[value].value}
-                {permission.approver && ', Approver'}
+                {ApproverPermission && permission.approver && ', Approver'}
                 {React.cloneElement(children[1])}
             </components.ValueContainer>
         )
@@ -911,18 +912,16 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         return (
             <components.MenuList {...props}>
                 {props.children}
-                {permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && (
+                {ApproverPermission && permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && (
                     <>
                         <div className="w-100 dc__border-top-n1" />
                         <components.Option {...props}>
-                            <div className="flex left top cursor" onClick={handleApproverChange}>
-                                <Checkbox
-                                    isChecked={permission.approver}
-                                    value={CHECKBOX_VALUE.CHECKED}
-                                    onChange={noop}
-                                />
-                                {formatOptionLabel(APPROVER_ACTION)}
-                            </div>
+                            <ApproverPermission
+                                approver={permission.approver}
+                                handleApproverChange={handleApproverChange}
+                                formatOptionLabel={formatOptionLabel}
+                                approverAction={APPROVER_ACTION}
+                            />
                         </components.Option>
                     </>
                 )}
