@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, SourceTypeMap, ViewType } from '../../../../config'
+import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, NO_COMMIT_SELECTED, SourceTypeMap, ViewType } from '../../../../config'
 import {
     ServerErrors,
     ErrorScreenManager,
@@ -338,12 +338,16 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     ]
                     _selectedMaterial.isMaterialLoading = false
                     _selectedMaterial.showAllCommits = false
+                    _selectedMaterial.isMaterialSelectionError = false
+                    _selectedMaterial.materialSelectionErrorMsg = ''
                 } else {
                     _selectedMaterial.history = []
                     _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
                     _selectedMaterial.noSearchResult = true
                     _selectedMaterial.isMaterialLoading = false
                     _selectedMaterial.showAllCommits = false
+                    _selectedMaterial.isMaterialSelectionError = true
+                    _selectedMaterial.materialSelectionErrorMsg = NO_COMMIT_SELECTED
                 }
                 setFilteredWorkflows(workflows)
             })
@@ -358,6 +362,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
         _ciNodeId: number,
         pipelineName: string,
         ciPipelineMaterialId: number,
+        gitMaterialId: number,
         commitHash = null,
     ) => {
         let _selectedMaterial
@@ -393,24 +398,25 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
         } else {
             setFilteredWorkflows(_workflows)
             abortControllerRef.current = new AbortController()
-            updateCIMaterialList(
+            getMaterialHistory(
                 selectedCINode.id.toString(),
-                pipelineName,
-                true,
                 abortControllerRef.current.signal,
+                gitMaterialId,
+                false,
             ).catch((errors: ServerErrors) => {
-                showError(errors)
-                setErrorCode(errors.code)
+                if (!abortControllerRef.current.signal.aborted) {
+                    showError(errors)
+                }
             })
         }
     }
 
-    const getFilteredMaterial = async (ciNodeId: number, ciPipelineMaterialId: number, showExcluded: boolean) => {
+    const getFilteredMaterial = async (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => {
         const _workflows = [...filteredWorkflows].map((wf) => {
             wf.nodes = wf.nodes.map((node) => {
                 if (node.id === ciNodeId.toString() && node.type === 'CI') {
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
-                        if (material.gitMaterialId === ciPipelineMaterialId) {
+                        if (material.gitMaterialId === gitMaterialId) {
                             material.isMaterialLoading = true
                             material.showAllCommits = showExcluded
                         }
@@ -424,27 +430,24 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
         })
         setFilteredWorkflows(_workflows)
         abortControllerRef.current = new AbortController()
-        getMaterialHistory(
-            ciNodeId.toString(),
-            abortControllerRef.current.signal,
-            ciPipelineMaterialId,
-            showExcluded,
-        ).catch((errors: ServerErrors) => {
-            if (!abortControllerRef.current.signal.aborted) {
-                showError(errors)
-            }
-        })
+        getMaterialHistory(ciNodeId.toString(), abortControllerRef.current.signal, gitMaterialId, showExcluded).catch(
+            (errors: ServerErrors) => {
+                if (!abortControllerRef.current.signal.aborted) {
+                    showError(errors)
+                }
+            },
+        )
     }
 
     const getMaterialHistory = (
         ciNodeId: string,
         abortSignal: AbortSignal,
-        materialId?: number,
+        gitMaterialId?: number,
         showExcluded?: boolean,
     ) => {
         const params = {
             pipelineId: ciNodeId,
-            materialId: materialId,
+            materialId: gitMaterialId,
             showExcluded: showExcluded,
         }
         return getCIMaterialList(params, abortSignal).then((response) => {

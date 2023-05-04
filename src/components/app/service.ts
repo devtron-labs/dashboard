@@ -109,7 +109,7 @@ export function fetchAppDetailsInTime(
     envId: number | string,
     reloadTimeOut: number,
 ): Promise<AppDetailsResponse> {
-  return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
+    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
 }
 
 export function fetchResourceTreeInTime(
@@ -188,11 +188,11 @@ const processMaterialHistoryAndSelectionError = (material) => {
         history: [],
     }
     if (material.history) {
-        let selectedIndex
+        let selectedIndex = -1
         const matHistory = []
         for (let index = 0; index < material.history.length; index++) {
             const history = material.history[index]
-            if (!selectedIndex && !history.Excluded) {
+            if (selectedIndex === -1 && !history.Excluded) {
                 selectedIndex = index
             }
             matHistory.push({
@@ -243,20 +243,20 @@ const processCIMaterialResponse = (response) => {
 }
 
 export const getCIMaterialList = (params, abortSignal: AbortSignal) => {
-  let url = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`
-  if (params.materialId) {
-      url += `/${params.materialId}${params.showExcluded ? '?showAll=true' : ''} `
-  }
-  return get(url, {
-      signal: abortSignal,
-  }).then((response) => {
-      const materials = processCIMaterialResponse(response)
-      return {
-          code: response.code,
-          status: response.status,
-          result: materials,
-      }
-  })
+    let url = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`
+    if (params.materialId) {
+        url += `/${params.materialId}${params.showExcluded ? '?showAll=true' : ''} `
+    }
+    return get(url, {
+        signal: abortSignal,
+    }).then((response) => {
+        const materials = processCIMaterialResponse(response)
+        return {
+            code: response.code,
+            status: response.status,
+            result: materials,
+        }
+    })
 }
 
 export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType, abortSignal: AbortSignal) {

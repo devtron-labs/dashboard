@@ -31,6 +31,7 @@ import {
     BUILD_STATUS,
     DEFAULT_GIT_BRANCH_VALUE,
     DOCUMENTATION,
+    NO_COMMIT_SELECTED,
 } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'
@@ -178,12 +179,16 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     ]
                     _selectedMaterial.isMaterialLoading = false
                     _selectedMaterial.showAllCommits = false
+                    _selectedMaterial.isMaterialSelectionError = false
+                    _selectedMaterial.materialSelectionErrorMsg = ''
                 } else {
                     _selectedMaterial.history = []
                     _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
                     _selectedMaterial.noSearchResult = true
                     _selectedMaterial.isMaterialLoading = false
                     _selectedMaterial.showAllCommits = false
+                    _selectedMaterial.isMaterialSelectionError = true
+                    _selectedMaterial.materialSelectionErrorMsg = NO_COMMIT_SELECTED
                 }
                 this.setState({
                     workflows: workflows,
@@ -198,7 +203,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    async getMaterialByCommit(ciNodeId: number, pipelineName: string, ciPipelineMaterialId: number, commitHash = null) {
+    async getMaterialByCommit(
+        ciNodeId: number,
+        pipelineName: string,
+        ciPipelineMaterialId: number,
+        gitMaterialId: number,
+        commitHash = null,
+    ) {
         let _selectedMaterial
         const workflows = [...this.state.workflows].map((workflow) => {
             workflow.nodes.map((node) => {
@@ -244,11 +255,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 },
                 () => {
                     this.abortController = new AbortController()
-                    this.updateCIMaterialList(
+                    this.getMaterialHistory(
                         ciNodeId.toString(),
-                        pipelineName,
-                        true,
                         this.abortController.signal,
+                        gitMaterialId,
+                        false,
                     ).catch((errors: ServerErrors) => {
                         if (!this.abortController.signal.aborted) {
                             showError(errors)
@@ -260,12 +271,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
     }
 
-    async getFilteredMaterial(ciNodeId: number, ciPipelineMaterialId: number, showExcluded: boolean) {
+    async getFilteredMaterial(ciNodeId: number, gitMaterialId: number, showExcluded: boolean) {
         const workflows = [...this.state.workflows].map((wf) => {
             wf.nodes = wf.nodes.map((node) => {
                 if (node.id === ciNodeId.toString() && node.type === 'CI') {
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
-                        if (material.gitMaterialId === ciPipelineMaterialId) {
+                        if (material.gitMaterialId === gitMaterialId) {
                             material.isMaterialLoading = true
                             material.showAllCommits = showExcluded
                         }
@@ -277,25 +288,31 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
             return wf
         })
-        this.setState({ workflows })
-        this.abortController = new AbortController()
-        this.getMaterialHistory(
-            ciNodeId.toString(),
-            this.abortController.signal,
-            ciPipelineMaterialId,
-            showExcluded,
-        ).catch((errors: ServerErrors) => {
-            if (!this.abortController.signal.aborted) {
-                showError(errors)
-                this.setState({ code: errors.code })
-            }
-        })
+        this.setState(
+            {
+                workflows: workflows,
+            },
+            () => {
+                this.abortController = new AbortController()
+                this.getMaterialHistory(
+                    ciNodeId.toString(),
+                    this.abortController.signal,
+                    gitMaterialId,
+                    showExcluded,
+                ).catch((errors: ServerErrors) => {
+                    if (!this.abortController.signal.aborted) {
+                        showError(errors)
+                        this.setState({ code: errors.code })
+                    }
+                })
+            },
+        )
     }
 
-    getMaterialHistory(ciNodeId: string, abortSignal: AbortSignal, materialId?: number, showExcluded?: boolean) {
+    getMaterialHistory(ciNodeId: string, abortSignal: AbortSignal, gitMaterialId?: number, showExcluded?: boolean) {
         const params = {
             pipelineId: ciNodeId,
-            materialId: materialId,
+            materialId: gitMaterialId,
             showExcluded: showExcluded,
         }
         return getCIMaterialList(params, abortSignal).then((response) => {

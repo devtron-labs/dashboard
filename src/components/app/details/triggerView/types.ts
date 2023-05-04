@@ -78,16 +78,16 @@ export interface CDMaterialState {
 }
 
 export interface MaterialInfo {
-  revision: string
-  modifiedTime: string | Date
-  author: string
-  message: string
-  commitLink: string
-  tag: string
-  webhookData: string
-  branch: string
-  url?: string
-  type?: string
+    revision: string
+    modifiedTime: string | Date
+    author: string
+    message: string
+    commitLink: string
+    tag: string
+    webhookData: string
+    branch: string
+    url?: string
+    type?: string
 }
 
 export interface CDMaterialType {
@@ -301,8 +301,14 @@ export interface TriggerViewContextType {
     selectMaterial: (materialId) => void
     toggleChanges: (materialId: string, hash: string) => void
     toggleInvalidateCache: () => void
-    getMaterialByCommit: (ciNodeId: number, pipelineName: string, materialId: number, commitHash: string) => void
-    getFilteredMaterial: (ciNodeId: number, materialId: number, showExcluded: boolean) => void
+    getMaterialByCommit: (
+        ciNodeId: number,
+        pipelineName: string,
+        materialId: number,
+        gitMaterialId: number,
+        commitHash: string,
+    ) => void
+    getFilteredMaterial: (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => void
 }
 
 export interface TriggerViewRouterProps {
@@ -670,10 +676,10 @@ export interface EmptyStateCIMaterialProps {
     noSearchResults?: boolean
     noSearchResultsMsg?: string
     toggleWebHookModal?: () => void
-    clearSearch?: () => void
+    clearSearch?: (e) => void
     handleGoToWorkFlowEditor?: (e?: any) => void
     showAllCommits?: boolean
-    toggleExclude: (e)=> void
+    toggleExclude: (e) => void
 }
 
 export interface MaterialSourceProps {

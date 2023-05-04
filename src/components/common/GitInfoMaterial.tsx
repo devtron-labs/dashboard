@@ -152,10 +152,11 @@ export default function GitInfoMaterial({
         )
     }
     const handleFilterChanges = (_searchText: string): void => {
-        triggerViewContext.getMaterialByCommit(pipelineId, title, selectedMaterial.id, _searchText)
+        triggerViewContext.getMaterialByCommit(pipelineId, title, selectedMaterial.id, selectedMaterial.gitMaterialId, _searchText)
     }
 
-    const clearSearch = (): void => {
+    const clearSearch = (e): void => {
+        stopPropagation(e)
         if (searchApplied) {
             handleFilterChanges('')
             setSearchApplied(false)
@@ -175,7 +176,7 @@ export default function GitInfoMaterial({
                 setSearchApplied(true)
             }
         } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
-            clearSearch()
+            clearSearch(event)
         }
     }
 
