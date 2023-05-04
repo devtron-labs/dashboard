@@ -294,6 +294,8 @@ export default function GitInfoMaterial({
                             noSearchResultsMsg={selectedMaterial.noSearchResultsMsg}
                             clearSearch={clearSearch}
                             handleGoToWorkFlowEditor={goToWorkFlowEditor}
+                            showAllCommits={showAllCommits}
+                            toggleExclude={toggleExclude}
                         />
                     </div>
                 ) : (

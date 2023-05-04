@@ -791,7 +791,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
             ]
             if (_inputMaterial) {
                 if (_inputMaterial.value === DEFAULT_GIT_BRANCH_VALUE) continue
-                const history = _inputMaterial.history.filter((hstry) => hstry.isSelected && !hstry.excluded)
+                const history = _inputMaterial.history.filter((hstry) => hstry.isSelected)
                 if (!history.length) {
                     history.push(_inputMaterial.history[0])
                 }
@@ -1297,7 +1297,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     node.inputMaterialList[i].value,
                 ]
                 if (node.inputMaterialList[i].value === DEFAULT_GIT_BRANCH_VALUE) continue
-                const history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected && !hstry.excluded)
+                const history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected)
                 if (!history.length) {
                     history.push(node.inputMaterialList[i].history[0])
                 }

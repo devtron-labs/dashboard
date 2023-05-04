@@ -183,7 +183,12 @@ const gitTriggersModal = (triggers, materials) => {
 
 const processMaterialHistory = (material) => {
     if (material.history) {
+        let selectedIndex
         return material.history.map((history, index) => {
+            if (!selectedIndex && !history.Excluded) {
+                selectedIndex = index
+            }
+
             return {
                 commitURL: material.gitMaterialUrl ? createGitCommitUrl(material.gitMaterialUrl, history.Commit) : '',
                 changes: history.Changes || [],
@@ -191,7 +196,7 @@ const processMaterialHistory = (material) => {
                 message: history.Message,
                 date: history.Date ? moment(history.Date).format(Moment12HourFormat) : '',
                 commit: history?.Commit,
-                isSelected: index == 0,
+                isSelected: index === selectedIndex,
                 showChanges: false,
                 webhookData: history.WebhookData
                     ? {
@@ -200,7 +205,7 @@ const processMaterialHistory = (material) => {
                           data: history.WebhookData.data,
                       }
                     : null,
-                    excluded: history.Excluded,
+                excluded: history.Excluded,
             }
         })
     }

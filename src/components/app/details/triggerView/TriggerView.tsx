@@ -664,7 +664,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             ]
             if (node.inputMaterialList[i]) {
                 if (node.inputMaterialList[i].value === DEFAULT_GIT_BRANCH_VALUE) continue
-                const history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected && !hstry.excluded)
+                const history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected)
                 if (!history.length) {
                     history.push(node.inputMaterialList[i].history[0])
                 }

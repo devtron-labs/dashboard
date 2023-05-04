@@ -153,7 +153,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             isValid =
                 (isValid &&
                     !mat.isMaterialLoading &&
-                    !!mat.history.find((history) => history.isSelected && !history.excluded)) ||
+                    !!mat.history.find((history) => history.isSelected)) ||
                 (!mat.isDockerFileError && mat.branchErrorMsg === SOURCE_NOT_CONFIGURED && isMaterialActive)
             return isValid
         }, true)

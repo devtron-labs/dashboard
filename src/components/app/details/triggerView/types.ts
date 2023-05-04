@@ -673,6 +673,7 @@ export interface EmptyStateCIMaterialProps {
     clearSearch?: () => void
     handleGoToWorkFlowEditor?: (e?: any) => void
     showAllCommits?: boolean
+    toggleExclude: (e)=> void
 }
 
 export interface MaterialSourceProps {
