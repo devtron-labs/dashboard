@@ -1,3 +1,4 @@
+import { POD_LINKS } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 import { ColumnMetadataType, EFFECT_TYPE } from './types'
 
@@ -373,8 +374,8 @@ export const PRE_FETCH_DATA_MESSAGING = {
     CONNECTING_TO_POD: 'Connecting to pod terminal.',
     TIMED_OUT_LINK: ' \u001b[38;5;196mTimed out\u001b[0m',
     FAILED_TEXT: '  \u001b[38;5;196mFailed\u001b[0m',
-    CHECK_POD_EVENTS: ' | \u001b[38;5;110m\u001b[4mCheck Pod Events\u001b[0m',
-    CHEKC_POD_MANIFEST: '\u001b[38;5;110m\u001b[4mCheck Pod Manifest\u001b[0m',
+    CHECK_POD_EVENTS: ` | \u001b[38;5;110m\u001b[4m${POD_LINKS.POD_EVENTS}\u001b[0m`,
+    CHEKC_POD_MANIFEST: `\u001b[38;5;110m\u001b[4m${POD_LINKS.POD_MANIFEST}\u001b[0m`,
 }
 
 export const defaultManifestErrorText =
