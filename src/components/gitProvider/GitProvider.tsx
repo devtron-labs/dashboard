@@ -123,7 +123,7 @@ export default function GitProvider({ ...props }) {
 
     return (
         <section
-            className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1"
+            className="global-configuration__component flex-1"
             data-testid="git-provider-wrapper"
         >
             <h2 className="form__title">Git accounts</h2>

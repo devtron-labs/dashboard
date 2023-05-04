@@ -465,7 +465,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
         const _offset = offset || 1
         const _size = size || 20
-        this.setState({ isLoading: true, showCDModal: true })
+        this.setState({ loader: true, showCDModal: true })
         this.abortController = new AbortController()
         getRollbackMaterialList(cdNodeId, _offset, _size, this.abortController.signal)
             .then((response) => {
@@ -493,7 +493,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         cdNodeId: cdNodeId,
                         nodeType: 'CD',
                         showCDModal: true,
-                        isLoading: false,
+                        loader: false,
                     },
                     () => {
                         preventBodyScroll(true)
@@ -1021,7 +1021,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 triggerType={node.triggerType}
                                 material={material}
                                 materialType={this.state.materialType}
-                                envName={node.environmentName}
+                                envName={node?.environmentName}
                                 isLoading={this.state.isLoading}
                                 changeTab={this.changeTab}
                                 triggerDeploy={this.onClickTriggerCDNode}

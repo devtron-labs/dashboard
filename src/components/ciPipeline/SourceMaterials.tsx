@@ -101,7 +101,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                 const isBranchRegex = mat.type === SourceTypeMap.BranchRegex || mat.isRegex
                 const isBranchFixed = mat.type === SourceTypeMap.BranchFixed && !mat.isRegex
                 const _selectedWebhookEvent =
-                    mat.type === SourceTypeMap.WEBHOOK && mat.value && props.webhookData.getSelectedWebhookEvent(mat)
+                    mat.type === SourceTypeMap.WEBHOOK && mat.value && props.webhookData?.getSelectedWebhookEvent(mat)
                 let selectedMaterial
 
                 if (props.includeWebhookEvents && mat.type === SourceTypeMap.WEBHOOK && !_selectedWebhookEvent) {

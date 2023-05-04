@@ -148,7 +148,7 @@ export function SourceInfo({
                                         URLs
                                     </button>
                                 )}
-                                {showCommitInfo && (
+                                {appDetails?.dataSource !== 'EXTERNAL' && showCommitInfo && (
                                     <button
                                         className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                         onClick={onClickShowCommitInfo}

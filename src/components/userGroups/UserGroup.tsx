@@ -39,10 +39,10 @@ import {
     getUsersDataToExport,
     getGroupsDataToExport,
     getUserRole,
+    getCustomRoles,
 } from './userGroup.service'
 import { getEnvironmentListMin, getProjectFilteredApps } from '../../services/service'
 import { getChartGroups } from '../charts/charts.service'
-import { ChartGroup } from '../charts/charts.types'
 import {
     DirectPermissionsRoleFilter,
     ChartGroupPermissionsFilter,
@@ -54,6 +54,9 @@ import {
     DefaultUserKey,
     DefaultUserValue,
     ActionRoleType,
+    Custom_Roles,
+    EntityTypes,
+    UserGroup,
 } from './userGroups.types'
 import { ACCESS_TYPE_MAP, DOCUMENTATION, HELM_APP_UNASSIGNED_PROJECT, Routes, SERVER_MODE } from '../../config'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
@@ -82,19 +85,6 @@ import {
 
 const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 
-interface UserGroup {
-    appsList: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
-    userGroupsList: any[]
-    environmentsList: any[]
-    projectsList: any[]
-    chartGroupsList: ChartGroup[]
-    fetchAppList: (projectId: number[]) => void
-    superAdmin: boolean
-    roles: string[]
-    envClustersList: any[]
-    fetchAppListHelmApps: (projectId: number[]) => void
-    appsListHelmApps: Map<number, { loading: boolean; result: { id: number; name: string }[]; error: any }>
-}
 const UserGroupContext = React.createContext<UserGroup>({
     appsList: new Map(),
     userGroupsList: [],
@@ -107,58 +97,13 @@ const UserGroupContext = React.createContext<UserGroup>({
     envClustersList: [],
     fetchAppListHelmApps: () => {},
     appsListHelmApps: new Map(),
+    customRoles: {
+        customRoles: [],
+        possibleRolesMeta: {},
+        possibleRolesMetaForHelm: {},
+        possibleRolesMetaForCluster: {},
+    },
 })
-
-const possibleRolesMeta = {
-    [ActionTypes.VIEW]: {
-        value: 'View only',
-        description: 'Can view selected applications',
-    },
-    [ActionTypes.TRIGGER]: {
-        value: 'Build and deploy',
-        description: 'Can build and deploy apps on selected environments',
-    },
-    [ActionTypes.ADMIN]: {
-        value: 'Admin',
-        description: 'Can view, trigger and edit selected applications',
-    },
-    '*': {
-        value: 'Admin',
-        description: 'Can view, trigger and edit selected applications',
-    },
-    [ActionTypes.MANAGER]: {
-        value: 'Manager',
-        description: 'Can view, trigger and edit selected applications. Can also manage user access.',
-    },
-    [ActionTypes.UPDATE]: {
-        value: 'Build and deploy',
-        description: 'Can build and deploy apps on selected environments.',
-    },
-    [ActionTypes.APPROVER]: {
-        value: 'Approver',
-        description:
-            'Can approve images to be deployed. The user must be added as an approver for a deployment pipeline.',
-    },
-}
-
-const possibleRolesMetaHelmApps = {
-    [ActionTypes.VIEW]: {
-        value: 'View only',
-        description: 'Can view selected application(s) and resource manifests of selected application(s)',
-    },
-    [ActionTypes.EDIT]: {
-        value: 'View & Edit',
-        description: 'Can also edit resource manifests of selected application(s)',
-    },
-    [ActionTypes.ADMIN]: {
-        value: 'Admin',
-        description: 'Complete access on selected applications',
-    },
-    '*': {
-        value: 'Admin',
-        description: 'Complete access on selected applications',
-    },
-}
 
 const tempMultiSelectStyles = {
     ...multiSelectStyles,
@@ -221,6 +166,7 @@ export default function UserGroupRoute() {
                 serverMode === SERVER_MODE.EA_ONLY ? null : getChartGroups(),
                 getUserRole(),
                 getEnvironmentListHelmApps(),
+                getCustomRoles(),
             ]),
         [serverMode],
     )
@@ -307,7 +253,7 @@ export default function UserGroupRoute() {
     }
 
     if (listsLoading) return <Progressing pageLoader />
-    const [userGroups, projects, environments, chartGroups, userRole, envClustersList] = lists
+    const [userGroups, projects, environments, chartGroups, userRole, envClustersList, customRolesList] = lists
     return (
         <div className="flex h-100">
             <div data-testid="auth-user-page" className="auth-page__body">
@@ -324,6 +270,23 @@ export default function UserGroupRoute() {
                         envClustersList: envClustersList.status === 'fulfilled' ? envClustersList?.value?.result : [],
                         fetchAppListHelmApps,
                         appsListHelmApps,
+                        customRoles: {
+                            customRoles: customRolesList.status === 'fulfilled' ? customRolesList?.value?.result : [],
+                            possibleRolesMeta: getMetaPossibleRoles(
+                                customRolesList.status === 'fulfilled' ? customRolesList?.value?.result : [],
+                                EntityTypes.DIRECT,
+                                ACCESS_TYPE_MAP.DEVTRON_APPS,
+                            ),
+                            possibleRolesMetaForHelm: getMetaPossibleRoles(
+                                customRolesList.status === 'fulfilled' ? customRolesList?.value?.result : [],
+                                EntityTypes.DIRECT,
+                                ACCESS_TYPE_MAP.HELM_APPS,
+                            ),
+                            possibleRolesMetaForCluster: getMetaPossibleRoles(
+                                customRolesList.status === 'fulfilled' ? customRolesList?.value?.result : [],
+                                EntityTypes.CLUSTER,
+                            ),
+                        },
                     }}
                 >
                     <Switch>
@@ -357,7 +320,7 @@ const UserGroupList: React.FC<{
     const searchRef = useRef(null)
     const keys = useKeyDown()
     const [addHash, setAddHash] = useState(null)
-    const { roles } = useUserGroupContext()
+    const { roles, customRoles } = useUserGroupContext()
 
     useEffect(() => {
         switch (keys.join(',').toLowerCase()) {
@@ -472,7 +435,7 @@ const UserGroupList: React.FC<{
                             _roleFilter.environment?.split(',').join(', ') || 'All existing + future environments'
                         _userPermissions.application =
                             _roleFilter.entityName?.split(',').join(', ') || 'All existing + future applications'
-                        _userPermissions.role = possibleRolesMeta[_roleFilter.action]?.value || '-'
+                        _userPermissions.role = customRoles.possibleRolesMeta[_roleFilter.action]?.value || '-'
 
                         _usersList.push(_userPermissions)
                     }
@@ -515,7 +478,7 @@ const UserGroupList: React.FC<{
                             _roleFilter.environment?.split(',').join(', ') || 'All existing + future environments'
                         _groupPermissions.application =
                             _roleFilter.entityName?.split(',').join(', ') || 'All existing + future applications'
-                        _groupPermissions.role = possibleRolesMeta[_roleFilter.action]?.value || '-'
+                        _groupPermissions.role = customRoles.possibleRolesMeta[_roleFilter.action]?.value || '-'
 
                         _groupsList.push(_groupPermissions)
                     }
@@ -839,14 +802,14 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     index,
     removeRow,
 }) => {
-    const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps } = useUserGroupContext()
+    const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps, customRoles } =
+        useUserGroupContext()
     const projectId =
         permission.team && permission.team.value !== HELM_APP_UNASSIGNED_PROJECT
             ? projectsList.find((project) => project.name === permission.team.value)?.id
             : null
 
-    const possibleRoles = [ActionTypes.VIEW, ActionTypes.TRIGGER, ActionTypes.ADMIN, ActionTypes.MANAGER]
-    const possibleRolesHelmApps = [ActionTypes.VIEW, ActionTypes.EDIT, ActionTypes.ADMIN]
+    const [possibleRoles, setPossibleRoles] = useState([])
     const [openMenu, changeOpenMenu] = useState<'entityName' | 'environment' | ''>('')
     const [environments, setEnvironments] = useState([])
     const [applications, setApplications] = useState([])
@@ -896,8 +859,8 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 {value === '*'
                     ? 'Admin'
                     : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
-                    ? possibleRolesMetaHelmApps[value].value
-                    : possibleRolesMeta[value].value}
+                    ? customRoles.possibleRolesMetaForHelm[value].value
+                    : customRoles.possibleRolesMeta[value].value}
                 {ApproverPermission && permission.approver && ', Approver'}
                 {React.cloneElement(children[1])}
             </components.ValueContainer>
@@ -936,6 +899,17 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         }))
         setEnvironments(envOptions)
     }, [environmentsList])
+
+    useEffect(() => {
+        const customRoleOptions = customRoles.customRoles.map((role) => ({
+            label: role.roleDisplayName,
+            value: role.roleName,
+            description: role.roleDescription,
+            entity: role.entity,
+            accessType: role.accessType,
+        }))
+        setPossibleRoles(customRoleOptions)
+    }, [customRoles])
 
     useEffect(() => {
         const envOptions = envClustersList?.map((cluster) => ({
@@ -998,15 +972,15 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 <span>
                     {
                         (permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
-                            ? possibleRolesMetaHelmApps
-                            : possibleRolesMeta)[value]?.value
+                            ? customRoles.possibleRolesMetaForHelm
+                            : customRoles.possibleRolesMeta)[value]?.value
                     }
                 </span>
                 <small className="light-color">
                     {
                         (permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
-                            ? possibleRolesMetaHelmApps
-                            : possibleRolesMeta)[value]?.description
+                            ? customRoles.possibleRolesMetaForHelm
+                            : customRoles.possibleRolesMeta)[value]?.description
                     }
                 </small>
             </div>
@@ -1267,13 +1241,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 value={permission.action}
                 name="action"
                 placeholder="Select role"
-                options={(permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
-                    ? possibleRolesHelmApps
-                    : possibleRoles
-                ).map((role) => ({
-                    label: role as string,
-                    value: role as ActionRoleType,
-                }))}
+                options={ParseData(possibleRoles, permission.entity, permission.accessType)}
                 className="basic-multi-select"
                 classNamePrefix="select-user-role-dropdown"
                 formatOptionLabel={formatOptionLabel}
@@ -1652,4 +1620,35 @@ function SearchEmpty({ searchString, setSearchString }) {
             </EmptyState.Button>
         </EmptyState>
     )
+}
+
+export function ParseData(dataList: any[], entity: string, accessType?: string) {
+    switch (entity) {
+        case EntityTypes.DIRECT:
+            if (accessType === ACCESS_TYPE_MAP.DEVTRON_APPS) {
+                return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS)
+            } else {
+                return dataList.filter((role) => role.accessType === ACCESS_TYPE_MAP.HELM_APPS)
+            }
+        case EntityTypes.CLUSTER:
+            return dataList.filter((role) => role.entity === EntityTypes.CLUSTER)
+        case EntityTypes.CHART_GROUP:
+            return dataList.filter((role) => role.entity === EntityTypes.CHART_GROUP)
+    }
+}
+
+function getMetaPossibleRoles(customRoles: Custom_Roles[], entity: string, accessType?: string) {
+    let possibleRolesMeta = {}
+    customRoles.forEach((role) => {
+        if (role.entity === entity && (entity !== EntityTypes.DIRECT || role.accessType === accessType)) {
+            possibleRolesMeta = {
+                ...possibleRolesMeta,
+                [role.roleName]: {
+                    value: role.roleDisplayName,
+                    description: role.roleDescription,
+                },
+            }
+        }
+    })
+    return possibleRolesMeta
 }

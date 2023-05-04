@@ -449,7 +449,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     renderNewJobPipelineButton = () => {
         return (
-            <button type="button" className="cta dc__no-decor flex mb-20" onClick={this.openCreateModal}>
+            <button
+                type="button"
+                className="cta dc__no-decor flex mb-20"
+                data-testid="job-pipeline-button"
+                onClick={this.openCreateModal}
+            >
                 <img src={add} alt="add-worflow" className="icon-dim-18 mr-5" />
                 Job pipeline
             </button>

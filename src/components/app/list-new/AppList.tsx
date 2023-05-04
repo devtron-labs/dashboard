@@ -498,34 +498,36 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             filterType === AppListConstants.FilterType.CLUTSER || filterType === AppListConstants.FilterType.NAMESPACE
                 ? AppListConstants.FilterType.NAMESPACE
                 : filterType
-        let appliedFilters = query[queryParamType]
-        let arr = appliedFilters.split(',')
-        if (filterType === AppListConstants.FilterType.CLUTSER) {
-            arr = arr.filter((item) => !item.startsWith(val))
-        } else {
-            arr = arr.filter((item) => item !== val)
+        if (query[queryParamType]) {
+            let appliedFilters = query[queryParamType]
+            let arr = appliedFilters.split(',')
+            if (filterType === AppListConstants.FilterType.CLUTSER) {
+                arr = arr.filter((item) => !item.startsWith(val))
+            } else {
+                arr = arr.filter((item) => item !== val)
 
-            /**
-             * Check if filterType is NAMESPACE & appliedFilters array doesn't contain any namespace
-             * related to a cluster then push Cluster Id to updatedAppliedFilters array (i.e. arr)
-             */
-            if (
-                filterType === AppListConstants.FilterType.NAMESPACE &&
-                !arr.some((item) => item.startsWith(`${clustId}_`))
-            ) {
-                arr.push(clustId)
+                /**
+                 * Check if filterType is NAMESPACE & appliedFilters array doesn't contain any namespace
+                 * related to a cluster then push Cluster Id to updatedAppliedFilters array (i.e. arr)
+                 */
+                if (
+                    filterType === AppListConstants.FilterType.NAMESPACE &&
+                    !arr.some((item) => item.startsWith(`${clustId}_`))
+                ) {
+                    arr.push(clustId)
+                }
             }
+
+            query[queryParamType] =
+                filterType === AppListConstants.FilterType.NAMESPACE && !arr.toString() ? clustId : arr.toString()
+
+            if (query[queryParamType] == '') delete query[queryParamType]
+            let queryStr = queryString.stringify(query)
+            let url = `${
+                currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
+            }?${queryStr}`
+            history.push(url)
         }
-
-        query[queryParamType] =
-            filterType === AppListConstants.FilterType.NAMESPACE && !arr.toString() ? clustId : arr.toString()
-
-        if (query[queryParamType] == '') delete query[queryParamType]
-        let queryStr = queryString.stringify(query)
-        let url = `${
-            currentTab == AppListConstants.AppTabs.DEVTRON_APPS ? buildDevtronAppListUrl() : buildHelmAppListUrl()
-        }?${queryStr}`
-        history.push(url)
     }
 
     const removeAllFilters = (): void => {

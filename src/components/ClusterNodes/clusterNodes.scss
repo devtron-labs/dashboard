@@ -1,4 +1,4 @@
-.cluster-list {
+.cluster-list-main-container {
     &.no-result-container {
         height: calc(100vh - 48px);
         overflow: hidden;
@@ -68,7 +68,7 @@
     }
 
     &.show-terminal {
-        height: calc(50vh - 61px) !important;
+        height: calc(50vh - 48px) !important;
     }
 }
 
@@ -195,7 +195,7 @@
         column-gap: 16px;
     }
 }
-.cluster-list,
+.cluster-list-main-container,
 .node-list,
 .node-details-container {
     .top-3 {
@@ -275,7 +275,7 @@
 }
 
 .cluster-terminal-view-container {
-    height: calc(50vh + 13px);
+    height: 50vh;
 }
 
 .cluster-terminal__wrapper {
@@ -283,7 +283,7 @@
     background: var(--terminal-bg);
     flex: 1 1;
     height: calc(100% - 60px);
-    
+
     &.full-screen-terminal {
         height: calc(100vh - 108px);
     }

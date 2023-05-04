@@ -141,7 +141,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
             </p>
             <CollapsedSecretForm
                 appId={appId}
-                id={list.id || 0}
+                id={list?.id || 0}
                 title="Add Secret"
                 appChartRef={appChartRef}
                 update={update}

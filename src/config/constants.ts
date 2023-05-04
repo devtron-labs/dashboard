@@ -56,7 +56,7 @@ export const Routes = {
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/edit',
 
-    JOB_CI_DETAIL:'job/ci-pipeline/list',
+    JOB_CI_DETAIL: 'job/ci-pipeline/list',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
@@ -218,6 +218,7 @@ export const Routes = {
     USER_ROLE_GROUP: 'user/role/group',
     APP_FILTER_LIST: 'app/app-listing/autocomplete',
     APP_LIST_GROUP: 'app/list/group',
+    CUSTOM_ROLES: 'rbac/role',
     GROUPS: 'groups',
     GROUP: 'group',
 }
@@ -646,7 +647,7 @@ export const ModuleNameMap = {
 
 export const BUILD_STATUS = {
     NOT_TRIGGERED: 'not triggered',
-    NOT_DEPLOYED: 'not deployed'
+    NOT_DEPLOYED: 'not deployed',
 }
 
 export const EVENT_STREAM_EVENTS_MAP = {
@@ -789,8 +790,8 @@ export const SOURCE_NOT_CONFIGURED_MESSAGE =
     'Source is not configured for one or more git repositories. Please configure and try again.'
 
 export enum MANIFEST_KEY_FIELDS {
-    METADATA= 'metadata',
-    MANAGED_FIELDS= 'managedFields'
+    METADATA = 'metadata',
+    MANAGED_FIELDS = 'managedFields',
 }
 
 export enum KEY_VALUE {
@@ -801,5 +802,5 @@ export enum KEY_VALUE {
 export enum CONFIGURATION_TYPES {
     ENVIRONMENT = 'ENVIRONMENT',
     NAMESPACE = 'NAMESPACE',
-    DESCRIPTION = 'DESCRIPTION'
+    DESCRIPTION = 'DESCRIPTION',
 }
