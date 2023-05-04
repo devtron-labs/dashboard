@@ -872,16 +872,12 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             <components.MenuList {...props}>
                 {props.children}
                 {ApproverPermission && permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && (
-                    <>
-                        <div className="w-100 dc__border-top-n1" />
-                        <components.Option {...props}>
-                            <ApproverPermission
-                                approver={permission.approver}
-                                handleDirectPermissionChange={handleDirectPermissionChange}
-                                formatOptionLabel={formatOptionLabel}
-                            />
-                        </components.Option>
-                    </>
+                    <ApproverPermission
+                        optionProps={props}
+                        approver={permission.approver}
+                        handleDirectPermissionChange={handleDirectPermissionChange}
+                        formatOptionLabel={formatOptionLabel}
+                    />
                 )}
             </components.MenuList>
         )
