@@ -867,10 +867,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
         )
     }
 
-    const handleApproverChange = () => {
-        handleDirectPermissionChange(APPROVER_ACTION, { name: APPROVER_ACTION.label })
-    }
-
     const RoleMenuList = (props) => {
         return (
             <components.MenuList {...props}>
@@ -881,9 +877,8 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         <components.Option {...props}>
                             <ApproverPermission
                                 approver={permission.approver}
-                                handleApproverChange={handleApproverChange}
+                                handleDirectPermissionChange={handleDirectPermissionChange}
                                 formatOptionLabel={formatOptionLabel}
-                                approverAction={APPROVER_ACTION}
                             />
                         </components.Option>
                     </>

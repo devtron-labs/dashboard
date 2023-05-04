@@ -18,7 +18,7 @@ import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { ARTIFACTS_EMPTY_STATE_TEXTS } from './Constants'
 import { extractImage } from '../../service'
 
-const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
+const ApprovedArtifact = importComponentFromFELibrary('ApprovedArtifact')
 
 export default function Artifacts({
     status,
@@ -169,40 +169,22 @@ const CIProgressView = (): JSX.Element => {
 }
 
 export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children }: CIListItemType) => {
+    if (type === 'approved-artifact') {
+        return ApprovedArtifact ? (
+            <ApprovedArtifact
+                userApprovalMetadata={userApprovalMetadata}
+                triggeredBy={triggeredBy}
+                children={children}
+            />
+        ) : null
+    }
+
     return (
         <div className={`mb-16 ci-artifact ci-artifact--${type}`} data-testid="hover-on-report-artifact">
-            {type === 'approved-artifact' ? (
-                <>
-                    {ApprovalInfoTippy && (
-                        <div className="flex left pl-16">
-                            <ApprovalInfoTippy
-                                matId={null}
-                                appId={null}
-                                requestedUserId={null}
-                                stageType={null}
-                                userApprovalMetadata={userApprovalMetadata}
-                                cancelRequest={noop}
-                                requestInProgress={false}
-                                triggeredBy={triggeredBy}
-                            />
-                        </div>
-                    )}
-                    <div className="dc__border-bottom-n1" />
-                    <div className="approved-artifact pt-16 pb-16 pl-16 pr-16 flex-align-center">
-                        <div className="bcn-1 flex br-4 icon-dim-40">
-                            <img src={docker} className="icon-dim-24" />
-                        </div>
-                        {children}
-                    </div>
-                </>
-            ) : (
-                <>
-                    <div className="bcn-1 flex br-4">
-                        <img src={type === 'artifact' ? docker : folder} className="icon-dim-24" />
-                    </div>
-                    {children}
-                </>
-            )}
+            <div className="bcn-1 flex br-4">
+                <img src={type === 'artifact' ? docker : folder} className="icon-dim-24" />
+            </div>
+            {children}
         </div>
     )
 }

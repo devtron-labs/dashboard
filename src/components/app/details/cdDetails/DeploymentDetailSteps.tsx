@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router'
-import { getAlphabetIcon, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { getDeploymentStatusDetail } from '../appDetails/appDetails.service'
 import { DeploymentStatusDetailsBreakdownDataType } from '../appDetails/appDetails.type'
@@ -10,9 +10,10 @@ import { DeploymentDetailStepsType } from './cd.type'
 import CDEmptyState from './CDEmptyState'
 import mechanicalOperation from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg'
-import { ReactComponent as Check } from '../../../../assets/icons/ic-check.svg'
-import { ReactComponent as ChevronDown } from '../../../../assets/icons/appstatus/ic-chevron-down.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, TIMELINE_STATUS, URLS } from '../../../../config'
+import { importComponentFromFELibrary } from '../../../common'
+
+const DeploymentApprovalInfo = importComponentFromFELibrary('DeploymentApprovalInfo')
 
 export default function DeploymentDetailSteps({
     deploymentStatus,
@@ -27,7 +28,6 @@ export default function DeploymentDetailSteps({
     )
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>(processDeploymentStatusDetailsData())
-    const [approverDetailsExpanded, setApproverDetailsExpanded] = useState<boolean>(false)
 
     let initTimer = null
     const getDeploymentDetailStepsData = (): void => {
@@ -74,10 +74,6 @@ export default function DeploymentDetailSteps({
         })
     }
 
-    const toggleApproverDetailsExpanded = () => {
-        setApproverDetailsExpanded(!approverDetailsExpanded)
-    }
-
     return deploymentStatus.toUpperCase() === TIMELINE_STATUS.ABORTED ||
         deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ? (
         <div className="flexbox deployment-aborted" data-testid="deployment-history-steps-failed-message">
@@ -104,45 +100,8 @@ export default function DeploymentDetailSteps({
         </div>
     ) : (
         <div className="dc__mxw-1000 min-w-800">
-            {userApprovalMetadata && (
-                <div className="deployment-approval-container pl-20 pr-20 pt-20">
-                    <div className="deployment-status-breakdown-row pt-8 pb-8 pl-8 pr-8 bcn-0 bw-1 border-collapse en-2">
-                        <Check className="icon-dim-20 green-tick" />
-                        <span className="ml-12 mr-12 fs-13">
-                            <span>Approval requested by {userApprovalMetadata.requestedUserData.userEmail}</span>
-                        </span>
-                    </div>
-                    <div className="vertical-connector" />
-                    <div className="deployment-status-breakdown-row pt-8 pb-8 pl-8 pr-8 bcn-0 bw-1 border-collapse en-2">
-                        <Check className="icon-dim-20 green-tick" />
-                        <span className="ml-12 mr-12 fs-13">
-                            <span>{userApprovalMetadata.approvedUsersData.length} Approved</span>
-                        </span>
-                        <ChevronDown
-                            style={{
-                                marginLeft: 'auto',
-                                ['--rotateBy' as any]: `${180 * Number(approverDetailsExpanded)}deg`,
-                            }}
-                            className="icon-dim-24 rotate pointer"
-                            onClick={toggleApproverDetailsExpanded}
-                        />
-                    </div>
-                    {approverDetailsExpanded && (
-                        <div className="bcn-0 en-2 detail-tab_border bw-1">
-                            <ol className="pt-12 pb-4 pl-12 pr-12 mb-0 dc__list-style-none">
-                                {userApprovalMetadata.approvedUsersData.map((_approver) => {
-                                    return (
-                                        <li key={_approver.userEmail} className="flex left mb-8 fs-13 fw-4">
-                                            {getAlphabetIcon(_approver.userEmail)}
-                                            {_approver.userEmail}
-                                        </li>
-                                    )
-                                })}
-                            </ol>
-                        </div>
-                    )}
-                    <div className="vertical-connector" />
-                </div>
+            {DeploymentApprovalInfo && userApprovalMetadata && (
+                <DeploymentApprovalInfo userApprovalMetadata={userApprovalMetadata} />
             )}
             <DeploymentStatusDetailBreakdown
                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
