@@ -64,7 +64,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
         if (this.hideDetails(status))
             return (
                 <div
-                    data-testid="ci-trigger-status-not-triggered"
+                    data-testid={`ci-trigger-status-${this.props.index}`}
                     className="dc__cd-trigger-status"
                     style={{ color: TriggerStatus[status] }}
                 >
