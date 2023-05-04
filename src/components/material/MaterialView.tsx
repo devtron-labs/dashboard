@@ -35,7 +35,6 @@ import {
 import { ReactComponent as Info } from '../../assets/icons/info-filled-grey.svg'
 import { AuthenticationType } from '../cluster/cluster.type'
 import { INCLUDE_EXCLUDE_TIPPY, LEARN_HOW, INFO_BAR } from './constants'
-import { EDIT_TAINTS_MODAL_MESSAGING } from '../ClusterNodes/constants'
 
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
     constructor(props) {
