@@ -460,17 +460,22 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 </div>
                 {!disableSelection &&
                     (this.props.stageType === DeploymentNodeType.CD || this.state.isRollbackTrigger) &&
-                    isApprovalConfigured &&
-                    ApprovalInfoTippy && (
-                        <ApprovalInfoTippy
-                            matId={mat.id}
-                            appId={this.props.appId}
-                            pipelineId={this.props.pipelineId}
-                            stageType={this.props.stageType}
-                            requestedUserId={this.props.requestedUserId}
-                            userApprovalMetadata={mat.userApprovalMetadata}
-                            onClickCDMaterial={this.context.onClickCDMaterial}
-                        />
+                    isApprovalConfigured && (
+                        <>
+                            {ApprovalInfoTippy ? (
+                                <ApprovalInfoTippy
+                                    matId={mat.id}
+                                    appId={this.props.appId}
+                                    pipelineId={this.props.pipelineId}
+                                    stageType={this.props.stageType}
+                                    requestedUserId={this.props.requestedUserId}
+                                    userApprovalMetadata={mat.userApprovalMetadata}
+                                    onClickCDMaterial={this.context.onClickCDMaterial}
+                                />
+                            ) : (
+                                <div />
+                            )}
+                        </>
                     )}
                 {this.props.materialType === MATERIAL_TYPE.none ? (
                     <div />
@@ -1191,11 +1196,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
-    renderEmptyState = (isApprovalConfigured: boolean, consumedImagePresent?: boolean, applyMargin?: boolean) => {
+    renderEmptyState = (isApprovalConfigured: boolean, consumedImagePresent?: boolean) => {
         if (isApprovalConfigured && ApprovalEmptyState) {
             return (
                 <ApprovalEmptyState
-                    className={applyMargin ? 'ml-15-perc' : ''}
+                    className="dc__skip-align-reload-center"
                     consumedImagePresent={consumedImagePresent}
                     triggerType={this.props.triggerType}
                     isRollbackTrigger={this.state.isRollbackTrigger}
@@ -1233,7 +1238,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 : this.renderCDModal(isApprovalConfigured)
         } else {
             return this.props.isFromBulkCD ? (
-                this.renderEmptyState(isApprovalConfigured, false, true)
+                this.renderEmptyState(isApprovalConfigured)
             ) : (
                 <>
                     <div className="trigger-modal__header">

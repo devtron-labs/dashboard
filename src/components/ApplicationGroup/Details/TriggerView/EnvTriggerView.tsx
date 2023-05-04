@@ -553,7 +553,8 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
         )
         let _workflowId, _appID
         setCDLoading(true)
-        setShowCDModal(true)
+        setShowCDModal(!isApprovalNode)
+        setShowApprovalModal(isApprovalNode)
         abortControllerRef.current = new AbortController()
         getCDMaterialList(
             cdNodeId,
@@ -1647,9 +1648,9 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
             return (
                 <ApprovalMaterialModal
                     appId={_appID}
-                    pipelineId={selectedCDNode.id}
-                    stageType={DeploymentNodeType[selectedCDNode.type]}
-                    node={node}
+                    pipelineId={selectedCDNode?.id}
+                    stageType={DeploymentNodeType[selectedCDNode?.type]}
+                    node={node ?? ({} as NodeAttr)}
                     materialType={materialType}
                     isLoading={isCDLoading}
                     changeTab={changeTab}

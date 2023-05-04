@@ -2915,6 +2915,13 @@ textarea::placeholder {
     transform: translate(-50%, -50%);
 }
 
+.dc__skip-align-reload-center {
+    position: unset;
+    top: 0;
+    left: 0;
+    transform: none;
+}
+
 .dc__truncate {
     overflow: hidden;
     display: -webkit-box;
