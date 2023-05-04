@@ -1769,10 +1769,6 @@ button.anchor {
     border: 1px solid var(--N200);
 }
 
-.dc__border-none {
-    border: none;
-}
-
 .dc__border-n1 {
     border: 1px solid var(--N100);
 }
@@ -1811,6 +1807,10 @@ button.anchor {
 
 .dc__border-right-n1 {
     border-right: solid 1px var(--N100);
+}
+
+.dc__no-border {
+  border: none;
 }
 
 .dc__no-border-imp {
@@ -2338,14 +2338,6 @@ textarea,
 
 .w-800 {
     width: 800px;
-}
-
-.w-872-imp {
-    width: 872px !important ;
-}
-
-.w-874-imp {
-    width: 874px !important ;
 }
 
 // Width in percentage

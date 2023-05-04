@@ -363,7 +363,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     </span>
                 </div>
                 {this.props.isExcludeRepoChecked ? (
-                    <div className="dc__border br-4 mt-8 ml-35 w-874-imp">
+                    <div className="dc__border br-4 mt-8 ml-35">
                         <div className="p-8 dc__border-bottom">
                             <p className="fw-4 fs-13 mb-0-imp">
                                 Enter file or folder paths to be included or excluded.
@@ -411,7 +411,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
 
                         <textarea
-                            className="form__textarea dc__no-border-imp w-872-imp"
+                            className="form__textarea dc__no-border-imp"
                             autoComplete={'off'}
                             autoFocus
                             placeholder={'Example: \nto include type /foldername \nto exclude type !/foldername'}
@@ -469,7 +469,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </Checkbox>
                         {this.props.isChecked ? (
                             <input
-                                className="form__input ml-35 w-874-imp"
+                                className="form__input ml-35"
                                 autoComplete={'off'}
                                 autoFocus
                                 type="text"
