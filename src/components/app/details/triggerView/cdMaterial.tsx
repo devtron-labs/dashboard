@@ -18,20 +18,16 @@ import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-ba
 import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
 import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
-import { ReactComponent as ApprovalChecks } from '../../../../assets/icons/ic-checks.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
-import noapprovedimages from '../../../../assets/img/no-approved-images@2x.png'
 import { importComponentFromFELibrary } from '../../../common'
 import {
     CDMaterialType,
     showError,
     Progressing,
     ConditionalWrap,
-    TippyCustomized,
-    TippyTheme,
     EmptyState,
     InfoColourBar,
     noop,
@@ -59,14 +55,12 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
-import { toast } from 'react-toastify'
 import { ARTIFACT_STATUS } from './Constants'
 
-const ApprovedTippyContent = importComponentFromFELibrary('ApprovedTippyContent')
-const submitApprovalRequest = importComponentFromFELibrary('submitApprovalRequest')
-const APPROVAL_ACTION_TYPE = importComponentFromFELibrary('APPROVAL_ACTION_TYPE')
-const APPROVAL_RUNTIME_STATE = importComponentFromFELibrary('APPROVAL_RUNTIME_STATE')
-const EMPTY_VIEW_TEXTS = importComponentFromFELibrary('EMPTY_VIEW_TEXTS')
+const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
+const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
+const ApprovedImagesMessage = importComponentFromFELibrary('ApprovedImagesMessage')
+const ApprovalEmptyState = importComponentFromFELibrary('ApprovalEmptyState')
 
 export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
     static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
@@ -375,72 +369,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         this.checkForConfigDiff(selectedMaterial)
     }
 
-    expireRequest = (e: any) => {
-        e.stopPropagation()
-        this.setState({ requestInProgress: true })
-        const payload = {
-            appId: this.props.appId,
-            actionType: APPROVAL_ACTION_TYPE.cancel,
-            pipelineId: +this.props.pipelineId,
-            artifactId: +e.currentTarget.dataset.id,
-            approvalRequestId: +e.currentTarget.dataset.requestId,
-        }
-
-        submitApprovalRequest(payload)
-            .then((response) => {
-                toast.success('Image approval expired')
-                this.context.onClickCDMaterial(this.props.pipelineId, this.props.stageType)
-            })
-            .catch((e) => {
-                showError(e)
-            })
-            .finally(() => {
-                this.setState({ requestInProgress: false })
-            })
-    }
-
-    getExpireRequestButton = (mat: CDMaterialType) => {
-        return (
-            <button
-                className="cta delete flex h-32 mt-4 ml-auto mr-16 mb-16"
-                data-id={mat.id}
-                data-request-id={mat.userApprovalMetadata?.approvalRequestId}
-                onClick={this.state.requestInProgress ? noop : this.expireRequest}
-            >
-                {this.state.requestInProgress ? <Progressing size={24} /> : 'Expire approval'}
-            </button>
-        )
-    }
-
-    renderApprovalInfo = (mat: CDMaterialType) => {
-        return (
-            <TippyCustomized
-                theme={TippyTheme.white}
-                className="w-300 h-100"
-                placement="top-start"
-                Icon={ApprovalChecks}
-                heading="Approved"
-                additionalContent={
-                    <ApprovedTippyContent
-                        matId={mat.id}
-                        requestedUserId={this.props.requestedUserId}
-                        userApprovalMetadata={mat.userApprovalMetadata}
-                        cancelRequest={this.expireRequest}
-                        requestInProgress={false}
-                    />
-                }
-                showCloseButton={true}
-                trigger="click"
-                interactive={true}
-            >
-                <div className="flex left cursor">
-                    <ApprovalChecks className="icon-dim-16 scg-5 mr-8" />
-                    <span className="fs-13 fw-4">Approved</span>
-                </div>
-            </TippyCustomized>
-        )
-    }
-
     isApprovalRequester = (userApprovalMetadata: UserApprovalMetadataType) => {
         return (
             userApprovalMetadata?.requestedUserData &&
@@ -534,7 +462,17 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                 {!disableSelection &&
                     (this.props.stageType === DeploymentNodeType.CD || this.state.isRollbackTrigger) &&
                     isApprovalConfigured &&
-                    this.renderApprovalInfo(mat)}
+                    ApprovalInfoTippy && (
+                        <ApprovalInfoTippy
+                            matId={mat.id}
+                            appId={this.props.appId}
+                            pipelineId={this.props.pipelineId}
+                            stageType={this.props.stageType}
+                            requestedUserId={this.props.requestedUserId}
+                            userApprovalMetadata={mat.userApprovalMetadata}
+                            onClickCDMaterial={this.context.onClickCDMaterial}
+                        />
+                    )}
                 {this.props.materialType === MATERIAL_TYPE.none ? (
                     <div />
                 ) : (
@@ -572,23 +510,16 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         {this.props.materialType !== 'none' &&
                             isApprovalRequester &&
                             !isImageApprover &&
-                            !disableSelection && (
-                                <TippyCustomized
-                                    theme={TippyTheme.white}
-                                    className="w-300 h-100 dc__align-left"
-                                    placement="bottom-end"
-                                    iconClass="fcv-5"
-                                    heading="Expire approval"
-                                    infoText="Are you sure you want to expire the deployment approval for this image? A new approval request would need to be raised if you want to deploy this image."
-                                    additionalContent={this.getExpireRequestButton(mat)}
-                                    showCloseButton={true}
-                                    trigger="click"
-                                    interactive={true}
-                                >
-                                    <span className="mr-16 cr-5 cursor" data-id={mat.id}>
-                                        Expire approval
-                                    </span>
-                                </TippyCustomized>
+                            !disableSelection &&
+                            ExpireApproval && (
+                                <ExpireApproval
+                                    matId={mat.id}
+                                    appId={this.props.appId}
+                                    pipelineId={this.props.pipelineId}
+                                    stageType={this.props.stageType}
+                                    userApprovalMetadata={mat.userApprovalMetadata}
+                                    onClickCDMaterial={this.context.onClickCDMaterial}
+                                />
                             )}
                         {this.renderMaterialCTA(mat, isApprovalRequester, isImageApprover, disableSelection)}
                     </div>
@@ -726,16 +657,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         })
     }
 
-    getApprovedImagesMessage = () => {
-        return (
-            <span>
-                Not finding the image you’re looking for? Images will be available here for deployment after
-                approval.&nbsp;
-                <span className="cb-5 cursor" onClick={this.viewImagesForApproval}>
-                    View images for approval
-                </span>
-            </span>
-        )
+    viewAllImages = () => {
+        this.context.onClickCDMaterial(this.props.pipelineId, DeploymentNodeType.CD, true)
     }
 
     getConsumedAndAvailableMaterialList = (isApprovalConfigured: boolean) => {
@@ -746,11 +669,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             const approvedImages = []
 
             this.props.material.forEach((mat) => {
-                if (
-                    mat.latest &&
-                    (!mat.userApprovalMetadata ||
-                        mat.userApprovalMetadata.approvalRuntimeState !== APPROVAL_RUNTIME_STATE.approved)
-                ) {
+                if (mat.latest && (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) {
                     mat.isSelected = false
                     consumedImage.push(mat)
                 } else {
@@ -1254,64 +1173,32 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         <img alt="close" src={close} />
                     </button>
                 </div>
-                {isApprovalConfigured && (this.state.isRollbackTrigger || this.props.material.length > 1) && (
-                    <InfoColourBar
-                        message={this.getApprovedImagesMessage()}
-                        classname="info_bar dc__no-border-radius dc__no-top-border"
-                        Icon={InfoIcon}
-                        iconClass="icon-dim-20"
-                    />
-                )}
+                {isApprovalConfigured &&
+                    ApprovedImagesMessage &&
+                    (this.state.isRollbackTrigger || this.props.material.length > 1) && (
+                        <InfoColourBar
+                            message={<ApprovedImagesMessage viewAllImages={this.viewAllImages} />}
+                            classname="info_bar dc__no-border-radius dc__no-top-border"
+                            Icon={InfoIcon}
+                            iconClass="icon-dim-20"
+                        />
+                    )}
                 {this.renderTriggerBody(isApprovalConfigured)}
                 {this.renderTriggerModalCTA(isApprovalConfigured)}
             </>
         )
     }
 
-    getEmptyStateSubtitle = () => {
-        if (this.props.triggerType === TriggerTypeMap.automatic) {
-            return EMPTY_VIEW_TEXTS.noImage.cdAutoMode(this.props.envName)
-        } else if (this.state.isRollbackTrigger) {
-            return EMPTY_VIEW_TEXTS.noImage.rollbackSubtitle
-        } else {
-            return EMPTY_VIEW_TEXTS.noImage.cdSubtitle
-        }
-    }
-
-    viewImagesForApproval = () => {
-        this.context.onClickCDMaterial(this.props.pipelineId, DeploymentNodeType.CD, true)
-    }
-
     renderEmptyState = (isApprovalConfigured: boolean, consumedImagePresent?: boolean) => {
-        if (isApprovalConfigured) {
+        if (isApprovalConfigured && ApprovalEmptyState) {
             return (
-                <EmptyState>
-                    <EmptyState.Image>
-                        <img
-                            src={this.props.triggerType === TriggerTypeMap.automatic ? noartifact : noapprovedimages}
-                            alt=""
-                        />
-                    </EmptyState.Image>
-                    <EmptyState.Title>
-                        <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
-                            {this.props.triggerType === TriggerTypeMap.automatic
-                                ? EMPTY_VIEW_TEXTS.noImage.title
-                                : EMPTY_VIEW_TEXTS.noApprovedImages.title}
-                        </h4>
-                    </EmptyState.Title>
-                    <EmptyState.Subtitle>{this.getEmptyStateSubtitle()}</EmptyState.Subtitle>
-                    <EmptyState.Button>
-                        <button
-                            className="cta ghosted flex h-36"
-                            data-selected-tab="0"
-                            onClick={this.viewImagesForApproval}
-                        >
-                            {consumedImagePresent
-                                ? EMPTY_VIEW_TEXTS.noImage.label
-                                : EMPTY_VIEW_TEXTS.noApprovedImages.label}
-                        </button>
-                    </EmptyState.Button>
-                </EmptyState>
+                <ApprovalEmptyState
+                    consumedImagePresent={consumedImagePresent}
+                    triggerType={this.props.triggerType}
+                    isRollbackTrigger={this.state.isRollbackTrigger}
+                    envName={this.props.envName}
+                    viewAllImages={this.viewAllImages}
+                />
             )
         }
 
