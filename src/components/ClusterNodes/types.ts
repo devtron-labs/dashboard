@@ -316,6 +316,7 @@ export interface ClusterManifestType {
     setManifestMode: (mode: EDIT_MODE_TYPE) => void
     setManifestData: (manifest: string) => void
     errorMessage?: string[]
+    setManifestAvailable: (isManifestAvailable: boolean) => void
 }
 
 export interface ClusterEditManifestType {

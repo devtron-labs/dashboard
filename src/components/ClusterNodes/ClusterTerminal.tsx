@@ -101,6 +101,7 @@ export default function ClusterTerminal({
     const [forceDelete, setForceDelete] = useState<boolean>()
     const [manifestErrors, setManifestErrors] = useState<string[]>()
     const [debugMode, setDebugMode] = useState<boolean>(selectedNodeName.value !== AUTO_SELECT.value)
+    const [isManifestAvailable, setManifestAvailable] = useState<boolean>()
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
     const terminalRef = useRef(null)
@@ -123,7 +124,7 @@ export default function ClusterTerminal({
         debugNode: debugMode,
         podName: resourceData?.podName || '',
         taints: taints.get(selectedNodeName.value),
-        containerName: containerName
+        containerName: containerName,
     }
 
     useEffect(() => {
@@ -165,11 +166,12 @@ export default function ClusterTerminal({
                         } else {
                             const result = response.result
                             setResourceData(result)
-                            if(result.containers?.length > 1){
+                            if (result.containers?.length > 1) {
                                 containerRef.current = true
                             }
                             isManifestUpdated.current = true
                             setSelectedTabIndex(0)
+                            setManifestAvailable(false)
                             setDebugMode(result.debugNode)
                             const nodeName = result.nodeName
                             setSelectedNodeName(nodeName ? { label: nodeName, value: nodeName } : AUTO_SELECT)
@@ -216,6 +218,7 @@ export default function ClusterTerminal({
             containerRef.current = false
             autoSelectNodeRef.current = selectedNodeName.value
             setSelectedTabIndex(0)
+            setManifestAvailable(false)
             setManifestButtonState(EDIT_MODE_TYPE.NON_EDIT)
             if (update) {
                 socketDisconnecting()
@@ -422,13 +425,13 @@ export default function ClusterTerminal({
                     _terminal.write(PRE_FETCH_DATA_MESSAGING.CREATING_PODS)
                 } else if (startingText === TERMINAL_STATUS.SHELL) {
                     _terminal.write(`${PRE_FETCH_DATA_MESSAGING.SWITCHING_SHELL} ${selectedTerminalType.value}.`)
-                } 
+                }
             }
             if (startingText !== TERMINAL_STATUS.SHELL && podState) {
                 if (podState === CLUSTER_STATUS.RUNNING) {
                     _terminal.write(PRE_FETCH_DATA_MESSAGING.SUCCEEDED_LINK)
                     _terminal.writeln('')
-                    if(containerRef.current && containerName) {
+                    if (containerRef.current && containerName) {
                         _terminal.writeln(`${PRE_FETCH_DATA_MESSAGING.MULTIPLE_CONTAINER} ${containerName}`)
                     }
                     _terminal.write(PRE_FETCH_DATA_MESSAGING.CONNECTING_TO_POD)
@@ -608,10 +611,12 @@ export default function ClusterTerminal({
 
     const selectTerminalTab = (): void => {
         setSelectedTabIndex(0)
+        setManifestAvailable(false)
     }
 
     const selectEventsTab = (): void => {
         setSelectedTabIndex(1)
+        setManifestAvailable(false)
     }
 
     const selectManifestTab = (): void => {
@@ -637,9 +642,9 @@ export default function ClusterTerminal({
         const linkMatcherRegex = new RegExp(`${POD_LINKS.POD_MANIFEST}|${POD_LINKS.POD_EVENTS}`)
         terminal.registerLinkMatcher(linkMatcherRegex, (_event, text) => {
             if (text === POD_LINKS.POD_EVENTS) {
-                setSelectedTabIndex(1)
+                selectEventsTab()
             } else if (text === POD_LINKS.POD_MANIFEST) {
-                setSelectedTabIndex(2)
+                selectManifestTab()
             }
         })
     }
@@ -680,8 +685,10 @@ export default function ClusterTerminal({
     const groupHeading = (props) => {
         return <GroupHeading {...props} hideClusterName={true} />
     }
-    
-    const terminalClusterDetailsPageClassWrapper = isFullScreen ? 'cluster-details-full-screen' : 'cluster-details-node-details'
+
+    const terminalClusterDetailsPageClassWrapper = isFullScreen
+        ? 'cluster-details-full-screen'
+        : 'cluster-details-node-details'
 
     const terminalTabWrapper = (terminalView: () => JSX.Element) => {
         return (
@@ -706,6 +713,7 @@ export default function ClusterTerminal({
                             setManifestMode={setManifestButtonState}
                             setManifestData={setManifestData}
                             errorMessage={manifestErrors}
+                            setManifestAvailable={setManifestAvailable}
                         />
                     </div>
                 )}
@@ -933,7 +941,7 @@ export default function ClusterTerminal({
             },
             {
                 type: TERMINAL_WRAPPER_COMPONENT_TYPE.MANIFEST_EDIT_BUTTONS,
-                hideTerminalStripComponent: selectedTabIndex !== 2,
+                hideTerminalStripComponent: !(selectedTabIndex === 2 && isManifestAvailable),
                 buttonSelectionState: manifestButtonState,
                 setManifestButtonState: setManifestButtonState,
             },

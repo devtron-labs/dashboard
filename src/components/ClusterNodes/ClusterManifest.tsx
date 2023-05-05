@@ -18,6 +18,7 @@ export default function ClusterManifest({
     setManifestMode,
     setManifestData,
     errorMessage,
+    setManifestAvailable
 }: ClusterManifestType) {
     const [defaultManifest, setDefaultManifest] = useState('')
     const [manifestValue, setManifest] = useState('')
@@ -33,9 +34,11 @@ export default function ClusterManifest({
                     setDefaultManifest(_manifest)
                     setManifest(_manifest)
                     setLoading(false)
+                    setManifestAvailable(true)
                 })
                 .catch((error) => {
                     setResourceMissing(true)
+                    setManifestAvailable(false)
                 })
                 .finally(() => {
                     setLoading(false)
@@ -43,6 +46,7 @@ export default function ClusterManifest({
         } else {
             setResourceMissing(true)
             setLoading(false)
+            setManifestAvailable(false)
         }
     }, [terminalAccessId])
 
