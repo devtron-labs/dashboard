@@ -200,6 +200,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
             >
                 <div data-testid={`cluster-row-${clusterData.name}`} className="cb-5 dc__ellipsis-right flex left">
                     <NavLink
+                        data-testid={`cluster-${clusterData.name}-link`}
                         to={`${match.url}/${clusterData.id}`}
                         onClick={(e) => {
                             handleClusterClick(e, clusterData.errorInNodeListing)

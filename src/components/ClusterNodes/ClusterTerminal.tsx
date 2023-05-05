@@ -49,6 +49,7 @@ export default function ClusterTerminal({
     nodeGroups,
     closeTerminal,
     clusterImageList,
+    isClusterDetailsPage,
     isNodeDetailsPage,
     namespaceList,
     node,
