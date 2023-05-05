@@ -169,7 +169,7 @@ export default function ClusterTerminal({
                             }
                             isManifestUpdated.current = true
                             setSelectedTabIndex(0)
-                            setDebugMode(false)
+                            setDebugMode(result.debugNode)
                             const nodeName = result.nodeName
                             setSelectedNodeName(nodeName ? { label: nodeName, value: nodeName } : AUTO_SELECT)
                             const containers = result.containers
