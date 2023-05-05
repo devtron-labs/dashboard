@@ -34,7 +34,7 @@ function TerminalComponent({
     const [selectedTerminalType, setSelectedTerminalType] = useState(shellTypes[0])
     const [terminalCleared, setTerminalCleared] = useState(false)
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
-    const defaultContainerOption = { label: selectedContainerName, value: selectedContainerName }
+    const defaultContainerOption = { label: _selectedContainer, value: _selectedContainer }
     const [sessionId, setSessionId] = useState<string>()
     const connectTerminal: boolean =
         socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED
