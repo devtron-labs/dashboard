@@ -52,6 +52,7 @@ export default function ClusterTerminal({
     nodeGroups,
     closeTerminal,
     clusterImageList,
+    isClusterDetailsPage,
     isNodeDetailsPage,
     namespaceList,
     node,
@@ -685,7 +686,7 @@ export default function ClusterTerminal({
             <div
                 className={`cluster-terminal__wrapper ${isFullScreen ? 'full-screen-terminal' : ''} ${
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
-                }`}
+                } ${isClusterDetailsPage ? terminalClusterDetailsPageClassWrapper : ''}`}
             >
                 <div className={`${selectedTabIndex === 0 ? 'h-100 flexbox' : 'dc__hide-section'}`}>
                     {(!isNodeDetailsPage || connectTerminal) && terminalView}
@@ -811,6 +812,11 @@ export default function ClusterTerminal({
     }
 
     const hideShell: boolean = !(connectTerminal && isPodCreated && !selectedTabIndex)
+
+    const fullScreenClassWrapper = isFullScreen ? 'cluster-full_screen' : 'cluster-terminal-view-container'
+    const nodeDetailsPageClassWrapper = isNodeDetailsPage || isClusterDetailsPage ? '' : 'node-terminal'
+    const clusterDetailsPageClassWrapper = isClusterDetailsPage ? 'cluster-details-terminal' : ''
+    const terminalClusterDetailsPageClassWrapper = isFullScreen ? 'cluster-details-full-screen' : 'cluster-details-node-details'
 
     const selectionListData: TerminalSelectionListDataType = {
         firstRow: [
@@ -953,9 +959,7 @@ export default function ClusterTerminal({
                 selectionListData={selectionListData}
                 socketConnection={socketConnection}
                 setSocketConnection={setSocketConnection}
-                className={`${
-                    isFullScreen || isNodeDetailsPage ? 'cluster-full_screen' : 'cluster-terminal-view-container'
-                } ${isNodeDetailsPage ? '' : 'node-terminal'}`}
+                className={`${fullScreenClassWrapper} ${nodeDetailsPageClassWrapper} ${clusterDetailsPageClassWrapper}`}
             />
             {showPodExistPopup && (
                 <ManifestPopupMenu

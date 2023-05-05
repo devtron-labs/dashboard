@@ -392,13 +392,10 @@ export interface LogsComponentProps extends NodeDetailPropsType {
 export interface TerminalComponentProps {
     selectedTab: (_tabName: string, _url?: string) => void
     isDeleted: boolean
-    selectedContainerValue: string,
-    containers: Options[],
+    isResourceBrowserView?: boolean
+    selectedResource?: SelectedResourceType
     selectedContainer: Map<string, string>
     setSelectedContainer: (containerName: Map<string, string>) => void
-    className: string,
-    sessionURL: string,
-    nodeName: string
 }
 
 export interface NodeTreeTabListProps extends LogSearchTermType {
