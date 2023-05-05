@@ -1,19 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router'
 import { NodeDetailTab } from '../nodeDetail.type'
-import IndexStore from '../../../index.store'
 import { SocketConnectionType } from './node.type'
 import MessageUI from '../../../../common/message.ui'
 import { Option } from '../../../../common/ReactSelect.utils'
-import {
-    getContainersData,
-    getContainerSelectStyles,
-    getGroupedContainerOptions,
-    getShellSelectStyles,
-} from '../nodeDetail.util'
+import { getContainerSelectStyles, getGroupedContainerOptions, getShellSelectStyles } from '../nodeDetail.util'
 import { shellTypes } from '../../../../../../config/constants'
 import { OptionType } from '../../../../../app/types'
-import { AppType, Options, TerminalComponentProps } from '../../../appDetails.type'
+import { TerminalComponentProps } from '../../../appDetails.type'
 import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
@@ -25,19 +19,17 @@ let clusterTimeOut
 function TerminalComponent({
     selectedTab,
     isDeleted,
-    isResourceBrowserView,
-    selectedResource,
+    selectedContainerValue,
+    containers,
     selectedContainer,
     setSelectedContainer,
+    className,
+    sessionURL,
+    nodeName,
 }: TerminalComponentProps) {
     const params = useParams<{ actionName: string; podName: string; nodeType: string; node: string }>()
     const { url } = useRouteMatch()
     const terminalRef = useRef(null)
-    const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
-    const containers = (
-        isResourceBrowserView ? selectedResource.containers : getContainersData(podMetaData)
-    ) as Options[]
-    const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
     const _selectedContainer = selectedContainer.get(selectedContainerValue) || containers?.[0]?.name || ''
     const [selectedContainerName, setSelectedContainerName] = useState(_selectedContainer)
     const [selectedTerminalType, setSelectedTerminalType] = useState(shellTypes[0])
@@ -47,39 +39,16 @@ function TerminalComponent({
     const [sessionId, setSessionId] = useState<string>()
     const connectTerminal: boolean =
         socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED
-    const appDetails = IndexStore.getAppDetails()
-    const nodeName = isResourceBrowserView ? params.node : params.podName
-
-    const generateSessionURL = () => {
-        let url
-        if (isResourceBrowserView) {
-            url = `k8s/pod/exec/session/${selectedResource.clusterId}`
-        } else if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
-            url = `k8s/pod/exec/session/${appDetails.appId}`
-        } else {
-            url = `api/v1/applications/pod/exec/session/${appDetails.appId}/${appDetails.environmentId}`
-        }
-        url += `/${isResourceBrowserView ? selectedResource.namespace : appDetails.namespace}/${nodeName}/${
-            selectedTerminalType.value
-        }/${selectedContainerName}`
-        return url
-    }
 
     const handleAbort = () => {
         setTerminalCleared(!terminalCleared)
     }
 
     const getNewSession = () => {
-        if (
-            !nodeName ||
-            !selectedContainerName ||
-            !selectedTerminalType.value ||
-            (!isResourceBrowserView && !appDetails)
-        ) {
+        if (!nodeName || !selectedContainerName || !selectedTerminalType.value) {
             return
         }
-
-        get(generateSessionURL())
+        get(`${sessionURL}/${nodeName}/${selectedTerminalType.value}/${selectedContainerName}`)
             .then((response: any) => {
                 handleAbort()
                 const sessionId = response?.result.SessionID
@@ -135,12 +104,8 @@ function TerminalComponent({
 
     if (isDeleted || !selectedContainerName.length) {
         return (
-            <div>
-                <MessageUI
-                    msg="This resource no longer exists"
-                    size={32}
-                    minHeight={isResourceBrowserView ? 'calc(100vh - 126px)' : ''}
-                />
+            <div className={className}>
+                <MessageUI msg="This resource no longer exists" size={32} minHeight="100%" />
             </div>
         )
     }
@@ -201,7 +166,7 @@ function TerminalComponent({
             selectionListData={selectionListData}
             socketConnection={socketConnection}
             setSocketConnection={setSocketConnection}
-            className={isResourceBrowserView ? 'k8s-resource-view-container' : 'terminal-view-container'}
+            className={className}
         />
     )
 }
