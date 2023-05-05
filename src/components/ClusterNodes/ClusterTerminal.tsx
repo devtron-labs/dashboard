@@ -291,7 +291,6 @@ export default function ClusterTerminal({
                 socketDisconnecting()
                 clusterTerminalTypeUpdate({ ...payload, terminalAccessId: terminalAccessIdRef.current })
                     .then((response) => {
-                        setResourceData(response.result)
                         terminalAccessIdRef.current = response.result.terminalAccessId
                         socketConnecting()
                     })
