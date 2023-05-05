@@ -164,7 +164,9 @@ export default function ClusterTerminal({
                         } else {
                             const result = response.result
                             setResourceData(result)
-                            containerRef.current = true
+                            if(result.containers?.length > 1){
+                                containerRef.current = true
+                            }
                             isManifestUpdated.current = true
                             setSelectedTabIndex(0)
                             setDebugMode(false)
