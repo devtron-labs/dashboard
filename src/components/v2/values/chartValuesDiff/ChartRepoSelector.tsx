@@ -156,7 +156,7 @@ export function ChartRepoSelector({
                     <AsyncSelect
                         cacheOptions
                         defaultOptions={repoChartOptions}
-                        isSearchable={false}
+                        isSearchable={window._env_.ENABLE_CHART_SEARCH_IN_HELM_DEPLOY}
                         formatOptionLabel={repoChartSelectOptionLabel}
                         value={isExternal && !installedAppInfo && !repoChartValue.chartRepoName ? null : repoChartValue}
                         loadOptions={repoChartLoadOptions}

@@ -24,7 +24,7 @@ export const getManifestResource = (
 
     return get(
         `api/v1/applications/${ad.appName}-${ad.environmentName}/resource?version=${cn.version}&namespace=${
-            ad.namespace
+            cn.namespace || ''
         }&group=${cn.group || ''}&kind=${cn.kind}&resourceName=${cn.name}`,
     )
 }
@@ -62,7 +62,9 @@ export const getEvent = (
     }
     const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName && node.kind.toLowerCase() === nodeType)[0]
     return get(
-        `api/v1/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${ad.namespace}&resourceUID=${cn.uid}&resourceName=${cn.name}`,
+        `api/v1/applications/${ad.appName}-${ad.environmentName}/events?resourceNamespace=${
+            cn.namespace || ''
+        }&resourceUID=${cn.uid}&resourceName=${cn.name}`,
     )
 }
 
