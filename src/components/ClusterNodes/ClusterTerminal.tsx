@@ -443,13 +443,15 @@ export default function ClusterTerminal({
         return <GroupHeading {...props} hideClusterName={true} />
     }
 
-    const terminalFullScreenClassWrapper = isFullScreen ? 'cluster-full_screen' : 'cluster-terminal-view-container'
-    const terminalNodeDetailsPageClassWrapper = isNodeDetailsPage || isClusterDetailsPage ? '' : 'node-terminal'
-    const terminalClusterDetailsPageClassWrapper = isClusterDetailsPage ? 'cluster-details-terminal' : ''
+    // css class for cluster terminal view
+    const fullScreenClassWrapper = isFullScreen ? 'cluster-full_screen' : 'cluster-terminal-view-container'
+    const nodeDetailsPageClassWrapper = isNodeDetailsPage || isClusterDetailsPage ? '' : 'node-terminal'
+    const clusterDetailsPageClassWrapper = isClusterDetailsPage ? 'cluster-details-terminal' : ''
+    const terminalClusterDetailsPageClassWrapper = isFullScreen ? 'cluster-details-full-screen' : 'cluster-details-node-details'
 
     return (
         <div
-            className={`${terminalFullScreenClassWrapper} ${terminalNodeDetailsPageClassWrapper} ${terminalClusterDetailsPageClassWrapper}`}
+            className={`${fullScreenClassWrapper} ${nodeDetailsPageClassWrapper} ${clusterDetailsPageClassWrapper}`}
         >
             <div className="flex dc__content-space bcn-0 pl-20 dc__border-top h-32">
                 <div className="flex left">
@@ -686,7 +688,7 @@ export default function ClusterTerminal({
             <div
                 className={`cluster-terminal__wrapper ${isFullScreen ? 'full-screen-terminal' : ''} ${
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
-                } ${isClusterDetailsPage ? 'cluster-details-full-screen' : ''}`}
+                } ${isClusterDetailsPage ? terminalClusterDetailsPageClassWrapper : ''}`}
             >
                 <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalContainer()}</div>
                 {selectedTabIndex === 1 && (
