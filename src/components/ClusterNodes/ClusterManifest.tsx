@@ -80,9 +80,9 @@ export default function ClusterManifest({
 
     const renderManifest = () => {
         if (isResourceMissing) {
-            return <MessageUI msg={MESSAGING_UI.MANIFEST_NOT_AVAILABLE} size={24} />
+            return <MessageUI msg={MESSAGING_UI.MANIFEST_NOT_AVAILABLE} size={24} minHeight="100%" />
         } else if (loading) {
-            return <MessageUI msg={MESSAGING_UI.FETCHING_MANIFEST} icon={MsgUIType.LOADING} size={24} />
+            return <MessageUI msg={MESSAGING_UI.FETCHING_MANIFEST} icon={MsgUIType.LOADING} size={24}  minHeight="100%" />
         } else {
             return (
                 <div className="h-100 flexbox dc__flex-direction">

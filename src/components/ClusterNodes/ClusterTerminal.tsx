@@ -680,6 +680,8 @@ export default function ClusterTerminal({
     const groupHeading = (props) => {
         return <GroupHeading {...props} hideClusterName={true} />
     }
+    
+    const terminalClusterDetailsPageClassWrapper = isFullScreen ? 'cluster-details-full-screen' : 'cluster-details-node-details'
 
     const terminalTabWrapper = (terminalView: () => JSX.Element) => {
         return (
@@ -816,7 +818,6 @@ export default function ClusterTerminal({
     const fullScreenClassWrapper = isFullScreen ? 'cluster-full_screen' : 'cluster-terminal-view-container'
     const nodeDetailsPageClassWrapper = isNodeDetailsPage || isClusterDetailsPage ? '' : 'node-terminal'
     const clusterDetailsPageClassWrapper = isClusterDetailsPage ? 'cluster-details-terminal' : ''
-    const terminalClusterDetailsPageClassWrapper = isFullScreen ? 'cluster-details-full-screen' : 'cluster-details-node-details'
 
     const selectionListData: TerminalSelectionListDataType = {
         firstRow: [
