@@ -253,7 +253,7 @@ const manifestEditButtons = ({
     const renderButtons = () => {
         const buttonConfig = {
             edit: {
-                icon: <Pencil className="icon-dim-16 mr-6" />,
+                icon: <Edit className="icon-dim-16 mr-6" />,
                 message: MANIFEST_SELECTION_MESSAGE.REVIEW_CHANGES,
                 onClick: selectReviewMode,
             },
@@ -263,7 +263,7 @@ const manifestEditButtons = ({
                 onClick: applyChanges,
             },
             noEdit: {
-                icon: <Edit className="icon-dim-16 mr-6" />,
+                icon: <Pencil className="icon-dim-16 mr-6" />,
                 message: MANIFEST_SELECTION_MESSAGE.EDIT_MANIFEST,
                 onClick: selectEditMode,
             },

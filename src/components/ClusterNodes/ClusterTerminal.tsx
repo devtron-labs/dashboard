@@ -43,7 +43,6 @@ import {
     TERMINAL_WRAPPER_COMPONENT_TYPE,
 } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
-import YAML from 'yaml'
 
 let clusterTimeOut
 
@@ -106,10 +105,12 @@ export default function ClusterTerminal({
     const terminalRef = useRef(null)
     const prevNodeRef = useRef('')
     const currNodeRef = useRef('')
+    const containerRef = useRef(null)
     const isManifestUpdated = useRef(false)
     const preventUpdateCall: boolean =
         (autoSelectNodeRef.current === AUTO_SELECT.value && selectedNodeName.value !== AUTO_SELECT.value) ||
         isManifestUpdated.current
+    const containerName = resourceData?.containers?.[0].containerName
 
     const payload = {
         clusterId: clusterId,
@@ -121,6 +122,7 @@ export default function ClusterTerminal({
         debugNode: debugMode,
         podName: resourceData?.podName || '',
         taints: taints.get(selectedNodeName.value),
+        containerName: containerName
     }
 
     useEffect(() => {
@@ -152,6 +154,7 @@ export default function ClusterTerminal({
                         if (abortController.signal.aborted) {
                             return
                         } else if (response.result?.podExists) {
+                            setResourceData(response.result)
                             setShowPodExistPopup(response.result.podExists)
                         } else if (response.result?.errors) {
                             const errors = response.result.errors
@@ -161,13 +164,14 @@ export default function ClusterTerminal({
                         } else {
                             const result = response.result
                             setResourceData(result)
+                            containerRef.current = true
                             isManifestUpdated.current = true
                             setSelectedTabIndex(0)
                             setDebugMode(false)
                             const nodeName = result.nodeName
                             setSelectedNodeName(nodeName ? { label: nodeName, value: nodeName } : AUTO_SELECT)
                             const containers = result.containers
-                            const image = containers[0].Image
+                            const image = containers[0].image
                             if (image) {
                                 setImage({ label: image, value: image })
                             }
@@ -206,6 +210,7 @@ export default function ClusterTerminal({
         try {
             const abortController = new AbortController()
             isShellSwitched.current = false
+            containerRef.current = false
             autoSelectNodeRef.current = selectedNodeName.value
             setSelectedTabIndex(0)
             setManifestButtonState(EDIT_MODE_TYPE.NON_EDIT)
@@ -257,6 +262,7 @@ export default function ClusterTerminal({
                                     setConnectTerminal(true)
                                 } else if (userMessage === CLUSTER_STATUS.POD_TERMINATED) {
                                     setUpdate(false)
+                                    setManifestData('')
                                     setConnectTerminal(false)
                                 }
                             })
@@ -281,6 +287,7 @@ export default function ClusterTerminal({
         try {
             if (update) {
                 isShellSwitched.current = true
+                containerRef.current = false
                 socketDisconnecting()
                 clusterTerminalTypeUpdate({ ...payload, terminalAccessId: terminalAccessIdRef.current })
                     .then((response) => {
@@ -291,6 +298,7 @@ export default function ClusterTerminal({
                     .catch((error) => {
                         showError(error)
                         setRetry(true)
+                        setManifestData('')
                         setPodCreated(false)
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
@@ -331,7 +339,7 @@ export default function ClusterTerminal({
             `user/terminal/get?namespace=${selectedNamespace.value}&shellName=${
                 selectedTerminalType.value
             }&terminalAccessId=${terminalAccessIdRef.current}&containerName=${
-                resourceData.containers?.[0].ContainerName || ''
+                resourceData.containers?.[0].containerName || ''
             }`,
             terminalAccessIdRef.current,
             window?._env_?.CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT || 7,
@@ -412,12 +420,15 @@ export default function ClusterTerminal({
                     _terminal.write(PRE_FETCH_DATA_MESSAGING.CREATING_PODS)
                 } else if (startingText === TERMINAL_STATUS.SHELL) {
                     _terminal.write(`${PRE_FETCH_DATA_MESSAGING.SWITCHING_SHELL} ${selectedTerminalType.value}.`)
-                }
+                } 
             }
             if (startingText !== TERMINAL_STATUS.SHELL && podState) {
                 if (podState === CLUSTER_STATUS.RUNNING) {
                     _terminal.write(PRE_FETCH_DATA_MESSAGING.SUCCEEDED_LINK)
                     _terminal.writeln('')
+                    if(containerRef.current && containerName) {
+                        _terminal.writeln(`${PRE_FETCH_DATA_MESSAGING.MULTIPLE_CONTAINER} ${containerName}`)
+                    }
                     _terminal.write(PRE_FETCH_DATA_MESSAGING.CONNECTING_TO_POD)
                 }
             }
@@ -432,7 +443,7 @@ export default function ClusterTerminal({
                 }
                 _terminal.write(PRE_FETCH_DATA_MESSAGING.CHECK_POD_EVENTS)
                 _terminal.write(' | ')
-                _terminal.write(PRE_FETCH_DATA_MESSAGING.CHEKC_POD_MANIFEST)
+                _terminal.write(PRE_FETCH_DATA_MESSAGING.CHECK_POD_MANIFEST)
                 _terminal.writeln('')
             } else {
                 _terminal.write('..')
@@ -452,6 +463,7 @@ export default function ClusterTerminal({
             setReconnect(!isReconnect)
             setNamespace(defaultNameSpace)
             setImage(imageList[0])
+            setResourceData(null)
             setSelectedNodeName(nodeGroups[0].options[0])
         }
     }
@@ -487,6 +499,7 @@ export default function ClusterTerminal({
     async function disconnectRetry(): Promise<void> {
         try {
             setPodCreated(true)
+            containerRef.current = false
             clusterDisconnectAndRetry(payload).then((response) => {
                 terminalAccessIdRef.current = response.result.terminalAccessId
                 setSocketConnection(SocketConnectionType.DISCONNECTED)
@@ -510,6 +523,8 @@ export default function ClusterTerminal({
                     setRetry(true)
                 } else if (userMessage === CLUSTER_STATUS.POD_TERMINATED) {
                     setUpdate(false)
+                    setPodCreated(false)
+                    setManifestData('')
                     setConnectTerminal(false)
                 }
             })
@@ -704,7 +719,7 @@ export default function ClusterTerminal({
                     </div>
                     {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                 </li>
-                {connectTerminal && (
+                {connectTerminal && terminalAccessIdRef.current && (
                     <>
                         <li className="tab-list__tab fs-12" onClick={selectEventsTab}>
                             <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
@@ -787,6 +802,12 @@ export default function ClusterTerminal({
         } else if (socketConnection === SocketConnectionType.CONNECTING) {
             return <></>
         }
+    }
+
+    const closeManifetsPopup = (isClose: boolean): void => {
+        setManifestButtonState(EDIT_MODE_TYPE.EDIT)
+        setManifestData('')
+        setShowPodExistPopup(isClose)
     }
 
     const hideShell: boolean = !(connectTerminal && isPodCreated && !selectedTabIndex)
@@ -938,9 +959,9 @@ export default function ClusterTerminal({
             />
             {showPodExistPopup && (
                 <ManifestPopupMenu
-                    closePopup={setShowPodExistPopup}
+                    closePopup={closeManifetsPopup}
                     podName={resourceData?.podName}
-                    namespace={selectedNamespace.label}
+                    namespace={resourceData?.namespace}
                     forceDeletePod={setForceDelete}
                 />
             )}

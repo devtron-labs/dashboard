@@ -375,7 +375,8 @@ export const PRE_FETCH_DATA_MESSAGING = {
     TIMED_OUT_LINK: ' \u001b[38;5;196mTimed out\u001b[0m',
     FAILED_TEXT: '  \u001b[38;5;196mFailed\u001b[0m',
     CHECK_POD_EVENTS: ` | \u001b[38;5;110m\u001b[4m${POD_LINKS.POD_EVENTS}\u001b[0m`,
-    CHEKC_POD_MANIFEST: `\u001b[38;5;110m\u001b[4m${POD_LINKS.POD_MANIFEST}\u001b[0m`,
+    CHECK_POD_MANIFEST: `\u001b[38;5;110m\u001b[4m${POD_LINKS.POD_MANIFEST}\u001b[0m`,
+    MULTIPLE_CONTAINER: 'Multiple containers detected. Connecting to first container'
 }
 
 export const defaultManifestErrorText =

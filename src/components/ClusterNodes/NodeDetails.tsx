@@ -86,6 +86,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const [showDrainNodeDialog, setDrainNodeDialog] = useState(false)
     const [showDeleteNodeDialog, setDeleteNodeDialog] = useState(false)
     const [showEditTaints, setShowEditTaints] = useState(false)
+    const isNodeAuto: boolean = nodeName === AUTO_SELECT.value
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
     const { push } = useHistory()
@@ -187,7 +188,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     }
 
     const renderNodeDetailsTabs = (): JSX.Element => {
-        const cursorValue = nodeName === AUTO_SELECT.value ? 'cursor-not-allowed' : 'cursor'
+        const cursorValue = isNodeAuto ? 'cursor-not-allowed' : 'cursor'
         return (
             <ul role="tablist" className="tab-list">
                 <li className={`tab-list__tab pointer ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
@@ -238,7 +239,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                     linked: true,
                 },
                 ':nodeName': {
-                    component: nodeName === AUTO_SELECT.value ? 'Selecting node. . . .' : nodeName,
+                    component: isNodeAuto ? 'Selecting node' : nodeName,
                     linked: false,
                 },
             },
@@ -247,7 +248,11 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     )
 
     const renderBreadcrumbs = (): JSX.Element => {
-        return <BreadCrumb breadcrumbs={breadcrumbs} />
+        return (
+            <span className={isNodeAuto ? 'dc__loading-dots' : ''}>
+                <BreadCrumb breadcrumbs={breadcrumbs} />
+            </span>
+        )
     }
 
     const noDataInSubTab = (tabName: string): JSX.Element => {

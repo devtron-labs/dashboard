@@ -10,7 +10,6 @@ import { ReactComponent as Pencil } from '../../assets/icons/ic-pencil.svg'
 import { VisibleModal2 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
-import { toast } from 'react-toastify'
 import { defaultManifestErrorText } from './constants'
 
 export default function ClusterManifest({
@@ -55,14 +54,17 @@ export default function ClusterManifest({
             const _manifestValue = manifestValue.replace(regex, 'apiVersion:')
             if (_manifestValue !== defaultManifest) {
                 try {
-                    setManifestData(JSON.stringify(YAML.parse(_manifestValue)))
+                    if(YAML.parse(_manifestValue)){
+                        setManifestData(JSON.stringify(YAML.parse(_manifestValue)))
+                    }else {
+                        setManifest(defaultManifestErrorText)
+                    }
                 } catch (error) {
                     setManifest(defaultManifestErrorText + '# ' + error + '\n#\n' + _manifestValue)
                     setManifestMode(EDIT_MODE_TYPE.EDIT)
                 }
             } else {
                 setManifest(defaultManifestErrorText + _manifestValue)
-                toast.warning('Yaml file is same')
                 setManifestMode(EDIT_MODE_TYPE.EDIT)
             }
         } else if (manifestMode === EDIT_MODE_TYPE.EDIT) {
@@ -71,6 +73,10 @@ export default function ClusterManifest({
             }
         }
     }, [manifestMode])
+
+    const switchToEditMode = (): void => {
+        setManifestMode(EDIT_MODE_TYPE.EDIT)
+    }
 
     const renderManifest = () => {
         if (isResourceMissing) {
@@ -81,10 +87,10 @@ export default function ClusterManifest({
             return (
                 <div className="h-100 flexbox dc__flex-direction">
                     {manifestMode === EDIT_MODE_TYPE.REVIEW && (
-                        <div className="cluster-manifest-header pt-4 pb-4 cn-0 scn-0 flex">
-                            <div className=" pl-12 flex left">Pod manifest</div>
+                        <div className="cluster-manifest-header pt-4 pb-4 cn-0 flex">
+                            <div className="pl-12 flex dc__content-space">Pod manifest<Close className="icon-dim-16 cursor fcn-0" onClick={switchToEditMode} /></div>
                             <div className="pl-12 flex left">
-                                <Pencil className="icon-dim-16 mr-10" /> Manifest (Editing)
+                                <Pencil className="icon-dim-16 mr-10 scn-0" /> Manifest (Editing)
                             </div>
                         </div>
                     )}
@@ -112,7 +118,6 @@ export default function ClusterManifest({
 export function ManifestPopupMenu({ closePopup, podName, namespace, forceDeletePod }: ManifestPopuptype) {
     const closePopupDoNothing = (): void => {
         closePopup(false)
-        forceDeletePod(false)
     }
 
     const forceDelete = (): void => {
@@ -134,7 +139,7 @@ export function ManifestPopupMenu({ closePopup, podName, namespace, forceDeleteP
                         {`${ManifestMessaging.POD_NAME} "${podName}" ${ManifestMessaging.ALREADY_EXIST} “${namespace}” ${ManifestMessaging.NAMESPACE}.`}
                     </p>
                     <p className="fs-14 fw-4">{ManifestMessaging.CONTINUE_TERMINATE_EXISTING_POD}</p>
-                    <p className="fs-14 fw-4">{ManifestMessaging.CREATE_PIPELINE_USING_HELM}</p>
+                    <p className="fs-14 fw-4">{ManifestMessaging.SURE_WANT_TO_CONTINUE}</p>
                 </div>
                 <div className="flex right confirmation-dialog__button-group">
                     <button

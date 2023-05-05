@@ -818,7 +818,7 @@ export const ManifestMessaging = {
     NAMESPACE: 'namespace',
     CONTINUE_TERMINATE_EXISTING_POD:
         'Continuing will terminate the existing pod and create a new one with the provided manifest.',
-    CREATE_PIPELINE_USING_HELM: 'Are you sure you want to create this deployment pipeline using helm?',
+    SURE_WANT_TO_CONTINUE: 'Are you sure you want to continue?',
     CANCEL: 'Cancel',
     TERMINATE_EXISTING_POD: 'Terminate existing pod',
 }
