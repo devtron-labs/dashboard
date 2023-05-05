@@ -7,8 +7,8 @@ import SummaryComponent from './NodeDetailTabs/Summary.component'
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom'
 import { useParams, useRouteMatch } from 'react-router'
 import { NodeDetailTab } from './nodeDetail.type'
-import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
-import { AppType, NodeDetailPropsType, NodeType, Options } from '../../appDetails.type'
+import { getNodeDetailTabs } from './nodeDetail.util'
+import { NodeDetailPropsType, NodeType } from '../../appDetails.type'
 import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
@@ -43,11 +43,6 @@ function NodeDetailComponent({
     const [fetchingResource, setFetchingResource] = useState(
         isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
     )
-    const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
-    const containers = (
-        isResourceBrowserView ? selectedResource?.containers : getContainersData(podMetaData)
-    ) as Options[]
-    const selectedContainerValue = isResourceBrowserView ? selectedResource?.name : podMetaData?.name
     const [selectedContainer, setSelectedContainer] = useState<Map<string, string>>(new Map())
     const { path, url } = useRouteMatch()
     const toggleManagedFields = (managedFieldsExist: boolean) => {
@@ -166,19 +161,6 @@ function NodeDetailComponent({
         } else if (selectedTabName !== _tabName) {
             setSelectedTabName(_tabName)
         }
-    }
-
-    const generateSessionURL = (): string => {
-        let url
-        if (isResourceBrowserView) {
-            url = `k8s/pod/exec/session/${selectedResource.clusterId}`
-        } else if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
-            url = `k8s/pod/exec/session/${appDetails.appId}`
-        } else {
-            url = `api/v1/applications/pod/exec/session/${appDetails.appId}/${appDetails.environmentId}`
-        }
-        url += `/${isResourceBrowserView ? selectedResource.namespace : appDetails.namespace}`
-        return url
     }
 
     const currentTab = applicationObjectTabs.filter((tab) => {
@@ -305,15 +287,10 @@ function NodeDetailComponent({
                         <TerminalComponent
                             selectedTab={handleSelectedTab}
                             isDeleted={isDeleted}
+                            isResourceBrowserView={isResourceBrowserView}
+                            selectedResource={selectedResource}
                             selectedContainer={selectedContainer}
                             setSelectedContainer={setSelectedContainer}
-                            className={
-                                isResourceBrowserView ? 'k8s-resource-view-container' : 'terminal-view-container'
-                            }
-                            sessionURL={generateSessionURL()}
-                            selectedContainerValue={selectedContainerValue}
-                            containers={containers}
-                            nodeName={isResourceBrowserView ? params.node : params.podName}
                         />
                     </Route>
                     <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
