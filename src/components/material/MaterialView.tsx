@@ -36,7 +36,12 @@ import {
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as InfoOutlined } from '../../assets/icons/ic-info-outlined.svg'
 import { AuthenticationType } from '../cluster/cluster.type'
-import { INCLUDE_EXCLUDE_COMMIT_TIPPY, INCLUDE_EXCLUDE_COMMIT_INFO, INFO_BAR } from './constants'
+import {
+    INCLUDE_EXCLUDE_COMMIT_TIPPY,
+    INCLUDE_EXCLUDE_COMMIT_INFO,
+    INFO_BAR,
+    INCLUDE_EXCLUDE_PLACEHOLDER,
+} from './constants'
 
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
     constructor(props) {
@@ -160,24 +165,31 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         )
     }
 
-    isIncludeExcludeOther = (): JSX.Element => {
+    renderIncludeExcludeInfoBar = (): JSX.Element => {
+        if (this.props.material.includeExcludeFilePath?.trim() === '') {
+            return null
+        }
         const filePath = this.props.material.includeExcludeFilePath.split(/\r?\n/)
         let allExcluded = true
         for (const path of filePath) {
-            if (path !== '' && path.charAt(0) !== '!') {
+            const trimmedPath = path.trim()
+            if (trimmedPath !== '' && trimmedPath.charAt(0) !== '!') {
                 allExcluded = false
             }
         }
-        if (allExcluded) {
-            return <span className="ml-4 fw-6 cg-5">included</span>
-        }
-        return <span className="ml-4 fw-6 cr-5">excluded</span>
-    }
-
-    handleKeypress = (e): void => {
-        if (e.key === 'Enter' && !e.target.value) {
-            e.preventDefault()
-        }
+        return (
+            <div className="flex left h-36 p-8 bcy-1 dc__border-top">
+                <span className="fw-4 fs-13">
+                    <InfoOutlined className="icon-dim-16 mr-6 mt-6 fcn-6" />
+                </span>
+                {INFO_BAR.infoMessage}
+                {allExcluded ? (
+                    <span className="ml-4 fw-6 cg-5">included</span>
+                ) : (
+                    <span className="ml-4 fw-6 cr-5">excluded</span>
+                )}
+            </div>
+        )
     }
 
     renderForm() {
@@ -336,8 +348,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                 )}
                 <div className="flex left">
                     <Checkbox
-                        isChecked={this.props.isExcludeRepoChecked}
-                        value={'CHECKED'}
+                        isChecked={this.props.material.isExcludeRepoChecked}
+                        value={CHECKBOX_VALUE.CHECKED}
                         tabIndex={3}
                         onChange={this.props.handleExcludeRepoCheckbox}
                         rootClassName="fs-14 cn-9 mb-8 flex top dc_max-width__max-content"
@@ -363,7 +375,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </TippyCustomized>
                     </span>
                 </div>
-                {this.props.isExcludeRepoChecked ? (
+                {this.props.material.isExcludeRepoChecked && (
                     <div className="dc__border br-4 mt-8 ml-35">
                         <div className="p-8 dc__border-bottom">
                             <p className="fw-4 fs-13 mb-0-imp">
@@ -381,11 +393,15 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 <div className="ml-8">
                                     <div className="flex left">
                                         <div className="dc__bullet mr-6 ml-6"></div>
-                                        <span className="fs-13 fw-4">{INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partOne}</span>
+                                        <span className="fs-13 fw-4">
+                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partOne}
+                                        </span>
                                         <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__border">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partTwo}
                                         </span>
-                                        <span className="ml-4 fs-13 fw-4">{INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partThree}</span>
+                                        <span className="ml-4 fs-13 fw-4">
+                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partThree}
+                                        </span>
                                         <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__border">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partFour}
                                         </span>
@@ -393,12 +409,16 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     </div>
                                     <div className="flex left">
                                         <div className="dc__bullet mr-6 ml-6"></div>
-                                        <span className="fs-13 fw-4">{INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo}</span>
+                                        <span className="fs-13 fw-4">
+                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo}
+                                        </span>
                                         <br />
                                     </div>
                                     <div className="flex left mt-2">
                                         <div className="dc__bullet mr-6 ml-6"></div>
-                                        <span className="fs-13 fw-4">{INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineThree}</span>
+                                        <span className="fs-13 fw-4">
+                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineThree}
+                                        </span>
                                         <br />
                                     </div>
                                     <div className="ml-10 mt-4 dc__ff-monospace fs-13 fw-4">
@@ -415,25 +435,14 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             className="form__textarea dc__no-border-imp"
                             autoComplete={'off'}
                             autoFocus
-                            placeholder={'Example: \nto include type /foldername \nto exclude type !/foldername'}
+                            placeholder={INCLUDE_EXCLUDE_PLACEHOLDER}
                             rows={3}
                             value={this.props.material.includeExcludeFilePath}
-                            onKeyPress={this.handleKeypress}
                             onChange={this.props.handleFileChange}
                             data-testid="clone-directory-path"
                         />
-                        {this.props.material.includeExcludeFilePath?.length > 0 && (
-                            <div className="flex left h-36 p-8 bcy-1 dc__border-top">
-                                <span className="fw-4 fs-13">
-                                    <InfoOutlined className="icon-dim-16 mr-6 mt-6 fcn-6" />
-                                </span>
-                                {INFO_BAR.infoMessage}
-                                {this.isIncludeExcludeOther()}
-                            </div>
-                        )}
+                        {this.renderIncludeExcludeInfoBar()}
                     </div>
-                ) : (
-                    ''
                 )}
                 <label>
                     <div className="pt-16">
@@ -467,7 +476,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 )}
                             </div>
                         </Checkbox>
-                        {this.props.isChecked ? (
+                        {this.props.isChecked && (
                             <input
                                 className="form__input ml-35"
                                 autoComplete={'off'}
@@ -478,8 +487,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 onChange={this.props.handlePathChange}
                                 data-testid="clone-directory-path"
                             />
-                        ) : (
-                            ''
                         )}
                         <span className="form__error ml-35">
                             {this.props.isError.checkoutPath && (

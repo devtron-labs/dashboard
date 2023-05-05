@@ -29,3 +29,7 @@ export const INCLUDE_EXCLUDE_COMMIT_INFO = {
 export const INFO_BAR = {
     infoMessage: 'Remaining files/folders in the Git Repo will be',
 }
+
+export const INCLUDE_EXCLUDE_PLACEHOLDER = 'Example: \nto include type /foldername \nto exclude type !/foldername'
+
+export const MATERIAL_EXCLUDE_TIPPY_TEXT = 'Not available for build as this commit contains changes in excluded files or folders'

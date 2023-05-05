@@ -39,6 +39,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         ...mat,
                         includeExcludeFilePath: mat.filterPattern?.length ? mat.filterPattern.join('\n') : '',
                         gitProvider: providers.find((p) => mat.gitProviderId === p.id),
+                        isExcludeRepoChecked: !!mat.filterPattern?.length
                     }
                 })
                 this.setState({

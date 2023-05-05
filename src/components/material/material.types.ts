@@ -19,6 +19,7 @@ export interface GitMaterialType {
     active: boolean
     fetchSubmodules: boolean
     isUsedInCiConfig?: boolean
+    isExcludeRepoChecked?: boolean
 }
 
 export interface MaterialListState {
@@ -37,10 +38,10 @@ export interface CreateMaterialState {
         active: boolean
         fetchSubmodules: boolean
         includeExcludeFilePath: string
+        isExcludeRepoChecked: boolean
     }
     isCollapsed: boolean
     isChecked: boolean
-    isExcludeRepoChecked: boolean
     isLearnHowClicked: boolean
     isLoading: boolean
     isError: MaterialError
@@ -56,7 +57,6 @@ export interface UpdateMaterialState {
     material: GitMaterialType
     isCollapsed: boolean
     isChecked: boolean
-    isExcludeRepoChecked: boolean
     isLearnHowClicked: boolean
     isLoading: boolean
     isError: MaterialError
@@ -65,7 +65,6 @@ export interface UpdateMaterialState {
 export interface MaterialViewProps {
     isMultiGit: boolean
     isChecked: boolean
-    isExcludeRepoChecked: boolean
     isLearnHowClicked: boolean
     material: GitMaterialType
     isCollapsed: boolean

@@ -29,10 +29,10 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 active: true,
                 fetchSubmodules: false,
                 includeExcludeFilePath: "",
+                isExcludeRepoChecked: false
             },
             isCollapsed: this.props.isMultiGit ? true : false,
             isChecked: false,
-            isExcludeRepoChecked: false,
             isLearnHowClicked: false,
             isLoading: false,
             isError: {
@@ -63,7 +63,10 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
 
     handleExcludeRepoCheckbox(event): void {
         this.setState({
-            isExcludeRepoChecked: !this.state.isExcludeRepoChecked
+            material: {
+                ...this.state.material,
+                isExcludeRepoChecked: !this.state.material.isExcludeRepoChecked,
+            },
         })
     }
 
@@ -171,13 +174,18 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             });
             let payload = {
                 appId: this.props.appId,
-                material: [{
-                    url: this.state.material.url,
-                    checkoutPath: this.state.material.checkoutPath,
-                    gitProviderId: this.state.material.gitProvider.id,
-                    fetchSubmodules: this.state.material.fetchSubmodules,
-                    filterPattern: this.state.material.includeExcludeFilePath.split(/\r?\n/),
-                }]
+                material: [
+                    {
+                        url: this.state.material.url,
+                        checkoutPath: this.state.material.checkoutPath,
+                        gitProviderId: this.state.material.gitProvider.id,
+                        fetchSubmodules: this.state.material.fetchSubmodules,
+                        filterPattern: this.state.material.includeExcludeFilePath
+                            .trim()
+                            .split(/\r?\n/)
+                            .filter((path) => path.trim()),
+                    },
+                ],
             }
             createMaterial(payload).then((response) => {
                 this.props.refreshMaterials();
@@ -199,7 +207,8 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                 checkoutPath: '',
                 includeExcludeFilePath: '',
                 active: true,
-                fetchSubmodules: false
+                fetchSubmodules: false,
+                isExcludeRepoChecked: false
             },
             isCollapsed: true,
             isLoading: false,
@@ -216,7 +225,6 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
             <MaterialView
                 isMultiGit={this.props.isMultiGit}
                 isChecked={this.state.isChecked}
-                isExcludeRepoChecked={this.state.isExcludeRepoChecked}
                 isLearnHowClicked={this.state.isLearnHowClicked}
                 handleLearnHowClick={this.handleLearnHowClick}
                 material={this.state.material}

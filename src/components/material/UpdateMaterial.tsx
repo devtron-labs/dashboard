@@ -34,10 +34,10 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 active: this.props.material.active,
                 fetchSubmodules: this.props.material.fetchSubmodules,
                 isUsedInCiConfig: this.props.material.isUsedInCiConfig,
+                isExcludeRepoChecked: this.props.material.isExcludeRepoChecked
             },
             isCollapsed: true,
             isChecked: true,
-            isExcludeRepoChecked: true,
             isLearnHowClicked: false,
             isLoading: false,
             isError: {
@@ -103,13 +103,16 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
 
     handleExcludeRepoCheckbox(event): void {
         this.setState({
-            isExcludeRepoChecked: !this.state.isExcludeRepoChecked
+            material: {
+                ...this.state.material,
+                isExcludeRepoChecked: !this.state.material.isExcludeRepoChecked,
+            },
         })
     }
 
     handleLearnHowClick(event): void {
         this.setState({
-            isLearnHowClicked: !this.state.isLearnHowClicked
+            isLearnHowClicked: !this.state.isLearnHowClicked,
         })
     }
 
@@ -196,7 +199,10 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                         id: this.state.material.id,
                         url: this.state.material.url,
                         checkoutPath: this.state.material.checkoutPath,
-                        filterPattern: this.state.material.includeExcludeFilePath.split(/\r?\n/).filter(path=> path),
+                        filterPattern: this.state.material.includeExcludeFilePath
+                            .trim()
+                            .split(/\r?\n/)
+                            .filter((path) => path.trim()),
                         gitProviderId: this.state.material.gitProvider.id,
                         fetchSubmodules: this.state.material.fetchSubmodules ? true : false,
                     },
@@ -242,7 +248,6 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                 isError={this.state.isError}
                 isCollapsed={this.state.isCollapsed}
                 isChecked={this.state.isChecked}
-                isExcludeRepoChecked={this.state.isExcludeRepoChecked}
                 isLearnHowClicked={this.state.isLearnHowClicked}
                 handleLearnHowClick={this.handleLearnHowClick}
                 isLoading={this.state.isLoading}

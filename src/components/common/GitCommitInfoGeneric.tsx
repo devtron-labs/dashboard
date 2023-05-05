@@ -14,6 +14,7 @@ import { GitMaterialInfoHeader } from './GitMaterialInfo'
 import moment from 'moment'
 import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
+import { MATERIAL_EXCLUDE_TIPPY_TEXT } from '../material/constants'
 
 export default function GitCommitInfoGeneric({
     materialSourceType,
@@ -168,7 +169,7 @@ export default function GitCommitInfoGeneric({
                     className="default-tt w-200 dc__align-center fw-4 fs-12"
                     arrow={false}
                     placement="left"
-                    content="Not available for build as this commit contains changes in excluded files or folders"
+                    content={MATERIAL_EXCLUDE_TIPPY_TEXT}
                     interactive={true}
                 >
                     <span className="flex left cr-5 cursor-not-allowed">
