@@ -360,7 +360,6 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
 
     const getMaterialByCommit = async (
         _ciNodeId: number,
-        pipelineName: string,
         ciPipelineMaterialId: number,
         gitMaterialId: number,
         commitHash = null,

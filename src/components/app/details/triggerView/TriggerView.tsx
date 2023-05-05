@@ -205,7 +205,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     async getMaterialByCommit(
         ciNodeId: number,
-        pipelineName: string,
         ciPipelineMaterialId: number,
         gitMaterialId: number,
         commitHash = null,

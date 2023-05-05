@@ -303,7 +303,6 @@ export interface TriggerViewContextType {
     toggleInvalidateCache: () => void
     getMaterialByCommit: (
         ciNodeId: number,
-        pipelineName: string,
         materialId: number,
         gitMaterialId: number,
         commitHash: string,

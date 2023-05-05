@@ -35,7 +35,7 @@ import {
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as InfoOutlined } from '../../assets/icons/ic-info-outlined.svg'
 import { AuthenticationType } from '../cluster/cluster.type'
-import { INCLUDE_EXCLUDE_TIPPY, LEARN_HOW, INFO_BAR } from './constants'
+import { INCLUDE_EXCLUDE_COMMIT_TIPPY, INCLUDE_EXCLUDE_COMMIT_INFO, INFO_BAR } from './constants'
 
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
     constructor(props) {
@@ -151,10 +151,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
     tippyContent = () => {
         return (
             <div className="p-12 fs-13">
-                <div className="mb-20">{INCLUDE_EXCLUDE_TIPPY.lineOne}</div>
-                <div className="mb-20">{INCLUDE_EXCLUDE_TIPPY.lineTwo}</div>
-                <div>{INCLUDE_EXCLUDE_TIPPY.lineThree}</div>
-                <div>{INCLUDE_EXCLUDE_TIPPY.lineFour}</div>
+                <div className="mb-20">{INCLUDE_EXCLUDE_COMMIT_TIPPY.lineOne}</div>
+                <div className="mb-20">{INCLUDE_EXCLUDE_COMMIT_TIPPY.lineTwo}</div>
+                <div>{INCLUDE_EXCLUDE_COMMIT_TIPPY.lineThree}</div>
+                <div>{INCLUDE_EXCLUDE_COMMIT_TIPPY.lineFour}</div>
             </div>
         )
     }
@@ -380,30 +380,30 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 <div className="ml-8">
                                     <div className="flex left">
                                         <div className="dc__bullet mr-6 ml-6"></div>
-                                        <span className="fs-13 fw-4">{LEARN_HOW.infoList.lineOne.partOne}</span>
+                                        <span className="fs-13 fw-4">{INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partOne}</span>
                                         <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__border">
-                                            {LEARN_HOW.infoList.lineOne.partTwo}
+                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partTwo}
                                         </span>
-                                        <span className="ml-4 fs-13 fw-4">{LEARN_HOW.infoList.lineOne.partThree}</span>
+                                        <span className="ml-4 fs-13 fw-4">{INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partThree}</span>
                                         <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__border">
-                                            {LEARN_HOW.infoList.lineOne.partFour}
+                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partFour}
                                         </span>
                                         <br />
                                     </div>
                                     <div className="flex left">
                                         <div className="dc__bullet mr-6 ml-6"></div>
-                                        <span className="fs-13 fw-4">{LEARN_HOW.infoList.lineTwo}</span>
+                                        <span className="fs-13 fw-4">{INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo}</span>
                                         <br />
                                     </div>
                                     <div className="flex left mt-2">
                                         <div className="dc__bullet mr-6 ml-6"></div>
-                                        <span className="fs-13 fw-4">{LEARN_HOW.infoList.lineThree}</span>
+                                        <span className="fs-13 fw-4">{INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineThree}</span>
                                         <br />
                                     </div>
                                     <div className="ml-10 mt-4 dc__ff-monospace fs-13 fw-4">
-                                        {LEARN_HOW.example.lineOne}
+                                        {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineOne}
                                         <br />
-                                        {LEARN_HOW.example.lineTwo}
+                                        {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineTwo}
                                         <br />
                                     </div>
                                 </div>

@@ -151,7 +151,7 @@ export default function GitInfoMaterial({
         )
     }
     const handleFilterChanges = (_searchText: string): void => {
-        triggerViewContext.getMaterialByCommit(pipelineId, title, selectedMaterial.id, selectedMaterial.gitMaterialId, _searchText)
+        triggerViewContext.getMaterialByCommit(pipelineId, selectedMaterial.id, selectedMaterial.gitMaterialId, _searchText)
     }
 
     const clearSearch = (e): void => {
