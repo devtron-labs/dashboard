@@ -1133,7 +1133,9 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
 
     const onShowBulkCIModal = () => {
         setCILoading(true)
-        setShowBulkCIModal(true)
+        setTimeout(() => {
+            setShowBulkCIModal(true)
+        }, 100)
     }
 
     const updateBulkCDInputMaterial = (materialList: Record<string, any[]>): void => {
