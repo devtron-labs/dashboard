@@ -75,6 +75,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             let materials = response.result.material.map((mat) => {
                 return {
                     ...mat,
+                    includeExcludeFilePath: mat.filterPattern?.length ? mat.filterPattern.join('\n') : '',
                     gitProvider: this.state.providers.find((p) => mat.gitProviderId === p.id),
                 }
             })

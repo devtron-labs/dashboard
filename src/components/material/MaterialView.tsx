@@ -33,7 +33,7 @@ import {
     DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE,
 } from '../../config/constantMessaging'
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
-import { ReactComponent as InfoOutlined } from '../../assets/icons/ic-info-outlined.svg';
+import { ReactComponent as InfoOutlined } from '../../assets/icons/ic-info-outlined.svg'
 import { AuthenticationType } from '../cluster/cluster.type'
 import { INCLUDE_EXCLUDE_TIPPY, LEARN_HOW, INFO_BAR } from './constants'
 
@@ -159,23 +159,23 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         )
     }
 
-    // True if rest all folders should be include , false if rest all should be excluded.
-    isIncludeOrExclude = (): boolean => {
+    isIncludeExcludeOther = (): JSX.Element => {
         const filePath = this.props.material.includeExcludeFilePath.split(/\r?\n/)
-        let include: number = 0
-        let exclude: number = 0
-        filePath.forEach((path) => {
-            if (path.charAt(0) === '!') {
-                exclude++
-            } else {
-                include++
+        let allExcluded = true
+        for (const path of filePath) {
+            if (path !== '' && path.charAt(0) !== '!') {
+                allExcluded = false
             }
-        })
+        }
+        if (allExcluded) {
+            return <span className="ml-4 fw-6 cg-5">included</span>
+        }
+        return <span className="ml-4 fw-6 cr-5">excluded</span>
+    }
 
-        if (include === 0) {
-            return true
-        } else {
-            return false
+    handleKeypress = (e): void => {
+        if (e.key === 'Enter' && !e.target.value) {
+            e.preventDefault()
         }
     }
 
@@ -417,6 +417,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             placeholder={'Example: \nto include type /foldername \nto exclude type !/foldername'}
                             rows={3}
                             value={this.props.material.includeExcludeFilePath}
+                            onKeyPress={this.handleKeypress}
                             onChange={this.props.handleFileChange}
                             data-testid="clone-directory-path"
                         />
@@ -426,9 +427,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     <InfoOutlined className="icon-dim-16 mr-6 mt-6 fcn-6" />
                                 </span>
                                 {INFO_BAR.infoMessage}
-                                <span className={`ml-4 fw-6 ${this.isIncludeOrExclude() ? 'cg-5' : 'cr-5'}`}>
-                                    {this.isIncludeOrExclude() ? 'included' : 'excluded'}
-                                </span>
+                                {this.isIncludeExcludeOther()}
                             </div>
                         )}
                     </div>

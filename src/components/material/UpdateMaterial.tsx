@@ -196,7 +196,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                         id: this.state.material.id,
                         url: this.state.material.url,
                         checkoutPath: this.state.material.checkoutPath,
-                        filterPattern: this.state.material.includeExcludeFilePath.split(/\r?\n/),
+                        filterPattern: this.state.material.includeExcludeFilePath.split(/\r?\n/).filter(path=> path),
                         gitProviderId: this.state.material.gitProvider.id,
                         fetchSubmodules: this.state.material.fetchSubmodules ? true : false,
                     },

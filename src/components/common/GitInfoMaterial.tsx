@@ -243,9 +243,9 @@ export default function GitInfoMaterial({
                                 <PopupMenu autoClose>
                                     <PopupMenu.Button rootClassName="mw-18" isKebab>
                                         {showAllCommits ? (
-                                            <ShowIconFilterApplied className="icon-dim-20" />
-                                        ) : (
                                             <ShowIconFilter className="icon-dim-20" />
+                                        ) : (
+                                            <ShowIconFilterApplied className="icon-dim-20" />
                                         )}
                                     </PopupMenu.Button>
                                     <PopupMenu.Body>
