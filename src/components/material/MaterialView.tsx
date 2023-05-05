@@ -9,6 +9,7 @@ import {
     TippyCustomized,
     TippyTheme,
     stopPropagation,
+    CHECKBOX_VALUE,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MaterialViewProps, MaterialViewState } from './material.types'
 import { NavLink } from 'react-router-dom'
@@ -438,7 +439,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     <div className="pt-16">
                         <Checkbox
                             isChecked={this.props.isChecked}
-                            value={'CHECKED'}
+                            value={CHECKBOX_VALUE.CHECKED}
                             tabIndex={4}
                             onChange={this.props.handleCheckoutPathCheckbox}
                             rootClassName="fs-14 cn-9 mb-8 flex top"
@@ -483,7 +484,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         <span className="form__error ml-35">
                             {this.props.isError.checkoutPath && (
                                 <>
-                                    {' '}
                                     <img src={error} className="form__icon" /> {this.props.isError.checkoutPath}
                                 </>
                             )}
