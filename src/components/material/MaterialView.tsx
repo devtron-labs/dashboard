@@ -374,7 +374,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     rel="noopener noreferer"
                                     target="_blank"
                                 >
-                                    {!this.props.isLearnHowClicked ? `Learn how` : `Hide info`}
+                                    {!this.props.isLearnHowClicked ? 'Learn how' : 'Hide info'}
                                 </a>
                             </p>
                             {this.props.isLearnHowClicked && (
