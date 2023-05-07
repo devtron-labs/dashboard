@@ -1,4 +1,4 @@
-import React, { useState, useMemo, Component, useRef, useEffect } from 'react'
+import React, { useState, useMemo, Component, useRef } from 'react'
 import YAML from 'yaml'
 import {
     showError,
@@ -15,6 +15,7 @@ import {
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
     ButtonWithLoader,
+    CHECKBOX_VALUE,
 } from '../common'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
@@ -75,6 +76,9 @@ import { request } from 'http'
 import { ConfigCluster, UserInfos, ClusterInfo, ClusterResult } from './cluster.type'
 import { error } from 'console'
 import { NoMatchingResults } from '../externalLinks/ExternalLinks.component'
+import cluster from 'cluster'
+import { getClusterEvents } from '../ClusterNodes/clusterNodes.service'
+import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -118,6 +122,8 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             isKubeConfigFile: false,
             getCluster: false,
             browseFile: false,
+            isClusterSelect: false,
+            isClusterDetails: false,
         }
         this.initialise = this.initialise.bind(this)
         this.toggleCheckTlsConnection = this.toggleCheckTlsConnection.bind(this)
@@ -125,6 +131,8 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.toggleKubeConfigFile = this.toggleKubeConfigFile.bind(this)
         this.toggleGetCluster = this.toggleGetCluster.bind(this)
         this.toggleBrowseFile = this.toggleBrowseFile.bind(this)
+        this.toggleSelectCluster = this.toggleSelectCluster.bind(this)
+        this.toggleClusterDetails = this.toggleClusterDetails.bind(this)
     }
 
     componentDidMount() {
@@ -228,6 +236,14 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.setState({ isTlsConnection: !this.state.isTlsConnection })
     }
 
+    toggleClusterDetails() {
+        this.setState({ isClusterDetails: !this.state.isClusterDetails })
+    }
+
+    toggleSelectCluster() {
+        this.setState({ isClusterSelect: !this.state.isClusterSelect })
+    }
+
     toggleShowAddCluster() {
         this.setState({ showAddCluster: !this.state.showAddCluster })
     }
@@ -302,6 +318,9 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 defaultClusterComponent={this.state.defaultClusterComponent}
                                 isGrafanaModuleInstalled={true}
                                 isTlsConnection={this.state.isTlsConnection}
+                                isClusterSelect={this.state.isClusterSelect}
+                                isClusterDetails={this.state.isClusterDetails}
+                                toggleSelectCluster={this.toggleSelectCluster}
                                 toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                                 toggleShowAddCluster={this.toggleShowAddCluster}
                                 toggleKubeConfigFile={this.toggleKubeConfigFile}
@@ -310,6 +329,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 toggleGetCluster={this.toggleGetCluster}
                                 browseFile={this.state.browseFile}
                                 toggleBrowseFile={this.toggleBrowseFile}
+                                toggleClusterDetails={this.toggleClusterDetails}
                             />
                         </Drawer>
                     )}
@@ -340,6 +360,10 @@ function Cluster({
     toggleGetCluster,
     browseFile,
     toggleBrowseFile,
+    isClusterSelect,
+    toggleSelectCluster,
+    toggleClusterDetails,
+    isClusterDetails,
 }) {
     const [editMode, toggleEditMode] = useState(false)
     const [environment, setEnvironment] = useState(null)
@@ -496,6 +520,10 @@ function Cluster({
                                 toggleGetCluster,
                                 browseFile,
                                 toggleBrowseFile,
+                                isClusterSelect,
+                                toggleSelectCluster,
+                                toggleClusterDetails,
+                                isClusterDetails,
                                 isGrafanaModuleInstalled:
                                     grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED,
                             }}
@@ -537,6 +565,10 @@ function ClusterForm({
     getCluster,
     browseFile,
     toggleBrowseFile,
+    isClusterSelect,
+    toggleSelectCluster,
+    isClusterDetails,
+    toggleClusterDetails,
 }) {
     const [loading, setLoading] = useState(false)
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false)
@@ -554,10 +586,9 @@ function ClusterForm({
     const inputFileRef = useRef(null)
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
     const [saveYamlData, setSaveYamlState] = useState<string>('')
-    const [clusterName, setClusterName] = useState([])
     const [errorMessage, setErrorMessage] = useState<string>('')
-    const [userName, setUserName] = useState([])
-    const [dataList, setDataList] = useState<string[]>([])
+    const [dataList, setDataList] = useState<{ clusterName: string; userList: string[]; message: string }[]>()
+    const [loader, setState] = useState<boolean>(false)
 
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -626,6 +657,10 @@ function ClusterForm({
         onValidation,
     )
 
+    function toggleLoaderChangeState() {
+        setState(!state.loader)
+    }
+
     const saveClustersDetails = (e) => {
         try {
             saveClusters(request).then(
@@ -635,9 +670,9 @@ function ClusterForm({
                 (err) => {
                     console.log('error')
                     if (err.response === 400) {
-                        setErrorMessage('Bad request')
+                        toast.error('Bad request')
                     } else if (err.response === 500) {
-                        setErrorMessage('Internal Server error')
+                        toast.error('Internal Server error')
                     }
                 },
             )
@@ -665,7 +700,7 @@ function ClusterForm({
         return true
     }
 
-    const validateClusterDetail = () => {
+    function validateClusterDetail() {
         try {
             validateCluster(request, saveYamlData).then(
                 (response) => {
@@ -674,16 +709,20 @@ function ClusterForm({
                         if (otherResponses(cluster)) {
                             const _dataList = []
                             const listOfClusters = [...map.keys()]
-                            setClusterName(listOfClusters)
                             const map1 = userInfoObj
                             map1.forEach((userName, userNameObj) => {
                                 const map2 = userNameObj
                                 map2.forEach((key, value) => {
+                                    let errorMessage: string
                                     const listOfUserName: string[] = [...map2.keys()]
-                                    _dataList.push({clusterName: cluster, userList: listOfUserName})
-                                    //setDataList(new Map(_dataList.set(cluster, listOfUserName)))
+                                    errorMessage = map2.get('errorInConnecting')
+                                    setErrorMessage(errorMessage)
+                                    _dataList.push({
+                                        clusterName: cluster,
+                                        userList: listOfUserName,
+                                        message: errorMessage,
+                                    })
                                     setDataList(_dataList)
-                                    setErrorMessage(map2.get('errorInConnecting'))
                                 })
                             })
                         }
@@ -846,10 +885,6 @@ function ClusterForm({
         )
     }
 
-    const clusterTable = () => {
-        return {}
-    }
-
     const onFileChange = (e): void => {
         setUploadState(UPLOAD_STATE.UPLOADING)
         const file = e.target.files[0]
@@ -865,9 +900,7 @@ function ClusterForm({
     }
 
     const handleSuccessButton = (): void => {
-        if (uploadState === UPLOAD_STATE.SUCCESS) {
-            clusterTable()
-        } else if (uploadState === UPLOAD_STATE.UPLOAD) {
+        if (uploadState === UPLOAD_STATE.UPLOAD) {
             setUploadState(UPLOAD_STATE.SUCCESS)
             inputFileRef.current.click()
         }
@@ -879,6 +912,9 @@ function ClusterForm({
         }
         if (getCluster) {
             toggleGetCluster()
+        }
+        if (isClusterDetails) {
+            toggleClusterDetails()
         }
         toggleShowAddCluster()
     }
@@ -1064,6 +1100,12 @@ function ClusterForm({
         )
     }
 
+    const handleCalls = () => {
+        toggleGetCluster()
+        toggleLoaderChangeState()
+        validateClusterDetail()
+    }
+
     const codeEditor = () => {
         return (
             <>
@@ -1092,7 +1134,6 @@ function ClusterForm({
                         </CodeEditor.Header>
                     </CodeEditor>
                 </div>
-
                 <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
                     <button className="cta cancel" type="button" onClick={handleCloseButton}>
                         Cancel
@@ -1100,72 +1141,97 @@ function ClusterForm({
                     <button
                         className="cta mr-32 ml-20"
                         type="button"
-                        onClick={toggleGetCluster}
-                        disabled={uploadState !== UPLOAD_STATE.SUCCESS ? true : false}
+                        onClick={handleCalls}
+                        disabled={uploadState !== UPLOAD_STATE.SUCCESS ? false : true}
                     >
                         Get cluster
-                        {validateClusterDetail}
                     </button>
                 </div>
             </>
         )
     }
 
-    const loadingCluster = () => {
+    const LoadingCluster = (): JSX.Element => {
         return (
-            <EmptyState>
-                <EmptyState.Image>
-                    <MechanicalOperation />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h4>Connecting to Cluster</h4>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>
-                    Please wait while the kubeconfig is verified and cluster details are fetched.
-                </EmptyState.Subtitle>
-            </EmptyState>
+            <div className="cluster-form dc__position-rel h-100 bcn-0">
+                <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
+                    <EmptyState>
+                        <EmptyState.Image>
+                            <MechanicalOperation />
+                        </EmptyState.Image>
+                        <EmptyState.Title>
+                            <h4>Connecting to Cluster</h4>
+                        </EmptyState.Title>
+                        <EmptyState.Subtitle>
+                            Please wait while the kubeconfig is verified and cluster details are fetched.
+                        </EmptyState.Subtitle>
+                    </EmptyState>
+                </div>
+            </div>
         )
     }
 
-    const renderDataList = () => {
-        const arr = []
-        dataList.forEach((key, value) => arr.push())
+    const SaveClusterDetails = () => {
+        return (
+            <>
+                <AddClusterHeader/>
+                <div className="api-token__list en-2 bw-1 bcn-0 br-8">
+                    <div className="cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
+                        <div></div>
+                        <div>CLUSTER</div>
+                        <div>USER</div>
+                        <div>MESSAGE</div>
+                        <div></div>
+                    </div>
+                </div>
+            </>
+        )
+    }
+
+    const handleClusterDetailCall = () => {
+        toggleClusterDetails()
     }
 
     const displayClusterDetails = () => {
         return (
             <>
+                {loader && !getCluster && <LoadingCluster />}
                 <div className="cluster-form dc__position-rel h-100 bcn-0">
-                    <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
-                        <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Add Cluster</h2>
-                        <button
-                            type="button"
-                            className="dc__transparent flex icon-dim-24 mr-24"
-                            onClick={handleCloseButton}
-                        >
-                            <Close className="icon-dim-24" />
-                        </button>
+                    <AddClusterHeader />
+                    <div className="infobar flex left bcb-1 eb-2 bw-1 br-4 mb-20 pt-10 pb-0 pr-16 pl-16">
+                        Select the cluster you want to add/update.
                     </div>
-                    <div>
-                        <div className="cluster-create-status__title mb-0">
-                            Select the cluster you want to update/add.
-                        </div>
-                    </div>
-                    <div className="pb-8">
-                        <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
+                    <div className="api-token__list en-2 bw-1 bcn-0 br-8">
+                        <div className="cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
                             <div></div>
                             <div>CLUSTER</div>
                             <div>USER</div>
                             <div>MESSAGE</div>
                             <div></div>
                         </div>
-                        <div className="dc__overflow-scroll" style={{'height': 'calc(100vh - 153px)'}}>
-                            {(!dataList || dataList.length === 0) ? (
-                                <NoMatchingResults />
+                        <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 213px)' }}>
+                            {!dataList || dataList.length === 0 ? (
+                                // dataList.map((clusterDetail, index) => (
+                                <div
+                                    key={`api_${0}`}
+                                    className="cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
+                                    style={{ height: '40px' }}
+                                >
+                                    <Checkbox
+                                        rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
+                                        isChecked={isClusterSelect}
+                                        onChange={toggleSelectCluster}
+                                        value={CHECKBOX_VALUE.CHECKED}
+                                    ></Checkbox>
+
+                                    <div className="flexbox">
+                                        <span className="dc__ellipsis-right">Cluster Name</span>
+                                    </div>
+                                    <div className=" dc__ellipsis-right">User Name</div>
+                                    <div className=""> Messages</div>
+                                </div>
                             ) : (
-                                dataList.map((data, index) => {
-                                    console.log(data, index)
-                                })
+                                <NoMatchingResults />
                             )}
                         </div>
                     </div>
@@ -1178,14 +1244,25 @@ function ClusterForm({
                         <button
                             className="cta mr-32 ml-20"
                             type="button"
-                            onClick={handleOnSubmit}
-                            disabled={uploadState !== UPLOAD_STATE.SUCCESS ? true : false}
+                            onClick={toggleClusterDetails}
+                            disabled={uploadState !== UPLOAD_STATE.SUCCESS ? false : true}
                         >
                             Save
                         </button>
                     </div>
                 )}
             </>
+        )
+    }
+
+    const AddClusterHeader = () => {
+        return (
+            <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
+                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Add Cluster</h2>
+                <button type="button" className="dc__transparent flex icon-dim-24 mr-24" onClick={handleCloseButton}>
+                    <Close className="icon-dim-24" />
+                </button>
+            </div>
         )
     }
 
@@ -1198,16 +1275,7 @@ function ClusterForm({
                 style={{ padding: 'auto 0' }}
                 onSubmit={handleOnSubmit}
             >
-                <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Add Cluster</h2>
-                    <button
-                        type="button"
-                        className="dc__transparent flex icon-dim-24 mr-24"
-                        onClick={handleCloseButton}
-                    >
-                        <Close className="icon-dim-24" />
-                    </button>
-                </div>
+                <AddClusterHeader />
                 <div className="pl-20 pr-20" style={{ overflow: 'auto', height: 'calc(100vh - 169px)' }}>
                     <div className="form__row clone-apps dc__inline-block pd-0 pt-0 pb-12">
                         <RadioGroup

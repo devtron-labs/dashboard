@@ -119,6 +119,8 @@ export interface ClusterFormType {
     defaultClusterComponent: any
     isGrafanaModuleInstalled: boolean
     isTlsConnection: boolean
+    isClusterSelect: boolean
+    isClusterDetails: boolean
     toggleCheckTlsConnection: () => void
     isDrawer: boolean
 }
