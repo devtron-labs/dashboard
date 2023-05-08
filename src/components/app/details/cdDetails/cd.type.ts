@@ -47,5 +47,5 @@ export interface DeploymentDetailStepsType{
   isHelmApps?: boolean
   installedAppVersionHistoryId?: number
   isGitops?: boolean
-  userApprovalMetadata: UserApprovalMetadataType
+  userApprovalMetadata?: UserApprovalMetadataType
 }
