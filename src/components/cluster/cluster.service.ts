@@ -27,9 +27,9 @@ export function getCluster(id: number) {
     return get(URL);
 }
 
-export function saveClusters(request) {
+export function saveClusters(request, payload) {
     const URL = `${Routes.CLUSTER}`;
-    return post(URL, request);
+    return post(URL, request, payload);
 }
 
 export function validateCluster(request, payload) {

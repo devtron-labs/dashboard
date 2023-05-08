@@ -588,7 +588,9 @@ function ClusterForm({
     const [saveYamlData, setSaveYamlState] = useState<string>('')
     const [errorMessage, setErrorMessage] = useState<string>('')
     const [dataList, setDataList] = useState<{ clusterName: string; userList: string[]; message: string }[]>()
+    const [aveClusterList, setSaveClusterList] = useState<{ clusterName: string; status: string; message: string }[]>()
     const [loader, setState] = useState<boolean>(false)
+    const [selectedClustersList, setSelectedClustersList] = useState<{ clusterName: string[] }[]>()
 
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -661,11 +663,13 @@ function ClusterForm({
         setState(!state.loader)
     }
 
-    const saveClustersDetails = (e) => {
+    function saveClustersDetails() {
         try {
-            saveClusters(request).then(
+            let payload = getClusterPayload()
+            saveClusters(request, payload).then(
                 (response) => {
-                    console.log('response')
+                    const map = response.result
+                    const _saveClusterList = []
                 },
                 (err) => {
                     console.log('error')
@@ -700,9 +704,16 @@ function ClusterForm({
         return true
     }
 
+    function YAMLtoJSON(saveYamlData) {
+        var obj = YAML.parse(saveYamlData)
+        var jsonStr = JSON.stringify(obj)
+        return jsonStr
+    }
+
     function validateClusterDetail() {
         try {
-            validateCluster(request, saveYamlData).then(
+            let payload = YAMLtoJSON(saveYamlData)
+            validateCluster(request, payload).then(
                 (response) => {
                     const map = response.result
                     map.forEach((cluster, userInfoObj) => {
@@ -730,9 +741,11 @@ function ClusterForm({
                 },
                 (err) => {
                     if (err.code === 400) {
-                        setErrorMessage('Bad request')
+                        toast.error('Bad request')
                     } else if (err.code === 500) {
-                        setErrorMessage('Internal Server error')
+                        toast.error('Internal Server error')
+                    } else if (err.code === 402) {
+                        toast.error("Value didn't found")
                     }
                 },
             )
@@ -1103,7 +1116,7 @@ function ClusterForm({
     const handleCalls = () => {
         toggleGetCluster()
         toggleLoaderChangeState()
-        validateClusterDetail()
+        // validateClusterDetail()
     }
 
     const codeEditor = () => {
@@ -1171,45 +1184,20 @@ function ClusterForm({
         )
     }
 
-    const SaveClusterDetails = () => {
+    const saveClusterDetails = (): JSX.Element => {
         return (
             <>
-                <AddClusterHeader/>
-                <div className="api-token__list en-2 bw-1 bcn-0 br-8">
-                    <div className="cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
-                        <div></div>
-                        <div>CLUSTER</div>
-                        <div>USER</div>
-                        <div>MESSAGE</div>
-                        <div></div>
-                    </div>
-                </div>
-            </>
-        )
-    }
-
-    const handleClusterDetailCall = () => {
-        toggleClusterDetails()
-    }
-
-    const displayClusterDetails = () => {
-        return (
-            <>
-                {loader && !getCluster && <LoadingCluster />}
                 <div className="cluster-form dc__position-rel h-100 bcn-0">
                     <AddClusterHeader />
-                    <div className="infobar flex left bcb-1 eb-2 bw-1 br-4 mb-20 pt-10 pb-0 pr-16 pl-16">
-                        Select the cluster you want to add/update.
-                    </div>
                     <div className="api-token__list en-2 bw-1 bcn-0 br-8">
                         <div className="cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
                             <div></div>
                             <div>CLUSTER</div>
-                            <div>USER</div>
+                            <div>STATUS</div>
                             <div>MESSAGE</div>
                             <div></div>
                         </div>
-                        <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 213px)' }}>
+                        <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 161px)' }}>
                             {!dataList || dataList.length === 0 ? (
                                 // dataList.map((clusterDetail, index) => (
                                 <div
@@ -1217,17 +1205,11 @@ function ClusterForm({
                                     className="cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
                                     style={{ height: '40px' }}
                                 >
-                                    <Checkbox
-                                        rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
-                                        isChecked={isClusterSelect}
-                                        onChange={toggleSelectCluster}
-                                        value={CHECKBOX_VALUE.CHECKED}
-                                    ></Checkbox>
-
+                                    <div></div>
                                     <div className="flexbox">
-                                        <span className="dc__ellipsis-right">Cluster Name</span>
+                                        <span className="dc__ellipsis-right"> Cluster Name</span>
                                     </div>
-                                    <div className=" dc__ellipsis-right">User Name</div>
+                                    <div className=" dc__ellipsis-right"> SUCCESS</div>
                                     <div className=""> Messages</div>
                                 </div>
                             ) : (
@@ -1235,7 +1217,69 @@ function ClusterForm({
                             )}
                         </div>
                     </div>
+                    <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                        <button className="cta cancel" type="button" onClick={handleCloseButton}>
+                            Cancel
+                        </button>
+                    </div>
                 </div>
+            </>
+        )
+    }
+
+    const handleClusterDetailCall = () => {
+        toggleKubeConfigFile()
+        toggleClusterDetails()
+        saveClustersDetails()
+    }
+
+    const displayClusterDetails = () => {
+        return (
+            <>
+                {/* {loader && !getCluster && <LoadingCluster />} */}
+                {isKubeConfigFile && (
+                    <div className="cluster-form dc__position-rel h-100 bcn-0">
+                        <AddClusterHeader />
+                        <div className="infobar flex left bcb-1 eb-2 bw-1 br-4 mb-20 pt-10 pb-0 pr-16 pl-16">
+                            Select the cluster you want to add/update.
+                        </div>
+                        <div className="api-token__list en-2 bw-1 bcn-0 br-8">
+                            <div className="cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
+                                <div></div>
+                                <div>CLUSTER</div>
+                                <div>USER</div>
+                                <div>MESSAGE</div>
+                                <div></div>
+                            </div>
+                            <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 213px)' }}>
+                                {!dataList || dataList.length === 0 ? (
+                                    // dataList.map((clusterDetail, index) => (
+                                    <div
+                                        key={`api_${0}`}
+                                        className="cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
+                                        style={{ height: '40px' }}
+                                    >
+                                        <Checkbox
+                                            rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
+                                            isChecked={isClusterSelect}
+                                            onChange={toggleSelectCluster}
+                                            value={CHECKBOX_VALUE.CHECKED}
+                                        ></Checkbox>
+
+                                        <div className="flexbox">
+                                            <span className="dc__ellipsis-right">Cluster Name</span>
+                                        </div>
+                                        <div className=" dc__ellipsis-right">User Name</div>
+                                        <div className=""> Messages</div>
+                                    </div>
+                                ) : (
+                                    <NoMatchingResults />
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {isKubeConfigFile && (
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
                         <button className="cta cancel" type="button" onClick={toggleGetCluster}>
@@ -1244,13 +1288,14 @@ function ClusterForm({
                         <button
                             className="cta mr-32 ml-20"
                             type="button"
-                            onClick={toggleClusterDetails}
+                            onClick={handleClusterDetailCall}
                             disabled={uploadState !== UPLOAD_STATE.SUCCESS ? false : true}
                         >
                             Save
                         </button>
                     </div>
                 )}
+                {isClusterDetails && !isKubeConfigFile && saveClusterDetails()}
             </>
         )
     }
@@ -1264,6 +1309,10 @@ function ClusterForm({
                 </button>
             </div>
         )
+    }
+
+    const saveClusterButton = () => {
+        handleCloseButton()
     }
 
     return getCluster ? (
@@ -1297,7 +1346,9 @@ function ClusterForm({
                         <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
                             Cancel
                         </button>
-                        <button className="cta mr-20 ml-20">{loading ? <Progressing /> : 'Save'}</button>
+                        <button onClick={saveClusterButton} className="cta mr-20 ml-20">
+                            Save
+                        </button>
                     </div>
                 )}
                 {confirmation && (
