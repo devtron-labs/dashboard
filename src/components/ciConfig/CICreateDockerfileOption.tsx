@@ -448,7 +448,7 @@ export default function CICreateDockerfileOption({
                                 value={
                                     configOverrideView && !allowOverride
                                         ? currentBuildContextGitMaterial
-                                        : selectedBuildContextGitMaterial
+                                        : selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial : currentMaterial
                                 }
                                 styles={{
                                     ..._multiSelectStyles,

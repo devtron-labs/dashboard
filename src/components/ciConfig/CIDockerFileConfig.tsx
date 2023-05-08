@@ -419,7 +419,7 @@ export default function CIDockerFileConfig({
                                     value={
                                         configOverrideView && !allowOverride
                                             ? currentMaterial
-                                            : selectedBuildContextGitMaterial
+                                            : selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial : currentMaterial
                                     }
                                     styles={{
                                         ..._multiSelectStyles,
