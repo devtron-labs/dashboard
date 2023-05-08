@@ -404,9 +404,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     arrow={false}
                     placement="top"
                     content={
-                        !mat.latest && isImageApprover
-                            ? 'This image was approved by you. An image cannot be deployed by its approver.'
-                            : 'An image can be deployed only once after it has been approved. This image would need to be approved again for it to be eligible for deployment.'
+                        disableSelection
+                            ? 'An image can be deployed only once after it has been approved. This image would need to be approved again for it to be eligible for deployment.'
+                            : 'This image was approved by you. An image cannot be deployed by its approver.'
                     }
                 >
                     <span className="dc__opacity-0_5" data-testid={`cd-approval-artifact-select-disabled-${mat.index}`}>
