@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { getDeploymentStatusDetail } from '../appDetails/appDetails.service'
 import { DeploymentStatusDetailsBreakdownDataType } from '../appDetails/appDetails.type'
@@ -11,6 +11,7 @@ import CDEmptyState from './CDEmptyState'
 import mechanicalOperation from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, TIMELINE_STATUS, URLS } from '../../../../config'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppType }: DeploymentDetailStepsType) {
     const history = useHistory()
@@ -68,15 +69,20 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
     return deploymentStatus.toUpperCase() === TIMELINE_STATUS.ABORTED ||
         deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ? (
         <div className="flexbox deployment-aborted" data-testid="deployment-history-steps-failed-message">
-            <CDEmptyState
-                title="Deployment failed"
-                subtitle="A new deployment was initiated before this deployment completed."
+              <GenericEmptyState
+                title={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_FAILED.TITLE}
+                subTitle={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_FAILED.SUBTITLE}
             />
         </div>
     ) : deploymentListLoader ? (
         <Progressing pageLoader />
-    ) : !deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed ? (
+    ) : deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed ? (
         <div className="h-100 flex">
+          {/* <GenericEmptyState
+                image = {mechanicalOperation}
+                title={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_FAILED.TITLE}
+                subTitle={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_FAILED.SUBTITLE}
+            /> */}
             <CDEmptyState
                 title="Deployment in progress"
                 imgSource={mechanicalOperation}

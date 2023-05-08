@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Reload, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { useAsync, useInterval, useScrollable, mapByKey, asyncWrap } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
@@ -21,6 +21,7 @@ import Artifacts from '../cicdHistory/Artifacts'
 import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { AppEnvironment } from '../../../../services/service.types'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -204,15 +205,15 @@ export default function CDDetails() {
                             />
                         </Route>
                     ) : !envId ? (
-                        <EmptyView
-                            title="No environment selected"
-                            subTitle="Please select an environment to start seeing CD deployments."
+                        <GenericEmptyState
+                            title={EMPTY_STATE_STATUS.CD_DETAILS_ENVIRONMENT.TITLE}
+                            subTitle={EMPTY_STATE_STATUS.CD_DETAILS_ENVIRONMENT.SUBTITLE}
                         />
                     ) : (
-                        <EmptyView
-                            title="No deployments"
-                            subTitle={`No deployment history available for the ${selectedEnv?.environmentName} environment.`}
-                        />
+                      <GenericEmptyState
+                      title={EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.TITLE}
+                      subTitle={`${EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.SUBTITLE} ${selectedEnv?.environmentName} environment.`}
+                  />
                     )}
                     {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
                 </div>

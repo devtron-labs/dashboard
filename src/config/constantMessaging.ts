@@ -177,3 +177,68 @@ export const API_COMPONENTS = {
     NEW_API_TITLE: "/ New API token",
     EDIT_API_TITLE: "/ Edit API token"
 }
+
+export const EMPTY_STATE_STATUS = {
+    API_TOKEN: {
+        TITLE: 'No matching results',
+        SUBTITLE: "We couldn't find any matching token",
+    },
+    ARTIFACT: {
+        TITLE: 'No artifacts generated',
+        SUBTITLE: 'Errr..!! We couldn’t build your code.',
+    },
+    CI_BUILD_HISTORY_PIPELINE_TRIGGER:{
+      TITLE: 'pipeline not triggered',
+      SUBTITLE: 'Pipeline trigger history, details and logs will be available here.',
+    },
+    CI_BUILD_HISTORY_LINKED_PIPELINE:{
+      TITLE: 'This is a Linked CI Pipelined',
+      SUBTITLE: 'This is a Linked CI Pipelined',
+    },
+    CI_BUILD_HISTORY_NO_PIPELINE:{
+      TITLE: 'No pipeline selected',
+      SUBTITLE: 'Please select a pipeline',
+    },
+    CI_DEATILS_NO_VULNERABILITY_FOUND: 'No Vulnerability Found',
+    CI_DETAILS_IMAGE_SCANNED_DISABLED: 'Go to build pipeline configurations and enable ’Scan for vulnerabilities’',
+    CI_DETAILS_IMAGE_NOT_SCANNED:{
+      TITLE: 'Image not scanned',
+      SUBTITLE: 'This build was executed before scanning was enabled for this pipeline.'
+    },
+    CD_DETAILS_ENVIRONMENT: {
+        TITLE: 'No environment selected',
+        SUBTITLE: 'Please select an environment to start seeing CD deployments.',
+    },
+    CD_DETAILS_NO_DEPLOYMENT: {
+        TITLE: 'No deployments',
+        SUBTITLE: 'No deployment history available for the'
+    },
+    CHART_DEPLOYMENT_HISTORY: {
+        TITLE: 'Data not available',
+        SUBTITLE:
+            'Data for previous deployments is not available. History for any new deployment will be available here.',
+    },
+    DEPLOYMENT_DETAILS_SETPS_FAILED:{
+      TITLE: 'Deployment failed',
+      SUBTITLE: 'A new deployment was initiated before this deployment completed.'
+    },
+    DEPLOYMENT_DETAILS_SETPS_PROGRESSING:{
+      TITLE: 'Deployment in progress',
+      SUBTITLE: 'This deployment is in progress. Click on Check status to know the live status..'
+    },
+    DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE: {
+        TITLE: 'Data not available',
+        SUBTITLE: 'Source code detail is not available',
+    },
+    DEPLOYMENT_HISTORY_CONFIG_LIST: {
+        TITLE: 'Data not available',
+        SUBTITLE: 'Deployed configurations is not available for older deployments',
+    },
+
+    GENERATE_API_TOKEN: {
+        TITLE: 'Generate a token to access the Devtron API',
+        SUBTITLE:
+            'API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API.',
+    },
+
+}

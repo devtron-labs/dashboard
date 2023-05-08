@@ -10,23 +10,11 @@ import { isTokenExpired } from './authorization.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import './apiToken.scss'
-import { TippyCustomized, TippyTheme, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme, EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
+import { EMPTY_STATE_STATUS } from '../../config/constantMessaging'
 
-function NoMatchingResults() {
-    return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={NoResults} width="250" height="200" alt="No matching results" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h2 className="fs-16 fw-4 c-9">No matching results</h2>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>We couldn't find any matching token</EmptyState.Subtitle>
-        </EmptyState>
-    )
-}
 
 function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType) {
     const history = useHistory()
@@ -79,6 +67,16 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
         handleDeleteButton(list)
     }
 
+    const noMatchingResults = () => {
+      return (
+          <GenericEmptyState
+              image={NoResults}
+              title={EMPTY_STATE_STATUS.API_TOKEN.TITLE}
+              subTitle={EMPTY_STATE_STATUS.API_TOKEN.SUBTITLE}
+          />
+      )
+  }
+
     return (
         <div className="bcn-0">
             <div data-testid="api-token-page-header" className="flex dc__content-space pl-20 pr-20 pt-16 pb-16">
@@ -108,7 +106,7 @@ function APITokenList({ tokenList, renderSearchToken, reload }: APITokenListType
                 </div>
                 <div className="dc__overflow-scroll api__list__height">
                     {!tokenList || tokenList.length === 0 ? (
-                        <NoMatchingResults />
+                        noMatchingResults()
                     ) : (
                         tokenList.map((list, index) => (
                             <div
