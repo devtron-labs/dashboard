@@ -457,7 +457,7 @@ export interface JobPipeline {
 export interface TagChipsContainerType {
   labelTags: TagType[]
 }
-export interface SourceInfoType{
+export interface SourceInfoType {
   appDetails
   setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
   environment: AppEnvironment

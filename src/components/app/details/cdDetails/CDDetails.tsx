@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Reload, UserApprovalMetadataType } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { useAsync, useInterval, useScrollable, mapByKey, asyncWrap } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
@@ -330,7 +330,7 @@ export const TriggerOutput: React.FC<{
                                     activeClassName="active"
                                     to={`source-code`}
                                 >
-                                    Source code
+                                    Source
                                 </NavLink>
                             </li>
                             {triggerDetails.stage == 'DEPLOY' && (
@@ -365,6 +365,8 @@ export const TriggerOutput: React.FC<{
                 key={triggerDetails.id}
                 triggerDetails={triggerDetails}
                 loading={triggerDetailsLoading && !triggerDetailsResult}
+                userApprovalMetadata={triggerDetailsResult?.result?.userApprovalMetadata}
+                triggeredByEmail={triggerDetailsResult?.result?.triggeredByEmail}
                 setFullScreenView={setFullScreenView}
                 setDeploymentHistoryList={setDeploymentHistoryList}
                 deploymentHistoryList={deploymentHistoryList}
@@ -383,6 +385,8 @@ const HistoryLogs: React.FC<{
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
     deploymentAppType: DeploymentAppType
     isBlobStorageConfigured: boolean
+    userApprovalMetadata: UserApprovalMetadataType
+    triggeredByEmail: string
 }> = ({
     triggerDetails,
     loading,
@@ -391,6 +395,8 @@ const HistoryLogs: React.FC<{
     setDeploymentHistoryList,
     deploymentAppType,
     isBlobStorageConfigured,
+    userApprovalMetadata,
+    triggeredByEmail,
 }) => {
     let { path } = useRouteMatch()
     const { appId, pipelineId, triggerId, envId } = useParams<{
@@ -426,6 +432,7 @@ const HistoryLogs: React.FC<{
                                 <DeploymentDetailSteps
                                     deploymentStatus={triggerDetails.status}
                                     deploymentAppType={deploymentAppType}
+                                    userApprovalMetadata={userApprovalMetadata}
                                     isGitops={deploymentAppType === DeploymentAppType.helm}
                                     isHelmApps={false}
                                 />
@@ -435,6 +442,9 @@ const HistoryLogs: React.FC<{
                             <GitChanges
                                 gitTriggers={triggerDetails.gitTriggers}
                                 ciMaterials={triggerDetails.ciMaterials}
+                                artifact={triggerDetails.artifact}
+                                userApprovalMetadata={userApprovalMetadata}
+                                triggeredByEmail={triggeredByEmail}
                             />
                         </Route>
                         {triggerDetails.stage === 'DEPLOY' && (

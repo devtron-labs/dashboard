@@ -4,8 +4,10 @@ import {
     Progressing,
     ConfirmationDialog,
     Host,
+    noop,
     stopPropagation,
     multiSelectStyles,
+    useEffectAfterMount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
@@ -20,9 +22,7 @@ import {
 } from '../../../../config'
 import {
     NavigationArrow,
-    useEffectAfterMount,
     useAppContext,
-    noop,
     useEventSource,
     FragmentHOC,
     useSearchString,

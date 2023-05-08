@@ -224,7 +224,6 @@ export const Routes = {
     CUSTOM_ROLES: 'rbac/role',
     GROUPS: 'groups',
     GROUP: 'group',
-
 }
 
 export const ViewType = {
@@ -272,11 +271,6 @@ export const PATTERNS = {
 export const TriggerType = {
     Auto: 'AUTOMATIC',
     Manual: 'MANUAL',
-}
-
-export const TriggerTypeMap = {
-    automatic: 'Auto',
-    manual: 'Manual',
 }
 
 export const SourceTypeMap = {
@@ -656,7 +650,7 @@ export const ModuleNameMap = {
 
 export const BUILD_STATUS = {
     NOT_TRIGGERED: 'not triggered',
-    NOT_DEPLOYED: 'not deployed'
+    NOT_DEPLOYED: 'not deployed',
 }
 
 export const EVENT_STREAM_EVENTS_MAP = {
@@ -800,8 +794,8 @@ export const SOURCE_NOT_CONFIGURED_MESSAGE =
     'Source is not configured for one or more git repositories. Please configure and try again.'
 
 export enum MANIFEST_KEY_FIELDS {
-    METADATA= 'metadata',
-    MANAGED_FIELDS= 'managedFields'
+    METADATA = 'metadata',
+    MANAGED_FIELDS = 'managedFields',
 }
 
 export enum KEY_VALUE {
@@ -812,5 +806,5 @@ export enum KEY_VALUE {
 export enum CONFIGURATION_TYPES {
     ENVIRONMENT = 'ENVIRONMENT',
     NAMESPACE = 'NAMESPACE',
-    DESCRIPTION = 'DESCRIPTION'
+    DESCRIPTION = 'DESCRIPTION',
 }

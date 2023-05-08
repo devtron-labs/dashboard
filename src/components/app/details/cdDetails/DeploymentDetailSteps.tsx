@@ -11,6 +11,9 @@ import mechanicalOperation from '../../../../assets/img/ic-mechanical-operation.
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg'
 import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM, TIMELINE_STATUS, URLS } from '../../../../config'
 import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType } from '../appDetails/appDetails.type'
+import { importComponentFromFELibrary } from '../../../common'
+
+const DeploymentApprovalInfo = importComponentFromFELibrary('DeploymentApprovalInfo')
 
 let deploymentStatusTimer = null
 export default function DeploymentDetailSteps({
@@ -18,7 +21,8 @@ export default function DeploymentDetailSteps({
     deploymentAppType,
     isHelmApps = false,
     installedAppVersionHistoryId,
-    isGitops
+    isGitops,
+    userApprovalMetadata
 }: DeploymentDetailStepsType) {
     const history = useHistory()
     const { url } = useRouteMatch()
@@ -116,6 +120,9 @@ export default function DeploymentDetailSteps({
         </div>
     ) : (
         <div className="dc__mxw-1000 min-w-800">
+            {DeploymentApprovalInfo && userApprovalMetadata && (
+                <DeploymentApprovalInfo userApprovalMetadata={userApprovalMetadata} />
+            )}
             <DeploymentStatusDetailBreakdown
                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                 streamData={null}
