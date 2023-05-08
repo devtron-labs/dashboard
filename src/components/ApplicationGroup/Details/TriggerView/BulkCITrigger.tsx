@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import { ServerErrors, Drawer, Progressing, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { noop, useAsync } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
-import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
+import { ReactComponent as PlayIcon } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
@@ -547,7 +547,7 @@ export default function BulkCITrigger({
                         <Progressing />
                     ) : (
                         <>
-                            <PlayIcon className="icon-dim-16 dc__no-svg-fill scn-0 mr-8" />
+                            <PlayIcon className="trigger-btn__icon" />
                             Start Build
                         </>
                     )}

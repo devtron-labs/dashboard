@@ -166,14 +166,14 @@ export default function GitCommitInfoGeneric({
         if (isExcluded) {
             return (
                 <Tippy
-                    className="default-tt w-200 dc__align-center fw-4 fs-12"
+                    className="default-tt w-200 dc__align-left fw-4 fs-12"
                     arrow={false}
-                    placement="left"
+                    placement="bottom"
                     content={MATERIAL_EXCLUDE_TIPPY_TEXT}
                     interactive={true}
                 >
                     <span className="flex left cr-5 cursor-not-allowed">
-                        <Abort className="mr-8 fcr-5" />
+                        <Abort className="mr-4 fcr-5" />
                         Excluded
                     </span>
                 </Tippy>

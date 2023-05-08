@@ -16,20 +16,32 @@ export const INCLUDE_EXCLUDE_COMMIT_INFO = {
             partThree: 'before a path to exclude Eg.',
             partFour: '!/folder/subfolder/*',
         },
-        lineTwo: 'For multiple inputs, enter paths in separate lines.',
+        lineTwo: {
+            partOne: 'Supported regex to write paths',
+            partTwo: '/*',
+            partThree: '/**',
+            partFour: '*',
+            partFive: 'How to use',
+        },
         lineThree:
             'In case of any conflict, the path defined later will hold more importance. In the below example ‘docs/**’ folder will be included.',
     },
     example: {
-        lineOne: '!/sub-project/docs/**',
-        lineTwo: '/sub-project/**',
+        lineOne: '!sub-project/docs/**',
+        lineTwo: 'sub-project/**',
     },
+}
+
+export const USE_REGEX_TIPPY_CONTENT = {
+    insructionsList: {
+        lineOne: 'If used ‘in between’ or ‘last’ of the path, matches any number of directories.',
+    }
 }
 
 export const INFO_BAR = {
     infoMessage: 'Remaining files/folders in the Git Repo will be',
 }
 
-export const INCLUDE_EXCLUDE_PLACEHOLDER = 'Example: \nto include type /foldername \nto exclude type !/foldername'
+export const INCLUDE_EXCLUDE_PLACEHOLDER = 'Enter paths separated by line breaks: \nto include type /foldername \nto exclude type !/foldername'
 
 export const MATERIAL_EXCLUDE_TIPPY_TEXT = 'Not available for build as this commit contains changes in excluded files or folders'

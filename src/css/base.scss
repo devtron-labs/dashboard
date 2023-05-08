@@ -2336,12 +2336,20 @@ textarea,
     width: 400px;
 }
 
+.w-500 {
+    width: 500px !important;
+}
+
 .w-600 {
     width: 600px;
 }
 
 .w-800 {
     width: 800px;
+}
+
+.w-885 {
+    width: 885px !important;
 }
 
 // Width in percentage
@@ -2536,6 +2544,10 @@ textarea,
 
 .mh-600 {
     min-height: 600px;
+}
+
+.mxh-140 {
+    max-height: 140px;
 }
 
 .mxh-210 {

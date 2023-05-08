@@ -1,7 +1,7 @@
 import React from 'react'
 import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.png'
-import NoEligibleCommit from '../../../../assets/img/no-eligible-commit.png'
+import NoEligibleCommit from '../../../../assets/gif/no-eligible-commit.gif'
 import NoResults from '../../../../assets/img/empty-noresult@2x.png'
 import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-right.svg'
 import { EmptyStateCIMaterialProps } from './types'
@@ -111,7 +111,7 @@ export default function EmptyStateCIMaterial({
                 ),
                 title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommit}</h1>,
                 subtitle: CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitSubtitle,
-                link: <span className="dc__underline dc__block cursor" onClick={toggleExclude}>{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitButtonText}</span>,
+                link: <span className="dc__link dc__underline dc__block cursor" onClick={toggleExclude}>{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitButtonText}</span>,
                 cta: null,
             }
         } else if (!anyCommit) {

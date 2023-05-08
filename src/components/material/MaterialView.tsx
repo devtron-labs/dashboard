@@ -41,6 +41,7 @@ import {
     INCLUDE_EXCLUDE_COMMIT_INFO,
     INFO_BAR,
     INCLUDE_EXCLUDE_PLACEHOLDER,
+    USE_REGEX_TIPPY_CONTENT,
 } from './constants'
 
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
@@ -152,6 +153,21 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         } else {
             this.toggleConfirmation()
         }
+    }
+
+    useRegexTippyContent = () => {
+
+        return (
+            <div className="flex">
+                <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__no-border">
+                    /**
+                </span>
+                <span className="fs-13 fw-4 ml-2">
+                    {USE_REGEX_TIPPY_CONTENT.insructionsList.lineOne}
+                </span>
+
+            </div>
+        )
     }
 
     tippyContent = () => {
@@ -390,31 +406,63 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 </a>
                             </p>
                             {this.props.isLearnHowClicked && (
-                                <div className="ml-8">
+                                <div className="ml-8 mt-8">
                                     <div className="flex left">
                                         <div className="dc__bullet mr-6 ml-6"></div>
                                         <span className="fs-13 fw-4">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partOne}
                                         </span>
-                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__border">
+                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__no-border">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partTwo}
                                         </span>
                                         <span className="ml-4 fs-13 fw-4">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partThree}
                                         </span>
-                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__border">
+                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__no-border">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partFour}
                                         </span>
                                         <br />
                                     </div>
-                                    <div className="flex left">
+                                    <div className="flex left mt-4">
                                         <div className="dc__bullet mr-6 ml-6"></div>
                                         <span className="fs-13 fw-4">
-                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo}
+                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partOne}
+                                        </span>
+                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__no-border">
+                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partTwo}
+                                        </span>
+                                        <span className="fs-13 fw-4 ml-2">,</span>
+                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-2 dc__no-border">
+                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partThree}
+                                        </span>
+                                        <span className="fs-13 fw-4 ml-2">,</span>
+                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-2 dc__no-border">
+                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFour}
+                                        </span>
+                                        <span>
+                                            <TippyCustomized
+                                                theme={TippyTheme.white}
+                                                iconClass="fcv-5"
+                                                className="w-500 h-100"
+                                                placement="bottom"
+                                                Icon={QuestionFilled}
+                                                heading="Using regex to write paths"
+                                                infoText=""
+                                                showCloseButton={true}
+                                                additionalContent={this.useRegexTippyContent()}
+                                                trigger="click"
+                                                interactive={true}
+                                            >
+                                                <span className="dc__link cursor fs-13 fw-4 ml-8">
+                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFive}
+                                                </span>
+                                            </TippyCustomized>
+
+                                            
                                         </span>
                                         <br />
                                     </div>
-                                    <div className="flex left mt-2">
+                                    <div className="flex left mt-6">
                                         <div className="dc__bullet mr-6 ml-6"></div>
                                         <span className="fs-13 fw-4">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineThree}
@@ -432,7 +480,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </div>
 
                         <textarea
-                            className="form__textarea dc__no-border-imp"
+                            className="form__textarea dc__no-border-imp mxh-140"
                             autoComplete={'off'}
                             autoFocus
                             placeholder={INCLUDE_EXCLUDE_PLACEHOLDER}
@@ -478,7 +526,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         </Checkbox>
                         {this.props.isChecked && (
                             <input
-                                className="form__input ml-35"
+                                className="form__input ml-35 w-885"
                                 autoComplete={'off'}
                                 autoFocus
                                 type="text"
