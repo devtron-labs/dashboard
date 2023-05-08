@@ -41,8 +41,11 @@ export interface DeploymentHistory {
     workflow_type?: string
 }
 
-export interface DeploymentDetailStepsType {
-  deploymentStatus: string
+export interface DeploymentDetailStepsType{
+  deploymentStatus?: string
   deploymentAppType?: DeploymentAppType
+  isHelmApps?: boolean
+  installedAppVersionHistoryId?: number
+  isGitops?: boolean
   userApprovalMetadata: UserApprovalMetadataType
 }

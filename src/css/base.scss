@@ -1091,6 +1091,10 @@ button.anchor {
         background: url('../assets/icons/ic-hibernate-2.svg'), $background;
         background-size: contain, contain;
     }
+    &.timedout {
+      background: url('../assets/icons/ic-timeout-red.svg'), $background;
+      background-size: contain, contain;
+    }
 }
 
 @mixin dc__striped-row($background) {
@@ -1936,6 +1940,10 @@ button.anchor {
 
 .dc__text-center {
     text-align: center;
+}
+
+.dc__mxw-inherit {
+  max-width: inherit;
 }
 
 .dc__mxw-200 {
