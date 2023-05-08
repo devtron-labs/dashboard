@@ -389,7 +389,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         disableSelection: boolean,
     ) => {
         if (mat.vulnerable) {
-            return <span className="material-history__scan-error">Security Issues Found</span>
+            return (
+                <span
+                    className="material-history__scan-error"
+                    data-testid={`cd-artifact-vulnerability-disabled-${mat.index}`}
+                >
+                    Security Issues Found
+                </span>
+            )
         } else if (disableSelection || isImageApprover) {
             return (
                 <Tippy
@@ -402,7 +409,9 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             : 'An image can be deployed only once after it has been approved. This image would need to be approved again for it to be eligible for deployment.'
                     }
                 >
-                    <span className="dc__opacity-0_5">Select</span>
+                    <span className="dc__opacity-0_5" data-testid={`cd-approval-artifact-select-disabled-${mat.index}`}>
+                        Select
+                    </span>
                 </Tippy>
             )
         } else if (mat.isSelected) {
@@ -416,6 +425,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             ? ''
                             : 'dc__align-right'
                     } icon-dim-24 cursor`}
+                    data-testid={`cd-artifact-selected-check-${mat.index}`}
                 />
             )
         } else {
@@ -431,6 +441,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             this.handleImageSelection(mat.index, mat)
                         }
                     }}
+                    data-testid={`cd-artifact-select-${mat.index}`}
                 >
                     Select
                 </span>
