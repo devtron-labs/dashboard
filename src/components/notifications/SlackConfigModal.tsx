@@ -173,7 +173,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
             <div className="m-24 mb-32">
                 <label className="form__row">
                     <span className="form__label">Slack Channel*</span>
-                    <input className="form__input" type="text" name="app-name"
+                    <input data-testid="add-slack-channel" className="form__input" type="text" name="app-name"
                         value={this.state.form.configName} onChange={this.handleSlackChannelChange}
                         onBlur={(event) => this.isValid(event, 'configName')}
                         placeholder="channel name" autoFocus={true} tabIndex={1} />
@@ -196,7 +196,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                             <Help className="ml-5 dc__vertical-align-middle icon-dim-16 cursor" />
                         </Tippy>
                     </span>
-                    <input className="form__input" type="text" name="app-name"
+                    <input data-testid="add-webhook-url" className="form__input" type="text" name="app-name"
                         value={this.state.form.webhookUrl}
                         placeholder="Enter Incoming Webhook URL" tabIndex={2} onChange={this.handleWebhookUrlChange}
                         onBlur={(event) => this.isValid(event, 'webhookUrl')} />
@@ -214,9 +214,9 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                         </Tippy>
                     </label>
                     <Select value={this.state.form.projectId} onChange={this.handleProjectChange} tabIndex={3} rootClassName="select-button--default">
-                        <Select.Button>{project ? project.name : "Select Project"}</Select.Button>
+                        <Select.Button dataTestIdDropdown="slack-select-project-button">{project ? project.name : "Select Project"}</Select.Button>
                         {this.state.projectList.map((p) => {
-                            return <Select.Option key={p.id} value={p.id}>{p.name}</Select.Option>
+                            return <Select.Option dataTestIdMenuList={p.name} key={p.id} value={p.id}>{p.name}</Select.Option>
                         })}
                     </Select>
                     <span className="form__error">
@@ -231,7 +231,7 @@ export class SlackConfigModal extends Component<SlackConfigModalProps, SlackConf
                     <button type="button" className="cta cancel mr-16" tabIndex={5}
                         onClick={this.props.closeSlackConfigModal}>Cancel
                     </button>
-                    <button type="submit" className="cta" tabIndex={4} disabled={this.state.form.isLoading}>
+                    <button data-testid="add-slack-save-button" type="submit" className="cta" tabIndex={4} disabled={this.state.form.isLoading}>
                         {this.state.form.isLoading ? <Progressing /> : "Save"}
                     </button>
                 </div>

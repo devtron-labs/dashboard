@@ -48,6 +48,7 @@ export default function ClusterTerminal({
     nodeGroups,
     closeTerminal,
     clusterImageList,
+    isClusterDetailsPage,
     isNodeDetailsPage,
     namespaceList,
     node,
@@ -379,6 +380,7 @@ export default function ClusterTerminal({
     const terminalContainer = () => {
         return (
             <Terminal
+                dataTestId="cluster-terminal-view"
                 nodeName={selectedNodeName.value}
                 containerName={selectedNodeName.label}
                 socketConnection={socketConnection}
@@ -441,18 +443,24 @@ export default function ClusterTerminal({
         return <GroupHeading {...props} hideClusterName={true} />
     }
 
+    // css class for cluster terminal view
+    const fullScreenClassWrapper = isFullScreen ? 'cluster-full_screen' : 'cluster-terminal-view-container'
+    const nodeDetailsPageClassWrapper = isNodeDetailsPage || isClusterDetailsPage ? '' : 'node-terminal'
+    const clusterDetailsPageClassWrapper = isClusterDetailsPage ? 'cluster-details-terminal' : ''
+    const terminalClusterDetailsPageClassWrapper = isFullScreen ? 'cluster-details-full-screen' : 'cluster-details-node-details'
+
     return (
         <div
-            className={`${
-                isFullScreen || isNodeDetailsPage ? 'cluster-full_screen' : 'cluster-terminal-view-container'
-            } ${isNodeDetailsPage ? '' : 'node-terminal'}`}
+            className={`${fullScreenClassWrapper} ${nodeDetailsPageClassWrapper} ${clusterDetailsPageClassWrapper}`}
         >
             <div className="flex dc__content-space bcn-0 pl-20 dc__border-top h-32">
                 <div className="flex left">
                     {clusterName && (
                         <>
                             <div className="cn-6 mr-16">{SELECT_TITLE.CLUSTER}</div>
-                            <div className="flex fw-6 fs-13 mr-20">{clusterName}</div>
+                            <div data-testid="cluster-terminal-cluster-name" className="flex fw-6 fs-13 mr-20">
+                                {clusterName}
+                            </div>
                             <span className="bcn-2 mr-16 h-32" style={{ width: '1px' }} />
                         </>
                     )}
@@ -477,9 +485,10 @@ export default function ClusterTerminal({
 
                     {!isNodeDetailsPage && (
                         <>
-                        <div className="cn-6 mr-10">{SELECT_TITLE.NODE}</div>
+                            <div className="cn-6 mr-10">{SELECT_TITLE.NODE}</div>
                             <div style={{ minWidth: '145px' }}>
                                 <ReactSelect
+                                    classNamePrefix="cluster-terminal-node"
                                     placeholder="Select Containers"
                                     options={nodeGroups}
                                     defaultValue={selectedNodeName}
@@ -500,6 +509,7 @@ export default function ClusterTerminal({
                     <div className="cn-6 ml-8 mr-10">{SELECT_TITLE.NAMESPACE}</div>
                     <div>
                         <CreatableSelect
+                            classNamePrefix="cluster-terminal-name-space"
                             placeholder="Select Namespace"
                             options={defaultNamespaceList}
                             defaultValue={selectedNamespace}
@@ -531,6 +541,7 @@ export default function ClusterTerminal({
                     </TippyCustomized>
                     <div>
                         <CreatableSelect
+                            classNamePrefix="cluster-terminal-select-image"
                             placeholder="Select Image"
                             options={imageList}
                             defaultValue={selectedImage}
@@ -555,11 +566,13 @@ export default function ClusterTerminal({
                         >
                             {isFullScreen ? (
                                 <ExitScreen
+                                    data-testid="cluster-terminal-exit-screen-button"
                                     className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
                                     onClick={toggleScreenView}
                                 />
                             ) : (
                                 <FullScreen
+                                    data-testid="cluster-terminal-full-screen-button"
                                     className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
                                     onClick={toggleScreenView}
                                 />
@@ -567,6 +580,7 @@ export default function ClusterTerminal({
                         </Tippy>
                         <Tippy className="default-tt" arrow={false} placement="top" content={'Close'}>
                             <Close
+                                data-testid="cluster-terminal-close-screen-button"
                                 className="icon-dim-20 cursor fcr-5 dc__hover-r100 br-4 fcn-6 mr-20"
                                 onClick={closeTerminalModal}
                             />
@@ -577,14 +591,22 @@ export default function ClusterTerminal({
 
             <div className="flex left bcn-0 pl-20 dc__border-top h-28">
                 <ul role="tablist" className="tab-list">
-                    <li className="tab-list__tab pointer fs-12" onClick={selectTerminalTab}>
+                    <li
+                        data-testid="cluster-terminal-button"
+                        className="tab-list__tab pointer fs-12"
+                        onClick={selectTerminalTab}
+                    >
                         <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 0 ? 'active' : ''}`}>
                             {SELECT_TITLE.TERMINAL}
                         </div>
                         {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                     </li>
                     {terminalAccessIdRef.current && connectTerminal && (
-                        <li className="tab-list__tab fs-12" onClick={() => selectEventsTab()}>
+                        <li
+                            data-testid="pod-events-button"
+                            className="tab-list__tab fs-12"
+                            onClick={() => selectEventsTab()}
+                        >
                             <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
                                 {SELECT_TITLE.POD_EVENTS}
                             </div>
@@ -592,7 +614,11 @@ export default function ClusterTerminal({
                         </li>
                     )}
                     {terminalAccessIdRef.current && connectTerminal && (
-                        <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
+                        <li
+                            data-testid="pod-manifests-button"
+                            className="tab-list__tab fs-12"
+                            onClick={selectManifestTab}
+                        >
                             <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
                                 {SELECT_TITLE.POD_MANIFEST}
                             </div>
@@ -617,20 +643,20 @@ export default function ClusterTerminal({
                             >
                                 {socketConnection === SocketConnectionType.CONNECTING ||
                                 socketConnection === SocketConnectionType.CONNECTED ? (
-                                    <span className="mr-8 cursor">
+                                    <span data-testid="disconnect-button" className="mr-8 cursor">
                                         <div
                                             className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5"
                                             onClick={stopTerminalConnection}
                                         />
                                     </span>
                                 ) : (
-                                    <span className="mr-8 flex">
+                                    <span data-testid="play-button" className="mr-8 flex">
                                         <Play className="icon-dim-16 mr-4 cursor" onClick={resumePodConnection} />
                                     </span>
                                 )}
                             </Tippy>
                             <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-                                <div className="flex">
+                                <div data-testid="clear-logs-button" className="flex">
                                     <Abort
                                         className="icon-dim-16 mr-4 fcn-6 cursor"
                                         onClick={(e) => {
@@ -643,6 +669,7 @@ export default function ClusterTerminal({
                             <div className="cn-6 ml-8 mr-10">{SELECT_TITLE.SHELL} </div>
                             <div>
                                 <CreatableSelect
+                                    classNamePrefix="cluster-terminal-select-shell"
                                     placeholder="Select Shell"
                                     options={clusterShellTypes}
                                     defaultValue={selectedTerminalType}
@@ -661,7 +688,7 @@ export default function ClusterTerminal({
             <div
                 className={`cluster-terminal__wrapper ${isFullScreen ? 'full-screen-terminal' : ''} ${
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
-                }`}
+                } ${isClusterDetailsPage ? terminalClusterDetailsPageClassWrapper : ''}`}
             >
                 <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalContainer()}</div>
                 {selectedTabIndex === 1 && (

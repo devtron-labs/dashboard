@@ -3,7 +3,13 @@ import moment from 'moment'
 import { Link, useParams } from 'react-router-dom'
 import { ModuleNameMap, Moment12HourFormat, URLS } from '../../../config'
 import { getAppOtherEnvironment, getJobCIPipeline, getTeamList } from '../../../services/service'
-import { handleUTCTime, importComponentFromFELibrary, processDeployedTime, sortOptionsByValue, useAsync } from '../../common'
+import {
+    handleUTCTime,
+    importComponentFromFELibrary,
+    processDeployedTime,
+    sortOptionsByValue,
+    useAsync,
+} from '../../common'
 import { showError, Progressing, TagType, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { AppDetails, AppOverviewProps, JobPipeline } from '../types'
 import { ReactComponent as EditIcon } from '../../../assets/icons/ic-pencil.svg'
@@ -22,7 +28,7 @@ import {
     ExternalLinksAndToolsType,
     ExternalLinkScopeType,
 } from '../../externalLinks/ExternalLinks.type'
-import { getExternalLinks, getMonitoringTools } from '../../externalLinks/ExternalLinks.service'
+import { getExternalLinks } from '../../externalLinks/ExternalLinks.service'
 import { sortByUpdatedOn } from '../../externalLinks/ExternalLinks.utils'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import AboutTagEditModal from '../details/AboutTagEditModal'
@@ -54,7 +60,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         [appId],
         !isJobOverview,
     )
-    const isAgroInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
+    const isArgoInstalled: boolean = otherEnvsResult?.[1]?.result?.status === ModuleStatus.INSTALLED
     const [jobPipelines, setJobPipelines] = useState<JobPipeline[]>([])
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
 
@@ -75,22 +81,20 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     }, [appId])
 
     const getExternalLinksDetails = (): void => {
-        Promise.all([getMonitoringTools(), getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)])
-            .then(([monitoringToolsRes, externalLinksRes]) => {
+        getExternalLinks(0, appId, ExternalLinkIdentifierType.DevtronApp)
+            .then((externalLinksRes) => {
                 setExternalLinksAndTools({
                     fetchingExternalLinks: false,
                     externalLinks:
-                        externalLinksRes.result
-                            ?.filter((_link) => _link.type === ExternalLinkScopeType.AppLevel)
-                            ?.sort(sortByUpdatedOn) || [],
+                        externalLinksRes.result?.ExternalLinks?.filter(
+                            (_link) => _link.type === ExternalLinkScopeType.AppLevel,
+                        ).sort(sortByUpdatedOn) || [],
                     monitoringTools:
-                        monitoringToolsRes.result
-                            ?.map((tool) => ({
-                                label: tool.name,
-                                value: tool.id,
-                                icon: tool.icon,
-                            }))
-                            .sort(sortOptionsByValue) || [],
+                        externalLinksRes.result?.Tools?.map((tool) => ({
+                            label: tool.name,
+                            value: tool.id,
+                            icon: tool.icon,
+                        })).sort(sortOptionsByValue) || [],
                 })
             })
             .catch((e) => {
@@ -121,8 +125,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const toggleTagsUpdateModal = (e) => {
         stopPropagation(e)
         setShowUpdateTagModal(!showUpdateTagModal)
-        if(showUpdateTagModal){
-          setReloadMandatoryProjects(!reloadMandatoryProjects)
+        if (showUpdateTagModal) {
+            setReloadMandatoryProjects(!reloadMandatoryProjects)
         }
     }
 
@@ -161,7 +165,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             const payload = {
                 id: parseInt(appId),
                 description: newDescription,
-                labels: appMetaInfo.labels
+                labels: appMetaInfo.labels,
             }
 
             const appLabel = await createAppLabels(payload)
@@ -175,25 +179,45 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const renderSideInfoColumn = () => {
         return (
             <div className="pt-16 pb-16 pl-20 pr-20 dc__border-right">
-                <div className="mb-16">
+                <div className="mb-16" data-testid={`overview-${isJobOverview ? 'job' : 'app'}`}>
                     {isJobOverview ? 'Job name' : 'App name'}
-                    <div className="fs-13 fw-4 lh-20 cn-9">{appMetaInfo?.appName}</div>
+                    <div
+                        className="fs-13 fw-4 lh-20 cn-9"
+                        data-testid={`overview-${isJobOverview ? 'job' : 'app'}Name`}
+                    >
+                        {appMetaInfo?.appName}
+                    </div>
                 </div>
                 <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7">Created on</div>
-                    <div className="fs-13 fw-4 lh-20 cn-9">
+                    <div className="fs-12 fw-4 lh-20 cn-7" data-testid="overview-createdon">
+                        Created on
+                    </div>
+                    <div className="fs-13 fw-4 lh-20 cn-9" data-testid="overview-createdonName">
                         {appMetaInfo?.createdOn ? moment(appMetaInfo.createdOn).format(Moment12HourFormat) : '-'}
                     </div>
                 </div>
                 <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7">Created by</div>
-                    <div className="fs-13 fw-4 lh-20 cn-9">{appMetaInfo?.createdBy}</div>
+                    <div className="fs-12 fw-4 lh-20 cn-7" data-testid="overview-createdby">
+                        Created by
+                    </div>
+                    <div className="fs-13 fw-4 lh-20 cn-9" data-testid="overview-createdbyName">
+                        {appMetaInfo?.createdBy}
+                    </div>
                 </div>
                 <div className="mb-16">
-                    <div className="fs-12 fw-4 lh-20 cn-7">Project</div>
-                    <div className="flex left dc__content-space fs-13 fw-4 lh-20 cn-9">
+                    <div className="fs-12 fw-4 lh-20 cn-7" data-testid="overview-project">
+                        Project
+                    </div>
+                    <div
+                        className="flex left dc__content-space fs-13 fw-4 lh-20 cn-9"
+                        data-testid="overview-projectName"
+                    >
                         {appMetaInfo?.projectName}
-                        <EditIcon className="icon-dim-20 cursor" onClick={toggleChangeProjectModal} />
+                        <EditIcon
+                            data-testid="overview-project-edit"
+                            className="icon-dim-20 cursor"
+                            onClick={toggleChangeProjectModal}
+                        />
                     </div>
                 </div>
             </div>
@@ -204,11 +228,15 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         return (
             <div className="pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
                 <div className="flex left dc__content-space mb-12 w-100">
-                    <div className="flex left fs-14 fw-6 lh-20 cn-9">
+                    <div className="flex left fs-14 fw-6 lh-20 cn-9" data-testid="overview-tags">
                         <TagIcon className="tags-icon icon-dim-20 mr-8" />
                         Tags
                     </div>
-                    <div className="flex fs-14 fw-4 lh-16 cn-7 cursor" onClick={toggleTagsUpdateModal}>
+                    <div
+                        className="flex fs-14 fw-4 lh-16 cn-7 cursor"
+                        onClick={toggleTagsUpdateModal}
+                        data-testid="overview-tag-edit"
+                    >
                         <EditIcon className="icon-dim-16 scn-7 mr-4" />
                         Edit
                     </div>
@@ -230,12 +258,12 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const renderAppLevelExternalLinks = () => {
         return (
             <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
+                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12" data-testid="overview-external-links">
                     <LinkedIcon className="icon-dim-20 mr-8" />
                     External Links
                 </div>
                 {externalLinksAndTools.fetchingExternalLinks ? (
-                    <div className="dc__loading-dots" />
+                    <div className="dc__loading-dots" data-testid="overview-external-links-not-present" />
                 ) : (
                     <AppLevelExternalLinks
                         isOverviewPage={true}
@@ -257,14 +285,17 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         if (otherEnvsResult?.[0]?.result?.length > 0) {
             return (
                 <div className="env-deployments-info-wrapper w-100">
-                    <div className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
+                    <div
+                        className="env-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7"
+                        data-testid="overview-deployed-environment"
+                    >
                         <span>Environment</span>
-                        {isAgroInstalled && <span>App status</span>}
+                        {isArgoInstalled && <span>App status</span>}
                         <span>Last deployed</span>
                     </div>
                     <div className="env-deployments-info-body">
                         {otherEnvsResult[0].result.map(
-                            (_env) =>
+                            (_env, index) =>
                                 !_env.deploymentAppDeleteRequest && (
                                     <div
                                         key={`${_env.environmentName}-${_env.environmentId}`}
@@ -273,10 +304,11 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                         <Link
                                             to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`}
                                             className="fs-13"
+                                            data-testid={`overview-link-environment${index}`}
                                         >
                                             {_env.environmentName}
                                         </Link>
-                                        {isAgroInstalled && (
+                                        {isArgoInstalled && (
                                             <AppStatus
                                                 appStatus={
                                                     _env.lastDeployed
@@ -285,8 +317,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                                 }
                                             />
                                         )}
-                                        <span className="fs-13 fw-4 cn-7">
-                                            {processDeployedTime(_env.lastDeployed, isAgroInstalled)}
+                                        <span className="fs-13 fw-4 cn-7" data-testid="overview-deployed-time">
+                                            {processDeployedTime(_env.lastDeployed, isArgoInstalled)}
                                         </span>
                                     </div>
                                 ),
@@ -296,13 +328,17 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
             )
         }
 
-        return <div className="fs-13 fw-4 cn-7">This application has not been deployed yet.</div>
+        return (
+            <div className="fs-13 fw-4 cn-7" data-testid="overview-no-deployment">
+                This application has not been deployed yet.
+            </div>
+        )
     }
 
     const renderEnvironmentDeploymentsStatus = () => {
         return (
             <div className="flex column left pt-16 pb-16 pl-20 pr-20">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
+                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12" data-testid="overview-deployment">
                     <RocketIcon className="icon-dim-20 scn-9 mr-8" />
                     Deployments
                 </div>
@@ -338,30 +374,41 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
 
     const renderWorkflowComponent = () => {
         if (!Array.isArray(jobPipelines) || !jobPipelines.length) {
-            return <div className="fs-13 fw-4 cn-7">No job pipelines are configured</div>
+            return (
+                <div className="fs-13 fw-4 cn-7" data-testid="overview-no-pipelines">
+                    No job pipelines are configured
+                </div>
+            )
         }
 
         return (
             <div className="env-deployments-info-wrapper w-100">
-                <div className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space">
+                <div
+                    className="flex dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7 dc__content-space"
+                    data-testid="overview-configured-pipeline"
+                >
                     <div className="m-tb-8">Pipeline name</div>
                     <div className="flex">
                         <div className="m-tb-8 mr-16 w-150">Last run status</div>
                         <div className="w-150 m-tb-8">Last run at</div>
                     </div>
                 </div>
-                {jobPipelines.map((jobPipeline) => (
+                {jobPipelines.map((jobPipeline, index) => (
                     <div key={jobPipeline.ci_pipeline_id} className="dc__content-space flex">
                         <div className="h-20 m-tb-8 cb-5 fs-13">
                             <Link
                                 to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ci_pipeline_id}/`}
                                 className="fs-13"
+                                data-testid={`overview-link-pipeline${index}`}
                             >
                                 {jobPipeline.ci_pipeline_name}
                             </Link>
                         </div>
                         <div className="flex">
-                            <div className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start">
+                            <div
+                                data-testid={`${jobPipeline.status || 'notdeployed'}-job-status`}
+                                className="mr-16 w-150 h-20 m-tb-8 fs-13 cn-9 flex dc__content-start"
+                            >
                                 {getStatusIcon(jobPipeline.status)}
                                 {jobPipeline.status === 'CANCELLED' ? (
                                     <div>Cancelled</div>
@@ -384,7 +431,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const renderWorkflowsStatus = () => {
         return (
             <div className="flex column left pt-16 pb-16 pl-20 pr-20">
-                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12">
+                <div className="flex left fs-14 fw-6 lh-20 cn-9 mb-12" data-testid="job-pipeline">
                     <WorkflowIcon className="icon-dim-20 scn-9 mr-8" />
                     Job pipelines
                 </div>
@@ -410,21 +457,34 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
         return (
             <div className="flex column left pt-16 pb-16 pl-20 pr-20 dc__border-bottom-n1">
                 <div className="flex left dc__content-space mb-12 w-100">
-                    <div className="flex left fs-14 fw-6 lh-20 cn-9">
+                    <div className="flex left fs-14 fw-6 lh-20 cn-9" data-testid="job-description-header">
                         <DescriptionIcon className="tags-icon icon-dim-20 mr-8" />
                         Description
                     </div>
                     {editMode ? (
                         <div className="flex left ml-auto dc__gap-8">
-                            <button className="btn btn-link p-0 fs-14 fw-6 cn-7" onClick={handleCancel}>
+                            <button
+                                className="btn btn-link p-0 fs-14 fw-6 cn-7"
+                                data-testid="cancel-button"
+                                onClick={handleCancel}
+                            >
                                 Cancel
                             </button>
-                            <button className="btn btn-link p-0 fs-14 fw-6 cb-5" type="submit" onClick={handleSave}>
+                            <button
+                                className="btn btn-link p-0 fs-14 fw-6 cb-5"
+                                data-testid="job-description-save-button"
+                                type="submit"
+                                onClick={handleSave}
+                            >
                                 Save
                             </button>
                         </div>
                     ) : (
-                        <div className="flex fs-14 fw-4 lh-16 cn-7 cursor ml-auto" onClick={switchToEditMode}>
+                        <div
+                            className="flex fs-14 fw-4 lh-16 cn-7 cursor ml-auto"
+                            data-testid="job-description-edit"
+                            onClick={switchToEditMode}
+                        >
                             <EditIcon className="icon-dim-16 scn-7 mr-4" />
                             Edit
                         </div>
@@ -433,6 +493,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                 {editMode ? (
                     <div className="flex left flex-wrap dc__gap-8 w-100">
                         <textarea
+                            data-testid="job-description-textbox"
                             placeholder="No description"
                             value={newDescription}
                             onChange={handleDescriptionChange}
@@ -440,7 +501,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                         />
                     </div>
                 ) : (
-                    <div className="flex left flex-wrap fs-13 dc__gap-8 w-100">
+                    <div className="flex left flex-wrap fs-13 dc__gap-8 w-100" data-testid="job-description-text">
                         {newDescription ? newDescription : <span className="cn-7 fs-13">No description</span>}
                     </div>
                 )}

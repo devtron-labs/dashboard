@@ -163,13 +163,14 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 onSave={this.saveChartGroup}
             >
                 <label className="form__row">
-                    <span className="form__label dc__required-field">Name</span>
+                    <span className="form__label dc__required-field" data-testid="create-group-name-heading">Name</span>
                     <input
                         className="form__input"
                         autoComplete="off"
                         type="text"
                         name="name"
                         value={this.state.name.value}
+                        data-testid="create-group-name-value"
                         placeholder="e.g. elastic-stack"
                         autoFocus={true}
                         tabIndex={1}
@@ -179,7 +180,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                     <span className="form__error">
                         {this.state.name.error.map((err) => {
                             return (
-                                <div>
+                                <div data-testid="chart-group-min-5-char">
                                     <Error className="form__icon form__icon--error" /> {err}
                                 </div>
                             )
@@ -188,7 +189,7 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                 </label>
 
                 <label className="form__row">
-                    <span className="form__label">Description</span>
+                    <span className="form__label" data-testid="create-group-desc-heading">Description</span>
                     <textarea
                         className="form__input form__input--textarea"
                         name="description"
@@ -196,12 +197,13 @@ export default class CreateChartGroup extends Component<CreateChartGroupProps, C
                         placeholder="Enter a short description for this group."
                         autoFocus={true}
                         tabIndex={2}
+                        data-testid="create-group-desc"
                         onChange={this.handleDescriptionChange}
                         required
                     />
                     <span className="form__error"></span>
                 </label>
-                <button type="button" className="cta dc__align-right" onClick={this.saveChartGroup}>
+                <button type="button" className="cta dc__align-right" onClick={this.saveChartGroup} data-testid="save-group-button">
                     {this.state.loading ? <Progressing /> : this.props.chartGroupId ? 'Update Group' : 'Create Group'}
                 </button>
             </DialogForm>

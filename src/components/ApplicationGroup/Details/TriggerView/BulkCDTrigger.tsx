@@ -34,11 +34,17 @@ export default function BulkCDTrigger({
         appList.find((app) => !app.warningMessage) || appList[0],
     )
     const [unauthorizedAppList, setUnauthorizedAppList] = useState<Record<number, boolean>>({})
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
+    const closeBulkCDModal = (e): void => {
+        abortControllerRef.current.abort()
+        closePopup(e)
+    }
 
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
             evt.preventDefault()
-            closePopup(evt)
+            closeBulkCDModal(evt)
         }
     }
     const outsideClickHandler = (evt): void => {
@@ -47,7 +53,7 @@ export default function BulkCDTrigger({
             !ciTriggerDetailRef.current.contains(evt.target) &&
             typeof closePopup === 'function'
         ) {
-            closePopup(evt)
+            closeBulkCDModal(evt)
         }
     }
 
@@ -68,16 +74,19 @@ export default function BulkCDTrigger({
     const getMaterialData = (): void => {
         const _unauthorizedAppList: Record<number, boolean> = {}
         const _CDMaterialPromiseList = []
+        abortControllerRef.current = new AbortController()
         for (const appDetails of appList) {
             if (!appDetails.warningMessage) {
                 _unauthorizedAppList[appDetails.appId] = false
                 _CDMaterialPromiseList.push(
-                    getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType)
+                    getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType, abortControllerRef.current.signal)
                         .then((r) => {
                             return { materialList: r, appId: appDetails.appId }
                         })
                         .catch((e) => {
-                            throw { response: e?.response, appId: appDetails.appId }
+                            if (!abortControllerRef.current.signal.aborted) {
+                                throw { response: e?.response, appId: appDetails.appId }
+                            }
                         }),
                 )
             }
@@ -101,7 +110,9 @@ export default function BulkCDTrigger({
                 setLoading(false)
             })
             .catch((error) => {
-                showError(error)
+                if (!abortControllerRef.current.signal.aborted) {
+                    showError(error)
+                }
             })
     }
 
@@ -111,13 +122,13 @@ export default function BulkCDTrigger({
 
     const renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-17 pr-20 pb-17 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Deploy to {appList[0].envName}</h2>
+            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">Deploy to {appList[0].envName}</h2>
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"
                     disabled={isLoading}
-                    onClick={closePopup}
+                    onClick={closeBulkCDModal}
                 >
                     <Close className="icon-dim-24" />
                 </button>
@@ -142,8 +153,8 @@ export default function BulkCDTrigger({
         return (
             <EmptyView
                 imgSrc={emptyPreDeploy}
-                title={`${selectedApp.name}  ${BULK_CD_MESSAGING.emptyPreDeploy.title}`}
-                subTitle={BULK_CD_MESSAGING.emptyPreDeploy.subTitle}
+                title={`${selectedApp.name}  ${BULK_CD_MESSAGING[stage].title}`}
+                subTitle={BULK_CD_MESSAGING[stage].subTitle}
             />
         )
     }
@@ -181,7 +192,7 @@ export default function BulkCDTrigger({
                             {unauthorizedAppList[app.appId] && (
                                 <span className="flex left cy-7 fw-4 fs-12">
                                     <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4" />
-                                    {BULK_CD_MESSAGING.emptyPreDeploy.title}
+                                    {BULK_CD_MESSAGING.unauthorized.title}
                                 </span>
                             )}
                         </div>
@@ -202,7 +213,7 @@ export default function BulkCDTrigger({
                             changeTab={changeTab}
                             triggerDeploy={onClickStartDeploy}
                             onClickRollbackMaterial={noop}
-                            closeCDModal={closePopup}
+                            closeCDModal={closeBulkCDModal}
                             selectImage={selectImage}
                             toggleSourceInfo={toggleSourceInfo}
                             parentPipelineId={selectedApp.parentPipelineId}
@@ -227,7 +238,12 @@ export default function BulkCDTrigger({
     const renderFooterSection = (): JSX.Element => {
         return (
             <div className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width">
-                <button className="cta flex h-36" onClick={onClickStartDeploy} disabled={isDeployDisabled()}>
+                <button
+                    className="cta flex h-36"
+                    data-testid="deploy-button"
+                    onClick={onClickStartDeploy}
+                    disabled={isDeployDisabled()}
+                >
                     {isLoading ? (
                         <Progressing />
                     ) : (
@@ -251,7 +267,7 @@ export default function BulkCDTrigger({
                 {renderHeaderSection()}
                 {responseList.length ? (
                     <TriggerResponseModal
-                        closePopup={closePopup}
+                        closePopup={closeBulkCDModal}
                         responseList={responseList}
                         isLoading={isLoading}
                         onClickRetryBuild={onClickTriggerBulkCD}

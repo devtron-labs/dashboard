@@ -51,6 +51,7 @@ export default function AboutAppInfoModal({
     const renderProjectSelect = (): JSX.Element => {
         return (
             <ReactSelect
+                classNamePrefix="overview-project-menu-list"
                 options={projectsOptions}
                 value={selectedProject}
                 onChange={handleProjectSelection}
@@ -153,6 +154,7 @@ export default function AboutAppInfoModal({
                         disabled={submitting}
                         onClick={handleSaveAction}
                         tabIndex={5}
+                        data-testid="overview-project-save-button"
                     >
                         {submitting ? <Progressing /> : 'Save'}
                     </button>

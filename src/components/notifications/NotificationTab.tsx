@@ -386,7 +386,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             <EmptyState.Image><img src={EmptyImage} alt="so empty" /></EmptyState.Image>
             <EmptyState.Title><h3>Notifications</h3></EmptyState.Title>
             <EmptyState.Subtitle>Receive alerts when a pipeline triggers, completes successfully or fails.</EmptyState.Subtitle>
-            <div onClick={this.CreateNewNotification} className="cta flex dc__no-decor">
+            <div data-testid="add-notification-button" onClick={this.CreateNewNotification} className="cta flex dc__no-decor">
                 <Add className="icon-dim-20 mr-5" />Add Notification
             </div>
         </EmptyState>
@@ -525,13 +525,13 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                 <i>All current and future pipelines matching.</i>
                                 <div className="dc__devtron-tag__container">
                                     {row.appliedFilters.project.map((element) => {
-                                        return <span key={element.name} className="dc__devtron-tag mr-5">Project:{element.name}</span>
+                                        return <span data-testid={`${row.pipelineType}-${element.name}`} key={element.name} className="dc__devtron-tag mr-5">Project:{element.name}</span>
                                     })}
                                     {row.appliedFilters.application.map((element) => {
-                                        return <span key={element.name} className="dc__devtron-tag mr-5">App:{element.name}</span>
+                                        return <span data-testid={`${row.pipelineType}-${element.name}`} key={element.name} className="dc__devtron-tag mr-5">App:{element.name}</span>
                                     })}
                                     {row.appliedFilters.environment.map((element) => {
-                                        return <span key={element.name} className="dc__devtron-tag mr-5">Env:{element.name}</span>
+                                        return <span data-testid={`${row.pipelineType}-${element.name}`} key={element.name} className="dc__devtron-tag mr-5">Env:{element.name}</span>
                                     })}
                                 </div> </> : null}
                         </td>
@@ -599,7 +599,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     renderBody() {
         return <div className="notification-tab">
-            <div onClick={this.CreateNewNotification} style={{ width: "100px" }}
+            <div data-testid="add-new-notification-button" onClick={this.CreateNewNotification} style={{ width: "100px" }}
                 className="cta small flex dc__no-decor">
                 <Add className="icon-dim-16 mr-5" />Add New
             </div>

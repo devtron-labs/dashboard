@@ -16,7 +16,7 @@ import {
 import { mapByKey, removeItemsFromArray } from '../common'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import K8sPermissons from './K8sObjectPermissions/K8sPermissons'
-import { apiGroupAll, k8sPermissionRoles } from './K8sObjectPermissions/K8sPermissions.utils'
+import { apiGroupAll } from './K8sObjectPermissions/K8sPermissions.utils'
 
 export default function AppPermissions({
     data = null,
@@ -67,7 +67,7 @@ export default function AppPermissions({
         }
         populateDataFromAPI(data.roleFilters)
     }, [data])
-
+    const { customRoles } = useUserGroupContext()
     function setAllApplication(directRolefilter: APIRoleFilter, projectId) {
         if ( directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
             return [
@@ -143,7 +143,6 @@ export default function AppPermissions({
             uniqueProjectIdsDevtronApps = [],
             uniqueProjectIdsHelmApps = []
 
-
         roleFilters?.forEach((element) => {
             if (element.entity === EntityTypes.DIRECT) {
                 const projectId = projectsMap.get(element.team)?.id
@@ -156,7 +155,6 @@ export default function AppPermissions({
                 }
             }
         })
-
         await Promise.all([
             fetchAppList([...new Set(uniqueProjectIdsDevtronApps)].map(Number)),
             fetchAppListHelmApps([...new Set(uniqueProjectIdsHelmApps)].map(Number)),
@@ -227,7 +225,7 @@ export default function AppPermissions({
                         value: k8s.namespace === '' ? '*' : k8s.namespace,
                     },
                     group: { label: apiGroupAll(k8s.group, true), value: apiGroupAll(k8s.group) },
-                    action: k8sPermissionRoles.find((_role) => _role.value === k8s.action),
+                    action: { label: customRoles.possibleRolesMetaForCluster[k8s.action].value, value: k8s.action },
                     kind: { label: k8s.kind === '' ? 'All Kinds' : k8s.kind, value: k8s.kind === '' ? '*' : k8s.kind },
                     resource: k8s.resource
                         .split(',')
@@ -408,13 +406,23 @@ export default function AppPermissions({
             <ul role="tablist" className="tab-list mt-12 dc__border-bottom">
                 {serverMode !== SERVER_MODE.EA_ONLY && (
                     <li className="tab-list__tab">
-                        <NavLink to={`${url}/devtron-apps`} className="tab-list__tab-link" activeClassName="active">
+                        <NavLink
+                            to={`${url}/devtron-apps`}
+                            data-testid="devtron-app-permission-tab"
+                            className="tab-list__tab-link"
+                            activeClassName="active"
+                        >
                             Devtron Apps
                         </NavLink>
                     </li>
                 )}
                 <li className="tab-list__tab">
-                    <NavLink to={`${url}/helm-apps`} className="tab-list__tab-link" activeClassName="active">
+                    <NavLink
+                        to={`${url}/helm-apps`}
+                        data-testid="helm-app-permission-tab"
+                        className="tab-list__tab-link"
+                        activeClassName="active"
+                    >
                         Helm Apps
                     </NavLink>
                 </li>
@@ -422,6 +430,7 @@ export default function AppPermissions({
                     <li className="tab-list__tab">
                         <NavLink
                             to={`${url}/kubernetes-objects`}
+                            data-testid="kube-resource-permission-tab"
                             className="tab-list__tab-link"
                             activeClassName="active"
                         >
@@ -431,7 +440,12 @@ export default function AppPermissions({
                 )}
                 {serverMode !== SERVER_MODE.EA_ONLY && (
                     <li className="tab-list__tab">
-                        <NavLink to={`${url}/chart-groups`} className="tab-list__tab-link" activeClassName="active">
+                        <NavLink
+                            to={`${url}/chart-groups`}
+                            data-testid="chart-group-permission-tab"
+                            className="tab-list__tab-link"
+                            activeClassName="active"
+                        >
                             Chart Groups
                         </NavLink>
                     </li>

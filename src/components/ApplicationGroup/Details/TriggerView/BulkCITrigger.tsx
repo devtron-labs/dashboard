@@ -56,12 +56,24 @@ export default function BulkCITrigger({
         refreshMaterial,
     }: {
         selectMaterial: (materialId, pipelineId?: number) => void
-        refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => void
+        refreshMaterial: (
+            ciNodeId: number,
+            pipelineName: string,
+            materialId: number,
+            abortController?: AbortController,
+        ) => void
     } = useContext(TriggerViewContext)
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
+    const closeBulkCIModal = (evt) => {
+        abortControllerRef.current.abort()
+        closePopup(evt)
+    }
+
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
             evt.preventDefault()
-            closePopup(evt)
+            closeBulkCIModal(evt)
         }
     }
     const outsideClickHandler = (evt): void => {
@@ -70,7 +82,7 @@ export default function BulkCITrigger({
             !ciTriggerDetailRef.current.contains(evt.target) &&
             typeof closePopup === 'function'
         ) {
-            closePopup(evt)
+            closeBulkCIModal(evt)
         }
     }
 
@@ -96,12 +108,16 @@ export default function BulkCITrigger({
     }, [])
 
     const getMaterialData = (): void => {
+        abortControllerRef.current = new AbortController()
         const _CIMaterialPromiseList = appList.map((appDetails) =>
             appDetails.isWebhookCI || appDetails.isLinkedCI
                 ? null
-                : getCIMaterialList({
-                      pipelineId: appDetails.ciPipelineId,
-                  }),
+                : getCIMaterialList(
+                      {
+                          pipelineId: appDetails.ciPipelineId,
+                      },
+                      abortControllerRef.current.signal,
+                  ),
         )
         if (_CIMaterialPromiseList?.length) {
             const _materialListMap: Record<string, any[]> = {}
@@ -123,8 +139,10 @@ export default function BulkCITrigger({
                     setLoading(false)
                 })
                 .catch((error) => {
-                    showError(error)
-                    setLoading(false)
+                    if (!abortControllerRef.current.signal.aborted) {
+                        showError(error)
+                        setLoading(false)
+                    }
                 })
         } else {
             setLoading(false)
@@ -137,13 +155,13 @@ export default function BulkCITrigger({
         }
 
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-17 pr-20 pb-17 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Build image</h2>
+            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">Build image</h2>
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"
                     disabled={isLoading}
-                    onClick={closePopup}
+                    onClick={closeBulkCIModal}
                 >
                     <Close className="icon-dim-24" />
                 </button>
@@ -268,6 +286,7 @@ export default function BulkCITrigger({
                         regexValue={regexValue}
                         onCloseBranchRegexModal={hideBranchEditModal}
                         hideHeaderFooter={true}
+                        savingRegexValue={isLoading}
                     />
                     <div className="flex right pr-20 pb-20">
                         <button className="cta cancel h-28 lh-28-imp mr-16" onClick={hideBranchEditModal}>
@@ -387,6 +406,11 @@ export default function BulkCITrigger({
         }
     }
 
+    const _refreshMaterial = (pipelineId: number, title: string, gitMaterialId: number) => {
+        abortControllerRef.current = new AbortController()
+        refreshMaterial(pipelineId, title, gitMaterialId, abortControllerRef.current)
+    }
+
     const renderSelectedAppMaterial = (appId: number, selectedMaterialList: any[]): JSX.Element | null => {
         if (appId === selectedApp.appId && !!selectedMaterialList.length && !showRegexModal) {
             return (
@@ -395,7 +419,7 @@ export default function BulkCITrigger({
                         material={selectedMaterialList}
                         selectMaterial={selectMaterial}
                         refreshMaterial={{
-                            refresh: refreshMaterial,
+                            refresh: _refreshMaterial,
                             title: selectedApp.ciPipelineName,
                             pipelineId: +selectedApp.ciPipelineId,
                         }}
@@ -513,7 +537,12 @@ export default function BulkCITrigger({
                         </div>
                     </div>
                 )}
-                <button className="cta flex h-36" onClick={onClickStartBuild} disabled={isStartBuildDisabled()}>
+                <button
+                    className="cta flex h-36"
+                    data-testid="start-build"
+                    onClick={onClickStartBuild}
+                    disabled={isStartBuildDisabled()}
+                >
                     {isLoading ? (
                         <Progressing />
                     ) : (

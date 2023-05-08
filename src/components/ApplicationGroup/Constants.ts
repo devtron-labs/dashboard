@@ -79,11 +79,11 @@ export const BULK_CI_MESSAGING = {
 }
 
 export const BULK_CD_MESSAGING = {
-    emptyPreDeploy: {
+    [DeploymentNodeType.PRECD]: {
         title: 'does not have a pre-deployment stage',
         subTitle: 'This app does not have a pre-deployment stage',
     },
-    emptyPostDeploy: {
+    [DeploymentNodeType.POSTCD]: {
         title: 'does not have a post-deployment stage',
         subTitle: 'This app does not have a post-deployment stage',
     },
@@ -134,5 +134,20 @@ export const GROUP_LIST_HEADER = {
     NAMESPACE: 'Namespace',
     CLUSTER: 'Cluster',
     APPLICATIONS: 'Applications',
-    APPLICATION: 'Application'
+    APPLICATION: 'Application',
+}
+
+export enum AppFilterTabs {
+    'GROUP_FILTER' = 'groupFilter',
+    'APP_FILTER' = 'appFilter',
+}
+
+export enum CreateGroupTabs {
+    'SELECTED_APPS' = 'selectedApps',
+    'ALL_APPS' = 'allApps',
+}
+
+export const CREATE_GROUP_TABS = {
+    'selectedApps' :'Selected applications',
+    'allApps' : 'Add/Remove applications',
 }

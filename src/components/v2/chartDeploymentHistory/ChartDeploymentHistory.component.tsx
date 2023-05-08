@@ -229,7 +229,7 @@ function ChartDeploymentHistory({
                                             {deployment.dockerImages && (
                                                 <div className="dc__app-commit__hash dc__app-commit__hash--no-bg">
                                                     <img src={docker} className="commit-hash__icon grayscale" />
-                                                    <span className="ml-3">
+                                                    <span className="ml-3" data-testid="docker-version-deployment">
                                                         {deployment.dockerImages[0].split(':')[1] ||
                                                             deployment.dockerImages[0]}
                                                     </span>
@@ -271,6 +271,7 @@ function ChartDeploymentHistory({
                         <li onClick={() => onClickDeploymentTabs(index)} key={index} className="tab-list__tab">
                             <div
                                 className={`tab-list__tab-link ${selectedDeploymentTabIndex == index ? 'active' : ''}`}
+                                data-testid={`nav-bar-option-${index}`}
                             >
                                 {tab}
                             </div>
@@ -368,32 +369,43 @@ function ChartDeploymentHistory({
                         className="ml-20 w-100 p-16 bcn-0 br-4 en-2 bw-1 pb-12 mb-12"
                         style={{ width: 'min( 100%, 800px )' }}
                     >
-                        <div className="fw-6 fs-14 cn-9 pb-10">Source details</div>
-                        <div className="source-detail border-btm pb-10 pt-10">
-                            <div className="cn-7">Name</div>
-                            <div>{chartMetadata.chartName}</div>
+                        <div className="fw-6 fs-14 cn-9 pb-10" data-testid="source-details-heading">
+                            Source details
                         </div>
                         <div className="source-detail border-btm pb-10 pt-10">
-                            <div className="cn-7">Version</div>
-                            <div>{chartMetadata.chartVersion}</div>
+                            <div className="cn-7" data-testid="chart-name-deployment-history-heading">
+                                Name
+                            </div>
+                            <div data-testid="chart-name-deployment-history">{chartMetadata.chartName}</div>
                         </div>
                         <div className="source-detail border-btm pb-10 pt-10">
-                            <div className="cn-7">Home</div>
+                            <div className="cn-7" data-testid="chart-version-deployment-history-heading">
+                                Version
+                            </div>
+                            <div data-testid="chart-version-deployment-history">{chartMetadata.chartVersion}</div>
+                        </div>
+                        <div className="source-detail border-btm pb-10 pt-10">
+                            <div className="cn-7" data-testid="home-heading">
+                                Home
+                            </div>
                             <div>
                                 <a
                                     rel="noreferrer noopener"
                                     target="_blank"
                                     href={chartMetadata.home}
                                     className="anchor"
+                                    data-testid="home-link"
                                 >
                                     {chartMetadata.home}
                                 </a>
                             </div>
                         </div>
                         <div className="source-detail border-btm pb-10 pt-10">
-                            <div className="cn-7">Sources</div>
+                            <div className="cn-7" data-testid="sources-heading">
+                                Sources
+                            </div>
                             <div>
-                                {chartMetadata.sources?.map((source) => {
+                                {chartMetadata.sources?.map((source, index) => {
                                     return (
                                         <div key={source}>
                                             {source ? (
@@ -402,6 +414,7 @@ function ChartDeploymentHistory({
                                                     target="_blank"
                                                     href={source}
                                                     className="anchor"
+                                                    data-testid={`sources-link-${index}`}
                                                 >
                                                     {source}
                                                 </a>
@@ -414,8 +427,10 @@ function ChartDeploymentHistory({
                             </div>
                         </div>
                         <div className="source-detail pb-10 pt-10">
-                            <div className="cn-7">Description</div>
-                            <div>{chartMetadata.description}</div>
+                            <div className="cn-7" data-testid="description-heading">
+                                Description
+                            </div>
+                            <div data-testid="description-value">{chartMetadata.description}</div>
                         </div>
                     </div>
                 )}
@@ -435,20 +450,30 @@ function ChartDeploymentHistory({
             <div className="trigger-details ml-20 mr-20 pb-20">
                 <div className="flex dc__content-space trigger-details__summary">
                     <div className="flex column left pt-10">
-                        <div className="cn-9 fs-14 fw-6">Deployed at</div>
+                        <div className="cn-9 fs-14 fw-6" data-testid="deployed-at-heading">
+                            Deployed at
+                        </div>
                         <div className="flex left">
                             <time className="cn-7 fs-12">
                                 {moment(new Date(deployment.deployedAt.seconds * 1000), 'YYYY-MM-DDTHH:mm:ssZ').format(
                                     Moment12HourFormat,
                                 )}
                             </time>
+                            {deployment?.deployedBy && (
+                                <div className="flex">
+                                    <div className="dc__bullet mr-6 ml-6"></div>
+                                    <div className="cn-7 fs-12 mr-12">{deployment.deployedBy}</div>
+                                </div>    
+                            )}
                             {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
                                 return (
                                     <div key={index} className="dc__app-commit__hash ml-10">
                                         <Tippy arrow={true} className="default-tt" content={dockerImage}>
                                             <span>
                                                 <img src={docker} className="commit-hash__icon grayscale" />
-                                                <span className="ml-3">{dockerImage.split(':')[1] || dockerImage}</span>
+                                                <span className="ml-3" data-testid="docker-version-deployment-history">
+                                                    {dockerImage.split(':')[1] || dockerImage}
+                                                </span>
                                             </span>
                                         </Tippy>
                                     </div>
@@ -563,7 +588,9 @@ function ChartDeploymentHistory({
         return (
             <div className="ci-details">
                 <div className="ci-details__history deployment-cards">
-                    <span className="pl-16 pr-16 dc__uppercase">Deployments</span>
+                    <span className="pl-16 pr-16 dc__uppercase" data-testid="deployment-history-deployments-heading">
+                        Deployments
+                    </span>
                     <div className="flex column top left" style={{ overflowY: 'auto' }}>
                         {renderDeploymentCards()}
                     </div>

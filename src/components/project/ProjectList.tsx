@@ -148,7 +148,9 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     renderPageHeader() {
         return (
             <>
-                <h1 className="form__title">Projects</h1>
+                <h1 className="form__title" data-testid="project-list-title">
+                    Projects
+                </h1>
                 <p className="form__subtitle">
                     Manage your organization's projects.&nbsp;
                     <a
@@ -168,7 +170,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         let unSavedItem = this.state.projects.find((item) => !item.id)
         if (!unSavedItem) {
             return (
-                <div className="white-card white-card--add-new-item mb-16 dashed" onClick={this.addProject}>
+                <div data-testid="project-add-project-button" className="white-card white-card--add-new-item mb-16 dashed" onClick={this.addProject}>
                     <Add className="icon-dim-24 fcb-5 mr-16" />
                     <span className="list__add-item">Add Project</span>
                 </div>
@@ -185,7 +187,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             return <ErrorScreenManager code={this.state.code} />
         } else {
             return (
-                <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+                <section className="global-configuration__component flex-1">
                     {this.renderPageHeader()}
                     {this.renderAddProject()}
                     {this.state.projects.map((project, index) => {

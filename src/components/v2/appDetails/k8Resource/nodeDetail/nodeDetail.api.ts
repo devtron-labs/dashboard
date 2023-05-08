@@ -17,7 +17,7 @@ export const getManifestResource = (
 }
 
 export const getDesiredManifestResource = (appDetails: AppDetails, podName: string, nodeType: string) => {
-    const selectedResource = appDetails.resourceTree.nodes.filter(
+    const selectedResource = appDetails.resourceTree?.nodes.filter(
         (data) => data.name === podName && data.kind.toLowerCase() === nodeType,
     )[0]
     const requestData = {

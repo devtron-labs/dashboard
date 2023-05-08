@@ -170,7 +170,7 @@ export default function SavedValuesList() {
 
     const renderUploadButton = (): JSX.Element => {
         return (
-            <button onClick={() => redirectToChartValuePage(0)} className="add-link cta flex h-32">
+            <button onClick={() => redirectToChartValuePage(0)} className="add-link cta flex h-32" data-testid="add-preset-values-button">
                 <Add className="icon-dim-16 mr-5" />
                 New
             </button>
@@ -241,7 +241,7 @@ export default function SavedValuesList() {
     const renderSavedValuesList = (): JSX.Element => {
         return (
             <div className="preset-values-container">
-                <div className="cn-9 fw-6 fs-16">Preset values</div>
+                <div className="cn-9 fw-6 fs-16" data-testid="preset-page-heading">Preset values</div>
                 {renderSubtitleAndNewButton('Customize, Dry Run and Save values so they’re ready to be used later.')}
                 <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
                     {savedValueList.length === 0 ? (
