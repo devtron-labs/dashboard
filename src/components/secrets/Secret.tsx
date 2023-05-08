@@ -478,7 +478,9 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         }
         let dataArray = yamlMode ? tempArray.current : externalValues
         const { isValid, arr } = validateKeyValuePair(dataArray)
+        console.log(isValid,arr);
         if (!isValid) {
+            toast.error('unmarshal failed for data, please provide valid json')
             setKeyValueArray(arr)
             return
         }

@@ -543,6 +543,7 @@ export function ConfigMapForm({
         let dataArray = yamlMode ? tempArray.current : externalValues
         const { isValid, arr } = validateKeyValuePair(dataArray)
         if (!isValid) {
+            toast.error('unmarshal failed for data, please provide valid json')
             setExternalValues(arr)
             return
         }
@@ -553,7 +554,7 @@ export function ConfigMapForm({
         try {
             let data = arr.reduce((agg, curr) => {
                 if (!curr.k) return agg
-                agg[curr.k] = curr.v || ''
+                agg[curr.k] = curr.v
                 return agg
             }, {})
             setLoading(true)
@@ -993,7 +994,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
                     keyErr = keyError
                     errorneousKeys.push(k)
                 }
-                return [...agg, { k, v: v || '', keyError: keyErr, valueError: '' }]
+                return [...agg, { k, v, keyError: keyErr, valueError: '' }]
             }, [])
             setKeyValueArray(tempArray)
             let error = ''
