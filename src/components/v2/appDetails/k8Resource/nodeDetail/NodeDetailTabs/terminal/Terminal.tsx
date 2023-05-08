@@ -16,6 +16,7 @@ import { mainContext } from '../../../../../../common/navigation/NavigationRoute
 import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
 import './terminal.css'
 import { TERMINAL_RESOURCE_GA, termialGAEvents, TERMINAL_STATUS, TERMINAL_TEXT } from './constants'
+import { getAppId, getDevtronAppId } from '../../nodeDetail.api'
 
 let socket = undefined
 let terminal = undefined
@@ -92,7 +93,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             return true
         })
     }
-
+    // TODO: Verify
     const generateSocketURL = () => {
         let socketURL = process.env.REACT_APP_ORCHESTRATOR_ROOT
         if (
@@ -417,23 +418,31 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
     }
 
     const generateSessionURL = () => {
-        let url
+        const appId =
+            appDetails.appType == AppType.DEVTRON_APP
+                ? getDevtronAppId(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
+                : getAppId(
+                      appDetails.clusterId,
+                      appDetails.namespace,
+                      appDetails.deploymentAppType == DeploymentAppType.argo_cd
+                          ? `${appDetails.appName}-${appDetails.environmentName}`
+                          : appDetails.appName,
+                  )
+        
+        let url: string = 'k8s/pod/exec/session/'
         if (terminalViewProps.isResourceBrowserView) {
-            url = `k8s/pod/exec/session/${terminalViewProps.selectedResource.clusterId}`
-        } else if (appDetails.deploymentAppType === DeploymentAppType.argo_cd) {
-            url = `k8s/pod/exec/session/${appDetails.clusterId}`
-        } else if (appDetails.appType === AppType.EXTERNAL_HELM_CHART) {
-            url = `k8s/pod/exec/session/${appDetails.appId}`
+            url += `${terminalViewProps.selectedResource.clusterId}`
         } else {
-            url = `api/v1/applications/pod/exec/session/${appDetails.appId}/${appDetails.environmentId}`
+            url += `${appId}`
         }
         url += `/${
             terminalViewProps.isResourceBrowserView
                 ? terminalViewProps.selectedResource.namespace
                 : appDetails.namespace
             }/${terminalViewProps.nodeName}/${terminalViewProps.shell.value}/${terminalViewProps.containerName}`
-        if (appDetails.deploymentAppType === DeploymentAppType.argo_cd) { 
-            return url+`?envId=${appDetails.environmentId}&acdAppId=${appDetails.appId}`
+        
+        if (!terminalViewProps.isResourceBrowserView) { 
+            return url+`?appType=${appDetails.appType === AppType.DEVTRON_APP ? '0' : '1'}`
         }
         return url
     }
@@ -472,7 +481,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                     showError(err)
                     if (err instanceof ServerErrors && Array.isArray(err.errors)) {
                         const _invalidNameErr = err.errors[0].userMessage
-                        if (_invalidNameErr.includes('Unauthorized')) {
+                        if (_invalidNameErr?.includes('Unauthorized')) {
                             setErrorMessage({message: ERROR_MESSAGE.UNAUTHORIZED, reason: ''})
                         }
                     }

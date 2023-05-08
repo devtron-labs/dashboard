@@ -5,6 +5,9 @@ import { AppDetails, AppType, DeploymentAppType, SelectedResourceType } from '..
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {
     return `${clusterId}|${namespace}|${appName}`
 }
+export const getDevtronAppId = (clusterId: number, appId: number, envId: number) => {
+    return `${clusterId}|${appId}|${envId}`
+}
 
 export const getManifestResource = (
     ad: AppDetails,
@@ -70,22 +73,19 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
         (data) => data.name === nodeName && data.kind.toLowerCase() === nodeType,
     )[0]
 
-    const getAppName = (): string => {
-        if (appDetails.deploymentAppType === DeploymentAppType.helm && appDetails.appType === AppType.DEVTRON_APP) {
-            return `${appDetails.appName}-${appDetails.environmentName}`
-        } else {
-            return appDetails.appName
-        }
-    }
-
     const appId =
-        appDetails.deploymentAppType == DeploymentAppType.argo_cd
-            ? ''
-            : getAppId(appDetails.clusterId, appDetails.namespace, getAppName())
+        appDetails.appType == AppType.DEVTRON_APP
+            ? getDevtronAppId(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
+            : getAppId(
+                  appDetails.clusterId,
+                  appDetails.namespace,
+                  appDetails.deploymentAppType == DeploymentAppType.argo_cd
+                      ? `${appDetails.appName}-${appDetails.environmentName}`
+                      : appDetails.appName,
+              )
 
     const requestBody = {
         appId: appId,
-        clusterId: appDetails.clusterId,
         k8sRequest: {
             resourceIdentifier: {
                 groupVersionKind: {
@@ -97,10 +97,8 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
                 name: selectedResource.name,
             },
         },
-        acdAppIdentifier: appDetails.deploymentAppType === DeploymentAppType.argo_cd ? {
-            appId: appDetails.appId,
-            envId: appDetails.environmentId,
-        } : undefined,
+        appType: appDetails.appType == AppType.DEVTRON_APP ? 0 : 1,
+        deploymentType: appDetails.deploymentAppType == DeploymentAppType.helm ? 0 : 1,
     }
     if (updatedManifest) {
         requestBody.k8sRequest['patch'] = updatedManifest
@@ -158,30 +156,27 @@ export const getLogsURL = (
     namespace?: string,
 ) => {
     //const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0];
-    let prefix = `${location.protocol}//${location.host}` // eslint-disable-line
+    let prefix = `${window.location.protocol}//${window.location.host}` 
+    const appId =
+        ad.appType == AppType.DEVTRON_APP
+            ? getDevtronAppId(ad.clusterId, ad.appId, ad.environmentId)
+            : getAppId(ad.clusterId, ad.namespace, ad.deploymentAppType == DeploymentAppType.argo_cd
+                ? `${ad.appName}-${ad.environmentName}`
+                : ad.appName)
 
     let logsURL = `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}`
 
     if (isResourceBrowserView) {
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
-    } else if (ad.deploymentAppType === DeploymentAppType.argo_cd){
-        logsURL += `&clusterId=${ad.clusterId}&namespace=${ad.namespace}&acdAppId=${ad.appId}&envId=${ad.environmentId}`
     } else {
-        logsURL += `&appId=${getAppId(
-            ad.clusterId,
-            ad.namespace,
-            ad.deploymentAppType === DeploymentAppType.helm  && ad.appType === AppType.DEVTRON_APP
-                ? `${ad.appName}-${ad.environmentName}`
-                : ad.appName,
-        )}`
+        const appType = ad.appType == AppType.DEVTRON_APP ? 0 : 1
+        const deploymentType = ad.deploymentAppType == DeploymentAppType.helm ? 0 : 1
+        if (appType  === 0){
+            logsURL += `&namespace=${ad.namespace}`
+        }
+        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
     }
     return `${logsURL}&follow=true&tailLines=500`
-}
-
-export const getTerminalData = (ad: AppDetails, nodeName: string, terminalType: string) => {
-    const cn = ad.resourceTree.nodes.filter((node) => node.name === nodeName)[0]
-    const _url = `api/v1/applications/pod/exec/session/${ad.appId}/${ad.environmentId}/${ad.namespace}/${ad.appName}-${ad.environmentName}/${terminalType}/${ad.appName}`
-    return get(_url)
 }
 
 export const createResource = (
