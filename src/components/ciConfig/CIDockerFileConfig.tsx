@@ -418,7 +418,7 @@ export default function CIDockerFileConfig({
                                     getOptionValue={(option) => `${option.checkoutPath}`}
                                     value={
                                         configOverrideView && !allowOverride
-                                            ? currentMaterial
+                                            ? currentBuildContextGitMaterial
                                             : selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial : currentMaterial
                                     }
                                     styles={{

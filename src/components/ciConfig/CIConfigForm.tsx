@@ -59,7 +59,7 @@ export default function CIConfigForm({
             ? sourceConfig.material.find(
                 (material) => material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
             )
-            : ciConfig?.ciBuildConfig?.gitMaterialId
+            : ciConfig?.ciBuildConfig?.buildContextGitMaterialId
                 ? sourceConfig.material.find((material) => material.id === ciConfig?.ciBuildConfig?.buildContextGitMaterialId)
                 : sourceConfig.material[0]
     const [selectedMaterial, setSelectedMaterial] = useState(currentMaterial)
