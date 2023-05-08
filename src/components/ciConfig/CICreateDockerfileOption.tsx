@@ -412,7 +412,8 @@ export default function CICreateDockerfileOption({
                     <span className="flex">
                         <Dropdown
                             onClick={toggleCollapse}
-                            className="icon-dim-26 rotate "
+                            className="icon-dim-26 rotate"
+                            data-testid="set-build-context-button"
                             style={{ ['--rotateBy' as any]: isCollapsed ? '180deg' : '0deg' }}
                         />
                         Set Build context
