@@ -614,7 +614,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     default: savedStrategy.default,
                 }
             }),
-            userApprovalConfig: !!this.state.requiredApprovals
+            userApprovalConfig: this.state.requiredApprovals?.length > 0
                 ? {
                       requiredCount: +this.state.requiredApprovals,
                   }

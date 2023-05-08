@@ -676,21 +676,28 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         this.context.onClickCDMaterial(this.props.pipelineId, DeploymentNodeType.CD, true)
     }
 
-    getConsumedAndAvailableMaterialList = (isApprovalConfigured: boolean) => {
+    processConsumedAndApprovedImages = () => {
         const consumedImage = []
+        const approvedImages = []
+        this.props.material.forEach((mat) => {
+            if (mat.latest && (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) {
+                mat.isSelected = false
+                consumedImage.push(mat)
+            } else {
+                approvedImages.push(mat)
+            }
+        })
+
+        return { consumedImage, approvedImages }
+    }
+
+    getConsumedAndAvailableMaterialList = (isApprovalConfigured: boolean) => {
+        let _consumedImage = []
         let materialList = []
 
         if (isApprovalConfigured) {
-            const approvedImages = []
-
-            this.props.material.forEach((mat) => {
-                if (mat.latest && (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) {
-                    mat.isSelected = false
-                    consumedImage.push(mat)
-                } else {
-                    approvedImages.push(mat)
-                }
-            })
+            const { consumedImage, approvedImages } = this.processConsumedAndApprovedImages()
+            _consumedImage = consumedImage
 
             materialList =
                 this.state.isRollbackTrigger && this.state.showOlderImages ? [approvedImages[0]] : approvedImages
@@ -710,25 +717,23 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         }
 
         return {
-            consumedImage,
+            consumedImage: _consumedImage,
             materialList,
         }
     }
 
     renderMaterialList = (isApprovalConfigured: boolean) => {
         const { consumedImage, materialList } = this.getConsumedAndAvailableMaterialList(isApprovalConfigured)
+        const selectImageTitle = this.state.isRollbackTrigger
+            ? 'Select from previously deployed images'
+            : 'Select Image'
+        const titleText = isApprovalConfigured ? 'Approved images' : selectImageTitle
 
         return (
             <>
                 {isApprovalConfigured && this.renderMaterial(consumedImage, true, isApprovalConfigured)}
                 {(!this.props.isFromBulkCD || isApprovalConfigured) && (
-                    <div className="material-list__title pb-16">
-                        {isApprovalConfigured
-                            ? 'Approved images'
-                            : this.state.isRollbackTrigger
-                            ? 'Select from previously deployed images'
-                            : 'Select Image'}
-                    </div>
+                    <div className="material-list__title pb-16">{titleText}</div>
                 )}
                 {isApprovalConfigured && materialList.length <= 0
                     ? this.renderEmptyState(isApprovalConfigured, consumedImage.length > 0)
@@ -917,6 +922,14 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         )
     }
 
+    getDeployButtonIcon = () => {
+        return this.props.stageType === STAGE_TYPE.CD ? (
+            <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
+        ) : (
+            <img src={play} alt="trigger" className="trigger-btn__icon" />
+        )
+    }
+
     renderTriggerModalCTA(isApprovalConfigured: boolean) {
         const buttonLabel = CDButtonLabelMap[this.props.stageType]
         const hideConfigDiffSelector = isApprovalConfigured && this.props.material.length <= 1
@@ -1006,11 +1019,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                             <Progressing />
                         ) : (
                             <>
-                                {this.props.stageType === STAGE_TYPE.CD ? (
-                                    <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
-                                ) : (
-                                    <img src={play} alt="trigger" className="trigger-btn__icon" />
-                                )}
+                                {this.getDeployButtonIcon()}
                                 {buttonLabel}
                             </>
                         )}
