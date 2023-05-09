@@ -25,6 +25,8 @@ export interface ChartDeploymentDetail {
     version: number
     installedAppVersionId?: number
     deployedAt: DeployedAt
+    deployedBy: string
+    status: string
 }
 
 export interface RollbackReleaseRequest {

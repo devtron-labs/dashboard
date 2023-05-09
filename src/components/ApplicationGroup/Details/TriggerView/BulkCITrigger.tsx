@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { ServerErrors, Drawer, Progressing, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
-import { noop, useAsync } from '../../../common'
+import { ServerErrors, Drawer, Progressing, showError, stopPropagation, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { useAsync } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
 import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
@@ -155,8 +155,8 @@ export default function BulkCITrigger({
         }
 
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-17 pr-20 pb-17 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Build image</h2>
+            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">Build image</h2>
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"

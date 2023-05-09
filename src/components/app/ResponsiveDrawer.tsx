@@ -1,5 +1,6 @@
+import { useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib';
 import React, {useEffect} from 'react'
-import { useWindowSize, useEffectAfterMount } from '../common';
+import { useWindowSize } from '../common';
 
 export default function ResponsiveDrawer({ initialHeight = 36, minHeight = 100, defaultHeight = 500, minimumTopMargin = 100, isDetailedView, onHeightChange = null, className = "", children, anchor=null }) {
     let dimensions = useWindowSize()

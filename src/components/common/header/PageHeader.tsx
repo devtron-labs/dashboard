@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import './pageHeader.css'
 import LogoutCard from '../LogoutCard'
-import { getLoginInfo, getRandomColor, setActionWithExpiry } from '../helpers/Helpers'
+import { setActionWithExpiry } from '../helpers/Helpers'
 import { InstallationType, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
@@ -18,6 +18,7 @@ import { ReactComponent as Question } from '../../../assets/icons/ic-help-outlin
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { PageHeaderType } from './header.type'
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
+import { getLoginInfo, getRandomColor } from '@devtron-labs/devtron-fe-common-lib'
 
 function PageHeader({
     headerName,

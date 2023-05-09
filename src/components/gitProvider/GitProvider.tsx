@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getGitHostList, getGitProviderList } from '../../services/service';
 import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service'
-import { useForm, useEffectAfterMount, useAsync, handleOnBlur, handleOnFocus, parsePassword } from '../common'
+import { useForm, useAsync, handleOnBlur, handleOnFocus, parsePassword } from '../common'
 import {
     showError,
     Progressing,
@@ -10,6 +10,7 @@ import {
     InfoColourBar,
     VisibleModal,
     multiSelectStyles,
+    useEffectAfterMount
 } from '@devtron-labs/devtron-fe-common-lib'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
@@ -122,7 +123,7 @@ export default function GitProvider({ ...props }) {
 
     return (
         <section
-            className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1"
+            className="global-configuration__component flex-1"
             data-testid="git-provider-wrapper"
         >
             <h2 className="form__title">Git accounts</h2>

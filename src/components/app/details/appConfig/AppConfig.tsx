@@ -361,8 +361,14 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                 .slice()
                 .reverse()
                 .find((stage) => stage.status)
-            _lastConfiguredStage = lastConfiguredStage.stageName
-            _configs = isUnlocked(_lastConfiguredStage)
+            if (!lastConfiguredStage) {
+                _configs = {} as AppStageUnlockedType
+                _lastConfiguredStage = ''
+            } else {
+                _lastConfiguredStage = lastConfiguredStage.stageName
+                _configs = isUnlocked(_lastConfiguredStage)
+            }
+            
         }
 
         return {
@@ -546,9 +552,10 @@ const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, current
 }
 
 function renderNavItem(item: CustomNavItemsType) {
+    const linkDataTestName = item.title.toLowerCase().split(' ').join('-')
     return (
         <NavLink
-            data-testid={`${item.title.toLowerCase().split(' ').join('-')}-link`}
+            data-testid={`${linkDataTestName}-link`}
             key={item.title}
             onClick={(event) => {
                 if (item.isLocked) event.preventDefault()
@@ -557,7 +564,12 @@ function renderNavItem(item: CustomNavItemsType) {
             to={item.href}
         >
             <span className="dc__ellipsis-right nav-text">{item.title}</span>
-            {item.isLocked && <Lock className="app-compose__nav-icon icon-dim-20" />}
+            {item.isLocked && (
+                <Lock
+                    className="app-compose__nav-icon icon-dim-20"
+                    data-testid={`${linkDataTestName}-lockicon`}
+                />
+            )}
         </NavLink>
     )
 }
@@ -626,9 +638,15 @@ function Navigation({
                     return <EnvironmentOverrideRouter key={item.title} />
                 }
             })}
+
             {isJobView && <div className="h-100" />}
             <div className="cta-delete-app flex w-100 dc__position-sticky pt-2 pb-16 bcn-0">
-                <button data-testid = "delete-job-app-button" type="button" className="flex cta delete mt-8 w-100 h-36" onClick={deleteApp}>
+                <button
+                    data-testid="delete-job-app-button"
+                    type="button"
+                    className="flex cta delete mt-8 w-100 h-36"
+                    onClick={deleteApp}
+                >
                     Delete {isJobView ? 'Job' : 'Application'}
                 </button>
             </div>

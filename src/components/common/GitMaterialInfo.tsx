@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react'
-import { createGitCommitUrl, not } from './index'
+import { createGitCommitUrl } from './index'
 import { ReactComponent as PersonIcon } from '../../assets/icons/ic-person.svg';
 import { ReactComponent as CalendarIcon } from '../../assets/icons/ic-calendar.svg';
 import { ReactComponent as MessageIcon } from '../../assets/icons/ic-message.svg';
@@ -10,6 +10,7 @@ import { GitTriggers, CiMaterial } from '../app/details/cicdHistory/types'
 import { Moment12HourFormat } from '../../config';
 import moment from 'moment'
 import {CiPipelineSourceConfig} from '../ciPipeline/CiPipelineSourceConfig';
+import { not } from '@devtron-labs/devtron-fe-common-lib'
 
 function getGitIcon(repoUrl) {
     for (let gitProvider of ['github', 'gitlab', 'bitbucket']) {

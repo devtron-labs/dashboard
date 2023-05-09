@@ -2,10 +2,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import {
     Select,
     RadioGroup,
-    not,
     Info,
     CustomInput,
-
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
 } from '../common'
@@ -16,6 +14,7 @@ import {
     useThrottledEffect,
     Checkbox,
     CHECKBOX_VALUE,
+    not,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router'
 import { updateConfig, deleteConfig } from './service'
@@ -95,7 +94,7 @@ const ConfigMap = ({ respondOnSuccess, ...props }) => {
             {configData.map((cm, idx) => {
                 return (
                     <CollapsedConfigMapForm
-                        key={cm.name || Math.random().toString(36).substr(2, 5)}
+                        key={cm?.name || Math.random().toString(36).substr(2, 5)}
                         {...{ ...cm, title: cm.name ? '' : 'Add ConfigMap' }}
                         appChartRef={appChartRef}
                         appId={appId}

@@ -4,8 +4,10 @@ import {
     Progressing,
     ConfirmationDialog,
     Host,
+    noop,
     stopPropagation,
     multiSelectStyles,
+    useEffectAfterMount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
@@ -20,9 +22,7 @@ import {
 } from '../../../../config'
 import {
     NavigationArrow,
-    useEffectAfterMount,
     useAppContext,
-    noop,
     useEventSource,
     FragmentHOC,
     useSearchString,
@@ -225,6 +225,7 @@ export const Details: React.FC<DetailsType> = ({
     }, [appDetails])
 
     const getDeploymentDetailStepsData = (): void => {
+       // Deployments status details for Devtron apps
         getDeploymentStatusDetail(params.appId, params.envId).then((deploymentStatusDetailRes) => {
             processDeploymentStatusData(deploymentStatusDetailRes.result)
         })
@@ -384,7 +385,6 @@ export const Details: React.FC<DetailsType> = ({
         }
     }, [appDetailsError])
 
-    // useInterval(polling, interval);
     useEffect(() => {
         if (isPollingRequired) {
             callAppDetailsAPI(true)
@@ -463,16 +463,10 @@ export const Details: React.FC<DetailsType> = ({
                     setDetailed={toggleDetailedStatus}
                     environment={environment}
                     environments={environments}
-                    showCommitInfo={isAppDeployment && appDetails?.dataSource !== 'EXTERNAL' ? showCommitInfo : null}
+                    showCommitInfo={isAppDeployment ? showCommitInfo : null}
                     showUrlInfo={isAppDeployment ? setUrlInfo : null}
                     showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
-                    deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
-                    deploymentStatusText={deploymentStatusDetailsBreakdownData.deploymentStatusText}
-                    deploymentTriggerTime={deploymentStatusDetailsBreakdownData.deploymentTriggerTime}
-                    triggeredBy={deploymentStatusDetailsBreakdownData.triggeredBy}
-                    loadingDetails={loadingDetails}
-                    loadingResourceTree={loadingResourceTree}
-                />
+                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData} />
             </div>
             <SyncErrorComponent
                 showApplicationDetailedModal={showApplicationDetailedModal}

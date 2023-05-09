@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import { not, useKeyDown } from '../../../common'
+import React, { useEffect, useState } from 'react'
+import { useKeyDown } from '../../../common'
 import { useLocation } from 'react-router'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg'
@@ -11,7 +11,9 @@ import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { NavLink } from 'react-router-dom'
 import { TIMELINE_STATUS } from '../../../../config'
-import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { EmptyState, not } from '@devtron-labs/devtron-fe-common-lib'
+import { CIListItem, CopyTippyWithText } from './Artifacts'
+import { extractImage } from '../../service'
 
 export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResizeButtonType): JSX.Element => {
     const { pathname } = useLocation()
@@ -69,7 +71,15 @@ export const Scroller = ({ scrollToTop, scrollToBottom, style }: ScrollerType): 
     )
 }
 
-export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
+export const GitChanges = ({
+    gitTriggers,
+    ciMaterials,
+    artifact,
+    userApprovalMetadata,
+    triggeredByEmail,
+}: GitChangesType) => {
+    const [copied, setCopied] = useState(false)
+
     if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
         return <EmptyView title="Data not available" subTitle="Source code detail is not available" />
     }
@@ -102,6 +112,26 @@ export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
                     </div>
                 ) : null
             })}
+            {artifact && userApprovalMetadata && (
+                <CIListItem
+                    type="approved-artifact"
+                    userApprovalMetadata={userApprovalMetadata}
+                    triggeredBy={triggeredByEmail}
+                >
+                    <div className="flex column left hover-trigger">
+                        <div className="cn-9 fs-14 flex left">
+                            <CopyTippyWithText
+                                copyText={extractImage(artifact)}
+                                copied={copied}
+                                setCopied={setCopied}
+                            />
+                        </div>
+                        <div className="cn-7 fs-12 flex left">
+                            <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
+                        </div>
+                    </div>
+                </CIListItem>
+            )}
         </div>
     )
 }
@@ -136,6 +166,8 @@ export const triggerStatus = (triggerDetailStatus: string): string => {
         return 'Failed'
     } else if (triggerStatus === TIMELINE_STATUS.HEALTHY) {
         return 'Succeeded'
+    } else if (triggerStatus === TIMELINE_STATUS.INPROGRESS) {
+        return 'Inprogress'
     } else {
         return triggerDetailStatus
     }

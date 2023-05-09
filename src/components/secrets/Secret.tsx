@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
     RadioGroup,
-    not,
     Info,
     ToastBody,
     CustomInput,
@@ -15,6 +14,7 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     InfoColourBar,
+    not,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { useParams } from 'react-router'
@@ -141,7 +141,7 @@ const Secret = ({ respondOnSuccess, ...props }) => {
             </p>
             <CollapsedSecretForm
                 appId={appId}
-                id={list.id || 0}
+                id={list?.id || 0}
                 title="Add Secret"
                 appChartRef={appChartRef}
                 update={update}
