@@ -1,4 +1,4 @@
-import { CDModalTab } from '../../../service'
+import { CDModalTab } from "@devtron-labs/devtron-fe-common-lib"
 
 const materialInfo = {
     author: 'Test User',

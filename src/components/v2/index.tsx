@@ -199,7 +199,7 @@ function RouterComponent({ envType }) {
                                 <ValuesComponent appId={params.appId} init={_init} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
-                                <ChartDeploymentHistory appId={params.appId} isExternal={false} />
+                                <ChartDeploymentHistory appId={params.appId} isExternal={false}/>
                             </Route>
                             <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
                         </Switch>
