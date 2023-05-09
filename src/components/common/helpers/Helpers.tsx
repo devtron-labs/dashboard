@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject, useLayoutEffect } from 'react'
 import { TOKEN_COOKIE_NAME } from '../../../config'
-import { showError, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, noop, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
 import { useLocation } from 'react-router'
@@ -26,16 +26,6 @@ export type IntersectionOptions = {
     threshold?: number | number[]
     once?: boolean
     defaultIntersecting?: boolean
-}
-
-export function useEffectAfterMount(cb, dependencies) {
-    const justMounted = React.useRef(true)
-    React.useEffect(() => {
-        if (!justMounted.current) {
-            return cb()
-        }
-        justMounted.current = false
-    }, dependencies)
 }
 
 export function validateEmail(email) {
@@ -153,42 +143,6 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         }
     }
     return { state, disable, handleOnChange, handleOnSubmit }
-}
-
-export function getRandomColor(email: string): string {
-    // var hash = 0;
-    // for (var i = 0; i < str.length; i++) {
-    //     hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    // }
-    // var colour = '#';
-    // for (var i = 0; i < 3; i++) {
-    //     var value = (hash >> (i * 8)) & 0xFF;
-    //     colour += ('00' + value.toString(16)).substr(-2);
-    // }
-    // return colour;
-    var colors = [
-        '#FFB900',
-        '#D83B01',
-        '#B50E0E',
-        '#E81123',
-        '#B4009E',
-        '#5C2D91',
-        '#0078D7',
-        '#00B4FF',
-        '#008272',
-        '#107C10',
-    ]
-    var sum = 0
-    for (let i = 0; i < email.length; i++) {
-        sum += email.charCodeAt(i)
-    }
-    return colors[sum % colors.length]
-}
-
-export function noop(...args): any {}
-
-export function not(e) {
-    return !e
 }
 
 export function mapByKey(arr: any[], id: string): Map<any, any> {
@@ -501,31 +455,6 @@ export function useOnline() {
     }, [])
 
     return online
-}
-
-export function getCookie(sKey) {
-    if (!sKey) {
-        return null
-    }
-    return (
-        document.cookie.replace(
-            new RegExp('(?:(?:^|.*;)\\s*' + sKey.replace(/[\-\.\+\*]/g, '\\$&') + '\\s*\\=\\s*([^;]*).*$)|^.*$'),
-            '$1',
-        ) || null
-    )
-}
-
-export function getLoginInfo() {
-    const argocdToken = getCookie(TOKEN_COOKIE_NAME)
-    if (argocdToken) {
-        const jwts = argocdToken.split('.')
-        try {
-            return JSON.parse(atob(jwts[1]))
-        } catch (err) {
-            console.error('error in setting user ', err)
-            return null
-        }
-    }
 }
 
 interface scrollableInterface {

@@ -242,7 +242,7 @@ export default function TerminalView({
     return (
         <div className="terminal-wrapper">
             {renderConnectionStrip()}
-            <div ref={myDivRef} id="terminal-id" className="pt-8 terminal-component pl-20">
+            <div ref={myDivRef} id="terminal-id" className="mt-8 mb-8 terminal-component ml-20">
                 <CopyToast showCopyToast={popupText} />
             </div>
         </div>

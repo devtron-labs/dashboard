@@ -5,16 +5,13 @@ import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclama
 import {
     useAsync,
     NavigationArrow,
-    getRandomColor,
-    not,
     useKeyDown,
-    noop,
     removeItemsFromArray,
     getRandomString,
     sortBySelected,
     mapByKey,
-    useEffectAfterMount,
     sortObjectArrayAlphabetically,
+    importComponentFromFELibrary,
 } from '../common'
 import {
     showError,
@@ -28,6 +25,10 @@ import {
     MultiValueContainer,
     MultiValueRemove,
     multiSelectStyles,
+    getRandomColor,
+    not,
+    noop,
+    useEffectAfterMount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getUserList,
@@ -74,8 +75,14 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
 import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW, USER_EXPORT_HEADER_ROW } from '../common/ExportToCsv/constants'
 import { getSSOConfigList } from '../login/login.service'
-import { ERROR_EMPTY_SCREEN, SSO_NOT_CONFIGURED_STATE_TEXTS, TOAST_ACCESS_DENIED, USER_NOT_EDITABLE } from '../../config/constantMessaging'
-import { group } from 'console'
+import {
+    ERROR_EMPTY_SCREEN,
+    SSO_NOT_CONFIGURED_STATE_TEXTS,
+    TOAST_ACCESS_DENIED,
+    USER_NOT_EDITABLE,
+} from '../../config/constantMessaging'
+
+const ApproverPermission = importComponentFromFELibrary('ApproverPermission')
 
 const UserGroupContext = React.createContext<UserGroup>({
     appsList: new Map(),
@@ -90,13 +97,12 @@ const UserGroupContext = React.createContext<UserGroup>({
     fetchAppListHelmApps: () => {},
     appsListHelmApps: new Map(),
     customRoles: {
-        customRoles:[],
-        possibleRolesMeta:{},
-        possibleRolesMetaForHelm:{},
-        possibleRolesMetaForCluster:{},
+        customRoles: [],
+        possibleRolesMeta: {},
+        possibleRolesMetaForHelm: {},
+        possibleRolesMetaForCluster: {},
     },
 })
-
 
 const tempMultiSelectStyles = {
     ...multiSelectStyles,
@@ -185,7 +191,7 @@ export default function UserGroupRoute() {
             }, appList)
         })
         try {
-            const { result } = await getProjectFilteredApps(missingProjects,ACCESS_TYPE_MAP.DEVTRON_APPS)
+            const { result } = await getProjectFilteredApps(missingProjects, ACCESS_TYPE_MAP.DEVTRON_APPS)
             const projectsMap = mapByKey(result || [], 'projectId')
             setAppsList((appList) => {
                 return new Map(
@@ -211,7 +217,7 @@ export default function UserGroupRoute() {
     }
 
     async function fetchAppListHelmApps(projectIds: number[]) {
-            const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
+        const missingProjects = projectIds.filter((projectId) => !appsListHelmApps.has(projectId))
         if (missingProjects.length === 0) return
         setAppsListHelmApps((appListHelmApps) => {
             return missingProjects.reduce((appListHelmApps, projectId) => {
@@ -246,10 +252,10 @@ export default function UserGroupRoute() {
     }
 
     if (listsLoading) return <Progressing pageLoader />
-    const [userGroups, projects, environments, chartGroups, userRole, envClustersList,customRolesList] = lists
+    const [userGroups, projects, environments, chartGroups, userRole, envClustersList, customRolesList] = lists
     return (
         <div className="flex h-100">
-            <div className="auth-page__body">
+            <div data-testid="auth-user-page" className="auth-page__body">
                 <UserGroupContext.Provider
                     value={{
                         fetchAppList,
@@ -277,7 +283,7 @@ export default function UserGroupRoute() {
                             ),
                             possibleRolesMetaForCluster: getMetaPossibleRoles(
                                 customRolesList.status === 'fulfilled' ? customRolesList?.value?.result : [],
-                                EntityTypes.CLUSTER
+                                EntityTypes.CLUSTER,
                             ),
                         },
                     }}
@@ -322,7 +328,7 @@ const UserGroupList: React.FC<{
                 searchRef.current.focus()
         }
     }, [keys])
-    
+
     useEffect(() => {
         if (!error) return
         showError(error, true, true)
@@ -530,7 +536,11 @@ const UserGroupList: React.FC<{
                 userOrGroup.description?.toLowerCase()?.includes(searchString?.toLowerCase()),
         )
         return (
-            <div id="auth-page__body" data-testid={`auth-${type}-page`} className="auth-page__body-users__list-container">
+            <div
+                id="auth-page__body"
+                data-testid={`auth-${type}-page`}
+                className="auth-page__body-users__list-container"
+            >
                 {renderHeaders(type)}
                 {result.length > 0 && (
                     <div className="flex dc__content-space">
@@ -775,6 +785,9 @@ const allEnvironmentsOption = {
     label: 'All environments',
     value: '*',
 }
+
+export const APPROVER_ACTION = { label: 'approver', value: 'approver' }
+
 interface DirectPermissionRow {
     permission: DirectPermissionsRoleFilter
     handleDirectPermissionChange: (...rest) => void
@@ -788,7 +801,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     index,
     removeRow,
 }) => {
-    const { serverMode } = useContext(mainContext)
     const { environmentsList, projectsList, appsList, envClustersList, appsListHelmApps, customRoles } =
         useUserGroupContext()
     const projectId =
@@ -848,8 +860,25 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     : permission.accessType === ACCESS_TYPE_MAP.HELM_APPS
                     ? customRoles.possibleRolesMetaForHelm[value].value
                     : customRoles.possibleRolesMeta[value].value}
+                {ApproverPermission && permission.approver && ', Approver'}
                 {React.cloneElement(children[1])}
             </components.ValueContainer>
+        )
+    }
+
+    const RoleMenuList = (props) => {
+        return (
+            <components.MenuList {...props}>
+                {props.children}
+                {ApproverPermission && permission.accessType === ACCESS_TYPE_MAP.DEVTRON_APPS && (
+                    <ApproverPermission
+                        optionProps={props}
+                        approver={permission.approver}
+                        handleDirectPermissionChange={handleDirectPermissionChange}
+                        formatOptionLabel={formatOptionLabel}
+                    />
+                )}
+            </components.MenuList>
         )
     }
 
@@ -1217,17 +1246,23 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         color: state.isSelected ? 'var(--B500)' : 'var(--N900)',
                         backgroundColor: state.isSelected ? 'var(--B100)' : state.isFocused ? 'var(--N100)' : 'white',
                         fontWeight: state.isSelected ? 600 : 'normal',
+                        cursor: state.isDisabled ? 'not-allowed' : 'pointer',
                         marginRight: '8px',
                     }),
                     valueContainer: (base, state) => ({
                         ...base,
                         display: 'flex',
+                        flexWrap: 'nowrap',
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
                     }),
                 }}
                 components={{
                     ClearIndicator: null,
                     IndicatorSeparator: null,
                     ValueContainer: RoleValueContainer,
+                    MenuList: RoleMenuList,
                 }}
             />
             <CloseIcon className="pointer margin-top-6px" onClick={(e) => removeRow(index)} />
@@ -1592,10 +1627,10 @@ export function ParseData(dataList: any[], entity: string, accessType?: string) 
     }
 }
 
-function getMetaPossibleRoles(customRoles: Custom_Roles[], entity: string, accessType?: string ) {
+function getMetaPossibleRoles(customRoles: Custom_Roles[], entity: string, accessType?: string) {
     let possibleRolesMeta = {}
     customRoles.forEach((role) => {
-        if (role.entity === entity && ((entity!== EntityTypes.DIRECT)|| role.accessType === accessType)) {
+        if (role.entity === entity && (entity !== EntityTypes.DIRECT || role.accessType === accessType)) {
             possibleRolesMeta = {
                 ...possibleRolesMeta,
                 [role.roleName]: {

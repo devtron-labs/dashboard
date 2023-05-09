@@ -176,6 +176,15 @@ a:focus {
             }
         }
     }
+
+    &.active-tab {
+        border-bottom: 2px solid var(--B500);
+
+        .dc__badge {
+            background-color: var(--B500);
+            color: var(--N000);
+        }
+    }
 }
 
 .tab-list__tab-link {
@@ -335,6 +344,10 @@ a:focus {
 
 .cursor-text {
     cursor: text;
+}
+
+.cursor-default {
+    cursor: default;
 }
 
 // block
@@ -595,6 +608,7 @@ button.anchor {
 }
 
 .app-summary__status-name {
+
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,
@@ -869,6 +883,7 @@ button.anchor {
 }
 
 .override-button.cta {
+
     &.ghosted,
     &.delete {
         height: 32px;
@@ -1084,6 +1099,10 @@ button.anchor {
         background: url('../assets/icons/ic-hibernate-2.svg'), $background;
         background-size: contain, contain;
     }
+    &.timedout {
+      background: url('../assets/icons/ic-timeout-red.svg'), $background;
+      background-size: contain, contain;
+    }
 }
 
 @mixin dc__striped-row($background) {
@@ -1157,35 +1176,22 @@ button.anchor {
     }
 }
 
-.gui-yaml-switch.radio-group {
-    padding: 0;
-    height: 24px;
-    overflow: hidden;
-    border-radius: 4px;
+.gui-yaml-switch,
+.manual-approvals-switch {
+    &.radio-group {
+        padding: 0;
+        height: 24px;
+        overflow: hidden;
+        border-radius: 4px;
 
-    input + .radio__item-label {
-        border-radius: 0;
-        border: 1px solid var(--N200);
-    }
-
-    input[type='checkbox']:checked + .radio__item-label {
-        border-radius: 0;
-        background-color: var(--N100);
-        color: var(--N900);
-
-        svg path {
-            stroke: var(--N900);
-        }
-    }
-
-    .radio {
-        color: var(--N500);
-
-        svg path {
-            stroke: var(--N500);
+        input+.radio__item-label {
+            border-radius: 0;
+            border: 1px solid var(--N200);
         }
 
-        &:hover:not(.disabled) {
+        input[type='checkbox']:checked+.radio__item-label {
+            border-radius: 0;
+            background-color: var(--N100);
             color: var(--N900);
 
             svg path {
@@ -1193,19 +1199,115 @@ button.anchor {
             }
         }
 
-        .radio__item-label {
-            border-right: unset;
+        .radio {
+            color: var(--N500);
+
+            svg path {
+                stroke: var(--N500);
+            }
+
+            &:hover:not(.disabled) {
+                color: var(--N900);
+
+                svg path {
+                    stroke: var(--N900);
+                }
+            }
+
+            .radio__item-label {
+                border-right: unset;
+            }
+
+            &:first-child input+.radio__item-label {
+                border-top-left-radius: 4px;
+                border-bottom-left-radius: 4px;
+            }
+
+            &:last-child input+.radio__item-label {
+                border-top-right-radius: 4px;
+                border-bottom-right-radius: 4px;
+                border: 1px solid var(--N200);
+            }
         }
 
-        &:first-child input + .radio__item-label {
-            border-top-left-radius: 4px;
-            border-bottom-left-radius: 4px;
+        input[type='checkbox']:checked+.radio__item-label {
+            border-radius: 0;
+            background-color: var(--N100);
+            color: var(--N900);
+
+            svg path {
+                stroke: var(--N900);
+            }
+        }
+    }
+}
+
+.gui-yaml-switch {
+    &.radio-group {
+        input[type='checkbox']:checked+.radio__item-label {
+            color: var(--N900);
+
+            svg path {
+                stroke: var(--N900);
+            }
         }
 
-        &:last-child input + .radio__item-label {
-            border-top-right-radius: 4px;
-            border-bottom-right-radius: 4px;
-            border: 1px solid var(--N200);
+        .radio {
+            color: var(--N500);
+
+            svg path {
+                stroke: var(--N500);
+            }
+
+            &:hover:not(.disabled) {
+                color: var(--N900);
+
+                svg path {
+                    stroke: var(--N900);
+                }
+            }
+        }
+    }
+}
+
+.manual-approvals-switch {
+    &.radio-group {
+        input[type='checkbox']:checked+.radio__item-label {
+            color: var(--N900);
+
+            svg path {
+                fill: var(--N900);
+            }
+        }
+
+        input + .radio__item-label {
+            padding: 4px 8px;
+        }
+
+        .radio {
+            color: var(--N500);
+
+            svg path {
+                fill: var(--N500);
+            }
+
+            &:first-child input+.radio__item-label {
+                border-top-left-radius: 4px !important;
+                border-bottom-left-radius: 4px !important;
+            }
+
+            &:last-child input+.radio__item-label {
+                border-top-right-radius: 4px !important;
+                border-bottom-right-radius: 4px !important;
+            }
+
+            &:hover:not(.disabled) {
+                color: var(--N900);
+
+                svg path {
+                    fill: var(--N900);
+                }
+            }
         }
     }
 }
@@ -1493,7 +1595,7 @@ button.anchor {
     vertical-align: bottom;
 }
 
-.dc__tertiary-tab__radio input:checked ~ .dc__tertiary-tab {
+.dc__tertiary-tab__radio input:checked~.dc__tertiary-tab {
     border: solid 1px var(--B500);
     background-color: var(--B100);
 }
@@ -1848,6 +1950,10 @@ button.anchor {
     text-align: center;
 }
 
+.dc__mxw-inherit {
+  max-width: inherit;
+}
+
 .dc__mxw-200 {
     max-width: 200px;
 }
@@ -2076,7 +2182,7 @@ textarea,
     }
 }
 
-.basic-multi-select > .select__control--is-disabled {
+.basic-multi-select>.select__control--is-disabled {
     background-color: var(--N100) !important;
 }
 
@@ -2505,6 +2611,18 @@ textarea,
     height: 80px !important;
 }
 
+.h-104 {
+    height: 104px;
+}
+
+.h-132 {
+    height: 132px;
+}
+
+.h-200 {
+    height: 200px;
+}
+
 .h-250 {
     height: 250px !important;
 }
@@ -2553,6 +2671,10 @@ textarea,
 // Height in percentage
 .h-100 {
     height: 100%;
+}
+
+.h-100vh {
+    height: 100vh;
 }
 
 .dc__height-reduce-172 {
@@ -2727,6 +2849,14 @@ textarea,
     margin-top: 120px;
 }
 
+.ml-60 {
+    margin-left: 60px;
+}
+
+.ml-15-perc {
+    margin-left: 15%;
+}
+
 // background
 .dc__window-bg {
     background: var(--window-bg);
@@ -2808,6 +2938,13 @@ textarea::placeholder {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.dc__skip-align-reload-center {
+    position: unset;
+    top: 0;
+    left: 0;
+    transform: none;
 }
 
 .dc__truncate {
@@ -2934,6 +3071,21 @@ textarea::placeholder {
     list-style-type: disc;
 }
 
+.dc__list-style-none {
+    list-style-type: none;
+}
+
+.alphabet-icon__initial {
+    font-weight: 500;
+    text-transform: uppercase;
+    line-height: 1.9;
+    text-align: center;
+    border-radius: 50%;
+    color: var(--N000);
+    user-select: none;
+    border: solid 1px transparent;
+}
+
 .dc__zi-4 {
     z-index: 4;
 }
@@ -2953,6 +3105,7 @@ textarea::placeholder {
         margin-top: 4px;
     }
 }
+
 .shimmer-loading {
     animation-duration: 2s;
     animation-fill-mode: forwards;
@@ -2985,4 +3138,17 @@ textarea::placeholder {
 .full-height-width {
     height: 100vh;
     width: 100vw;
+}
+
+.dc__badge {
+    background-color: var(--N100);
+    font-style: normal;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 18px;
+    letter-spacing: normal;
+    text-align: center;
+    color: var(--N700);
+    padding: 0px 6px;
+    border-radius: 50%;
 }

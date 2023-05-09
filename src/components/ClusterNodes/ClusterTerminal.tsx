@@ -686,9 +686,7 @@ export default function ClusterTerminal({
         return <GroupHeading {...props} hideClusterName={true} />
     }
 
-    const terminalClusterDetailsPageClassWrapper = isFullScreen
-        ? 'cluster-details-full-screen'
-        : 'cluster-details-node-details'
+    const terminalClusterDetailsPageClassWrapper = isFullScreen ? 'cluster-details-full-screen' : 'cluster-details-node-details'
 
     const terminalTabWrapper = (terminalView: () => JSX.Element) => {
         return (

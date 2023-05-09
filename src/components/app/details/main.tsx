@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
 import { ErrorBoundary } from '../../common'
-import { showError, Progressing, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, BreadCrumb, useBreadcrumb, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import { URLS } from '../../../config'
 import { AppSelector } from '../../AppSelector'
@@ -16,7 +16,7 @@ import { EnvType } from '../../v2/appDetails/appDetails.type'
 import PageHeader from '../../common/header/PageHeader'
 import { AppDetailsProps } from './triggerView/types'
 import Overview from '../Overview/Overview'
-import { importComponentFromFELibrary, noop, trackByGAEvent } from '../../common/helpers/Helpers'
+import { importComponentFromFELibrary, trackByGAEvent } from '../../common/helpers/Helpers'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))

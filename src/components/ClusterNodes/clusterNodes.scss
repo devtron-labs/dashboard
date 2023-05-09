@@ -294,6 +294,7 @@
     }
 
     &.cluster-details-node-details {
+        height: calc(100% - 80px);
         .terminal-container {
             height: calc(100% - 50px);
         }
