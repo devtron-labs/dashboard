@@ -14,7 +14,7 @@ import { ReactComponent as Pencil } from '../../../../../../../assets/icons/ic-p
 import { ReactComponent as Edit } from '../../../../../../../assets/icons/ic-visibility-on.svg'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
-import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import {
     SelectWrapperType,
     ReactSelectType,
@@ -27,7 +27,6 @@ import {
     DebugModeType,
 } from './terminal.type'
 import { EDIT_MODE_TYPE, MANIFEST_SELECTION_MESSAGE, TERMINAL_WRAPPER_COMPONENT_TYPE } from './constants'
-import Toggle from '../../../../../../common/Toggle/Toggle'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../../../../../ClusterNodes/constants'
 
 const creatableSelectWrapper = (selectData: SelectWrapperType) => {
