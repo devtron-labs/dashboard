@@ -252,7 +252,14 @@ export default function CIConfigForm({
                     processing: true,
                 })
                 const { result } = await getWorkflowList(appId)
-                const { workflows } = processWorkflow(result, ciConfig, null, null, WorkflowCreate, WorkflowCreate.workflow)
+                const { workflows } = processWorkflow(
+                    result,
+                    ciConfig,
+                    null,
+                    null,
+                    WorkflowCreate,
+                    WorkflowCreate.workflow,
+                )
 
                 setProcessedWorkflows({ processing: false, workflows })
             } catch (err) {
@@ -315,7 +322,9 @@ export default function CIConfigForm({
             <div className={`form__app-compose ${configOverrideView ? 'config-override-view' : ''}`}>
                 {!configOverrideView && (
                     <div className="flex dc__content-space mb-20">
-                        <h2 className="form__title m-0-imp" data-testid="build-configuration-heading">Build Configuration</h2>
+                        <h2 className="form__title m-0-imp" data-testid="build-configuration-heading">
+                            Build Configuration
+                        </h2>
                         <a
                             className="flex right dc__link"
                             rel="noreferrer noopener"
