@@ -588,9 +588,8 @@ function ClusterForm({
     const [saveYamlData, setSaveYamlState] = useState<string>('')
     const [errorMessage, setErrorMessage] = useState<string>('')
     const [dataList, setDataList] = useState<{ clusterName: string; userList: string[]; message: string }[]>()
-    const [aveClusterList, setSaveClusterList] = useState<{ clusterName: string; status: string; message: string }[]>()
+    const [saveClusterList, setSaveClusterList] = useState<{ clusterName: string; status: string; message: string }[]>()
     const [loader, setState] = useState<boolean>(false)
-    const [selectedClustersList, setSelectedClustersList] = useState<{ clusterName: string[] }[]>()
 
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -665,18 +664,31 @@ function ClusterForm({
 
     function saveClustersDetails() {
         try {
-            let payload = getClusterPayload()
+            let payload = saveClustersPayload()
             saveClusters(request, payload).then(
                 (response) => {
                     const map = response.result
-                    const _saveClusterList = []
+                    map.forEach((key, value) => {
+                        let isInsecureTlsVerify = map.get('insecureSkipTlsVerify')
+                        let configValue = map.get('config')
+                        let cluster = map.get('cluster_name')
+                        let errorMessage = map.get('errorInConnecting')
+                        const _clusterList = []
+                        if (errorMessage.length === 0) {
+                            _clusterList.push({ clusteName: cluster, status: 'Success', message: errorMessage })
+                        } else {
+                            _clusterList.push({ clusterName: cluster, status: 'Failed', message: errorMessage })
+                        }
+                        setSaveClusterList(_clusterList)
+                    })
                 },
                 (err) => {
-                    console.log('error')
-                    if (err.response === 400) {
+                    if (err.code === 400) {
                         toast.error('Bad request')
-                    } else if (err.response === 500) {
+                    } else if (err.code === 500) {
                         toast.error('Internal Server error')
+                    } else if (err.code === 402) {
+                        toast.error('Not found')
                     }
                 },
             )
@@ -745,7 +757,7 @@ function ClusterForm({
                     } else if (err.code === 500) {
                         toast.error('Internal Server error')
                     } else if (err.code === 402) {
-                        toast.error("Value didn't found")
+                        toast.error('Not Found')
                     }
                 },
             )
@@ -780,6 +792,21 @@ function ClusterForm({
                 userName: prometheusToggleEnabled ? state.userName.value : '',
                 password: prometheusToggleEnabled ? state.password.value : '',
             },
+        }
+    }
+
+    const saveClustersPayload = () => {
+        return {
+            id,
+            cluster_name: state.cluster_name.value,
+            config: {
+                bearer_token:
+                    state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value : '',
+                tls_key: state.tlsClientKey.value,
+                cert_auth_data: state.tlsClientCert.value,
+            },
+            active: true,
+            server_url: state.value,
         }
     }
 
@@ -1198,26 +1225,32 @@ function ClusterForm({
                             <div></div>
                         </div>
                         <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 161px)' }}>
-                            {!dataList || dataList.length === 0 ? (
-                                // dataList.map((clusterDetail, index) => (
-                                <div
-                                    key={`api_${0}`}
-                                    className="cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
-                                    style={{ height: '40px' }}
-                                >
-                                    <div></div>
-                                    <div className="flexbox">
-                                        <span className="dc__ellipsis-right"> Cluster Name</span>
-                                    </div>
-                                    <div className=" dc__ellipsis-right"> SUCCESS</div>
-                                    <div className=""> Messages</div>
-                                </div>
-                            ) : (
+                            {!saveClusterList || saveClusterList.length === 0 ? (
                                 <NoMatchingResults />
+                            ) : (
+                                saveClusterList.map((clusterListDetail, index) => (
+                                    <div
+                                        key={`api_${index}`}
+                                        className="cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
+                                        style={{ height: '40px' }}
+                                    >
+                                        <div></div>
+                                        <div className="flexbox">
+                                            <span className="dc__ellipsis-right">
+                                                {clusterListDetail.clusterName}
+                                            </span>
+                                        </div>
+                                        <div className=" dc__ellipsis-right"> {clusterListDetail.status} </div>
+                                        <div className=""> {clusterListDetail.message}</div>
+                                    </div>
+                                ))
                             )}
                         </div>
                     </div>
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                        <button className="cta cancel" type="button" onClick={toggleGetCluster}>
+                            Edit Kubeconfig
+                        </button>
                         <button className="cta cancel" type="button" onClick={handleCloseButton}>
                             Cancel
                         </button>
@@ -1253,27 +1286,28 @@ function ClusterForm({
                             </div>
                             <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 213px)' }}>
                                 {!dataList || dataList.length === 0 ? (
-                                    // dataList.map((clusterDetail, index) => (
-                                    <div
-                                        key={`api_${0}`}
-                                        className="cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
-                                        style={{ height: '40px' }}
-                                    >
-                                        <Checkbox
-                                            rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
-                                            isChecked={isClusterSelect}
-                                            onChange={toggleSelectCluster}
-                                            value={CHECKBOX_VALUE.CHECKED}
-                                        ></Checkbox>
-
-                                        <div className="flexbox">
-                                            <span className="dc__ellipsis-right">Cluster Name</span>
-                                        </div>
-                                        <div className=" dc__ellipsis-right">User Name</div>
-                                        <div className=""> Messages</div>
-                                    </div>
-                                ) : (
                                     <NoMatchingResults />
+                                ) : (
+                                    dataList.map((clusterDetail, index) => (
+                                        <div
+                                            key={`api_${index}`}
+                                            className="cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
+                                            style={{ height: '40px' }}
+                                        >
+                                            <Checkbox
+                                                rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
+                                                isChecked={isClusterSelect}
+                                                onChange={toggleSelectCluster}
+                                                value={CHECKBOX_VALUE.CHECKED}
+                                            ></Checkbox>
+
+                                            <div className="flexbox">
+                                                <span className="dc__ellipsis-right">{clusterDetail.clusterName}</span>
+                                            </div>
+                                            <div className=" dc__ellipsis-right">{clusterDetail.userList}</div>
+                                            <div className=""> {clusterDetail.message}</div>
+                                        </div>
+                                    ))
                                 )}
                             </div>
                         </div>
