@@ -176,6 +176,8 @@ function ChartValuesView({
                                 selectedVersionUpdatePage:{id:response.result.appStoreVersionId,version:response.result.chartVersion},
                             },
                         })
+                    }) .catch((errors: ServerErrors) => {
+                        showError(errors)
                     })
             checkGitOpsConfiguration()
             fetchProjectsAndEnvironments(serverMode, dispatch)
