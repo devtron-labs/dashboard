@@ -377,7 +377,7 @@ export const getPodsForRootNodeName = (_rootNode: string, _treeNodes: Array<Node
         pods = pods.concat(rootNodes.filter(_n => _n.kind.toLowerCase() == NodeType.Pod.toLowerCase()))
         rootNodes = rootNodes.flatMap(_n => (_n.childNodes ?? []))
     }
-    return pods
+    return [...new Set(pods)]
 }
 
 export default IndexStore;
