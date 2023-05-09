@@ -1143,7 +1143,7 @@ function ClusterForm({
     const handleCalls = () => {
         toggleGetCluster()
         toggleLoaderChangeState()
-        // validateClusterDetail()
+        validateClusterDetail()
     }
 
     const codeEditor = () => {
@@ -1375,7 +1375,7 @@ function ClusterForm({
 
                 {!isKubeConfigFile && (
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
-                        <button className="cta cancel" type="button" onClick={(e) => toggleEditMode((t) => !t)}>
+                        <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
                             Cancel
                         </button>
                         <button className="cta mr-20 ml-20">{loading ? <Progressing /> : 'Save cluster'}</button>
