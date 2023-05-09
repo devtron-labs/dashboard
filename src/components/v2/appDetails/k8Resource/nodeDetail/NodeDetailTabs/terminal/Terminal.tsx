@@ -425,7 +425,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
                       appDetails.clusterId,
                       appDetails.namespace,
                       appDetails.deploymentAppType == DeploymentAppType.argo_cd
-                          ? `${appDetails.appName}-${appDetails.environmentName}`
+                          ? `${appDetails.appName}`
                           : appDetails.appName,
                   )
         

@@ -80,7 +80,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
                   appDetails.clusterId,
                   appDetails.namespace,
                   appDetails.deploymentAppType == DeploymentAppType.argo_cd
-                      ? `${appDetails.appName}-${appDetails.environmentName}`
+                      ? `${appDetails.appName}`
                       : appDetails.appName,
               )
 
@@ -161,7 +161,7 @@ export const getLogsURL = (
         ad.appType == AppType.DEVTRON_APP
             ? getDevtronAppId(ad.clusterId, ad.appId, ad.environmentId)
             : getAppId(ad.clusterId, ad.namespace, ad.deploymentAppType == DeploymentAppType.argo_cd
-                ? `${ad.appName}-${ad.environmentName}`
+                ? `${ad.appName}`
                 : ad.appName)
 
     let logsURL = `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}`
