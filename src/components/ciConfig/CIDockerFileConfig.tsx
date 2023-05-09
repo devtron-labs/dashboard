@@ -443,7 +443,7 @@ export default function CIDockerFileConfig({
                         </div>
                         <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                             <label htmlFor="" className="form__label">
-                                Build Context Path (Relative)
+                                Build Context (Relative)
                             </label>
                             {configOverrideView && !allowOverride ? (
                                 <span className="fs-14 fw-4 lh-20 cn-9">
@@ -467,7 +467,7 @@ export default function CIDockerFileConfig({
                                         tabIndex={4}
                                         type="text"
                                         className="form__input file-name"
-                                        placeholder="Enter Path"
+                                        placeholder="Project Path"
                                         name="buildContext"
                                         value={
                                             configOverrideView && !allowOverride
