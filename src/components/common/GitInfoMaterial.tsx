@@ -55,7 +55,7 @@ export default function GitInfoMaterial({
             setSearchText('')
             setSearchApplied(false)
         } else if (selectedMaterial.searchText !== searchText) {
-            setSearchText(selectedMaterial.searchText)
+            //setSearchText(selectedMaterial.searchText)
             setSearchApplied(true)
         }
         setShowAllCommits(selectedMaterial?.showAllCommits ?? false)
@@ -107,6 +107,7 @@ export default function GitInfoMaterial({
                     material={material}
                     selectMaterial={triggerViewContext.selectMaterial}
                     refreshMaterial={refreshMaterial}
+                    setSearchText={setSearchText}
                 />
             </div>
         )

@@ -34,8 +34,144 @@ export const INCLUDE_EXCLUDE_COMMIT_INFO = {
 
 export const USE_REGEX_TIPPY_CONTENT = {
     insructionsList: {
-        lineOne: 'If used ‘in between’ or ‘last’ of the path, matches any number of directories.',
-    }
+        heading: 'Using regex to write paths',
+        regexInfo: [
+            {
+                regex: '/**',
+                info: 'If used ‘in between’ or ‘last’ of the path, matches any number of directories.',
+            },
+            {
+                regex: '/*',
+                info: 'If used ‘in between’ of the path, matches single directory. \nIf used at ‘last’ of the path, matches any number of directories.',
+            },
+            {
+                regex: '*',
+                info: 'Used to match any file type',
+            }
+        ],
+        regexPathInfo: {
+            headingRegex: 'REGEX',
+            headingPath: 'PATHS',
+            regexPathExample: {
+                regexExample1: 'Project/**/Client',
+                regexPathExample1: {
+                    regexPath1: {
+                        partOne: 'Project',
+                        partTwo: '/folderA/folderB/',
+                        partThree: 'Client',
+                        isCorrect: true
+                    },
+                    regexPath2: {
+                        partOne: 'Project',
+                        partTwo: '/folderC/',
+                        partThree: 'Client',
+                        isCorrect: true
+                    },
+                    regexPath3: {
+                        partOne: 'Project',
+                        partTwo: '/folderC/',
+                        partThree: 'token',
+                        isCorrect: false
+                    },
+                },
+                regexExample2: 'Project/*/Client',
+                regexPathExample2: {
+                    regexPath1: {
+                        partOne: 'Project',
+                        partTwo: '/folderA/folderB/',
+                        partThree: 'Client',
+                        isCorrect: false
+                    },
+                    regexPath2: {
+                        partOne: 'Project',
+                        partTwo: '/folderC/',
+                        partThree: 'Client',
+                        isCorrect: true
+                    },
+                    regexPath3: {
+                        partOne: 'Project',
+                        partTwo: '/folderC/',
+                        partThree: 'token',
+                        isCorrect: false
+                    },
+                },
+                regexExample3: {
+                    partOne: 'Project/**',
+                    partTwo: 'or',
+                    partThree: 'Project/*',
+                },
+                regexPathExample3: {
+                    regexPath1: {
+                        partOne: 'Project',
+                        partTwo: '/folderA/folderB/',
+                        partThree: 'Client',
+                        isCorrect: true
+                    },
+                    regexPath2: {
+                        partOne: 'Project',
+                        partTwo: '/folderC/',
+                        partThree: 'Client',
+                        isCorrect: true
+                    },
+                    regexPath3: {
+                        partOne: 'Project',
+                        partTwo: '/folderC/',
+                        partThree: 'token',
+                        isCorrect: true
+                    },
+                },
+                regexExample4: 'Project/Client*',
+                regexPathExample4: {
+                    regexPath1: {
+                        partOne: 'Project',
+                        partTwo: '/client',
+                        partThree: '.txt',
+                        isCorrect: true
+                    },
+                    regexPath2: {
+                        partOne: 'Project',
+                        partTwo: '/client',
+                        partThree: '.js',
+                        isCorrect: true
+                    },
+                    regexPath3: {
+                        partOne: 'Project',
+                        partTwo: '/token',
+                        partThree: '.txt',
+                        isCorrect: false
+                    },
+                },
+                regexExample5: {
+                    partOne: 'Only',
+                    partTwo: '/*',
+                    partThree: 'or',
+                    partFour: '/**',
+                },
+                regexPathExample5: {
+                    regexPath1: {
+                        partOne: 'All folders at root',
+                        isCorrect: true
+                    },
+                    regexPath2: {
+                        partOne: 'All files at root',
+                        isCorrect: false
+                    },
+                },
+                regexExample6: {
+                    partOne: 'Only',
+                    partTwo: '*',
+                },
+                regexPathExample6: {
+                    regexPath1: {
+                        partOne: 'All files & folders at root',
+                        isCorrect: true
+                    },
+                },
+                
+            }
+        }
+    },
+
 }
 
 export const INFO_BAR = {

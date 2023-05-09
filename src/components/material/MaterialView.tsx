@@ -43,6 +43,7 @@ import {
     INCLUDE_EXCLUDE_PLACEHOLDER,
     USE_REGEX_TIPPY_CONTENT,
 } from './constants'
+import TippyHeadless from '@tippyjs/react/headless'
 
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
     constructor(props) {
@@ -155,17 +156,54 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         }
     }
 
-    useRegexTippyContent = () => {
-
+    RegexInfoSteps = () : JSX.Element => {
         return (
-            <div className="flex">
-                <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__no-border">
-                    /**
-                </span>
-                <span className="fs-13 fw-4 ml-2">
-                    {USE_REGEX_TIPPY_CONTENT.insructionsList.lineOne}
-                </span>
+            <div className="w-500 fs-13 bcn-0 dc__overflow-scroll">
+                <h2 className="flex left fs-14 fw-6 p-12 m-0 dc__border-bottom">
+                    <QuestionFilled className="icon-dim-20 fcv-5 mr-12" />
+                    {USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
+                </h2>
+                <div className="flex column dc__align-start p-12 dc__gap-12">
+                    <div className="w-476 h-112 flex column dc__align-start p-0 dc__gap-4">
+                        {USE_REGEX_TIPPY_CONTENT.insructionsList.regexInfo.map((item, key) => (
+                            <div className={`${key === 2 ? "h-24" : "h-40"} dc__gap-12 w-476 fs-13 fw-4 flex dc__align-start p-0`}>
+                                <div className="w-28 h-24 flex column dc__content-center dc__align-items-center p-10 dc__gap-10 bcn-1 br-4 dc__ff-monospace dc__no-border">{item.regex}</div>
+                                <span className={`${key === 2 ? "h-20" : "h-40"} w-436 lh-20`}>
+                                    {item.info}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="w-476 h-454 dc__border-n1 flex column dc__align-start p-0 br-4">
+                        <div className="w-476 h-32 flex pt-6 pr-12 pb-6 pl-12 dc__gap-16 dc__border-bottom-n1">
+                            <p className="w-200 h-20 fs-12 fw-6 lh-20 fcn-6">
+                                {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.headingRegex}
+                            </p>
+                            <p className="w-236 h-20 fs-12 fw-6 lh-20 fcn-6">
+                                {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.headingPath}
+                            </p>
+                        </div>
+                        <div className="w-476 h-82 pt-8 pr-12 pb-8 pl-12 flex dc__gap-16 dc__align-start dc__border-bottom-n1">
+                            <div className="w-111 bcn-1 br-4 dc__position-abs ">
+                                <span className="fs-13 fw-4 lh-20 ml-4">
+                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample1}
+                                </span>
+                            </div>
+                            <div className="w-236 h-66 flex column dc__align-start p-0 dc__gap-6">
+                                <div className="w-236 h-18">
+                                    <div className="w-216 h-18 flex row  dc__align-items-center p-0 dc__gap-4">
+                                        {/* {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath1} */}
+                                        {/* <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath1}</span> */}
+                                    </div>
+                                </div>
 
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+                <br/>
             </div>
         )
     }
@@ -439,27 +477,22 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                         <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-2 dc__no-border">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFour}
                                         </span>
-                                        <span>
-                                            <TippyCustomized
-                                                theme={TippyTheme.white}
-                                                iconClass="fcv-5"
-                                                className="w-500 h-100"
+                                        <>
+                                            <TippyHeadless
+                                                className=""
+                                                theme="light"
                                                 placement="bottom"
-                                                Icon={QuestionFilled}
-                                                heading="Using regex to write paths"
-                                                infoText=""
-                                                showCloseButton={true}
-                                                additionalContent={this.useRegexTippyContent()}
                                                 trigger="click"
                                                 interactive={true}
+                                                render={() => (
+                                                    <this.RegexInfoSteps />
+                                                )}
                                             >
                                                 <span className="dc__link cursor fs-13 fw-4 ml-8">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFive}
                                                 </span>
-                                            </TippyCustomized>
-
-                                            
-                                        </span>
+                                            </TippyHeadless>
+                                        </>
                                         <br />
                                     </div>
                                     <div className="flex left mt-6">

@@ -12,6 +12,7 @@ export default function MaterialSource({
     selectMaterial,
     ciPipelineId,
     fromTriggerInfo,
+    setSearchText
 }: MaterialSourceProps) {
     const renderErrorMessage = (mat: CIMaterialType): string => {
         if (mat.isRepoError) {
@@ -53,6 +54,7 @@ export default function MaterialSource({
     const handleRefreshAction = (e) => {
         e.stopPropagation()
         refreshMaterial.refresh(refreshMaterial.pipelineId, Number(e.currentTarget.dataset.id))
+        setSearchText('')
     }
 
     const renderRefreshButton = (mat: CIMaterialType) => {

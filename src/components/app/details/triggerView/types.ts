@@ -651,4 +651,5 @@ export interface MaterialSourceProps {
     }
     ciPipelineId?: number
     fromTriggerInfo?: boolean
+    setSearchText?: any
 }

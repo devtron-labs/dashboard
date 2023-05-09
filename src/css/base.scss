@@ -301,6 +301,10 @@ a:focus {
     top: 0;
 }
 
+.dc__top-9 {
+    top: 9px;
+}
+
 .dc__bottom-0 {
     bottom: 0;
 }
@@ -2366,6 +2370,10 @@ textarea,
     min-width: 385px;
 }
 
+.w-28 {
+    width: 28px;
+}
+
 .w-54 {
     width: 54px;
 }
@@ -2384,6 +2392,10 @@ textarea,
 
 .w-100px {
     width: 100px;
+}
+
+.w-111{
+    width: 111px;
 }
 
 .w-120 {
@@ -2406,8 +2418,16 @@ textarea,
     width: 200px;
 }
 
+.w-216 {
+    width: 216px;
+}
+
 .w-220 {
     width: 220px;
+}
+
+.w-236 {
+    width: 236px;
 }
 
 .w-250 {
@@ -2442,8 +2462,16 @@ textarea,
     width: 400px;
 }
 
+.w-436 {
+    width: 436px;
+}
+
+.w-476 {
+    width: 476px;
+}
+
 .w-500 {
-    width: 500px !important;
+    width: 500px;
 }
 
 .w-600 {
@@ -2607,6 +2635,10 @@ textarea,
     height: 60px !important;
 }
 
+.h-66 {
+    height: 66px !important;
+}
+
 .h-80 {
     height: 80px !important;
 }
@@ -2623,12 +2655,24 @@ textarea,
     height: 200px;
 }
 
+.h-82 {
+    height: 82px !important;
+}
+
+.h-112{
+    height: 112px !important;
+}
+
 .h-250 {
     height: 250px !important;
 }
 
 .h-300 {
     height: 300px !important;
+}
+
+.h-454 {
+    height: 454px !important;
 }
 
 // Minimum Height
@@ -2897,12 +2941,28 @@ textarea,
     column-gap: 24px;
 }
 
+.dc__gap-4 {
+    gap: 4px;
+}
+
+.dc__gap-6 {
+    gap: 6px;
+}
+
 .dc__gap-8 {
     gap: 8px;
 }
 
+.dc__gap-10 {
+    gap: 10px;
+}
+
 .dc__gap-12 {
     gap: 12px;
+}
+
+.dc__gap-16 {
+    gap: 16px;
 }
 
 .dc__flip-180 {
