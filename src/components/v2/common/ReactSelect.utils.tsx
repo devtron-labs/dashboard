@@ -2,8 +2,7 @@ import React from 'react'
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import { noop } from '../../common'
-import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../cdPipeline/cdPipeline.types'
 
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
