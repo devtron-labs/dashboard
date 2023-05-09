@@ -92,7 +92,6 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
             },
         },
         appType: appDetails.appType == AppType.DEVTRON_APP ? K8sResourcePayloadAppType.DEVTRON_APP : K8sResourcePayloadAppType.HELM_APP,
-        deploymentType: appDetails.deploymentAppType == DeploymentAppType.helm ? K8sResourcePayloadDeploymentType.NON_GITOPS : K8sResourcePayloadDeploymentType.GITOPS
     }
     if (updatedManifest) {
         requestBody.k8sRequest['patch'] = updatedManifest
@@ -162,11 +161,10 @@ export const getLogsURL = (
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
     } else {
         const appType = ad.appType == AppType.DEVTRON_APP ? K8sResourcePayloadAppType.DEVTRON_APP : K8sResourcePayloadAppType.HELM_APP
-        const deploymentType = ad.deploymentAppType == DeploymentAppType.helm ? K8sResourcePayloadDeploymentType.NON_GITOPS : K8sResourcePayloadDeploymentType.GITOPS
         if (appType  === 0){
             logsURL += `&namespace=${ad.namespace}`
         }
-        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
+        logsURL += `&appId=${appId}&appType=${appType}`
     }
     return `${logsURL}&follow=true&tailLines=500`
 }
