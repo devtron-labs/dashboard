@@ -1,6 +1,6 @@
 import { Routes } from '../../../../../config';
 import { get, post, put } from '@devtron-labs/devtron-fe-common-lib';
-import { AppDetails, AppType, DeploymentAppType, SelectedResourceType } from '../../appDetails.type'
+import { AppDetails, AppType, DeploymentAppType, K8sResourcePayloadAppType, K8sResourcePayloadDeploymentType, SelectedResourceType } from '../../appDetails.type'
 
 export const getAppId = (clusterId: number, namespace: string, appName: string) => {
     return `${clusterId}|${namespace}|${appName}`
@@ -76,13 +76,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
     const appId =
         appDetails.appType == AppType.DEVTRON_APP
             ? getDevtronAppId(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
-            : getAppId(
-                  appDetails.clusterId,
-                  appDetails.namespace,
-                  appDetails.deploymentAppType == DeploymentAppType.argo_cd
-                      ? `${appDetails.appName}`
-                      : appDetails.appName,
-              )
+            : getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName)
 
     const requestBody = {
         appId: appId,
@@ -97,8 +91,8 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
                 name: selectedResource.name,
             },
         },
-        appType: appDetails.appType == AppType.DEVTRON_APP ? 0 : 1,
-        deploymentType: appDetails.deploymentAppType == DeploymentAppType.helm ? 0 : 1,
+        appType: appDetails.appType == AppType.DEVTRON_APP ? K8sResourcePayloadAppType.DEVTRON_APP : K8sResourcePayloadAppType.HELM_APP,
+        deploymentType: appDetails.deploymentAppType == DeploymentAppType.helm ? K8sResourcePayloadDeploymentType.NON_GITOPS : K8sResourcePayloadDeploymentType.GITOPS
     }
     if (updatedManifest) {
         requestBody.k8sRequest['patch'] = updatedManifest
@@ -160,17 +154,15 @@ export const getLogsURL = (
     const appId =
         ad.appType == AppType.DEVTRON_APP
             ? getDevtronAppId(ad.clusterId, ad.appId, ad.environmentId)
-            : getAppId(ad.clusterId, ad.namespace, ad.deploymentAppType == DeploymentAppType.argo_cd
-                ? `${ad.appName}`
-                : ad.appName)
+            : getAppId(ad.clusterId, ad.namespace, ad.appName)
 
     let logsURL = `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}`
 
     if (isResourceBrowserView) {
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
     } else {
-        const appType = ad.appType == AppType.DEVTRON_APP ? 0 : 1
-        const deploymentType = ad.deploymentAppType == DeploymentAppType.helm ? 0 : 1
+        const appType = ad.appType == AppType.DEVTRON_APP ? K8sResourcePayloadAppType.DEVTRON_APP : K8sResourcePayloadAppType.HELM_APP
+        const deploymentType = ad.deploymentAppType == DeploymentAppType.helm ? K8sResourcePayloadDeploymentType.NON_GITOPS : K8sResourcePayloadDeploymentType.GITOPS
         if (appType  === 0){
             logsURL += `&namespace=${ad.namespace}`
         }
