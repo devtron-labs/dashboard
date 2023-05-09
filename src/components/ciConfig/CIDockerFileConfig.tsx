@@ -5,7 +5,7 @@ import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as BuildpackIcon } from '../../assets/icons/ic-builpack.svg'
 import { ReactComponent as CheckIcon } from '../../assets/icons/ic-check.svg'
 import CIAdvancedConfig from './CIAdvancedConfig'
-import { CI_BUILDTYPE_ALIAS, _multiSelectStyles } from './CIConfig.utils'
+import {CI_BUILDTYPE_ALIAS, _multiSelectStyles, renderBuildContext, USING_ROOT} from './CIConfig.utils'
 import { CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import CIBuildpackBuildOptions, {
     renderOptionIcon,
@@ -81,8 +81,9 @@ export default function CIDockerFileConfig({
             addDivider: false,
         },
     ]
-
-    useEffect(() => {
+    // const [spanValue,setSpanValue] = useState<string>(" Set build context ")
+    const [disable,setDisable] = useState<boolean>(formState.buildContext ? false : true)
+    useEffect(() => { 
         setInProgress(true)
         Promise.all([getDockerfileTemplate(), getBuildpackMetadata()])
             .then(([{ result: dockerfileTemplate }, { result: buildpackMetadata }]) => {
@@ -98,6 +99,22 @@ export default function CIDockerFileConfig({
                 setInProgress(false)
             })
     }, [])
+
+    useEffect(() => {
+        if (disable) {
+            if (configOverrideView) {
+                setCurrentCIBuildConfig({
+                    ...currentCIBuildConfig,
+                    dockerBuildConfig: {
+                        ...currentCIBuildConfig.dockerBuildConfig,
+                        buildContext: USING_ROOT,
+                    },
+                })
+            } else {
+                formState.buildContext.value = USING_ROOT
+            }
+        }
+    }, [disable])
 
     useEffect(() => {
         if (configOverrideView && updateDockerConfigOverride && currentCIBuildConfig) {
@@ -229,20 +246,20 @@ export default function CIDockerFileConfig({
 
     const renderSelfDockerfileBuildOption = () => {
         return (
-            <div className="mb-4 form-row__docker">
-                <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                    <label className="form__label">{`${
-                        configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
-                    } containing Dockerfile`}</label>
-                    {configOverrideView && !allowOverride ? (
-                        <div className="flex left">
-                            {currentMaterial?.url && renderOptionIcon(currentMaterial.url)}
-                            <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name || 'Not selected'}</span>
-                        </div>
-                    ) : (
+            <div>
+                <div className="mb-4 form-row__docker">
+                    <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                        <label className="form__label">{`${
+                            configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
+                        } containing Dockerfile`}</label>
+                        {configOverrideView && !allowOverride ? (
+                            <div className="flex left">
+                                {currentMaterial?.url && renderOptionIcon(currentMaterial.url)}
+                                <span className="fs-14 fw-4 lh-20 cn-9">{currentMaterial?.name || 'Not selected'}</span>
+                            </div>
+                        ) : (
                             <ReactSelect
                                 className="m-0"
-                                classNamePrefix="build-config__select-repository-containing-dockerfile"
                                 tabIndex={3}
                                 isMulti={false}
                                 isClearable={false}
@@ -265,52 +282,59 @@ export default function CIDockerFileConfig({
                                 onChange={handleFileLocationChange}
                                 isDisabled={configOverrideView && !allowOverride}
                             />
-                    )}
-                    {formState.repository.error && <label className="form__error">{formState.repository.error}</label>}
-                </div>
-                <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                    <label htmlFor="" className="form__label dc__required-field">
-                        Dockerfile Path (Relative)
-                    </label>
-                    {configOverrideView && !allowOverride ? (
-                        <span className="fs-14 fw-4 lh-20 cn-9">
-                            {`${selectedMaterial?.checkoutPath}/${
-                                ciConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath || 'Dockerfile'
-                            }`.replace('//', '/')}
-                        </span>
-                    ) : (
-                        <div className="docker-file-container">
-                            <Tippy
-                                className="default-tt"
-                                arrow={false}
-                                placement="top"
-                                content={selectedMaterial?.checkoutPath}
-                            >
-                                <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
-                                    {selectedMaterial?.checkoutPath}
-                                </span>
-                            </Tippy>
+                        )}
+                        {formState.repository.error && (
+                            <label className="form__error">{formState.repository.error}</label>
+                        )}
+                    </div>
+                    <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
+                        <label htmlFor="" className="form__label dc__required-field">
+                            Dockerfile Path (Relative)
+                        </label>
+                        {configOverrideView && !allowOverride ? (
+                            <span className="fs-14 fw-4 lh-20 cn-9">
+                                {`${selectedMaterial?.checkoutPath}/${
+                                    ciConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath || 'Dockerfile'
+                                }`.replace('//', '/')}
+                            </span>
+                        ) : (
+                            <div className="docker-file-container">
+                                <Tippy
+                                    className="default-tt"
+                                    arrow={false}
+                                    placement="top"
+                                    content={selectedMaterial?.checkoutPath}
+                                >
+                                    <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
+                                        {selectedMaterial?.checkoutPath}
+                                    </span>
+                                </Tippy>
                                 <input
                                     tabIndex={4}
                                     type="text"
                                     className="form__input file-name"
-                                    data-testid="dockerfile-path-text-box"
                                     placeholder="Dockerfile"
                                     name="dockerfile"
                                     value={
                                         configOverrideView && !allowOverride
                                             ? ciConfig?.ciBuildConfig?.dockerBuildConfig?.dockerfileRelativePath ||
-                                            'Dockerfile'
+                                              'Dockerfile'
                                             : formState.dockerfile.value
                                     }
                                     onChange={handleOnChangeConfig}
-                                    autoComplete={"off"}
+                                    autoComplete={'off'}
                                     autoFocus={!configOverrideView}
                                     disabled={configOverrideView && !allowOverride}
                                 />
-                        </div>
-                    )}
-                    {formState.dockerfile.error && <label className="form__error">{formState.dockerfile.error}</label>}
+                            </div>
+                        )}
+                        {formState.dockerfile.error && (
+                            <label className="form__error">{formState.dockerfile.error}</label>
+                        )}
+                    </div>
+                </div>
+                <div className="mb-4 w-100">
+                    {renderBuildContext(disable, setDisable, formState, configOverrideView, allowOverride, ciConfig, handleOnChangeConfig)}
                 </div>
             </div>
         )
@@ -338,6 +362,9 @@ export default function CIDockerFileConfig({
                     currentCIBuildConfig={currentCIBuildConfig}
                     setCurrentCIBuildConfig={setCurrentCIBuildConfig}
                     setInProgress={setInProgress}
+                    ciConfig={ciConfig}
+                    formState={formState}
+                    handleOnChangeConfig={handleOnChangeConfig}
                 />
             )}
             {ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE && (

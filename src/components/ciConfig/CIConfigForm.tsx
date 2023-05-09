@@ -22,6 +22,7 @@ import {
     getTargetPlatformMap,
     initCurrentCIBuildConfig,
     processBuildArgs,
+    USING_ROOT,
 } from './CIConfig.utils'
 import { useHistory } from 'react-router-dom'
 import { STAGE_NAME } from '../app/details/appConfig/appConfig.type'
@@ -88,7 +89,7 @@ export default function CIConfigForm({
     })
     const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden)
     const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>(
-        initCurrentCIBuildConfig(allowOverride, ciConfig, selectedCIPipeline, selectedMaterial, state.dockerfile.value),
+        initCurrentCIBuildConfig(allowOverride, ciConfig, selectedCIPipeline, selectedMaterial, state.dockerfile.value, state.buildContext.value),
     )
 
     useEffect(() => {
@@ -170,6 +171,7 @@ export default function CIConfigForm({
                 }, {}),
                 dockerfileRepository: repository.value,
                 targetPlatform: targetPlatforms,
+                buildContext: buildContext.value,
             }
         }
 
@@ -284,6 +286,15 @@ export default function CIConfigForm({
                         },
                     })
                     break
+                case DockerConfigOverrideKeys.buildContext:
+                    updateDockerConfigOverride(DockerConfigOverrideKeys.buildContext, {
+                        ...currentCIBuildConfig,
+                        dockerBuildConfig: {
+                            ...currentCIBuildConfig.dockerBuildConfig,
+                            buildContext: e.target.value == USING_ROOT ? '.' : e.target.value,
+                         },
+                    })
+                    break
                 default:
                     break
             }
@@ -297,7 +308,7 @@ export default function CIConfigForm({
         }
     }
 
-    const { repository, dockerfile, projectPath, registry, repository_name, key, value } = state
+    const { repository, dockerfile, projectPath, registry, repository_name, buildContext, key, value } = state
     return (
         <>
             <div className={`form__app-compose ${configOverrideView ? 'config-override-view' : ''}`}>

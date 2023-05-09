@@ -254,6 +254,9 @@ export interface CICreateDockerfileOptionProps {
     repository: CIFormStateOptionType
     setCurrentCIBuildConfig: React.Dispatch<React.SetStateAction<CIBuildConfigType>>
     setInProgress: React.Dispatch<React.SetStateAction<boolean>>
+    formState: any
+    ciConfig: CiPipelineResult
+    handleOnChangeConfig: (e) => void 
 }
 
 export interface CIBuildpackBuildOptionsProps {
