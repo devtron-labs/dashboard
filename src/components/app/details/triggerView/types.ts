@@ -100,6 +100,7 @@ export interface MaterialInfo {
 }
 
 export interface CDMaterialType {
+    userApprovalMetadata: any
     id: string
     materialInfo: MaterialInfo[]
     tab: CDModalTabType
@@ -118,6 +119,7 @@ export interface CDMaterialType {
     showSourceInfo: boolean
     latest: boolean
     runningOnParentCd?: boolean
+    index
 }
 
 export interface CIMaterialRouterProps {
