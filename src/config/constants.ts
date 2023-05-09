@@ -189,6 +189,7 @@ export const Routes = {
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
     TELEMETRY_EVENT: 'telemetry/event',
     DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
+    HELM_DEPLOYMENT_STATUS_TIMELINE_INSTALLED_APP: 'app-store/deployment-status/timeline',
     MANUAL_SYNC: 'app/deployment-status/manual-sync',
     MODULE_CONFIGURED: 'module/config',
     SSO: 'sso',
@@ -270,11 +271,6 @@ export const PATTERNS = {
 export const TriggerType = {
     Auto: 'AUTOMATIC',
     Manual: 'MANUAL',
-}
-
-export const TriggerTypeMap = {
-    automatic: 'Auto',
-    manual: 'Manual',
 }
 
 export const SourceTypeMap = {
@@ -687,14 +683,14 @@ export const CLUSTER_COMMAND = {
         clusterName: 'K8s',
         title: 'Supports EKS, AKS, GKE, Kops, Digital Ocean managed Kubernetes.',
         command:
-            'curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml',
+            'curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd',
     },
     microK8s: {
         heading: 'MicroK8s',
         clusterName: 'microK8s',
         title: 'MicroK8s is a light weight Kubernetes cluster',
         command:
-            "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml",
+            "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd",
     },
 }
 
@@ -768,6 +764,7 @@ export enum TIMELINE_STATUS {
     DEGRADED = 'DEGRADED',
     DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
     ABORTED = 'ABORTED',
+    INPROGRESS= 'INPROGRESS'
 }
 
 export const DEPLOYMENT_STATUS = {

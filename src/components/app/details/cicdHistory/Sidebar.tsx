@@ -187,9 +187,7 @@ const HistorySummaryCard = React.memo(
                 >
                     <div className="w-100 ci-details__build-card">
                         <div
-                            className={`dc__app-summary__icon icon-dim-20 ${triggerStatus(status)
-                                ?.toLocaleLowerCase()
-                                .replace(/\s+/g, '')}`}
+                            className={`dc__app-summary__icon icon-dim-20 ${triggerStatus(status)?.toLocaleLowerCase().replace(/\s+/g, '')}`}
                         />
                         <div className="flex column left dc__ellipsis-right">
                             <div className="cn-9 fs-14">{moment(startedOn).format(Moment12HourFormat)}</div>
