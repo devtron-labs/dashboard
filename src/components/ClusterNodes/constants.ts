@@ -1,3 +1,4 @@
+import { POD_LINKS } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 import { ColumnMetadataType, EFFECT_TYPE } from './types'
 
@@ -288,6 +289,8 @@ export const CLUSTER_TERMINAL_MESSAGING = {
     BUSYBOX: 'busybox',
     DEBUG_CLUSTER: ') which can be used to debug clusters and workloads.',
     PUBLIC_IMAGE: 'You can use publicly available custom images as well.',
+    DEBUG_MODE_TEXT:
+        'Running a pod in a debug mode means that the pod can access the host’s resources and kernel capabilities.',
 }
 
 export const SELECT_TITLE = {
@@ -426,3 +429,20 @@ export enum MD_EDITOR_TAB {
     WRITE = 'write',
     PREVIEW = 'preview',
 }
+
+export const PRE_FETCH_DATA_MESSAGING = {
+    SELECTING_NODE: 'Selecting a node',
+    SELECTED: 'selected',
+    CREATING_PODS: 'Creating pod.',
+    SWITCHING_SHELL: 'Switching shell to',
+    SUCCEEDED_LINK: ' \u001b[38;5;35mSucceeded\u001b[0m',
+    CONNECTING_TO_POD: 'Connecting to pod terminal.',
+    TIMED_OUT_LINK: ' \u001b[38;5;196mTimed out\u001b[0m',
+    FAILED_TEXT: '  \u001b[38;5;196mFailed\u001b[0m',
+    CHECK_POD_EVENTS: ` | \u001b[38;5;110m\u001b[4m${POD_LINKS.POD_EVENTS}\u001b[0m`,
+    CHECK_POD_MANIFEST: `\u001b[38;5;110m\u001b[4m${POD_LINKS.POD_MANIFEST}\u001b[0m`,
+    MULTIPLE_CONTAINER: 'Multiple containers detected. Connecting to first container'
+}
+
+export const defaultManifestErrorText =
+    "# Please edit the object below. Lines beginning with a '#' will be ignored,\n# and an empty file will abort the edit. If an error occurs while saving this file will be\n# reopened with the relevant failures.\n# \n"

@@ -70,6 +70,7 @@ interface CodeEditorInterface {
 
 interface CodeEditorHeaderInterface {
     children?: any;
+    className?: string
     hideDefaultSplitHeader?: boolean;
 }
 interface CodeEditorComposition {
@@ -321,12 +322,14 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
     );
 })
 
-const Header: React.FC<CodeEditorHeaderInterface> & CodeEditorHeaderComposition = ({ children, hideDefaultSplitHeader }) => {
+const Header: React.FC<CodeEditorHeaderInterface> & CodeEditorHeaderComposition = ({ children, className, hideDefaultSplitHeader }) => {
     const { defaultValue } = useCodeEditorContext()
-    return <div className="code-editor__header flex left">
-        {children}
-        {!hideDefaultSplitHeader && defaultValue && <SplitPane />}
-    </div>
+    return (
+        <div className={className || 'code-editor__header flex left'}>
+            {children}
+            {!hideDefaultSplitHeader && defaultValue && <SplitPane />}
+        </div>
+    )
 }
 
 function ThemeChanger({ }) {

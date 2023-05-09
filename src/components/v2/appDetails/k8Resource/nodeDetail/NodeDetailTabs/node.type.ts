@@ -53,8 +53,8 @@ export const ERROR_MESSAGE = {
 }
 
 export const POD_LINKS = {
-    POD_MANIFEST: 'Check Pod Manifest',
-    POD_EVENTS: 'Check Pod Events',
+    POD_MANIFEST: 'View/Edit Pod Manifest',
+    POD_EVENTS: 'View Pod Events',
 }
 
 export interface ErrorMessageType {

@@ -294,6 +294,7 @@
     }
 
     &.cluster-details-node-details {
+        height: calc(100% - 80px);
         .terminal-container {
             height: calc(100% - 50px);
         }
@@ -460,4 +461,9 @@
     max-height: 100%;
     flex-basis: 250px;
     flex-shrink: 0;
+}
+
+.cluster-manifest-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 30px;
 }

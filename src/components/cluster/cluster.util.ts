@@ -1,4 +1,5 @@
 import { OptionType } from '../app/types';
+import { NodeTaintType } from '../ClusterNodes/types';
 import { ClusterComponentType, ClusterComponentStatusType, ClusterComponentStatus, ClusterTerminalParamsType } from './cluster.type';
 
 export function getEnvName(components: ClusterComponentType[], agentInstallationStage): string {
@@ -47,4 +48,12 @@ export function getClusterTerminalParamsData(
         selectedNode: _selectedNode,
         selectedShell: _selectedShell,
     }
+}
+
+export const createTaintsList = (list: any[], nodeLabel: string): Map<string, NodeTaintType[]> => {
+    const taints = new Map<string, NodeTaintType[]>()
+    list?.forEach((node) => {
+        taints.set(node[nodeLabel], node.taints)
+    })
+    return taints
 }

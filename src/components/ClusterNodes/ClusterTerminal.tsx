@@ -1,32 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react'
-import Tippy from '@tippyjs/react'
-import ReactSelect, { components } from 'react-select'
+import { components } from 'react-select'
 import { BUSYBOX_LINK, NETSHOOT_LINK, shellTypes } from '../../config/constants'
-import { SocketConnectionType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
-import Terminal from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/Terminal'
+import {
+    ErrorMessageType,
+    POD_LINKS,
+    SocketConnectionType,
+} from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
 import {
     clusterDisconnectAndRetry,
+    clusterManifestEdit,
     clusterTerminalDisconnect,
     clusterTerminalStart,
     clusterTerminalStop,
     clusterTerminalTypeUpdate,
     clusterTerminalUpdate,
 } from './clusterNodes.service'
-import { ReactComponent as Disconnect } from '../../assets/icons/ic-disconnected.svg'
-import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import { GroupHeading, Option } from '../../components/v2/common/ReactSelect.utils'
-import { ReactComponent as Connect } from '../../assets/icons/ic-connected.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
-import { ReactComponent as FullScreen } from '../../assets/icons/ic-fullscreen-2.svg'
-import { ReactComponent as ExitScreen } from '../../assets/icons/ic-exit-fullscreen-2.svg'
-import { ReactComponent as Play } from '../../assets/icons/ic-play.svg'
-import CreatableSelect from 'react-select/creatable'
 import { clusterImageDescription, convertToOptionsList } from '../common'
-import { ServerErrors, showError, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
-import ClusterManifest from './ClusterManifest'
+import { get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import ClusterManifest, { ManifestPopupMenu } from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
-import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as HelpIcon } from '../../assets/icons/ic-help-outline.svg'
 import { ClusterTerminalType } from './types'
 import {
     AUTO_SELECT,
@@ -36,11 +29,22 @@ import {
     CLUSTER_TERMINAL_MESSAGING,
     IMAGE_LIST,
     nodeSelect,
+    PRE_FETCH_DATA_MESSAGING,
     SELECT_TITLE,
 } from './constants'
 import { OptionType } from '../userGroups/userGroups.types'
 import { getClusterTerminalParamsData } from '../cluster/cluster.util'
-import { useHistory, useLocation } from 'react-router-dom'
+import { generatePath, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'
+import {
+    EDIT_MODE_TYPE,
+    TERMINAL_STATUS,
+    TERMINAL_TEXT,
+    TERMINAL_WRAPPER_COMPONENT_TYPE,
+} from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
+import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
+
+let clusterTimeOut
 
 export default function ClusterTerminal({
     clusterId,
@@ -52,10 +56,12 @@ export default function ClusterTerminal({
     isNodeDetailsPage,
     namespaceList,
     node,
+    taints,
     setSelectedNode,
 }: ClusterTerminalType) {
     const location = useLocation()
     const history = useHistory()
+    const { path } = useRouteMatch()
     const queryParams = new URLSearchParams(location.search)
     const terminalAccessIdRef = useRef()
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
@@ -79,6 +85,7 @@ export default function ClusterTerminal({
     const [socketConnection, setSocketConnection] = useState<SocketConnectionType>(SocketConnectionType.CONNECTING)
     const [selectedImage, setImage] = useState<OptionType>(queryParamsData.selectedImage || imageList[0])
     const [selectedNamespace, setNamespace] = useState(queryParamsData.selectedNamespace || defaultNameSpace)
+    const [resourceData, setResourceData] = useState(null)
     const [update, setUpdate] = useState<boolean>(false)
     const [isFullScreen, setFullScreen] = useState<boolean>(false)
     const [isFetchRetry, setRetry] = useState<boolean>(false)
@@ -86,8 +93,26 @@ export default function ClusterTerminal({
     const [isReconnect, setReconnect] = useState<boolean>(false)
     const [toggleOption, settoggleOption] = useState<boolean>(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
+    const [sessionId, setSessionId] = useState<string>()
+    const [errorMessage, setErrorMessage] = useState<ErrorMessageType>({ message: '', reason: '' })
+    const [manifestButtonState, setManifestButtonState] = useState<EDIT_MODE_TYPE>(EDIT_MODE_TYPE.NON_EDIT)
+    const [manifestData, setManifestData] = useState<string>('')
+    const [showPodExistPopup, setShowPodExistPopup] = useState<boolean>()
+    const [forceDelete, setForceDelete] = useState<boolean>()
+    const [manifestErrors, setManifestErrors] = useState<string[]>()
+    const [debugMode, setDebugMode] = useState<boolean>(selectedNodeName.value !== AUTO_SELECT.value)
+    const [isManifestAvailable, setManifestAvailable] = useState<boolean>()
     const isShellSwitched = useRef<boolean>(false)
     const autoSelectNodeRef = useRef(null)
+    const terminalRef = useRef(null)
+    const prevNodeRef = useRef('')
+    const currNodeRef = useRef('')
+    const containerRef = useRef(null)
+    const isManifestUpdated = useRef(false)
+    const preventUpdateCall: boolean =
+        (autoSelectNodeRef.current === AUTO_SELECT.value && selectedNodeName.value !== AUTO_SELECT.value) ||
+        isManifestUpdated.current
+    const containerName = resourceData?.containers?.[0].containerName
 
     const payload = {
         clusterId: clusterId,
@@ -95,6 +120,11 @@ export default function ClusterTerminal({
         shellName: selectedTerminalType.value,
         nodeName: selectedNodeName.value,
         namespace: selectedNamespace.value,
+        manifest: manifestData,
+        debugNode: debugMode,
+        podName: resourceData?.podName || '',
+        taints: taints.get(selectedNodeName.value),
+        containerName: containerName,
     }
 
     useEffect(() => {
@@ -114,24 +144,95 @@ export default function ClusterTerminal({
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
 
     useEffect(() => {
-        if (autoSelectNodeRef.current === AUTO_SELECT.value && selectedNodeName.value !== AUTO_SELECT.value) {
+        if (resourceData && update && manifestData) {
+            try {
+                socketDisconnecting()
+                const abortController = new AbortController()
+                clusterManifestEdit(
+                    { ...payload, id: terminalAccessIdRef.current, forceDelete: forceDelete },
+                    { signal: abortController.signal },
+                )
+                    .then((response) => {
+                        if (abortController.signal.aborted) {
+                            return
+                        } else if (response.result?.podExists) {
+                            setResourceData(response.result)
+                            setShowPodExistPopup(response.result.podExists)
+                        } else if (response.result?.errors) {
+                            const errors = response.result.errors
+                            setManifestErrors(errors)
+                            setManifestButtonState(EDIT_MODE_TYPE.EDIT)
+                            setManifestData('')
+                        } else {
+                            const result = response.result
+                            setResourceData(result)
+                            if (result.containers?.length > 1) {
+                                containerRef.current = true
+                            }
+                            isManifestUpdated.current = true
+                            setSelectedTabIndex(0)
+                            setManifestAvailable(false)
+                            setDebugMode(result.debugNode)
+                            const nodeName = result.nodeName
+                            setSelectedNodeName(nodeName ? { label: nodeName, value: nodeName } : AUTO_SELECT)
+                            const containers = result.containers
+                            const image = containers[0].image
+                            if (image) {
+                                setImage({ label: image, value: image })
+                            }
+                            const namespace = result.namespace
+                            setNamespace(namespace ? { label: namespace, value: namespace } : defaultNameSpace)
+                            setManifestButtonState(EDIT_MODE_TYPE.NON_EDIT)
+                            terminalAccessIdRef.current = result.terminalAccessId
+                            socketConnecting()
+                            setShowPodExistPopup(false)
+                            setManifestErrors([])
+                        }
+                    })
+                    .catch((error) => {
+                        showError(error)
+                        setManifestButtonState(EDIT_MODE_TYPE.EDIT)
+                        setManifestData('')
+                    })
+                    .finally(() => {
+                        isManifestUpdated.current = false
+                    })
+
+                return () => {
+                    abortController.abort()
+                }
+            } catch (error) {
+                showError(error)
+            }
+        }
+    }, [manifestData, forceDelete])
+
+    useEffect(() => {
+        if (preventUpdateCall) {
             autoSelectNodeRef.current = selectedNodeName.value
             return
         }
         try {
             const abortController = new AbortController()
             isShellSwitched.current = false
+            containerRef.current = false
             autoSelectNodeRef.current = selectedNodeName.value
             setSelectedTabIndex(0)
+            setManifestAvailable(false)
+            setManifestButtonState(EDIT_MODE_TYPE.NON_EDIT)
             if (update) {
                 socketDisconnecting()
-                clusterTerminalUpdate({ ...payload, id: terminalAccessIdRef.current},{signal: abortController.signal})
+                clusterTerminalUpdate(
+                    { ...payload, id: terminalAccessIdRef.current },
+                    { signal: abortController.signal },
+                )
                     .then((response) => {
+                        setResourceData(response.result)
                         terminalAccessIdRef.current = response.result.terminalAccessId
-                        if(abortController.signal.aborted) {
+                        if (abortController.signal.aborted) {
                             return
                         }
-                        setTerminalCleared(true)
+                        setTerminalCleared(!terminalCleared)
                         socketConnecting()
                         setPodCreated(true)
                         setRetry(false)
@@ -139,12 +240,17 @@ export default function ClusterTerminal({
                     .catch((error) => {
                         sessionError(error)
                         setPodCreated(false)
+                        setTerminalCleared(!terminalCleared)
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
             } else {
-                clusterTerminalStart(payload,{signal: abortController.signal})
+                clusterTerminalStart(payload, { signal: abortController.signal })
                     .then((response) => {
+                        setResourceData(response.result)
                         terminalAccessIdRef.current = response.result.terminalAccessId
+                        if (abortController.signal.aborted) {
+                            return
+                        }
                         setUpdate(true)
                         socketConnecting()
                         setConnectTerminal(true)
@@ -154,6 +260,7 @@ export default function ClusterTerminal({
                     .catch((error) => {
                         showError(error)
                         setPodCreated(false)
+                        setTerminalCleared(!terminalCleared)
                         if (error instanceof ServerErrors && Array.isArray(error.errors)) {
                             error.errors.map(({ userMessage }) => {
                                 if (userMessage === CLUSTER_STATUS.SESSION_LIMIT_REACHED) {
@@ -161,6 +268,7 @@ export default function ClusterTerminal({
                                     setConnectTerminal(true)
                                 } else if (userMessage === CLUSTER_STATUS.POD_TERMINATED) {
                                     setUpdate(false)
+                                    setManifestData('')
                                     setConnectTerminal(false)
                                 }
                             })
@@ -170,7 +278,7 @@ export default function ClusterTerminal({
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
             }
-            
+
             return () => {
                 abortController.abort()
             }
@@ -179,12 +287,13 @@ export default function ClusterTerminal({
             setUpdate(false)
             setSocketConnection(SocketConnectionType.DISCONNECTED)
         }
-    }, [selectedNodeName.value, selectedImage.value, isReconnect, selectedNamespace.value])
+    }, [selectedNodeName.value, selectedImage.value, isReconnect, selectedNamespace.value, debugMode])
 
     useEffect(() => {
         try {
             if (update) {
                 isShellSwitched.current = true
+                containerRef.current = false
                 socketDisconnecting()
                 clusterTerminalTypeUpdate({ ...payload, terminalAccessId: terminalAccessIdRef.current })
                     .then((response) => {
@@ -194,6 +303,7 @@ export default function ClusterTerminal({
                     .catch((error) => {
                         showError(error)
                         setRetry(true)
+                        setManifestData('')
                         setPodCreated(false)
                         setSocketConnection(SocketConnectionType.DISCONNECTED)
                     })
@@ -213,6 +323,139 @@ export default function ClusterTerminal({
         }
     }, [])
 
+    useEffect(() => {
+        // Maintaining value in ref for setTimeout context
+        if (socketConnection === SocketConnectionType.DISCONNECTING) {
+            if (clusterTimeOut) {
+                clearTimeout(clusterTimeOut)
+            }
+        } else if (socketConnection === SocketConnectionType.CONNECTING && terminalAccessIdRef.current) {
+            setErrorMessage({ message: '', reason: '' })
+            prevNodeRef.current = selectedNodeName.value
+            currNodeRef.current = ''
+            getNewSession()
+        }
+    }, [socketConnection, terminalAccessIdRef.current])
+
+    const getNewSession = () => {
+        if (!terminalAccessIdRef.current) return
+        setSocketConnection(SocketConnectionType.CONNECTING)
+        getClusterData(
+            `user/terminal/get?namespace=${selectedNamespace.value}&shellName=${
+                selectedTerminalType.value
+            }&terminalAccessId=${terminalAccessIdRef.current}&containerName=${
+                resourceData.containers?.[0].containerName || ''
+            }`,
+            terminalAccessIdRef.current,
+            window?._env_?.CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT || 7,
+        )
+    }
+
+    const getClusterData = (url: string, terminalId: number, count: number) => {
+        if (terminalId !== terminalAccessIdRef.current) return
+        else if (
+            clusterTimeOut &&
+            (socketConnection === SocketConnectionType.DISCONNECTED ||
+                socketConnection === SocketConnectionType.DISCONNECTING)
+        ) {
+            clearTimeout(clusterTimeOut)
+            return
+        }
+        get(url)
+            .then((response: any) => {
+                const sessionId = response.result.userTerminalSessionId
+                const status = response.result.status
+                if (status === TERMINAL_STATUS.RUNNING && !response.result?.isValidShell) {
+                    preFetchData(status, TERMINAL_STATUS.FAILED)
+                    setErrorMessage({ message: response.result?.errorReason, reason: '' })
+                } else if (status === TERMINAL_STATUS.TERMINATED) {
+                    setErrorMessage({ message: status, reason: response.result?.errorReason })
+                } else if (!sessionId && count > 0) {
+                    preFetchData(status)
+                    clusterTimeOut = setTimeout(() => {
+                        getClusterData(url, terminalId, count - 1)
+                    }, window?._env_?.CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL || 7000)
+                } else if (sessionId) {
+                    const _nodeName = response.result?.nodeName
+                    if (selectedNodeName.value === TERMINAL_STATUS.AUTO_SELECT_NODE) {
+                        setSelectedNodeName({ value: _nodeName, label: _nodeName })
+                    }
+                    if (socketConnection === SocketConnectionType.CONNECTING) {
+                        setSessionId(sessionId)
+                        currNodeRef.current = _nodeName
+                        preFetchData(status)
+                    }
+                } else {
+                    preFetchData(CLUSTER_STATUS.FAILED, TERMINAL_STATUS.TIMEDOUT)
+                    setSocketConnection(SocketConnectionType.DISCONNECTED)
+                    setErrorMessage({ message: TERMINAL_STATUS.TIMEDOUT, reason: '' })
+                }
+            })
+            .catch((err) => {
+                clearTimeout(clusterTimeOut)
+                sessionError(err)
+                clearTerminal()
+            })
+    }
+
+    const preFetchData = (podState = '', status = '') => {
+        const _terminal = terminalRef.current
+        let startingText = TERMINAL_STATUS.CREATE
+        if (!_terminal) return
+
+        _terminal.reset()
+
+        if (prevNodeRef.current === TERMINAL_STATUS.AUTO_SELECT_NODE) {
+            _terminal.write(PRE_FETCH_DATA_MESSAGING.SELECTING_NODE)
+            if (currNodeRef.current) {
+                _terminal.write(` > ${currNodeRef.current} ${PRE_FETCH_DATA_MESSAGING.SELECTED}`)
+                _terminal.writeln('')
+            } else {
+                _terminal.write('...')
+            }
+        }
+
+        if (prevNodeRef.current !== TERMINAL_STATUS.AUTO_SELECT_NODE || currNodeRef.current) {
+            if (isShellSwitched.current) {
+                startingText = TERMINAL_STATUS.SHELL
+            }
+
+            if (startingText) {
+                if (startingText === TERMINAL_STATUS.CREATE) {
+                    _terminal.write(PRE_FETCH_DATA_MESSAGING.CREATING_PODS)
+                } else if (startingText === TERMINAL_STATUS.SHELL) {
+                    _terminal.write(`${PRE_FETCH_DATA_MESSAGING.SWITCHING_SHELL} ${selectedTerminalType.value}.`)
+                }
+            }
+            if (startingText !== TERMINAL_STATUS.SHELL && podState) {
+                if (podState === CLUSTER_STATUS.RUNNING) {
+                    _terminal.write(PRE_FETCH_DATA_MESSAGING.SUCCEEDED_LINK)
+                    _terminal.writeln('')
+                    if (containerRef.current && containerName) {
+                        _terminal.writeln(`${PRE_FETCH_DATA_MESSAGING.MULTIPLE_CONTAINER} ${containerName}`)
+                    }
+                    _terminal.write(PRE_FETCH_DATA_MESSAGING.CONNECTING_TO_POD)
+                }
+            }
+
+            if (status) {
+                if (status === TERMINAL_STATUS.TIMEDOUT) {
+                    _terminal.write(PRE_FETCH_DATA_MESSAGING.TIMED_OUT_LINK)
+                } else if (status === TERMINAL_STATUS.FAILED) {
+                    _terminal.write(PRE_FETCH_DATA_MESSAGING.FAILED_TEXT)
+                } else if (status === TERMINAL_STATUS.SUCCEDED) {
+                    _terminal.write(PRE_FETCH_DATA_MESSAGING.SUCCEEDED_LINK)
+                }
+                _terminal.write(PRE_FETCH_DATA_MESSAGING.CHECK_POD_EVENTS)
+                _terminal.write(' | ')
+                _terminal.write(PRE_FETCH_DATA_MESSAGING.CHECK_POD_MANIFEST)
+                _terminal.writeln('')
+            } else {
+                _terminal.write('..')
+            }
+        }
+    }
+
     function updateSelectedContainerName() {
         autoSelectNodeRef.current = null
         setSocketConnection(SocketConnectionType.DISCONNECTED)
@@ -221,14 +464,16 @@ export default function ClusterTerminal({
                 setSelectedNodeName({ label: node, value: node })
             }
         } else {
+            setManifestData('')
             setReconnect(!isReconnect)
             setNamespace(defaultNameSpace)
             setImage(imageList[0])
+            setResourceData(null)
             setSelectedNodeName(nodeGroups[0].options[0])
         }
     }
 
-    async function closeTerminalModal(e: any, skipRedirection?: boolean): Promise<void> {
+    async function closeTerminalModal(e: any, skipRedirection?: boolean) {
         try {
             if (!isNodeDetailsPage && typeof closeTerminal === 'function') {
                 closeTerminal(skipRedirection)
@@ -238,6 +483,7 @@ export default function ClusterTerminal({
                 await clusterTerminalDisconnect(terminalAccessIdRef.current)
             }
             socketDisconnecting()
+            terminalAccessIdRef.current = null
             toggleOptionChange()
             setUpdate(false)
         } catch (error) {
@@ -247,8 +493,8 @@ export default function ClusterTerminal({
     }
 
     async function stopTerminalConnection(): Promise<void> {
-        setSocketConnection(SocketConnectionType.DISCONNECTING)
         try {
+            setSocketConnection(SocketConnectionType.DISCONNECTING)
             await clusterTerminalStop(terminalAccessIdRef.current)
         } catch (error) {
             showError(error)
@@ -258,14 +504,14 @@ export default function ClusterTerminal({
     async function disconnectRetry(): Promise<void> {
         try {
             setPodCreated(true)
-            clusterDisconnectAndRetry(payload).then((response) => {
-                terminalAccessIdRef.current = response.result.terminalAccessId
-                setSocketConnection(SocketConnectionType.DISCONNECTED)
-                setUpdate(true)
-                socketConnecting()
-                setRetry(false)
-                setConnectTerminal(true)
-            })
+            containerRef.current = false
+            const response = await clusterDisconnectAndRetry(payload)
+            terminalAccessIdRef.current = response.result.terminalAccessId
+            setSocketConnection(SocketConnectionType.DISCONNECTED)
+            setUpdate(true)
+            socketConnecting()
+            setRetry(false)
+            setConnectTerminal(true)
             toggleOptionChange()
         } catch (error) {
             setPodCreated(false)
@@ -281,6 +527,8 @@ export default function ClusterTerminal({
                     setRetry(true)
                 } else if (userMessage === CLUSTER_STATUS.POD_TERMINATED) {
                     setUpdate(false)
+                    setPodCreated(false)
+                    setManifestData('')
                     setConnectTerminal(false)
                 }
             })
@@ -292,12 +540,16 @@ export default function ClusterTerminal({
         queryParams.set('image', selectedImage.value)
         queryParams.set('namespace', selectedNamespace.value)
         queryParams.set('shell', selectedTerminalType.value)
-        if (!isNodeDetailsPage) {
+        if (isNodeDetailsPage) {
+            const url =
+                generatePath(path, { clusterId, nodeName: selectedNodeName.value }) + '?' + queryParams.toString()
+            history.replace(url)
+        } else {
             queryParams.set('node', selectedNodeName.value)
+            history.replace({
+                search: queryParams.toString(),
+            })
         }
-        history.replace({
-            search: queryParams.toString(),
-        })
     }
 
     const reconnectTerminal = (): void => {
@@ -329,6 +581,9 @@ export default function ClusterTerminal({
     const onChangeNodes = (selected): void => {
         setSelectedNodeName(selected)
         autoSelectNodeRef.current = null
+        if (selected.value === AUTO_SELECT.value) {
+            setDebugMode(false)
+        }
         if (setSelectedNode) {
             setSelectedNode(selected.value)
         }
@@ -356,14 +611,20 @@ export default function ClusterTerminal({
 
     const selectTerminalTab = (): void => {
         setSelectedTabIndex(0)
+        setManifestAvailable(false)
     }
 
     const selectEventsTab = (): void => {
         setSelectedTabIndex(1)
+        setManifestAvailable(false)
     }
 
     const selectManifestTab = (): void => {
         setSelectedTabIndex(2)
+    }
+
+    const clearTerminal = () => {
+        setTerminalCleared(!terminalCleared)
     }
 
     const menuComponent = (props) => {
@@ -377,33 +638,15 @@ export default function ClusterTerminal({
         )
     }
 
-    const terminalContainer = () => {
-        return (
-            <Terminal
-                dataTestId="cluster-terminal-view"
-                nodeName={selectedNodeName.value}
-                containerName={selectedNodeName.label}
-                socketConnection={socketConnection}
-                isTerminalCleared={terminalCleared}
-                shell={selectedTerminalType}
-                setTerminalCleared={setTerminalCleared}
-                setSocketConnection={setSocketConnection}
-                isClusterTerminal={true}
-                terminalId={terminalAccessIdRef.current}
-                disconnectRetry={disconnectRetry}
-                isFetchRetry={isFetchRetry}
-                isToggleOption={toggleOption}
-                isFullScreen={isFullScreen}
-                isTerminalTab={selectedTabIndex === 0}
-                setTerminalTab={setSelectedTabIndex}
-                isPodConnected={connectTerminal}
-                sessionError={sessionError}
-                selectedNamespace={selectedNamespace.value}
-                isShellSwitched={isShellSwitched.current}
-                setSelectedNodeName={setSelectedNodeName}
-                reconnectTerminal={reconnectTerminal}
-            />
-        )
+    const renderRegisterLinkMatcher = (terminal) => {
+        const linkMatcherRegex = new RegExp(`${POD_LINKS.POD_MANIFEST}|${POD_LINKS.POD_EVENTS}`)
+        terminal.registerLinkMatcher(linkMatcherRegex, (_event, text) => {
+            if (text === POD_LINKS.POD_EVENTS) {
+                selectEventsTab()
+            } else if (text === POD_LINKS.POD_MANIFEST) {
+                selectManifestTab()
+            }
+        })
     }
 
     const imageTippyInfo = () => {
@@ -443,254 +686,18 @@ export default function ClusterTerminal({
         return <GroupHeading {...props} hideClusterName={true} />
     }
 
-    // css class for cluster terminal view
-    const fullScreenClassWrapper = isFullScreen ? 'cluster-full_screen' : 'cluster-terminal-view-container'
-    const nodeDetailsPageClassWrapper = isNodeDetailsPage || isClusterDetailsPage ? '' : 'node-terminal'
-    const clusterDetailsPageClassWrapper = isClusterDetailsPage ? 'cluster-details-terminal' : ''
     const terminalClusterDetailsPageClassWrapper = isFullScreen ? 'cluster-details-full-screen' : 'cluster-details-node-details'
 
-    return (
-        <div
-            className={`${fullScreenClassWrapper} ${nodeDetailsPageClassWrapper} ${clusterDetailsPageClassWrapper}`}
-        >
-            <div className="flex dc__content-space bcn-0 pl-20 dc__border-top h-32">
-                <div className="flex left">
-                    {clusterName && (
-                        <>
-                            <div className="cn-6 mr-16">{SELECT_TITLE.CLUSTER}</div>
-                            <div data-testid="cluster-terminal-cluster-name" className="flex fw-6 fs-13 mr-20">
-                                {clusterName}
-                            </div>
-                            <span className="bcn-2 mr-16 h-32" style={{ width: '1px' }} />
-                        </>
-                    )}
-                    {isNodeDetailsPage && (
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="bottom"
-                            content={connectTerminal ? 'Disconnect and terminate pod' : 'Connect to terminal'}
-                        >
-                            {connectTerminal ? (
-                                <span className="flex mr-8">
-                                    <Disconnect className="icon-dim-16 mr-4 cursor" onClick={closeTerminalModal} />
-                                </span>
-                            ) : (
-                                <span className="flex mr-8">
-                                    <Connect className="icon-dim-16 mr-4 cursor" onClick={reconnectTerminal} />
-                                </span>
-                            )}
-                        </Tippy>
-                    )}
-
-                    {!isNodeDetailsPage && (
-                        <>
-                            <div className="cn-6 mr-10">{SELECT_TITLE.NODE}</div>
-                            <div style={{ minWidth: '145px' }}>
-                                <ReactSelect
-                                    classNamePrefix="cluster-terminal-node"
-                                    placeholder="Select Containers"
-                                    options={nodeGroups}
-                                    defaultValue={selectedNodeName}
-                                    value={selectedNodeName}
-                                    onChange={onChangeNodes}
-                                    styles={nodeSelect}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        GroupHeading: groupHeading,
-                                        Option,
-                                    }}
-                                />
-                            </div>
-                        </>
-                    )}
-
-                    <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                    <div className="cn-6 ml-8 mr-10">{SELECT_TITLE.NAMESPACE}</div>
-                    <div>
-                        <CreatableSelect
-                            classNamePrefix="cluster-terminal-name-space"
-                            placeholder="Select Namespace"
-                            options={defaultNamespaceList}
-                            defaultValue={selectedNamespace}
-                            value={selectedNamespace}
-                            onChange={onChangeNamespace}
-                            styles={clusterSelectStyle}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option,
-                            }}
-                        />
-                    </div>
-
-                    <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                    <div className="cn-6 ml-8 mr-4">{SELECT_TITLE.IMAGE}</div>
-                    <TippyCustomized
-                        theme={TippyTheme.white}
-                        heading="Image"
-                        placement="top"
-                        interactive={true}
-                        trigger="click"
-                        className="w-300"
-                        Icon={Help}
-                        showCloseButton={true}
-                        iconClass="icon-dim-20 fcv-5"
-                        additionalContent={imageTippyInfo()}
-                    >
-                        <HelpIcon className="icon-dim-16 mr-8 cursor" />
-                    </TippyCustomized>
-                    <div>
-                        <CreatableSelect
-                            classNamePrefix="cluster-terminal-select-image"
-                            placeholder="Select Image"
-                            options={imageList}
-                            defaultValue={selectedImage}
-                            value={selectedImage}
-                            onChange={onChangeImages}
-                            styles={clusterImageSelect}
-                            components={{
-                                IndicatorSeparator: null,
-                                Option: imageOptionComponent,
-                                MenuList: menuComponent,
-                            }}
-                        />
-                    </div>
-                </div>
-                {!isNodeDetailsPage && (
-                    <span className="flex">
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content={isFullScreen ? 'Restore height' : 'Maximise height'}
-                        >
-                            {isFullScreen ? (
-                                <ExitScreen
-                                    data-testid="cluster-terminal-exit-screen-button"
-                                    className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
-                                    onClick={toggleScreenView}
-                                />
-                            ) : (
-                                <FullScreen
-                                    data-testid="cluster-terminal-full-screen-button"
-                                    className="mr-12 dc__hover-n100 br-4  cursor fcn-6"
-                                    onClick={toggleScreenView}
-                                />
-                            )}
-                        </Tippy>
-                        <Tippy className="default-tt" arrow={false} placement="top" content={'Close'}>
-                            <Close
-                                data-testid="cluster-terminal-close-screen-button"
-                                className="icon-dim-20 cursor fcr-5 dc__hover-r100 br-4 fcn-6 mr-20"
-                                onClick={closeTerminalModal}
-                            />
-                        </Tippy>
-                    </span>
-                )}
-            </div>
-
-            <div className="flex left bcn-0 pl-20 dc__border-top h-28">
-                <ul role="tablist" className="tab-list">
-                    <li
-                        data-testid="cluster-terminal-button"
-                        className="tab-list__tab pointer fs-12"
-                        onClick={selectTerminalTab}
-                    >
-                        <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 0 ? 'active' : ''}`}>
-                            {SELECT_TITLE.TERMINAL}
-                        </div>
-                        {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
-                    </li>
-                    {terminalAccessIdRef.current && connectTerminal && (
-                        <li
-                            data-testid="pod-events-button"
-                            className="tab-list__tab fs-12"
-                            onClick={() => selectEventsTab()}
-                        >
-                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
-                                {SELECT_TITLE.POD_EVENTS}
-                            </div>
-                            {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
-                        </li>
-                    )}
-                    {terminalAccessIdRef.current && connectTerminal && (
-                        <li
-                            data-testid="pod-manifests-button"
-                            className="tab-list__tab fs-12"
-                            onClick={selectManifestTab}
-                        >
-                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
-                                {SELECT_TITLE.POD_MANIFEST}
-                            </div>
-                            {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
-                        </li>
-                    )}
-                </ul>
-                <div className={`${selectedTabIndex !== 0 ? 'dc__hide-section' : 'flex'}`}>
-                    {connectTerminal && isPodCreated && (
-                        <>
-                            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
-                            <Tippy
-                                className="default-tt cursor"
-                                arrow={false}
-                                placement="bottom"
-                                content={
-                                    socketConnection === SocketConnectionType.CONNECTING ||
-                                    socketConnection === SocketConnectionType.CONNECTED
-                                        ? 'Disconnect from pod'
-                                        : 'Reconnect to pod'
-                                }
-                            >
-                                {socketConnection === SocketConnectionType.CONNECTING ||
-                                socketConnection === SocketConnectionType.CONNECTED ? (
-                                    <span data-testid="disconnect-button" className="mr-8 cursor">
-                                        <div
-                                            className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5"
-                                            onClick={stopTerminalConnection}
-                                        />
-                                    </span>
-                                ) : (
-                                    <span data-testid="play-button" className="mr-8 flex">
-                                        <Play className="icon-dim-16 mr-4 cursor" onClick={resumePodConnection} />
-                                    </span>
-                                )}
-                            </Tippy>
-                            <Tippy className="default-tt" arrow={false} placement="bottom" content="Clear">
-                                <div data-testid="clear-logs-button" className="flex">
-                                    <Abort
-                                        className="icon-dim-16 mr-4 fcn-6 cursor"
-                                        onClick={(e) => {
-                                            setTerminalCleared(true)
-                                        }}
-                                    />
-                                </div>
-                            </Tippy>
-                            <span className="bcn-2 ml-8 mr-8" style={{ width: '1px', height: '16px' }} />
-                            <div className="cn-6 ml-8 mr-10">{SELECT_TITLE.SHELL} </div>
-                            <div>
-                                <CreatableSelect
-                                    classNamePrefix="cluster-terminal-select-shell"
-                                    placeholder="Select Shell"
-                                    options={clusterShellTypes}
-                                    defaultValue={selectedTerminalType}
-                                    onChange={onChangeTerminalType}
-                                    styles={clusterSelectStyle}
-                                    components={{
-                                        IndicatorSeparator: null,
-                                        Option,
-                                    }}
-                                />
-                            </div>
-                        </>
-                    )}
-                </div>
-            </div>
+    const terminalTabWrapper = (terminalView: () => JSX.Element) => {
+        return (
             <div
                 className={`cluster-terminal__wrapper ${isFullScreen ? 'full-screen-terminal' : ''} ${
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
                 } ${isClusterDetailsPage ? terminalClusterDetailsPageClassWrapper : ''}`}
             >
-                <div className={`${selectedTabIndex === 0 ? 'h-100' : 'dc__hide-section'}`}>{terminalContainer()}</div>
+                <div className={`${selectedTabIndex === 0 ? 'h-100 flexbox' : 'dc__hide-section'}`}>
+                    {(!isNodeDetailsPage || connectTerminal) && terminalView}
+                </div>
                 {selectedTabIndex === 1 && (
                     <div className="h-100 dc__overflow-scroll">
                         <ClusterEvents terminalAccessId={terminalAccessIdRef.current} reconnectStart={reconnectStart} />
@@ -698,10 +705,277 @@ export default function ClusterTerminal({
                 )}
                 {selectedTabIndex === 2 && (
                     <div className="h-100">
-                        <ClusterManifest terminalAccessId={terminalAccessIdRef.current} />
+                        <ClusterManifest
+                            terminalAccessId={terminalAccessIdRef.current}
+                            manifestMode={manifestButtonState}
+                            setManifestMode={setManifestButtonState}
+                            setManifestData={setManifestData}
+                            errorMessage={manifestErrors}
+                            setManifestAvailable={setManifestAvailable}
+                        />
                     </div>
                 )}
             </div>
-        </div>
+        )
+    }
+
+    const renderTabs = () => {
+        return (
+            <ul role="tablist" className="tab-list">
+                <li className="tab-list__tab pointer fs-12" onClick={selectTerminalTab}>
+                    <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 0 ? 'active' : ''}`}>
+                        {SELECT_TITLE.TERMINAL}
+                    </div>
+                    {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
+                </li>
+                {connectTerminal && terminalAccessIdRef.current && (
+                    <>
+                        <li className="tab-list__tab fs-12" onClick={selectEventsTab}>
+                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
+                                {SELECT_TITLE.POD_EVENTS}
+                            </div>
+                            {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
+                        </li>
+                        <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
+                            <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
+                                {SELECT_TITLE.POD_MANIFEST}
+                            </div>
+                            {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
+                        </li>
+                    </>
+                )}
+            </ul>
+        )
+    }
+
+    const renderErrorMessageStrip = () => {
+        if (errorMessage.message === TERMINAL_STATUS.TIMEDOUT) {
+            return (
+                <div className="pl-20 flex left h-24 pr-20 w-100 bcr-7 cn-0 connection-status-strip">
+                    {TERMINAL_TEXT.CONNECTION_TIMEOUT}&nbsp;
+                    <span className="cursor dc__underline" onClick={selectEventsTab}>
+                        {TERMINAL_TEXT.CHECK_POD_EVENTS}
+                    </span>
+                    &nbsp;
+                    {TERMINAL_TEXT.FOR_ERRORS}&nbsp;
+                    <span className="cursor dc__underline" onClick={socketConnecting}>
+                        {TERMINAL_TEXT.RETRY_CONNECTION}
+                    </span>
+                    &nbsp;
+                    {TERMINAL_TEXT.CASE_OF_ERROR}
+                </div>
+            )
+        } else if (errorMessage.message === TERMINAL_STATUS.TERMINATED) {
+            return (
+                <div className="pl-20 pr-20 w-100 bcr-7 cn-0 connection-status-strip">
+                    {TERMINAL_TEXT.POD_TERMINATED} {errorMessage.reason}&nbsp;
+                    <span className="cursor dc__underline" onClick={reconnectTerminal}>
+                        {TERMINAL_TEXT.INITIATE_CONNECTION}
+                    </span>
+                </div>
+            )
+        }
+        return <div className="pl-20 pr-20 w-100 bcr-7 cn-0 connection-status-strip">{errorMessage.message} </div>
+    }
+
+    const renderStripMessage = (): JSX.Element => {
+        if (isFetchRetry) {
+            return (
+                <div className="bcr-7 pl-20 cn-0 connection-status-strip">
+                    {TERMINAL_TEXT.CONCURRENT_LIMIT_REACH}&nbsp;
+                    <button
+                        type="button"
+                        onClick={disconnectRetry}
+                        className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
+                    >
+                        {TERMINAL_TEXT.TERMINATE_RETRY}
+                    </button>
+                </div>
+            )
+        } else if (errorMessage.message && errorMessage.message.length > 0) {
+            return renderErrorMessageStrip()
+        } else if (socketConnection === SocketConnectionType.DISCONNECTED) {
+            return (
+                <div className="bcr-7 cn-0 pl-20 connection-status-strip">
+                    Disconnected
+                    <span>.&nbsp;</span>
+                    <button
+                        type="button"
+                        onClick={socketConnecting}
+                        className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
+                    >
+                        Reconnect
+                    </button>
+                </div>
+            )
+        } else if (socketConnection === SocketConnectionType.CONNECTING) {
+            return <></>
+        }
+    }
+
+    const closeManifetsPopup = (isClose: boolean): void => {
+        setManifestButtonState(EDIT_MODE_TYPE.EDIT)
+        setManifestData('')
+        setShowPodExistPopup(isClose)
+    }
+
+    const hideShell: boolean = !(connectTerminal && isPodCreated && !selectedTabIndex)
+
+    const fullScreenClassWrapper = isFullScreen ? 'cluster-full_screen' : 'cluster-terminal-view-container'
+    const nodeDetailsPageClassWrapper = isNodeDetailsPage || isClusterDetailsPage ? '' : 'node-terminal'
+    const clusterDetailsPageClassWrapper = isClusterDetailsPage ? 'cluster-details-terminal' : ''
+
+    const selectionListData: TerminalSelectionListDataType = {
+        firstRow: [
+            {
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.TITLE_NAME,
+                hideTerminalStripComponent: !clusterName,
+                title: SELECT_TITLE.CLUSTER,
+                value: clusterName,
+            },
+            {
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CONNECTION_BUTTON,
+                hideTerminalStripComponent: !isNodeDetailsPage,
+                connectTerminal: connectTerminal,
+                closeTerminalModal: closeTerminalModal,
+                reconnectTerminal: reconnectTerminal,
+            },
+            {
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.REACT_SELECT,
+                hideTerminalStripComponent: isNodeDetailsPage,
+                title: SELECT_TITLE.NODE,
+                placeholder: 'Select node',
+                options: nodeGroups,
+                defaultValue: selectedNodeName,
+                value: selectedNodeName,
+                onChange: onChangeNodes,
+                styles: nodeSelect,
+                components: {
+                    IndicatorSeparator: null,
+                    GroupHeading: groupHeading,
+                    Option,
+                },
+            },
+            {
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CREATABLE_SELECT,
+                showInfoTippy: false,
+                title: SELECT_TITLE.NAMESPACE,
+                placeholder: 'Select Namespace',
+                options: defaultNamespaceList,
+                defaultValue: selectedNamespace,
+                value: selectedNamespace,
+                onChange: onChangeNamespace,
+                styles: clusterSelectStyle,
+                components: {
+                    IndicatorSeparator: null,
+                    Option,
+                },
+            },
+            {
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CREATABLE_SELECT,
+                title: SELECT_TITLE.IMAGE,
+                placeholder: 'Select Image',
+                options: imageList,
+                showInfoTippy: true,
+                defaultValue: selectedImage,
+                value: selectedImage,
+                onChange: onChangeImages,
+                infoContent: imageTippyInfo(),
+                styles: clusterImageSelect,
+                components: {
+                    IndicatorSeparator: null,
+                    Option: imageOptionComponent,
+                    MenuList: menuComponent,
+                },
+            },
+            {
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CLOSE_EXPAND_VIEW,
+                hideTerminalStripComponent: isNodeDetailsPage,
+                showExpand: true,
+                isFullScreen: isFullScreen,
+                toggleScreenView: toggleScreenView,
+                closeTerminalModal: closeTerminalModal,
+            },
+        ],
+        secondRow: [
+            {
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CUSTOM_COMPONENT,
+                customComponent: renderTabs,
+            },
+            {
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CONNCTION_SWITCH,
+                hideTerminalStripComponent: hideShell,
+                stopTerminalConnection,
+                resumePodConnection,
+                toggleButton:
+                    socketConnection === SocketConnectionType.CONNECTING ||
+                    socketConnection === SocketConnectionType.CONNECTED,
+            },
+            {
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CLEAR_BUTTON,
+                hideTerminalStripComponent: hideShell,
+                setTerminalCleared: clearTerminal,
+            },
+            {
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CREATABLE_SELECT,
+                hideTerminalStripComponent: hideShell,
+                title: SELECT_TITLE.SHELL,
+                placeholder: 'Select Shell',
+                options: clusterShellTypes,
+                defaultValue: selectedTerminalType,
+                onChange: onChangeTerminalType,
+                styles: clusterSelectStyle,
+                components: {
+                    IndicatorSeparator: null,
+                    Option,
+                },
+            },
+            {
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.DEBUG_MODE_TOGGLE_BUTTON,
+                hideTerminalStripComponent: hideShell || selectedNodeName.value === AUTO_SELECT.value,
+                showInfoTippy: true,
+                onToggle: setDebugMode,
+                isEnabled: debugMode,
+            },
+            {
+                type: TERMINAL_WRAPPER_COMPONENT_TYPE.MANIFEST_EDIT_BUTTONS,
+                hideTerminalStripComponent: !(selectedTabIndex === 2 && isManifestAvailable),
+                buttonSelectionState: manifestButtonState,
+                setManifestButtonState: setManifestButtonState,
+            },
+        ],
+        tabSwitcher: {
+            terminalTabWrapper: terminalTabWrapper,
+            terminalData: {
+                terminalRef: terminalRef,
+                clearTerminal: terminalCleared,
+                terminalMessageData: preFetchData,
+                renderConnectionStrip: renderStripMessage(),
+                setSocketConnection: setSocketConnection,
+                socketConnection: socketConnection,
+                isTerminalTab: !selectedTabIndex,
+                sessionId: sessionId,
+                registerLinkMatcher: renderRegisterLinkMatcher,
+            },
+        },
+    }
+
+    return (
+        <>
+            <TerminalWrapper
+                selectionListData={selectionListData}
+                socketConnection={socketConnection}
+                setSocketConnection={setSocketConnection}
+                className={`${fullScreenClassWrapper} ${nodeDetailsPageClassWrapper} ${clusterDetailsPageClassWrapper}`}
+            />
+            {showPodExistPopup && (
+                <ManifestPopupMenu
+                    closePopup={closeManifetsPopup}
+                    podName={resourceData?.podName}
+                    namespace={resourceData?.namespace}
+                    forceDeletePod={setForceDelete}
+                />
+            )}
+        </>
     )
 }
