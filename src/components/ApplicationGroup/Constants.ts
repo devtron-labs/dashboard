@@ -1,4 +1,4 @@
-import { DeploymentNodeType } from '../app/details/triggerView/types'
+import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ENV_TRIGGER_VIEW_GA_EVENTS = {
     MaterialClicked: {
@@ -8,6 +8,10 @@ export const ENV_TRIGGER_VIEW_GA_EVENTS = {
     ImageClicked: {
         category: 'Environment Details Trigger View',
         action: 'Select Image Clicked',
+    },
+    ApprovalNodeClicked: {
+        category: 'Environment Details Trigger View',
+        action: 'Approval Node Clicked',
     },
     RollbackClicked: {
         category: 'Environment Details Trigger View',
@@ -148,6 +152,6 @@ export enum CreateGroupTabs {
 }
 
 export const CREATE_GROUP_TABS = {
-    'selectedApps' :'Selected applications',
-    'allApps' : 'Add/Remove applications',
+    selectedApps: 'Selected applications',
+    allApps: 'Add/Remove applications',
 }

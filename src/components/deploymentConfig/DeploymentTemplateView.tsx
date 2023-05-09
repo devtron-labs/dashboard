@@ -2,8 +2,16 @@ import React, { useEffect, useRef, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { DEPLOYMENT, DOCUMENTATION, MODES, ROLLOUT_DEPLOYMENT } from '../../config'
-import { RadioGroup, Toggle, versionComparator } from '../common'
-import { Checkbox, CHECKBOX_VALUE, showError, Progressing, ConditionalWrap, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { RadioGroup, versionComparator } from '../common'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    showError,
+    Progressing,
+    ConditionalWrap,
+    InfoColourBar,
+    Toggle,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { DropdownIndicator, Option } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Arrows } from '../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file-text.svg'
