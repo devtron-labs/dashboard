@@ -4,11 +4,11 @@ import { CIBuildConfigType, DockerConfigOverrideType } from '../../../ciPipeline
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { CIMaterialType } from './MaterialHistory'
 import {
-    CDMaterialType,
     CDModalTabType,
     CommonNodeAttr,
     DeploymentNodeType,
     UserApprovalConfigType,
+    VulnerabilityType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CDMaterialProps {
@@ -102,7 +102,7 @@ export interface MaterialInfo {
 export interface CDMaterialType {
     id: string
     materialInfo: MaterialInfo[]
-    tab: CDMdalTabType
+    tab: CDModalTabType
     scanEnabled: boolean
     scanned: boolean
     vulnerabilitiesLoading: boolean
