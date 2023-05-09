@@ -28,12 +28,12 @@ export function getCluster(id: number) {
 }
 
 export function saveClusters(request, payload) {
-    const URL = `${Routes.CLUSTER}`;
+    const URL = `${Routes.SAVECLUSTER}`;
     return post(URL, request, payload);
 }
 
 export function validateCluster(request, payload) {
-    const URL = `${Routes.CLUSTER}`
+    const URL = `${Routes.VALIDATE}`
     return post(URL, request, payload);
 }
 

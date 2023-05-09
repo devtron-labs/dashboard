@@ -79,6 +79,7 @@ import { NoMatchingResults } from '../externalLinks/ExternalLinks.component'
 import cluster from 'cluster'
 import { getClusterEvents } from '../ClusterNodes/clusterNodes.service'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import { json } from 'stream/consumers'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -662,10 +663,10 @@ function ClusterForm({
         setState(!state.loader)
     }
 
-    function saveClustersDetails() {
+    async function saveClustersDetails() {
         try {
-            let payload = saveClustersPayload()
-            saveClusters(request, payload).then(
+            let payload = getClusterPayload()
+            await saveClusters(request, payload).then(
                 (response) => {
                     const map = response.result
                     map.forEach((key, value) => {
@@ -683,13 +684,7 @@ function ClusterForm({
                     })
                 },
                 (err) => {
-                    if (err.code === 400) {
-                        toast.error('Bad request')
-                    } else if (err.code === 500) {
-                        toast.error('Internal Server error')
-                    } else if (err.code === 402) {
-                        toast.error('Not found')
-                    }
+                    showError(err)
                 },
             )
         } catch (err) {
@@ -719,13 +714,21 @@ function ClusterForm({
     function YAMLtoJSON(saveYamlData) {
         var obj = YAML.parse(saveYamlData)
         var jsonStr = JSON.stringify(obj)
-        return jsonStr
+        return jsonStr.replace(/[\\"]/g, '\\"')
+        .replace(/[\\]/g, '\\\\')
+        .replace(/[\\/]/g, '\\/')
+        .replace(/[\\b]/g, '\\b')
+        .replace(/[\\f]/g, '\\f')
+        .replace(/[\\n]/g, '\\n')
+        .replace(/[\\r]/g, '\\r')
+        .replace(/[\\t]/g, '\\t')
     }
 
-    function validateClusterDetail() {
+    async function validateClusterDetail() {
         try {
             let payload = YAMLtoJSON(saveYamlData)
-            validateCluster(request, payload).then(
+            console.log(payload)
+            await validateCluster(request, payload).then(
                 (response) => {
                     const map = response.result
                     map.forEach((cluster, userInfoObj) => {
@@ -752,13 +755,7 @@ function ClusterForm({
                     })
                 },
                 (err) => {
-                    if (err.code === 400) {
-                        toast.error('Bad request')
-                    } else if (err.code === 500) {
-                        toast.error('Internal Server error')
-                    } else if (err.code === 402) {
-                        toast.error('Not Found')
-                    }
+                    showError(err)
                 },
             )
         } catch (err) {
@@ -792,21 +789,6 @@ function ClusterForm({
                 userName: prometheusToggleEnabled ? state.userName.value : '',
                 password: prometheusToggleEnabled ? state.password.value : '',
             },
-        }
-    }
-
-    const saveClustersPayload = () => {
-        return {
-            id,
-            cluster_name: state.cluster_name.value,
-            config: {
-                bearer_token:
-                    state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value : '',
-                tls_key: state.tlsClientKey.value,
-                cert_auth_data: state.tlsClientCert.value,
-            },
-            active: true,
-            server_url: state.value,
         }
     }
 
@@ -1140,10 +1122,11 @@ function ClusterForm({
         )
     }
 
-    const handleCalls = () => {
+    const handleCalls = async () => {
+        await validateClusterDetail()
         toggleGetCluster()
         toggleLoaderChangeState()
-        validateClusterDetail()
+        
     }
 
     const codeEditor = () => {
@@ -1182,7 +1165,7 @@ function ClusterForm({
                         className="cta mr-32 ml-20"
                         type="button"
                         onClick={handleCalls}
-                        disabled={uploadState !== UPLOAD_STATE.SUCCESS ? false : true}
+                        disabled={uploadState !== UPLOAD_STATE.SUCCESS ? true : false}
                     >
                         Get cluster
                     </button>
@@ -1258,10 +1241,10 @@ function ClusterForm({
         )
     }
 
-    const handleClusterDetailCall = () => {
+    const handleClusterDetailCall = async () => {
+        await saveClustersDetails()
         toggleKubeConfigFile()
         toggleClusterDetails()
-        saveClustersDetails()
     }
 
     const displayClusterDetails = () => {
@@ -1320,8 +1303,8 @@ function ClusterForm({
                         <button
                             className="cta mr-32 ml-20"
                             type="button"
-                            onClick={handleClusterDetailCall}
-                            disabled={uploadState !== UPLOAD_STATE.SUCCESS ? false : true}
+                            onClick={() => handleClusterDetailCall()}
+                            disabled={uploadState !== UPLOAD_STATE.SUCCESS ? true : false}
                         >
                             Save
                         </button>
@@ -1341,10 +1324,6 @@ function ClusterForm({
                 </button>
             </div>
         )
-    }
-
-    const saveClusterButton = () => {
-        handleCloseButton()
     }
 
     return getCluster ? (
@@ -1378,7 +1357,7 @@ function ClusterForm({
                         <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
                             Cancel
                         </button>
-                        <button className="cta mr-20 ml-20">{loading ? <Progressing /> : 'Save cluster'}</button>
+                        <button className="cta mr-20 ml-20" onSubmit={handleOnSubmit}>{loading ? <Progressing /> : 'Save cluster'}</button>
                     </div>
                 )}
                 {confirmation && (
