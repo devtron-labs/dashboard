@@ -167,6 +167,16 @@ function ChartValuesView({
 
     useEffect(() => {
         if (isDeployChartView || isCreateValueView) {
+            getChartValues(commonState.chartValues.id, commonState.chartValues.kind)
+                    .then((response) => {
+                        dispatch({
+                            type: ChartValuesViewActionTypes.multipleOptions,
+                            payload: {
+                                selectedVersion:response.result.appStoreVersionId,
+                                selectedVersionUpdatePage:{id:response.result.appStoreVersionId,version:response.result.chartVersion},
+                            },
+                        })
+                    })
             checkGitOpsConfiguration()
             fetchProjectsAndEnvironments(serverMode, dispatch)
             getAndUpdateSchemaValue(
@@ -174,7 +184,7 @@ function ChartValuesView({
                 convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
                 dispatch,
             )
-
+           
             const _fetchedReadMe = commonState.fetchedReadMe
             _fetchedReadMe.set(0, commonState.installedConfig.readme)
             dispatch({
@@ -336,7 +346,9 @@ function ChartValuesView({
                         })
                         let _valueName
                         if (isCreateValueView && commonState.chartValues.kind === ChartKind.TEMPLATE) {
-                            setValueName(response.result.name)
+                            if (valueName === '') {
+                                setValueName(response.result.name)
+                            }
                             _valueName = response.result.name
                         }
 
@@ -383,7 +395,7 @@ function ChartValuesView({
             }
         }
     }, [commonState.chartValues])
-
+    
     useEffect(() => {
         if (commonState.selectedVersionUpdatePage?.id) {
             getChartRelatedReadMe(
@@ -392,6 +404,8 @@ function ChartValuesView({
                 commonState.modifiedValuesYaml,
                 dispatch,
             )
+            
+
         }
     }, [commonState.selectedVersionUpdatePage, commonState.isReadMeAvailable])
 
@@ -793,7 +807,7 @@ function ChartValuesView({
                 }
                 if (chartValueId !== '0') {
                     payload['id'] = parseInt(chartValueId)
-                    payload['chartVersion'] = commonState.chartValues.chartVersion
+                    payload['chartVersion'] = commonState.selectedVersionUpdatePage.version
                     toastMessage = CHART_VALUE_TOAST_MSGS.Updated
                     res = await updateChartValues(payload)
                 } else {
