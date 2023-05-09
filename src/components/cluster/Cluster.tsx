@@ -1236,9 +1236,7 @@ function ClusterForm({
                                     >
                                         <div></div>
                                         <div className="flexbox">
-                                            <span className="dc__ellipsis-right">
-                                                {clusterListDetail.clusterName}
-                                            </span>
+                                            <span className="dc__ellipsis-right">{clusterListDetail.clusterName}</span>
                                         </div>
                                         <div className=" dc__ellipsis-right"> {clusterListDetail.status} </div>
                                         <div className=""> {clusterListDetail.message}</div>
