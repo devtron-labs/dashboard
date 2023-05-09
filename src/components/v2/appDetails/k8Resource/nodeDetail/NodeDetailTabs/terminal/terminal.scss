@@ -25,11 +25,11 @@
     display: flex;
     flex-direction: column;
     max-height: 100vh;
+    background: var(--terminal-bg);
     overflow: hidden;
     flex: 1;
     .terminal-component {
         overflow: hidden;
-        background-color: var(--terminal-bg);
         flex: 1;
     }
 }
