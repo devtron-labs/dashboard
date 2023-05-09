@@ -1375,12 +1375,10 @@ function ClusterForm({
 
                 {!isKubeConfigFile && (
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
-                        <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
+                        <button className="cta cancel" type="button" onClick={(e) => toggleEditMode((t) => !t)}>
                             Cancel
                         </button>
-                        <button onClick={saveClusterButton} className="cta mr-20 ml-20">
-                            Save
-                        </button>
+                        <button className="cta mr-20 ml-20">{loading ? <Progressing /> : 'Save cluster'}</button>
                     </div>
                 )}
                 {confirmation && (
