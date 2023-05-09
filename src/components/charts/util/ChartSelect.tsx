@@ -2,12 +2,13 @@ import React, { useContext } from 'react'
 import Tippy from '@tippyjs/react'
 import { Chart } from '../charts.types'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
-import { LazyImage, noop, ConditionalWrap } from '../../common'
+import { LazyImage, ConditionalWrap } from '../../common'
 import { ReactComponent as Minus } from '../../../assets/icons/ic-minus.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { SERVER_MODE } from '../../../config'
 import { DeprecatedWarn } from '../../common/DeprecatedUpdateWarn'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
+import { noop } from '@devtron-labs/devtron-fe-common-lib'
 
 interface AllChartSelectProps {
     chart: Chart

@@ -1,4 +1,5 @@
 import { DeploymentAppType } from "../../../v2/appDetails/appDetails.type"
+import { UserApprovalMetadataType } from "@devtron-labs/devtron-fe-common-lib"
 
 export interface DeploymentHistorySingleValue {
     displayName: string
@@ -41,6 +42,10 @@ export interface DeploymentHistory {
 }
 
 export interface DeploymentDetailStepsType{
-  deploymentStatus: string
+  deploymentStatus?: string
   deploymentAppType?: DeploymentAppType
+  isHelmApps?: boolean
+  installedAppVersionHistoryId?: number
+  isGitops?: boolean
+  userApprovalMetadata?: UserApprovalMetadataType
 }

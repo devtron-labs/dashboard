@@ -2,8 +2,7 @@
 //@ts-nocheck
 
 import React, { useEffect } from 'react';
-import { useEffectAfterMount } from '../../common'
-import { showError, Progressing, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, PopupMenu, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
 import { SelectComposition, SelectProps, OptionGroupProps, SelectAsync } from './types';
 
 import arrowTriangle from '../../../assets/icons/ic-chevron-down.svg'
