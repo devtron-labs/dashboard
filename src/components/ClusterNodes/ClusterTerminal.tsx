@@ -16,11 +16,11 @@ import {
     clusterTerminalUpdate,
 } from './clusterNodes.service'
 import { GroupHeading, Option } from '../../components/v2/common/ReactSelect.utils'
-import { clusterImageDescription, convertToOptionsList, useJsonYaml } from '../common'
+import { clusterImageDescription, convertToOptionsList } from '../common'
 import { get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import ClusterManifest, { ManifestPopupMenu } from './ClusterManifest'
 import ClusterEvents from './ClusterEvents'
-import { ClusterTerminalType, NodeTaintType } from './types'
+import { ClusterTerminalType } from './types'
 import {
     AUTO_SELECT,
     clusterImageSelect,
