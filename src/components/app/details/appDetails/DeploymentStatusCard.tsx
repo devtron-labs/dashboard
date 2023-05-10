@@ -93,26 +93,25 @@ function DeploymentStatusCard({
                 </div>
                 <div className="flexbox" data-testid="last-updated-time">
                     <span className="fs-13 mr-5 fw-6 cn-9">
-                        {hideDeploymentStatusLeftInfo
-                            ? deploymentTriggerTime && moment(deploymentTriggerTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
-                            : deploymentStatusDetailsBreakdownData?.deploymentTriggerTime &&
-                              moment(
-                                  deploymentStatusDetailsBreakdownData.deploymentTriggerTime,
-                                  'YYYY-MM-DDTHH:mm:ssZ',
-                              ).fromNow()}
+                        {moment(
+                            hideDeploymentStatusLeftInfo
+                                ? deploymentTriggerTime
+                                : deploymentStatusDetailsBreakdownData?.deploymentTriggerTime,
+                            'YYYY-MM-DDTHH:mm:ssZ',
+                        ).fromNow()}
                     </span>
                     {deploymentStatusDetailsBreakdownData?.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS && (
                         <Timer className="icon-dim-16 mt-4" />
                     )}
                 </div>
 
-                {hideDeploymentStatusLeftInfo
-                    ? triggeredBy && triggeredBy
-                    : deploymentStatusDetailsBreakdownData?.triggeredBy && (
-                          <div className="fw-4 fs-12 cn-9 dc__ellipsis-right dc__mxw-inherit">
-                              by {deploymentStatusDetailsBreakdownData.triggeredBy || '-'}
-                          </div>
-                      )}
+                {hideDeploymentStatusLeftInfo ? (
+                    triggeredBy
+                ) : (
+                    <div className="fw-4 fs-12 cn-9 dc__ellipsis-right dc__mxw-inherit">
+                        by {deploymentStatusDetailsBreakdownData.triggeredBy || '-'}
+                    </div>
+                )}
             </div>
         </div>
     )
