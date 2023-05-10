@@ -24,6 +24,8 @@ import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
+import { ReactComponent as Check } from '../../assets/icons/ic-check-circle-green.svg'
+import { ReactComponent as Wrong } from '../../assets/icons/ic-close-circle.svg'
 import Tippy from '@tippyjs/react'
 import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
 import DeleteComponent from '../../util/DeleteComponent'
@@ -158,12 +160,12 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
 
     RegexInfoSteps = () : JSX.Element => {
         return (
-            <div className="w-500 fs-13 bcn-0 dc__overflow-scroll">
+            <div className="w-500 h-410 fs-13 bcn-0 dc__border dc__border-radius-8-imp">
                 <h2 className="flex left fs-14 fw-6 p-12 m-0 dc__border-bottom">
                     <QuestionFilled className="icon-dim-20 fcv-5 mr-12" />
                     {USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
                 </h2>
-                <div className="flex column dc__align-start p-12 dc__gap-12">
+                <div className="h-360 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-scroll">
                     <div className="w-476 h-112 flex column dc__align-start p-0 dc__gap-4">
                         {USE_REGEX_TIPPY_CONTENT.insructionsList.regexInfo.map((item, key) => (
                             <div className={`${key === 2 ? "h-24" : "h-40"} dc__gap-12 w-476 fs-13 fw-4 flex dc__align-start p-0`}>
@@ -174,29 +176,177 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             </div>
                         ))}
                     </div>
-                    <div className="w-476 h-454 dc__border-n1 flex column dc__align-start p-0 br-4">
-                        <div className="w-476 h-32 flex pt-6 pr-12 pb-6 pl-12 dc__gap-16 dc__border-bottom-n1">
-                            <p className="w-200 h-20 fs-12 fw-6 lh-20 fcn-6">
+                    <div className="w-476 mt-12 dc__border-n1 flex column dc__align-start p-0 br-4">
+                        <div className="w-476 regex-tippy-container h-32 pt-6 pr-12 pb-6 pl-12 dc__gap-16 dc__border-bottom-n1">
+                            <span className="h-20 fs-12 fw-6 lh-20 fcn-6">
                                 {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.headingRegex}
-                            </p>
-                            <p className="w-236 h-20 fs-12 fw-6 lh-20 fcn-6">
+                            </span>
+                            <span className="h-20 fs-12 fw-6 lh-20 fcn-6">
                                 {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.headingPath}
-                            </p>
+                            </span>
                         </div>
-                        <div className="w-476 h-82 pt-8 pr-12 pb-8 pl-12 flex dc__gap-16 dc__align-start dc__border-bottom-n1">
-                            <div className="w-111 bcn-1 br-4 dc__position-abs ">
-                                <span className="fs-13 fw-4 lh-20 ml-4">
+                        <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
+                            <div>
+                                <span className="bcn-1 br-4 fs-13 fw-4 lh-20">
                                     {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample1}
                                 </span>
                             </div>
-                            <div className="w-236 h-66 flex column dc__align-start p-0 dc__gap-6">
-                                <div className="w-236 h-18">
-                                    <div className="w-216 h-18 flex row  dc__align-items-center p-0 dc__gap-4">
-                                        {/* {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath1} */}
-                                        {/* <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath1}</span> */}
-                                    </div>
+                            <div className="h-66 dc__align-start p-0 dc__gap-6">
+                                <div className="h-18 dc__align-items-center p-0 dc__gap-4">
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath1.partOne}</span>
+                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath1.partTwo}</span>
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath1.partThree}</span>
                                 </div>
-
+                                <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath2.partOne}</span>
+                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath2.partTwo}</span>
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath2.partThree}</span>
+                                </div>
+                                <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath3.partOne}</span>
+                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath3.partTwo}</span>
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample1.regexPath3.partThree}</span>
+                                </div>
+                            </div>
+                            <div className="h-66 dc__align-start p-0 dc__gap-6">
+                                <Check className="icon-dim-16 mt-2"/>
+                                <Check className="icon-dim-16 mt-2"/>
+                                <Wrong className="icon-dim-16 mt-2"/>
+                            </div>
+                        </div>
+                        <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
+                            <div>
+                                <span className="bcn-1 br-4 fs-13 fw-4 lh-20">
+                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample2}
+                                </span>
+                            </div>
+                            <div className="h-66 dc__align-start p-0 dc__gap-6">
+                                <div className="h-18 dc__align-items-center p-0 dc__gap-4">
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath1.partOne}</span>
+                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath1.partTwo}</span>
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath1.partThree}</span>
+                                </div>
+                                <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath2.partOne}</span>
+                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath2.partTwo}</span>
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath2.partThree}</span>
+                                </div>
+                                <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath3.partOne}</span>
+                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath3.partTwo}</span>
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample2.regexPath3.partThree}</span>
+                                </div>
+                            </div>
+                            <div className="h-66 dc__align-start p-0 dc__gap-6">
+                                <Wrong className="icon-dim-16 mt-2"/>
+                                <Check className="icon-dim-16 mt-2"/>
+                                <Wrong className="icon-dim-16 mt-2"/>
+                            </div>
+                        </div>
+                        <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
+                            <div>
+                                <span className="bcn-1 br-4 fs-13 fw-4 lh-20">
+                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample3.partOne}
+                                </span>
+                                <span className="ml-4 fs-13 fw-4 lh-20">
+                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample3.partTwo}
+                                </span>
+                                <span className="ml-4 bcn-1 br-4 fs-13 fw-4 lh-20">
+                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample3.partThree}
+                                </span>
+                            </div>
+                            <div className="h-66 dc__align-start p-0 dc__gap-6">
+                                <div className="h-18 dc__align-items-center p-0 dc__gap-4">
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample3.regexPath1.partOne}</span>
+                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample3.regexPath1.partTwo}</span>
+                                </div>
+                                <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample3.regexPath2.partOne}</span>
+                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample3.regexPath2.partTwo}</span>
+                                </div>
+                                <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample3.regexPath3.partOne}</span>
+                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample3.regexPath3.partTwo}</span>
+                                </div>
+                            </div>
+                            <div className="h-66 dc__align-start p-0 dc__gap-6">
+                                <Check className="icon-dim-16 mt-2"/>
+                                <Check className="icon-dim-16 mt-2"/>
+                                <Check className="icon-dim-16 mt-2"/>
+                            </div>
+                        </div>
+                        <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
+                            <div>
+                                <span className="bcn-1 br-4 fs-13 fw-4 lh-20">
+                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample4}
+                                </span>
+                            </div>
+                            <div className="h-66 dc__align-start p-0 dc__gap-6">
+                                <div className="h-18 dc__align-items-center p-0 dc__gap-4">
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample4.regexPath1.partOne}</span>
+                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample4.regexPath1.partTwo}</span>
+                                    
+                                </div>
+                                <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample4.regexPath2.partOne}</span>
+                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample4.regexPath2.partTwo}</span>
+                                </div>
+                                <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample4.regexPath3.partOne}</span>
+                                    <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample4.regexPath3.partTwo}</span>
+                                </div>
+                            </div>
+                            <div className="h-66 dc__align-start p-0 dc__gap-6">
+                                <Check className="icon-dim-16 mt-2"/>
+                                <Check className="icon-dim-16 mt-2"/>
+                                <Wrong className="icon-dim-16 mt-2"/>
+                            </div>
+                        </div>
+                        <div className="regex-tippy-container h-58 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
+                            <div>
+                            <span className="fs-13 fw-4 lh-20">
+                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample5.partOne}
+                                </span>
+                                <span className="ml-4 bcn-1 br-4 fs-13 fw-4 lh-20">
+                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample5.partTwo}
+                                </span>
+                                <span className="ml-4 fs-13 fw-4 lh-20">
+                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample5.partThree}
+                                </span>
+                                <span className="ml-4 bcn-1 br-4 fs-13 fw-4 lh-20">
+                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample5.partFour}
+                                </span>
+                            </div>
+                            <div className="h-66 dc__align-start p-0 dc__gap-6">
+                                <div className="h-18 dc__align-items-center p-0 dc__gap-4">
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample5.regexPath1.partOne}</span>
+                                    
+                                </div>
+                                <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample5.regexPath2.partOne}</span>
+                                </div>
+                            </div>
+                            <div className="h-66 dc__align-start p-0 dc__gap-6">
+                                <Check className="icon-dim-16 mt-2"/>
+                                <Wrong className="icon-dim-16 mt-2"/>
+                            </div>
+                        </div>
+                        <div className="regex-tippy-container h-36 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
+                            <div>
+                            <span className="fs-13 fw-4 lh-20">
+                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample6.partOne}
+                                </span>
+                                <span className="ml-4 bcn-1 br-4 fs-13 fw-4 lh-20">
+                                    {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample6.partTwo}
+                                </span>
+                            </div>
+                            <div className="h-66 dc__align-start p-0 dc__gap-6">
+                                <div className="h-18 dc__align-items-center p-0 dc__gap-4">
+                                    <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample6.regexPath1.partOne}</span>
+                                </div>
+                            </div>
+                            <div className="h-66 dc__align-start p-0 dc__gap-6">
+                                <Check className="icon-dim-16 mt-2"/>
                             </div>
                         </div>
 

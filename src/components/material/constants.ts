@@ -59,19 +59,16 @@ export const USE_REGEX_TIPPY_CONTENT = {
                         partOne: 'Project',
                         partTwo: '/folderA/folderB/',
                         partThree: 'Client',
-                        isCorrect: true
                     },
                     regexPath2: {
                         partOne: 'Project',
                         partTwo: '/folderC/',
                         partThree: 'Client',
-                        isCorrect: true
                     },
                     regexPath3: {
                         partOne: 'Project',
                         partTwo: '/folderC/',
                         partThree: 'token',
-                        isCorrect: false
                     },
                 },
                 regexExample2: 'Project/*/Client',
@@ -80,19 +77,16 @@ export const USE_REGEX_TIPPY_CONTENT = {
                         partOne: 'Project',
                         partTwo: '/folderA/folderB/',
                         partThree: 'Client',
-                        isCorrect: false
                     },
                     regexPath2: {
                         partOne: 'Project',
                         partTwo: '/folderC/',
                         partThree: 'Client',
-                        isCorrect: true
                     },
                     regexPath3: {
                         partOne: 'Project',
                         partTwo: '/folderC/',
                         partThree: 'token',
-                        isCorrect: false
                     },
                 },
                 regexExample3: {
@@ -103,42 +97,30 @@ export const USE_REGEX_TIPPY_CONTENT = {
                 regexPathExample3: {
                     regexPath1: {
                         partOne: 'Project',
-                        partTwo: '/folderA/folderB/',
-                        partThree: 'Client',
-                        isCorrect: true
+                        partTwo: '/folderA/folderB/Client.txt',
                     },
                     regexPath2: {
                         partOne: 'Project',
-                        partTwo: '/folderC/',
-                        partThree: 'Client',
-                        isCorrect: true
+                        partTwo: '/folderC/Client.txt',
                     },
                     regexPath3: {
                         partOne: 'Project',
-                        partTwo: '/folderC/',
-                        partThree: 'token',
-                        isCorrect: true
+                        partTwo: '/folderC/token.txt',
                     },
                 },
                 regexExample4: 'Project/Client*',
                 regexPathExample4: {
                     regexPath1: {
-                        partOne: 'Project',
-                        partTwo: '/client',
-                        partThree: '.txt',
-                        isCorrect: true
+                        partOne: 'Project/client',
+                        partTwo: '.txt',
                     },
                     regexPath2: {
-                        partOne: 'Project',
-                        partTwo: '/client',
-                        partThree: '.js',
-                        isCorrect: true
+                        partOne: 'Project/client',
+                        partTwo: '.js',
                     },
                     regexPath3: {
-                        partOne: 'Project',
-                        partTwo: '/token',
-                        partThree: '.txt',
-                        isCorrect: false
+                        partOne: 'Project/token',
+                        partTwo: '.txt',
                     },
                 },
                 regexExample5: {
@@ -150,11 +132,9 @@ export const USE_REGEX_TIPPY_CONTENT = {
                 regexPathExample5: {
                     regexPath1: {
                         partOne: 'All folders at root',
-                        isCorrect: true
                     },
                     regexPath2: {
                         partOne: 'All files at root',
-                        isCorrect: false
                     },
                 },
                 regexExample6: {
@@ -164,7 +144,6 @@ export const USE_REGEX_TIPPY_CONTENT = {
                 regexPathExample6: {
                     regexPath1: {
                         partOne: 'All files & folders at root',
-                        isCorrect: true
                     },
                 },
                 
