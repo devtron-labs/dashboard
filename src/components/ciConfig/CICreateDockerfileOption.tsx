@@ -236,7 +236,7 @@ export default function CICreateDockerfileOption({
         return (
             <div className="flex">
                  <Tippy
-                     className="default-tt"
+                     className="default-tt w-200"
                      arrow={false}
                      placement="top"
                      content="Dockerfile will be placed at the root of the selected repo path"
@@ -347,7 +347,7 @@ export default function CICreateDockerfileOption({
         )
     }
 
-    const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
+    const [isCollapsed, setIsCollapsed] = useState<boolean>((currentMaterial?.id != currentBuildContextGitMaterial?.id) || (formState?.buildContext !== ''))
     const handleCopyToClipboard = (e) => {
         e.stopPropagation()
         copyToClipboard(editorValue, () => setCopied(true))
@@ -433,7 +433,7 @@ export default function CICreateDockerfileOption({
                 </div>
             )}
             {(!configOverrideView || allowOverride ? isCollapsed : true) && (
-                <div className="mb-4 form-row__docker">
+                <div className="form-row__docker">
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                         <label className="form__label">{`${
                             configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
