@@ -53,6 +53,7 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     DataListType,
     UserDetails,
+    SaveClusterPayloadType,
 } from './cluster.type'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
@@ -680,18 +681,30 @@ function ClusterForm({
         setCollapse(!collapsed)
     }
 
-    const getSaveClusterPayload = (dataList) => {
-        return {
-            // id,
-            // cluster_name: dataList['cluster_name']
-            // insecureSkipTlsVerify: dataList
-        }
+    const getSaveClusterPayload = (dataLists: DataListType[]) => {
+        let SaveClusterPayload: SaveClusterPayloadType[] = []
+        dataLists.forEach((dataList, index) => {
+            const _clusterDetails : SaveClusterPayloadType = {
+                id: null,
+                cluster_name: dataList.cluster_name,
+                insecureSkipTlsVerify: dataList.insecureSkipTlsVerify,
+                config: dataList.userInfos[index].config,
+                active: dataList.active,
+                prometheus_url: "",
+                prometheusAuth: {"userName": "",
+                "password": ""},
+                server_url: dataList.server_url,
+            }
+            SaveClusterPayload.push(_clusterDetails)
+        });
+
+        return SaveClusterPayload
     }
 
     async function saveClustersDetails() {
         try {
-            // let payload = getSaveClusterPayload()
-            let payload = dataList
+            let payload = getSaveClusterPayload(dataList)
+            // let payload = dataList
             await saveClusters(payload).then(
                 (response) => {
                     response.result.map((_clusterSaveDetails, index) => {
@@ -761,8 +774,9 @@ function ClusterForm({
                             server_url: _cluster['server_url'],
                             active: _cluster['active'],
                             defaultClusterComponent: _cluster['defaultClusterComponent'],
+                            insecureSkipTlsVerify: _cluster['insecureSkipTlsVerify']
                         }
-                    }),
+                    })
                 ])
 
                 //     const map = response.result
@@ -1329,19 +1343,6 @@ function ClusterForm({
         toggleClusterDetails()
     }
 
-    // const getUserNameList = (userInfos: []) => {
-    //     return (
-    //         userInfos.map((_userName, index) => {
-    //             <div className='dc__content-space cursor' onClick={toggleDropdown}>
-    //             <Dropdown
-    //                 className="icon-dim-24 rotate"
-    //                 style={{ ['--rotateBy' as any]: collapsed ? '180deg' : '0deg' }}
-    //             />
-
-    //             </div>
-    //         })
-    //     )
-    // }
     if (loader) {
         return <LoadingCluster />
     }
@@ -1352,7 +1353,7 @@ function ClusterForm({
                     <div className="cluster-form dc__position-rel h-100 bcn-0">
                         <AddClusterHeader />
                         <InfoColourBar
-                            message={<div>`${dataList.length} valid cluster. Select the cluster you want to Add/Update`</div>}
+                            message={`${dataList.length} valid cluster. Select the cluster you want to Add/Update`}
                             classname="info_bar cn-9 mb-20 lh-20"
                             Icon={Info}
                             iconClass="icon-dim-18"

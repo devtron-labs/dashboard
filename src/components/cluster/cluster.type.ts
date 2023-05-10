@@ -16,7 +16,6 @@ export interface UserDetails{
     userName: string
     errorInConnecting: string,
     config: ConfigCluster
-
 }
 
 export interface DataListType{
@@ -25,14 +24,25 @@ export interface DataListType{
     server_url: string
     active: boolean
     defaultClusterComponent: number
-
+    insecureSkipTlsVerify: boolean
     //TODO delete
     // agentInstallationStage: number
     // k8sVersion: string
     // userName: string
-    // insecureSkipTlsVerify: boolean
+    
     // errorInConnecting: string
     // isCdArgoSetup: boolean
+}
+
+export interface SaveClusterPayloadType {
+    id : number,
+    cluster_name: string,
+    insecureSkipTlsVerify: boolean,
+    config: ConfigCluster,
+    active: boolean,
+    prometheus_url: string,
+    prometheusAuth: Record<string, string>,
+    server_url: string,
 }
 
 export const DEFAULT_SECRET_PLACEHOLDER = '********'
