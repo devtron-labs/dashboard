@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import { noop } from '../common'
-import { showError, Progressing, Drawer, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Drawer, DeleteDialog, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as EditIcon } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as DeleteIcon } from '../../assets/icons/ic-delete-interactive.svg'

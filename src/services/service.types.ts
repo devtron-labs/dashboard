@@ -1,5 +1,4 @@
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib';
-import { VulnerabilityType } from '../components/common';
+import { ResponseType, VulnerabilityType } from '@devtron-labs/devtron-fe-common-lib';
 import { DeploymentAppType } from '../components/v2/appDetails/appDetails.type';
 
 export interface RootObject {
