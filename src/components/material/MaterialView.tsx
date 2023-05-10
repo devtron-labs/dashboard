@@ -165,7 +165,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     <QuestionFilled className="icon-dim-20 fcv-5 mr-12" />
                     {USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
                 </h2>
-                <div className="h-360 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-scroll">
+                <div className="h-365 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-scroll">
                     <div className="w-476 h-112 flex column dc__align-start p-0 dc__gap-4">
                         {USE_REGEX_TIPPY_CONTENT.insructionsList.regexInfo.map((item, key) => (
                             <div className={`${key === 2 ? "h-24" : "h-40"} dc__gap-12 w-476 fs-13 fw-4 flex dc__align-start p-0`}>
@@ -186,8 +186,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             </span>
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
-                            <div>
-                                <span className="bcn-1 br-4 fs-13 fw-4 lh-20">
+                            <div className="flex left">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
                                     {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample1}
                                 </span>
                             </div>
@@ -215,8 +215,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             </div>
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
-                            <div>
-                                <span className="bcn-1 br-4 fs-13 fw-4 lh-20">
+                            <div className="flex left">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
                                     {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample2}
                                 </span>
                             </div>
@@ -244,14 +244,14 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             </div>
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
-                            <div>
-                                <span className="bcn-1 br-4 fs-13 fw-4 lh-20">
+                            <div className="flex left">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
                                     {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample3.partOne}
                                 </span>
                                 <span className="ml-4 fs-13 fw-4 lh-20">
                                     {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample3.partTwo}
                                 </span>
-                                <span className="ml-4 bcn-1 br-4 fs-13 fw-4 lh-20">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
                                     {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample3.partThree}
                                 </span>
                             </div>
@@ -276,8 +276,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             </div>
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
-                            <div>
-                                <span className="bcn-1 br-4 fs-13 fw-4 lh-20">
+                            <div className="flex left">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 cn-7">
                                     {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample4}
                                 </span>
                             </div>
@@ -303,17 +303,17 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             </div>
                         </div>
                         <div className="regex-tippy-container h-58 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
-                            <div>
-                            <span className="fs-13 fw-4 lh-20">
+                            <div className="flex left">
+                                <span className="fs-13 fw-4 lh-20">
                                     {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample5.partOne}
                                 </span>
-                                <span className="ml-4 bcn-1 br-4 fs-13 fw-4 lh-20">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
                                     {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample5.partTwo}
                                 </span>
                                 <span className="ml-4 fs-13 fw-4 lh-20">
                                     {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample5.partThree}
                                 </span>
-                                <span className="ml-4 bcn-1 br-4 fs-13 fw-4 lh-20">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
                                     {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample5.partFour}
                                 </span>
                             </div>
@@ -332,11 +332,11 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             </div>
                         </div>
                         <div className="regex-tippy-container h-36 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
-                            <div>
-                            <span className="fs-13 fw-4 lh-20">
+                            <div className="flex left">
+                                <span className="fs-13 fw-4 lh-20">
                                     {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample6.partOne}
                                 </span>
-                                <span className="ml-4 bcn-1 br-4 fs-13 fw-4 lh-20">
+                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
                                     {USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexExample6.partTwo}
                                 </span>
                             </div>
@@ -600,13 +600,13 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                         <span className="fs-13 fw-4">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partOne}
                                         </span>
-                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__no-border">
+                                        <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partTwo}
                                         </span>
                                         <span className="ml-4 fs-13 fw-4">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partThree}
                                         </span>
-                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__no-border">
+                                        <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partFour}
                                         </span>
                                         <br />
@@ -616,15 +616,15 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                         <span className="fs-13 fw-4">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partOne}
                                         </span>
-                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-4 dc__no-border">
+                                        <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partTwo}
                                         </span>
                                         <span className="fs-13 fw-4 ml-2">,</span>
-                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-2 dc__no-border">
+                                        <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partThree}
                                         </span>
                                         <span className="fs-13 fw-4 ml-2">,</span>
-                                        <span className="bcn-1 br-2 p-2 dc__ff-monospace fs-13 fw-4 ml-2 dc__no-border">
+                                        <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFour}
                                         </span>
                                         <>

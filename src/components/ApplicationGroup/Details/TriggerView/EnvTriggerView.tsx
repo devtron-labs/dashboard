@@ -350,8 +350,8 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     ]
                     _selectedMaterial.isMaterialLoading = false
                     _selectedMaterial.showAllCommits = false
-                    _selectedMaterial.isMaterialSelectionError = _result.Excluded ? true : false
-                    _selectedMaterial.materialSelectionErrorMsg = _result.Excluded ? NO_COMMIT_SELECTED : ''
+                    _selectedMaterial.isMaterialSelectionError = false
+                    _selectedMaterial.materialSelectionErrorMsg = ''
                 } else {
                     _selectedMaterial.history = []
                     _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
