@@ -17,6 +17,7 @@ import {
     ButtonWithLoader,
     CHECKBOX_VALUE,
     DropdownIcon,
+    Info,
 } from '../common'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
@@ -590,7 +591,6 @@ function ClusterForm({
     const inputFileRef = useRef(null)
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
     const [saveYamlData, setSaveYamlState] = useState<string>('')
-    const [errorMessage, setErrorMessage] = useState<string>('')
     const [dataList, setDataList] = useState<DataListType[]>([])
     const [saveClusterList, setSaveClusterList] = useState<{ clusterName: string; status: string; message: string }[]>([])
     const [loader, setState] = useState<boolean>(false)
@@ -897,7 +897,6 @@ function ClusterForm({
             password: prometheusToggleEnabled ? state.password.value : '',
         },
         server_url,
-
         defaultClusterComponent: defaultClusterComponent,
         k8sversion: '',
     }
@@ -1235,6 +1234,7 @@ function ClusterForm({
     const saveClusterDetails = (): JSX.Element => {
         return (
             <>
+                <LoadingCluster/>
                 <div className="cluster-form dc__position-rel h-100 bcn-0">
                     <AddClusterHeader />
                     <div className="api-token__list en-2 bw-1 bcn-0 br-8">
@@ -1306,9 +1306,12 @@ function ClusterForm({
                 {isKubeConfigFile && (
                     <div className="cluster-form dc__position-rel h-100 bcn-0">
                         <AddClusterHeader />
-                        <div className="infobar flex left bcb-1 eb-2 bw-1 br-4 mb-20 pt-10 pb-0 pr-16 pl-16">
-                            Select the cluster you want to add/update.
-                        </div>
+                        <InfoColourBar
+                            message={`${dataList.length} valid cluster. Select the cluster you want to Add/Update`}
+                            classname="info_bar cn-9 mb-20 lh-20"
+                            Icon={Info}
+                            iconClass="icon-dim-18"
+                        />
                         <div className="api-token__list en-2 bw-1 bcn-0 br-8">
                             <div className="cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
                                 <div></div>
@@ -1337,8 +1340,13 @@ function ClusterForm({
                                             <div className="flexbox">
                                                 <span className="dc__ellipsis-right">{clusterDetail.cluster_name}</span>
                                             </div>
-                                            <div className=" dc__ellipsis-right">{clusterDetail.userInfos[0].userName}</div>
-                                            <div className="dc__ellipsis-right"> {clusterDetail.userInfos[0].errorInConnecting || 'No error'}</div>
+                                            <div className=" dc__ellipsis-right">
+                                                {clusterDetail.userInfos[0].userName}
+                                            </div>
+                                            <div className="dc__ellipsis-right">
+                                                {' '}
+                                                {clusterDetail.userInfos[0].errorInConnecting || 'No error'}
+                                            </div>
                                         </div>
                                     ))
                                 )}
