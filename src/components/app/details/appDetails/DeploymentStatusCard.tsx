@@ -70,14 +70,18 @@ function DeploymentStatusCard({
             </>
         )
     }
+
+    const onClickLastDeploymentStatus = (e) => {
+        if (loadingResourceTree) noop()
+        if (!hideDetails && !hideDeploymentStatusLeftInfo) {
+            showDeploymentDetailedStatus(e)
+        }
+    }
+
     return (
         <div
             data-testid="deployment-status-card"
-            onClick={
-                loadingResourceTree
-                    ? noop
-                    : (!hideDetails || !hideDeploymentStatusLeftInfo) && showDeploymentDetailedStatus
-            }
+            onClick={onClickLastDeploymentStatus}
             className={`source-info-container flex left bcn-0 p-16 br-8 mw-382 ${
                 hideDeploymentStatusLeftInfo || hideDetails ? '' : 'cursor'
             } mr-12`}
@@ -89,23 +93,26 @@ function DeploymentStatusCard({
                 </div>
                 <div className="flexbox" data-testid="last-updated-time">
                     <span className="fs-13 mr-5 fw-6 cn-9">
-                        {deploymentStatusDetailsBreakdownData?.deploymentTriggerTime &&
-                            moment(
-                                deploymentStatusDetailsBreakdownData.deploymentTriggerTime,
-                                'YYYY-MM-DDTHH:mm:ssZ',
-                            ).fromNow()}
-                        {(hideDeploymentStatusLeftInfo && deploymentTriggerTime) && moment(deploymentTriggerTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()}
+                        {hideDeploymentStatusLeftInfo
+                            ? deploymentTriggerTime && moment(deploymentTriggerTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()
+                            : deploymentStatusDetailsBreakdownData?.deploymentTriggerTime &&
+                              moment(
+                                  deploymentStatusDetailsBreakdownData.deploymentTriggerTime,
+                                  'YYYY-MM-DDTHH:mm:ssZ',
+                              ).fromNow()}
                     </span>
                     {deploymentStatusDetailsBreakdownData?.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS && (
                         <Timer className="icon-dim-16 mt-4" />
                     )}
                 </div>
-                {deploymentStatusDetailsBreakdownData?.triggeredBy && (
-                    <div className="fw-4 fs-12 cn-9 dc__ellipsis-right dc__mxw-inherit">
-                        by {deploymentStatusDetailsBreakdownData.triggeredBy || '-'}
-                    </div>
-                )}
-                 {hideDeploymentStatusLeftInfo && triggeredBy && triggeredBy}
+
+                {hideDeploymentStatusLeftInfo
+                    ? triggeredBy && triggeredBy
+                    : deploymentStatusDetailsBreakdownData?.triggeredBy && (
+                          <div className="fw-4 fs-12 cn-9 dc__ellipsis-right dc__mxw-inherit">
+                              by {deploymentStatusDetailsBreakdownData.triggeredBy || '-'}
+                          </div>
+                      )}
             </div>
         </div>
     )
