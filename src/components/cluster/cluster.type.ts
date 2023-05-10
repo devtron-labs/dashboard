@@ -11,6 +11,30 @@ export const AuthenticationType = {
     IAM: 'IAM',
 }
 
+
+export interface UserDetails{
+    userName: string
+    errorInConnecting: string,
+    config: ConfigCluster
+
+}
+
+export interface DataListType{
+    cluster_name: string
+    userInfos: UserDetails[]
+    server_url: string
+    active: boolean
+    defaultClusterComponent: number
+
+    //TODO delete
+    // agentInstallationStage: number
+    // k8sVersion: string
+    // userName: string
+    // insecureSkipTlsVerify: boolean
+    // errorInConnecting: string
+    // isCdArgoSetup: boolean
+}
+
 export const DEFAULT_SECRET_PLACEHOLDER = '********'
 
 export enum ClusterComponentStatus {

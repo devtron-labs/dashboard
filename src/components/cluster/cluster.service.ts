@@ -27,14 +27,14 @@ export function getCluster(id: number) {
     return get(URL);
 }
 
-export function saveClusters(request, payload) {
+export function saveClusters(payload) {
     const URL = `${Routes.SAVECLUSTER}`;
-    return post(URL, request, payload);
+    return post(URL, payload);
 }
 
-export function validateCluster(request, payload) {
+export function validateCluster(payload) {
     const URL = `${Routes.VALIDATE}`
-    return post(URL, request, payload);
+    return post(URL, payload);
 }
 
 export function saveCluster(request) {
