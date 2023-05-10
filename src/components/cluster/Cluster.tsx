@@ -21,6 +21,7 @@ import {
 } from '../common'
 import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
+import NoResults from '../../assets/img/empty-noresult@2x.png'
 import {
     getClusterList,
     saveCluster,
@@ -78,7 +79,6 @@ import { UPLOAD_STATE } from '../CustomChart/types'
 import { request } from 'http'
 import { ConfigCluster, UserInfos, ClusterInfo, ClusterResult } from './cluster.type'
 import { error } from 'console'
-import { NoMatchingResults } from '../externalLinks/ExternalLinks.component'
 import cluster from 'cluster'
 import { getClusterEvents } from '../ClusterNodes/clusterNodes.service'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
@@ -675,22 +675,6 @@ function ClusterForm({
         setCollapse(!collapsed)
     }
 
-    // const saveClusterPayload = () => {
-    //     let payload
-    //     // dataList.map((_dataList, index)=>{
-    //     //     payload = {
-    //     //         id,
-    //     //         cluster_name: _dataList[cluster_name].
-    //     //     }
-    //     // })
-        
-    //     // return {
-    //     //     id,
-    //     //     cluster_name: 
-            
-    //     // }
-    // }
-
     async function saveClustersDetails() {
         try {
             let payload = dataList
@@ -1230,6 +1214,20 @@ function ClusterForm({
             </div>
         )
     }
+    
+    const NoMatchingResults = (): JSX.Element => {
+        return (
+            <EmptyState>
+                <EmptyState.Image>
+                    <img src={NoResults} width="250" height="200" alt="No matching results" />
+                </EmptyState.Image>
+                <EmptyState.Title>
+                    <h2 className="fs-16 fw-4 c-9">No matching results</h2>
+                </EmptyState.Title>
+                <EmptyState.Subtitle>We couldn't find any matching cluster</EmptyState.Subtitle>
+            </EmptyState>
+        )
+    }
 
     const saveClusterDetails = (): JSX.Element => {
         return (
@@ -1285,14 +1283,14 @@ function ClusterForm({
         toggleClusterDetails()
     }
 
-    // const getUserNameList = (userInfos) => {
+    // const getUserNameList = (userInfos: []) => {
     //     return (
     //         userInfos.map((_userName, index) => {
     //             <div className='dc__content-space cursor' onClick={toggleDropdown}>
-    //             {/* <Dropdown
+    //             <Dropdown
     //                 className="icon-dim-24 rotate"
     //                 style={{ ['--rotateBy' as any]: collapsed ? '180deg' : '0deg' }}
-    //             /> */}
+    //             />
 
     //             </div>
     //         })
