@@ -28,13 +28,13 @@ export const getAppList = (request, options?) => {
     return post(URL, request, options)
 }
 
-export function getCITriggerInfo(params: { appId: number | string; ciArtifactId: number | string }) {
-    const URL = `${Routes.APP}/material-info/${params.appId}/${params.ciArtifactId}`
+export function getCITriggerInfo(params: { envId: number | string; ciArtifactId: number | string }) {
+    const URL = `${Routes.APP}/material-info/${params.envId}/${params.ciArtifactId}`
     return get(URL)
 }
 
 export function getCITriggerInfoModal(
-    params: { appId: number | string; ciArtifactId: number | string },
+    params: { envId: number | string; ciArtifactId: number | string },
     commit: string,
 ) {
     return getCITriggerInfo(params).then((response) => {
