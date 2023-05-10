@@ -36,7 +36,8 @@ export default function CICreateDockerfileOption({
     ciConfig,
     formState,
     handleOnChangeConfig,
-    renderInfoCard
+    renderInfoCard,
+    isDefaultBuildContext
 }: CICreateDockerfileOptionProps) {
     const [languages, setLanguages] = useState<LanguageOptionType[]>([])
     const [languageFrameworks, setLanguageFrameworks] = useState<Map<string, FrameworkOptionType[]>>()
@@ -347,7 +348,7 @@ export default function CICreateDockerfileOption({
         )
     }
 
-    const [isCollapsed, setIsCollapsed] = useState<boolean>((currentMaterial?.id != currentBuildContextGitMaterial?.id) || (formState?.buildContext !== ''))
+    const [isCollapsed, setIsCollapsed] = useState<boolean>(!isDefaultBuildContext())
     const handleCopyToClipboard = (e) => {
         e.stopPropagation()
         copyToClipboard(editorValue, () => setCopied(true))

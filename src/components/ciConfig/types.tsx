@@ -265,6 +265,7 @@ export interface CICreateDockerfileOptionProps {
     ciConfig: CiPipelineResult
     handleOnChangeConfig: (e) => void
     renderInfoCard: () => JSX.Element
+    isDefaultBuildContext: () => boolean
 }
 
 export interface CIBuildpackBuildOptionsProps {
