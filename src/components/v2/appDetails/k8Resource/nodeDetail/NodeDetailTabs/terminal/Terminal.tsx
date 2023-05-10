@@ -8,7 +8,7 @@ import SockJS from 'sockjs-client'
 import { ErrorMessageType, ERROR_MESSAGE, POD_LINKS, SocketConnectionType, TerminalViewProps } from '../node.type'
 import ReactGA from 'react-ga4'
 import IndexStore from '../../../../index.store'
-import { AppType, DeploymentAppType, K8sResourcePayloadAppType } from '../../../../appDetails.type'
+import { AppType, DeploymentAppType } from '../../../../appDetails.type'
 import { elementDidMount, useOnline } from '../../../../../../common'
 import { get, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { SERVER_MODE } from '../../../../../../../config'
@@ -421,7 +421,13 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
         const appId =
             appDetails.appType == AppType.DEVTRON_APP
                 ? getDevtronAppId(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
-                : getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName)
+                : getAppId(
+                      appDetails.clusterId,
+                      appDetails.namespace,
+                      appDetails.deploymentAppType == DeploymentAppType.argo_cd
+                          ? `${appDetails.appName}`
+                          : appDetails.appName,
+                  )
         
         let url: string = 'k8s/pod/exec/session/'
         if (terminalViewProps.isResourceBrowserView) {
@@ -436,7 +442,7 @@ function TerminalView(terminalViewProps: TerminalViewProps) {
             }/${terminalViewProps.nodeName}/${terminalViewProps.shell.value}/${terminalViewProps.containerName}`
         
         if (!terminalViewProps.isResourceBrowserView) { 
-            return url+`?appType=${appDetails.appType === AppType.DEVTRON_APP ? `${K8sResourcePayloadAppType.DEVTRON_APP}` : `${K8sResourcePayloadAppType.HELM_APP}`}`
+            return url+`?appType=${appDetails.appType === AppType.DEVTRON_APP ? '0' : '1'}`
         }
         return url
     }

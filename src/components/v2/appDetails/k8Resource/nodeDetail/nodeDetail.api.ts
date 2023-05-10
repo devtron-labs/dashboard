@@ -76,7 +76,13 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
     const appId =
         appDetails.appType == AppType.DEVTRON_APP
             ? getDevtronAppId(appDetails.clusterId, appDetails.appId, appDetails.environmentId)
-            : getAppId(appDetails.clusterId, appDetails.namespace, appDetails.appName)
+            : getAppId(
+                  appDetails.clusterId,
+                  appDetails.namespace,
+                  appDetails.deploymentAppType == DeploymentAppType.argo_cd
+                      ? `${appDetails.appName}`
+                      : appDetails.appName,
+              )
 
     const requestBody = {
         appId: appId,
@@ -92,6 +98,7 @@ function createBody(appDetails: AppDetails, nodeName: string, nodeType: string, 
             },
         },
         appType: appDetails.appType == AppType.DEVTRON_APP ? K8sResourcePayloadAppType.DEVTRON_APP : K8sResourcePayloadAppType.HELM_APP,
+        deploymentType: appDetails.deploymentAppType == DeploymentAppType.helm ? K8sResourcePayloadDeploymentType.HELM_INSTALLED : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
     }
     if (updatedManifest) {
         requestBody.k8sRequest['patch'] = updatedManifest
@@ -153,7 +160,9 @@ export const getLogsURL = (
     const appId =
         ad.appType == AppType.DEVTRON_APP
             ? getDevtronAppId(ad.clusterId, ad.appId, ad.environmentId)
-            : getAppId(ad.clusterId, ad.namespace, ad.appName)
+            : getAppId(ad.clusterId, ad.namespace, ad.deploymentAppType == DeploymentAppType.argo_cd
+                ? `${ad.appName}`
+                : ad.appName)
 
     let logsURL = `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}`
 
@@ -161,10 +170,11 @@ export const getLogsURL = (
         logsURL += `&clusterId=${clusterId}&namespace=${namespace}`
     } else {
         const appType = ad.appType == AppType.DEVTRON_APP ? K8sResourcePayloadAppType.DEVTRON_APP : K8sResourcePayloadAppType.HELM_APP
+        const deploymentType = ad.deploymentAppType == DeploymentAppType.helm ? K8sResourcePayloadDeploymentType.HELM_INSTALLED : K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
         if (appType  === 0){
             logsURL += `&namespace=${ad.namespace}`
         }
-        logsURL += `&appId=${appId}&appType=${appType}`
+        logsURL += `&appId=${appId}&appType=${appType}&deploymentType=${deploymentType}`
     }
     return `${logsURL}&follow=true&tailLines=500`
 }

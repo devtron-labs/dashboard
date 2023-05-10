@@ -29,8 +29,8 @@ export enum K8sResourcePayloadAppType {
 }
 
 export enum K8sResourcePayloadDeploymentType {
-    NON_GITOPS = 0,
-    GITOPS = 1,
+    HELM_INSTALLED = 0,
+    ARGOCD_INSTALLED = 1,
 }
 
 export interface EnvDetails {
