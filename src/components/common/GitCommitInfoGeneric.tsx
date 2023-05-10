@@ -166,7 +166,7 @@ export default function GitCommitInfoGeneric({
         if (isExcluded) {
             return (
                 <Tippy
-                    className="default-tt w-200 dc__align-left fw-4 fs-12"
+                    className="default-tt w-200 dc__align-left fw-4 fs-12 dc__no-text-transform"
                     arrow={false}
                     placement="bottom"
                     content={MATERIAL_EXCLUDE_TIPPY_TEXT}
