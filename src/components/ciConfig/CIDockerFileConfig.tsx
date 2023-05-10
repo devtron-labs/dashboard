@@ -484,6 +484,7 @@ export default function CIDockerFileConfig({
                                         tabIndex={4}
                                         type="text"
                                         className="form__input file-name"
+                                        data-testid="build-context-path-text-box"
                                         placeholder="Project Path"
                                         name="buildContext"
                                         value={

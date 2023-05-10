@@ -508,6 +508,7 @@ export default function CICreateDockerfileOption({
                                     tabIndex={4}
                                     type="text"
                                     className="form__input file-name"
+                                    data-testid="build-context-path-text-box"
                                     placeholder="Enter Path"
                                     name="buildContext"
                                     value={
