@@ -433,7 +433,7 @@ export default function CICreateDockerfileOption({
                 </div>
             )}
             {(!configOverrideView || allowOverride ? isCollapsed : true) && (
-                <div className="form-row__docker">
+                <div className={`form-row__docker ${!configOverrideView || allowOverride ? 'ml-24' : ''}`}>
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                         <label className="form__label">{`${
                             configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
