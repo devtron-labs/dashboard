@@ -91,6 +91,7 @@ export interface CIConfigDiffViewProps {
     processedWorkflows: ProcessedWorkflowsType
     toggleConfigOverrideDiffModal: () => void
     reload: (skipPageReload?: boolean) => Promise<void>
+    gitMaterials: any
 }
 
 export interface CIConfigFormProps {
@@ -304,6 +305,7 @@ export interface CIBuildConfigDiffProps {
     configOverridenPipelines: CiPipeline[]
     materials: Material[]
     globalCIConfig: DockerConfigOverrideType
+    gitMaterials: any
 }
 
 export interface TargetPlatformSelectorType {

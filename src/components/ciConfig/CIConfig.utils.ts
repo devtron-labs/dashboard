@@ -428,33 +428,39 @@ export const getCIConfigDiffValues = (
     globalCIConfig: DockerConfigOverrideType,
     ciConfigOverride: DockerConfigOverrideType,
     materials,
+    gitMaterials,
 ): CIConfigDiffType[] => {
     const globalCIBuildType = globalCIConfig.ciBuildConfig?.ciBuildType
     const ciBuildTypeOverride = ciConfigOverride?.ciBuildConfig?.ciBuildType
     let globalGitMaterialName, currentMaterialName
-    let globalBuildContextGitMaterialName,currentBuildContextGitMaterialName
+    let globalBuildContextGitMaterialItem,currentBuildContextGitMaterialItem
     let globalBuildContext = globalCIConfig.ciBuildConfig?.dockerBuildConfig?.buildContext,
         currentBuildContext = ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
     if (
-        materials &&
         (globalCIBuildType !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE ||
             ciBuildTypeOverride !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE)
     ) {
-        for (const gitMaterial of materials) {
-            if (gitMaterial.gitMaterialId === globalCIConfig.ciBuildConfig?.gitMaterialId) {
-                globalGitMaterialName = gitMaterial.materialName
-            }
+        if(materials) {
+            for (const gitMaterial of materials) {
+                if (gitMaterial.gitMaterialId === globalCIConfig.ciBuildConfig?.gitMaterialId) {
+                    globalGitMaterialName = gitMaterial.materialName
+                }
 
-            if (gitMaterial.gitMaterialId === ciConfigOverride?.ciBuildConfig?.gitMaterialId) {
-                currentMaterialName = gitMaterial.materialName
+                if (gitMaterial.gitMaterialId === ciConfigOverride?.ciBuildConfig?.gitMaterialId) {
+                    currentMaterialName = gitMaterial.materialName
+                }
             }
+        }
 
-            if (gitMaterial.gitMaterialId === globalCIConfig.ciBuildConfig?.buildContextGitMaterialId) {
-                globalBuildContextGitMaterialName = gitMaterial.materialName
-            }
+        if(gitMaterials){
+            for (const gitMaterial of gitMaterials){
+                if (gitMaterial.id === globalCIConfig.ciBuildConfig?.buildContextGitMaterialId) {
+                    globalBuildContextGitMaterialItem = gitMaterial
+                }
 
-            if (gitMaterial.gitMaterialId === ciConfigOverride?.ciBuildConfig?.buildContextGitMaterialId) {
-                currentBuildContextGitMaterialName = gitMaterial.materialName
+                if (gitMaterial.id === ciConfigOverride?.ciBuildConfig?.buildContextGitMaterialId) {
+                    currentBuildContextGitMaterialItem = gitMaterial
+                }
             }
         }
     }
@@ -513,14 +519,14 @@ export const getCIConfigDiffValues = (
             {
                 configName: 'Repo containing build context',
                 changeBGColor: globalCIConfig.ciBuildConfig?.buildContextGitMaterialId !== ciConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
-                baseValue: globalBuildContextGitMaterialName,
-                overridenValue: currentBuildContextGitMaterialName,
+                baseValue: globalBuildContextGitMaterialItem?.name,
+                overridenValue: currentBuildContextGitMaterialItem?.name,
             },
             {
                 configName: 'Build context',
-                changeBGColor: globalBuildContext !== currentBuildContext,
-                baseValue: globalBuildContext == '' ? '.' : globalBuildContext,
-                overridenValue: currentBuildContext == '' ? '.' : currentBuildContext,
+                changeBGColor: (globalBuildContextGitMaterialItem?.checkoutPath + (globalBuildContext ?  globalBuildContext : '')) !== (currentBuildContextGitMaterialItem?.checkoutPath + (currentBuildContext ? currentBuildContext: '')),
+                baseValue: globalBuildContextGitMaterialItem?.checkoutPath + (globalBuildContext ?  globalBuildContext : ''),
+                overridenValue: currentBuildContextGitMaterialItem?.checkoutPath + (currentBuildContext ? currentBuildContext: ''),
             },
         )
     }
