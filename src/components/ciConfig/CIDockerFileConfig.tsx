@@ -302,7 +302,7 @@ export default function CIDockerFileConfig({
     const renderSelfDockerfileBuildOption = () => {
         return (
             <div>
-                <div className="mb-12 form-row__docker">
+                <div className={`${configOverrideView ? 'mb-12': ''}  form-row__docker`}>
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                         <label className="form__label">{`${
                             configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
