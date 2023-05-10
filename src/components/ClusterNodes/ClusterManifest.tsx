@@ -98,7 +98,7 @@ export default function ClusterManifest({
                             </div>
                         </div>
                     )}
-                    <div className="pt-8 pb-8 dc__flex-1">
+                    <div className="pt-8 pb-8 dc__flex-1 dc__overflow-hidden">
                         <CodeEditor
                             defaultValue={defaultManifest}
                             theme="vs-dark--dt"
