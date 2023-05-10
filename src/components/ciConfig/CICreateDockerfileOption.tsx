@@ -479,7 +479,7 @@ export default function CICreateDockerfileOption({
                         {configOverrideView && !allowOverride ? (
                             <span className="fs-14 fw-4 lh-20 cn-9">
                                 {`${selectedBuildContextGitMaterial?.checkoutPath}/${
-                                    ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || '.'
+                                    ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext
                                 }`.replace('//', '/')}
                             </span>
                         ) : (
