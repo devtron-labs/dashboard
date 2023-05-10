@@ -473,22 +473,26 @@ export default function ClusterTerminal({
         }
     }
 
-    async function closeTerminalModal(e: any, skipRedirection?: boolean) {
+    function closeTerminalModal(e: any, skipRedirection?: boolean): void {
         try {
             if (!isNodeDetailsPage && typeof closeTerminal === 'function') {
-                closeTerminal(skipRedirection)
+                closeTerminal(skipRedirection);
             }
-            setConnectTerminal(false)
+            setConnectTerminal(false);
             if (isPodCreated && terminalAccessIdRef.current) {
-                await clusterTerminalDisconnect(terminalAccessIdRef.current)
+                clusterTerminalDisconnect(terminalAccessIdRef.current).then(() => {
+                    socketDisconnecting();
+                    terminalAccessIdRef.current = null;
+                    toggleOptionChange();
+                    setUpdate(false);
+                }).catch((error) => {
+                    setConnectTerminal(true);
+                    showError(error);
+                })
             }
-            socketDisconnecting()
-            terminalAccessIdRef.current = null
-            toggleOptionChange()
-            setUpdate(false)
         } catch (error) {
-            setConnectTerminal(true)
-            showError(error)
+            setConnectTerminal(true);
+            showError(error);
         }
     }
 
@@ -695,7 +699,7 @@ export default function ClusterTerminal({
                     isNodeDetailsPage ? 'node-details-full-screen' : ''
                 } ${isClusterDetailsPage ? terminalClusterDetailsPageClassWrapper : ''}`}
             >
-                <div className={`${selectedTabIndex === 0 ? 'h-100 flexbox' : 'dc__hide-section'}`}>
+                <div className={`${selectedTabIndex === 0 ? 'h-100 flexbox-col' : 'dc__hide-section'}`}>
                     {(!isNodeDetailsPage || connectTerminal) && terminalView}
                 </div>
                 {selectedTabIndex === 1 && (
