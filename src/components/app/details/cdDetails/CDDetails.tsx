@@ -15,7 +15,7 @@ import DeploymentDetailSteps from './DeploymentDetailSteps'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import Sidebar from '../cicdHistory/Sidebar'
-import { Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
+import { Scroller, LogResizeButton, GitChanges } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
 import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
@@ -206,8 +206,8 @@ export default function CDDetails() {
                         </Route>
                     ) : !envId ? (
                         <GenericEmptyState
-                            title={EMPTY_STATE_STATUS.CD_DETAILS_ENVIRONMENT.TITLE}
-                            subTitle={EMPTY_STATE_STATUS.CD_DETAILS_ENVIRONMENT.SUBTITLE}
+                            title={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.TITLE}
+                            subTitle={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.SUBTITLE}
                         />
                     ) : (
                       <GenericEmptyState

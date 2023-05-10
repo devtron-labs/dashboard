@@ -14,7 +14,7 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import Sidebar from '../cicdHistory/Sidebar'
-import { Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
+import { Scroller, LogResizeButton, GitChanges } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
 import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
@@ -451,7 +451,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     const total = severityCount.critical + severityCount.moderate + severityCount.low
 
     if (['failed', 'cancelled'].includes(status.toLowerCase())) {
-        return <GenericEmptyState title={EMPTY_STATE_STATUS.ARTIFACT.TITLE} subTitle={EMPTY_STATE_STATUS.ARTIFACT.SUBTITLE} />
+        return <GenericEmptyState title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated} subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError} />
     } else if (['starting', 'running'].includes(status.toLowerCase())) {
         return <CIRunningView isSecurityTab={true} />
     } else if (securityData.isLoading) {

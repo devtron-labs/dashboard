@@ -5,6 +5,7 @@ import {
     ErrorScreenManager,
     ConfirmationDialog,
     ServerErrors,
+    GenericEmptyState
 } from '@devtron-labs/devtron-fe-common-lib'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
@@ -31,7 +32,7 @@ import {
     RollbackReleaseRequest,
 } from './chartDeploymentHistory.service'
 import IndexStore from '../appDetails/index.store'
-import { DEPLOYMENT_HISTORY_TABS, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
+import { DEPLOYMENT_HISTORY_TABS, EMPTY_STATE_STATUS, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
     loading?: boolean
@@ -319,8 +320,9 @@ function ChartDeploymentHistory({
         ) {
             return (
                 <div className="flex h-100">
-                    <CDEmptyState
-                        subtitle={`${deploymentTabs[selectedDeploymentTabIndex]} ${ERROR_EMPTY_SCREEN.TAB_NOT_AVAILABLE_POSTFIX}`}
+                    <GenericEmptyState
+                        title= {EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
+                        subTitle={`${deploymentTabs[selectedDeploymentTabIndex]} ${ERROR_EMPTY_SCREEN.TAB_NOT_AVAILABLE_POSTFIX}`}
                     />
                 </div>
             )
@@ -463,7 +465,7 @@ function ChartDeploymentHistory({
                                 <div className="flex">
                                     <div className="dc__bullet mr-6 ml-6"></div>
                                     <div className="cn-7 fs-12 mr-12">{deployment.deployedBy}</div>
-                                </div>    
+                                </div>
                             )}
                             {deployment.dockerImages.slice(0, 3).map((dockerImage, index) => {
                                 return (
@@ -581,7 +583,10 @@ function ChartDeploymentHistory({
             )
         } else if (!deploymentHistoryArr || deploymentHistoryArr.length <= 0) {
             return (
-                <CDEmptyState subtitle="Data for previous deployments is not available. History for any new deployment will be available here." />
+                <GenericEmptyState
+                    title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
+                    subTitle={EMPTY_STATE_STATUS.CHART_DEPLOYMENT_HISTORY.SUBTITLE}
+                />
             )
         }
 

@@ -69,7 +69,7 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
     return deploymentStatus.toUpperCase() === TIMELINE_STATUS.ABORTED ||
         deploymentStatusDetailsBreakdownData.deploymentStatus === DEPLOYMENT_STATUS.SUPERSEDED ? (
         <div className="flexbox deployment-aborted" data-testid="deployment-history-steps-failed-message">
-              <GenericEmptyState
+            <GenericEmptyState
                 title={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_FAILED.TITLE}
                 subTitle={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_FAILED.SUBTITLE}
             />
@@ -78,18 +78,13 @@ export default function DeploymentDetailSteps({ deploymentStatus, deploymentAppT
         <Progressing pageLoader />
     ) : deploymentStatusDetailsBreakdownData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed ? (
         <div className="h-100 flex">
-          {/* <GenericEmptyState
-                image = {mechanicalOperation}
-                title={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_FAILED.TITLE}
-                subTitle={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_FAILED.SUBTITLE}
-            /> */}
             <CDEmptyState
-                title="Deployment in progress"
+                title={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_PROGRESSING.TITLE}
                 imgSource={mechanicalOperation}
                 actionButtonClass="bcb-5 cn-0"
                 ActionButtonIcon={Arrow}
                 actionHandler={redirectToDeploymentStatus}
-                subtitle="This deployment is in progress. Click on Check status to know the live status."
+                subtitle={EMPTY_STATE_STATUS.DEPLOYMENT_DETAILS_SETPS_PROGRESSING.SUBTITLE}
                 actionButtonText="Check live status"
                 actionButtonIconRight={true}
                 dataTestId="deployment-progress"

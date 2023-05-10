@@ -11,7 +11,8 @@ import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { NavLink } from 'react-router-dom'
 import { TIMELINE_STATUS } from '../../../../config'
-import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResizeButtonType): JSX.Element => {
     const { pathname } = useLocation()
@@ -71,7 +72,7 @@ export const Scroller = ({ scrollToTop, scrollToBottom, style }: ScrollerType): 
 
 export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
     if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
-        return <EmptyView title="Data not available" subTitle="Source code detail is not available" />
+        return <GenericEmptyState title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE} subTitle={EMPTY_STATE_STATUS.DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE.SUBTITLE} />
     }
     return (
         <div className="flex column left w-100 p-16">
@@ -137,6 +138,6 @@ export const triggerStatus = (triggerDetailStatus: string): string => {
     } else if (triggerStatus === TIMELINE_STATUS.HEALTHY) {
         return 'Succeeded'
     } else {
-        return triggerDetailStatus 
+        return triggerDetailStatus
     }
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { showError, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { copyToClipboard } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
@@ -11,12 +11,11 @@ import docker from '../../../../assets/icons/misc/docker.svg'
 import folder from '../../../../assets/icons/ic-folder.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
 import Tippy from '@tippyjs/react'
-import { EmptyView } from './History.components'
 import '../cIDetails/ciDetails.scss'
 import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentType } from './types'
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
-import { ARTIFACTS_EMPTY_STATE_TEXTS } from './Constants'
 import { extractImage } from '../../service'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 export default function Artifacts({
     status,
@@ -53,16 +52,16 @@ export default function Artifacts({
     } else if (isJobView && !blobStorageEnabled) {
         return (
             <div className="flex column p-24 w-100 h-100">
-                <EmptyView
-                    title={ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesFound}
-                    subTitle={ARTIFACTS_EMPTY_STATE_TEXTS.BlobStorageNotConfigured}
-                    imgSrc={noartifact}
+                <GenericEmptyState
+                    title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesFound}
+                    subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.BlobStorageNotConfigured}
+                    image={noartifact}
                 />
-                <div className="flexbox pt-8 pr-12 pb-8 pl-12 bcv-1 ev-2 bw-1 br-4">
+                <div className="flexbox pt-8 pr-12 pb-8 pl-12 bcv-1 ev-2 bw-1 br-4 dc__position-abs-b-20">
                     <Question className="icon-dim-20 fcv-5" />
-                    <span className="fs-13 fw-4 mr-8 ml-8">{ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}</span>
+                    <span className="fs-13 fw-4 mr-8 ml-8">{EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}</span>
                     <a className="fs-13 fw-6 cb-5 dc__no-decor" href={DOCUMENTATION.BLOB_STORAGE} target="_blank">
-                        {ARTIFACTS_EMPTY_STATE_TEXTS.ConfigureBlobStorage}
+                        {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.ConfigureBlobStorage}
                     </a>
                     <OpenInNew className="icon-dim-20 ml-8" />
                 </div>
@@ -70,10 +69,10 @@ export default function Artifacts({
         )
     } else if (isJobView && !isArtifactUploaded) {
         return (
-            <EmptyView
-                title={ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesFound}
-                subTitle={ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesGenerated}
-                imgSrc={noartifact}
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesFound}
+                subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesGenerated}
+                image={noartifact}
             />
         )
     } else if (
@@ -81,9 +80,9 @@ export default function Artifacts({
         status.toLowerCase() === TERMINAL_STATUS_MAP.CANCELLED
     ) {
         return (
-            <EmptyView
-                title={ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
-                subTitle={ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
+                subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
             />
         )
     } else {
@@ -151,6 +150,7 @@ const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWithTextTyp
 }
 
 const CIProgressView = (): JSX.Element => {
+   {/* TODO replace with genericemptystate after incoporating png support */}
     return (
         <EmptyState>
             <EmptyState.Image>
