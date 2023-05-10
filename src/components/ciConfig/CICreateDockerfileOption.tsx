@@ -440,6 +440,7 @@ export default function CICreateDockerfileOption({
                         ) : (
                             <ReactSelect
                                 className="m-0"
+                                classNamePrefix="build-config__select-repository-containing-build-context"
                                 tabIndex={3}
                                 isMulti={false}
                                 isClearable={false}
