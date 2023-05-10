@@ -46,7 +46,14 @@ import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { ReactComponent as MechanicalOperation } from '../../assets/img/ic-mechanical-operation.svg'
-import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, DEFAULT_SECRET_PLACEHOLDER, DataListType, UserDetails } from './cluster.type'
+import {
+    POLLING_INTERVAL,
+    ClusterListProps,
+    AuthenticationType,
+    DEFAULT_SECRET_PLACEHOLDER,
+    DataListType,
+    UserDetails,
+} from './cluster.type'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
 import {
@@ -592,8 +599,10 @@ function ClusterForm({
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
     const [saveYamlData, setSaveYamlState] = useState<string>('')
     const [dataList, setDataList] = useState<DataListType[]>([])
-    const [saveClusterList, setSaveClusterList] = useState<{ clusterName: string; status: string; message: string }[]>([])
-    const [loader, setState] = useState<boolean>(false)
+    const [saveClusterList, setSaveClusterList] = useState<{ clusterName: string; status: string; message: string }[]>(
+        [],
+    )
+    const [loader, setLoadingState] = useState<boolean>(false)
     const [collapsed, setCollapse] = useState<boolean>(true)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -603,7 +612,7 @@ function ClusterForm({
             password: { value: prometheusAuth?.password, error: '' },
             tlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             tlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
-            certificateAuthorityData: {value: prometheusAuth?.certificateAuthorityData, error: '' },
+            certificateAuthorityData: { value: prometheusAuth?.certificateAuthorityData, error: '' },
             token: { value: config && config.bearer_token ? config.bearer_token : '', error: '' },
             endpoint: { value: prometheus_url || '', error: '' },
             authType: { value: authenTicationType, error: '' },
@@ -650,7 +659,7 @@ function ClusterForm({
             },
             certificateAuthorityData: {
                 required: false,
-                validator: { error: 'Certificate authority data is required', regex: /^(?!\s*$).+/ }
+                validator: { error: 'Certificate authority data is required', regex: /^(?!\s*$).+/ },
             },
             token:
                 isDefaultCluster() || id
@@ -667,32 +676,38 @@ function ClusterForm({
         onValidation,
     )
 
-    function toggleLoaderChangeState() {
-        setState(!state.loader)
-    }
-
     const toggleDropdown = (): void => {
         setCollapse(!collapsed)
     }
 
+    const getSaveClusterPayload = (dataList) => {
+        return {
+            // id,
+            // cluster_name: dataList['cluster_name']
+            // insecureSkipTlsVerify: dataList
+        }
+    }
+
     async function saveClustersDetails() {
         try {
+            // let payload = getSaveClusterPayload()
             let payload = dataList
             await saveClusters(payload).then(
                 (response) => {
-                     response.result.map((_clusterSaveDetails, index) => {
-                        setSaveClusterList([{
-                            clusterName: _clusterSaveDetails['cluster_name'],
-                            status: _clusterSaveDetails['errorInConnecting'].length === 0 ? 'Added' : 'Failed',
-                            message: _clusterSaveDetails['errorInConnectin'],
-                        }])
+                    response.result.map((_clusterSaveDetails, index) => {
+                        setSaveClusterList([
+                            {
+                                clusterName: _clusterSaveDetails['cluster_name'],
+                                status: _clusterSaveDetails['errorInConnecting'].length === 0 ? 'Added' : 'Failed',
+                                message: _clusterSaveDetails['errorInConnectin'],
+                            },
+                        ])
                     })
                 },
-                (err) => {
-                    showError(err)
-                },
             )
+            setLoadingState(false)
         } catch (err) {
+            setLoadingState(false)
             showError(err)
         }
     }
@@ -717,13 +732,11 @@ function ClusterForm({
     }
 
     function YAMLtoJSON(saveYamlData) {
-        try{
+        try {
             var obj = YAML.parse(saveYamlData)
             var jsonStr = JSON.stringify(obj)
             return jsonStr
-            
-        }
-        catch(error){
+        } catch (error) {
             showError(error)
         }
 
@@ -737,11 +750,11 @@ function ClusterForm({
 
     async function validateClusterDetail() {
         try {
-            let payload = {config: YAMLtoJSON(saveYamlData)}
+            let payload = { config: YAMLtoJSON(saveYamlData) }
             console.log(payload)
-            await validateCluster(payload).then(
-                (response) => {
-                    setDataList([...Object.values(response.result).map((_cluster)  => {
+            await validateCluster(payload).then((response) => {
+                setDataList([
+                    ...Object.values(response.result).map((_cluster) => {
                         return {
                             cluster_name: _cluster['cluster_name'],
                             userInfos: [...Object.values(_cluster['userInfos'] as UserDetails[])],
@@ -749,7 +762,8 @@ function ClusterForm({
                             active: _cluster['active'],
                             defaultClusterComponent: _cluster['defaultClusterComponent'],
                         }
-                    })])
+                    }),
+                ])
 
                 //     const map = response.result
                 //     map.forEach((cluster, userInfoObj) => {
@@ -773,13 +787,11 @@ function ClusterForm({
                 //                 // })
                 //             })
                 //         }
-                    // })
-                },
-                (err) => {
-                    showError(err)
-                },
-            )
+                // })
+                setLoadingState(false)
+            })
         } catch (err) {
+            setLoadingState(false)
             showError(err)
         }
     }
@@ -832,17 +844,28 @@ function ClusterForm({
                 payload.prometheusAuth['password'] = state.password.value || ''
             }
         }
-        if ((state.tlsClientKey.value || state.tlsClientCert.value || state.certificateAuthorityData.value) && prometheusToggleEnabled) {
-            let isValid = state.tlsClientKey.value?.length && state.tlsClientCert.value?.length && state.certificateAuthorityData?.length
-            if (!isValid) {
-                toast.error('Please add TLS Key, Certificate and Certificate Authority Data')
-                return
-            } else {
-                payload.prometheusAuth['tlsClientKey'] = state.tlsClientKey.value || ''
-                payload.prometheusAuth['tlsClientCert'] = state.tlsClientCert.value || ''
-                payload.prometheusAuth['certificateAuthorityData'] = state.certificateAuthorityData.value || ''
+        if (isTlsConnection) {
+            if (
+                (state.tlsClientKey.value || state.tlsClientCert.value || state.certificateAuthorityData.value) &&
+                prometheusToggleEnabled
+            ) {
+                let isValid =
+                    state.tlsClientKey.value?.length &&
+                    state.tlsClientCert.value?.length &&
+                    state.certificateAuthorityData?.length
+                if (!isValid) {
+                    toast.error('Please add TLS Key, Certificate and Certificate Authority Data')
+                    return
+                } else {
+                    payload.prometheusAuth['tlsClientKey'] = state.tlsClientKey.value || ''
+                    payload.prometheusAuth['tlsClientCert'] = state.tlsClientCert.value || ''
+                    payload.prometheusAuth['certificateAuthorityData'] = state.certificateAuthorityData.value || ''
+                }
             }
+        } else {
+            return
         }
+
         const api = id ? updateCluster : saveCluster
         try {
             setLoading(true)
@@ -960,6 +983,7 @@ function ClusterForm({
             toggleClusterDetails()
         }
         toggleShowAddCluster()
+        setLoadingState(false)
     }
 
     const renderUrlAndBearerToken = () => {
@@ -1144,10 +1168,9 @@ function ClusterForm({
     }
 
     const handleCalls = async () => {
+        setLoadingState(true)
         await validateClusterDetail()
         toggleGetCluster()
-        toggleLoaderChangeState()
-        
     }
 
     const codeEditor = () => {
@@ -1199,22 +1222,41 @@ function ClusterForm({
         return (
             <div className="cluster-form dc__position-rel h-100 bcn-0">
                 <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Add Cluster</h2>
+                    <button
+                        type="button"
+                        className="dc__transparent flex icon-dim-24 mr-24"
+                        onClick={handleCloseButton}
+                    >
+                        <Close className="icon-dim-24" />
+                    </button>
+                </div>
+                <div
+                    className="flex flex-align-center dc__border-bottom w-100 flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20"
+                    style={{ height: 732 }}
+                >
                     <EmptyState>
                         <EmptyState.Image>
                             <MechanicalOperation />
                         </EmptyState.Image>
                         <EmptyState.Title>
-                            <h4>Connecting to Cluster</h4>
+                            <h4>Trying to connect to Cluster</h4>
                         </EmptyState.Title>
                         <EmptyState.Subtitle>
                             Please wait while the kubeconfig is verified and cluster details are fetched.
                         </EmptyState.Subtitle>
                     </EmptyState>
                 </div>
+                <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                    <button className="cta cancel" type="button" onClick={handleCloseButton}>
+                        Cancel
+                    </button>
+                    <button className="cta mr-20 ml-20">{<Progressing />}</button>
+                </div>
             </div>
         )
     }
-    
+
     const NoMatchingResults = (): JSX.Element => {
         return (
             <EmptyState>
@@ -1229,10 +1271,13 @@ function ClusterForm({
         )
     }
 
+    if(loader) {
+        return <LoadingCluster/>
+    }
+
     const saveClusterDetails = (): JSX.Element => {
         return (
             <>
-                <LoadingCluster/>
                 <div className="cluster-form dc__position-rel h-100 bcn-0">
                     <AddClusterHeader />
                     <div className="api-token__list en-2 bw-1 bcn-0 br-8">
@@ -1278,6 +1323,7 @@ function ClusterForm({
     }
 
     const handleClusterDetailCall = async () => {
+        setLoadingState(true)
         await saveClustersDetails()
         toggleKubeConfigFile()
         toggleClusterDetails()
@@ -1296,16 +1342,17 @@ function ClusterForm({
     //         })
     //     )
     // }
-
+    if (loader) {
+        return <LoadingCluster />
+    }
     const displayClusterDetails = () => {
         return (
             <>
-                {/* {loader && !getCluster && <LoadingCluster />} */}
                 {isKubeConfigFile && (
                     <div className="cluster-form dc__position-rel h-100 bcn-0">
                         <AddClusterHeader />
                         <InfoColourBar
-                            message={`${dataList.length} valid cluster. Select the cluster you want to Add/Update`}
+                            message={<div>`${dataList.length} valid cluster. Select the cluster you want to Add/Update`</div>}
                             classname="info_bar cn-9 mb-20 lh-20"
                             Icon={Info}
                             iconClass="icon-dim-18"
@@ -1318,7 +1365,7 @@ function ClusterForm({
                                 <div>MESSAGE</div>
                                 <div></div>
                             </div>
-                            <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 213px)' }}>
+                            <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 219px)' }}>
                                 {!dataList || dataList.length === 0 ? (
                                     <NoMatchingResults />
                                 ) : (
@@ -1342,7 +1389,6 @@ function ClusterForm({
                                                 {clusterDetail.userInfos[0].userName}
                                             </div>
                                             <div className="dc__ellipsis-right">
-                                                {' '}
                                                 {clusterDetail.userInfos[0].errorInConnecting || 'No error'}
                                             </div>
                                         </div>
@@ -1362,7 +1408,7 @@ function ClusterForm({
                             className="cta mr-32 ml-20"
                             type="button"
                             onClick={() => handleClusterDetailCall()}
-                            disabled={uploadState !== UPLOAD_STATE.SUCCESS ? true : false}
+                            disabled={!saveClusterList}
                         >
                             Save
                         </button>
