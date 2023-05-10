@@ -88,7 +88,7 @@ export default function CIDockerFileConfig({
         },
     ]
     // const [spanValue,setSpanValue] = useState<string>(" Set build context ")
-    const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
+    const [isCollapsed, setIsCollapsed] = useState<boolean>((currentMaterial?.id != currentBuildContextGitMaterial?.id) || (formState?.buildContext !== ''))
     useEffect(() => {
         setInProgress(true)
         Promise.all([getDockerfileTemplate(), getBuildpackMetadata()])
@@ -286,7 +286,7 @@ export default function CIDockerFileConfig({
     const renderSelfDockerfileBuildOption = () => {
         return (
             <div>
-                <div className="mb-4 form-row__docker">
+                <div className="mb-12 form-row__docker">
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                         <label className="form__label">{`${
                             configOverrideView && !allowOverride ? 'Repository' : 'Select repository'
@@ -312,6 +312,7 @@ export default function CIDockerFileConfig({
                                     menu: (base) => ({
                                         ...base,
                                         marginTop: '0',
+                                        paddingBottom: '4px',
                                     }),
                                 }}
                                 components={{
@@ -392,7 +393,7 @@ export default function CIDockerFileConfig({
                 )}
 
                 {(!configOverrideView || allowOverride ? isCollapsed : true) && (
-                    <div className="mb-4 form-row__docker">
+                    <div className="form-row__docker">
                         <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                             <label className="form__label">{`${
                                 configOverrideView && !allowOverride ? 'Repository' : 'Select repo'
@@ -425,6 +426,7 @@ export default function CIDockerFileConfig({
                                         menu: (base) => ({
                                             ...base,
                                             marginTop: '0',
+                                            paddingBottom: '4px',
                                         }),
                                     }}
                                     components={{

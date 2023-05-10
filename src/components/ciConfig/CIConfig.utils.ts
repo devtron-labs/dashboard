@@ -33,8 +33,8 @@ export const _customStyles = {
     menuList: (base) => ({
         ...base,
         position: 'relative',
-        paddingBottom: 0,
-        paddingTop: 0,
+        paddingBottom: '4px',
+        paddingTop: '4px',
         maxHeight: '250px',
     }),
     dropdownIndicator: (base, state) => ({
