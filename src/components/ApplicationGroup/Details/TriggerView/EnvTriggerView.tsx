@@ -663,9 +663,12 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node[MATERIAL_TYPE.inputMaterialList] = data.materials
-                            node.approvalUsers = data.approvalUsers
-                            node.userApprovalConfig = data.userApprovalConfig
-                            node.requestedUserId = data.requestedUserId
+
+                            if (node.type === 'CD') {
+                                node.approvalUsers = data.approvalUsers
+                                node.userApprovalConfig = data.userApprovalConfig
+                                node.requestedUserId = data.requestedUserId
+                            }
 
                             _selectedNode = node
                             _workflowId = workflow.id

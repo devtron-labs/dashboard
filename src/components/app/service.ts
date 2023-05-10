@@ -284,18 +284,30 @@ export function getCDMaterialList(
                 userApprovalConfig: null,
                 requestedUserId: 0,
             }
-        }
-
-        return {
-            approvalUsers: response.result.approvalUsers,
-            materials: cdMaterialListModal(
-                response.result.ci_artifacts,
-                true,
-                response.result.latest_wf_artifact_id,
-                response.result.latest_wf_artifact_status,
-            ),
-            userApprovalConfig: response.result.userApprovalConfig,
-            requestedUserId: response.result.requestedUserId,
+        } else if (stageType === DeploymentNodeType.CD || stageType === DeploymentNodeType.APPROVAL) {
+            return {
+                approvalUsers: response.result.approvalUsers,
+                materials: cdMaterialListModal(
+                    response.result.ci_artifacts,
+                    true,
+                    response.result.latest_wf_artifact_id,
+                    response.result.latest_wf_artifact_status,
+                ),
+                userApprovalConfig: response.result.userApprovalConfig,
+                requestedUserId: response.result.requestedUserId,
+            }
+        } else {
+            return {
+                approvalUsers: [],
+                materials: cdMaterialListModal(
+                    response.result.ci_artifacts,
+                    true,
+                    response.result.latest_wf_artifact_id,
+                    response.result.latest_wf_artifact_status,
+                ),
+                userApprovalConfig: null,
+                requestedUserId: 0,
+            }
         }
     })
 }
