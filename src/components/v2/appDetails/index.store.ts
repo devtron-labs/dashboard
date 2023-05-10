@@ -370,14 +370,16 @@ export const reduceKindStatus = (aggregatedStatus: string, newStatus: string) =>
 }
 
 export const getPodsForRootNodeName = (_rootNode: string, _treeNodes: Array<Node>): Array<iNode> => {
-    let root = _treeNodes.filter(_tn => _tn.name.toLowerCase() == _rootNode.toLowerCase()).map(_tn => _tn as iNode)
+    let root = _treeNodes
+        .filter((_tn) => _tn.name.toLowerCase() == _rootNode.toLowerCase() && !_tn.parentRefs)
+        .map((_tn) => _tn as iNode)
     let rootNodes = getiNodesByRootNodeWithChildNodes(_treeNodes, root)
     let pods = [] as Array<iNode>
     while(rootNodes?.length > 0) {
         pods = pods.concat(rootNodes.filter(_n => _n.kind.toLowerCase() == NodeType.Pod.toLowerCase()))
         rootNodes = rootNodes.flatMap(_n => (_n.childNodes ?? []))
     }
-    return [...new Set(pods)]
+    return pods
 }
 
 export default IndexStore;
