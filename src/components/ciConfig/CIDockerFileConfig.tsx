@@ -377,9 +377,8 @@ export default function CIDockerFileConfig({
 
                 {(!configOverrideView || allowOverride) && (
                     <div className="flex left row ml-0 build-context-label fs-13 mb-6">
-                        <span className="flex">
+                        <span className="flex pointer" onClick={toggleCollapse}>
                             <Dropdown
-                                onClick={toggleCollapse}
                                 className="icon-dim-26 rotate "
                                 data-testid="set-build-context-button"
                                 style={{ ['--rotateBy' as any]: isCollapsed ? '360deg' : '270deg' }}
@@ -448,7 +447,7 @@ export default function CIDockerFileConfig({
                             {configOverrideView && !allowOverride ? (
                                 <span className="fs-14 fw-4 lh-20 cn-9">
                                     {`${selectedBuildContextGitMaterial?.checkoutPath}/${
-                                        ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || '.'
+                                        ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || ''
                                     }`.replace('//', '/')}
                                 </span>
                             ) : (
