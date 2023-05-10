@@ -417,6 +417,7 @@ export default function CIConfigForm({
                     processedWorkflows={processedWorkflows}
                     toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
                     reload={reload}
+                    gitMaterials = {sourceConfig.material}
                 />
             )}
         </>
