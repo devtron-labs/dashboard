@@ -153,7 +153,6 @@ function EnvironmentStatusComponent({
         return (
             appDetails?.lastDeployedTime && (
               <DeploymentStatusCard
-              isGitops={isGitops}
               deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
               hideDeploymentStatusLeftInfo={!isGitops}
               deploymentTriggerTime = {appDetails?.lastDeployedTime}
