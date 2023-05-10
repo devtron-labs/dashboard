@@ -153,7 +153,11 @@ function EnvironmentStatusComponent({
         return (
             appDetails?.lastDeployedTime && (
               <DeploymentStatusCard
+              isGitops={isGitops}
               deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+              hideDeploymentStatusLeftInfo={!isGitops}
+              deploymentTriggerTime = {appDetails?.lastDeployedTime}
+              triggeredBy ={appDetails?.lastDeployedBy}
           />
             )
         )
@@ -231,7 +235,7 @@ function EnvironmentStatusComponent({
                 <div className="flex left ml-20 mb-16 lh-20">
                     {renderStatusBlock()}
                     {renderHelmConfigApplyStatusBlock()}
-                    {isGitops && renderLastUpdatedBlock()}
+                    {renderLastUpdatedBlock()}
                     {renderChartUsedBlock()}
                     {renderUpgraderChartBlock()}
                 </div>
