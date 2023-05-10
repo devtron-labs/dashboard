@@ -684,19 +684,18 @@ function ClusterForm({
     const getSaveClusterPayload = (dataLists: DataListType[]) => {
         let SaveClusterPayload: SaveClusterPayloadType[] = []
         dataLists.forEach((dataList, index) => {
-            const _clusterDetails : SaveClusterPayloadType = {
+            const _clusterDetails: SaveClusterPayloadType = {
                 id: null,
                 cluster_name: dataList.cluster_name,
                 insecureSkipTlsVerify: dataList.insecureSkipTlsVerify,
                 config: dataList.userInfos[index].config,
                 active: dataList.active,
-                prometheus_url: "",
-                prometheusAuth: {"userName": "",
-                "password": ""},
+                prometheus_url: '',
+                prometheusAuth: { userName: '', password: '' },
                 server_url: dataList.server_url,
             }
             SaveClusterPayload.push(_clusterDetails)
-        });
+        })
 
         return SaveClusterPayload
     }
@@ -705,19 +704,17 @@ function ClusterForm({
         try {
             let payload = getSaveClusterPayload(dataList)
             // let payload = dataList
-            await saveClusters(payload).then(
-                (response) => {
-                    response.result.map((_clusterSaveDetails, index) => {
-                        setSaveClusterList([
-                            {
-                                clusterName: _clusterSaveDetails['cluster_name'],
-                                status: _clusterSaveDetails['errorInConnecting'].length === 0 ? 'Added' : 'Failed',
-                                message: _clusterSaveDetails['errorInConnectin'],
-                            },
-                        ])
-                    })
-                },
-            )
+            await saveClusters(payload).then((response) => {
+                response.result.map((_clusterSaveDetails, index) => {
+                    setSaveClusterList([
+                        {
+                            clusterName: _clusterSaveDetails['cluster_name'],
+                            status: _clusterSaveDetails['errorInConnecting'].length === 0 ? 'Added' : 'Failed',
+                            message: _clusterSaveDetails['errorInConnectin'],
+                        },
+                    ])
+                })
+            })
             setLoadingState(false)
         } catch (err) {
             setLoadingState(false)
@@ -774,9 +771,9 @@ function ClusterForm({
                             server_url: _cluster['server_url'],
                             active: _cluster['active'],
                             defaultClusterComponent: _cluster['defaultClusterComponent'],
-                            insecureSkipTlsVerify: _cluster['insecureSkipTlsVerify']
+                            insecureSkipTlsVerify: _cluster['insecureSkipTlsVerify'],
                         }
-                    })
+                    }),
                 ])
 
                 //     const map = response.result
@@ -1285,8 +1282,8 @@ function ClusterForm({
         )
     }
 
-    if(loader) {
-        return <LoadingCluster/>
+    if (loader) {
+        return <LoadingCluster />
     }
 
     const saveClusterDetails = (): JSX.Element => {
@@ -1462,7 +1459,7 @@ function ClusterForm({
                         <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
                             Cancel
                         </button>
-                        <button className="cta mr-20 ml-20">{loading ? <Progressing /> : 'Save cluster'}</button>
+                        <button className="cta mr-20 ml-20">{'Save cluster'}</button>
                     </div>
                 )}
                 {confirmation && (
