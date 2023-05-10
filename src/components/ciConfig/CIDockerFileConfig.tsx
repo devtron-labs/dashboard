@@ -87,8 +87,17 @@ export default function CIDockerFileConfig({
             addDivider: false,
         },
     ]
-    // const [spanValue,setSpanValue] = useState<string>(" Set build context ")
-    const [isCollapsed, setIsCollapsed] = useState<boolean>((currentMaterial?.id != currentBuildContextGitMaterial?.id) || (formState?.buildContext !== ''))
+    const isDefaultBuildContext = (): boolean => {
+        let currentOverriddenGitMaterialId = 0,currentOverriddenBuildContextGitMaterialId = 0;
+        let currentOverriddenBuildContext = ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
+        currentOverriddenGitMaterialId = ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.gitMaterialId
+        currentOverriddenBuildContextGitMaterialId = ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.buildContextGitMaterialId
+        return (configOverrideView && allowOverride) ?
+            (currentOverriddenGitMaterialId === currentOverriddenBuildContextGitMaterialId) && (!currentOverriddenBuildContext || (currentOverriddenBuildContext === ''))
+            : ((currentMaterial.id === currentBuildContextGitMaterial.id) && (!(ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext) || ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext === ''))
+    }
+
+    const [isCollapsed, setIsCollapsed] = useState<boolean>(!isDefaultBuildContext())
     useEffect(() => {
         setInProgress(true)
         Promise.all([getDockerfileTemplate(), getBuildpackMetadata()])
@@ -138,11 +147,18 @@ export default function CIDockerFileConfig({
     }, [allowOverride])
 
     const handleFileLocationChange = (selectedMaterial): void => {
+        let buildContextGitMaterialId = 0
+        buildContextGitMaterialId = currentCIBuildConfig.buildContextGitMaterialId
         setSelectedMaterial(selectedMaterial)
+        if(isDefaultBuildContext()){
+            setSelectedBuildContextGitMaterial(selectedMaterial)
+            buildContextGitMaterialId = selectedMaterial?.id
+        }
         formState.repository.value = selectedMaterial.name
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
             gitMaterialId: selectedMaterial.id,
+            buildContextGitMaterialId: buildContextGitMaterialId,
         })
     }
 
@@ -518,6 +534,7 @@ export default function CIDockerFileConfig({
                     formState={formState}
                     handleOnChangeConfig={handleOnChangeConfig}
                     renderInfoCard={renderInfoCard}
+                    isDefaultBuildContext={isDefaultBuildContext}
                 />
             )}
             {ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE && (
