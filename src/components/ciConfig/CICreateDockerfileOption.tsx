@@ -235,7 +235,17 @@ export default function CICreateDockerfileOption({
     const renderLanguageOptions = (editorData: TemplateDataType) => {
         return (
             <div className="flex">
-                <span className={`fs-13 fw-4 lh-20 cn-7 ${configOverrideView && !allowOverride ? 'mr-8' : ''}`}>Repo to place Dockerfile</span>
+                 <Tippy
+                     className="default-tt"
+                     arrow={false}
+                     placement="top"
+                     content="Dockerfile will be placed at the root of the selected repo path"
+                 >
+                    <span className={`fs-13 fw-4 lh-20 cn-7 ${configOverrideView && !allowOverride ? 'mr-8' : ''}`}>
+                        Repo to place Dockerfile
+                    </span>
+                 </Tippy>
+
                 {configOverrideView && !allowOverride ? (
                     <div className="flex left">
                         {selectedMaterial?.icon && (
@@ -409,9 +419,8 @@ export default function CICreateDockerfileOption({
             </div>
             {(!configOverrideView || allowOverride) && (
                 <div className="flex left row ml-0 build-context-label fs-13 mb-6">
-                    <span className="flex">
+                    <span className="flex pointer" onClick={toggleCollapse}>
                         <Dropdown
-                            onClick={toggleCollapse}
                             className="icon-dim-26 rotate"
                             data-testid="set-build-context-button"
                             style={{ ['--rotateBy' as any]: isCollapsed ? '360deg' : '270deg' }}
