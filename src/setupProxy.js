@@ -4,7 +4,7 @@ module.exports = function (app) {
     app.use(
         '/orchestrator',
         createProxyMiddleware({
-            target: 'http://13.82.136.173:31730/',
+            target: 'https://qa.devtron.info/',
             changeOrigin: true,
             logLevel: 'info',
             secure: false,
