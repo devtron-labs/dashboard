@@ -69,7 +69,7 @@
     }
 
     &.show-terminal {
-        height: calc(50vh - 48px) !important;
+        height: calc(50vh - 78px) !important;
     }
 }
 
@@ -294,7 +294,6 @@
     }
 
     &.cluster-details-node-details {
-        height: calc(100% - 80px);
         .terminal-container {
             height: calc(100% - 50px);
         }
