@@ -46,7 +46,7 @@ export class Empty extends Component<EmptyProps>{
                 </EmptyState.Title>
                 <EmptyState.Subtitle>{this.props.message}</EmptyState.Subtitle>
                 <EmptyState.Button>
-                    <button type="button" className="saved-filter__clear-btn dc__saved-filter__clear-btn--dark" onClick={this.props.clickHandler}>
+                    <button type="button" className="saved-filter__clear-btn dc__saved-filter__clear-btn--dark" data-testid = "clear-filter-button" onClick={this.props.clickHandler}>
                         {this.props.buttonLabel}
                     </button>
                 </EmptyState.Button>

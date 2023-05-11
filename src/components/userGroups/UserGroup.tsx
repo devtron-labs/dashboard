@@ -874,7 +874,10 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     <ApproverPermission
                         optionProps={props}
                         approver={permission.approver}
-                        handleDirectPermissionChange={handleDirectPermissionChange}
+                        handleDirectPermissionChange={(...rest: any[]) => {
+                            props.selectOption(props.selectProps.value)
+                            handleDirectPermissionChange(...rest)
+                        }}
                         formatOptionLabel={formatOptionLabel}
                     />
                 )}
@@ -1238,6 +1241,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                 onChange={handleDirectPermissionChange}
                 isDisabled={!permission.team}
                 menuPlacement="auto"
+                blurInputOnSelect={true}
                 styles={{
                     ...tempMultiSelectStyles,
                     option: (base, state) => ({
