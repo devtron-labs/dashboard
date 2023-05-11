@@ -160,7 +160,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
 
     RegexInfoSteps = () : JSX.Element => {
         return (
-            <div className="w-500 h-410 fs-13 bcn-0 dc__border dc__border-radius-8-imp">
+            <div data-testid="exclude-include-use-regex-info" className="w-500 h-410 fs-13 bcn-0 dc__border dc__border-radius-8-imp">
                 <h2 className="flex left fs-14 fw-6 p-12 m-0 dc__border-bottom">
                     <QuestionFilled className="icon-dim-20 fcv-5 mr-12" />
                     {USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
@@ -559,7 +559,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         rootClassName="fs-14 cn-9 mb-8 flex top dc_max-width__max-content"
                     >
                         <div className="ml-12">
-                            <span className="mt-1 flex left">Exclude specific file/folder in this repo</span>
+                            <span data-testid="exclude-include-checkbox" className="mt-1 flex left">Exclude specific file/folder in this repo</span>
                         </div>
                     </Checkbox>
                     <span>
@@ -585,6 +585,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             <p className="fw-4 fs-13 mb-0-imp">
                                 Enter file or folder paths to be included or excluded.
                                 <a
+                                    data-testid={`${!this.props.isLearnHowClicked ? "exclude-include-learn" : "exclude-include-hide"}`}
                                     className="dc__link ml-4 cursor"
                                     onClick={this.props.handleLearnHowClick}
                                     rel="noopener noreferer"
@@ -594,7 +595,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 </a>
                             </p>
                             {this.props.isLearnHowClicked && (
-                                <div className="ml-8 mt-8">
+                                <div data-testid="exclude-include-learn-how-steps" className="ml-8 mt-8">
                                     <div className="flex left">
                                         <div className="dc__bullet mr-6 ml-6"></div>
                                         <span className="fs-13 fw-4">
@@ -638,7 +639,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                     <this.RegexInfoSteps />
                                                 )}
                                             >
-                                                <span className="dc__link cursor fs-13 fw-4 ml-8">
+                                                <span data-testid="exclude-include-use-regex" className="dc__link cursor fs-13 fw-4 ml-8">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFive}
                                                 </span>
                                             </TippyHeadless>
@@ -661,8 +662,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 </div>
                             )}
                         </div>
-
                         <textarea
+                            data-testid="exclude-include-commit-textbox"
                             className="form__textarea dc__no-border-imp mxh-140"
                             autoComplete={'off'}
                             autoFocus
@@ -670,7 +671,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             rows={3}
                             value={this.props.material.includeExcludeFilePath}
                             onChange={this.props.handleFileChange}
-                            data-testid="clone-directory-path"
                         />
                         {this.renderIncludeExcludeInfoBar()}
                     </div>
