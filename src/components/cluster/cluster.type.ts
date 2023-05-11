@@ -18,6 +18,11 @@ export interface UserDetails{
     config: ConfigCluster
 }
 
+export interface UserNameList {
+    label: string,
+    value: string,
+}
+
 export interface DataListType{
     cluster_name: string
     userInfos: UserDetails[]
