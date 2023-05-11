@@ -54,6 +54,7 @@ import {
     DataListType,
     UserDetails,
     SaveClusterPayloadType,
+    UserNameList,
 } from './cluster.type'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
@@ -92,6 +93,10 @@ import { getClusterEvents } from '../ClusterNodes/clusterNodes.service'
 import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { json } from 'stream/consumers'
 import { stat } from 'fs'
+import { userInfo } from 'os'
+import ReactSelect from 'react-select/creatable'
+import { SELECT_TOKEN_STYLE } from '../ciPipeline/Webhook/webhook.utils'
+import { CompareWithDropdownProps } from '../deploymentConfig/types'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -600,7 +605,7 @@ function ClusterForm({
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
     const [saveYamlData, setSaveYamlState] = useState<string>('')
     const [dataList, setDataList] = useState<DataListType[]>([])
-    const [selectCluster, setSelectedCluster] = useState(false)
+    // const [userNameList, setUserNameList] = useState<{userName: string; message: string}[]>([])
     const [saveClusterList, setSaveClusterList] = useState<{ clusterName: string; status: string; message: string }[]>(
         [],
     )
@@ -709,8 +714,16 @@ function ClusterForm({
                     setSaveClusterList([
                         {
                             clusterName: _clusterSaveDetails['cluster_name'],
-                            status: _clusterSaveDetails['errorInConnecting'].length === 0 ? 'Added' : 'Failed',
-                            message: _clusterSaveDetails['errorInConnecting'].length === 0 ? 'Cluster Added' : _clusterSaveDetails['errorInConnecting'],
+                            status:
+                                _clusterSaveDetails['errorInConnecting'].length === 0
+                                    ? 'Added'
+                                    : _clusterSaveDetails['errorInConnecting'] === 'cluster already exists'
+                                    ? 'Updated'
+                                    : 'Failed',
+                            message:
+                                _clusterSaveDetails['errorInConnecting'].length === 0
+                                    ? 'Cluster Added'
+                                    : _clusterSaveDetails['errorInConnecting'],
                         },
                     ])
                 })
@@ -720,6 +733,22 @@ function ClusterForm({
             setLoadingState(false)
             showError(err)
         }
+    }
+
+    const CompareWithDropdown = ({
+        isEnvOverride,
+        environments,
+        charts,
+        selectedOption,
+        setSelectedOption,
+        globalChartRef,
+    }: CompareWithDropdownProps) => {
+        const [userNameList, setUserNameList] = useState<UserNameList[]>([
+            {
+                label: '',
+                value: '',
+            },
+        ])
     }
 
     const otherResponses = (responseKey: string): boolean => {
@@ -749,14 +778,8 @@ function ClusterForm({
         } catch (error) {
             showError(error)
         }
-
-        // .replace(/[\\]/g, '\\\\')
-        // .replace(/[\\b]/g, '\\b')
-        // .replace(/[\\f]/g, '\\f')
-        // .replace(/[\\n]/g, '\\n')
-        // .replace(/[\\r]/g, '\\r')
-        // .replace(/[\\t]/g, '\\t')
     }
+
 
     async function validateClusterDetail() {
         try {
@@ -799,10 +822,13 @@ function ClusterForm({
                 //             })
                 //         }
                 // })
+
                 setLoadingState(false)
             })
         } catch (err) {
             setLoadingState(false)
+            toggleGetCluster()
+            setUploadState(UPLOAD_STATE.UPLOAD)
             showError(err)
         }
     }
@@ -977,7 +1003,7 @@ function ClusterForm({
 
     const handleSuccessButton = (): void => {
         if (uploadState === UPLOAD_STATE.UPLOAD) {
-            setUploadState(UPLOAD_STATE.SUCCESS)
+            // setUploadState(UPLOAD_STATE.SUCCESS)
             inputFileRef.current.click()
         }
     }
@@ -1217,7 +1243,7 @@ function ClusterForm({
                         Cancel
                     </button>
                     <button
-                        className="cta mr-32 ml-20"
+                        className="cta mr-32 ml-20 "
                         type="button"
                         onClick={handleCalls}
                         disabled={uploadState !== UPLOAD_STATE.SUCCESS ? true : false}
@@ -1259,10 +1285,12 @@ function ClusterForm({
                     </EmptyState>
                 </div>
                 <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
-                    <button className="cta cancel" type="button" onClick={handleCloseButton}>
+                    <button className="cta cancel" type="button" onClick={handleCloseButton} disabled={true}>
                         Cancel
                     </button>
-                    <button className="cta mr-20 ml-20">{<Progressing />}</button>
+                    <button className="cta mr-20 ml-20" disabled={true}>
+                        {<Progressing />}
+                    </button>
                 </div>
             </div>
         )
@@ -1286,13 +1314,18 @@ function ClusterForm({
         return <LoadingCluster />
     }
 
+    const editKubeConfigState = () => {
+        toggleGetCluster()
+        setUploadState(UPLOAD_STATE.UPLOAD)
+    }
+
     const saveClusterDetails = (): JSX.Element => {
         return (
             <>
                 <div className="cluster-form dc__position-rel h-100 bcn-0">
                     <AddClusterHeader />
                     <div className="api-token__list en-2 bw-1 bcn-0 br-8">
-                        <div className="cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
+                        <div className="cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-bottom-n1">
                             <div></div>
                             <div>CLUSTER</div>
                             <div>STATUS</div>
@@ -1321,7 +1354,7 @@ function ClusterForm({
                         </div>
                     </div>
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
-                        <button className="cta cancel" type="button" onClick={toggleGetCluster}>
+                        <button className="cta cancel" type="button" onClick={editKubeConfigState}>
                             Edit Kubeconfig
                         </button>
                         <button className="cta cancel" type="button" onClick={handleCloseButton}>
@@ -1343,6 +1376,43 @@ function ClusterForm({
     if (loader) {
         return <LoadingCluster />
     }
+
+    // const setUserList = () => {
+    //     dataList.map((_clusterDetails, index) => {
+    //         setUserList([
+    //             userName: _clusterDetails.userInfos[index].userName,
+    //             message: _clusterDetails.userInfos[index].errorInConnecting,
+    //         ])
+    //     })
+    // }
+
+    const userNameDropDownList = (userInfos): JSX.Element => {
+        if (userInfos.length === 1) {
+            return (
+                <div>
+                    {userInfos[0].userName}
+                </div>
+            )
+        } else {
+            const userNameOptions = userInfos.map((user) => {
+                return {label: user.userName, value: user.userName}
+            })
+            debugger
+            return (
+                <div className="">
+                    {/* <CompareWithDropdown
+                            isEnvOverride={isEnvOverride}
+                            environments={filteredEnvironments}
+                            charts={filteredCharts}
+                            selectedOption={selectedOption}
+                            setSelectedOption={setSelectedOption}
+                            globalChartRef={globalChartRef}
+                    /> */}
+                </div>
+            )
+        }
+    }
+
     const displayClusterDetails = () => {
         return (
             <>
@@ -1384,7 +1454,7 @@ function ClusterForm({
                                                 <span className="dc__ellipsis-right">{clusterDetail.cluster_name}</span>
                                             </div>
                                             <div className=" dc__ellipsis-right">
-                                                {clusterDetail.userInfos[0].userName}
+                                                {userNameDropDownList(clusterDetail.userInfos)}
                                             </div>
                                             <div className="dc__ellips is-right">
                                                 {clusterDetail.userInfos[0].errorInConnecting || 'No error'}
@@ -1464,7 +1534,9 @@ function ClusterForm({
                         <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
                             Cancel
                         </button>
-                        <button className="cta mr-20 ml-20" onClick={() => saveClusterCall()}>{'Save cluster'}</button>
+                        <button className="cta mr-20 ml-20" onClick={() => saveClusterCall()}>
+                            {'Save cluster'}
+                        </button>
                     </div>
                 )}
                 {confirmation && (
@@ -1559,6 +1631,7 @@ function Environment({
             toast.success(`Successfully ${id ? 'updated' : 'saved'}`)
             handleClose(true)
         } catch (err) {
+            
             showError(err)
         } finally {
             setLoading(false)
