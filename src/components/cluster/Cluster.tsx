@@ -1,4 +1,5 @@
 import React, { useState, useMemo, Component, useRef } from 'react'
+import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import YAML from 'yaml'
 import {
     showError,
@@ -1291,8 +1292,8 @@ function ClusterForm({
             <>
                 <div className="cluster-form dc__position-rel h-100 bcn-0">
                     <AddClusterHeader />
-                    <div className="api-token__list en-2 bw-1 bcn-0 br-8">
-                        <div className="cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
+                    <div className="api-token__list en-2 bw-0 bcn-0 br-8">
+                        <div className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1">
                             <div></div>
                             <div>CLUSTER</div>
                             <div>STATUS</div>
@@ -1306,26 +1307,32 @@ function ClusterForm({
                                 saveClusterList.map((clusterListDetail, index) => (
                                     <div
                                         key={`api_${index}`}
-                                        className="cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
+                                        className="saved-cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
                                         style={{ height: '40px' }}
                                     >
                                         <div></div>
                                         <div className="flexbox">
                                             <span className="dc__ellipsis-right">{clusterListDetail.clusterName}</span>
                                         </div>
-                                        <div className=" dc__ellipsis-right"> {clusterListDetail.status} </div>
-                                        <div className=""> {clusterListDetail.message}</div>
+                                        <div className = "flexbox dc__align-items-center">
+                                        <div className={`dc__app-summary__icon icon-dim-16 mr-2 ${clusterListDetail.status === "Failed" ? "failed" : "succeeded"}`}></div>
+                                        <div className="dc__ellipsis-right"> {clusterListDetail.status} </div>
+                                        </div>
+                                        <div className="dc__ellipsis-right"> {clusterListDetail.message}</div>
                                     </div>
                                 ))
                             )}
                         </div>
                     </div>
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
-                        <button className="cta cancel" type="button" onClick={toggleGetCluster}>
-                            Edit Kubeconfig
+                        <button className="cta cancel ml-20" type="button" onClick={toggleGetCluster} style={{ marginRight: 'auto' }}>
+                            <span style={{ display: 'flex', alignItems: 'center' }}>
+                            <Edit className="icon-dim-16 scn-7 mr-4" />
+                                Edit Kubeconfig
+                            </span>
                         </button>
-                        <button className="cta cancel" type="button" onClick={handleCloseButton}>
-                            Cancel
+                        <button className="cta mr-20" type="button" onClick={handleCloseButton} style={{ marginLeft: 'auto' }}>
+                            Close
                         </button>
                     </div>
                 </div>

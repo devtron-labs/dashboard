@@ -1,7 +1,7 @@
 import { RouteComponentProps } from 'react-router-dom'
 import { SERVER_MODE_TYPE } from '../../config'
 import { OptionType } from '../app/types'
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+//import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
 export const POLLING_INTERVAL = 30000
 

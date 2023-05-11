@@ -49,6 +49,17 @@
     }
 }
 
+.saved-cluster-list-row {
+    display: grid;
+    grid-template-columns: 0px minmax(278px, 346px) 100px 360px 190px minmax(80px, 90px);
+    grid-column-gap: 16px;
+
+
+    path:last-of-type {
+        fill: var(--R500);
+    }
+}
+
 //api-list-row
 // .cluster-container {
 //     max-width: 1024px;
