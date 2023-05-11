@@ -30,6 +30,7 @@ import { getUserRole } from '../../userGroups/userGroup.service'
 import { APP_LIST_HEADERS, StatusConstants } from './Constants'
 import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { createAppListPayload } from '../list/appList.modal'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
@@ -619,27 +620,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     const getAppListDataToExport = () => {
-        return getAppList(
-            typeof parsedPayloadOnUrlChange === 'object'
-                ? {
-                      ...parsedPayloadOnUrlChange,
-                      appNameSearch: searchString || '',
-                      sortBy: 'appNameSort',
-                      sortOrder: 'ASC',
-                      size: appCount,
-                  }
-                : {
-                      environments: [],
-                      teams: [],
-                      namespaces: [],
-                      appNameSearch: '',
-                      sortBy: 'appNameSort',
-                      sortOrder: 'ASC',
-                      offset: 0,
-                      hOffset: 0,
-                      size: appCount,
-                  },
-        ).then(({ result }) => {
+        return getAppList(createAppListPayload(onRequestUrlChange(), environmentClusterListRes)).then(({ result }) => {
             if (result.appContainers) {
                 const _appDataList = []
                 for (let _app of result.appContainers) {
