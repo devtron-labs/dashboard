@@ -136,7 +136,7 @@ export function ManifestPopupMenu({ closePopup, podName, namespace, forceDeleteP
                     <Close className="icon-dim-24 cursor" onClick={closePopupDoNothing} />
                 </div>
                 <div className="flex left column ">
-                    <h3 className="confirmation-dialog__title lh-1-25 dc__break-word w-100">
+                    <h3 className="confirmation-dialog__title lh-1-5 dc__break-word w-100">
                         {ManifestMessaging.POD_NAME_EXIST_IN_NAMESPACE}
                     </h3>
                     <p className="fs-14 fw-4">

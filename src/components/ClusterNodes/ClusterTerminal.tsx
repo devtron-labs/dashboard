@@ -818,7 +818,7 @@ export default function ClusterTerminal({
     }
 
     const closeManifetsPopup = (isClose: boolean): void => {
-        setManifestButtonState(EDIT_MODE_TYPE.EDIT)
+        setManifestButtonState(EDIT_MODE_TYPE.REVIEW)
         setManifestData('')
         setShowPodExistPopup(isClose)
     }
