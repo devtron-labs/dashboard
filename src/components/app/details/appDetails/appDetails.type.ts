@@ -176,6 +176,10 @@ export interface DetailsType {
 }
 
 export interface DeploymentStatusCardType {
-  deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
+  deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
   loadingResourceTree?: boolean
+  hideDeploymentStatusLeftInfo?: boolean
+  hideDetails?: boolean
+  deploymentTriggerTime?: string
+  triggeredBy?: string
 }

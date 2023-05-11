@@ -915,6 +915,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         autoComplete="off"
                         tabIndex={5}
                         label={''}
+                        dataTestid = "configmap-file-permission-textbox"
                         disabled={isChartVersion309OrBelow}
                         placeholder={'eg. 0400 or 400'}
                         error={filePermissionValue.error}

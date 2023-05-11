@@ -680,7 +680,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         const consumedImage = []
         const approvedImages = []
         this.props.material.forEach((mat) => {
-            if (mat.latest && (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) {
+            if (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2) {
                 mat.isSelected = false
                 consumedImage.push(mat)
             } else {
