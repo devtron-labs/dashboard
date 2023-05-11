@@ -320,8 +320,8 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                         <Drawer position="right" width="1000px" onEscape={this.toggleShowAddCluster}>
                             <ClusterForm
                                 id={null}
-                                cluster_name
-                                server_url
+                                cluster_name={this.state.cluster_name}
+                                server_url={this.state.server_url}
                                 active={true}
                                 config={{}}
                                 toggleEditMode={() => {}}
@@ -600,6 +600,7 @@ function ClusterForm({
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
     const [saveYamlData, setSaveYamlState] = useState<string>('')
     const [dataList, setDataList] = useState<DataListType[]>([])
+    const [selectCluster, setSelectedCluster] = useState(false)
     const [saveClusterList, setSaveClusterList] = useState<{ clusterName: string; status: string; message: string }[]>(
         [],
     )
@@ -703,14 +704,13 @@ function ClusterForm({
     async function saveClustersDetails() {
         try {
             let payload = getSaveClusterPayload(dataList)
-            // let payload = dataList
             await saveClusters(payload).then((response) => {
                 response.result.map((_clusterSaveDetails, index) => {
                     setSaveClusterList([
                         {
                             clusterName: _clusterSaveDetails['cluster_name'],
                             status: _clusterSaveDetails['errorInConnecting'].length === 0 ? 'Added' : 'Failed',
-                            message: _clusterSaveDetails['errorInConnectin'],
+                            message: _clusterSaveDetails['errorInConnecting'].length === 0 ? 'Cluster Added' : _clusterSaveDetails['errorInConnecting'],
                         },
                     ])
                 })
@@ -820,6 +820,7 @@ function ClusterForm({
     }
 
     const getClusterPayload = () => {
+        console.log(state.cluster_name.value)
         return {
             id,
             cluster_name: state.cluster_name.value,
@@ -838,7 +839,7 @@ function ClusterForm({
 
     async function onValidation() {
         let payload = getClusterPayload()
-        const urlValue = state.url.value.trim()
+        const urlValue = state.url.value?.trim() ?? ''
         if (urlValue.endsWith('/')) {
             payload['server_url'] = urlValue.slice(0, -1)
         } else {
@@ -873,8 +874,6 @@ function ClusterForm({
                     payload.prometheusAuth['certificateAuthorityData'] = state.certificateAuthorityData.value || ''
                 }
             }
-        } else {
-            return
         }
 
         const api = id ? updateCluster : saveCluster
@@ -1001,6 +1000,7 @@ function ClusterForm({
         return (
             <>
                 <div className="form__row">
+                    {console.log(state.cluster_name.value)}
                     <CustomInput
                         labelClassName="dc__required-field"
                         autoComplete="off"
@@ -1112,7 +1112,7 @@ function ClusterForm({
                 )}
                 {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheus_url && <PrometheusWarningInfo />}
                 {isGrafanaModuleInstalled && prometheusToggleEnabled && (
-                    <div>
+                    <div className="">
                         {(state.userName.error || state.password.error || state.endpoint.error) && (
                             <PrometheusRequiredFieldInfo />
                         )}
@@ -1386,7 +1386,7 @@ function ClusterForm({
                                             <div className=" dc__ellipsis-right">
                                                 {clusterDetail.userInfos[0].userName}
                                             </div>
-                                            <div className="dc__ellipsis-right">
+                                            <div className="dc__ellips is-right">
                                                 {clusterDetail.userInfos[0].errorInConnecting || 'No error'}
                                             </div>
                                         </div>
@@ -1428,6 +1428,11 @@ function ClusterForm({
         )
     }
 
+    const saveClusterCall = () => {
+        onValidation()
+        toggleShowAddCluster()
+    }
+
     return getCluster ? (
         displayClusterDetails()
     ) : (
@@ -1459,7 +1464,7 @@ function ClusterForm({
                         <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
                             Cancel
                         </button>
-                        <button className="cta mr-20 ml-20">{'Save cluster'}</button>
+                        <button className="cta mr-20 ml-20" onClick={() => saveClusterCall()}>{'Save cluster'}</button>
                     </div>
                 )}
                 {confirmation && (
