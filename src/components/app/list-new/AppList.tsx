@@ -46,7 +46,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
     const [currentTab, setCurrentTab] = useState(undefined)
     const [syncListData, setSyncListData] = useState<boolean>()
-
+    const [projectMap, setProjectMap] = useState(new Map());
     // API master data
     const [environmentClusterListRes, setEnvironmentClusterListRes] = useState<EnvironmentClusterList>()
 
@@ -91,6 +91,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         getInitData(payloadParsedFromUrl, serverMode)
             .then((initData) => {
                 setEnvironmentClusterListRes(initData.environmentClusterAppListData)
+                setProjectMap(initData.projectMap)
                 setMasterFilters(initData.filters)
                 setDataStateType(AppListViewType.LIST)
                 if (serverMode === SERVER_MODE.EA_ONLY) {
@@ -636,7 +637,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 appId: _env.appId,
                                 appName: _env.appName,
                                 projectId: _env.teamId,
-                                projectName: _env.teamName,
+                                projectName: projectMap.get(_env.teamId),
                                 environmentId: (_env.environmentName && _env.environmentId) || '-',
                                 environmentName: _env.environmentName || '-',
                                 clusterId: `${(_clusterId ?? _clusterId) || '-'}`,

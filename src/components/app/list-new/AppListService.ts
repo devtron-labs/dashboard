@@ -133,9 +133,14 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
         // set list data for env cluster & namespace
         const environmentClusterAppListData = new Map()
         const clusterMap = new Map()
+        const projectMap = new Map()
         for (const cluster of clusterList) {
             clusterMap.set(cluster.id, cluster.cluster_name)
         }
+        for (const project of projectList) {
+            projectMap.set(project.id, project.name)
+        }
+        
 
         for (const env of environmentList) {
             const envData = {
@@ -151,9 +156,10 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
 
         return {
             projectsRes: projectList,
+            projectMap: projectMap,
             environmentClusterAppListData: environmentClusterAppListData,
-            filters : filters
-        };
+            filters: filters,
+        }
     })
 }
 
