@@ -185,8 +185,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     ]
                     _selectedMaterial.isMaterialLoading = false
                     _selectedMaterial.showAllCommits = false
-                    _selectedMaterial.isMaterialSelectionError = false
-                    _selectedMaterial.materialSelectionErrorMsg = ''
+                    _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded 
+                    _selectedMaterial.materialSelectionErrorMsg =_selectedMaterial.history[0].excluded ? NO_COMMIT_SELECTED : ''
                 } else {
                     _selectedMaterial.history = []
                     _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
@@ -233,7 +233,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
             return workflow
         })
-
         if (commitHash && _selectedMaterial) {
             const commitInLocalHistory = _selectedMaterial.history.find((material) => material.commit === commitHash)
             if (commitInLocalHistory) {
