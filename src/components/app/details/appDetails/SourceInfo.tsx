@@ -279,6 +279,7 @@ export function SourceInfo({
                             <DeploymentStatusCard
                                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                 loadingResourceTree={loadingResourceTree}
+                                hideDetails={appDetails?.deploymentAppType === DeploymentAppType.helm}
                             />
                              <div className="flex right ml-auto">
                                 {appDetails?.appStoreChartId && (
