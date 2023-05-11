@@ -96,7 +96,7 @@ import { stat } from 'fs'
 import { userInfo } from 'os'
 import ReactSelect from 'react-select/creatable'
 import { SELECT_TOKEN_STYLE } from '../ciPipeline/Webhook/webhook.utils'
-import { CompareWithDropdownProps } from '../deploymentConfig/types'
+import UserNameDropDownList from './UseNameListDropdown'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -603,7 +603,7 @@ function ClusterForm({
     const [confirmation, toggleConfirmation] = useState(false)
     const inputFileRef = useRef(null)
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
-    const [saveYamlData, setSaveYamlState] = useState<string>('')
+    const [saveYamlData, setSaveYamlData] = useState<string>('')
     const [dataList, setDataList] = useState<DataListType[]>([])
     // const [userNameList, setUserNameList] = useState<{userName: string; message: string}[]>([])
     const [saveClusterList, setSaveClusterList] = useState<{ clusterName: string; status: string; message: string }[]>(
@@ -611,6 +611,7 @@ function ClusterForm({
     )
     const [loader, setLoadingState] = useState<boolean>(false)
     const [collapsed, setCollapse] = useState<boolean>(true)
+    const [selectedUserNameOptions, setSelectedUserNameOptions] = useState<Record<string, any>>({})
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
@@ -735,22 +736,6 @@ function ClusterForm({
         }
     }
 
-    const CompareWithDropdown = ({
-        isEnvOverride,
-        environments,
-        charts,
-        selectedOption,
-        setSelectedOption,
-        globalChartRef,
-    }: CompareWithDropdownProps) => {
-        const [userNameList, setUserNameList] = useState<UserNameList[]>([
-            {
-                label: '',
-                value: '',
-            },
-        ])
-    }
-
     const otherResponses = (responseKey: string): boolean => {
         const listOfResponses = [
             'cluster_name',
@@ -780,17 +765,24 @@ function ClusterForm({
         }
     }
 
-
     async function validateClusterDetail() {
         try {
             let payload = { config: YAMLtoJSON(saveYamlData) }
             console.log(payload)
             await validateCluster(payload).then((response) => {
+                const defaultUserNameSelections: Record<string, any> = {}
                 setDataList([
                     ...Object.values(response.result).map((_cluster) => {
+                        const _userInfoList = [...Object.values(_cluster['userInfos'] as UserDetails[])]
+                        defaultUserNameSelections[_cluster['cluster_name']] = {
+                            label: _userInfoList[0].userName,
+                            value: _userInfoList[0].userName,
+                            errorInConnecting: _userInfoList[0].errorInConnecting,
+                        }
+
                         return {
                             cluster_name: _cluster['cluster_name'],
-                            userInfos: [...Object.values(_cluster['userInfos'] as UserDetails[])],
+                            userInfos: _userInfoList,
                             server_url: _cluster['server_url'],
                             active: _cluster['active'],
                             defaultClusterComponent: _cluster['defaultClusterComponent'],
@@ -798,6 +790,7 @@ function ClusterForm({
                         }
                     }),
                 ])
+                setSelectedUserNameOptions(defaultUserNameSelections)
 
                 //     const map = response.result
                 //     map.forEach((cluster, userInfoObj) => {
@@ -994,18 +987,15 @@ function ClusterForm({
         reader.onload = () => {
             try {
                 const data = YAML.parseDocument(reader.result.toString())
-                setSaveYamlState(reader.result.toString())
+                setSaveYamlData(reader.result.toString())
             } catch (e) {}
         }
         reader.readAsText(file)
         setUploadState(UPLOAD_STATE.SUCCESS)
     }
 
-    const handleSuccessButton = (): void => {
-        if (uploadState === UPLOAD_STATE.UPLOAD) {
-            // setUploadState(UPLOAD_STATE.SUCCESS)
-            inputFileRef.current.click()
-        }
+    const handleBrowseFileClick = (): void => {
+        inputFileRef.current.click()
     }
 
     const handleCloseButton = () => {
@@ -1204,25 +1194,34 @@ function ClusterForm({
         )
     }
 
-    const handleCalls = async () => {
+    const handleGetClustersClick = async () => {
         setLoadingState(true)
         await validateClusterDetail()
         toggleGetCluster()
     }
 
+    const onChangeEditorValue = (val: string) => {
+        setSaveYamlData(val)
+    }
+
     const codeEditor = () => {
         return (
             <>
-                <hr />
                 <div className="code-editor-container">
-                    <CodeEditor value={saveYamlData} height={514} diffView={false} readOnly={false} mode={MODES.YAML}>
+                    <CodeEditor
+                        value={saveYamlData}
+                        height={514}
+                        diffView={false}
+                        onChange={onChangeEditorValue}
+                        mode={MODES.YAML}
+                    >
                         <CodeEditor.Header>
                             <div className="user-list__subtitle flex p-8">
                                 <span className="flex left">Paste the contents of kubeconfig file here</span>
                                 <div className="dc__link ml-auto cursor">
                                     {uploadState !== UPLOAD_STATE.UPLOADING && (
-                                        <div onClick={handleSuccessButton} className="flex">
-                                            {'Browser file...'}
+                                        <div onClick={handleBrowseFileClick} className="flex">
+                                            Browse file...
                                         </div>
                                     )}
                                 </div>
@@ -1245,8 +1244,8 @@ function ClusterForm({
                     <button
                         className="cta mr-32 ml-20 "
                         type="button"
-                        onClick={handleCalls}
-                        disabled={uploadState !== UPLOAD_STATE.SUCCESS ? true : false}
+                        onClick={handleGetClustersClick}
+                        disabled={!saveYamlData}
                     >
                         Get cluster
                     </button>
@@ -1386,33 +1385,6 @@ function ClusterForm({
     //     })
     // }
 
-    const userNameDropDownList = (userInfos): JSX.Element => {
-        if (userInfos.length === 1) {
-            return (
-                <div>
-                    {userInfos[0].userName}
-                </div>
-            )
-        } else {
-            const userNameOptions = userInfos.map((user) => {
-                return {label: user.userName, value: user.userName}
-            })
-            debugger
-            return (
-                <div className="">
-                    {/* <CompareWithDropdown
-                            isEnvOverride={isEnvOverride}
-                            environments={filteredEnvironments}
-                            charts={filteredCharts}
-                            selectedOption={selectedOption}
-                            setSelectedOption={setSelectedOption}
-                            globalChartRef={globalChartRef}
-                    /> */}
-                </div>
-            )
-        }
-    }
-
     const displayClusterDetails = () => {
         return (
             <>
@@ -1448,16 +1420,18 @@ function ClusterForm({
                                                 isChecked={isClusterSelect}
                                                 onChange={toggleSelectCluster}
                                                 value={CHECKBOX_VALUE.CHECKED}
-                                            ></Checkbox>
-
+                                            />
                                             <div className="flexbox">
                                                 <span className="dc__ellipsis-right">{clusterDetail.cluster_name}</span>
                                             </div>
-                                            <div className=" dc__ellipsis-right">
-                                                {userNameDropDownList(clusterDetail.userInfos)}
-                                            </div>
-                                            <div className="dc__ellips is-right">
-                                                {clusterDetail.userInfos[0].errorInConnecting || 'No error'}
+                                            <UserNameDropDownList
+                                                clusterDetail={clusterDetail}
+                                                selectedUserNameOptions={selectedUserNameOptions}
+                                                setSelectedUserNameOptions={setSelectedUserNameOptions}
+                                            />
+                                            <div className="dc__ellipsis-right">
+                                                {selectedUserNameOptions[clusterDetail.cluster_name]
+                                                    ?.errorInConnecting || 'No error'}
                                             </div>
                                         </div>
                                     ))
@@ -1631,7 +1605,6 @@ function Environment({
             toast.success(`Successfully ${id ? 'updated' : 'saved'}`)
             handleClose(true)
         } catch (err) {
-            
             showError(err)
         } finally {
             setLoading(false)
