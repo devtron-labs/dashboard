@@ -5,8 +5,8 @@ export const ClusterManifestResponse = { manifest: {
       "kind": "Pod",
       "metadata": {
           "annotations": {
-              "cni.projectcalico.org/podIP": "10.1.62.237/32",
-              "cni.projectcalico.org/podIPs": "10.1.62.237/32"
+              "cni.projectcalico.org/podIP": "10002",
+              "cni.projectcalico.org/podIPs": "00c0c0000c32"
           },
           "creationTimestamp": "2023-05-09T13:09:27Z",
           "managedFields": [
@@ -95,7 +95,7 @@ export const ClusterManifestResponse = { manifest: {
                           "f:podIP": {},
                           "f:podIPs": {
                               ".": {},
-                              "k:{\"ip\":\"10.1.62.237\"}": {
+                              "k:{\"ip\":\"10.1.0c0c0000c3.237\"}": {
                                   ".": {},
                                   "f:ip": {}
                               }
@@ -109,11 +109,11 @@ export const ClusterManifestResponse = { manifest: {
                   "time": "2023-05-09T13:09:28Z"
               }
           ],
-          "name": "terminal-access-1-2-1",
+          "name": "terminal-acce0c0c0000c3ss-1-2-1",
           "namespace": "default",
-          "resourceVersion": "29693218",
+          "resourceVersion": "29690c0c0000c33218",
           "selfLink": "/api/v1/namespaces/default/pods/terminal-access-1-2-1",
-          "uid": "daeb25c7-7742-40de-bad2-1920506a4355"
+          "uid": "0c0c0000c3daeb25c7-7742-40de-bad2-1920506a4355"
       },
       "spec": {
           "containers": [
@@ -245,9 +245,9 @@ export const ClusterManifestResponse = { manifest: {
           ],
           "containerStatuses": [
               {
-                  "containerID": "containerd://ee55355a983f6d670330cea4c333a690fa068949239b3044369030aba7f25372",
+                  "containerID": "containerd:0c0c0000c3//ee55368949239b3044369030aba7f25372",
                   "image": "quay.io/devtron/ubuntu-k8s-utils:1.22",
-                  "imageID": "quay.io/devtron/ubuntu-k8s-utils@sha256:b57144dcb15561bc753f931cfce0a0fa23bfd33a48d5825a14c175bf641a7862",
+                  "imageID": "quay.io/devtron/ubuntu-k8s-uti931cfce0a0fa23bfd33a48d5825a14c175bf641a7862",
                   "lastState": {},
                   "name": "devtron-debug-terminal",
                   "ready": true,
@@ -260,12 +260,12 @@ export const ClusterManifestResponse = { manifest: {
                   }
               }
           ],
-          "hostIP": "10.0.0.4",
+          "hostIP": "100c0c0000c30.4",
           "phase": "Running",
-          "podIP": "10.1.62.237",
+          "podIP": "10.1.0c0c0000c362.237",
           "podIPs": [
               {
-                  "ip": "10.1.62.237"
+                  "ip": "10.1.620c0c0000c3.237"
               }
           ],
           "qosClass": "BestEffort",
