@@ -564,10 +564,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         <TippyCustomized
                             theme={TippyTheme.white}
                             iconClass="fcv-5"
-                            className="dc__mxw-none w-505 bcn-0 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
+                            className="bcn-0 deafult-tt"
                             placement="bottom"
                             Icon={QuestionFilled}
-                            heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
+                            heading="Exclude file/folders"
                             infoText=""
                             showCloseButton={true}
                             additionalContent={this.tippyContent()}
@@ -631,7 +631,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             <TippyCustomized
                                                 theme={TippyTheme.white}
                                                 iconClass="fcv-5"
-                                                className="w-500"
+                                                className="dc__mxw-none w-505 bcn-0 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
+                                                heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
                                                 placement="bottom"
                                                 Icon={QuestionFilled}
                                                 infoText=""
