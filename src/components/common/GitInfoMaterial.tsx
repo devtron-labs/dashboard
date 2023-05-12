@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { PopupMenu, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { not, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { SourceTypeMap } from '../../config'
 import { MaterialHistory, CIMaterialType } from '../app/details/triggerView/MaterialHistory'
 import MaterialSource from '../app/details/triggerView/MaterialSource'
@@ -46,6 +46,7 @@ export default function GitInfoMaterial({
     const [searchText, setSearchText] = useState('')
     const [searchApplied, setSearchApplied] = useState(false)
     const [showAllCommits, setShowAllCommits] = useState(false)
+    const [showExcludePopUp, setShowExcludePopUp] = useState(false)
     const { push } = useHistory()
     const location = useLocation()
     const triggerViewContext = useContext(TriggerViewContext)
@@ -227,6 +228,10 @@ export default function GitInfoMaterial({
         toggleWebhookModal(selectedMaterial.id)
     }
 
+    const toggleShowExcludePopUp = () => {
+        setShowExcludePopUp(not)
+    }
+
     const toggleExclude = (e): void => {
         if (fromBulkCITrigger) {
             stopPropagation(e)
@@ -238,16 +243,22 @@ export default function GitInfoMaterial({
 
     const renderExcludedCommitsOption = () => {
         return (
-            <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="mw-18" isKebab>
+            <div className="dc__position-rel cursor">
+                <div className="mw-18" onClick={toggleShowExcludePopUp}>
                     {showAllCommits ? (
                         <ShowIconFilter data-testid="show-icon-filter" className="icon-dim-20" />
                     ) : (
                         <ShowIconFilterApplied data-testid="show-icon-filter-applied" className="icon-dim-20" />
                     )}
-                </PopupMenu.Button>
-                <PopupMenu.Body>
-                    <div className="flex left p-10 pointer" onClick={toggleExclude}>
+                </div>
+                {showExcludePopUp && (
+                    <div
+                        className="flex left p-10 pointer dc__position-abs dc__top-26 dc__right-0 h-40 w-182 bcn-0 br-4 dc__zi-20"
+                        style={{
+                            boxShadow: '0 2px 4px 0 rgba(21, 21, 21, 0.3)',
+                        }}
+                        onClick={toggleExclude}
+                    >
                         {showAllCommits ? (
                             <>
                                 <Hide data-testid="hide-excluded-commits" className="icon-dim-16 mr-10" />
@@ -260,8 +271,8 @@ export default function GitInfoMaterial({
                             </>
                         )}
                     </div>
-                </PopupMenu.Body>
-            </PopupMenu>
+                )}
+            </div>
         )
     }
 
