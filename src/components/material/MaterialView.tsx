@@ -563,10 +563,11 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                     <span>
                         <TippyCustomized
                             theme={TippyTheme.white}
-                            className="w-300 h-100 fcv-5"
+                            iconClass="fcv-5"
+                            className="dc__mxw-none w-505 bcn-0 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
                             placement="bottom"
                             Icon={QuestionFilled}
-                            heading="Exclude file/folders"
+                            heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
                             infoText=""
                             showCloseButton={true}
                             additionalContent={this.tippyContent()}
@@ -630,10 +631,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             <TippyCustomized
                                                 theme={TippyTheme.white}
                                                 iconClass="fcv-5"
-                                                className="dc__mxw-none w-505 bcn-0 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
+                                                className="w-500"
                                                 placement="bottom"
                                                 Icon={QuestionFilled}
-                                                heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
                                                 infoText=""
                                                 showCloseButton={true}
                                                 additionalContent={this.regexInfoSteps()}
@@ -644,20 +644,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFive}
                                                 </span>
                                             </TippyCustomized>
-                                            {/* <TippyHeadless
-                                                className=""
-                                                theme="light"
-                                                placement="bottom"
-                                                trigger="click"
-                                                interactive={true}
-                                                render={() => (
-                                                    this.regexInfoSteps()
-                                                )}
-                                            >
-                                                <span data-testid="exclude-include-use-regex" className="dc__link cursor fs-13 fw-4 ml-8">
-                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFive}
-                                                </span>
-                                            </TippyHeadless> */}
                                         </>
                                         <br />
                                     </div>
