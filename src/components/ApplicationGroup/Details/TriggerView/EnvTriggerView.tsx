@@ -465,7 +465,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
             let showRegexModal = false
             const _workflows = [...filteredWorkflows].map((wf) => {
                 wf.nodes.map((node) => {
-                    if (node.type === 'CI' && +node.id == +ciNodeId) {
+                    if (node.type === 'CI' && node.id == ciNodeId) {
                         const selectedCIPipeline = filteredCIPipelines
                             .get(wf.appId)
                             ?.find((_ci) => _ci.id === +ciNodeId)
@@ -564,7 +564,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                 showRegexModal = false
             const _workflows = [...filteredWorkflows].map((workflow) => {
                 workflow.nodes.map((node) => {
-                    if (node.type === 'CI' && +node.id == +ciNodeId) {
+                    if (node.type === 'CI' && node.id == ciNodeId) {
                         _workflowId = workflow.id
                         _appID = workflow.appId
                         const selectedCIPipeline = filteredCIPipelines.get(_appID)?.find((_ci) => _ci.id === +ciNodeId)
@@ -893,8 +893,11 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             material.history.map((hist) => {
                                 if (!hist.excluded) {
                                     if (material.type == SourceTypeMap.WEBHOOK) {
-                                        hist.isSelected =
-                                            hist.webhookData && hist.webhookData.id && hash == hist.webhookData.id
+                                        if(hist.webhookData && hist.webhookData.id && hash == hist.webhookData.id) {
+                                            hist.isSelected = true
+                                        }else {
+                                            hist.isSelected = false
+                                        }
                                     } else {
                                         hist.isSelected = hash == hist.commit
                                     }
@@ -1168,6 +1171,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
 
     const onShowBulkCIModal = () => {
         setCILoading(true)
+        //setShowBulkCIModal(true)
         setTimeout(() => {
             setShowBulkCIModal(true)
         }, 100)

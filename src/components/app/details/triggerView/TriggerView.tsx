@@ -781,8 +781,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             material.history.map((hist) => {
                                 if (!hist.excluded) {
                                     if (material.type == SourceTypeMap.WEBHOOK) {
-                                        hist.isSelected =
-                                            hist.webhookData && hist.webhookData.id && hash == hist.webhookData.id
+                                        if(hist.webhookData && hist.webhookData.id && hash == hist.webhookData.id) {
+                                            hist.isSelected = true
+                                        }else {
+                                            hist.isSelected = false
+                                        }
                                     } else {
                                         hist.isSelected = hash == hist.commit
                                     }

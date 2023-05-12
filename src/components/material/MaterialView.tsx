@@ -158,7 +158,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         }
     }
 
-    RegexInfoSteps = () : JSX.Element => {
+    regexInfoSteps = () : JSX.Element => {
         return (
             <div data-testid="exclude-include-use-regex-info" className="w-500 h-410 fs-13 bcn-0 dc__border dc__border-radius-8-imp">
                 <h2 className="flex left fs-14 fw-6 p-12 m-0 dc__border-bottom">
@@ -636,7 +636,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 trigger="click"
                                                 interactive={true}
                                                 render={() => (
-                                                    <this.RegexInfoSteps />
+                                                    this.regexInfoSteps()
                                                 )}
                                             >
                                                 <span data-testid="exclude-include-use-regex" className="dc__link cursor fs-13 fw-4 ml-8">

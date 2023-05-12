@@ -195,13 +195,12 @@ const processMaterialHistoryAndSelectionError = (material) => {
     }
     if (material.history) {
         let selectedIndex = -1
-        const matHistory = []
         for (let index = 0; index < material.history.length; index++) {
             const history = material.history[index]
             if (selectedIndex === -1 && !history.Excluded) {
                 selectedIndex = index
             }
-            matHistory.push({
+            data.history.push({
                 commitURL: material.gitMaterialUrl ? createGitCommitUrl(material.gitMaterialUrl, history.Commit) : '',
                 changes: history.Changes || [],
                 author: history.Author,
@@ -224,7 +223,6 @@ const processMaterialHistoryAndSelectionError = (material) => {
             data.isMaterialSelectionError = false
             data.materialSelectionErrorMsg = ''
         }
-        data.history = matHistory
     }
     return data
 }

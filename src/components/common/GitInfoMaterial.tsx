@@ -55,7 +55,6 @@ export default function GitInfoMaterial({
             setSearchText('')
             setSearchApplied(false)
         } else if (selectedMaterial.searchText !== searchText) {
-            //setSearchText(selectedMaterial.searchText)
             setSearchApplied(true)
         }
         setShowAllCommits(selectedMaterial?.showAllCommits ?? false)
@@ -221,10 +220,11 @@ export default function GitInfoMaterial({
     }
 
     const toggleExclude = (e): void => {
-        fromBulkCITrigger && stopPropagation(e)
-        const _showAllCommits = !showAllCommits
-        setShowAllCommits(_showAllCommits)
-        triggerViewContext.getFilteredMaterial(pipelineId, selectedMaterial.gitMaterialId, _showAllCommits)
+        if(fromBulkCITrigger) {
+            stopPropagation(e)
+        }
+        setShowAllCommits(!showAllCommits)
+        triggerViewContext.getFilteredMaterial(pipelineId, selectedMaterial.gitMaterialId, !showAllCommits)
     }
 
     function renderMaterialHistory(selectedMaterial: CIMaterialType) {
