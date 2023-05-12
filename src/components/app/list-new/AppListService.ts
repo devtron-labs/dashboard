@@ -134,18 +134,18 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
         const environmentClusterAppListData = new Map()
         const clusterMap = new Map()
         const projectMap = new Map()
-        if (typeof clusterList !== 'undefined') {
+        if (clusterList) {
             for (const cluster of clusterList) {
                 clusterMap.set(cluster.id, cluster.cluster_name)
             }
         }
-        if (typeof projectList !== 'undefined') {
+        if (projectList) {
             for (const project of projectList) {
                 projectMap.set(project.id, project.name)
             }
         }
 
-        if (typeof environmentList !== 'undefined') {
+        if (environmentList) {
             for (const env of environmentList) {
                 const envData = {
                     environmentName: env.environment_name,
