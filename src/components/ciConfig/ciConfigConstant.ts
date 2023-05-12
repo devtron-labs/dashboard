@@ -31,7 +31,7 @@ export const CI_BUILDPACK_OPTION_TEXTS = {
         },
     },
     ProjectPathTippyContent: {
-        label: 'Project Path (Relative)',
+        label: 'Build Context (Relative)',
         heading: 'Project Path',
         infoText: 'In case of monorepo, specify the path of the GIT Repo for the deployment of the project.',
     },
