@@ -462,6 +462,7 @@ export default function ClusterTerminal({
         if (node) {
             if (node !== selectedNodeName.value) {
                 setSelectedNodeName({ label: node, value: node })
+                setDebugMode(node !== AUTO_SELECT.value)
             }
         } else {
             setManifestData('')
@@ -469,6 +470,7 @@ export default function ClusterTerminal({
             setNamespace(defaultNameSpace)
             setImage(imageList[0])
             setResourceData(null)
+            setDebugMode(false)
             setSelectedNodeName(nodeGroups[0].options[0])
         }
     }
