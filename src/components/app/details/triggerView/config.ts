@@ -1,5 +1,6 @@
 import { createContext } from 'react'
-import { DeploymentNodeType, TriggerViewContextType } from './types'
+import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { TriggerViewContextType } from './types'
 
 export const TriggerViewContext = createContext<TriggerViewContextType>({
     invalidateCache: false,
@@ -7,7 +8,7 @@ export const TriggerViewContext = createContext<TriggerViewContextType>({
     onClickTriggerCINode: () => {},
     onClickTriggerCDNode: (nodeType: DeploymentNodeType, _appId: number) => {},
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => {},
-    onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType) => {},
+    onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => {},
     onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => {},
     closeCIModal: () => {},
     selectCommit: (materialId: string, hash: string, ciPipelineId?: string) => {},

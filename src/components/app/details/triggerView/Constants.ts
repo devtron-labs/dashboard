@@ -69,4 +69,14 @@ export const TRIGGER_VIEW_GA_EVENTS = {
         category: 'Trigger View',
         action: `${nodeType} Triggered`,
     }),
+    ApprovalNodeClicked: {
+        category: 'Trigger View',
+        action: 'Approval Node Clicked',
+    }
+}
+
+export const ARTIFACT_STATUS = {
+    Progressing: 'Progressing',
+    Degraded: 'Degraded',
+    Failed: 'Failed',
 }

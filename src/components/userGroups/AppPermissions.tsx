@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
-import { ChartPermission, DirectPermission, useUserGroupContext } from './UserGroup'
+import { APPROVER_ACTION, ChartPermission, DirectPermission, useUserGroupContext } from './UserGroup'
 import { ReactComponent as AddIcon } from '../../assets/icons/ic-add.svg'
 import { useRouteMatch } from 'react-router'
 import { ACCESS_TYPE_MAP, HELM_APP_UNASSIGNED_PROJECT, SERVER_MODE } from '../../config'
@@ -69,7 +69,7 @@ export default function AppPermissions({
     }, [data])
     const { customRoles } = useUserGroupContext()
     function setAllApplication(directRolefilter: APIRoleFilter, projectId) {
-        if ( directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
+        if (directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT) {
             return [
                 { label: 'All applications', value: '*' },
                 ...(
@@ -161,14 +161,10 @@ export default function AppPermissions({
         ])
 
         const directPermissions: DirectPermissionsRoleFilter[] = roleFilters
-            ?.filter(
-                (roleFilter: APIRoleFilter) =>
-                    roleFilter.entity === EntityTypes.DIRECT
-            )
+            ?.filter((roleFilter: APIRoleFilter) => roleFilter.entity === EntityTypes.DIRECT)
             ?.map((directRolefilter: APIRoleFilter, index: number) => {
                 const projectId =
-                    directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT &&
-                    projectsMap.get(directRolefilter.team)?.id
+                    directRolefilter.team !== HELM_APP_UNASSIGNED_PROJECT && projectsMap.get(directRolefilter.team)?.id
                 if (!directRolefilter['accessType']) {
                     directRolefilter['accessType'] = ACCESS_TYPE_MAP.DEVTRON_APPS
                 }
@@ -365,6 +361,8 @@ export default function AppPermissions({
                     ? fetchAppList([projectId])
                     : fetchAppListHelmApps([projectId])
             }
+        } else if (name === APPROVER_ACTION.label) {
+            tempPermissions[index][name] = !tempPermissions[index][name]
         } else {
             tempPermissions[index][name] = selectedValue
         }

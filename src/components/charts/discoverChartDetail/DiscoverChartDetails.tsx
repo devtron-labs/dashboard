@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import { useRouteMatch, useLocation, useParams, useHistory } from 'react-router'
-import { useEffectAfterMount, List } from '../../common'
-import { showError, Progressing, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import { List } from '../../common'
+import { showError, Progressing, BreadCrumb, useBreadcrumb, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import { getChartVersionsMin, getChartVersionDetails, getChartValuesCategorizedListParsed } from '../charts.service'
 import { getAvailableCharts } from '../../../services/service'
@@ -10,6 +10,7 @@ import { DiscoverChartDetailsProps, DeploymentProps } from './types'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
 import fileIcon from '../../../assets/icons/ic-file.svg'
 import { marked } from 'marked'
+import * as DOMPurify from 'dompurify';
 import { About } from './About'
 import { ChartDeploymentList } from './ChartDeploymentList'
 import { getSavedValuesListURL, getChartValuesURL } from '../charts.helper'
@@ -24,7 +25,8 @@ import { ChartValuesType } from '../charts.types'
 import { toast } from 'react-toastify'
 
 const DiscoverDetailsContext = React.createContext(null)
-
+const uncheckedCheckboxInputElement = `<input checked="" disabled="" type="checkbox">`
+const checkedCheckboxInputElement = `<input disabled="" type="checkbox">`
 export function useDiscoverDetailsContext() {
     const context = React.useContext(DiscoverDetailsContext)
     if (!context) {
@@ -376,9 +378,30 @@ function ReadmeRowHorizontal({ readme = null, version = '', ...props }) {
     )
 }
 
+function isReadmeInputCheckbox(text: string) { 
+    if (text.includes(uncheckedCheckboxInputElement) || text.includes(checkedCheckboxInputElement)) { 
+        return true;
+    }
+    return false;
+}
 export function MarkDown({ markdown = '', className = '', breaks = false, ...props }) {
     const { hash } = useLocation()
     const renderer = new marked.Renderer()
+
+    renderer.listitem = function (text: string) {
+        if (isReadmeInputCheckbox(text)) {
+            text = text
+            .replace(uncheckedCheckboxInputElement , '<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" checked disabled>')
+            .replace(checkedCheckboxInputElement, '<input type="checkbox" style="margin: 0 0.2em 0.25em -1.4em;" class="dc__vertical-align-middle" disabled>');
+            return `<li style="list-style: none">${text}</li>`     
+        } 
+        return `<li>${text}</li>`;     
+    };
+    
+    renderer.image = function (href: string, title: string, text: string) { 
+        return `<img src="${href}" alt="${text}" title="${title}" class="max-w-100">`
+    }
+
     renderer.table = function (header, body) {
         return `
         <div class="table-container">
@@ -410,7 +433,7 @@ export function MarkDown({ markdown = '', className = '', breaks = false, ...pro
     })
 
     function createMarkup() {
-        return { __html: marked(markdown) }
+        return { __html: DOMPurify.sanitize(marked(markdown), { USE_PROFILES: { html: true } }) }
     }
     return (
         <article

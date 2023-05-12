@@ -5,14 +5,19 @@ import { TriggerExternalCINode } from './nodes/TriggerExternalCINode'
 import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
-import { getCIPipelineURL, RectangularEdge as Edge } from '../../../../common'
-import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType } from '../types'
+import { getCIPipelineURL, importComponentFromFELibrary, RectangularEdge as Edge } from '../../../../common'
+import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType, TriggerViewContextType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
-import { Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+import { Checkbox, CHECKBOX_VALUE, DeploymentNodeType, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { TriggerViewContext } from '../config'
+
+const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 
 export class Workflow extends Component<WorkflowProps> {
+    static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
+
     goToWorkFlowEditor = (node: NodeAttr) => {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
             const ciPipelineURL = getCIPipelineURL(
@@ -20,7 +25,7 @@ export class Workflow extends Component<WorkflowProps> {
                 this.props.id,
                 true,
                 node.downstreams[0].split('-')[1],
-                this.props.isJobView
+                this.props.isJobView,
             )
             if (this.props.fromAppGrouping) {
                 window.open(
@@ -246,16 +251,33 @@ export class Workflow extends Component<WorkflowProps> {
         }, [])
     }
 
+    onClickNodeEdge = (nodeId: number) => {
+        this.context.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
+    }
+
     renderEdgeList() {
-        return this.getEdges().map((edgeNode) => {
+        const edges = this.getEdges()
+        return edges.map((edgeNode) => {
+            if (ApprovalNodeEdge) {
+                return (
+                    <ApprovalNodeEdge
+                        key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
+                        startNode={edgeNode.startNode}
+                        endNode={edgeNode.endNode}
+                        onClickEdge={() => this.onClickNodeEdge(edgeNode.endNode.id)}
+                        edges={edges}
+                    />
+                )
+            }
+
             return (
                 <Edge
                     key={`trigger-edge-${edgeNode.startNode.id}-${edgeNode.endNode.id}(${edgeNode.endNode.type})`}
                     startNode={edgeNode.startNode}
                     endNode={edgeNode.endNode}
-                    onClickEdge={() => {}}
-                    deleteEdge={() => {}}
-                    onMouseOverEdge={() => {}}
+                    onClickEdge={noop}
+                    deleteEdge={noop}
+                    onMouseOverEdge={noop}
                 />
             )
         })
