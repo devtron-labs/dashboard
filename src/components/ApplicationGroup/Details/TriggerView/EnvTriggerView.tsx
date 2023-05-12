@@ -893,7 +893,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             material.history.map((hist) => {
                                 if (!hist.excluded) {
                                     if (material.type == SourceTypeMap.WEBHOOK) {
-                                        if(hist.webhookData && hist.webhookData.id && hash == hist.webhookData.id) {
+                                        if(hist?.webhookData && hist.webhookData?.id && hash == hist.webhookData.id) {
                                             hist.isSelected = true
                                         }else {
                                             hist.isSelected = false

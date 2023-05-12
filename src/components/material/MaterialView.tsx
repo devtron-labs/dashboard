@@ -168,7 +168,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                 <div className="h-365 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-scroll">
                     <div className="w-476 h-112 flex column dc__align-start p-0 dc__gap-4">
                         {USE_REGEX_TIPPY_CONTENT.insructionsList.regexInfo.map((item, index) => (
-                            <div className={`${index === 2 ? "h-24" : "h-40"} dc__gap-12 w-476 fs-13 fw-4 flex dc__align-start p-0`}>
+                            <div key={index} className={`${index === 2 ? "h-24" : "h-40"} dc__gap-12 w-476 fs-13 fw-4 flex dc__align-start p-0`}>
                                 <div className="w-28 h-24 flex column dc__content-center dc__align-items-center p-10 dc__gap-10 bcn-1 br-4 dc__ff-monospace dc__no-border">{item.regex}</div>
                                 <span className={`${index === 2 ? "h-20" : "h-40"} w-436 lh-20`}>
                                     {item.info}
