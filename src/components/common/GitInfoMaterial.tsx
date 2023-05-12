@@ -106,7 +106,7 @@ export default function GitInfoMaterial({
                     material={material}
                     selectMaterial={triggerViewContext.selectMaterial}
                     refreshMaterial={refreshMaterial}
-                    setSearchText={setSearchText}
+                    clearSearch={clearSearch}
                 />
             </div>
         )
@@ -151,7 +151,12 @@ export default function GitInfoMaterial({
         )
     }
     const handleFilterChanges = (_searchText: string): void => {
-        triggerViewContext.getMaterialByCommit(pipelineId, selectedMaterial.id, selectedMaterial.gitMaterialId, _searchText)
+        triggerViewContext.getMaterialByCommit(
+            pipelineId,
+            selectedMaterial.id,
+            selectedMaterial.gitMaterialId,
+            _searchText,
+        )
     }
 
     const clearSearch = (e): void => {
@@ -173,6 +178,8 @@ export default function GitInfoMaterial({
             if (event.target.value) {
                 handleFilterChanges(event.target.value)
                 setSearchApplied(true)
+            } else if (searchApplied) {
+                setSearchApplied(false)
             }
         } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
             clearSearch(event)
@@ -220,11 +227,41 @@ export default function GitInfoMaterial({
     }
 
     const toggleExclude = (e): void => {
-        if(fromBulkCITrigger) {
+        if (fromBulkCITrigger) {
             stopPropagation(e)
         }
         setShowAllCommits(!showAllCommits)
+        clearSearch(e)
         triggerViewContext.getFilteredMaterial(pipelineId, selectedMaterial.gitMaterialId, !showAllCommits)
+    }
+
+    const renderExcludedCommitsOption = () => {
+        return (
+            <PopupMenu autoClose>
+                <PopupMenu.Button rootClassName="mw-18" isKebab>
+                    {showAllCommits ? (
+                        <ShowIconFilter className="icon-dim-20" />
+                    ) : (
+                        <ShowIconFilterApplied className="icon-dim-20" />
+                    )}
+                </PopupMenu.Button>
+                <PopupMenu.Body>
+                    <div className="flex left p-10 pointer" onClick={toggleExclude}>
+                        {showAllCommits ? (
+                            <>
+                                <Hide className="icon-dim-16 mr-10" />
+                                Hide excluded commits
+                            </>
+                        ) : (
+                            <>
+                                <Show className="icon-dim-16 mr-10" />
+                                Show excluded commits
+                            </>
+                        )}
+                    </div>
+                </PopupMenu.Body>
+            </PopupMenu>
+        )
     }
 
     function renderMaterialHistory(selectedMaterial: CIMaterialType) {
@@ -241,30 +278,7 @@ export default function GitInfoMaterial({
                         {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && (
                             <div className="flex right mr-20">
                                 {renderSearch()}
-                                <PopupMenu autoClose>
-                                    <PopupMenu.Button rootClassName="mw-18" isKebab>
-                                        {showAllCommits ? (
-                                            <ShowIconFilter className="icon-dim-20" />
-                                        ) : (
-                                            <ShowIconFilterApplied className="icon-dim-20" />
-                                        )}
-                                    </PopupMenu.Button>
-                                    <PopupMenu.Body>
-                                        <div className="flex left p-10 pointer" onClick={toggleExclude}>
-                                            {showAllCommits ? (
-                                                <>
-                                                    <Hide className="icon-dim-16 mr-10" />
-                                                    Hide excluded commits
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Show className="icon-dim-16 mr-10" />
-                                                    Show excluded commits
-                                                </>
-                                            )}
-                                        </div>
-                                    </PopupMenu.Body>
-                                </PopupMenu>
+                                {renderExcludedCommitsOption()}
                             </div>
                         )}
                     </div>
