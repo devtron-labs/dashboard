@@ -26,6 +26,7 @@ import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.s
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle-green.svg'
 import { ReactComponent as Wrong } from '../../assets/icons/ic-close-circle.svg'
+import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
 import { sortObjectArrayAlphabetically } from '../common/helpers/Helpers'
 import DeleteComponent from '../../util/DeleteComponent'
@@ -160,11 +161,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
 
     regexInfoSteps = (): JSX.Element => {
         return (
-            <div data-testid="exclude-include-use-regex-info" className="w-500 h-410 fs-13 bcn-0 dc__border dc__border-radius-8-imp">
-                <h2 className="flex left fs-14 fw-6 p-12 m-0 dc__border-bottom">
-                    <QuestionFilled className="icon-dim-20 fcv-5 mr-12" />
-                    {USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
-                </h2>
+            
+            <div data-testid="exclude-include-use-regex-info" className="w-500 h-380 fs-13 bcn-0">
                 <div className="h-365 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-scroll">
                     <div className="w-476 h-112 flex column dc__align-start p-0 dc__gap-4">
                         {USE_REGEX_TIPPY_CONTENT.insructionsList.regexInfo.map((item, index) => (
@@ -632,9 +630,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             <TippyCustomized
                                                 theme={TippyTheme.white}
                                                 iconClass="fcv-5"
-                                                className="w-500"
+                                                className="dc__mxw-none w-505 bcn-0 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
                                                 placement="bottom"
                                                 Icon={QuestionFilled}
+                                                heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
                                                 infoText=""
                                                 showCloseButton={true}
                                                 additionalContent={this.regexInfoSteps()}
@@ -645,7 +644,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFive}
                                                 </span>
                                             </TippyCustomized>
-                                            <TippyHeadless
+                                            {/* <TippyHeadless
                                                 className=""
                                                 theme="light"
                                                 placement="bottom"
@@ -658,7 +657,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <span data-testid="exclude-include-use-regex" className="dc__link cursor fs-13 fw-4 ml-8">
                                                     {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFive}
                                                 </span>
-                                            </TippyHeadless>
+                                            </TippyHeadless> */}
                                         </>
                                         <br />
                                     </div>

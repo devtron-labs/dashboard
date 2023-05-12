@@ -175,11 +175,12 @@ export default function GitInfoMaterial({
     const handleFilterKeyPress = (event): void => {
         const theKeyCode = event.key
         if (theKeyCode === 'Enter') {
-            if (event.target.value) {
+            if (event.target.value && !searchApplied) {
                 handleFilterChanges(event.target.value)
                 setSearchApplied(true)
             } else if (searchApplied) {
                 setSearchApplied(false)
+                clearSearch(event)
             }
         } else if (theKeyCode === 'Backspace' && searchText.length === 1) {
             clearSearch(event)

@@ -1950,6 +1950,10 @@ button.anchor {
   max-width: inherit;
 }
 
+.dc__mxw-none {
+    max-width: none !important;
+}
+
 .dc__mxw-200 {
     max-width: 200px;
 }
@@ -2470,8 +2474,8 @@ textarea,
     width: 476px;
 }
 
-.w-500 {
-    width: 500px !important;
+.w-505 {
+    width: 510px !important;
 }
 
 .w-600 {
@@ -2679,8 +2683,8 @@ textarea,
     height: 365px !important;
 }
 
-.h-410 {
-    height: 410px !important;
+.h-380 {
+    height: 380px !important;
 }
 
 // Minimum Height
