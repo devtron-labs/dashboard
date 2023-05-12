@@ -4,11 +4,11 @@ import { CIBuildConfigType, DockerConfigOverrideType } from '../../../ciPipeline
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { CIMaterialType } from './MaterialHistory'
 import {
+    CDMaterialType,
     CDModalTabType,
     CommonNodeAttr,
     DeploymentNodeType,
     UserApprovalConfigType,
-    VulnerabilityType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CDMaterialProps {
@@ -97,29 +97,6 @@ export interface MaterialInfo {
     branch: string
     url?: string
     type?: string
-}
-
-export interface CDMaterialType {
-    userApprovalMetadata: any
-    id: string
-    materialInfo: MaterialInfo[]
-    tab: CDModalTabType
-    scanEnabled: boolean
-    scanned: boolean
-    vulnerabilitiesLoading: boolean
-    lastExecution: string //timestamp
-    vulnerabilities: VulnerabilityType[]
-    vulnerable: boolean
-    deployedTime: string
-    deployedBy?: string
-    wfrId?: number
-    buildTime: string
-    image: string
-    isSelected: boolean
-    showSourceInfo: boolean
-    latest: boolean
-    runningOnParentCd?: boolean
-    index
 }
 
 export interface CIMaterialRouterProps {
