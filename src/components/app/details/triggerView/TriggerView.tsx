@@ -327,7 +327,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             let showRegexModal = false
             const workflows = [...this.state.workflows].map((workflow) => {
                 workflow.nodes.map((node) => {
-                    if (node.type === 'CI' && +node.id == +ciNodeId) {
+                    if (node.type === 'CI' && node.id == ciNodeId) {
                         const selectedCIPipeline = this.state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
                         if (selectedCIPipeline?.ciMaterial) {
                             for (const mat of selectedCIPipeline.ciMaterial) {
@@ -449,7 +449,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             let workflowId
             const workflows = [...this.state.workflows].map((workflow) => {
                 workflow.nodes.map((node) => {
-                    if (node.type === 'CI' && +node.id == +ciNodeId) {
+                    if (node.type === 'CI' && node.id == ciNodeId) {
                         const selectedCIPipeline = this.state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
                         if (selectedCIPipeline?.ciMaterial) {
                             for (const mat of selectedCIPipeline.ciMaterial) {
