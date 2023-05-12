@@ -290,7 +290,7 @@ export const CLUSTER_TERMINAL_MESSAGING = {
     DEBUG_CLUSTER: ') which can be used to debug clusters and workloads.',
     PUBLIC_IMAGE: 'You can use publicly available custom images as well.',
     DEBUG_MODE_TEXT:
-        'Running a pod in a debug mode means that the pod can access the host’s resources and kernel capabilities.',
+        `The debug mode is helpful in scenarios where you can't access your Node by using an SSH connection. When enabled, a pod is created on the node, which opens an interactive shell on the Node.`,
 }
 
 export const SELECT_TITLE = {
