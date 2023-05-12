@@ -406,8 +406,6 @@ function ChartValuesView({
                 commonState.modifiedValuesYaml,
                 dispatch,
             )
-            
-
         }
     }, [commonState.selectedVersionUpdatePage, commonState.isReadMeAvailable])
 
