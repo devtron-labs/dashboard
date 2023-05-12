@@ -89,8 +89,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         {this.props.material.url.includes('github') ? <GitHub /> : null}
                         {this.props.material.url.includes('bitbucket') ? <BitBucket /> : null}
                         {this.props.material.url.includes('gitlab') ||
-                        this.props.material.url.includes('github') ||
-                        this.props.material.url.includes('bitbucket') ? null : (
+                            this.props.material.url.includes('github') ||
+                            this.props.material.url.includes('bitbucket') ? null : (
                             <Git />
                         )}
                     </span>
@@ -158,7 +158,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         }
     }
 
-    regexInfoSteps = () : JSX.Element => {
+    regexInfoSteps = (): JSX.Element => {
         return (
             <div data-testid="exclude-include-use-regex-info" className="w-500 h-410 fs-13 bcn-0 dc__border dc__border-radius-8-imp">
                 <h2 className="flex left fs-14 fw-6 p-12 m-0 dc__border-bottom">
@@ -209,9 +209,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 </div>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
-                                <Check className="icon-dim-16 mt-2"/>
-                                <Check className="icon-dim-16 mt-2"/>
-                                <Wrong className="icon-dim-16 mt-2"/>
+                                <Check className="icon-dim-16 mt-2" />
+                                <Check className="icon-dim-16 mt-2" />
+                                <Wrong className="icon-dim-16 mt-2" />
                             </div>
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
@@ -238,9 +238,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 </div>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
-                                <Wrong className="icon-dim-16 mt-2"/>
-                                <Check className="icon-dim-16 mt-2"/>
-                                <Wrong className="icon-dim-16 mt-2"/>
+                                <Wrong className="icon-dim-16 mt-2" />
+                                <Check className="icon-dim-16 mt-2" />
+                                <Wrong className="icon-dim-16 mt-2" />
                             </div>
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
@@ -270,9 +270,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 </div>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
-                                <Check className="icon-dim-16 mt-2"/>
-                                <Check className="icon-dim-16 mt-2"/>
-                                <Check className="icon-dim-16 mt-2"/>
+                                <Check className="icon-dim-16 mt-2" />
+                                <Check className="icon-dim-16 mt-2" />
+                                <Check className="icon-dim-16 mt-2" />
                             </div>
                         </div>
                         <div className="regex-tippy-container h-82 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
@@ -285,7 +285,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 <div className="h-18 dc__align-items-center p-0 dc__gap-4">
                                     <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample4.regexPath1.partOne}</span>
                                     <span className="fs-13 fw-6 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample4.regexPath1.partTwo}</span>
-                                    
+
                                 </div>
                                 <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
                                     <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample4.regexPath2.partOne}</span>
@@ -297,9 +297,9 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 </div>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
-                                <Check className="icon-dim-16 mt-2"/>
-                                <Check className="icon-dim-16 mt-2"/>
-                                <Wrong className="icon-dim-16 mt-2"/>
+                                <Check className="icon-dim-16 mt-2" />
+                                <Check className="icon-dim-16 mt-2" />
+                                <Wrong className="icon-dim-16 mt-2" />
                             </div>
                         </div>
                         <div className="regex-tippy-container h-58 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
@@ -320,15 +320,15 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
                                 <div className="h-18 dc__align-items-center p-0 dc__gap-4">
                                     <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample5.regexPath1.partOne}</span>
-                                    
+
                                 </div>
                                 <div className="h-18 mt-6 dc__align-items-center p-0 dc__gap-4">
                                     <span className="fs-13 fw-4 lh-10">{USE_REGEX_TIPPY_CONTENT.insructionsList.regexPathInfo.regexPathExample.regexPathExample5.regexPath2.partOne}</span>
                                 </div>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
-                                <Check className="icon-dim-16 mt-2"/>
-                                <Wrong className="icon-dim-16 mt-2"/>
+                                <Check className="icon-dim-16 mt-2" />
+                                <Wrong className="icon-dim-16 mt-2" />
                             </div>
                         </div>
                         <div className="regex-tippy-container h-36 pt-8 pr-12 pb-8 pl-12 dc__gap-16 dc__align-start dc__border-bottom-n1">
@@ -346,14 +346,14 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 </div>
                             </div>
                             <div className="h-66 dc__align-start p-0 dc__gap-6">
-                                <Check className="icon-dim-16 mt-2"/>
+                                <Check className="icon-dim-16 mt-2" />
                             </div>
                         </div>
 
 
                     </div>
                 </div>
-                <br/>
+                <br />
             </div>
         )
     }
@@ -458,8 +458,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                                 <BitBucket className="mr-8 dc__vertical-align-middle icon-dim-20" />
                                             ) : null}
                                             {props.data.url.includes('gitlab') ||
-                                            props.data.url.includes('github') ||
-                                            props.data.url.includes('bitbucket') ? null : (
+                                                props.data.url.includes('github') ||
+                                                props.data.url.includes('bitbucket') ? null : (
                                                 <Git className="mr-8 dc__vertical-align-middle icon-dim-20" />
                                             )}
 
@@ -629,6 +629,22 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                             {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFour}
                                         </span>
                                         <>
+                                            <TippyCustomized
+                                                theme={TippyTheme.white}
+                                                iconClass="fcv-5"
+                                                className="w-500"
+                                                placement="bottom"
+                                                Icon={QuestionFilled}
+                                                infoText=""
+                                                showCloseButton={true}
+                                                additionalContent={this.regexInfoSteps()}
+                                                trigger="click"
+                                                interactive={true}
+                                            >
+                                                <span data-testid="exclude-include-use-regex" className="dc__link cursor fs-13 fw-4 ml-8">
+                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFive}
+                                                </span>
+                                            </TippyCustomized>
                                             <TippyHeadless
                                                 className=""
                                                 theme="light"

@@ -240,21 +240,21 @@ export default function GitInfoMaterial({
             <PopupMenu autoClose>
                 <PopupMenu.Button rootClassName="mw-18" isKebab>
                     {showAllCommits ? (
-                        <ShowIconFilter className="icon-dim-20" />
+                        <ShowIconFilter data-testid="show-icon-filter" className="icon-dim-20" />
                     ) : (
-                        <ShowIconFilterApplied className="icon-dim-20" />
+                        <ShowIconFilterApplied data-testid="show-icon-filter-applied" className="icon-dim-20" />
                     )}
                 </PopupMenu.Button>
                 <PopupMenu.Body>
                     <div className="flex left p-10 pointer" onClick={toggleExclude}>
                         {showAllCommits ? (
                             <>
-                                <Hide className="icon-dim-16 mr-10" />
+                                <Hide data-testid="hide-excluded-commits" className="icon-dim-16 mr-10" />
                                 Hide excluded commits
                             </>
                         ) : (
                             <>
-                                <Show className="icon-dim-16 mr-10" />
+                                <Show data-testid="show-excluded-commits" className="icon-dim-16 mr-10" />
                                 Show excluded commits
                             </>
                         )}

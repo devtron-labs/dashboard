@@ -38,7 +38,7 @@ export default function MaterialSource({
             return (
                 <div className="flex fs-10">
                     <Error className="form__icon--error icon-dim-14 mr-5" />
-                    <div className="material__error dc__ellipsis-right">{renderErrorMessage(mat)}</div>
+                    <div data-testid="material-" className="material__error dc__ellipsis-right">{renderErrorMessage(mat)}</div>
                 </div>
             )
         } else {
