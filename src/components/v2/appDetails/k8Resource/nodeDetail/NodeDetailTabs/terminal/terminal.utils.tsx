@@ -12,7 +12,7 @@ import { ReactComponent as Abort } from '../../../../../../../assets/icons/ic-ab
 import { ReactComponent as Check } from '../../../../../../../assets/icons/ic-check.svg'
 import { ReactComponent as Pencil } from '../../../../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Edit } from '../../../../../../../assets/icons/ic-visibility-on.svg'
-import { ReactComponent as Stop } from '../../../../../../../assets/icons/ic-stop.svg'
+import { ReactComponent as Stop } from '../../../../../../../assets/icons/ic-stop-filled.svg'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
 import { TippyCustomized, TippyTheme, Toggle } from '@devtron-labs/devtron-fe-common-lib'
@@ -48,7 +48,7 @@ const creatableSelectWrapper = (selectData: SelectWrapperType) => {
                     iconClass="icon-dim-20 fcv-5"
                     additionalContent={selectData.infoContent}
                 >
-                    <HelpIcon className="icon-dim-16 mr-8 cursor" />
+                    <HelpIcon className="icon-dim-16 cursor" />
                 </TippyCustomized>
             )}
             <div className="cn-6 ml-8 mr-4">{selectData.title}</div>
@@ -168,11 +168,11 @@ const connectionSwitch = (switchProps: ConnectionSwitchType) => {
             >
                 {switchProps.toggleButton ? (
                     <span className="mr-8 flex">
-                        <Stop className="icon-dim-12 fcr-5 mr-4 cursor" onClick={switchProps.stopTerminalConnection} />
+                        <Stop className="icon-dim-16 fcr-5 mr-4 cursor" onClick={switchProps.stopTerminalConnection} />
                     </span>
                 ) : (
                     <span className="mr-8 flex">
-                        <Play className="icon-dim-12 fcg-5 mr-4 cursor" onClick={switchProps.resumePodConnection} />
+                        <Play className="icon-dim-16 fcg-5 mr-4 cursor" onClick={switchProps.resumePodConnection} />
                     </span>
                 )}
             </Tippy>
