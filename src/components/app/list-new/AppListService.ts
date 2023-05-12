@@ -133,27 +133,39 @@ export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Pr
         // set list data for env cluster & namespace
         const environmentClusterAppListData = new Map()
         const clusterMap = new Map()
-        for (const cluster of clusterList) {
-            clusterMap.set(cluster.id, cluster.cluster_name)
+        const projectMap = new Map()
+        if (clusterList) {
+            for (const cluster of clusterList) {
+                clusterMap.set(cluster.id, cluster.cluster_name)
+            }
+        }
+        if (projectList) {
+            for (const project of projectList) {
+                projectMap.set(project.id, project.name)
+            }
         }
 
-        for (const env of environmentList) {
-            const envData = {
-                environmentName: env.environment_name,
-                namespace: env.namespace,
-                clusterName: clusterMap.get(env.cluster_id),
-                clusterId: env.cluster_id,
+        if (environmentList) {
+            for (const env of environmentList) {
+                const envData = {
+                    environmentName: env.environment_name,
+                    namespace: env.namespace,
+                    clusterName: clusterMap.get(env.cluster_id),
+                    clusterId: env.cluster_id,
+                }
+                environmentClusterAppListData.set(env.id, envData)
             }
-            environmentClusterAppListData.set(env.id, envData)
         }
+        
 
         // end
 
         return {
             projectsRes: projectList,
+            projectMap: projectMap,
             environmentClusterAppListData: environmentClusterAppListData,
-            filters : filters
-        };
+            filters: filters,
+        }
     })
 }
 
