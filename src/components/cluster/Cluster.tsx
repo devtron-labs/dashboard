@@ -1360,9 +1360,9 @@ function ClusterForm({
                     </div>
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
 
-                        <button className="cta cancel ml-20" type="button" onClick={toggleGetCluster} style={{ marginRight: 'auto' }}>
+                        <button className="ml-20  cb-5" type="button" onClick={toggleGetCluster} style={{ marginRight: 'auto' }}>
                             <span style={{ display: 'flex', alignItems: 'center' }}>
-                            <Edit className="icon-dim-16 scn-7 mr-4" />
+                            <Edit className="icon-dim-16 scb-5 mr-4" />
                                 Edit Kubeconfig
                             </span>
 
