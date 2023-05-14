@@ -140,7 +140,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             isKubeConfigFile: false,
             getCluster: false,
             browseFile: false,
-            isClusterSelect: false,
             isClusterDetails: false,
         }
         this.initialise = this.initialise.bind(this)
@@ -149,7 +148,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.toggleKubeConfigFile = this.toggleKubeConfigFile.bind(this)
         this.toggleGetCluster = this.toggleGetCluster.bind(this)
         this.toggleBrowseFile = this.toggleBrowseFile.bind(this)
-        this.toggleSelectCluster = this.toggleSelectCluster.bind(this)
         this.toggleClusterDetails = this.toggleClusterDetails.bind(this)
     }
 
@@ -258,10 +256,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.setState({ isClusterDetails: !this.state.isClusterDetails })
     }
 
-    toggleSelectCluster() {
-        this.setState({ isClusterSelect: !this.state.isClusterSelect })
-    }
-
     toggleShowAddCluster() {
         this.setState({ showAddCluster: !this.state.showAddCluster })
     }
@@ -336,9 +330,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 defaultClusterComponent={this.state.defaultClusterComponent}
                                 isGrafanaModuleInstalled={true}
                                 isTlsConnection={this.state.isTlsConnection}
-                                isClusterSelect={this.state.isClusterSelect}
                                 isClusterDetails={this.state.isClusterDetails}
-                                toggleSelectCluster={this.toggleSelectCluster}
                                 toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                                 toggleShowAddCluster={this.toggleShowAddCluster}
                                 toggleKubeConfigFile={this.toggleKubeConfigFile}
@@ -378,8 +370,6 @@ function Cluster({
     toggleGetCluster,
     browseFile,
     toggleBrowseFile,
-    isClusterSelect,
-    toggleSelectCluster,
     toggleClusterDetails,
     isClusterDetails,
 }) {
@@ -538,8 +528,6 @@ function Cluster({
                                 toggleGetCluster,
                                 browseFile,
                                 toggleBrowseFile,
-                                isClusterSelect,
-                                toggleSelectCluster,
                                 toggleClusterDetails,
                                 isClusterDetails,
                                 isGrafanaModuleInstalled:
@@ -583,8 +571,6 @@ function ClusterForm({
     getCluster,
     browseFile,
     toggleBrowseFile,
-    isClusterSelect,
-    toggleSelectCluster,
     isClusterDetails,
     toggleClusterDetails,
 }) {
@@ -605,13 +591,14 @@ function ClusterForm({
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
     const [saveYamlData, setSaveYamlData] = useState<string>('')
     const [dataList, setDataList] = useState<DataListType[]>([])
-    // const [userNameList, setUserNameList] = useState<{userName: string; message: string}[]>([])
     const [saveClusterList, setSaveClusterList] = useState<{ clusterName: string; status: string; message: string }[]>(
         [],
     )
+    const [selectedClusterName, setSelectedClusterNameOptions] = useState<{ cluster_name: string; state: boolean }>()
     const [loader, setLoadingState] = useState<boolean>(false)
-    const [collapsed, setCollapse] = useState<boolean>(true)
     const [selectedUserNameOptions, setSelectedUserNameOptions] = useState<Record<string, any>>({})
+    const [disableState, setDisableState] = useState<boolean>(false)
+    const [selectedClusterState, setSelectedClusterState] = useState<boolean>(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
@@ -683,10 +670,6 @@ function ClusterForm({
         },
         onValidation,
     )
-
-    const toggleDropdown = (): void => {
-        setCollapse(!collapsed)
-    }
 
     const getSaveClusterPayload = (dataLists: DataListType[]) => {
         let SaveClusterPayload: SaveClusterPayloadType[] = []
@@ -1354,6 +1337,7 @@ function ClusterForm({
                     </div>
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
                         <button className="cta cancel" type="button" onClick={editKubeConfigState}>
+                            <Pencil style={{ marginLeft: 'auto' }} />
                             Edit Kubeconfig
                         </button>
                         <button className="cta cancel" type="button" onClick={handleCloseButton}>
@@ -1383,9 +1367,21 @@ function ClusterForm({
     //             message: _clusterDetails.userInfos[index].errorInConnecting,
     //         ])
     //     })
-    // }
+    // }  
 
-    
+    const checkBoxForSelectedCluster = () => {
+        const _dataList = dataList
+        _dataList.map((_clusterDetailsData, index) => {
+            console.log(_clusterDetailsData.userInfos[index].errorInConnecting)
+            if (_clusterDetailsData.userInfos[index].errorInConnecting.length === 0) {
+                setDisableState(false)
+                setSelectedClusterNameOptions({ cluster_name: _clusterDetailsData.cluster_name, state: true })
+            } else {
+                setDisableState(true)
+                setSelectedClusterNameOptions({ cluster_name: _clusterDetailsData.cluster_name, state: false })
+            }
+        })
+    }
 
     const displayClusterDetails = () => {
         return (
@@ -1419,9 +1415,10 @@ function ClusterForm({
                                         >
                                             <Checkbox
                                                 rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
-                                                isChecked={isClusterSelect}
-                                                onChange={toggleSelectCluster}
+                                                onChange={checkBoxForSelectedCluster}
+                                                isChecked={selectedClusterName[clusterDetail.cluster_name]}
                                                 value={CHECKBOX_VALUE.CHECKED}
+                                                disabled={disableState}
                                             />
                                             <div className="flexbox">
                                                 <span className="dc__ellipsis-right">{clusterDetail.cluster_name}</span>
