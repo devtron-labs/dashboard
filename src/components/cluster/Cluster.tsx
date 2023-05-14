@@ -597,8 +597,9 @@ function ClusterForm({
     const [selectedClusterName, setSelectedClusterNameOptions] = useState<{ cluster_name: string; state: boolean }>()
     const [loader, setLoadingState] = useState<boolean>(false)
     const [selectedUserNameOptions, setSelectedUserNameOptions] = useState<Record<string, any>>({})
+    const [isSelected, setIsSeleceted] = useState<Map<string, boolean>>(new Map())
     const [disableState, setDisableState] = useState<boolean>(false)
-    const [selectedClusterState, setSelectedClusterState] = useState<boolean>(false)
+    // const [selectedClusterState, setSelectedClusterState] = useState<boolean>(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
@@ -1369,20 +1370,36 @@ function ClusterForm({
     //     })
     // }  
 
-    const checkBoxForSelectedCluster = () => {
-        const _dataList = dataList
-        _dataList.map((_clusterDetailsData, index) => {
-            console.log(_clusterDetailsData.userInfos[index].errorInConnecting)
-            if (_clusterDetailsData.userInfos[index].errorInConnecting.length === 0) {
-                setDisableState(false)
-                setSelectedClusterNameOptions({ cluster_name: _clusterDetailsData.cluster_name, state: true })
-            } else {
-                setDisableState(true)
-                setSelectedClusterNameOptions({ cluster_name: _clusterDetailsData.cluster_name, state: false })
-            }
-        })
-    }
+    // const checkBoxForSelectedCluster = () => {
+    //     const _dataList = dataList
+    //     _dataList.map((_clusterDetailsData, index) => {
+    //         console.log(_clusterDetailsData.userInfos[index].errorInConnecting)
+    //         if (_clusterDetailsData.userInfos[index].errorInConnecting.length === 0) {
+    //             setDisableState(false)
+    //             if(selectedClusterName.state === false) {
+    //                 setSelectedClusterNameOptions({ cluster_name: _clusterDetailsData.cluster_name, state: true })
+    //             }
+    //             else {
 
+    //                 setSelectedClusterNameOptions({ cluster_name: _clusterDetailsData.cluster_name, state: false })
+
+    //             }
+
+    //         } else {
+    //             setDisableState(true)
+    //             setSelectedClusterNameOptions({ cluster_name: _clusterDetailsData.cluster_name, state: false })
+    //         }
+    //     })
+    // }
+
+    const toggleIsSelected = () => {
+        // const _dataList = dataList
+        // _dataList.map((_clusterDetailsData, index) => {
+        //     if (_clusterDetailsData.userInfos[index].errorInConnecting.length === 0) {
+        //         setDisableState(false)
+        //     }
+        // })
+    }
     const displayClusterDetails = () => {
         return (
             <>
@@ -1396,7 +1413,7 @@ function ClusterForm({
                             iconClass="icon-dim-18"
                         />
                         <div className="api-token__list en-2 bw-1 bcn-0 br-8">
-                            <div className="cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
+                            <div className="cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top">
                                 <div></div>
                                 <div>CLUSTER</div>
                                 <div>USER</div>
@@ -1414,9 +1431,10 @@ function ClusterForm({
                                             style={{ height: '40px' }}
                                         >
                                             <Checkbox
+                                                key={`app-$${index}`}
                                                 rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
-                                                onChange={checkBoxForSelectedCluster}
-                                                isChecked={selectedClusterName[clusterDetail.cluster_name]}
+                                                onChange={toggleIsSelected}
+                                                isChecked={isSelected[index]}
                                                 value={CHECKBOX_VALUE.CHECKED}
                                                 disabled={disableState}
                                             />
