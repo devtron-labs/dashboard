@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactSelect from 'react-select'
 import { DropdownIndicator } from '../v2/common/ReactSelect.utils'
-import { Option } from '../common'
+import { Option } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function UserNameDropDownList({ clusterDetail, selectedUserNameOptions, setSelectedUserNameOptions }) {
     const onChangeUserName = (selectedOption: any) => {

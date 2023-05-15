@@ -1293,9 +1293,9 @@
   resolved "https://registry.npmjs.org/@csstools/normalize.css/-/normalize.css-9.0.1.tgz"
   integrity sha512-6It2EVfGskxZCQhuykrfnALg7oVeiI6KclWSmGDqB0AiInVrTGB9Jp9i4/Ad21u9Jde/voVQz6eFX/eSg/UsPA==
 
-"@devtron-labs/devtron-fe-common-lib@0.0.7-beta-39":
+"@devtron-labs/devtron-fe-common-lib@0.0.7-beta-39s":
   version "0.0.7-beta-39"
-  resolved "https://registry.npmjs.org/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.7-beta-39.tgz"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-0.0.7-beta-39.tgz#9dbcdea96374611d0dae83c4bb52d51ceec16d5b"
   integrity sha512-PcN5bDIfUx+LDbJ+dFsmQpn76eO0G7R9XFyEaX7nR2CsODjggQasrRjDtEtsk1qqQctgwbtriehPpr4PWODAlg==
   dependencies:
     sass "^1.56.2"

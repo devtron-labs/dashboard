@@ -1,11 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-<<<<<<< HEAD
-import { highlightSearchedText, Pagination, Progressing } from '../../common'
-=======
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { Pagination } from '../../common'
->>>>>>> main
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
     K8S_EMPTY_GROUP,
@@ -160,9 +156,6 @@ export function K8SResourceList({
                                                 className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
                                                 data-name={resourceData.name}
                                                 onClick={handleResourceClick}>
-                                                <span dangerouslySetInnerHTML={{
-                                                    __html: highlightSearchedText(searchText, resourceData.name),
-                                                }}></span>
                                             </a>
                                         </Tippy>
                                     </div>
@@ -178,20 +171,13 @@ export function K8SResourceList({
                         </div>
                     ) : (
                         <div
-<<<<<<< HEAD
-                            className={`dc__highlight-text dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
-=======
                             key={`${resourceData.name}-${idx}`}
                             className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
->>>>>>> main
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
                                     : ''
                             }`}
                         >
-                            <span dangerouslySetInnerHTML={{
-                                    __html: highlightSearchedText(searchText, resourceData[columnName]),
-                            }}></span>
                         </div>
                     ),
                 )}

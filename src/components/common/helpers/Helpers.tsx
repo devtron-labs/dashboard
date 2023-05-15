@@ -1115,18 +1115,6 @@ export const eventAgeComparator = <T,>(key: string): any => {
     return (a: T, b: T) => k8sStyledAgeToSeconds(a[key]) - k8sStyledAgeToSeconds(b[key])
 }
 
-<<<<<<< HEAD
-const highlightText = (highlighted) => `<mark>${highlighted}</mark>`
-
-export const highlightSearchedText = (searchText: string, matchString: string): string => {
-    if (!searchText) {
-        return matchString
-    }
-    
-    const regex = new RegExp(searchText, 'gi')
-    return matchString.replace(regex, highlightText)
-}
-=======
 export const handleOnFocus = (e): void => {
     if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
         e.target.value = ''
@@ -1211,4 +1199,3 @@ export function useHeightObserver(callback): [RefObject<HTMLDivElement>] {
 
     return [ref]
 }
->>>>>>> main
