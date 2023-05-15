@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, SourceTypeMap, ViewType } from '../../../../config'
+import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, NO_COMMIT_SELECTED, SourceTypeMap, ViewType } from '../../../../config'
 import {
     CDMaterialResponseType,
     CDModalTab,
@@ -344,15 +344,22 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             changes: _result.Changes || [],
                             showChanges: true,
                             webhookData: _result.WebhookData,
-                            isSelected: true,
+                            isSelected: !_result.Excluded,
+                            excluded: _result.Excluded,
                         },
                     ]
                     _selectedMaterial.isMaterialLoading = false
+                    _selectedMaterial.showAllCommits = false
+                    _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded 
+                    _selectedMaterial.materialSelectionErrorMsg =_selectedMaterial.history[0].excluded ? NO_COMMIT_SELECTED : ''
                 } else {
                     _selectedMaterial.history = []
                     _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
                     _selectedMaterial.noSearchResult = true
                     _selectedMaterial.isMaterialLoading = false
+                    _selectedMaterial.showAllCommits = false
+                    _selectedMaterial.isMaterialSelectionError = true
+                    _selectedMaterial.materialSelectionErrorMsg = NO_COMMIT_SELECTED
                 }
                 setFilteredWorkflows(workflows)
             })
@@ -365,8 +372,8 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
 
     const getMaterialByCommit = async (
         _ciNodeId: number,
-        pipelineName: string,
         ciPipelineMaterialId: number,
+        gitMaterialId: number,
         commitHash = null,
     ) => {
         let _selectedMaterial
@@ -376,6 +383,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
                         if (material.isSelected && material.searchText !== commitHash) {
                             material.isMaterialLoading = true
+                            material.showAllCommits = false
                             material.searchText = commitHash
                             _selectedMaterial = material
                         }
@@ -390,9 +398,9 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
         if (commitHash && _selectedMaterial) {
             const commitInLocalHistory = _selectedMaterial.history.find((material) => material.commit === commitHash)
             if (commitInLocalHistory) {
-                _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: true }]
+                _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: !commitInLocalHistory.excluded }]
                 _selectedMaterial.isMaterialLoading = false
-
+                _selectedMaterial.showAllCommits = false
                 setFilteredWorkflows(_workflows)
             } else {
                 setFilteredWorkflows(_workflows)
@@ -401,31 +409,116 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
         } else {
             setFilteredWorkflows(_workflows)
             abortControllerRef.current = new AbortController()
-            updateCIMaterialList(
+            getMaterialHistory(
                 selectedCINode.id.toString(),
-                pipelineName,
-                true,
                 abortControllerRef.current.signal,
+                gitMaterialId,
+                false,
             ).catch((errors: ServerErrors) => {
-                showError(errors)
-                setErrorCode(errors.code)
+                if (!abortControllerRef.current.signal.aborted) {
+                    showError(errors)
+                }
             })
         }
     }
 
-    //NOTE: GIT MATERIAL ID
-    const refreshMaterial = (
-        ciNodeId: number,
-        pipelineName: string,
-        gitMaterialId: number,
-        abortController?: AbortController,
-    ) => {
+    const getFilteredMaterial = async (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => {
         const _workflows = [...filteredWorkflows].map((wf) => {
             wf.nodes = wf.nodes.map((node) => {
                 if (node.id === ciNodeId.toString() && node.type === 'CI') {
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
-                        material.isMaterialLoading =
-                            material.gitMaterialId === gitMaterialId ? true : material.isMaterialLoading
+                        if (material.gitMaterialId === gitMaterialId) {
+                            material.isMaterialLoading = true
+                            material.showAllCommits = showExcluded
+                        }
+                        return material
+                    })
+                    return node
+                }
+                return node
+            })
+            return wf
+        })
+        setFilteredWorkflows(_workflows)
+        abortControllerRef.current = new AbortController()
+        getMaterialHistory(ciNodeId.toString(), abortControllerRef.current.signal, gitMaterialId, showExcluded).catch(
+            (errors: ServerErrors) => {
+                if (!abortControllerRef.current.signal.aborted) {
+                    showError(errors)
+                }
+            },
+        )
+    }
+
+    const getMaterialHistory = (
+        ciNodeId: string,
+        abortSignal: AbortSignal,
+        gitMaterialId?: number,
+        showExcluded?: boolean,
+    ) => {
+        const params = {
+            pipelineId: ciNodeId,
+            materialId: gitMaterialId,
+            showExcluded: showExcluded,
+        }
+        return getCIMaterialList(params, abortSignal).then((response) => {
+            let showRegexModal = false
+            const _workflows = [...filteredWorkflows].map((wf) => {
+                wf.nodes.map((node) => {
+                    if (node.type === 'CI' && node.id == ciNodeId) {
+                        const selectedCIPipeline = filteredCIPipelines
+                            .get(wf.appId)
+                            ?.find((_ci) => _ci.id === +ciNodeId)
+                        if (selectedCIPipeline?.ciMaterial) {
+                            for (const mat of selectedCIPipeline.ciMaterial) {
+                                if (mat.isRegex && mat.gitMaterialId === response.result[0].gitMaterialId) {
+                                    node.isRegex = !!response.result[0].regex
+                                    if (response.result[0].value) {
+                                        node.branch = response.result[0].value
+                                    } else {
+                                        showRegexModal = !response.result[0].value
+                                    }
+                                    break
+                                }
+                            }
+                        }
+                        node.inputMaterialList = node.inputMaterialList.map((mat) => {
+                            if (mat.id === response.result[0].id) {
+                                return {
+                                    ...response.result[0],
+                                    isSelected: mat.isSelected,
+                                    isMaterialLoading: false,
+                                    searchText: mat.searchText,
+                                    showAllCommits: showExcluded,
+                                }
+                            } else return mat
+                        })
+                    }
+                    return node
+                })
+                return wf
+            })
+            setFilteredWorkflows(_workflows)
+            if (!showBulkCIModal) {
+                setShowCIModal(!showRegexModal)
+                setShowMaterialRegexModal(showRegexModal)
+            }
+            getWorkflowStatusData(_workflows)
+            preventBodyScroll(true)
+        })
+    }
+
+    //NOTE: GIT MATERIAL ID
+    const refreshMaterial = (ciNodeId: number, gitMaterialId: number, abortController?: AbortController) => {
+        let showExcluded = false
+        const _workflows = [...filteredWorkflows].map((wf) => {
+            wf.nodes = wf.nodes.map((node) => {
+                if (node.id === ciNodeId.toString() && node.type === 'CI') {
+                    node.inputMaterialList = node.inputMaterialList.map((material) => {
+                        if (material.gitMaterialId === gitMaterialId) {
+                            material.isMaterialLoading = true
+                            showExcluded = material.showAllCommits
+                        }
                         return material
                     })
                     return node
@@ -438,14 +531,16 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
         abortControllerRef.current = abortController ?? new AbortController()
         refreshGitMaterial(gitMaterialId.toString(), abortControllerRef.current.signal)
             .then((response) => {
-                updateCIMaterialList(ciNodeId.toString(), pipelineName, true, abortControllerRef.current.signal).catch(
-                    (errors: ServerErrors) => {
-                        if (!abortControllerRef.current.signal.aborted) {
-                            showError(errors)
-                            setErrorCode(errors.code)
-                        }
-                    },
-                )
+                getMaterialHistory(
+                    ciNodeId.toString(),
+                    abortControllerRef.current.signal,
+                    gitMaterialId,
+                    showExcluded,
+                ).catch((errors: ServerErrors) => {
+                    if (!abortControllerRef.current.signal.aborted) {
+                        showError(errors)
+                    }
+                })
             })
             .catch((error: ServerErrors) => {
                 if (!abortControllerRef.current.signal.aborted) {
@@ -469,7 +564,9 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                 showRegexModal = false
             const _workflows = [...filteredWorkflows].map((workflow) => {
                 workflow.nodes.map((node) => {
-                    if (node.type === 'CI' && +node.id == +ciNodeId) {
+                    if (node.type === 'CI' && node.id == ciNodeId) {
+                        _workflowId = workflow.id
+                        _appID = workflow.appId
                         const selectedCIPipeline = filteredCIPipelines.get(_appID)?.find((_ci) => _ci.id === +ciNodeId)
                         if (selectedCIPipeline?.ciMaterial) {
                             for (const mat of selectedCIPipeline.ciMaterial) {
@@ -482,8 +579,6 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                                 }
                             }
                         }
-                        _workflowId = workflow.id
-                        _appID = workflow.appId
                         if (preserveMaterialSelection) {
                             const selectMaterial = node.inputMaterialList.find((mat) => mat.isSelected)
                             node.inputMaterialList = response.result.map((material) => {
@@ -796,11 +891,18 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     node.inputMaterialList.map((material) => {
                         if (material.id == materialId && material.isSelected) {
                             material.history.map((hist) => {
-                                if (material.type == SourceTypeMap.WEBHOOK) {
-                                    hist.isSelected =
-                                        hist.webhookData && hist.webhookData.id && hash == hist.webhookData.id
+                                if (!hist.excluded) {
+                                    if (material.type == SourceTypeMap.WEBHOOK) {
+                                        if(hist?.webhookData && hist.webhookData?.id && hash == hist.webhookData.id) {
+                                            hist.isSelected = true
+                                        }else {
+                                            hist.isSelected = false
+                                        }
+                                    } else {
+                                        hist.isSelected = hash == hist.commit
+                                    }
                                 } else {
-                                    hist.isSelected = hash == hist.commit
+                                    hist.isSelected = false
                                 }
                             })
                         }
@@ -1069,7 +1171,10 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
 
     const onShowBulkCIModal = () => {
         setCILoading(true)
-        setShowBulkCIModal(true)
+        //setShowBulkCIModal(true)
+        setTimeout(() => {
+            setShowBulkCIModal(true)
+        }, 100)
     }
 
     const updateBulkCDInputMaterial = (cdMaterialResponse: Record<string, CDMaterialResponseType>): void => {
@@ -1349,6 +1454,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             _mat.isBranchError ||
                             _mat.isRepoError ||
                             _mat.isDockerFileError ||
+                            _mat.isMaterialSelectionError ||
                             (_mat.type === SourceTypeMap.WEBHOOK && _mat.history.length === 0)
                         )
                     })
@@ -1359,6 +1465,8 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             errorMessage = invalidInputMaterial.dockerFileErrorMsg
                         } else if (invalidInputMaterial.isBranchError) {
                             errorMessage = invalidInputMaterial.branchErrorMsg
+                        } else if (invalidInputMaterial.isMaterialSelectionError) {
+                            errorMessage = invalidInputMaterial.materialSelectionErrorMsg
                         } else {
                             errorMessage = CI_MATERIAL_EMPTY_STATE_MESSAGING.NoMaterialFound
                         }
@@ -1835,6 +1943,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     toggleChanges: toggleChanges,
                     toggleInvalidateCache: toggleInvalidateCache,
                     getMaterialByCommit: getMaterialByCommit,
+                    getFilteredMaterial: getFilteredMaterial,
                 }}
             >
                 {renderWorkflow()}

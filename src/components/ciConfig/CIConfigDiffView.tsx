@@ -22,6 +22,7 @@ export default function CIConfigDiffView({
     processedWorkflows,
     toggleConfigOverrideDiffModal,
     reload,
+    gitMaterials,
 }: CIConfigDiffViewProps) {
     const history = useHistory()
     const location = useLocation()
@@ -210,6 +211,7 @@ export default function CIConfigDiffView({
                                     configOverridenPipelines={configOverridenPipelines}
                                     materials={ciConfig?.materials}
                                     globalCIConfig={globalCIConfig}
+                                    gitMaterials = {gitMaterials}
                                 />
                             </div>
                         ))

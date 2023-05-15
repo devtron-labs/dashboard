@@ -33,8 +33,8 @@ export const _customStyles = {
     menuList: (base) => ({
         ...base,
         position: 'relative',
-        paddingBottom: 0,
-        paddingTop: 0,
+        paddingBottom: '4px',
+        paddingTop: '4px',
         maxHeight: '250px',
     }),
     dropdownIndicator: (base, state) => ({
@@ -128,6 +128,9 @@ export const CI_CONFIG_FORM_VALIDATION = {
     repository_name: {
         required: false,
     },
+    buildContext: {
+        required: false,
+    }
 }
 
 export const getCIConfigFormState = (
@@ -163,6 +166,14 @@ export const getCIConfigFormState = (
                 : '',
             error: '',
         },
+        buildContext: {
+            value:
+                (selectedCIPipeline?.isDockerConfigOverridden
+                    ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
+                    : ciConfig?.ciBuildConfig?.dockerBuildConfig &&
+                    ciConfig.ciBuildConfig.dockerBuildConfig?.buildContext),
+            error: '', 
+        }
     }
 }
 
@@ -171,7 +182,9 @@ export const initCurrentCIBuildConfig = (
     ciConfig: CiPipelineResult,
     selectedCIPipeline: CIPipelineDataType,
     selectedMaterial: any,
+    selectedBuildContextGitMaterial: any,
     dockerfileValue: string,
+    buildContextValue: string
 ) => {
     if (
         allowOverride &&
@@ -186,8 +199,10 @@ export const initCurrentCIBuildConfig = (
             dockerBuildConfig: selectedCIPipeline.dockerConfigOverride.ciBuildConfig.dockerBuildConfig || {
                 dockerfileRelativePath: dockerfileValue.replace(/^\//, ''),
                 dockerfileContent: '',
+                buildContext: buildContextValue,
             },
             gitMaterialId: selectedMaterial?.id,
+            buildContextGitMaterialId: selectedBuildContextGitMaterial?.id,
         }
     } else if (ciConfig?.ciBuildConfig) {
         return {
@@ -196,8 +211,10 @@ export const initCurrentCIBuildConfig = (
             dockerBuildConfig: ciConfig.ciBuildConfig.dockerBuildConfig || {
                 dockerfileRelativePath: dockerfileValue.replace(/^\//, ''),
                 dockerfileContent: '',
+                buildContext: buildContextValue,
             },
             gitMaterialId: selectedMaterial?.id,
+            buildContextGitMaterialId: selectedBuildContextGitMaterial?.id,
         }
     } else {
         return {
@@ -206,8 +223,10 @@ export const initCurrentCIBuildConfig = (
             dockerBuildConfig: {
                 dockerfileRelativePath: dockerfileValue.replace(/^\//, ''),
                 dockerfileContent: '',
+                buildContext: buildContextValue,
             },
             gitMaterialId: selectedMaterial?.id,
+            buildContextGitMaterialId: selectedBuildContextGitMaterial?.id,
         }
     }
 }
@@ -409,22 +428,39 @@ export const getCIConfigDiffValues = (
     globalCIConfig: DockerConfigOverrideType,
     ciConfigOverride: DockerConfigOverrideType,
     materials,
+    gitMaterials,
 ): CIConfigDiffType[] => {
     const globalCIBuildType = globalCIConfig.ciBuildConfig?.ciBuildType
     const ciBuildTypeOverride = ciConfigOverride?.ciBuildConfig?.ciBuildType
     let globalGitMaterialName, currentMaterialName
+    let globalBuildContextGitMaterialItem,currentBuildContextGitMaterialItem
+    let globalBuildContext = globalCIConfig.ciBuildConfig?.dockerBuildConfig?.buildContext,
+        currentBuildContext = ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
     if (
-        materials &&
         (globalCIBuildType !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE ||
             ciBuildTypeOverride !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE)
     ) {
-        for (const gitMaterial of materials) {
-            if (gitMaterial.gitMaterialId === globalCIConfig.ciBuildConfig?.gitMaterialId) {
-                globalGitMaterialName = gitMaterial.materialName
-            }
+        if(materials) {
+            for (const gitMaterial of materials) {
+                if (gitMaterial.gitMaterialId === globalCIConfig.ciBuildConfig?.gitMaterialId) {
+                    globalGitMaterialName = gitMaterial.materialName
+                }
 
-            if (gitMaterial.gitMaterialId === ciConfigOverride?.ciBuildConfig?.gitMaterialId) {
-                currentMaterialName = gitMaterial.materialName
+                if (gitMaterial.gitMaterialId === ciConfigOverride?.ciBuildConfig?.gitMaterialId) {
+                    currentMaterialName = gitMaterial.materialName
+                }
+            }
+        }
+
+        if(gitMaterials){
+            for (const gitMaterial of gitMaterials){
+                if (gitMaterial.id === globalCIConfig.ciBuildConfig?.buildContextGitMaterialId) {
+                    globalBuildContextGitMaterialItem = gitMaterial
+                }
+
+                if (gitMaterial.id === ciConfigOverride?.ciBuildConfig?.buildContextGitMaterialId) {
+                    currentBuildContextGitMaterialItem = gitMaterial
+                }
             }
         }
     }
@@ -475,6 +511,25 @@ export const getCIConfigDiffValues = (
         baseValue: globalCIConfig.ciBuildConfig?.dockerBuildConfig?.targetPlatform,
         overridenValue: ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.targetPlatform,
     })
+    if (
+        globalCIBuildType !== CIBuildType.BUILDPACK_BUILD_TYPE &&
+        ciBuildTypeOverride !== CIBuildType.BUILDPACK_BUILD_TYPE
+    ) {
+        ciConfigDiffValues.push(
+            {
+                configName: 'Repo containing build context',
+                changeBGColor: globalCIConfig.ciBuildConfig?.buildContextGitMaterialId !== ciConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
+                baseValue: globalBuildContextGitMaterialItem?.name,
+                overridenValue: currentBuildContextGitMaterialItem?.name,
+            },
+            {
+                configName: 'Build context',
+                changeBGColor: (globalBuildContextGitMaterialItem?.checkoutPath + (globalBuildContext ?  globalBuildContext : '')) !== (currentBuildContextGitMaterialItem?.checkoutPath + (currentBuildContext ? currentBuildContext: '')),
+                baseValue: globalBuildContextGitMaterialItem?.checkoutPath + (globalBuildContext ?  globalBuildContext : ''),
+                overridenValue: currentBuildContextGitMaterialItem?.checkoutPath + (currentBuildContext ? currentBuildContext: ''),
+            },
+        )
+    }
     return ciConfigDiffValues
 }
 const getTargetPlatformChangeBGColor = (

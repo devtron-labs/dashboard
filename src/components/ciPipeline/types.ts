@@ -224,6 +224,7 @@ export interface BuildPackConfigType {
 export interface DockerBuildConfigType {
     dockerfileContent: string
     dockerfileRelativePath: string
+    buildContext: string
     dockerfilePath?: string
     dockerfileRepository?: string
     args?: Record<string, string>
@@ -237,6 +238,7 @@ export interface CIBuildConfigType {
     ciBuildType: CIBuildType
     dockerBuildConfig: DockerBuildConfigType
     gitMaterialId: number
+    buildContextGitMaterialId: number
     id?: number
 }
 
@@ -252,7 +254,8 @@ export const DockerConfigOverrideKeys = {
     projectPath: 'projectPath',
     dockerfile: 'dockerfile',
     dockerfileRelativePath: 'dockerfileRelativePath',
-    targetPlatform: 'targetPlatform'
+    targetPlatform: 'targetPlatform',
+    buildContext: 'buildContext'
 }
 
 export interface DockerConfigOverrideType {

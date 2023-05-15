@@ -1,4 +1,4 @@
-import { Routes, Moment12HourFormat, SourceTypeMap } from '../../config'
+import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
 import {
     get,
     post,
@@ -187,17 +187,27 @@ const gitTriggersModal = (triggers, materials) => {
     })
 }
 
-const processMaterialHistory = (material) => {
+const processMaterialHistoryAndSelectionError = (material) => {
+    const data = {
+        isMaterialSelectionError: true,
+        materialSelectionErrorMsg: NO_COMMIT_SELECTED,
+        history: [],
+    }
     if (material.history) {
-        return material.history.map((history, index) => {
-            return {
+        let selectedIndex = -1
+        for (let index = 0; index < material.history.length; index++) {
+            const history = material.history[index]
+            if (selectedIndex === -1 && !history.Excluded) {
+                selectedIndex = index
+            }
+            data.history.push({
                 commitURL: material.gitMaterialUrl ? createGitCommitUrl(material.gitMaterialUrl, history.Commit) : '',
                 changes: history.Changes || [],
                 author: history.Author,
                 message: history.Message,
                 date: history.Date ? moment(history.Date).format(Moment12HourFormat) : '',
                 commit: history?.Commit,
-                isSelected: index == 0,
+                isSelected: index === selectedIndex,
                 showChanges: false,
                 webhookData: history.WebhookData
                     ? {
@@ -206,10 +216,15 @@ const processMaterialHistory = (material) => {
                           data: history.WebhookData.data,
                       }
                     : null,
-            }
-        })
+                excluded: history.Excluded,
+            })
+        }
+        if (selectedIndex >= 0) {
+            data.isMaterialSelectionError = false
+            data.materialSelectionErrorMsg = ''
+        }
     }
-    return []
+    return data
 }
 
 const processCIMaterialResponse = (response) => {
@@ -222,7 +237,8 @@ const processCIMaterialResponse = (response) => {
                 gitURL: material.gitMaterialUrl || '',
                 lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
                 isMaterialLoading: false,
-                history: processMaterialHistory(material),
+                showAllCommits: false,
+                ...processMaterialHistoryAndSelectionError(material),
             }
         })
     }
@@ -231,7 +247,11 @@ const processCIMaterialResponse = (response) => {
 }
 
 export const getCIMaterialList = (params, abortSignal: AbortSignal) => {
-    return get(`${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`, {
+    let url = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`
+    if (params.materialId) {
+        url += `/${params.materialId}${params.showExcluded ? '?showAll=true' : ''} `
+    }
+    return get(url, {
         signal: abortSignal,
     }).then((response) => {
         const materials = processCIMaterialResponse(response)
