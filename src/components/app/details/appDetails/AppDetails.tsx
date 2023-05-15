@@ -8,6 +8,7 @@ import {
     stopPropagation,
     multiSelectStyles,
     useEffectAfterMount,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
@@ -87,6 +88,7 @@ import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentS
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
+import virtualRocketDeployment from '../../../../assets/img/paper-rocket-deployment.png'
 
 export default function AppDetail() {
     const params = useParams<{ appId: string; envId?: string }>()
@@ -422,6 +424,8 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(false)
     }
 
+    const isVirtualEnvironment = true // TODO appDetails.isVirtualEnvironment
+
     if (!loadingResourceTree && (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0)) {
         return (
             <>
@@ -455,6 +459,26 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(true)
     }
 
+    const renderVirtualEnvironment = () => {
+      if (isVirtualEnvironment) {
+          return (
+              <div className="bcn-0 m-20 h-100 w-100 dc__position-rel">
+                  <GenericEmptyState
+                      image={virtualRocketDeployment}
+                      title="argo-test is a virtual environment"
+                      subTitle="Deployments to this environment generate a helm chart package. The packaged helm chart contains all the necessary configuration and metadata to deploy the application to any Kubernetes cluster."
+                  />
+              </div>
+          )
+      }
+      return <NodeTreeDetailTab
+          appDetails={appDetails}
+          externalLinks={externalLinksAndTools.externalLinks}
+          monitoringTools={externalLinksAndTools.monitoringTools}
+          isDevtronApp={true}
+      />
+    }
+
     return (
         <React.Fragment>
             <div className="w-100 pt-16 pr-20 pb-16 pl-20">
@@ -466,7 +490,9 @@ export const Details: React.FC<DetailsType> = ({
                     showCommitInfo={isAppDeployment ? showCommitInfo : null}
                     showUrlInfo={isAppDeployment ? setUrlInfo : null}
                     showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
-                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData} />
+                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                    isVirtualEnvironment={isVirtualEnvironment}
+                />
             </div>
             <SyncErrorComponent
                 showApplicationDetailedModal={showApplicationDetailedModal}
@@ -482,7 +508,7 @@ export const Details: React.FC<DetailsType> = ({
                             toggleScanDetailsModal(true)
                         }}
                     />
-                    {environment && (
+                    {environment && !isVirtualEnvironment && (
                         <AppMetrics
                             appName={appDetails.appName}
                             addExtraSpace={!isExternalToolAvailable}
@@ -505,13 +531,9 @@ export const Details: React.FC<DetailsType> = ({
                     <Progressing pageLoader fullHeight size={32} fillColor="var(--N500)" />
                 </div>
             ) : (
-                <NodeTreeDetailTab
-                    appDetails={appDetails}
-                    externalLinks={externalLinksAndTools.externalLinks}
-                    monitoringTools={externalLinksAndTools.monitoringTools}
-                    isDevtronApp={true}
-                />
+                renderVirtualEnvironment()
             )}
+
             {detailedStatus && (
                 <AppStatusDetailModal
                     close={hideAppDetailsStatus}

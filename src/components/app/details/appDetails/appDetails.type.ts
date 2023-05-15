@@ -182,4 +182,5 @@ export interface DeploymentStatusCardType {
   hideDetails?: boolean
   deploymentTriggerTime?: string
   triggeredBy?: string
+  isVirtualEnvironment?: boolean
 }
