@@ -144,6 +144,7 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
 export enum DeploymentAppType {
     helm = 'helm',
     argo_cd = 'argo_cd',
+    manifest_download = 'manifest_download'
 }
 
 export interface AppDetails {

@@ -19,6 +19,7 @@ import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import { ConditionalWrap, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from './DeploymentStatusCard'
+import { ReactComponent as VirtualCluster } from '../../../../assets/icons/ic-virtual-cluster.svg'
 
 export function SourceInfo({
     appDetails,
@@ -81,6 +82,16 @@ export function SourceInfo({
         )
     }
 
+    const renderDeploymentTypeIcon = () => {
+      if (appDetails?.deploymentAppType === DeploymentAppType.manifest_download || isVirtualEnvironment) {
+          return <VirtualCluster data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
+      } else if (appDetails?.deploymentAppType === DeploymentAppType.argo_cd) {
+          return <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />
+      } else if (appDetails?.deploymentAppType === DeploymentAppType.helm) {
+          return <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
+      }
+    }
+
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         return (
             <div className="flex left w-100 mb-16">
@@ -99,11 +110,7 @@ export function SourceInfo({
                                 : DeploymentAppTypeNameMapping.Helm
                         }`}
                     >
-                        {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (
-                            <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />
-                        ) : (
-                            <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
-                        )}
+                        {renderDeploymentTypeIcon()}
                     </Tippy>
                 )}
                 {appDetails?.deploymentAppDeleteRequest && (
@@ -117,7 +124,7 @@ export function SourceInfo({
                     <>
                         {!appDetails?.deploymentAppDeleteRequest && (
                             <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
-                                {showUrlInfo && (
+                                {(!isVirtualEnvironment && showUrlInfo) && (
                                     <button
                                         className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                         onClick={onClickShowUrlInfo}
@@ -137,7 +144,7 @@ export function SourceInfo({
                                         commit info
                                     </button>
                                 )}
-                                {showHibernateModal && (
+                                {(!isVirtualEnvironment && showHibernateModal) && (
                                     <ConditionalWrap
                                         condition={appDetails?.userApprovalConfig?.length > 0}
                                         wrap={conditionalScalePodsButton}
