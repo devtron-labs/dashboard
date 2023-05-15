@@ -619,7 +619,7 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
           }
       }
   } else if(!data?.timelines){   // data when timelines is not available in case of the previously deployed app(deployment-status/timline api) )
-    if (data?.wfrStatus === 'Healthy') {
+    if (data?.wfrStatus === 'Healthy' || data?.wfrStatus === 'Succeeded') {
         deploymentData.deploymentStatus = DEPLOYMENT_STATUS.SUCCEEDED
         deploymentData.deploymentStatusText = 'Succeeded'
         deploymentData.deploymentStatusBreakdown.APP_HEALTH.icon = 'success'
@@ -627,15 +627,11 @@ export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetail
         deploymentData.deploymentStatusBreakdown.KUBECTL_APPLY.isCollapsed = true
         deploymentData.deploymentStatusBreakdown.APP_HEALTH.isCollapsed = true
         deploymentData.deploymentStatusBreakdown.GIT_COMMIT.icon = 'success'
-    } else if (data?.wfrStatus === 'Unknown') {
-        deploymentData.deploymentStatus = DEPLOYMENT_STATUS.TIMED_OUT
-        deploymentData.deploymentStatusText = 'Degraded'
-    } else if (data?.wfrStatus === 'Failed') {
+    } else if (data?.wfrStatus === 'Failed' || data?.wfrStatus === 'Degraded') {
         deploymentData.deploymentStatus = DEPLOYMENT_STATUS.FAILED
         deploymentData.deploymentStatusText = 'Failed'
         deploymentData.deploymentStatusBreakdown.APP_HEALTH.displaySubText = 'Failed'
     }
-
   }
   return deploymentData
 }
