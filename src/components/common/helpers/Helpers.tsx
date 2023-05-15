@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject, useLayoutEffect } from 'react'
-import { TOKEN_COOKIE_NAME } from '../../../config'
 import { showError, noop, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
