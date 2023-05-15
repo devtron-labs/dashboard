@@ -82,7 +82,7 @@ export function SourceInfo({
         )
     }
 
-    const renderDeploymentTypeIcon = () => {
+    const renderDeploymentTypeIcon = (): void => {
       if (appDetails?.deploymentAppType === DeploymentAppType.manifest_download || isVirtualEnvironment) {
           return <VirtualCluster data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
       } else if (appDetails?.deploymentAppType === DeploymentAppType.argo_cd) {

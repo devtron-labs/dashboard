@@ -87,7 +87,7 @@ import { TriggerUrlModal } from '../../list/TriggerUrl'
 import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
-import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
+import { APP_DETAILS, APP_DETAILS_VIRTUAL, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
 import virtualRocketDeployment from '../../../../assets/img/paper-rocket-deployment.png'
 
 export default function AppDetail() {
@@ -465,8 +465,8 @@ export const Details: React.FC<DetailsType> = ({
               <div className="bcn-0 m-20 h-100 w-100 dc__position-rel">
                   <GenericEmptyState
                       image={virtualRocketDeployment}
-                      title="argo-test is a virtual environment"
-                      subTitle="Deployments to this environment generate a helm chart package. The packaged helm chart contains all the necessary configuration and metadata to deploy the application to any Kubernetes cluster."
+                      title={APP_DETAILS_VIRTUAL.TITLE}
+                      subTitle={APP_DETAILS_VIRTUAL.SUBTITLE}
                   />
               </div>
           )
