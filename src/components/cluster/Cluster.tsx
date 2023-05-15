@@ -282,7 +282,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 'Clusters' + (this.props.serverMode === SERVER_MODE.EA_ONLY ? '' : ' and Environments')
             return (
                 <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
-                    <div className="flex left dc__content-space">
+                    <div data-testid="cluster_and_env_header" className="flex left dc__content-space">
                         <h2 className="form__title">{moduleBasedTitle}</h2>
                         <button
                             type="button"
@@ -293,7 +293,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 })
                             }
                         >
-                            <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
+                            <Add data-testid="add_cluster_button" className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
                             Add cluster
                         </button>
                     </div>
@@ -1573,7 +1573,7 @@ function ClusterForm({
     const AddClusterHeader = () => {
         return (
             <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Add Cluster</h2>
+                <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">Add Cluster</h2>
                 <button type="button" className="dc__transparent flex icon-dim-24 mr-24" onClick={handleCloseButton}>
                     <Close className="icon-dim-24" />
                 </button>
