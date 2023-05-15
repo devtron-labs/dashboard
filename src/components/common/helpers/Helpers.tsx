@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject, useLayoutEffect } from 'react'
 import { showError, noop, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
@@ -679,7 +679,7 @@ export function useEventSource(
     const eventSourceRef = useRef(null)
 
     function closeEventSource() {
-        if (eventSourceRef.current && eventSourceRef.current.close) eventSourceRef.current.close()
+        if (eventSourceRef.current?.close) eventSourceRef.current.close()
     }
 
     function handleMessage(event) {
@@ -1172,4 +1172,30 @@ export const reloadToastBody = () => {
             buttonText="Reload"
         />
     )
+}
+
+export function useHeightObserver(callback): [RefObject<HTMLDivElement>] {
+    const ref = useRef(null)
+    const callbackRef = useRef(callback)
+
+    useLayoutEffect(() => {
+        callbackRef.current = callback
+    }, [callback])
+
+    const handleHeightChange = useCallback(() => {
+        callbackRef.current?.(ref.current.clientHeight)
+    }, [callbackRef])
+
+    useLayoutEffect(() => {
+        if (!ref.current) {
+            return
+        }
+        const observer = new ResizeObserver(handleHeightChange)
+        observer.observe(ref.current)
+        return () => {
+            observer.disconnect()
+        }
+    }, [handleHeightChange, ref])
+
+    return [ref]
 }
