@@ -1,21 +1,27 @@
-import { Routes, Moment12HourFormat, SourceTypeMap } from '../../config'
-import { get, post, trash, ServerErrors, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { Routes, Moment12HourFormat, SourceTypeMap, NO_COMMIT_SELECTED } from '../../config'
+import {
+    get,
+    post,
+    trash,
+    ServerErrors,
+    ResponseType,
+    sortCallback,
+    DeploymentNodeType,
+    CDModalTab,
+    CDMaterialResponseType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { createGitCommitUrl, handleUTCTime, ISTTimeModal } from '../common'
 import moment from 'moment-timezone'
 import { History } from './details/cicdHistory/types'
 import { AppDetails, CreateAppLabelsRequest } from './types'
-import { CDMdalTabType, DeploymentNodeType, DeploymentWithConfigType } from './details/triggerView/types'
+import { DeploymentWithConfigType } from './details/triggerView/types'
 import { AppMetaInfo } from './types'
 
 let stageMap = {
     PRECD: 'PRE',
     CD: 'DEPLOY',
     POSTCD: 'POST',
-}
-
-export const CDModalTab = {
-    Security: <CDMdalTabType>'SECURITY',
-    Changes: <CDMdalTabType>'CHANGES',
+    APPROVAL: 'APPROVAL',
 }
 
 export const getAppList = (request, options?) => {
@@ -109,7 +115,7 @@ export function fetchAppDetailsInTime(
     envId: number | string,
     reloadTimeOut: number,
 ): Promise<AppDetailsResponse> {
-  return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
+    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, { timeout: reloadTimeOut })
 }
 
 export function fetchResourceTreeInTime(
@@ -181,17 +187,27 @@ const gitTriggersModal = (triggers, materials) => {
     })
 }
 
-const processMaterialHistory = (material) => {
+const processMaterialHistoryAndSelectionError = (material) => {
+    const data = {
+        isMaterialSelectionError: true,
+        materialSelectionErrorMsg: NO_COMMIT_SELECTED,
+        history: [],
+    }
     if (material.history) {
-        return material.history.map((history, index) => {
-            return {
+        let selectedIndex = -1
+        for (let index = 0; index < material.history.length; index++) {
+            const history = material.history[index]
+            if (selectedIndex === -1 && !history.Excluded) {
+                selectedIndex = index
+            }
+            data.history.push({
                 commitURL: material.gitMaterialUrl ? createGitCommitUrl(material.gitMaterialUrl, history.Commit) : '',
                 changes: history.Changes || [],
                 author: history.Author,
                 message: history.Message,
                 date: history.Date ? moment(history.Date).format(Moment12HourFormat) : '',
                 commit: history?.Commit,
-                isSelected: index == 0,
+                isSelected: index === selectedIndex,
                 showChanges: false,
                 webhookData: history.WebhookData
                     ? {
@@ -200,10 +216,15 @@ const processMaterialHistory = (material) => {
                           data: history.WebhookData.data,
                       }
                     : null,
-            }
-        })
+                excluded: history.Excluded,
+            })
+        }
+        if (selectedIndex >= 0) {
+            data.isMaterialSelectionError = false
+            data.materialSelectionErrorMsg = ''
+        }
     }
-    return []
+    return data
 }
 
 const processCIMaterialResponse = (response) => {
@@ -216,7 +237,8 @@ const processCIMaterialResponse = (response) => {
                 gitURL: material.gitMaterialUrl || '',
                 lastFetchTime: material.lastFetchTime ? ISTTimeModal(material.lastFetchTime, true) : '',
                 isMaterialLoading: false,
-                history: processMaterialHistory(material),
+                showAllCommits: false,
+                ...processMaterialHistoryAndSelectionError(material),
             }
         })
     }
@@ -225,7 +247,11 @@ const processCIMaterialResponse = (response) => {
 }
 
 export const getCIMaterialList = (params, abortSignal: AbortSignal) => {
-    return get(`${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`, {
+    let url = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`
+    if (params.materialId) {
+        url += `/${params.materialId}${params.showExcluded ? '?showAll=true' : ''} `
+    }
+    return get(url, {
         signal: abortSignal,
     }).then((response) => {
         const materials = processCIMaterialResponse(response)
@@ -237,17 +263,50 @@ export const getCIMaterialList = (params, abortSignal: AbortSignal) => {
     })
 }
 
-export function getCDMaterialList(cdMaterialId, stageType: DeploymentNodeType, abortSignal: AbortSignal) {
-    let URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${stageMap[stageType]}`
+export function getCDMaterialList(
+    cdMaterialId,
+    stageType: DeploymentNodeType,
+    abortSignal: AbortSignal,
+    isApprovalNode?: boolean,
+): Promise<CDMaterialResponseType> {
+    const URL = `${Routes.CD_MATERIAL_GET}/${cdMaterialId}/material?stage=${
+        isApprovalNode ? stageMap.APPROVAL : stageMap[stageType]
+    }`
     return get(URL, {
         signal: abortSignal,
     }).then((response) => {
-        return cdMaterialListModal(
-            response.result.ci_artifacts,
-            true,
-            response.result.latest_wf_artifact_id,
-            response.result.latest_wf_artifact_status,
-        )
+        if (!response.result) {
+            return {
+                approvalUsers: [],
+                materials: [],
+                userApprovalConfig: null,
+                requestedUserId: 0,
+            }
+        } else if (stageType === DeploymentNodeType.CD || stageType === DeploymentNodeType.APPROVAL) {
+            return {
+                approvalUsers: response.result.approvalUsers,
+                materials: cdMaterialListModal(
+                    response.result.ci_artifacts,
+                    true,
+                    response.result.latest_wf_artifact_id,
+                    response.result.latest_wf_artifact_status,
+                ),
+                userApprovalConfig: response.result.userApprovalConfig,
+                requestedUserId: response.result.requestedUserId,
+            }
+        } else {
+            return {
+                approvalUsers: [],
+                materials: cdMaterialListModal(
+                    response.result.ci_artifacts,
+                    true,
+                    response.result.latest_wf_artifact_id,
+                    response.result.latest_wf_artifact_status,
+                ),
+                userApprovalConfig: null,
+                requestedUserId: 0,
+            }
+        }
     })
 }
 
@@ -264,7 +323,10 @@ export function getRollbackMaterialList(
         return {
             code: response.code,
             status: response.status,
-            result: cdMaterialListModal(response?.result.ci_artifacts, offset === 1 ? true : false),
+            result: {
+                materials: cdMaterialListModal(response.result?.ci_artifacts, offset === 1 ? true : false),
+                requestedUserId: response.result?.requestedUserId,
+            },
         }
     })
 }
@@ -288,6 +350,7 @@ function cdMaterialListModal(
         }
 
         return {
+            index,
             id: material.id,
             deployedTime: material.deployed_time
                 ? moment(material.deployed_time).format(Moment12HourFormat)
@@ -307,8 +370,10 @@ function cdMaterialListModal(
             scanned: material.scanned,
             scanEnabled: material.scanEnabled,
             vulnerable: material.vulnerable,
-            runningOnParentCd: material?.runningOnParentCd,
+            runningOnParentCd: material.runningOnParentCd,
             artifactStatus: artifactStatusValue,
+            userApprovalMetadata: material.userApprovalMetadata,
+            triggeredBy: material.triggeredBy,
             materialInfo: material.material_info
                 ? material.material_info.map((mat) => {
                       return {

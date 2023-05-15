@@ -574,6 +574,7 @@ export const workflowsTrigger = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 status: DEFAULT_STATUS,
                 description: 'test',
                 triggerType: 'Auto',
@@ -595,6 +596,7 @@ export const workflowsTrigger = [
         height: 174,
         width: 1280,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -666,6 +668,7 @@ export const workflowsTrigger = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -697,6 +700,7 @@ export const workflowsTrigger = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -718,6 +722,7 @@ export const workflowsTrigger = [
         height: 174,
         width: 1280,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -792,6 +797,7 @@ export const workflowsCreate = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
@@ -813,6 +819,7 @@ export const workflowsCreate = [
         height: 112,
         width: 840,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -884,6 +891,7 @@ export const workflowsCreate = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -915,6 +923,7 @@ export const workflowsCreate = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -936,6 +945,7 @@ export const workflowsCreate = [
         height: 112,
         width: 840,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1035,6 +1045,7 @@ export const workflowsTriggerPrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: ['POSTCD-79'],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
@@ -1129,6 +1140,7 @@ export const workflowsTriggerPrePostCD = [
         height: 174,
         width: 1280,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1200,6 +1212,7 @@ export const workflowsTriggerPrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1231,6 +1244,7 @@ export const workflowsTriggerPrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1252,6 +1266,7 @@ export const workflowsTriggerPrePostCD = [
         height: 174,
         width: 1280,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1326,6 +1341,7 @@ export const workflowsCreatePrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Auto',
@@ -1347,6 +1363,7 @@ export const workflowsCreatePrePostCD = [
         height: 112,
         width: 840,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1418,6 +1435,7 @@ export const workflowsCreatePrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1449,6 +1467,7 @@ export const workflowsCreatePrePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1470,6 +1489,7 @@ export const workflowsCreatePrePostCD = [
         height: 112,
         width: 840,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1803,6 +1823,7 @@ export const workflowsTriggerPreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1848,6 +1869,7 @@ export const workflowsTriggerPreCDResp = [
         height: 174,
         width: 1280,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -1919,6 +1941,7 @@ export const workflowsTriggerPreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1950,6 +1973,7 @@ export const workflowsTriggerPreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -1971,6 +1995,7 @@ export const workflowsTriggerPreCDResp = [
         height: 174,
         width: 1280,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2045,6 +2070,7 @@ export const workflowsCreatePreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2066,6 +2092,7 @@ export const workflowsCreatePreCDResp = [
         height: 112,
         width: 840,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2137,6 +2164,7 @@ export const workflowsCreatePreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2168,6 +2196,7 @@ export const workflowsCreatePreCDResp = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2189,6 +2218,7 @@ export const workflowsCreatePreCDResp = [
         height: 112,
         width: 840,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2201,7 +2231,7 @@ export const workflowsCreatePreCDResp = [
 export const workflowsCreatePostCD = [
     {
         id: '92',
-        appId:80,
+        appId: 80,
         name: 'first',
         nodes: [
             {
@@ -2263,6 +2293,7 @@ export const workflowsCreatePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2284,6 +2315,7 @@ export const workflowsCreatePostCD = [
         height: 112,
         width: 840,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2355,6 +2387,7 @@ export const workflowsCreatePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2386,6 +2419,7 @@ export const workflowsCreatePostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2407,6 +2441,7 @@ export const workflowsCreatePostCD = [
         height: 112,
         width: 840,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2481,6 +2516,7 @@ export const workflowsTriggerPostCD = [
                 parentPipelineType: undefined,
                 downstreams: ['POSTCD-79'],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2551,6 +2587,7 @@ export const workflowsTriggerPostCD = [
         height: 174,
         width: 1280,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,
@@ -2622,6 +2659,7 @@ export const workflowsTriggerPostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2653,6 +2691,7 @@ export const workflowsTriggerPostCD = [
                 parentPipelineType: undefined,
                 downstreams: [],
                 type: 'CD',
+                userApprovalConfig: undefined,
                 description: 'test',
                 status: DEFAULT_STATUS,
                 triggerType: 'Manual',
@@ -2674,6 +2713,7 @@ export const workflowsTriggerPostCD = [
         height: 174,
         width: 1280,
         ciConfiguredGitMaterialId: undefined,
+        approvalConfiguredIdsMap: {},
         gitMaterials: [
             {
                 gitMaterialId: 80,

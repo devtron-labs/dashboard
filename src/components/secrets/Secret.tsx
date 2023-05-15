@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
     RadioGroup,
-    not,
     Info,
     ToastBody,
     CustomInput,
@@ -15,6 +14,7 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     InfoColourBar,
+    not,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { useParams } from 'react-router'
@@ -917,6 +917,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         autoComplete="off"
                         tabIndex={5}
                         label={''}
+                        dataTestid = "configmap-file-permission-textbox"
                         disabled={isChartVersion309OrBelow}
                         placeholder={'eg. 0400 or 400'}
                         error={filePermissionValue.error}

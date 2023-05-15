@@ -104,6 +104,8 @@ export const handleSourceNotConfigured = (
             isRegex: false,
             isDockerFileError: isDockerFileError,
             dockerFileErrorMsg: isDockerFileError ? DOCKER_FILE_ERROR_TITLE : '',
+            isMaterialSelectionError: false,
+            materialSelectionErrorMsg: '',
         }
         _materialList.push(ciMaterial)
     }
