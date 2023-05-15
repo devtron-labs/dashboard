@@ -6,7 +6,7 @@ import { ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
-import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
+import { getTriggerHistory, getCDBuildReport } from './service'
 import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHistoryConfigList.component'
 import './cdDetail.scss'
 import DeploymentHistoryDetailedView from './deploymentHistoryDiff/DeploymentHistoryDetailedView'
@@ -247,16 +247,6 @@ export const TriggerOutput: React.FC<{
         pipelineId: string
     }>()
     const triggerDetails = triggerHistory.get(+triggerId)
-    const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails] = useAsync(
-        () => getTriggerDetails({ appId, envId, pipelineId, triggerId }),
-        [triggerId, appId, envId],
-        !!triggerId && !!pipelineId,
-    )
-    useEffect(() => {
-        if (triggerDetailsLoading || triggerDetailsError) return
-
-        if (triggerDetailsResult?.result) syncState(+triggerId, triggerDetailsResult?.result)
-    }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
     const timeout = useMemo(() => {
         if (
@@ -271,10 +261,7 @@ export const TriggerOutput: React.FC<{
         return 30000 // 30s for normal
     }, [triggerDetails])
 
-    useInterval(reloadTriggerDetails, timeout)
-
-    if (triggerDetailsLoading && !triggerDetails) return <Progressing pageLoader />
-    if (!triggerDetailsLoading && !triggerDetails) return <Reload />
+    if (!triggerDetails) return <Reload />
     if (triggerDetails?.id !== +triggerId) {
         return null
     }
@@ -364,7 +351,7 @@ export const TriggerOutput: React.FC<{
             <HistoryLogs
                 key={triggerDetails.id}
                 triggerDetails={triggerDetails}
-                loading={triggerDetailsLoading && !triggerDetailsResult}
+                loading={false}
                 setFullScreenView={setFullScreenView}
                 setDeploymentHistoryList={setDeploymentHistoryList}
                 deploymentHistoryList={deploymentHistoryList}
