@@ -596,10 +596,10 @@ function ClusterForm({
     const [saveClusterList, setSaveClusterList] = useState<{ clusterName: string; status: string; message: string }[]>(
         [],
     )
-    const [selectedClusterName, setSelectedClusterNameOptions] = useState<{ cluster_name: string; state: boolean }>()
+    const [selectedClusterName, setSelectedClusterNameOptions] = useState<{ clusterNname: string; state: boolean }>()
     const [loader, setLoadingState] = useState<boolean>(false)
     const [selectedUserNameOptions, setSelectedUserNameOptions] = useState<Record<string, any>>({})
-    const [isSelected, setIsSeleceted] = useState<Map<string, boolean>>(new Map())
+    const [isSelected, setIsSeleceted] = useState<{ clusterName: string; state: boolean }[]>([])
     const [disableState, setDisableState] = useState<boolean>(false)
     // const [selectedClusterState, setSelectedClusterState] = useState<boolean>(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
@@ -693,26 +693,38 @@ function ClusterForm({
         return SaveClusterPayload
     }
 
+    const setClusterNameInCLusterList = (cluster_name: string) => {
+        if(isSelected[cluster_name]) {
+            return true
+        }
+        else return false
+    }
+
     async function saveClustersDetails() {
         try {
             let payload = getSaveClusterPayload(dataList)
             await saveClusters(payload).then((response) => {
                 response.result.map((_clusterSaveDetails, index) => {
-                    setSaveClusterList([
-                        {
-                            clusterName: _clusterSaveDetails['cluster_name'],
-                            status:
-                                _clusterSaveDetails['errorInConnecting'].length === 0
-                                    ? 'Added'
-                                    : _clusterSaveDetails['errorInConnecting'] === 'cluster already exists'
-                                    ? 'Updated'
-                                    : 'Failed',
-                            message:
-                                _clusterSaveDetails['errorInConnecting'].length === 0
-                                    ? 'Cluster Added'
-                                    : _clusterSaveDetails['errorInConnecting'],
-                        },
-                    ])
+                   
+                    // console.log(_clusterSaveDetails)
+                    // console.log(isSelected)
+                    if(isSelected['state'] === true ) {
+                        setSaveClusterList([
+                            {
+                                clusterName: _clusterSaveDetails['cluster_name'],
+                                status:
+                                    _clusterSaveDetails['errorInConnecting'].length === 0
+                                        ? 'Added'
+                                        : _clusterSaveDetails['errorInConnecting'] === 'cluster-already-exists'
+                                        ? 'Updated'
+                                        : 'Failed',
+                                message:
+                                    _clusterSaveDetails['errorInConnecting'].length === 0
+                                        ? 'Cluster Added'
+                                        : _clusterSaveDetails['errorInConnecting'],
+                            },
+                        ])
+                    }
                 })
             })
             setLoadingState(false)
@@ -754,7 +766,7 @@ function ClusterForm({
     async function validateClusterDetail() {
         try {
             let payload = { config: YAMLtoJSON(saveYamlData) }
-            console.log(payload)
+            // console.log(payload)
             await validateCluster(payload).then((response) => {
                 const defaultUserNameSelections: Record<string, any> = {}
                 setDataList([
@@ -825,7 +837,7 @@ function ClusterForm({
     }
 
     const getClusterPayload = () => {
-        console.log(state.cluster_name.value)
+        // console.log(state.cluster_name.value)
         return {
             id,
             cluster_name: state.cluster_name.value,
@@ -1002,7 +1014,7 @@ function ClusterForm({
         return (
             <>
                 <div className="form__row">
-                    {console.log(state.cluster_name.value)}
+                    {/* {console.log(state.cluster_name.value)} */}
                     <CustomInput
                         labelClassName="dc__required-field"
                         autoComplete="off"
@@ -1414,24 +1426,44 @@ function ClusterForm({
     //     })
     // }
 
-    const toggleIsSelected = () => {
-        // const _dataList = dataList
-        // _dataList.map((_clusterDetailsData, index) => {
-        //     if (_clusterDetailsData.userInfos[index].errorInConnecting.length === 0) {
-
-        //         setDisableState(false)
-        //     }
-        //     else {
-        //         setDisableState(true)
-        //     }
-        // })
+    function toggleIsSelected() {
+        const _dataList = dataList
+        _dataList.map((_clusterDetailsData, index) => {
+            if (
+                _clusterDetailsData.userInfos[index].errorInConnecting.length === 0 ||
+                _clusterDetailsData.userInfos[index].errorInConnecting === 'cluster already exists'
+            ) {
+                if (isSelected['state'] === false) {
+                    setIsSeleceted([
+                        {
+                            clusterName: _clusterDetailsData.cluster_name,
+                            state: true,
+                        }
+                    ])
+                } else {
+                    setIsSeleceted([
+                        {
+                            clusterName: _clusterDetailsData.cluster_name,
+                            state: false,
+                        }
+                    ])
+                }
+                setDisableState(false)
+            } else {
+                setDisableState(true)
+            }
+        })
+        return
     }
 
     function validCluster() {
         const _validCluster = dataList
-        let count = 0;
+        let count = 0
         _validCluster.map((_dataList, index) => {
-            if(_dataList.userInfos[index].errorInConnecting.length === 0 || _dataList.userInfos[index].errorInConnecting === "cluster already exists") {
+            if (
+                _dataList.userInfos[index].errorInConnecting.length === 0 ||
+                _dataList.userInfos[index].errorInConnecting === 'cluster already exists'
+            ) {
                 count++
             }
         })
@@ -1472,9 +1504,9 @@ function ClusterForm({
                                                 key={`app-$${index}`}
                                                 rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
                                                 onChange={toggleIsSelected}
-                                                isChecked={isSelected[index]}
+                                                isChecked={isSelected['clusterName']}
                                                 value={CHECKBOX_VALUE.CHECKED}
-                                                disabled={disableState}
+                                                disabled={false}
                                             />
                                             <div className="flexbox">
                                                 <span className="dc__ellipsis-right">{clusterDetail.cluster_name}</span>
@@ -1487,15 +1519,19 @@ function ClusterForm({
                                             <div
                                                 className={`dc__app-summary__icon icon-dim-16 mr-2 ${
                                                     selectedUserNameOptions[clusterDetail.cluster_name]
-                                                        .errorInConnecting === 'cluster already exists' || selectedUserNameOptions[clusterDetail.cluster_name]
+                                                        .errorInConnecting === 'cluster-already-exists' ||
+                                                    selectedUserNameOptions[clusterDetail.cluster_name]
                                                         .errorInConnecting.length === 0
                                                         ? 'succeeded'
                                                         : 'failed'
                                                 }`}
                                             ></div>
                                             <div className="flexbox">
-                                                <span className="dc__ellipsis-right"> {selectedUserNameOptions[clusterDetail.cluster_name]
-                                                    ?.errorInConnecting || 'No error'} </span>
+                                                <span className="dc__ellipsis-right">
+                                                    {' '}
+                                                    {selectedUserNameOptions[clusterDetail.cluster_name]
+                                                        ?.errorInConnecting || 'No error'}{' '}
+                                                </span>
                                             </div>
                                         </div>
                                     ))

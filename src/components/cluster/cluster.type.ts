@@ -97,9 +97,9 @@ export interface ClusterInstallStatusProps {
 
 export interface ConfigCluster {
     bearerToken: string
-    cert_auth_data?: string
-    cert_data?: string
-    tls_key?: string
+    cert_auth_data: string
+    cert_data: string
+    tls_key: string
 }
 
 export interface UserInfos {
