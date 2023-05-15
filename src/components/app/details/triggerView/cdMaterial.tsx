@@ -85,7 +85,6 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             latestDeploymentConfig: null,
             specificDeploymentConfig: null,
             isSelectImageTrigger: props.materialType === MATERIAL_TYPE.inputMaterialList,
-            requestInProgress: false,
         }
         this.handleConfigSelection = this.handleConfigSelection.bind(this)
         this.deployTrigger = this.deployTrigger.bind(this)
@@ -680,7 +679,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         const consumedImage = []
         const approvedImages = []
         this.props.material.forEach((mat) => {
-            if (mat.latest && (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2)) {
+            if (!mat.userApprovalMetadata || mat.userApprovalMetadata.approvalRuntimeState !== 2) {
                 mat.isSelected = false
                 consumedImage.push(mat)
             } else {

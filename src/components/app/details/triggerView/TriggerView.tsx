@@ -32,6 +32,7 @@ import {
     BUILD_STATUS,
     DEFAULT_GIT_BRANCH_VALUE,
     DOCUMENTATION,
+    NO_COMMIT_SELECTED,
 } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { toast } from 'react-toastify'
@@ -90,6 +91,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.changeTab = this.changeTab.bind(this)
         this.toggleInvalidateCache = this.toggleInvalidateCache.bind(this)
         this.getMaterialByCommit = this.getMaterialByCommit.bind(this)
+        this.getFilteredMaterial = this.getFilteredMaterial.bind(this)
     }
 
     componentWillUnmount() {
@@ -177,15 +179,22 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             changes: _result.Changes || [],
                             showChanges: true,
                             webhookData: _result.WebhookData,
-                            isSelected: true,
+                            isSelected: !_result.Excluded,
+                            excluded: _result.Excluded,
                         },
                     ]
                     _selectedMaterial.isMaterialLoading = false
+                    _selectedMaterial.showAllCommits = false
+                    _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded 
+                    _selectedMaterial.materialSelectionErrorMsg =_selectedMaterial.history[0].excluded ? NO_COMMIT_SELECTED : ''
                 } else {
                     _selectedMaterial.history = []
                     _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
                     _selectedMaterial.noSearchResult = true
                     _selectedMaterial.isMaterialLoading = false
+                    _selectedMaterial.showAllCommits = false
+                    _selectedMaterial.isMaterialSelectionError = true
+                    _selectedMaterial.materialSelectionErrorMsg = NO_COMMIT_SELECTED
                 }
                 this.setState({
                     workflows: workflows,
@@ -200,7 +209,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    async getMaterialByCommit(ciNodeId: number, pipelineName: string, ciPipelineMaterialId: number, commitHash = null) {
+    async getMaterialByCommit(
+        ciNodeId: number,
+        ciPipelineMaterialId: number,
+        gitMaterialId: number,
+        commitHash = null,
+    ) {
         let _selectedMaterial
         const workflows = [...this.state.workflows].map((workflow) => {
             workflow.nodes.map((node) => {
@@ -209,6 +223,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         if (material.isSelected && material.searchText !== commitHash) {
                             material.isMaterialLoading = true
                             material.searchText = commitHash
+                            material.showAllCommits = false
                             _selectedMaterial = material
                         }
                         return material
@@ -218,13 +233,16 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
             return workflow
         })
-
         if (commitHash && _selectedMaterial) {
             const commitInLocalHistory = _selectedMaterial.history.find((material) => material.commit === commitHash)
             if (commitInLocalHistory) {
-                _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: true }]
+                _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: !commitInLocalHistory.excluded }]
                 _selectedMaterial.isMaterialLoading = false
-
+                _selectedMaterial.showAllCommits = false
+                if(commitInLocalHistory.excluded){
+                    _selectedMaterial.isMaterialSelectionError = true
+                    _selectedMaterial.materialSelectionErrorMsg =  NO_COMMIT_SELECTED
+                }
                 this.setState({
                     workflows: workflows,
                 })
@@ -245,11 +263,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 },
                 () => {
                     this.abortController = new AbortController()
-                    this.updateCIMaterialList(
+                    this.getMaterialHistory(
                         ciNodeId.toString(),
-                        pipelineName,
-                        true,
                         this.abortController.signal,
+                        gitMaterialId,
+                        false,
                     ).catch((errors: ServerErrors) => {
                         if (!this.abortController.signal.aborted) {
                             showError(errors)
@@ -261,14 +279,110 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
     }
 
-    //NOTE: GIT MATERIAL ID
-    refreshMaterial(ciNodeId: number, pipelineName: string, gitMaterialId: number) {
+    async getFilteredMaterial(ciNodeId: number, gitMaterialId: number, showExcluded: boolean) {
         const workflows = [...this.state.workflows].map((wf) => {
             wf.nodes = wf.nodes.map((node) => {
                 if (node.id === ciNodeId.toString() && node.type === 'CI') {
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
-                        material.isMaterialLoading =
-                            material.gitMaterialId === gitMaterialId ? true : material.isMaterialLoading
+                        if (material.gitMaterialId === gitMaterialId) {
+                            material.isMaterialLoading = true
+                            material.showAllCommits = showExcluded
+                        }
+                        return material
+                    })
+                    return node
+                }
+                return node
+            })
+            return wf
+        })
+        this.setState(
+            {
+                workflows: workflows,
+            },
+            () => {
+                this.abortController = new AbortController()
+                this.getMaterialHistory(
+                    ciNodeId.toString(),
+                    this.abortController.signal,
+                    gitMaterialId,
+                    showExcluded,
+                ).catch((errors: ServerErrors) => {
+                    if (!this.abortController.signal.aborted) {
+                        showError(errors)
+                        this.setState({ code: errors.code })
+                    }
+                })
+            },
+        )
+    }
+
+    getMaterialHistory(ciNodeId: string, abortSignal: AbortSignal, gitMaterialId?: number, showExcluded?: boolean) {
+        const params = {
+            pipelineId: ciNodeId,
+            materialId: gitMaterialId,
+            showExcluded: showExcluded,
+        }
+        return getCIMaterialList(params, abortSignal).then((response) => {
+            let showRegexModal = false
+            const workflows = [...this.state.workflows].map((workflow) => {
+                workflow.nodes.map((node) => {
+                    if (node.type === 'CI' && node.id == ciNodeId) {
+                        const selectedCIPipeline = this.state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
+                        if (selectedCIPipeline?.ciMaterial) {
+                            for (const mat of selectedCIPipeline.ciMaterial) {
+                                if (mat.isRegex && mat.gitMaterialId === response.result[0].gitMaterialId) {
+                                    node.isRegex = !!response.result[0].regex
+                                    if (response.result[0].value) {
+                                        node.branch = response.result[0].value
+                                    } else {
+                                        showRegexModal = !response.result[0].value
+                                    }
+                                    break
+                                }
+                            }
+                        }
+                        node.inputMaterialList = node.inputMaterialList.map((mat) => {
+                            if (mat.id === response.result[0].id) {
+                                return {
+                                    ...response.result[0],
+                                    isSelected: mat.isSelected,
+                                    isMaterialLoading: false,
+                                    searchText: mat.searchText,
+                                    showAllCommits: showExcluded,
+                                }
+                            } else return mat
+                        })
+                    }
+                    return node
+                })
+                return workflow
+            })
+            this.setState(
+                {
+                    workflows: workflows,
+                    showCIModal: !showRegexModal,
+                    showMaterialRegexModal: showRegexModal,
+                },
+                () => {
+                    this.getWorkflowStatus()
+                    preventBodyScroll(true)
+                },
+            )
+        })
+    }
+
+    //NOTE: GIT MATERIAL ID
+    refreshMaterial(ciNodeId: number, gitMaterialId: number) {
+        let showExcluded = false
+        const workflows = [...this.state.workflows].map((wf) => {
+            wf.nodes = wf.nodes.map((node) => {
+                if (node.id === ciNodeId.toString() && node.type === 'CI') {
+                    node.inputMaterialList = node.inputMaterialList.map((material) => {
+                        if (material.gitMaterialId === gitMaterialId) {
+                            material.isMaterialLoading = true
+                            showExcluded = material.showAllCommits
+                        }
                         return material
                     })
                     return node
@@ -281,14 +395,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.abortController = new AbortController()
         refreshGitMaterial(gitMaterialId.toString(), this.abortController.signal)
             .then((response) => {
-                this.updateCIMaterialList(ciNodeId.toString(), pipelineName, true, this.abortController.signal).catch(
-                    (errors: ServerErrors) => {
-                        if (!this.abortController.signal.aborted) {
-                            showError(errors)
-                            this.setState({ code: errors.code })
-                        }
-                    },
-                )
+                this.getMaterialHistory(
+                    ciNodeId.toString(),
+                    this.abortController.signal,
+                    gitMaterialId,
+                    showExcluded,
+                ).catch((errors: ServerErrors) => {
+                    if (!this.abortController.signal.aborted) {
+                        showError(errors)
+                        this.setState({ code: errors.code })
+                    }
+                })
             })
             .catch((error: ServerErrors) => {
                 if (!this.abortController.signal.aborted) {
@@ -332,7 +449,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             let workflowId
             const workflows = [...this.state.workflows].map((workflow) => {
                 workflow.nodes.map((node) => {
-                    if (node.type === 'CI' && +node.id == +ciNodeId) {
+                    if (node.type === 'CI' && node.id == ciNodeId) {
                         const selectedCIPipeline = this.state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
                         if (selectedCIPipeline?.ciMaterial) {
                             for (const mat of selectedCIPipeline.ciMaterial) {
@@ -424,10 +541,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
                             node.inputMaterialList = data.materials
-                            node.approvalUsers = data.approvalUsers
-                            node.userApprovalConfig =
-                                data.userApprovalConfig ?? workflow.approvalConfiguredIdsMap[cdNodeId]
-                            node.requestedUserId = data.requestedUserId
+
+                            if (node.type === 'CD') {
+                                node.approvalUsers = data.approvalUsers
+                                node.userApprovalConfig =
+                                    data.userApprovalConfig ?? workflow.approvalConfiguredIdsMap[cdNodeId]
+                                node.requestedUserId = data.requestedUserId
+                            }
                         }
                         return node
                     })
@@ -659,11 +779,18 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     node.inputMaterialList.map((material) => {
                         if (material.id == materialId && material.isSelected) {
                             material.history.map((hist) => {
-                                if (material.type == SourceTypeMap.WEBHOOK) {
-                                    hist.isSelected =
-                                        hist.webhookData && hist.webhookData.id && hash == hist.webhookData.id
+                                if (!hist.excluded) {
+                                    if (material.type == SourceTypeMap.WEBHOOK) {
+                                        if(hist?.webhookData && hist.webhookData?.id && hash == hist.webhookData.id) {
+                                            hist.isSelected = true
+                                        }else {
+                                            hist.isSelected = false
+                                        }
+                                    } else {
+                                        hist.isSelected = hash == hist.commit
+                                    }
                                 } else {
-                                    hist.isSelected = hash == hist.commit
+                                    hist.isSelected = false
                                 }
                             })
                         }
@@ -1163,6 +1290,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         toggleChanges: this.toggleChanges,
                         toggleInvalidateCache: this.toggleInvalidateCache,
                         getMaterialByCommit: this.getMaterialByCommit,
+                        getFilteredMaterial: this.getFilteredMaterial,
                     }}
                 >
                     {this.renderHostErrorMessage()}
