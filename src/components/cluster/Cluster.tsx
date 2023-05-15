@@ -46,6 +46,7 @@ import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
+import { ReactComponent as ForwardArrow } from '../../assets/icons/ic-arrow-forward.svg'
 import { ReactComponent as MechanicalOperation } from '../../assets/img/ic-mechanical-operation.svg'
 import {
     POLLING_INTERVAL,
@@ -1226,6 +1227,7 @@ function ClusterForm({
                     <button className="cta cancel" type="button" onClick={handleCloseButton}>
                         Cancel
                     </button>
+
                     <button
                         className="cta mr-32 ml-20 "
                         type="button"
@@ -1233,6 +1235,7 @@ function ClusterForm({
                         disabled={!saveYamlData}
                     >
                         Get cluster
+                        <ForwardArrow className="ml-5" />
                     </button>
                 </div>
             </>
@@ -1311,7 +1314,6 @@ function ClusterForm({
 
                     <div className="api-token__list en-2 bw-0 bcn-0 br-8">
                         <div className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1">
-
                             <div></div>
                             <div>CLUSTER</div>
                             <div>STATUS</div>
@@ -1332,9 +1334,13 @@ function ClusterForm({
                                         <div className="flexbox">
                                             <span className="dc__ellipsis-right">{clusterListDetail.clusterName}</span>
                                         </div>
-                                        <div className = "flexbox dc__align-items-center">
-                                        <div className={`dc__app-summary__icon icon-dim-16 mr-2 ${clusterListDetail.status === "Failed" ? "failed" : "succeeded"}`}></div>
-                                        <div className="dc__ellipsis-right"> {clusterListDetail.status} </div>
+                                        <div className="flexbox dc__align-items-center">
+                                            <div
+                                                className={`dc__app-summary__icon icon-dim-16 mr-2 ${
+                                                    clusterListDetail.status === 'Failed' ? 'failed' : 'succeeded'
+                                                }`}
+                                            ></div>
+                                            <div className="dc__ellipsis-right"> {clusterListDetail.status} </div>
                                         </div>
                                         <div className="dc__ellipsis-right"> {clusterListDetail.message}</div>
                                     </div>
@@ -1343,16 +1349,24 @@ function ClusterForm({
                         </div>
                     </div>
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
-
-                        <button className="ml-20  cb-5" type="button" onClick={toggleGetCluster} style={{ marginRight: 'auto' }}>
+                        <button
+                            className="ml-20  cb-5"
+                            type="button"
+                            onClick={toggleGetCluster}
+                            style={{ marginRight: 'auto' }}
+                        >
                             <span style={{ display: 'flex', alignItems: 'center' }}>
-                            <Pencil style={{ marginLeft: 'auto' }} />
-                            <Edit className="icon-dim-16 scb-5 mr-4" />
+                                <Pencil style={{ marginLeft: 'auto' }} />
+                                <Edit className="icon-dim-16 scb-5 mr-4" />
                                 Edit Kubeconfig
                             </span>
-
                         </button>
-                        <button className="cta mr-20" type="button" onClick={handleCloseButton} style={{ marginLeft: 'auto' }}>
+                        <button
+                            className="cta mr-20"
+                            type="button"
+                            onClick={handleCloseButton}
+                            style={{ marginLeft: 'auto' }}
+                        >
                             Close
                         </button>
                     </div>
@@ -1379,7 +1393,7 @@ function ClusterForm({
     //             message: _clusterDetails.userInfos[index].errorInConnecting,
     //         ])
     //     })
-    // }  
+    // }
 
     // const checkBoxForSelectedCluster = () => {
     //     const _dataList = dataList
@@ -1391,11 +1405,8 @@ function ClusterForm({
     //                 setSelectedClusterNameOptions({ cluster_name: _clusterDetailsData.cluster_name, state: true })
     //             }
     //             else {
-
     //                 setSelectedClusterNameOptions({ cluster_name: _clusterDetailsData.cluster_name, state: false })
-
     //             }
-
     //         } else {
     //             setDisableState(true)
     //             setSelectedClusterNameOptions({ cluster_name: _clusterDetailsData.cluster_name, state: false })
@@ -1407,10 +1418,26 @@ function ClusterForm({
         // const _dataList = dataList
         // _dataList.map((_clusterDetailsData, index) => {
         //     if (_clusterDetailsData.userInfos[index].errorInConnecting.length === 0) {
+
         //         setDisableState(false)
+        //     }
+        //     else {
+        //         setDisableState(true)
         //     }
         // })
     }
+
+    function validCluster() {
+        const _validCluster = dataList
+        let count = 0;
+        _validCluster.map((_dataList, index) => {
+            if(_dataList.userInfos[index].errorInConnecting.length === 0 || _dataList.userInfos[index].errorInConnecting === "cluster already exists") {
+                count++
+            }
+        })
+        return count
+    }
+
     const displayClusterDetails = () => {
         return (
             <>
@@ -1418,13 +1445,13 @@ function ClusterForm({
                     <div className="cluster-form dc__position-rel h-100 bcn-0">
                         <AddClusterHeader />
                         <InfoColourBar
-                            message={`${dataList.length} valid cluster. Select the cluster you want to Add/Update`}
+                            message={`${validCluster()} valid cluster. Select the cluster you want to Add/Update`}
                             classname="info_bar cn-9 mb-20 lh-20"
                             Icon={Info}
                             iconClass="icon-dim-18"
                         />
                         <div className="api-token__list en-2 bw-1 bcn-0 br-8">
-                            <div className="cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top">
+                            <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top">
                                 <div></div>
                                 <div>CLUSTER</div>
                                 <div>USER</div>
@@ -1438,7 +1465,7 @@ function ClusterForm({
                                     dataList.map((clusterDetail, index) => (
                                         <div
                                             key={`api_${index}`}
-                                            className="cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
+                                            className="cluster-list-row-1 flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
                                             style={{ height: '40px' }}
                                         >
                                             <Checkbox
@@ -1457,9 +1484,18 @@ function ClusterForm({
                                                 selectedUserNameOptions={selectedUserNameOptions}
                                                 setSelectedUserNameOptions={setSelectedUserNameOptions}
                                             />
-                                            <div className="dc__ellipsis-right">
-                                                {selectedUserNameOptions[clusterDetail.cluster_name]
-                                                    ?.errorInConnecting || 'No error'}
+                                            <div
+                                                className={`dc__app-summary__icon icon-dim-16 mr-2 ${
+                                                    selectedUserNameOptions[clusterDetail.cluster_name]
+                                                        .errorInConnecting === 'cluster already exists' || selectedUserNameOptions[clusterDetail.cluster_name]
+                                                        .errorInConnecting.length === 0
+                                                        ? 'succeeded'
+                                                        : 'failed'
+                                                }`}
+                                            ></div>
+                                            <div className="flexbox">
+                                                <span className="dc__ellipsis-right"> {selectedUserNameOptions[clusterDetail.cluster_name]
+                                                    ?.errorInConnecting || 'No error'} </span>
                                             </div>
                                         </div>
                                     ))
@@ -1471,8 +1507,17 @@ function ClusterForm({
 
                 {isKubeConfigFile && (
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
-                        <button className="cta cancel" type="button" onClick={toggleGetCluster}>
-                            Edit Kubeconfig
+                        <button
+                            className="ml-20  cb-5"
+                            type="button"
+                            onClick={toggleGetCluster}
+                            style={{ marginRight: 'auto' }}
+                        >
+                            <span style={{ display: 'flex', alignItems: 'center' }}>
+                                <Pencil style={{ marginLeft: 'auto' }} />
+                                {/* <Edit className="icon-dim-16 scb-5 mr-4" />  */}
+                                Edit Kubeconfig
+                            </span>
                         </button>
                         <button
                             className="cta mr-32 ml-20"
