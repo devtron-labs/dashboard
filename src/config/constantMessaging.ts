@@ -180,3 +180,5 @@ export const API_COMPONENTS = {
     NEW_API_TITLE: "/ New API token",
     EDIT_API_TITLE: "/ Edit API token"
 }
+
+export const JSON_UNMARSHAL_ERROR = "unmarshal failed for data, please provide valid json";

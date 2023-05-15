@@ -57,6 +57,7 @@ import {
 } from './secret.utils'
 import { EsoData, SecretFormProps } from '../deploymentConfig/types'
 import { NavLink } from 'react-router-dom'
+import { JSON_UNMARSHAL_ERROR } from '../../config/constantMessaging'
 
 const Secret = ({ respondOnSuccess, ...props }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -127,6 +128,8 @@ const Secret = ({ respondOnSuccess, ...props }) => {
             })
         } catch (err) {}
     }
+
+    console.log("Config",list);
 
     if (secretLoading) return <Progressing pageLoader />
     return (
@@ -478,9 +481,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         }
         let dataArray = yamlMode ? tempArray.current : externalValues
         const { isValid, arr } = validateKeyValuePair(dataArray)
-        console.log(isValid,arr);
         if (!isValid) {
-            toast.error('unmarshal failed for data, please provide valid json')
+            toast.error(JSON_UNMARSHAL_ERROR);
             setKeyValueArray(arr)
             return
         }

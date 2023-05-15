@@ -387,7 +387,7 @@ const OverrideConfigMapForm: React.FC<ConfigMapProps> = memo(function OverrideCo
                 name: name,
                 type: type,
                 external: external,
-                data: dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v }), {}),
+                data: dataArray.reduce((agg, { k, v }) => ({ ...agg, [k]: v ?? '' }), {}),
             }
 
             if (type === 'volume') {
