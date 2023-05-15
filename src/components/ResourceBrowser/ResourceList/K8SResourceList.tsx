@@ -1,6 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
+<<<<<<< HEAD
 import { highlightSearchedText, Pagination, Progressing } from '../../common'
+=======
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Pagination } from '../../common'
+>>>>>>> main
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
     K8S_EMPTY_GROUP,
@@ -12,7 +17,6 @@ import {
 } from '../Constants'
 import { K8SResourceListType } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
-import AppDetailsStore from '../../v2/appDetails/appDetails.store'
 import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
@@ -40,6 +44,7 @@ export function K8SResourceList({
     handleFilterChanges,
     clearSearch,
     isCreateModalOpen,
+    addTab,
 }: K8SResourceListType) {
     const { push } = useHistory()
     const { url } = useRouteMatch()
@@ -103,7 +108,7 @@ export function K8SResourceList({
             .slice(0, group ? -2 : -1)
             .join('/')}/${resourceParam}${tab ? `/${tab.toLowerCase()}` : ''}`
 
-        const isAdded = AppDetailsStore.addAppDetailsTab(kind, resourceName, _url)
+        const isAdded = addTab(selectedResource?.gvk?.Group?.toLowerCase() || K8S_EMPTY_GROUP, kind, resourceName, _url)
 
         if (isAdded) {
             updateNodeSelectionData(_nodeSelectionData)
@@ -131,17 +136,18 @@ export function K8SResourceList({
     const renderResourceRow = (resourceData: Record<string, any>, index: number): JSX.Element => {
         return (
             <div
-                key={`${resourceData.name}-${index}`}
+                key={`row--${index}-${resourceData.name}`}
                 className="dc_width-max-content dc_min-w-100 fw-4 cn-9 fs-13 dc__border-bottom-n1 pr-20 hover-class h-44 flexbox  dc__visible-hover"
             >
-                {resourceList.headers.map((columnName) =>
+                {resourceList.headers.map((columnName, idx) =>
                     columnName === 'name' ? (
                         <div
+                            key={`${resourceData.name}-${idx}`}
                             className={`w-350 dc__inline-flex mr-16 pl-20 pr-8 pt-12 pb-12 ${
                                 fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
                             }`}
                         >
-                            <div className="w-100 flex left">
+                            <div className="w-100 flex left" data-testid="created-resource-name">
                                 <div className="w-303 pr-4">
                                     <div className="dc__w-fit-content dc__mxw-304 pr-4">
                                         <Tippy
@@ -172,7 +178,12 @@ export function K8SResourceList({
                         </div>
                     ) : (
                         <div
+<<<<<<< HEAD
                             className={`dc__highlight-text dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
+=======
+                            key={`${resourceData.name}-${idx}`}
+                            className={`dc__inline-block dc__ellipsis-right mr-16 pt-12 pb-12 w-150 ${
+>>>>>>> main
                                 columnName === 'status'
                                     ? ` app-summary__status-name ${getStatusClass(resourceData[columnName])}`
                                     : ''
@@ -233,6 +244,7 @@ export function K8SResourceList({
                 <div className="fw-6 cn-7 fs-12 dc__border-bottom pr-20 dc__uppercase list-header  bcn-0 dc__position-sticky">
                     {resourceList.headers.map((columnName) => (
                         <div
+                            key={columnName}
                             className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 dc__ellipsis-right ${
                                 columnName === 'name'
                                     ? `${

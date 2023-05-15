@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef, useContext } from 'react';
+import { mapByKey, validateEmail, deepEqual } from '../common'
 import {
     showError,
     Progressing,
-    mapByKey,
-    validateEmail,
+    DeleteDialog,
     Option,
     ClearIndicator,
     MultiValueRemove,
     multiSelectStyles,
-    DeleteDialog,
     MultiValueChipContainer,
-    deepEqual,
-} from '../common';
+    RadioGroup,
+    RadioGroupItem,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { saveUser, deleteUser } from './userGroup.service';
 import Creatable from 'react-select/creatable';
 import Select from 'react-select';
@@ -22,7 +22,6 @@ import {
     ActionTypes,
     CreateUser,
     OptionType,
-    K8sPermissionFilter,
 } from './userGroups.types';
 import { toast } from 'react-toastify';
 import { useUserGroupContext } from './UserGroup';
@@ -31,7 +30,6 @@ import AppPermissions from './AppPermissions';
 import { ACCESS_TYPE_MAP, SERVER_MODE } from '../../config';
 import { mainContext } from '../common/navigation/NavigationRoutes';
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup';
 import { PermissionType } from '../apiTokens/authorization.utils';
 import { excludeKeyAndClusterValue } from './K8sObjectPermissions/K8sPermissions.utils';
 
@@ -187,13 +185,15 @@ export default function UserForm({
                         entityName: permission.entityName.find((entity) => entity.value === '*')
                             ? ''
                             : permission.entityName.map((entity) => entity.value).join(','),
+                        entity: EntityTypes.DIRECT
+
                     })),
                     ...k8sPermission.map((permission) => ({
                         ...permission,
                         entity: EntityTypes.CLUSTER,
                         action: permission.action.value,
                         cluster: permission.cluster.label,
-                        group: permission.group.value === '*' ? '' : permission.group.value, 
+                        group: permission.group.value === '*' ? '' : permission.group.value,
                         kind: permission.kind.value === '*' ? '' : permission.kind.label,
                         namespace: permission.namespace.value === '*' ? '' : permission.namespace.value,
                         resource: permission.resource.find((entity) => entity.value === '*')
@@ -356,6 +356,7 @@ export default function UserForm({
                         Email addresses*
                     </label>
                     <Creatable
+                        classNamePrefix="email-address-dropdown"
                         ref={creatableRef}
                         options={creatableOptions}
                         components={CreatableComponents}
@@ -383,13 +384,21 @@ export default function UserForm({
             )}
             <div className="flex left mb-16">
                 <RadioGroup
+                    
                     className="permission-type__radio-group"
                     value={localSuperAdmin}
                     name={`permission-type_${id}`}
                     onChange={handlePermissionType}
+                    
                 >
                     {PermissionType.map(({ label, value }) => (
-                        <RadioGroupItem value={value} key={label}>
+                        <RadioGroupItem
+                            dataTestId={`${
+                                value === 'SPECIFIC' ? 'specific-user' : 'super-admin'
+                            }-permission-radio-button`}
+                            value={value}
+                            key={label}
+                        >
                             <span className={`dc__no-text-transform ${localSuperAdmin === value ? 'fw-6' : 'fw-4'}`}>
                                 {label}
                             </span>
@@ -403,6 +412,7 @@ export default function UserForm({
                     <Select
                         value={userGroups}
                         ref={groupPermissionsRef}
+                        classNamePrefix="group-permission-dropdown"
                         components={{
                             MultiValueContainer: ({ ...props }) => (
                                 <MultiValueChipContainer {...props} validator={null} />
@@ -449,6 +459,7 @@ export default function UserForm({
             <div className="flex right mt-32">
                 {id && (
                     <button
+                        data-testid="user-form-delete-button"
                         className="cta delete"
                         onClick={(e) => setDeleteConfirmationModal(true)}
                         style={{ marginRight: 'auto' }}
@@ -462,15 +473,28 @@ export default function UserForm({
                         Unsaved changes
                     </span>
                 )}
-                <button disabled={submitting} onClick={cancelCallback} type="button" className="cta cancel mr-16">
+                <button
+                    data-testid="user-form-cancel-button"
+                    disabled={submitting}
+                    onClick={cancelCallback}
+                    type="button"
+                    className="cta cancel mr-16"
+                >
                     Cancel
                 </button>
-                <button disabled={submitting} type="button" className="cta" onClick={handleSubmit}>
+                <button
+                    disabled={submitting}
+                    data-testid="user-form-save-button"
+                    type="button"
+                    className="cta"
+                    onClick={handleSubmit}
+                >
                     {submitting ? <Progressing /> : 'Save'}
                 </button>
             </div>
             {deleteConfirmationModal && (
                 <DeleteDialog
+                    dataTestId="user-form-delete-dialog"
                     title={`Delete user '${emailState.emails[0]?.value || ''}'?`}
                     description={'Deleting this user will remove the user and revoke all their permissions.'}
                     delete={handleDelete}

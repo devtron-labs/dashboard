@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Terminal } from 'xterm';
-import { get } from '../../services/api';
+import { get, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib';
 import { AppDetails } from '../app/types';
 import SockJS from 'sockjs-client';
 import CopyToast, { handleSelectionChange } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/CopyToast';
@@ -8,11 +8,10 @@ import moment, { duration } from 'moment';
 import { AutoSizer } from 'react-virtualized'
 import { FitAddon } from 'xterm-addon-fit';
 import * as XtermWebfont from 'xterm-webfont';
-import { SocketConnectionType } from '../app/details/appDetails/AppDetails';
-import { useThrottledEffect } from '../common';
 import ReactGA from 'react-ga4';
-import './terminal.css';
+import './terminal.scss';
 import { Scroller } from '../app/details/cicdHistory/History.components';
+import { SocketConnectionType } from '../app/details/appDetails/appDetails.type';
 
 interface TerminalViewProps {
     appDetails: AppDetails;

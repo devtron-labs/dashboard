@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ReactSelect, { components } from 'react-select'
+import CreatableSelect from 'react-select/creatable'
 import {
     DropdownIndicator,
     getCommonSelectStyle,
@@ -25,7 +26,17 @@ import {
     LanguageOptionType,
     VersionsOptionType,
 } from './types'
-import TippyCustomized, { TippyTheme } from '../common/TippyCustomized'
+import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { DOCUMENTATION } from '../../config'
+import {
+    AUTO_DETECT,
+    BUILDER_SELECT_STYLES,
+    CI_BUILDPACK_OPTION_TEXTS,
+    LANGUAGE_SELECT_STYLES,
+    USE_CUSTOM_BUILDER,
+    VERSION_DETECT_OPTION,
+    VERSION_SELECT_STYLES,
+} from './ciConfigConstant'
 
 export const renderOptionIcon = (option: string) => {
     if (!option) return null
@@ -71,6 +82,15 @@ export const repositoryControls = (props): JSX.Element => {
     )
 }
 
+const menuListComponent = (props): JSX.Element => {
+    return (
+        <components.MenuList {...props}>
+            <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">{USE_CUSTOM_BUILDER}</div>
+            {props.children}
+        </components.MenuList>
+    )
+}
+
 export default function CIBuildpackBuildOptions({
     ciBuildConfig,
     sourceConfig,
@@ -109,11 +129,7 @@ export default function CIBuildpackBuildOptions({
                     label: ver,
                     value: ver,
                 })) || []
-            versionOptions.push({
-                label: 'Autodetect',
-                value: 'Autodetect',
-                infoText: 'Detect version during build time',
-            })
+            versionOptions.push(VERSION_DETECT_OPTION)
             _builderLanguageSupportMap[_languageBuilder.Language] = {
                 LanguageIcon: _languageBuilder.LanguageIcon,
                 Versions: versionOptions,
@@ -141,7 +157,6 @@ export default function CIBuildpackBuildOptions({
             }
         }
         setSupportedLanguagesList(_supportedLanguagesList)
-        setBuilderLanguageSupportMap(_builderLanguageSupportMap)
         updateConfigAndBuildersData(initOption, _builderLanguageSupportMap)
     }
 
@@ -185,6 +200,26 @@ export default function CIBuildpackBuildOptions({
                     builderLangEnvParam: currentBuilderLangEnvParam,
                     currentBuilderLangEnvParam: currentBuilderLangEnvParam,
                 }
+
+                // Update BuilderLanguageMetadata with previously saved custom option
+                const languageBuilderOption = _builderLanguageSupportMap[ciBuildConfig.buildPackConfig.language]
+                if (
+                    languageBuilderOption.BuilderLanguageMetadata.findIndex(
+                        (_metadata) => _metadata.value === _builder.value,
+                    ) === -1
+                ) {
+                    _builderLanguageSupportMap[ciBuildConfig.buildPackConfig.language] = {
+                        ...languageBuilderOption,
+                        BuilderLanguageMetadata: [
+                            ...languageBuilderOption.BuilderLanguageMetadata,
+                            {
+                                label: _builder.value,
+                                value: _builder.value,
+                                BuilderLangEnvParam: currentBuilderLangEnvParam ?? '',
+                            },
+                        ],
+                    }
+                }
             } else {
                 _builder = {
                     label: initOption.builderId,
@@ -209,6 +244,8 @@ export default function CIBuildpackBuildOptions({
                     currentBuilderLangEnvParam: currentBuilderLangEnvParam,
                 }
             }
+
+            setBuilderLanguageSupportMap(_builderLanguageSupportMap)
             setBuildersAndFrameworks({
                 ...buildersAndFrameworks,
                 selectedBuilder: _builder,
@@ -285,6 +322,26 @@ export default function CIBuildpackBuildOptions({
             },
         })
         updateBuildEnvArgs(buildersAndFrameworks.selectedVersion.value, selected)
+        setBuilderLanguageSupportMap((prevState) => {
+            const prevValue = prevState[buildersAndFrameworks.selectedLanguage.value]
+            if (prevValue.BuilderLanguageMetadata.findIndex((_metadata) => _metadata.value === selected.value) === -1) {
+                return {
+                    ...prevState,
+                    [buildersAndFrameworks.selectedLanguage.value]: {
+                        ...prevValue,
+                        BuilderLanguageMetadata: [
+                            ...prevValue.BuilderLanguageMetadata,
+                            {
+                                label: selected.value,
+                                value: selected.value,
+                                BuilderLangEnvParam: '',
+                            },
+                        ],
+                    },
+                }
+            }
+            return prevState
+        })
     }
 
     const updateBuildEnvArgs = (version: string, builder: BuilderIdOptionType, isInitCall?: boolean) => {
@@ -295,7 +352,7 @@ export default function CIBuildpackBuildOptions({
          * - If yes & is init call then push init arg selection to buildEnvArgs array
          * - Else remove empty arg from buildEnvArgs array & proceed
          */
-        if (_buildEnvArgs.length === 1 && !_buildEnvArgs[0].k && version !== 'Autodetect') {
+        if (_buildEnvArgs.length === 1 && !_buildEnvArgs[0].k && version !== AUTO_DETECT) {
             if (isInitCall) {
                 _buildEnvArgs[0].k = builder.BuilderLangEnvParam
                 _buildEnvArgs[0].v = version
@@ -320,14 +377,14 @@ export default function CIBuildpackBuildOptions({
          *          then remove the arg from buildEnvArgs array
          * - Proceed to set the buildEnvArgs state
          */
-        if (version === 'Autodetect' && !isInitCall) {
+        if (version === AUTO_DETECT && !isInitCall) {
             _buildEnvArgs.forEach((arg, idx) => {
                 if (arg.k === builder.BuilderLangEnvParam) {
                     _buildEnvArgs.splice(idx, 1)
                 }
             })
         } else if (
-            version !== 'Autodetect' &&
+            version !== AUTO_DETECT &&
             (currentCIBuildConfig.buildPackConfig.builderId !== builder.value ||
                 currentCIBuildConfig.buildPackConfig.languageVersion !== version)
         ) {
@@ -380,6 +437,21 @@ export default function CIBuildpackBuildOptions({
         )
     }
 
+    const additionalBuilderTippyContent = () => {
+        return (
+            <div className="p-12 fs-13 fw-4 lh-20">
+                <span>{CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.additionalContent.label}</span>
+                <ol className="dc__list-style-disc m-0 pl-20">
+                    {CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.additionalContent.listItems.map((_item) => (
+                        <li key={_item}>{_item}</li>
+                    ))}
+                </ol>
+            </div>
+        )
+    }
+
+    const formatCreateLabel = (inputValue: string) => `Use '${inputValue}'`
+
     const projectPathVal =
         configOverrideView && !allowOverride ? ciBuildConfig.buildPackConfig?.projectPath : projectPath.value
 
@@ -397,6 +469,7 @@ export default function CIBuildpackBuildOptions({
                         </div>
                     ) : (
                         <ReactSelect
+                            classNamePrefix="build-config__select-repository-containing-code"
                             className="m-0"
                             tabIndex={3}
                             isSearchable={false}
@@ -432,15 +505,15 @@ export default function CIBuildpackBuildOptions({
                 </div>
                 <div className="form__field">
                     <label htmlFor="" className="form__label flexbox-imp flex-align-center">
-                        Project Path (Relative)
+                        {CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.label}
                         <TippyCustomized
                             theme={TippyTheme.white}
                             className="w-300"
                             placement="top"
                             Icon={HelpIcon}
                             iconClass="fcv-5"
-                            heading="Project Path"
-                            infoText="In case of monorepo, specify the path of the GIT Repo for the deployment of the project."
+                            heading={CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.heading}
+                            infoText={CI_BUILDPACK_OPTION_TEXTS.ProjectPathTippyContent.infoText}
                             showCloseButton={true}
                             trigger="click"
                             interactive={true}
@@ -456,6 +529,7 @@ export default function CIBuildpackBuildOptions({
                                 ./
                             </span>
                             <input
+                                data-testid="build-pack-project-path-textbox"
                                 tabIndex={4}
                                 type="text"
                                 className="form__input file-name"
@@ -473,7 +547,7 @@ export default function CIBuildpackBuildOptions({
             <div className="flex top buildpack-options">
                 <div className="buildpack-language-options">
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                        <label className="form__label">Language</label>
+                        <label className="form__label">{CI_BUILDPACK_OPTION_TEXTS.Language}</label>
                         {configOverrideView && !allowOverride ? (
                             <div className="flex left">
                                 {buildersAndFrameworks.selectedLanguage?.icon && (
@@ -489,26 +563,13 @@ export default function CIBuildpackBuildOptions({
                             </div>
                         ) : (
                             <ReactSelect
+                                classNamePrefix="build-pack-language-dropdown"
                                 className="m-0"
                                 tabIndex={3}
                                 options={supportedLanguagesList}
                                 value={buildersAndFrameworks.selectedLanguage}
                                 isSearchable={false}
-                                styles={getCommonSelectStyle({
-                                    control: (base, state) => ({
-                                        ...base,
-                                        minHeight: '36px',
-                                        boxShadow: 'none',
-                                        backgroundColor: 'var(--N50)',
-                                        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                        cursor: 'pointer',
-                                    }),
-                                    menu: (base) => ({
-                                        ...base,
-                                        marginTop: '0',
-                                        minWidth: '226px',
-                                    }),
-                                })}
+                                styles={getCommonSelectStyle(LANGUAGE_SELECT_STYLES)}
                                 components={{
                                     IndicatorSeparator: null,
                                     DropdownIndicator,
@@ -521,13 +582,14 @@ export default function CIBuildpackBuildOptions({
                         )}
                     </div>
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
-                        <label className="form__label">Version</label>
+                        <label className="form__label">{CI_BUILDPACK_OPTION_TEXTS.Version}</label>
                         {configOverrideView && !allowOverride ? (
                             <span className="fs-14 fw-4 lh-20 cn-9">
                                 {buildersAndFrameworks.selectedVersion?.value}
                             </span>
                         ) : (
                             <ReactSelect
+                                classNamePrefix="build-pack-version-dropdown"
                                 className="m-0"
                                 tabIndex={3}
                                 isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
@@ -537,27 +599,7 @@ export default function CIBuildpackBuildOptions({
                                 value={buildersAndFrameworks.selectedVersion}
                                 formatOptionLabel={formatOptionLabel}
                                 isSearchable={false}
-                                styles={getCommonSelectStyle({
-                                    control: (base, state) => ({
-                                        ...base,
-                                        minHeight: '36px',
-                                        boxShadow: 'none',
-                                        backgroundColor: 'var(--N50)',
-                                        border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                        cursor: 'pointer',
-                                    }),
-                                    valueContainer: (base) => ({
-                                        ...base,
-                                        small: {
-                                            display: 'none',
-                                        },
-                                    }),
-                                    menu: (base) => ({
-                                        ...base,
-                                        marginTop: '0',
-                                        minWidth: '226px',
-                                    }),
-                                })}
+                                styles={getCommonSelectStyle(VERSION_SELECT_STYLES)}
                                 components={{
                                     IndicatorSeparator: null,
                                     DropdownIndicator,
@@ -571,15 +613,20 @@ export default function CIBuildpackBuildOptions({
                 </div>
                 <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                     <label className="form__label flexbox-imp flex-align-center">
-                        {configOverrideView && !allowOverride ? 'Builder' : 'Select a Builder'}
+                        {configOverrideView && !allowOverride
+                            ? CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.heading
+                            : CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.selectBuilder}
                         <TippyCustomized
                             theme={TippyTheme.white}
                             className="w-300"
                             placement="top"
                             Icon={HelpIcon}
                             iconClass="fcv-5"
-                            heading="Builder"
-                            infoText="A builder is an image that contains a set of buildpacks which provide your app's dependencies, a stack, and the OS layer for your app image."
+                            heading={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.heading}
+                            infoText={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.infoText}
+                            additionalContent={additionalBuilderTippyContent()}
+                            documentationLinkText={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.documentationLinkText}
+                            documentationLink={DOCUMENTATION.APP_CI_CONFIG_BUILD_WITHOUT_DOCKER}
                             showCloseButton={true}
                             trigger="click"
                             interactive={true}
@@ -590,7 +637,9 @@ export default function CIBuildpackBuildOptions({
                     {configOverrideView && !allowOverride ? (
                         <span className="fs-14 fw-4 lh-20 cn-9">{buildersAndFrameworks.selectedBuilder?.label}</span>
                     ) : (
-                        <ReactSelect
+                        <CreatableSelect
+                            classNamePrefix="build-pack-select-builder-dropdown"
+                            placeholder={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.selectBuilder}
                             className="m-0"
                             tabIndex={3}
                             isLoading={!builderLanguageSupportMap?.[buildersAndFrameworks.selectedLanguage?.value]}
@@ -599,26 +648,13 @@ export default function CIBuildpackBuildOptions({
                                     ?.BuilderLanguageMetadata
                             }
                             value={buildersAndFrameworks.selectedBuilder}
-                            isSearchable={false}
-                            styles={getCommonSelectStyle({
-                                control: (base, state) => ({
-                                    ...base,
-                                    minHeight: '36px',
-                                    boxShadow: 'none',
-                                    backgroundColor: 'var(--N50)',
-                                    border: state.isFocused ? '1px solid var(--B500)' : '1px solid var(--N200)',
-                                    cursor: 'pointer',
-                                }),
-                                menu: (base) => ({
-                                    ...base,
-                                    marginTop: '0',
-                                    minWidth: '226px',
-                                }),
-                            })}
+                            formatCreateLabel={formatCreateLabel}
+                            styles={getCommonSelectStyle(BUILDER_SELECT_STYLES)}
                             components={{
                                 IndicatorSeparator: null,
                                 DropdownIndicator,
                                 Option,
+                                MenuList: menuListComponent,
                             }}
                             onChange={handleBuilderSelection}
                             isDisabled={configOverrideView && !allowOverride}

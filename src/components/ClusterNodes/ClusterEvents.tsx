@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { MESSAGING_UI } from '../../config'
-import { showError } from '../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { EventsTable } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/EventsTable'
+import { PodEventsType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
 import MessageUI from '../v2/common/message.ui'
 import { getClusterEvents } from './clusterNodes.service'
+import { ClusterEventsType } from './types'
 
-export default function ClusterEvents({ terminalAccessId }: { terminalAccessId: number }) {
+export default function ClusterEvents({ terminalAccessId, reconnectStart }: ClusterEventsType) {
     const [events, setEvents] = useState([])
+    const [errorValue, setErrorValue] = useState<PodEventsType>()
     const [loading, setLoading] = useState<boolean>(true)
     const [isResourceMissing, setResourceMissing] = useState(false)
 
@@ -15,12 +18,13 @@ export default function ClusterEvents({ terminalAccessId }: { terminalAccessId: 
             getClusterEvents(terminalAccessId)
                 .then((response) => {
                     setLoading(false)
-                    const events = response.result?.events.items
-                    setEvents(events)
+                    setEvents(response.result?.eventsResponse?.events.items)
+                    setErrorValue(response.result)
                 })
                 .catch((error) => {
                     showError(error)
-                }).finally(() => {
+                })
+                .finally(() => {
                     setLoading(false)
                 })
         } else {
@@ -32,6 +36,11 @@ export default function ClusterEvents({ terminalAccessId }: { terminalAccessId: 
     return isResourceMissing ? (
         <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />
     ) : (
-        <EventsTable loading={loading} eventsList={events} />
+        <EventsTable
+            loading={loading}
+            eventsList={events}
+            errorValue={errorValue}
+            reconnect={reconnectStart}
+        />
     )
 }

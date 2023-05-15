@@ -28,15 +28,15 @@ export default function K8ResourceComponent({
                 <FilterResource nodes={nodes} />
             </div>
             {nodes.length > 0 ? (
-                <div className="resource-node-wrapper flexbox">
-                    <div className="k8-resources-node-tree pt-8 pl-16 dc__border-right">
+                <div className="resource-node-wrapper flexbox" data-testid="resource-node-wrapper">
+                    <div className="k8-resources-node-tree pt-8 pl-16 dc__border-right" data-testid="k8-resources-node-tree">
                         <NodeTreeComponent
                             clickedNodes={clickedNodes}
                             registerNodeClick={registerNodeClick}
                             isDevtronApp={isDevtronApp}
                         />
                     </div>
-                    <div className="flex-grow-1 p-0">
+                    <div className="flex-grow-1-imp dc__overflow-y-auto p-0" data-testid="k8-resources-node-details">
                         <NodeComponent
                             handleFocusTabs={handleFocusTabs}
                             externalLinks={externalLinks}

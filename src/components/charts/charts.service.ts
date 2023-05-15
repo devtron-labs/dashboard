@@ -1,9 +1,8 @@
-import { get, post, put, trash } from '../../services/api'
+import { get, post, put, trash, sortCallback, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
-import { handleUTCTime, sortCallback } from '../common'
+import { handleUTCTime } from '../common'
 import { ChartValuesType, ChartGroup, HelmTemplateChartRequest, HelmProjectUpdatePayload } from './charts.types'
 import { SavedValueListResponse } from './SavedValues/types'
-import {ResponseType} from "../../services/service.types";
 
 interface RootObject {
     code: number
@@ -34,12 +33,12 @@ export function updateChart(request) {
     return put(Routes.UPDATE_APP_API, request)
 }
 
-export function deleteInstalledChart(installedAppId, force?: boolean) {
+export function deleteInstalledChart(installedAppId: string | number, isGitops?: boolean, force?: boolean) {
     let URL
     if (force) {
-        URL = `app-store/deployment/application/delete/${installedAppId}?force=${force}`
+        URL = `app-store/deployment/application/delete/${installedAppId}?force=${force}&partialDelete=false`
     } else {
-        URL = `app-store/deployment/application/delete/${installedAppId}`
+        URL = `app-store/deployment/application/delete/${installedAppId}?partialDelete=${isGitops ? 'true' : 'false'}`
     }
     return trash(URL)
 }

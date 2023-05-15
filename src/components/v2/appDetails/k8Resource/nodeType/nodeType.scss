@@ -53,17 +53,45 @@
 }
 
 .resource-row:hover {
+  .resource-action-tabs__active{
+    color: var(--B500);
+ }
     background-color: var(--N50);
+    .node__tabs{
+      width: 100%;
+    }
 
-    .resource-action-tabs__active{
-        visibility: visible;
-     }
+    .node-empty{
+      visibility: hidden;
+    }
 }
 
 .resource-row{
-    .resource-action-tabs__active{
-       visibility: hidden;
+    .resource-action-tabs__clipboard {
+        &:hover {
+            path {
+                stroke: var(--B500);
+            }
+        }
     }
+      .node__tabs{
+        transition: width 0.3s;
+        overflow: hidden;
+      }
+
+      .node__logs{
+        width: 40px;
+      }
+
+      .node__manifest{
+        width: 62px;
+      }
+
+      .node-empty{
+        width: 8px;
+        min-height: 22px;
+        margin-left: -4px;
+      }
 }
 
 .resource-tree__nodes:hover {

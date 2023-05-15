@@ -97,7 +97,6 @@ export default () => {
                     }
                     catch (err) { }
                 })
-                // console.log(urls)
                 for (let index = 0; index < urls.length; index++) {
                     const element = urls[index];
                     wrappers[index] = Object.assign({}, bp)
@@ -111,6 +110,9 @@ export default () => {
                     })
                     wrappers[index].eventSrc.addEventListener('error', function (ev) {
                         self.postMessage({ result: [], signal: 'close', readyState: wrappers[index].eventSrc.readyState }, null); // eslint-disable-line no-restricted-globals
+                    })
+                    wrappers[index].eventSrc.addEventListener('CUSTOM_ERR_STREAM', function (ev) {
+                        self.postMessage({ result: [ev.data], signal: 'CUSTOM_ERR_STREAM', readyState: wrappers[index].eventSrc.readyState }, null); // eslint-disable-line no-restricted-globals
                     })
                 }
                 break
@@ -129,7 +131,6 @@ export default () => {
     }
 
     function respond() {
-        // console.log(wrapper.filteredArray.length)
         wrappers.forEach( wrapper => {
             if (wrapper.filteredArray.length === 0) return
             self.postMessage({ result: wrapper.filteredArray, readyState: wrapper.eventSrc.readyState }, null);// eslint-disable-line no-restricted-globals

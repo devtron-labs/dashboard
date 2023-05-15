@@ -1,19 +1,14 @@
 import React, { Component } from 'react'
 import dt from '../../assets/icons/logo/logo-dt.svg'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
-import { Switch, Redirect, NavLink, Link } from 'react-router-dom'
-import { Route } from 'react-router'
+import { Switch, Redirect, Route, NavLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { ServerErrors } from '../../modals/commonTypes'
-import { URLS, Host, DOCUMENTATION, TOKEN_COOKIE_NAME } from '../../config'
-import { Progressing, showError, getCookie } from '../common'
+import { getCookie, ServerErrors, Host, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME } from '../../config'
 import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
-import './login.css'
 import { dashboardAccessed } from '../../services/service'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
-import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg'
-import { SSO_LOGGING_INFO } from '../../config/constantMessaging'
+import './login.scss'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
     constructor(props) {
@@ -32,7 +27,6 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         this.login = this.login.bind(this)
         this.isFormNotValid = this.isFormNotValid.bind(this)
     }
-
     componentDidMount() {
         let queryString = new URLSearchParams(this.props.location.search)
         let queryParam = queryString.get('continue')
@@ -44,6 +38,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         //2. Also if the cookie is deleted/changed after some time from the database at backend then getCookie(TOKEN_COOKIE_NAME)
         //becomes false but queryParam != "/" will be true and queryParam is also not null hence redirecting users to the
         //login page with Please login again toast appearing.
+
         if (queryParam && (getCookie(TOKEN_COOKIE_NAME) || queryParam != '/')) {
             toast.error('Please login again')
         }
@@ -129,19 +124,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
 
     renderSSOLoginPage() {
         const search = this.props.location.search
-        const renderLoginError = (): JSX.Element => {
-            return (
-                <>
-                    <span>
-                        {SSO_LOGGING_INFO.frontText}
-                        <a target="_blank" href={DOCUMENTATION.GLOBAL_CONFIG_AUTH}>
-                            {SSO_LOGGING_INFO.redirectLink}
-                        </a>
-                        {SSO_LOGGING_INFO.tailText}
-                    </span>
-                </>
-            )
-        }
+
         return (
             <div className="login__control">
                 <img src={dt} alt="login" className="login__dt-logo" width="170px" height="120px" />
@@ -158,20 +141,13 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                                 <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24">
                                     <use href={`${LoginIcons}#${item.name}`}></use>
                                 </svg>
-                                Login with <span className="ml-5 dc__first-letter-capitalize">{item.name}</span>
+                                Login with
+                                <span className="ml-5 dc__first-letter-capitalize" data-testid="login-with-text">
+                                    {item.name}
+                                </span>
                             </a>
                         )
                     })}
-                {localStorage.isDashboardLoggedIn !== 'true' && (
-                    <InfoColourBar
-                        classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp mt-20 mb-20 w-300"
-                        message={renderLoginError()}
-                        redirectLink={SSO_LOGGING_INFO.redirectLink}
-                        internalLink={true}
-                        Icon={ErrorIcon}
-                        iconClass="warning-icon"
-                    />
-                )}
                 <NavLink className="login__link" to={`${URLS.LOGIN_ADMIN}${search}`}>
                     Login as administrator
                 </NavLink>
@@ -190,6 +166,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 <form className="login-dt__form" autoComplete="on" onSubmit={this.login}>
                     <input
                         type="text"
+                        data-testid="username-textbox"
                         className="form__input fs-14 mb-24"
                         placeholder="Username"
                         value={this.state.form.username}
@@ -198,6 +175,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                     />
                     <input
                         type={process.env.NODE_ENV !== 'development' ? 'password' : 'text'}
+                        data-testid="password-textbox"
                         className="form__input fs-14"
                         placeholder="Password"
                         value={this.state.form.password}
@@ -214,7 +192,11 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             What is my admin password?
                         </a>
                     </div>
-                    <button disabled={this.isFormNotValid() || this.state.loading} className="cta login__button">
+                    <button
+                        disabled={this.isFormNotValid() || this.state.loading}
+                        className="cta login__button"
+                        data-testid="login-button"
+                    >
                         {this.state.loading ? <Progressing /> : 'Login'}
                     </button>
                     {this.state.loginList.length ? (

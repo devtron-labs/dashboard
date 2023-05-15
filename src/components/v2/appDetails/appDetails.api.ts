@@ -1,11 +1,22 @@
 import { Routes } from '../../../config/constants'
-import { get, post, trash } from '../../../services/api'
-import { AppDetails } from '../../app/types'
+import { get, post, trash } from '@devtron-labs/devtron-fe-common-lib'
 import { AppType, DeploymentAppType } from './appDetails.type'
 import { getAppId } from '../appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
 export const getInstalledChartDetail = (_appId: number, _envId: number) => {
-    return get(`app-store/installed-app/detail?installed-app-id=${_appId}&env-id=${_envId}`)
+  return get(`${Routes.APP_STORE_INSTALLED_APP}/detail/v2?installed-app-id=${_appId}&env-id=${_envId}`)
+}
+
+export const getInstalledChartResourceTree = (_appId: number, _envId: number) => {
+    return get(`${Routes.APP_STORE_INSTALLED_APP}/detail/resource-tree?installed-app-id=${_appId}&env-id=${_envId}`)
+}
+
+export const getInstalledChartNotesDetail = (_appId: number, _envId: number) => {
+    return get(`${Routes.APP_STORE_INSTALLED_APP}/notes?installed-app-id=${_appId}&env-id=${_envId}`)
+}
+
+export const getInstalledChartDetailWithResourceTree = (_appId: number, _envId: number) => {
+    return get(`${Routes.APP_STORE_INSTALLED_APP}/resource/hibernate?installed-app-id=${_appId}&env-id=${_envId}`)
 }
 
 export const getInstalledAppDetail = (_appId: number, _envId: number) => {

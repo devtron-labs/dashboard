@@ -1,16 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { getGitHostList, getGitProviderList } from '../../services/service';
-import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service';
-import { showError, useForm, useEffectAfterMount, useAsync, Progressing, ErrorScreenManager } from '../common';
-import { List, CustomInput, ProtectedInput } from '../globalConfigurations/GlobalConfiguration';
+import { saveGitHost, saveGitProviderConfig, updateGitProviderConfig, deleteGitProvider } from './gitProvider.service'
+import { useForm, useAsync, handleOnBlur, handleOnFocus, parsePassword } from '../common'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    ErrorScreenNotAuthorized,
+    InfoColourBar,
+    VisibleModal,
+    multiSelectStyles,
+    useEffectAfterMount
+} from '@devtron-labs/devtron-fe-common-lib'
+import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration';
 import { toast } from 'react-toastify';
 import { DOCUMENTATION } from '../../config';
 import { DropdownIndicator } from './gitProvider.util';
 import { Option } from '../v2/common/ReactSelect.utils';
 import Tippy from '@tippyjs/react';
 import ReactSelect, { components } from 'react-select';
-import { multiSelectStyles, VisibleModal } from '../common';
-import './gitProvider.css';
+import './gitProvider.scss';
 import { GitHostConfigModal } from './AddGitHostConfigModal';
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as GitLab } from '../../assets/icons/git/gitlab.svg';
@@ -18,16 +27,15 @@ import { ReactComponent as Git } from '../../assets/icons/git/git.svg';
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg';
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg';
 import { ReactComponent as Warn } from '../../assets/icons/ic-info-warn.svg';
-import { ServerError } from '../../modals/commonTypes';
 import DeleteComponent from '../../util/DeleteComponent';
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging';
-import { AuthenticationType } from '../cluster/cluster.type';
+import { AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from '../cluster/cluster.type';
 import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar';
 import { safeTrim } from '../../util/Util';
 
 export default function GitProvider({ ...props }) {
-    const [loading, result, error, reload] = useAsync(getGitProviderList);
+
+    const [, , error] = useAsync(getGitProviderList, [], props.isSuperAdmin)
     const [providerList, setProviderList] = useState([]);
     const [hostListOption, setHostListOption] = useState([]);
     const [isPageLoading, setIsPageLoading] = useState(true);
@@ -85,14 +93,18 @@ export default function GitProvider({ ...props }) {
     }
 
     useEffect(() => {
-        getInitData();
-    }, []);
-
+        if (props.isSuperAdmin) {
+            getInitData()
+        }
+    }, [])
+    if (!props.isSuperAdmin) {
+        return <ErrorScreenNotAuthorized />
+    }
     if (isPageLoading) {
         return <Progressing pageLoader />;
     }
     if (isErrorLoading) {
-        return <ErrorScreenManager code={error?.code} reloadClass="dc__align-reload-center" />;
+        return <ErrorScreenManager code={error?.code} />
     }
 
     let allProviders = [
@@ -110,7 +122,10 @@ export default function GitProvider({ ...props }) {
     ].concat(providerList);
 
     return (
-        <section className="mt-16 mb-16 ml-20 mr-20 global-configuration__component flex-1">
+        <section
+            className="global-configuration__component flex-1"
+            data-testid="git-provider-wrapper"
+        >
             <h2 className="form__title">Git accounts</h2>
             <div className="form__subtitle">
                 Manage your organization’s git accounts. &nbsp;
@@ -123,10 +138,9 @@ export default function GitProvider({ ...props }) {
                     Learn more about git accounts
                 </a>
             </div>
-            {allProviders.map((provider) => {
+            {allProviders.map((provider, index) => {
                 return (
                     <>
-                        {' '}
                         <CollapsedList
                             key={provider.name || Math.random().toString(36).substr(2, 5)}
                             id={provider.id}
@@ -155,11 +169,11 @@ export default function GitProvider({ ...props }) {
                             </VisibleModal>
                         )}
                     </>
-                );
+                )
             })}
             {/* {[{ id: null, name: "", active: true, url: "", authMode: "ANONYMOUS" }].concat(result && Array.isArray(result.result) ? result.result : []).sort((a, b) => a.name.localeCompare(b.name)).map(git => <CollapsedList {...git} key={git.id || Math.random().toString(36).substr(2, 5)} reload={reload} />)} */}
         </section>
-    );
+    )
 }
 
 function CollapsedList({
@@ -182,14 +196,14 @@ function CollapsedList({
     sshPrivateKey,
     ...props
 }) {
-    const [collapsed, toggleCollapse] = useState(true);
-    const [enabled, toggleEnabled] = useState(active);
-    const [loading, setLoading] = useState(false);
-    let selectedGitHost = hostListOption.find((p) => p.value === gitHostId);
-    const [gitHost, setGithost] = useState({ value: selectedGitHost, error: '' });
+    const [collapsed, toggleCollapse] = useState(true)
+    const [enabled, toggleEnabled] = useState(active)
+    const [loading, setLoading] = useState(false)
+    let selectedGitHost = hostListOption.find((p) => p.value === gitHostId)
+    const [gitHost, setGithost] = useState({ value: selectedGitHost, error: '' })
 
     useEffectAfterMount(() => {
-        if (!collapsed) return;
+        if (!collapsed) return
         async function update() {
             let payload = {
                 id: id || 0,
@@ -201,20 +215,20 @@ function CollapsedList({
                 ...(authMode === 'USERNAME_PASSWORD' ? { username: userName, password } : {}),
                 ...(authMode === 'ACCESS_TOKEN' ? { accessToken } : {}),
                 ...(authMode === 'SSH' ? { sshPrivateKey: sshPrivateKey } : {}),
-            };
+            }
             try {
-                setLoading(true);
-                await updateGitProviderConfig(payload, id);
-                await reload();
-                toast.success(`Git account ${enabled ? 'enabled' : 'disabled'}.`);
+                setLoading(true)
+                await updateGitProviderConfig(payload, id)
+                await reload()
+                toast.success(`Git account ${enabled ? 'enabled' : 'disabled'}.`)
             } catch (err) {
-                showError(err);
+                showError(err)
             } finally {
-                setLoading(false);
+                setLoading(false)
             }
         }
-        update();
-    }, [enabled]);
+        update()
+    }, [enabled])
 
     const setToggleCollapse = () => {
         toggleCollapse(false)
@@ -231,7 +245,11 @@ function CollapsedList({
                 id ? 'update' : 'create'
             }`}
         >
-            <List onClick={setToggleCollapse} className={`${!id && !collapsed ? 'no-grid-column' : ''}`}>
+            <List
+                dataTestId={name || 'Add git account'}
+                onClick={setToggleCollapse}
+                className={`${!id && !collapsed ? 'no-grid-column' : ''}`}
+            >
                 <List.Logo>
                     {id && (
                         <div className="">
@@ -262,7 +280,7 @@ function CollapsedList({
                             placement="bottom"
                             content={enabled ? 'Disable git account' : 'Enable git account'}
                         >
-                            <span style={{ marginLeft: 'auto' }}>
+                            <span style={{ marginLeft: 'auto' }} data-testid={`${name}-toggle-button`}>
                                 {loading ? (
                                     <Progressing />
                                 ) : (
@@ -359,12 +377,12 @@ function GitForm({
 
     const [loading, setLoading] = useState(false);
     const [customState, setCustomState] = useState({
-        password: { value: password, error: '' },
+        password: { value: !password && id ? DEFAULT_SECRET_PLACEHOLDER : password, error: '' },
         username: { value: userName, error: '' },
         accessToken: { value: accessToken, error: '' },
         hostName: { value: gitHost.value, error: '' },
-        sshInput: { value: sshPrivateKey, error: '' },
-    });
+        sshInput: { value: !sshPrivateKey && id ? DEFAULT_SECRET_PLACEHOLDER : sshPrivateKey, error: '' },
+    })
     const [deleting, setDeleting] = useState(false);
     const [confirmation, toggleConfirmation] = useState(false);
 
@@ -394,11 +412,18 @@ function GitForm({
             authMode: state.auth.value,
             active,
             ...(state.auth.value === 'USERNAME_PASSWORD'
-                ? { username: customState.username.value, password: customState.password.value }
+                ? {
+                      username: customState.username.value,
+                      password: parsePassword(customState.password.value),
+                  }
                 : {}),
             ...(state.auth.value === 'ACCESS_TOKEN' ? { accessToken: customState.accessToken.value } : {}),
-            ...(state.auth.value === 'SSH' ? { sshPrivateKey: safeTrim(customState.sshInput.value) } : {}),
-        };
+            ...(state.auth.value === 'SSH'
+                ? {
+                      sshPrivateKey: parsePassword(safeTrim(customState.sshInput.value)),
+                  }
+                : {}),
+        }
 
         const api = id ? updateGitProviderConfig : saveGitProviderConfig;
         try {
@@ -415,10 +440,10 @@ function GitForm({
 
     async function onValidation() {
         if (state.auth.value === 'USERNAME_PASSWORD') {
-            if (!customState.password.value || !customState.username.value) {
+            if ((!id && !customState.password.value) || !customState.username.value) {
                 setCustomState((state) => ({
                     ...state,
-                    password: { value: state.password.value, error: 'This is a required field' },
+                    password: { value: state.password.value, error: !id ? 'This is a required field' : '' },
                     username: { value: state.username.value, error: 'Required' },
                 }));
                 return;
@@ -432,8 +457,11 @@ function GitForm({
                 return;
             }
         } else if (state.auth.value === 'SSH') {
-            if (!customState.sshInput.value) {
-                setCustomState((state) => ({ ...state, sshInput: { value: '', error: 'This is a required field' } }));
+            if (!id && !customState.sshInput.value) {
+                setCustomState((state) => ({
+                    ...state,
+                    sshInput: { value: '', error: 'This is a required field' },
+                }))
                 return;
             }
         }
@@ -522,6 +550,7 @@ function GitForm({
             <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
                 <div className="mb-16">
                     <CustomInput
+                        dataTestid="git-account-name-textbox"
                         autoComplete="off"
                         value={state.name.value}
                         onChange={handleOnChange}
@@ -538,6 +567,7 @@ function GitForm({
                                 name="host"
                                 value={gitHost.value}
                                 className="react-select--height-44 fs-13 bcn-0"
+                                classNamePrefix="select-git-account-host"
                                 placeholder="Select git host"
                                 isMulti={false}
                                 isSearchable
@@ -551,7 +581,7 @@ function GitForm({
                                             position: 'relative',
                                             paddingBottom: '0px',
                                             maxHeight: '176px',
-                                        };
+                                        }
                                     },
                                 }}
                                 components={{
@@ -568,6 +598,7 @@ function GitForm({
                         <div className="cr-5 fs-11">{gitHost.error}</div>
                     </div>
                     <CustomInput
+                        dataTestid="git-account-host-url-textbox"
                         autoComplete="off"
                         value={state.url.value}
                         onChange={handleOnChange}
@@ -578,8 +609,9 @@ function GitForm({
                 </div>
                 <div className="form__label">Authentication type*</div>
                 <div className={` form__row--auth-type  ${!id ? 'pointer' : ''}`}>
-                    {AuthType.map(({ label: Lable, value }) => (
+                    {AuthType.map(({ label: Lable, value }, index) => (
                         <div
+                            data-testid={`git-account-auth-type-${index}`}
                             className={` ${canSelectAuth(value) ? 'pointer' : 'wrapper-pointer-disabled'}`}
                             onChange={handleOnChange}
                             style={{ borderRight: '1px solid #d6d4d9', height: '48px' }}
@@ -623,6 +655,7 @@ function GitForm({
                 {state.auth.value === 'USERNAME_PASSWORD' && (
                     <div className="form__row form__row--two-third">
                         <CustomInput
+                            dataTestid="git-account-user-auth-username"
                             value={customState.username.value}
                             onChange={customHandleChange}
                             name="username"
@@ -630,9 +663,12 @@ function GitForm({
                             label="Username*"
                         />
                         <div>
-                            <ProtectedInput
+                            <CustomInput
+                                dataTestid="git-account-user-auth-password"
                                 value={customState.password.value}
                                 onChange={customHandleChange}
+                                onBlur={id && handleOnBlur}
+                                onFocus={handleOnFocus}
                                 name="password"
                                 error={customState.password.error}
                                 label="Password/Auth token*"
@@ -648,10 +684,13 @@ function GitForm({
                     <div className="form__row ">
                         <div className="form__label dc__required-field">Private SSH key</div>
                         <textarea
+                            data-testid="git-account-ssh-key-textbox"
                             placeholder="Enter key text"
                             className="form__input w-100"
                             style={{ height: '100px', backgroundColor: '#f7fafc' }}
                             onChange={customHandleChange}
+                            onBlur={id && handleOnBlur}
+                            onFocus={handleOnFocus}
                             name="sshInput"
                             value={customState.sshInput.value}
                         />
@@ -660,14 +699,24 @@ function GitForm({
                 )}
                 <div className={`form__row form__buttons`}>
                     {id && (
-                        <button className={`cta delete dc__m-auto ml-0`} type="button" onClick={() => toggleConfirmation(true)}>
+                        <button
+                            className={`cta delete dc__m-auto ml-0`}
+                            data-testid="delete-git-repo"
+                            type="button"
+                            onClick={() => toggleConfirmation(true)}
+                        >
                             {deleting ? <Progressing /> : 'Delete'}
                         </button>
                     )}
-                    <button className="cta cancel" type="button" onClick={(e) => toggleCollapse((t) => !t)}>
+                    <button
+                        className="cta cancel"
+                        data-testid="add-git-account-cancel-button"
+                        type="button"
+                        onClick={(e) => toggleCollapse((t) => !t)}
+                    >
                         Cancel
                     </button>
-                    <button className="cta" type="submit" disabled={loading}>
+                    <button className="cta" data-testid="add-git-account-save-button" type="submit" disabled={loading}>
                         {loading ? <Progressing /> : id ? 'Update' : 'Save'}
                     </button>
                 </div>
@@ -685,5 +734,5 @@ function GitForm({
                 )}
             </form>
         </>
-    );
+    )
 }

@@ -1,6 +1,13 @@
 import React, { useState } from 'react'
-import { Drawer, Progressing, showError, stopPropagation } from '../../common'
-import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
+import {
+    showError,
+    Progressing,
+    Drawer,
+    TippyCustomized,
+    TippyTheme,
+    stopPropagation,
+    InfoColourBar,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
@@ -17,7 +24,6 @@ import { ValidationRules } from './validationRules'
 import { EDIT_TAINTS_MODAL_MESSAGING, TAINT_OPTIONS } from '../constants'
 import { toast } from 'react-toastify'
 import { useParams } from 'react-router-dom'
-import TippyCustomized, { TippyTheme } from '../../common/TippyCustomized'
 
 export default function EditTaintsModal({ name, version, kind, taints, closePopup }: EditTaintsModalType) {
     const { clusterId } = useParams<{ clusterId: string }>()
@@ -157,7 +163,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             <div className="bcn-0 h-100">
                 <div className="flex flex-align-center flex-justify bcn-0 pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0">
                         {`${EDIT_TAINTS_MODAL_MESSAGING.titlePrefix} '${name}'`}
                     </h2>
                     <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>

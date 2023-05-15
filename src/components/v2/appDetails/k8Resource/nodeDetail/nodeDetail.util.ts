@@ -2,6 +2,8 @@ import {
     EnvType,
     LogState,
     NodeType,
+    Options,
+    OptionsBase,
     PodContainerOptions,
     PodMetaData,
     SelectedResourceType,
@@ -9,10 +11,11 @@ import {
 import IndexStore from '../../index.store'
 import { NodeDetailTab } from './nodeDetail.type'
 import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
+import { sortOptionsByLabel } from '../../../../common'
 
 export const getNodeDetailTabs = (nodeType: NodeType) => {
     if (nodeType.toLowerCase() === NodeType.Pod.toLowerCase()) {
-        return [NodeDetailTab.MANIFEST, NodeDetailTab.EVENTS, NodeDetailTab.LOGS, NodeDetailTab.TERMINAL]
+        return [NodeDetailTab.LOGS, NodeDetailTab.TERMINAL, NodeDetailTab.EVENTS, NodeDetailTab.MANIFEST]
     } else if (nodeType.toLowerCase() === NodeType.Containers.toLowerCase()) {
         return [NodeDetailTab.LOGS]
     } else {
@@ -22,6 +25,19 @@ export const getNodeDetailTabs = (nodeType: NodeType) => {
 
 export const flatContainers = (pod: PodMetaData): string[] => {
     return [...(pod?.containers || []), ...(pod?.initContainers || [])]
+}
+
+export const getContainersData = (pod: PodMetaData): OptionsBase[] => {
+    return [
+        ...(pod?.containers?.map((_container) => ({
+            name: _container,
+            isInitContainer: false,
+        })) || []),
+        ...(pod?.initContainers?.map((_container) => ({
+            name: _container,
+            isInitContainer: true,
+        })) || []),
+    ]
 }
 
 export function getSelectedPodList(selectedOption: string): PodMetaData[] {
@@ -49,7 +65,7 @@ export function getSelectedPodList(selectedOption: string): PodMetaData[] {
             } else if (selectedOption.startsWith('All ')) {
                 handleDefaultForSelectedOption(selectedOption.replace('All ', ''))
             } else {
-                pods = IndexStore.getAllPods().filter((_pod) => _pod.name == selectedOption)
+                pods = IndexStore.getAllPods().filter((_pod) => _pod.name === selectedOption)
             }
             break
     }
@@ -69,21 +85,21 @@ export function getPodContainerOptions(
         const containers = isResourceBrowserView
             ? selectedResource.containers
             : IndexStore.getAllPods()
-                  .filter((_pod) => _pod.name == params.podName)
-                  .flatMap((_pod) => flatContainers(_pod))
-                  .sort()
+                  .filter((_pod) => _pod.name === params.podName)
+                  .flatMap((_pod) => getContainersData(_pod))
 
-        if (containers.length == 0 || (containers.length === 1 && !containers[0])) {
+        if (containers.length === 0 || (containers.length === 1 && !containers[0].name)) {
             return {
                 containerOptions: [],
                 podOptions: [],
             }
         }
 
-        _selectedContainerName = logState.selectedContainerOption ?? _selectedContainerName ?? (containers[0] as string)
+        _selectedContainerName =
+            logState.selectedContainerOption ?? _selectedContainerName ?? (containers[0].name as string)
 
         const containerOptions = containers.map((_container) => {
-            return { name: _container, selected: _container == _selectedContainerName }
+            return { ..._container, selected: _container.name === _selectedContainerName }
         })
 
         return {
@@ -95,7 +111,7 @@ export function getPodContainerOptions(
         const rootNamesOfPods = IndexStore.getPodsRootParentNameAndStatus().flatMap((_ps) =>
             _ps[0].split('/').splice(-1),
         )
-        const additionalPodOptions = rootNamesOfPods.map((rn, index) => ({ name: 'All ' + rn, selected: index == 0 }))
+        const additionalPodOptions = rootNamesOfPods.map((rn, index) => ({ name: 'All ' + rn, selected: index === 0 }))
 
         if (IndexStore.getEnvDetails().envType === EnvType.APPLICATION) {
             additionalPodOptions.concat(
@@ -119,19 +135,19 @@ export function getPodContainerOptions(
         )
         if (logState.selectedPodOption) {
             podOptions.forEach(
-                (_po) => (_po.selected = _po.name.toLowerCase() == logState.selectedPodOption.toLowerCase()),
+                (_po) => (_po.selected = _po.name.toLowerCase() === logState.selectedPodOption.toLowerCase()),
             )
         }
 
         //build container Options
         const _allSelectedPods = getSelectedPodList(logState.selectedPodOption)
-        const containers = (flatContainers(_allSelectedPods[0]) ?? []).sort()
+        const containers = (getContainersData(_allSelectedPods[0]) ?? []).sort()
         const containerOptions = containers.map((_container, index) => {
-            return { name: _container, selected: index == 0 }
+            return { ..._container, selected: index === 0 }
         })
         if (logState.selectedContainerOption) {
             containerOptions.forEach(
-                (_co) => (_co.selected = _co.name.toLowerCase() == logState.selectedContainerOption.toLowerCase()),
+                (_co) => (_co.selected = _co.name.toLowerCase() === logState.selectedContainerOption.toLowerCase()),
             )
         }
         return {
@@ -153,11 +169,10 @@ export function getInitialPodContainerSelection(
         const containers = isResourceBrowserView
             ? selectedResource.containers
             : IndexStore.getAllPods()
-                  .filter((_pod) => _pod.name == params.podName)
-                  .flatMap((_pod) => flatContainers(_pod))
-                  .sort()
+                  .filter((_pod) => _pod.name === params.podName)
+                  .flatMap((_pod) => getContainersData(_pod))
 
-        if (containers.length == 0) {
+        if (containers.length === 0) {
             return {
                 selectedContainerOption: '',
                 selectedPodOption: '',
@@ -165,7 +180,8 @@ export function getInitialPodContainerSelection(
         }
 
         _selectedContainerName =
-            (_selectedContainerName && containers.find((_co) => _co == _selectedContainerName)) ?? containers[0]
+            (_selectedContainerName && containers.find((_co) => _co.name === _selectedContainerName))?.name ??
+            containers[0].name
         return {
             selectedContainerOption: _selectedContainerName,
             selectedPodOption: isResourceBrowserView ? params.node : params.podName,
@@ -179,7 +195,7 @@ export function getInitialPodContainerSelection(
         const _selectedPodOption = additionalPodOptions.find((_po) => _po.selected)?.name ?? ''
 
         const _allSelectedPods = getSelectedPodList(_selectedPodOption)
-        if (_allSelectedPods.length == 0) {
+        if (_allSelectedPods.length === 0) {
             return {
                 selectedContainerOption: '',
                 selectedPodOption: '',
@@ -206,12 +222,17 @@ export const getContainerSelectStyles = () => {
     return {
         ...multiSelectStyles,
         menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left', width: '150%' }),
+        menuList: (base) => ({
+            ...base,
+            paddingTop: 0,
+        }),
         control: (base) => ({
             ...base,
             borderColor: 'transparent',
             backgroundColor: 'transparent',
             minHeight: '24px !important',
             cursor: 'pointer',
+            height: '28px',
         }),
         singleValue: (base) => ({
             ...base,
@@ -221,8 +242,31 @@ export const getContainerSelectStyles = () => {
             textAlign: 'left',
             marginLeft: '2px',
         }),
+        valueContainer: (base, state) => ({
+            ...base,
+            height: '28px',
+            padding: '0 6px',
+        }),
         indicatorsContainer: (provided) => ({
             ...provided,
+            height: '28px',
+        }),
+        group: (base) => ({
+            ...base,
+            paddingTop: 0,
+            paddingBottom: 0,
+        }),
+        groupHeading: (base) => ({
+            ...base,
+            fontWeight: 600,
+            fontSize: '12px',
+            textTransform: 'normal',
+            height: '28px',
+            color: 'var(--N900)',
+            backgroundColor: 'var(--N100)',
+            marginBottom: 0,
+            display: 'flex',
+            alignItems: 'center'
         }),
     }
 }
@@ -244,12 +288,57 @@ export const getShellSelectStyles = () => {
             textAlign: 'left',
             color: '#06c',
         }),
+        valueContainer: (base, state) => ({
+            ...base,
+            height: '28px',
+            padding: '0 6px',
+        }),
         indicatorsContainer: (provided) => ({
             ...provided,
-        }),
+            height: '28px',
+        })
     }
 }
 
 export const getContainerOptions = (containers: string[]) => {
     return Array.isArray(containers) ? containers.map((container) => ({ label: container, value: container })) : []
+}
+
+export const getGroupedContainerOptions = (containers: Options[]) => {
+    const containerOptions = [],
+        initContainerOptions = []
+
+    if (Array.isArray(containers) && containers.length > 0) {
+        for (const _container of containers) {
+            if (_container.isInitContainer) {
+                initContainerOptions.push({
+                    label: _container.name,
+                    value: _container.name,
+                })
+            } else {
+                containerOptions.push({
+                    label: _container.name,
+                    value: _container.name,
+                })
+            }
+        }
+
+        const groupedOptions = [
+            {
+                label: 'Containers',
+                options: containerOptions.sort(sortOptionsByLabel),
+            },
+        ]
+
+        if (initContainerOptions.length > 0) {
+            groupedOptions.push({
+                label: 'Init containers',
+                options: initContainerOptions.sort(sortOptionsByLabel),
+            })
+        }
+
+        return groupedOptions
+    }
+
+    return []
 }

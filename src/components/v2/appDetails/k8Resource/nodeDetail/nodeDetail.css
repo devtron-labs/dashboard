@@ -2,6 +2,12 @@
     text-transform: capitalize;
 }
 
+.tab-cell-border {
+    width: 1px;
+    height: 16px;
+    background-color: var(--N200);
+}
+
 .default-tab-cell:hover{
    color: var(--B500);
 }
@@ -16,4 +22,21 @@
 
 .summary-view__card {
     background-color: #f2f4f7;
+}
+
+.containers-select__group {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.containers-select__group .containers-select__group-heading {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: none;
+    color: var(--N900);
+    background-color: var(--window-bg);
+    padding: 4px 10px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    margin: 0;
 }

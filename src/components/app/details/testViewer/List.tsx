@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react'
+import React, { useState } from 'react'
 import { ReactComponent as Sort } from '../../../../assets/icons/misc/sort-up.svg'
-import { not, noop } from '../../../common/'
+import { not } from '@devtron-labs/devtron-fe-common-lib'
 
 interface ListInterface {
     collapsible?: boolean;

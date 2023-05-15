@@ -11,11 +11,11 @@ import {
 } from '../Types'
 import { AggregationKeys, Nodes } from '../../app/types'
 import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
-import { Progressing } from '../../common'
 import ReactSelect, { GroupBase, InputActionMeta } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/dist/declarations/src/Select'
 import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
 import { withShortcut, IWithShortcut } from 'react-keybind'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 function Sidebar({
     k8SObjectMap,
@@ -199,6 +199,7 @@ function Sidebar({
                 data-grouped={useGroupName}
                 data-selected={isSelected}
                 onClick={selectNode}
+                data-testid={nodeName}
             >
                 {nodeName}
             </div>
@@ -297,7 +298,7 @@ function Sidebar({
             <div className="k8s-object-kind-search bcn-0 pt-16 pb-8 w-200 dc__m-auto cursor">
                 <ReactSelect
                     ref={searchInputRef}
-                    placeholder="Search Kind"
+                    placeholder="Jump to Kind"
                     options={k8sObjectOptionsList}
                     value={k8sObjectOptionsList[0]} // Just to enable clear indicator
                     inputValue={searchText}
@@ -336,7 +337,12 @@ function Sidebar({
                                     className={`${k8sObject.isExpanded ? 'fcn-9' : 'fcn-5'} rotate icon-dim-24 pointer`}
                                     style={{ ['--rotateBy' as any]: !k8sObject.isExpanded ? '-90deg' : '0deg' }}
                                 />
-                                <span className="fs-14 fw-6 pointer w-100 pt-6 pb-6">{k8sObject.name}</span>
+                                <span
+                                    className="fs-14 fw-6 pointer w-100 pt-6 pb-6"
+                                    data-testid={`k8sObject-${k8sObject.name}`}
+                                >
+                                    {k8sObject.name}
+                                </span>
                             </div>
                             {k8sObject.isExpanded && (
                                 <div className="pl-20">

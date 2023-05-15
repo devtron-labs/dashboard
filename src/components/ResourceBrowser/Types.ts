@@ -1,5 +1,5 @@
 import React from 'react'
-import { ResponseType } from '../../services/service.types'
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Nodes, OptionType } from '../app/types'
 import { LogSearchTermType, SelectedResourceType } from '../v2/appDetails/appDetails.type'
 
@@ -137,6 +137,14 @@ export interface K8SResourceListType extends ResourceFilterOptionsProps {
     getResourceListData: () => Promise<void>
     updateNodeSelectionData: (_selected: Record<string, any>) => void
     isCreateModalOpen: boolean
+    addTab: (
+        idPrefix: string,
+        kind: string,
+        name: string,
+        url: string,
+        positionFixed?: boolean,
+        iconPath?: string,
+    ) => boolean
 }
 
 export interface ResourceBrowserActionMenuType {

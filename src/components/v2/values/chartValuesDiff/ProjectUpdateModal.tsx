@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
+import { showError, Progressing, VisibleModal, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { Progressing, showError, VisibleModal } from '../../../common'
 import { ReactComponent as Error } from '../../assets/icons/ic-errorInfo.svg'
 import ReactSelect from 'react-select'
-import InfoColourbar from '../../../common/infocolourBar/InfoColourbar'
 import { DropdownIndicator, getCommonSelectStyle, Option } from '../../common/ReactSelect.utils'
 import { NumberOptionType } from '../../../app/types'
 import { toast } from 'react-toastify'
@@ -53,6 +52,7 @@ export default function ProjectUpdateModal({
             <ReactSelect
                 options={projectOptions}
                 value={selectedProject}
+                classNamePrefix="select-project-list"
                 onChange={handleProjectSelection}
                 components={{
                     IndicatorSeparator: null,
@@ -122,10 +122,12 @@ export default function ProjectUpdateModal({
         return (
             <>
                 <div className="cn-7 p-20">
-                    <div className="fs-12 fw-4 lh-20 mb-2">Project</div>
+                    <div className="fs-12 fw-4 lh-20 mb-2" data-testid="project-heading-onchange">
+                        Project
+                    </div>
                     {renderProjectSelect()}
                     {selectedProject && appMetaInfo && selectedProject.label !== appMetaInfo.projectName && (
-                        <InfoColourbar
+                        <InfoColourBar
                             classname="warn cn-9 lh-20 pt-8 pr-12"
                             Icon={Error}
                             message={projectChangeMessage()}
@@ -140,6 +142,7 @@ export default function ProjectUpdateModal({
                         disabled={isSubmitting}
                         onClick={onClose}
                         tabIndex={6}
+                        data-tesid="cancel-button-on-project-change"
                     >
                         Cancel
                     </button>
@@ -149,6 +152,7 @@ export default function ProjectUpdateModal({
                         disabled={isSubmitting}
                         onClick={handleSaveAction}
                         tabIndex={5}
+                        data-testid="overview-project-save-button"
                     >
                         {isSubmitting ? <Progressing /> : 'Save'}
                     </button>

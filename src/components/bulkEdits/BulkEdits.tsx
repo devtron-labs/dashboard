@@ -11,7 +11,7 @@ import {
     CMandSecretImpactedObjects,
 } from './bulkEdits.type'
 import yamlJsParser from 'yaml'
-import { Progressing, showError, ErrorScreenManager } from '../common'
+import { showError, Progressing, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg'
@@ -42,7 +42,7 @@ const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputName, val
     return (
         <label className="dc__tertiary-tab__radio flex fs-13">
             <input type="radio" name="status" checked={outputName === value} value={value} onClick={handleOutputTabs} />
-            <div className="tertiary-output-tab cursor mr-12 pb-6"> {name} </div>
+            <div className="tertiary-output-tab cursor mr-12 pb-6" data-testid={name+"-link"}> {name} </div>
         </label>
     )
 }
@@ -114,7 +114,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div className="deployment-group-list-page ">
                 <div className="bulk-desciription flex left pt-10 pb-10 pl-20 pr-20 cn-9">
                     <Question className="icon-dim-16 mr-13 fcv-5" />
-                    <div>
+                    <div data-testid="run-scripts-text">
                         Run scripts to bulk edit configurations for multiple devtron components.
                         <a
                             className="dc__link"
@@ -223,8 +223,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     type="button"
                     className="bulk-run-button cta dc__ellipsis-right pl-12 pr-12 flex mr-12 "
                     onClick={(e) => this.handleRunButton(e)}
+                    data-testid="run-button"
                 >
-                    <span>
+                    <span >
                         <PlayButton className="flex icon-dim-16 mr-8 " />
                     </span>
                     <div>Run</div>
@@ -233,6 +234,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     className="fs-12 en-2 bw-1 cb-5 fw-6 bcn-0 br-4 pt-6 pb-6 pl-12 pr-12"
                     style={{ maxHeight: '32px' }}
                     onClick={() => this.handleShowImpactedObjectButton()}
+                    data-testid="show-impacted-objects-button"
                 >
                     Show Impacted Objects
                 </button>
@@ -283,6 +285,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     onChange={(event) => {
                         this.handleConfigChange(event)
                     }}
+                    data-testid="code-editor"
                 ></CodeEditor>
                 <div className="bulk-output-drawer bcn-0 fs-13">
                     <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top border-btm bcn-0">
@@ -299,7 +302,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                             name={OutputObjectTabs.IMPACTED_OBJECTS}
                         />
                     </div>
-                    <div className="bulk-output-body cn-9 fs-13 pl-20 pr-20 pt-20">
+                    <div className="bulk-output-body cn-9 fs-13 pl-20 pr-20 pt-20" data-testid="output-message">
                         {this.state.showOutputData ? (
                             this.state.statusCode === 404 ? (
                                 <>{STATUS.ERROR}</>
@@ -649,8 +652,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderSampleTemplateHeader = () => {
         return (
             <div className="border-btm bcn-0 pt-5 pb-5 flex pr-20">
-                <div className="fw-6 cn-9 pl-20">Sample:</div>
+                <div className="fw-6 cn-9 pl-20" data-testid="sample-application">Sample:</div>
                 <ReactSelect
+                  classNamePrefix='sample-application-select'
                     value={this.state.updatedTemplate[0]}
                     defaultValue={this.state.updatedTemplate[0]}
                     className="select-width"

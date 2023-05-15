@@ -1,14 +1,15 @@
 import React, { Component } from 'react'
+import { showError, ServerErrors, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as Play } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import { VisibleModal, ButtonWithLoader, Checkbox, showError, Progressing, sortCallback } from '../../../common'
+import { ReactComponent as RunIcon } from '../../../../assets/icons/ic-play-media.svg'
+import { ButtonWithLoader } from '../../../common'
 import GitInfoMaterial from '../../../common/GitInfoMaterial'
 import { savePipeline } from '../../../ciPipeline/ciPipeline.service'
 import { DOCUMENTATION, ModuleNameMap, SourceTypeMap, SOURCE_NOT_CONFIGURED } from '../../../../config'
-import { ServerErrors } from '../../../../modals/commonTypes'
 import BranchRegexModal from './BranchRegexModal'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
@@ -28,6 +29,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         })
         this.state = {
             regexValue: regexValue,
+            savingRegexValue: false,
             selectedCIPipeline: props.filteredCIPipelines?.find((_ciPipeline) => _ciPipeline?.id == props.pipelineId),
             isBlobStorageConfigured: false,
         }
@@ -99,6 +101,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     rootClassName="form__checkbox-label--ignore-cache mb-0"
                     value={'CHECKED'}
                     onChange={this.context.toggleInvalidateCache}
+                    data-testid="set-clone-directory"
                 >
                     <div className="mr-5">
                         <div className="fs-13 fw-6">{IGNORE_CACHE_INFO.IgnoreCache.title}</div>
@@ -117,16 +120,26 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     renderMaterialStartBuild = (canTrigger) => {
         return (
             <div className="trigger-modal__trigger">
-                {this.renderIgnoreCache()}
+                {!this.props.isJobView && this.renderIgnoreCache()}
                 <ButtonWithLoader
                     rootClassName="cta-with-img cta-with-img--ci-trigger-btn"
+                    dataTestId="ci-trigger-start-build-button"
                     loaderColor="#ffffff"
                     disabled={!canTrigger}
                     isLoading={this.props.isLoading}
                     onClick={this.handleStartBuildAction}
                 >
-                    <Play className="trigger-btn__icon" />
-                    Start Build
+                    {this.props.isJobView ? (
+                        <>
+                            <RunIcon className="trigger-job-btn__icon" />
+                            Run Job
+                        </>
+                    ) : (
+                        <>
+                            <Play className="trigger-btn__icon" />
+                            Start Build
+                        </>
+                    )}
                 </ButtonWithLoader>
             </div>
         )
@@ -138,7 +151,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
         const canTrigger = this.props.material.reduce((isValid, mat) => {
             isValid =
-                (isValid && !mat.isMaterialLoading && !!mat.history.find((history) => history.isSelected)) ||
+                (isValid &&
+                    !mat.isMaterialLoading &&
+                    !!mat.history.find((history) => history.isSelected)) ||
                 (!mat.isDockerFileError && mat.branchErrorMsg === SOURCE_NOT_CONFIGURED && isMaterialActive)
             return isValid
         }, true)
@@ -146,6 +161,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             return (
                 <>
                     <GitInfoMaterial
+                        dataTestId='edit-branch-name'
                         material={this.props.material}
                         title={this.props.title}
                         pipelineId={this.props.pipelineId}
@@ -162,6 +178,7 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                         appId={this.props.appId}
                         fromBulkCITrigger={false}
                         hideSearchHeader={false}
+                        isJobView={this.props.isJobView}
                     />
                     {this.props.showWebhookModal ? null : this.renderMaterialStartBuild(canTrigger)}
                 </>
@@ -184,6 +201,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
     }
 
     onClickNextButton = () => {
+        this.setState({
+            savingRegexValue: true,
+        })
         const payload: any = {
             appId: +this.props.match.params.appId,
             id: +this.props.workflowId,
@@ -229,6 +249,11 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
             .catch((error: ServerErrors) => {
                 showError(error)
             })
+            .finally(() => {
+                this.setState({
+                    savingRegexValue: false,
+                })
+            })
     }
 
     handleRegexInputValue = (id, value, mat) => {
@@ -242,41 +267,26 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
         })
     }
 
-    renderCIMaterialModal = () => {
-        return (
-            <div className="modal-body--ci-material h-100" onClick={this.onClickStopPropagation}>
-                {this.props.loader ? (
-                    <div style={{ height: '100vh' }}>
-                        <Progressing pageLoader />
-                    </div>
-                ) : (
-                    <>
-                        {this.props.showMaterialRegexModal && (
-                            <BranchRegexModal
-                                material={this.props.material}
-                                selectedCIPipeline={this.state.selectedCIPipeline}
-                                showWebhookModal={this.props.showWebhookModal}
-                                title={this.props.title}
-                                isChangeBranchClicked={this.props.isChangeBranchClicked}
-                                onClickNextButton={this.onClickNextButton}
-                                onShowCIModal={this.props.onShowCIModal}
-                                handleRegexInputValue={this.handleRegexInputValue}
-                                regexValue={this.state.regexValue}
-                                onCloseBranchRegexModal={this.props.onCloseBranchRegexModal}
-                            />
-                        )}
-                        {this.props.showCIModal && this.renderCIModal()}
-                    </>
-                )}
-            </div>
-        )
-    }
-
     render() {
-        return (
-            <VisibleModal className="" close={this.context.closeCIModal}>
-                {this.renderCIMaterialModal()}
-            </VisibleModal>
-        )
+        if (this.props.showMaterialRegexModal) {
+            return (
+                <BranchRegexModal
+                    material={this.props.material}
+                    selectedCIPipeline={this.state.selectedCIPipeline}
+                    showWebhookModal={this.props.showWebhookModal}
+                    title={this.props.title}
+                    isChangeBranchClicked={this.props.isChangeBranchClicked}
+                    onClickNextButton={this.onClickNextButton}
+                    onShowCIModal={this.props.onShowCIModal}
+                    handleRegexInputValue={this.handleRegexInputValue}
+                    regexValue={this.state.regexValue}
+                    onCloseBranchRegexModal={this.props.onCloseBranchRegexModal}
+                    savingRegexValue={this.state.savingRegexValue}
+                />
+            )
+        } else if (this.props.showCIModal) {
+            return this.renderCIModal()
+        }
+        return <></>
     }
 }

@@ -1,6 +1,5 @@
-export const RequestTimeout = 60000
+import { DOCUMENTATION_HOME_PAGE } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'Checking Status...'
-export const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
 export const DEFAULTK8SVERSION = 'v1.16.0'
 export const TOKEN_COOKIE_NAME = 'argocd.token'
 export const DEVTRON_DEFAULT_RELEASE_NAME = 'devtron'
@@ -24,13 +23,15 @@ export const Routes = {
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',
     VALIDATE: 'cluster/validate',
-    SAVECLUSTER: 'cluster/saveClusters',
+    SAVECLUSTER: 'cluster/saveClusters',    CLUSTER_DESCRIPTION: 'cluster/description',
+    CLUSTER_NOTE: 'cluster/description/note',
+
     CD_CONFIG: 'app/cd-pipeline',
     EXTERNAL_CI_CONFIG: 'app/external-ci',
     CD_CONFIG_PATCH: 'app/cd-pipeline/patch',
     SPECIFIC_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all',
-    RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/all/latest',
-    LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/all/latest',
+    RECENT_DEPLOYMENT_CONFIG: 'app/history/deployed-configuration/latest/deployed',
+    LATEST_DEPLOYMENT_CONFIG: 'app/deployment-configuration/latest/saved',
     WORKFLOW_EDITOR: 'edit/workflow',
 
     CD_MATERIAL_GET: 'app/cd-pipeline',
@@ -48,12 +49,17 @@ export const Routes = {
 
     APP: 'app',
     APP_LIST: 'app/list',
+    APP_LIST_V1: 'v1',
+    APP_LIST_V2: 'v2',
     APP_LIST_MIN: 'app/autocomplete',
     APP_DETAIL: 'app/detail',
     APP_CONFIG_STATUS: 'app/stage/status',
     APP_OTHER_ENVIRONMENT: 'app/other-env',
+    APP_OTHER_ENVIRONMENT_MIN: 'app/other-env/min',
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/edit',
+
+    JOB_CI_DETAIL: 'job/ci-pipeline/list',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
@@ -79,6 +85,7 @@ export const Routes = {
     GIT_PROVIDER: 'git/provider',
     GIT_HOST: 'git/host',
     CHART_LIST_SUBPATH: 'list',
+    CHART_LIST_SUBPATH_MIN: 'list/min',
     GIT_PROVIDER_MIN: 'git/provider/autocomplete',
     MIGRATION_TOOLS: 'config/mig-tools',
     DATABASE: 'config/databases',
@@ -154,6 +161,7 @@ export const Routes = {
     HELM_LINK_TO_CHART_STORE_API: 'app-store/deployment/application/helm/link-to-chart-store',
     HELM_DEPLOYMENT_ROLLBACK_API: 'application/rollback',
     NAMESPACE: 'env/namespace',
+    APP_STORE_INSTALLED_APP: 'app-store/installed-app',
     APP_RELEASE_DEPLOYMENT_HISTORY_API: 'app-store/installed-app/deployment-history',
     APP_RELEASE_DEPLOYMENT_DETAIL_API: 'app-store/installed-app/deployment-history/info',
     PLUGIN_LIST: 'plugin/global/list',
@@ -174,6 +182,7 @@ export const Routes = {
     VALIDATE_CUSTOM_CHART: 'deployment/template/validate',
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
     CLUSTER_LIST: 'k8s/capacity/cluster/list',
+    CLUSTER_LIST_MIN: 'k8s/capacity/cluster/list/raw',
     CLUSTER_CAPACITY: 'k8s/capacity/cluster',
     NODE_LIST: 'k8s/capacity/node/list',
     NODE_CAPACITY: 'k8s/capacity/node',
@@ -181,6 +190,7 @@ export const Routes = {
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
     TELEMETRY_EVENT: 'telemetry/event',
     DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
+    HELM_DEPLOYMENT_STATUS_TIMELINE_INSTALLED_APP: 'app-store/deployment-status/timeline',
     MANUAL_SYNC: 'app/deployment-status/manual-sync',
     MODULE_CONFIGURED: 'module/config',
     SSO: 'sso',
@@ -205,7 +215,16 @@ export const Routes = {
     CLUSTER_LIST_PERMISSION: 'cluster/auth-list',
     ENVIRONMENT_APPS: 'env/app-grouping',
     ENV_APPLICATIONS: 'applications',
-    ENV_DEPLOYMENT_STATUS: 'deployment/status'
+    ENV_DEPLOYMENT_STATUS: 'deployment/status',
+    JOB: 'job',
+    JOB_LIST: 'job/list',
+    JOB_CI_PIPELINE_LIST: 'job/ci-pipeline/list',
+    USER_ROLE_GROUP: 'user/role/group',
+    APP_FILTER_LIST: 'app/app-listing/autocomplete',
+    APP_LIST_GROUP: 'app/list/group',
+    CUSTOM_ROLES: 'rbac/role',
+    GROUPS: 'groups',
+    GROUP: 'group',
 }
 
 export const ViewType = {
@@ -241,22 +260,18 @@ export const PATTERNS = {
     API_TOKEN: '^[a-z0-9][a-z0-9_-]*[a-z0-9]$/*',
     NAMESPACE: '^[a-z0-9]+([a-z0-9-?]*[a-z0-9])?$',
     URL: /^(http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}(:[0-9]{1,5})?(\/.*)?$/,
-    KUBERNETES_KEY: /^((http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}\/?)*[A-Za-z0-9][A-Za-z0-9-._]{0,253}$/,
+    KUBERNETES_KEY:
+        /^((http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,}\/?)*[A-Za-z0-9][A-Za-z0-9-._]{0,253}$/,
     KUBERNETES_VALUE: /^([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9]$/,
     KUBERNETES_KEY_PREFIX: /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/,
     KUBERNETES_KEY_NAME: /^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$/,
     START_END_ALPHANUMERIC: /^([A-Za-z0-9]).*[A-Za-z0-9]$|^[A-Za-z0-9]{1}$/,
-    ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/ // allow alphanumeric,(.) ,(-),(_)
+    ALPHANUMERIC_WITH_SPECIAL_CHAR: /^[A-Za-z0-9._-]+$/, // allow alphanumeric,(.) ,(-),(_)
 }
 
 export const TriggerType = {
     Auto: 'AUTOMATIC',
     Manual: 'MANUAL',
-}
-
-export const TriggerTypeMap = {
-    automatic: 'Auto',
-    manual: 'Manual',
 }
 
 export const SourceTypeMap = {
@@ -269,7 +284,6 @@ export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
 export const MomentDateFormat = 'ddd, DD MMM YYYY'
 export const Moment12HourExportFormat = 'DD-MMM-YYYY hh.mm A'
 
-const DOCUMENTATION_HOME_PAGE = 'https://docs.devtron.ai'
 export const DOCUMENTATION = {
     HOME_PAGE: DOCUMENTATION_HOME_PAGE,
     APP_CREATE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/create-application`,
@@ -318,11 +332,26 @@ export const DOCUMENTATION = {
     APP_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/create-application#tags`,
     APP_OVERVIEW_TAGS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/overview#manage-tags`,
     K8S_RESOURCES_PERMISSIONS: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/global-configurations/authorization/user-access#kubernetes-resources-permissions`,
+    APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile`,
+    JOB_SOURCE_CODE: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/configuration-job`,
+    JOB_WORKFLOW_EDITOR: `${DOCUMENTATION_HOME_PAGE}/v/v0.6/usage/jobs/workflow-editor-job`,
 }
 
 export const DEVTRON_NODE_DEPLOY_VIDEO = 'https://www.youtube.com/watch?v=9u-pKiWV-tM&t=1s'
 
 export const PREVIEW_DEVTRON = 'https://preview.devtron.ai/dashboard'
+
+export const NETSHOOT_LINK = 'https://github.com/nicolaka/netshoot'
+
+export const BUSYBOX_LINK = 'https://busybox.net/'
+
+export const DISCORD_LINK = 'https://discord.devtron.ai/'
+
+export const OPEN_NEW_TICKET = 'https://enterprise.devtron.ai/portal/en/newticket'
+
+export const VIEW_ALL_TICKETS = 'https://enterprise.devtron.ai/portal/en/myarea'
+
+export const RAISE_ISSUE = 'https://github.com/devtron-labs/devtron/issues/new/choose'
 
 // APP LIST STARTS
 export const AppListConstants = {
@@ -341,7 +370,7 @@ export const AppListConstants = {
         CLUTSER: 'cluster',
         NAMESPACE: 'namespace',
         ENVIRONMENT: 'environment',
-        APP_STATUS: 'appStatus'
+        APP_STATUS: 'appStatus',
     },
 }
 // APP LIST ENDS
@@ -354,7 +383,7 @@ export enum SERVER_MODE {
 export type SERVER_MODE_TYPE = keyof typeof SERVER_MODE
 
 export enum ACCESS_TYPE_MAP {
-    DEVTRON_APPS = '', // devtron app work flow
+    DEVTRON_APPS = 'devtron-app', // devtron app work flow
     HELM_APPS = 'helm-app', //helm app work flow
 }
 
@@ -570,6 +599,11 @@ export const BuildTabText = {
     postBuildStage: 'Post-build stage',
 }
 
+export const JobPipelineTabText = {
+    buildStage: 'Basic configuration',
+    preBuildStage: 'Tasks to be executed',
+}
+
 export const APP_STATUS_CUSTOM_MESSAGES = {
     HIBERNATED: "This application's workloads are scaled down to 0 replicas",
     'PARTIALLY HIBERNATED': "Some of this application's workloads are scaled down to 0 replicas.",
@@ -617,6 +651,7 @@ export const ModuleNameMap = {
 
 export const BUILD_STATUS = {
     NOT_TRIGGERED: 'not triggered',
+    NOT_DEPLOYED: 'not deployed',
 }
 
 export const EVENT_STREAM_EVENTS_MAP = {
@@ -649,14 +684,14 @@ export const CLUSTER_COMMAND = {
         clusterName: 'K8s',
         title: 'Supports EKS, AKS, GKE, Kops, Digital Ocean managed Kubernetes.',
         command:
-            'curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml',
+            'curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd',
     },
     microK8s: {
         heading: 'MicroK8s',
         clusterName: 'microK8s',
         title: 'MicroK8s is a light weight Kubernetes cluster',
         command:
-            "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml",
+            "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd",
     },
 }
 
@@ -730,6 +765,7 @@ export enum TIMELINE_STATUS {
     DEGRADED = 'DEGRADED',
     DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
     ABORTED = 'ABORTED',
+    INPROGRESS= 'INPROGRESS'
 }
 
 export const DEPLOYMENT_STATUS = {
@@ -745,7 +781,7 @@ export const DEPLOYMENT_STATUS = {
 
 export const HELM_DEPLOYMENT_STATUS_TEXT = {
     PROGRESSING: 'Progressing',
-    INPROGRESS: 'In progress'
+    INPROGRESS: 'In progress',
 }
 
 export const DEPLOYMENT_STATUS_QUERY_PARAM = 'deployment-status'
@@ -755,9 +791,21 @@ export const SOURCE_NOT_CONFIGURED = 'Source not configured'
 export const DOCKER_FILE_ERROR_TITLE = 'Unable to locate Dockerfile as source is not configured for this repository'
 export const DOCKER_FILE_ERROR_MESSAGE = 'Unable to locate Dockerfile as source is not configured for this repository'
 export const DEFAULT_GIT_BRANCH_VALUE = '--'
-export const SOURCE_NOT_CONFIGURED_MESSAGE= 'Source is not configured for one or more git repositories. Please configure and try again.'
+export const SOURCE_NOT_CONFIGURED_MESSAGE =
+    'Source is not configured for one or more git repositories. Please configure and try again.'
+export const NO_COMMIT_SELECTED = 'No commit is selected'
+export enum MANIFEST_KEY_FIELDS {
+    METADATA = 'metadata',
+    MANAGED_FIELDS = 'managedFields',
+}
 
 export enum KEY_VALUE {
-  KEY= 'key',
-  VALUE= 'value'
+    KEY = 'key',
+    VALUE = 'value',
+}
+
+export enum CONFIGURATION_TYPES {
+    ENVIRONMENT = 'ENVIRONMENT',
+    NAMESPACE = 'NAMESPACE',
+    DESCRIPTION = 'DESCRIPTION',
 }

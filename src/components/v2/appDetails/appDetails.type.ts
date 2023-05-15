@@ -180,6 +180,8 @@ export interface AppDetails {
     externalCi?: boolean
     clusterName?: string
     dockerRegistryId?: string
+    deploymentAppDeleteRequest?: boolean
+    userApprovalConfig?: string
 }
 
 interface MaterialInfo {
@@ -240,6 +242,7 @@ export interface Node {
 
 export interface Health {
     status: string
+    message?: string
 }
 
 export interface NetworkingInfo {
@@ -377,6 +380,8 @@ export interface LogSearchTermType {
 export interface NodeDetailPropsType extends LogSearchTermType {
     loadingResources?: boolean
     isResourceBrowserView?: boolean
+    markTabActiveByIdentifier?: (idPrefix: string, name: string, kind?: string, url?: string) => boolean
+    addTab?: (idPrefix: string, kind: string, name: string, url: string, positionFixed?: boolean, iconPath?: string) => boolean
     selectedResource?: SelectedResourceType
 }
 
@@ -386,18 +391,24 @@ export interface LogsComponentProps extends NodeDetailPropsType {
 }
 
 export interface TerminalComponentProps {
-    selectedTab: (_tabName: string, _url?: string) => void;
-    isDeleted: boolean;
+    selectedTab: (_tabName: string, _url?: string) => void
+    isDeleted: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
+    selectedContainer: Map<string, string>
+    setSelectedContainer: (containerName: Map<string, string>) => void
 }
 
 export interface NodeTreeTabListProps extends LogSearchTermType {
     tabRef?: MutableRefObject<HTMLDivElement>
 }
 
-export interface Options {
+export interface OptionsBase {
     name: string;
+    isInitContainer?: boolean
+}
+
+export interface Options extends OptionsBase {
     selected: boolean;
 }
 export interface PodContainerOptions {
@@ -438,7 +449,8 @@ export interface SelectedResourceType {
     kind: string
     namespace: string
     name: string
-    containers: string[]
+    containers: OptionsBase[]
+    selectedContainer?: string
 }
 
 export interface ResourceInfoActionPropsType {
@@ -446,6 +458,11 @@ export interface ResourceInfoActionPropsType {
     isDeleted: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
+}
+
+export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
+    hideManagedFields: boolean
+    toggleManagedFields: (managedFieldsExist: boolean) => void
 }
 
 export interface NodeTreeDetailTabProps {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
-import { ConfigurationType, ViewType } from '../../config'
-import { Progressing, RadioGroup, showError } from '../common'
+import { ConfigurationType, ViewType, BuildStageVariable } from '../../config'
+import { RadioGroup } from '../common'
 import {
     ConditionContainerType,
     FormErrorObjectType,
@@ -13,7 +13,7 @@ import {
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
 import { getPluginDetail } from '../ciPipeline/ciPipeline.service'
-import { ServerErrors } from '../../modals/commonTypes'
+import { ServerErrors, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
@@ -106,9 +106,17 @@ export function TaskDetailComponent() {
         setFormDataErrorObj(_formErrorObject)
         setFormData(_formData)
     }
+
     const handleDescriptionChange = (e: any): void => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].description = e.target.value
+        setFormData(_formData)
+    }
+
+    const handleTriggerIfParentStageFailChange = (): void => {
+        const _formData = { ...formData }
+        _formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail =
+            !_formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail
         setFormData(_formData)
     }
 
@@ -158,12 +166,11 @@ export function TaskDetailComponent() {
         <div>
             <div>
                 <div className="row-container mb-12">
-                    <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">
-                        Task name
-                    </div>
+                    <div className="fw-6 fs-13 lh-32 cn-7 dc__required-field">Task name</div>
                     <div>
                         <input
                             className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                            data-testid="preBuild-task-name-textbox"
                             type="text"
                             onChange={(e) => handleNameChange(e)}
                             value={formData[activeStageName].steps[selectedTaskIndex].name}
@@ -183,12 +190,25 @@ export function TaskDetailComponent() {
                     <div className="fw-6 fs-13 lh-32 cn-7 ">Description</div>{' '}
                     <input
                         className="w-100 br-4 en-2 bw-1 pl-10 pr-10 pt-5 pb-5"
+                        data-testid="preBuild-task-description-textbox"
                         type="text"
                         onChange={(e) => handleDescriptionChange(e)}
                         value={formData[activeStageName].steps[selectedTaskIndex].description}
                         placeholder="Enter task description"
                     />
                 </div>
+
+                {activeStageName === BuildStageVariable.PostBuild && (
+                    <div className="row-container mb-12">
+                        <div className="fw-6 fs-13 lh-32 cn-7 ">Trigger even if build fails</div>
+                        <input
+                            type="checkbox"
+                            className="cursor icon-dim-16"
+                            checked={formData[activeStageName].steps[selectedTaskIndex].triggerIfParentStageFail}
+                            onChange={handleTriggerIfParentStageFailChange}
+                        />
+                    </div>
+                )}
 
                 {formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.INLINE && (
                     <div className="row-container mb-12">
@@ -202,10 +222,18 @@ export function TaskDetailComponent() {
                             name="task-type"
                             onChange={handleTaskScriptTypeChange}
                         >
-                            <RadioGroup.Radio className="left-radius" value={ScriptType.SHELL}>
+                            <RadioGroup.Radio
+                                className="left-radius"
+                                value={ScriptType.SHELL}
+                                dataTestId="custom-script-task-name-shell"
+                            >
                                 Shell
                             </RadioGroup.Radio>
-                            <RadioGroup.Radio className="right-radius dc__no-left-border" value={ScriptType.CONTAINERIMAGE}>
+                            <RadioGroup.Radio
+                                className="right-radius dc__no-left-border"
+                                value={ScriptType.CONTAINERIMAGE}
+                                dataTestId="custom-script-task-name-container-image"
+                            >
                                 Container Image
                             </RadioGroup.Radio>
                         </RadioGroup>

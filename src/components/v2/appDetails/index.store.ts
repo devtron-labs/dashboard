@@ -108,7 +108,7 @@ const IndexStore = {
     },
 
     getMetaDataForPod: (_name: string) => {
-        return _appDetailsSubject.getValue().resourceTree.podMetadata.filter((pod) => pod.name === _name)[0];
+        return _appDetailsSubject.getValue().resourceTree?.podMetadata?.filter((pod) => pod.name === _name)[0] || {} as PodMetaData;
     },
 
     getPodMetaData: () => {

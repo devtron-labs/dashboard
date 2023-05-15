@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import { Progressing, showError, createGitCommitUrl, asyncWrap, ConfirmationDialog, not, formatDurationDiff } from '../../../common'
+import React, { useState } from 'react'
+import { showError, Progressing, ConfirmationDialog, not } from '@devtron-labs/devtron-fe-common-lib'
+import { createGitCommitUrl, asyncWrap } from '../../../common'
 import { toast } from 'react-toastify'
 import { useRouteMatch, useLocation, useParams } from 'react-router'
 import { statusColor as colorMap } from '../../config'
 import { Moment12HourFormat, ZERO_TIME_STRING } from '../../../../config'
 import moment from 'moment'
 import docker from '../../../../assets/icons/misc/docker.svg'
-import { ReactComponent as TimerIcon } from '../../../../assets/icons/ic-timer.svg'
-
 import warn from '../../../../assets/icons/ic-warning.svg'
 import '../cIDetails/ciDetails.scss'
 import {
@@ -24,7 +23,7 @@ import {
     WorkerStatusType,
 } from '../cicdHistory/types'
 import { Link } from 'react-router-dom'
-import { cancelCiTrigger, cancelPrePostCdTrigger } from '../../service'
+import { cancelCiTrigger, cancelPrePostCdTrigger, extractImage } from '../../service'
 
 const TriggerDetailsStatusIcon = React.memo(({ status }: TriggerDetailsStatusIconType): JSX.Element => {
     return (
@@ -76,7 +75,6 @@ export const TriggerDetails = React.memo(
                     />
                     <CurrentStatus
                         status={status}
-                        startedOn={startedOn}
                         finishedOn={finishedOn}
                         artifact={artifact}
                         message={message}
@@ -90,34 +88,29 @@ export const TriggerDetails = React.memo(
     },
 )
 
-const Finished = React.memo(({ status, startedOn, finishedOn, artifact }: FinishedType): JSX.Element => {
+const Finished = React.memo(({ status, finishedOn, artifact, type }: FinishedType): JSX.Element => {
     return (
         <div className="flex column left dc__min-width-fit-content">
-            <div className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`}>
+            <div className={`${status} fs-14 fw-6 ${TERMINAL_STATUS_COLOR_CLASS_MAP[status.toLowerCase()] || 'cn-5'}`} data-testid="deployment-status-text">
                 {status && status.toLowerCase() === 'cancelled' ? 'ABORTED' : status}
-            </div>            
+            </div>
             <div className="flex left">
                 {finishedOn && finishedOn !== ZERO_TIME_STRING && (
-                    <>            
-                        <time className="dc__vertical-align-middle">
-                            {moment(finishedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
-                        </time>
-                        <div className="dc__bullet mr-6 ml-6"/>
-                        <TimerIcon className="mb-1 grace-period-timer-icon icon-dim-20 mr-4 scn-6 commit-hash__icon grayscale dc__vertical-align-middle" />
-                        <time className="dc__vertical-align-middle mr-12">
-                           { formatDurationDiff(startedOn, finishedOn) }
-                        </time>                        
-                    </>           
+                    <time className="dc__vertical-align-middle">
+                        {moment(finishedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
+                    </time>
                 )}
-                {artifact && (
-                    <div className="dc__app-commit__hash ">
-                        <img src={docker} className="commit-hash__icon grayscale" />
-                        {artifact.split(':')[1]}
-                    </div>
+                {type === HistoryComponentType.CI && artifact && (
+                    <>
+                        <div className="dc__bullet mr-6 ml-6" />
+                        <div className="dc__app-commit__hash ">
+                            <img src={docker} className="commit-hash__icon grayscale" />
+                            {extractImage(artifact)}
+                        </div>
+                    </>
                 )}
             </div>
         </div>
-        
     )
 })
 
@@ -142,10 +135,9 @@ const WorkerStatus = React.memo(({ message, podStatus, stage }: WorkerStatusType
 })
 
 const ProgressingStatus = React.memo(
-    ({ status, startedOn, message, podStatus, stage, type }: ProgressingStatusType): JSX.Element => {
+    ({ status, message, podStatus, stage, type }: ProgressingStatusType): JSX.Element => {
         const [aborting, setAborting] = useState(false)
         const [abortConfirmation, setAbortConfiguration] = useState(false)
-        const [durationStr, setDurationStr] = useState<string>('');
         const { buildId, triggerId, pipelineId } = useParams<{
             buildId: string
             triggerId: string
@@ -157,19 +149,6 @@ const ProgressingStatus = React.memo(
         } else if (stage !== 'DEPLOY') {
             abort = () => cancelPrePostCdTrigger(pipelineId, triggerId)
         }
-
-        useEffect(() => {
-            setDurationStr(formatDurationDiff(startedOn, Date()))
-            const intervalTimer = setInterval(() => {
-                setDurationStr(formatDurationDiff(startedOn, Date()))
-            }, 1000) 
-
-            return () => {
-                if (intervalTimer) {
-                    clearInterval(intervalTimer)
-                }
-            }
-        }, [])
 
         async function abortRunning() {
             setAborting(true)
@@ -193,12 +172,8 @@ const ProgressingStatus = React.memo(
                         <div className={`${status} fs-14 fw-6 flex left inprogress-status-color`}>
                             In progress
                         </div>
-                        <TimerIcon className="mb-2 grace-period-timer-icon icon-dim-20 mr-6 scn-6 commit-hash__icon grayscale dc__vertical-align-middle" />
-                        <time className="dc__vertical-align-middle">
-                            {durationStr}
-                        </time>
                     </div>
-                    
+
                     {abort && (
                         <button
                             className="flex cta delete er-5 bw-1 fw-6 fs-13 h-28 ml-16"
@@ -240,15 +215,15 @@ const ProgressingStatus = React.memo(
 )
 
 const CurrentStatus = React.memo(
-    ({ status, startedOn, finishedOn, artifact, message, podStatus, stage, type }: CurrentStatusType): JSX.Element => {
+    ({ status, finishedOn, artifact, message, podStatus, stage, type }: CurrentStatusType): JSX.Element => {
         if (PROGRESSING_STATUS[status.toLowerCase()]) {
             return (
-                <ProgressingStatus status={status} startedOn={startedOn} message={message} podStatus={podStatus} stage={stage} type={type} />
+                <ProgressingStatus status={status} message={message} podStatus={podStatus} stage={stage} type={type} />
             )
         } else {
             return (
                 <div className="flex left">
-                    <Finished status={status} startedOn={startedOn} finishedOn={finishedOn} artifact={artifact} />
+                    <Finished status={status} finishedOn={finishedOn} artifact={artifact} type={type} />
                     <WorkerStatus message={message} podStatus={podStatus} stage={stage} />
                 </div>
             )
@@ -269,7 +244,9 @@ const StartDetails = ({
     const { pathname } = useLocation()
     return (
         <div className="trigger-details__start flex column left">
-            <div className="cn-9 fs-14 fw-6">Start</div>
+            <div className="cn-9 fs-14 fw-6" data-testid="deployment-history-start-heading">
+                Start
+            </div>
             <div className="flex left">
                 <time className="cn-7 fs-12">
                     {moment(startedOn, 'YYYY-MM-DDTHH:mm:ssZ').format(Moment12HourFormat)}
@@ -278,24 +255,28 @@ const StartDetails = ({
                 <div className="trigger-details__trigger-by cn-7 fs-12 mr-12">
                     {triggeredBy === 1 ? 'auto trigger' : triggeredByEmail}
                 </div>
-                {type === HistoryComponentType.CD && artifact ? (
-                    <div className="dc__app-commit__hash ">
-                        <img src={docker} className="commit-hash__icon grayscale" />
-                        {artifact.split(':')[1]}
-                    </div>
+                {type === HistoryComponentType.CD ? (
+                    <>
+                        {artifact && (
+                            <div className="dc__app-commit__hash" data-testid="docker-image-hash">
+                                <img src={docker} className="commit-hash__icon grayscale" />
+                                {artifact.split(':')[1]}
+                            </div>
+                        )}
+                    </>
                 ) : (
                     ciMaterials?.map((ciMaterial) => {
                         const gitDetail: GitTriggers = gitTriggers[ciMaterial.id]
-                        return (
+                        return gitDetail ? (
                             <React.Fragment key={ciMaterial.id}>
                                 {ciMaterial.type != 'WEBHOOK' && (
                                     <a
                                         target="_blank"
                                         rel="noopener noreferer"
-                                        href={createGitCommitUrl(ciMaterial?.url, gitDetail?.Commit)}
+                                        href={createGitCommitUrl(ciMaterial.url, gitDetail.Commit)}
                                         className="dc__app-commit__hash mr-12 bcn-1 cn-7"
                                     >
-                                        {gitDetail?.Commit?.substr(0, 8)}
+                                        {gitDetail.Commit?.substr(0, 8)}
                                     </a>
                                 )}
                                 {ciMaterial.type == 'WEBHOOK' &&
@@ -308,11 +289,11 @@ const StartDetails = ({
                                         </span>
                                     )}
                             </React.Fragment>
-                        )
+                        ) : null
                     })
                 )}
                 {!pathname.includes('source-code') && (
-                    <Link to={`${url}/source-code`} className="anchor ml-8">
+                    <Link to={`${url}/source-code`} className="anchor ml-8" data-testid="commit-details-link">
                         Commit details
                     </Link>
                 )}

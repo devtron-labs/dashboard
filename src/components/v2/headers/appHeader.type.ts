@@ -8,3 +8,7 @@ export interface LabelTags {
     inputTagValue: string;
     tagError: string;
 }
+
+export interface ChartHeaderComponentType{
+  errorResponseCode?: number
+}

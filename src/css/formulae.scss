@@ -46,6 +46,14 @@
     flex: 1;
 }
 
+.flex-grow-1 {
+    flex-grow: 1;
+}
+
+.flex-grow-1-imp {
+    flex-grow: 1 !important;
+}
+
 .flex-justify {
     justify-content: space-between !important;
 }
@@ -179,6 +187,7 @@ $color-suffix: 00;
 }
 
 .cta,
+
 .cta-with-img {
     height: 40px;
     font-size: 12px;
@@ -342,13 +351,18 @@ $color-suffix: 00;
     border-style: dashed !important;
 }
 
-.text-underline-dashed{
+.text-underline-dashed {
     border-bottom: 1px dashed var(--N400);
 }
 
 .text-underline-dashed-300 {
     border-bottom: 1px dashed var(--N300);
 }
+
+.text-underline-dashed-200 {
+    border-bottom: 1px dashed var(--N200);
+}
+
 
 .header {
     position: fixed;

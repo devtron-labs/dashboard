@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { copyToClipboard, Progressing, showError, VisibleModal } from '../../common'
+import { copyToClipboard } from '../../common'
+import { Progressing, VisibleModal, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as CopyText } from '../../../assets/icons/ic-copy.svg'
 import Tippy from '@tippyjs/react'
 import { getIngressServiceUrls } from '../service'
 import { KIND } from '../../../config/constants'
-import EmptyState from '../../EmptyState/EmptyState'
 import AppNotDeployed from '../../../assets/img/app-not-deployed.png'
 import { getManifestUrlInfo } from '../../external-apps/ExternalAppService'
-import { ManifestUrlList, TriggerURL } from './types'
+import { CopyToClipboardTextProps, ManifestUrlList, TriggerURL } from './types'
 
 export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close }: TriggerURL) {
     const [result, setResponse] = useState<ManifestUrlList[]>()
@@ -63,17 +63,19 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
         <VisibleModal className="" close={close}>
             <div onClick={stopPropogation} className="modal-body--ci-material h-100 dc__overflow-hidden">
                 <div className="trigger-modal__header">
-                    <h1 className="modal__title flex left fs-16">URLs</h1>
-                    <button type="button" className="dc__transparent" onClick={close}>
+                    <h1 className="modal__title flex left fs-16" data-testid="app-details-url-heading">
+                        URLs
+                    </h1>
+                    <button type="button" className="dc__transparent" onClick={close} data-testid="url-close-button">
                         <Close />
                     </button>
                 </div>
 
-                <div className="dc__overflow-scroll" style={{height: "calc(100% - 67px)"}}>
+                <div className="dc__overflow-scroll" style={{ height: 'calc(100% - 67px)' }}>
                     {loading ? (
                         <Progressing pageLoader />
                     ) : Object.values(data).every((value) => !value.length) ? (
-                        <EmptyUrlState title={errorMessage.title} subtitle={errorMessage.subtitle}/>
+                        <EmptyUrlState title={errorMessage.title} subtitle={errorMessage.subtitle} />
                     ) : (
                         Object.entries(data).map(([kind, item]) =>
                             item.length ? (
@@ -115,7 +117,7 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                                 </span>
                                                             </Tippy>
                                                             <span className="icon-dim-16">
-                                                                <CopyToClipboardText
+                                                                <CopyToClipboardTextWithTippy
                                                                     iconClass="pointer dc__visible-hover--child icon-dim-16"
                                                                     text={url}
                                                                 />
@@ -125,23 +127,23 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
                                                 </div>
                                             )}
                                             <div className="flexbox dc__content-start items-width-1">
-                                                <span className='flex dc__align-start'>
-                                                <Tippy
-                                                    content={value.pointsTo}
-                                                    className="default-tt dc__word-break-all"
-                                                    arrow={false}
-                                                    placement="top"
-                                                >
-                                                    <span className="url-box dc__ellipsis-right mr-6">
-                                                        {value.pointsTo}
+                                                <span className="flex dc__align-start">
+                                                    <Tippy
+                                                        content={value.pointsTo}
+                                                        className="default-tt dc__word-break-all"
+                                                        arrow={false}
+                                                        placement="top"
+                                                    >
+                                                        <span className="url-box dc__ellipsis-right mr-6">
+                                                            {value.pointsTo}
+                                                        </span>
+                                                    </Tippy>
+                                                    <span className="icon-dim-16 pt-2">
+                                                        <CopyToClipboardTextWithTippy
+                                                            iconClass="pointer dc__visible-hover--child icon-dim-16"
+                                                            text={value.pointsTo}
+                                                        />
                                                     </span>
-                                                </Tippy>
-                                                <span className="icon-dim-16 pt-2">
-                                                    <CopyToClipboardText
-                                                        iconClass="pointer dc__visible-hover--child icon-dim-16"
-                                                        text={value.pointsTo}
-                                                    />
-                                                </span>
                                                 </span>
                                             </div>
                                         </div>
@@ -156,7 +158,12 @@ export function TriggerUrlModal({ appId, envId, installedAppId, isEAMode, close 
     )
 }
 
-export function CopyToClipboardText({ text, iconClass }: { text: string; iconClass?: string }) {
+export function CopyToClipboardTextWithTippy({
+    text,
+    rootClassName,
+    iconClass,
+    placement = 'bottom',
+}: CopyToClipboardTextProps) {
     const [copied, setCopied] = useState(false)
     const copyClipboard = (e): void => {
         e.stopPropagation()
@@ -168,7 +175,7 @@ export function CopyToClipboardText({ text, iconClass }: { text: string; iconCla
         <Tippy
             className="default-tt"
             arrow={false}
-            placement="bottom"
+            placement={placement}
             content={copied ? 'Copied!' : 'Copy'}
             trigger="mouseenter click"
             onShow={(_tippy) => {
@@ -179,8 +186,8 @@ export function CopyToClipboardText({ text, iconClass }: { text: string; iconCla
             }}
             interactive={true}
         >
-            <div className="cluster-clipboard cursor" onClick={copyClipboard}>
-                <CopyText className={`${iconClass ? iconClass : 'icon-dim-16'}`} />
+            <div className={`cluster-clipboard cursor ${rootClassName ?? ''}`} onClick={copyClipboard}>
+                <CopyText className={`${iconClass ?? 'icon-dim-16'}`} />
             </div>
         </Tippy>
     )

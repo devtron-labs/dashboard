@@ -1,6 +1,6 @@
 import React from 'react';
 import Select, { components } from 'react-select';
-import { multiSelectStyles } from '../common';
+import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 import { Option } from '../v2/common/ReactSelect.utils';
 import './EnvironmentSelect.scss'
 

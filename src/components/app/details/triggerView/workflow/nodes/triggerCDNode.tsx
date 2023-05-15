@@ -1,12 +1,14 @@
-import React, { Component } from 'react';
-import { DeploymentNodeType, TriggerCDNodeProps } from '../../types';
-import { statusColor, statusIcon } from '../../../../config';
-import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg';
-import { URLS, DEFAULT_STATUS } from '../../../../../../config';
-import Tippy from '@tippyjs/react';
-import { Link } from 'react-router-dom';
-import { TriggerViewContext } from '../../config';
-import { triggerStatus } from '../../../cicdHistory/History.components';
+import React, { Component } from 'react'
+import { TriggerCDNodeProps } from '../../types'
+import { statusColor, statusIcon } from '../../../../config'
+import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
+import { URLS, DEFAULT_STATUS } from '../../../../../../config'
+import Tippy from '@tippyjs/react'
+import { Link } from 'react-router-dom'
+import { TriggerViewContext } from '../../config'
+import { triggerStatus } from '../../../cicdHistory/History.components'
+import { envDescriptionTippy } from './workflow.utils'
+import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     constructor(props) {
@@ -21,13 +23,13 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     }
 
     redirectToCDDetails() {
-      if (this.props.fromAppGrouping) {
-          return
-      }
-      this.props.history.push(this.getCDNodeDetailsURL())
+        if (this.props.fromAppGrouping) {
+            return
+        }
+        this.props.history.push(this.getCDNodeDetailsURL())
     }
 
-    renderStatus() {
+    renderStatus(title?: string) {
         const url = this.getCDNodeDetailsURL()
         let statusText = this.props.status ? triggerStatus(this.props.status) : ''
         let status = statusText ? statusText.toLowerCase() : ''
@@ -35,21 +37,31 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
             status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
         if (hideDetails)
             return (
-                <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
+                <div
+                    data-testid={`cd-trigger-status-${this.props.index}`}
+                    className="dc__cd-trigger-status"
+                    style={{ color: statusColor[status] }}
+                >
                     <span>{statusText}</span>
                 </div>
             )
         else
             return (
-                <div className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
-                    <span>
-                        <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
-                    </span>
+                <div
+                    data-testid={`cd-trigger-status-${this.props.index}`}
+                    className="dc__cd-trigger-status"
+                    style={{ color: statusColor[status] }}
+                >
+                    <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
                     <span>{statusText}</span>
                     {!this.props.fromAppGrouping && (
                         <>
-                            <span className="mr-5 ml-5">/</span>
-                            <Link to={url} className="workflow-node__details-link">
+                            {statusText && <span className="mr-5 ml-5">/</span>}
+                            <Link
+                                data-testid={`cd-trigger-details-${this.props.environmentName}-link`}
+                                to={url}
+                                className="workflow-node__details-link"
+                            >
                                 Details
                             </Link>
                         </>
@@ -73,21 +85,15 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                     <span className="workflow-node__text-light">
                                         Deploy: {this.props.deploymentStrategy}
                                     </span>
-                                    <Tippy
-                                        className="default-tt"
-                                        arrow={true}
-                                        placement="bottom"
-                                        content={this.props.environmentName}
-                                    >
-                                        <span className="dc__ellipsis-right">{this.props.environmentName}</span>
-                                    </Tippy>
+                                    {envDescriptionTippy(this.props.environmentName, this.props.description)}
                                 </div>
                                 <div className="workflow-node__icon-common ml-8 workflow-node__CD-icon" />
                             </div>
-                            {this.renderStatus()}
+                            {this.renderStatus(this.props.title)}
                             <div className="workflow-node__btn-grp">
                                 <Tippy className="default-tt" arrow={true} placement="bottom" content={'Rollback'}>
                                     <button
+                                        data-testid={`cd-trigger-deploy-roll-back-${this.props.index}`}
                                         className="workflow-node__rollback-btn"
                                         onClick={(event) => context.onClickRollbackMaterial(+this.props.id)}
                                     >
@@ -95,6 +101,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                     </button>
                                 </Tippy>
                                 <button
+                                    data-testid={`${this.props.type}-trigger-select-image-${this.props.index}`}
                                     className="workflow-node__deploy-btn"
                                     onClick={(event) => {
                                         event.stopPropagation()

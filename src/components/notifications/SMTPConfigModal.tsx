@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
-import { VisibleModal, showError, Progressing, Checkbox, validateEmail } from '../common'
+import { validateEmail } from '../common'
+import { showError, Progressing, VisibleModal, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
@@ -177,6 +178,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                         <label className="form__row">
                             <span className="form__label">Configuration Name*</span>
                             <input
+                                data-testid="add-smtp-configuration-name"
                                 ref={(node) => (this._configName = node)}
                                 className="form__input"
                                 type="text"
@@ -201,6 +203,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                         <label className="form__row">
                             <span className="form__label">SMTP Host*</span>
                             <input
+                                data-testid="add-smtp-host"
                                 className="form__input"
                                 type="text"
                                 name="host"
@@ -223,6 +226,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                         <label className="form__row">
                             <span className="form__label">SMTP Port*</span>
                             <input
+                                data-testid="add-smtp-port"
                                 className="form__input"
                                 type="text"
                                 name="port"
@@ -247,6 +251,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                                 SMTP Username*
                             </label>
                             <input
+                                data-testid="add-smtp-username"
                                 className="form__input"
                                 type="text"
                                 name="authUser"
@@ -268,6 +273,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                         </div>
                         <div className="form__row smtp-protected-input">
                             <ProtectedInput
+                                dataTestid="add-smtp-password"
                                 value={this.state.form.authPassword}
                                 onChange={this.handleInputChange}
                                 name="authPassword"
@@ -280,6 +286,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                         <label className="form__row">
                             <span className="form__label">Send email from*</span>
                             <input
+                                data-testid="add-smtp-send-email"
                                 className="form__input"
                                 type="email"
                                 name="fromEmail"
@@ -320,7 +327,7 @@ export class SMTPConfigModal extends Component<SMTPConfigModalProps, SMTPConfigM
                             >
                                 Cancel
                             </button>
-                            <button type="submit" className="cta" tabIndex={7} disabled={this.state.form.isLoading}>
+                            <button data-testid="add-smtp-save-button" type="submit" className="cta" tabIndex={7} disabled={this.state.form.isLoading}>
                                 {this.state.form.isLoading ? <Progressing /> : 'Save'}
                             </button>
                         </div>

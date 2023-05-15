@@ -64,6 +64,7 @@ function MountFromHost() {
                             <div className="mount-row mb-4 mt-4">
                                 <div className="fw-6 fs-13 lh-32 cn-7 "></div>
                                 <input
+                                    data-testid="script-mount-host-file-path-host"
                                     className="bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__left-radius-4 dc__no-right-border"
                                     autoComplete="off"
                                     placeholder="File path on Host"
@@ -74,6 +75,7 @@ function MountFromHost() {
                                 />
                                 <div className="flex bw-1 en-2">:</div>
                                 <input
+                                    data-testid="script-mount-host-file-path-container"
                                     className="bcn-1 en-2 bw-1 pl-10 pr-10 pt-6 pb-6 dc__right-radius-4 dc__no-left-border"
                                     autoComplete="off"
                                     placeholder="File path on container"

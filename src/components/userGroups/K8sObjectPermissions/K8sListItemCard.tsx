@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import ReactSelect from 'react-select'
 import {
-    ClearIndicator,
-    convertToOptionsList,
-    Option,
-    MultiValueRemove,
     processK8SObjects,
-    showError,
-    MultiValueChipContainer,
+    convertToOptionsList,
     sortObjectArrayAlphabetically,
     sortOptionsByLabel,
 } from '../../common'
+import {
+    showError,
+    InfoColourBar,
+    ClearIndicator,
+    Option,
+    MultiValueRemove,
+    MultiValueChipContainer,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     getClusterList,
     getResourceGroupList,
@@ -24,21 +27,20 @@ import {
     menuComponent,
     Option as SingleSelectOption,
 } from '../../v2/common/ReactSelect.utils'
-import { ALL_NAMESPACE, K8sListItemCardType, K8S_PERMISSION_INFO_MESSAGE, OptionType } from '../userGroups.types'
+import { ALL_NAMESPACE, K8sListItemCardType, K8S_PERMISSION_INFO_MESSAGE, OptionType, EntityTypes } from '../userGroups.types'
 import { ReactComponent as Clone } from '../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import CreatableSelect from 'react-select/creatable'
 import {
-    k8sPermissionRoles,
     k8sPermissionStyle,
     k8sRoleSelectionStyle,
     multiSelectAllState,
     resourceMultiSelectstyles,
 } from './K8sPermissions.utils'
-import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import Tippy from '@tippyjs/react'
 import { resourceKindOptionLabel } from './K8sPermission.component'
+import { ParseData } from '../UserGroup'
 
 export default function K8sListItemCard({
     k8sPermission,
@@ -53,6 +55,7 @@ export default function K8sListItemCard({
     objectMapping,
     setObjectMapping,
     selectedPermissionAction,
+    customRoles,
 }: K8sListItemCardType) {
     const [clusterOptions, setClusterOptions] = useState<OptionType[]>([])
     const [processedData, setProcessedData] = useState<Map<string, K8SObjectType>>()
@@ -306,7 +309,10 @@ export default function K8sListItemCard({
         })
         return isAllSelected
     }
-
+   
+    const k8sOptions = ParseData(customRoles.customRoles, EntityTypes.CLUSTER).map((role) => {
+        return { label: role.roleDisplayName, value: role.roleName, infoText: role.roleDescription }
+    }) 
     return (
         <div className="mt-16 mb-16 dc__border br-4 p-16 bcn-0">
             <div className="cn-6 mb-6 flex dc__content-space">
@@ -325,6 +331,7 @@ export default function K8sListItemCard({
             <div className="mb-16">
                 <ReactSelect
                     placeholder="Select cluster"
+                    classNamePrefix="k8s-permission-select-cluster-dropdown"
                     options={clusterOptions}
                     value={k8sPermission?.cluster}
                     onChange={onClusterChange}
@@ -342,6 +349,7 @@ export default function K8sListItemCard({
                     <div className="mb-16">
                         <CreatableSelect
                             placeholder="Select namespace"
+                            classNamePrefix="k8s-permission-select-namespace-dropdown"
                             options={namespaceMapping?.[k8sPermission?.cluster?.value]}
                             value={k8sPermission.namespace}
                             name="namespace"
@@ -361,6 +369,7 @@ export default function K8sListItemCard({
                             <div className="mb-16">
                                 <ReactSelect
                                     placeholder="Select API group"
+                                    classNamePrefix="k8s-permission-select-api-group-dropdown"
                                     options={apiGroupMapping?.[k8sPermission.key]}
                                     name="Api group"
                                     isDisabled={!k8sPermission.namespace}
@@ -379,6 +388,7 @@ export default function K8sListItemCard({
                             <div className="mb-16">
                                 <ReactSelect
                                     placeholder="Select kind"
+                                    classNamePrefix="k8s-permission-select-kind-dropdown"
                                     options={kindMapping?.[k8sPermission.key]}
                                     isDisabled={!k8sPermission.group}
                                     value={k8sPermission.kind}
@@ -399,6 +409,7 @@ export default function K8sListItemCard({
                     <div className="mb-16">
                         <CreatableSelect
                             placeholder="Select resource"
+                            classNamePrefix="k8s-permission-select-resource-dropdown"
                             options={objectMapping?.[k8sPermission.key]}
                             isDisabled={!k8sPermission.kind}
                             value={k8sPermission.resource}
@@ -436,11 +447,11 @@ export default function K8sListItemCard({
                     <div className="mb-16 w-300">
                         <ReactSelect
                             className="basic-multi-select"
-                            classNamePrefix="select"
+                            classNamePrefix="k8s-permission-select-role-dropdown"
                             placeholder="Select role"
-                            options={k8sPermissionRoles}
+                            options={k8sOptions}
                             value={k8sPermission.action}
-                            defaultValue={k8sPermissionRoles[0]}
+                            defaultValue={k8sOptions[0]}
                             onChange={setRoleSelection}
                             isSearchable={false}
                             menuPlacement="auto"

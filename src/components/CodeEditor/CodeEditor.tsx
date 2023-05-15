@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, useReducer, useRef } from 'react'
 import MonacoEditor, { MonacoDiffEditor } from 'react-monaco-editor';
-import { useJsonYaml, Select, RadioGroup, Progressing, useWindowSize, copyToClipboard } from '../common'
+import { useJsonYaml, Select, RadioGroup, useWindowSize, copyToClipboard } from '../common'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg';
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-error-exclamation.svg';
@@ -43,6 +44,8 @@ interface CodeEditorInterface {
     lineDecorationsWidth?: number;
     responseType?: string;
     onChange?: (string) => void;
+    onBlur?: () => void;
+    onFocus?: () => void;
     children?: any;
     defaultValue?: string;
     mode?: 'json' | 'yaml' | 'shell' | 'dockerfile';
@@ -111,7 +114,7 @@ interface CodeEditorState {
     code: string;
     noParsing: boolean;
 }
-const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernetes = true, cleanData = false}) {
+const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.memo(function Editor({ value, mode = "json", noParsing = false, defaultValue = "", children, tabSize = 2, lineDecorationsWidth = 0, height = 450, inline = false, shebang = "", minHeight, maxHeight, onChange, readOnly, diffView, theme="", loading, customLoader, focus, validatorSchema ,isKubernetes = true, cleanData = false, onBlur, onFocus}) {
     if (cleanData) {
         value = cleanKubeManifest(value);
         defaultValue = cleanKubeManifest(defaultValue);
@@ -168,8 +171,19 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
             editor.getModel().updateOptions({ tabSize: 2 });
         }
 
+        if (editor) {
+            if (typeof editor.onDidFocusEditorWidget === 'function' && typeof onFocus === 'function') {
+                editor.onDidFocusEditorWidget(onFocus)
+            }
+
+            if (typeof editor.onDidBlurEditorWidget === 'function' && typeof onBlur === 'function') {
+                editor.onDidBlurEditorWidget(onBlur)
+            }
+        }
+
         editorRef.current = editor
         monacoRef.current = monaco
+
     }
 
     useEffect(() => {
@@ -299,7 +313,6 @@ const CodeEditor: React.FC<CodeEditorInterface> & CodeEditorComposition = React.
                             editorDidMount={editorDidMount}
                             height={height}
                             width="100%"
-
                         />
                     }
                 </>

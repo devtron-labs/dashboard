@@ -120,6 +120,7 @@ function ResourceFilterOptions({
                         onFocus={focusHandler}
                         onBlur={focusHandler}
                         disabled={isSearchInputDisabled}
+                        data-testid="search-input-for-resource"
                     />
                     {searchApplied && (
                         <button className="search__clear-button" type="button" onClick={clearSearchInput}>
@@ -128,7 +129,7 @@ function ResourceFilterOptions({
                     )}
                     {showShortcutKey && (
                         <ShortcutKeyBadge
-                            shortcutKey="R"
+                            shortcutKey="r"
                             rootClassName="resource-search-shortcut-key"
                             onClick={handleInputShortcut}
                         />

@@ -3,12 +3,14 @@ import React from 'react'
 import { MESSAGING_UI } from '../../../../../../config/constants'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { EventTableType } from './node.type'
+import { TERMINAL_STATUS, TERMINAL_TEXT } from './terminal/constants'
 
-export function EventsTable({ loading, eventsList, isResourceBrowserView }: EventTableType) {
+export function EventsTable({ loading, eventsList, isResourceBrowserView, errorValue, reconnect }: EventTableType) {
     const renderEventsTable = () => {
         if (loading) {
             return (
                 <MessageUI
+                    dataTestId="app-events-container-loading"
                     msg={MESSAGING_UI.FETCHING_EVENTS}
                     icon={MsgUIType.LOADING}
                     size={24}
@@ -18,10 +20,19 @@ export function EventsTable({ loading, eventsList, isResourceBrowserView }: Even
         } else {
             if (eventsList && eventsList.length > 0) {
                 return (
-                    <div className="cn-0 ">
+                    <div data-testid="app-events-container" className="cn-0 ">
+                        {errorValue?.status === TERMINAL_STATUS.TERMINATED && <div className="pl-20 h-24 flex left pr-20 w-100 bcr-7 cn-0">
+                            {TERMINAL_TEXT.POD_TERMINATED}&nbsp; {errorValue.errorReason}&nbsp;
+                            <u className="cursor" onClick={reconnect}>
+                                 {TERMINAL_TEXT.INITIATE_CONNECTION}
+                            </u>
+                        </div>}
                         <table className="table pl-20">
                             <thead
-                                style={{ minHeight: isResourceBrowserView ? '200px' : '600px', background: 'var(--terminal-bg)' }}
+                                style={{
+                                    minHeight: isResourceBrowserView ? '200px' : '600px',
+                                    background: 'var(--terminal-bg)',
+                                }}
                             >
                                 <tr className="no-events-border pl-20 event-row">
                                     {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => {
@@ -31,6 +42,7 @@ export function EventsTable({ loading, eventsList, isResourceBrowserView }: Even
                                                 className={
                                                     'cell-style dc__uppercase ' + head + (idx === 0 && ' pad-left-20')
                                                 }
+                                                data-testid={head}
                                             >
                                                 {head}
                                             </th>
@@ -68,6 +80,7 @@ export function EventsTable({ loading, eventsList, isResourceBrowserView }: Even
             } else {
                 return (
                     <MessageUI
+                        dataTestId="app-events-container-empty"
                         msg={MESSAGING_UI.NO_EVENTS}
                         size={24}
                         minHeight={isResourceBrowserView ? '200px' : ''}

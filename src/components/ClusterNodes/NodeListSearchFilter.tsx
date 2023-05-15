@@ -7,6 +7,7 @@ import ReactSelect, { MultiValue } from 'react-select'
 import { OptionType } from '../app/types'
 import { ColumnMetadataType, NodeListSearchFliterType } from './types'
 import ColumnSelector from './ColumnSelector'
+import { NodeSearchOption, SEARCH_OPTION_LABEL } from './constants'
 
 const ColumnFilterContext = React.createContext(null)
 
@@ -75,7 +76,7 @@ export default function NodeListSearchFliter({
                 if (!currentItem) {
                     continue
                 }
-                if (selectedSearchTextType === 'label') {
+                if (selectedSearchTextType === SEARCH_OPTION_LABEL.LABEL) {
                     const element = currentItem.split('=')
                     const key = element[0] ? element[0].trim() : null
                     if (!key) {
@@ -111,6 +112,15 @@ export default function NodeListSearchFliter({
         setOpenFilterPopup(false)
     }
     const renderTextFilter = (): JSX.Element => {
+        let placeholderText = ''
+        if (selectedSearchTextType === SEARCH_OPTION_LABEL.NAME) {
+            placeholderText = 'Search by node name Eg. ip-172-31-2-152.us-east-2.compute.internal'
+        } else if (selectedSearchTextType === SEARCH_OPTION_LABEL.LABEL) {
+            placeholderText = 'Search by key=value Eg. environment=production, tier=frontend'
+        } else {
+            placeholderText = 'Search by node group name Eg. mainnode'
+        }
+
         return (
             <div className="dc__position-rel" style={{ background: 'var(--N50)' }}>
                 <div
@@ -120,24 +130,25 @@ export default function NodeListSearchFliter({
                     <Search className="mr-5 ml-10 icon-dim-18" />
                     {selectedSearchTextType ? (
                         <>
-                            <span className="dc__position-rel bottom-2px">{selectedSearchTextType}:</span>
+                            <span className="dc__position-rel bottom-2px">
+                                {selectedSearchTextType === SEARCH_OPTION_LABEL.NODE_GROUP
+                                    ? SEARCH_OPTION_LABEL.NODE_GROUP_TEXT
+                                    : selectedSearchTextType}
+                                :
+                            </span>
                             <input
                                 autoComplete="off"
                                 type="text"
                                 className="dc__transparent flex-1 outline-none"
                                 autoFocus
-                                placeholder={
-                                    selectedSearchTextType === 'name'
-                                        ? 'Search by node name Eg. ip-172-31-2-152.us-east-2.compute.internal'
-                                        : 'Search by key=value Eg. environment=production, tier=frontend'
-                                }
+                                placeholder={placeholderText}
                                 onKeyDown={handleFilterTag}
                                 onChange={handleFilterInput}
                                 value={searchInputText}
                             />
                         </>
                     ) : (
-                        <span>Search nodes by name or labels</span>
+                        <span>Search nodes by name, labels or node group</span>
                     )}
                 </div>
                 {openFilterPopup && (
@@ -146,10 +157,7 @@ export default function NodeListSearchFliter({
                         {!selectedSearchTextType && (
                             <div className="search-popup w-100 bcn-0 dc__position-abs  br-4 en-2 bw-1">
                                 <div className="search-title pt-4 pb-4 pl-10 pr-10">Search by</div>
-                                {[
-                                    { value: 1, label: 'name', type: 'main' },
-                                    { value: 2, label: 'label', type: 'main' },
-                                ].map((o) => {
+                                {NodeSearchOption.map((o) => {
                                     return (
                                         <div
                                             className="pt-8 pb-8 pl-10 pr-10 hover-class pointer"
@@ -158,7 +166,9 @@ export default function NodeListSearchFliter({
                                                 selectFilterType(o)
                                             }}
                                         >
-                                            {o.label}
+                                            {o.label === SEARCH_OPTION_LABEL.NODE_GROUP
+                                                ? SEARCH_OPTION_LABEL.NODE_GROUP_TEXT
+                                                : o.label}
                                         </div>
                                     )
                                 })}

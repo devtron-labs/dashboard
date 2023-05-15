@@ -3,7 +3,7 @@ import { TriggerStatus } from '../../../../config'
 import { RouteComponentProps } from 'react-router'
 import { CIMaterialType } from '../../MaterialHistory'
 import { Link } from 'react-router-dom'
-import { DEFAULT_STATUS, URLS } from '../../../../../../config'
+import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import link from '../../../../../../assets/icons/ic-link.svg'
 import Tippy from '@tippyjs/react'
 import { TriggerViewContext } from '../../config'
@@ -28,6 +28,8 @@ export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string 
     workflowId: string
     branch: string
     fromAppGrouping: boolean
+    isJobView?: boolean
+    index?: number
 }
 
 export class TriggerCINode extends Component<TriggerCINodeProps> {
@@ -41,45 +43,58 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
     }
 
     redirectToCIDetails() {
-      if (this.props.fromAppGrouping) {
-          return
-      }
-      this.props.history.push(this.getCIDetailsURL())
+        if (this.props.fromAppGrouping) {
+            return
+        }
+        this.props.history.push(this.getCIDetailsURL())
+    }
+
+    hideDetails(status: string = '') {
+        return (
+            status === DEFAULT_STATUS.toLowerCase() ||
+            status === BUILD_STATUS.NOT_TRIGGERED ||
+            status === BUILD_STATUS.NOT_DEPLOYED ||
+            status === ''
+        )
     }
 
     renderStatus() {
-        let url = this.getCIDetailsURL()
-        let status = this.props.status ? this.props.status.toLowerCase() : ''
-        let hideDetails =
-            status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
-        if (hideDetails)
+        const url = this.getCIDetailsURL()
+        const status = this.props.status ? this.props.status.toLowerCase() : ''
+        if (this.hideDetails(status))
             return (
-                <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
-                    {this.props.status}
+                <div
+                    data-testid={`ci-trigger-status-${this.props.index}`}
+                    className="dc__cd-trigger-status"
+                    style={{ color: TriggerStatus[status] }}
+                >
+                    {this.props.status ? this.props.status : BUILD_STATUS.NOT_TRIGGERED}
                 </div>
             )
         else
             return (
-                <div className="dc__cd-trigger-status" style={{ color: TriggerStatus[status] }}>
+                <div
+                    data-testid={`ci-trigger-status-${this.props.index}`}
+                    className="dc__cd-trigger-status"
+                    style={{ color: TriggerStatus[status] }}
+                >
                     {this.props.status && this.props.status.toLowerCase() === 'cancelled'
                         ? 'ABORTED'
                         : this.props.status}
-                    {!this.props.fromAppGrouping && (
-                        <>
-                            <span className="mr-5 ml-5">/</span>
-                            <Link to={url} className="workflow-node__details-link">
-                                Details
-                            </Link>
-                        </>
-                    )}
+                    {this.props.status && <span className="mr-5 ml-5">/</span>}
+                    <Link
+                        data-testid={`ci-trigger-select-details-button-${this.props.title}`}
+                        to={url}
+                        className="workflow-node__details-link"
+                    >
+                        Details
+                    </Link>
                 </div>
             )
     }
 
     renderCardContent(context) {
-        let status = this.props.status ? this.props.status.toLowerCase() : ''
-        let hideDetails =
-            status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
+        const hideDetails = this.hideDetails(this.props.status?.toLowerCase())
 
         return (
             <div
@@ -103,16 +118,21 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 <div className="workflow-node__title flex">
                     {/* <img src={build} className="icon-dim-24 mr-16" /> */}
                     <div className="workflow-node__full-width-minus-Icon">
-                        <span className="workflow-node__text-light">Build</span>
+                        <span className="workflow-node__text-light">{this.props.isJobView ? 'Job' : 'Build'}</span>
                         <Tippy className="default-tt" arrow={true} placement="bottom" content={this.props.title}>
                             <div className="dc__ellipsis-left">{this.props.title}</div>
                         </Tippy>
                     </div>
-                    <div className="workflow-node__icon-common ml-8 workflow-node__CI-icon" />
+                    <div
+                        className={`workflow-node__icon-common ml-8 ${
+                            this.props.isJobView ? 'workflow-node__job-icon' : 'workflow-node__CI-icon'
+                        }`}
+                    />
                 </div>
                 {this.renderStatus()}
                 <div className="workflow-node__btn-grp">
                     <button
+                        data-testid={`workflow-build-select-material-button-${this.props.index}`}
                         className="workflow-node__deploy-btn workflow-node__deploy-btn--ci"
                         onClick={(event) => {
                             event.stopPropagation()

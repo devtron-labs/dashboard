@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router'
-import { BreadCrumb, ErrorScreenManager, Progressing, showError, useBreadcrumb } from '../../common'
+import { showError, Progressing, ErrorScreenManager, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
 import { getChartValuesCategorizedListParsed, getChartVersionDetails, getChartVersionsMin } from '../charts.service'
 import PageHeader from '../../common/header/PageHeader'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'

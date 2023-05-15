@@ -1,6 +1,7 @@
 import { SelectedResourceType } from "../../../appDetails.type"
 
 export interface TerminalViewProps {
+    dataTestId?: string
     nodeName: string
     shell: any
     containerName: string
@@ -20,12 +21,24 @@ export interface TerminalViewProps {
     sessionError?: (error: any) => void
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
+    isShellSwitched?: boolean
+    setSelectedNodeName?: any
+    selectedNamespace?: string
+    reconnectTerminal?: () => void
 }
 
 export interface EventTableType {
     loading: boolean
     eventsList: any[]
     isResourceBrowserView?: boolean
+    reconnect?: () => void
+    errorValue?: PodEventsType
+}
+
+export interface PodEventsType {
+    status: string
+    errorReason: string
+    eventsResponse: any
 }
 
 export enum SocketConnectionType {
@@ -42,4 +55,9 @@ export const ERROR_MESSAGE = {
 export const POD_LINKS = {
     POD_MANIFEST: 'Check Pod Manifest',
     POD_EVENTS: 'Check Pod Events',
+}
+
+export interface ErrorMessageType {
+    message: string,
+    reason: string
 }

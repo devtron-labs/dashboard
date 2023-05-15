@@ -1,10 +1,9 @@
 import { Routes, SourceTypeMap, TriggerType, ViewType } from '../../config'
-import { get, post } from '../../services/api'
+import { get, post } from '@devtron-labs/devtron-fe-common-lib'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { MaterialType, Githost, PatchAction, ScriptType, PluginType, BuildStageType, RefVariableType } from './types'
-import { safeTrim } from '../../util/Util';
-
+import { safeTrim } from '../../util/Util'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -25,7 +24,11 @@ export function getCIPipelineNameSuggestion(appId: string | number): Promise<any
     return get(URL)
 }
 
-export function getInitData(appId: string | number, includeWebhookData: boolean = false): Promise<any> {
+export function getInitData(
+    appId: string | number,
+    includeWebhookData: boolean = false,
+    preFillName: boolean = true,
+): Promise<any> {
     return Promise.all([
         getCIPipelineNameSuggestion(appId),
         getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true),
@@ -35,7 +38,7 @@ export function getInitData(appId: string | number, includeWebhookData: boolean 
         return {
             result: {
                 form: {
-                    name: pipelineNameRes.result,
+                    name: preFillName ? pipelineNameRes.result : '',
                     args: [{ key: '', value: '' }],
                     materials: pipelineMetaConfig.result.materials,
                     gitHost: pipelineMetaConfig.result.gitHost,
@@ -366,6 +369,7 @@ function migrateOldData(
                 id: data.id,
                 name: data.name,
                 description: '',
+                triggerIfParentStageFail: false,
                 outputDirectoryPath: [data.outputLocation],
                 index: data.index,
                 stepType: PluginType.INLINE,
@@ -425,12 +429,6 @@ function parseCIResponse(
             ciPipeline.postBuildStage = migrateOldData(ciPipeline.afterDockerBuildScripts)
         }
         const materials = createMaterialList(ciPipeline, gitMaterials, gitHost)
-
-        let _isCiPipelineEditable = true
-        if (materials.length > 1 && materials.some((_material) => _material.type == SourceTypeMap.WEBHOOK)) {
-            _isCiPipelineEditable = false
-        }
-
         // do webhook event specific
         let _webhookConditionList = []
         if (webhookEvents && webhookEvents.length > 0) {
@@ -472,7 +470,7 @@ function parseCIResponse(
                 webhookEvents: webhookEvents,
                 ciPipelineSourceTypeOptions: ciPipelineSourceTypeOptions,
                 webhookConditionList: _webhookConditionList,
-                ciPipelineEditable: _isCiPipelineEditable,
+                ciPipelineEditable: true,
                 preBuildStage: ciPipeline.preBuildStage || emptyStepsData(),
                 postBuildStage: ciPipeline.postBuildStage || emptyStepsData(),
                 isDockerConfigOverridden: ciPipeline.isDockerConfigOverridden,

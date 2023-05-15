@@ -2,7 +2,7 @@ import React from 'react'
 import { ReactComponent as ArrowDown } from '../assets/icons/ic-chevron-down.svg'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
-import { noop, stopPropagation } from '../../common'
+import { noop, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 import { Environment } from '../../cdPipeline/cdPipeline.types'
 
 export const getCustomOptionSelectionStyle = (styleOverrides = {}) => {
@@ -122,7 +122,7 @@ export function Option(props) {
 export function DropdownIndicator(props) {
     return (
         <components.DropdownIndicator {...props}>
-            <ArrowDown className="icon-dim-20 icon-n5" />
+            <ArrowDown className="icon-dim-20 icon-n5" data-testid="overview-project-edit-dropdown" />
         </components.DropdownIndicator>
     )
 }
@@ -176,9 +176,9 @@ export const CustomValueContainer = (props): JSX.Element => {
         <components.ValueContainer {...props}>
             {(!props.selectProps.menuIsOpen || !props.selectProps.inputValue) &&
                 (props.selectProps.value?.label ? (
-                    <span className="dc__position-abs cn-9 ml-2">{props.selectProps.value.label}</span>
+                    <span className={`dc__position-abs cn-9 ml-4 ${props.valClassName ?? ''}`}>{props.selectProps.value.label}</span>
                 ) : (
-                    <span className="dc__position-abs cn-5 ml-2">{props.selectProps.placeholder}</span>
+                    <span className="dc__position-abs cn-5 ml-8">{props.selectProps.placeholder}</span>
                 ))}
             {React.cloneElement(props.children[1])}
         </components.ValueContainer>
@@ -201,10 +201,13 @@ export const noMatchingPlatformOptions = (): string => {
 }
 
 export function GroupHeading(props) {
-    if (!props.data.label) return null
+    const {data, hideClusterName} = props
+    if (!data.label) return null
     return (
         <components.GroupHeading {...props}>
-            <div className="flex dc__no-text-transform flex-justify h-100">Cluster : {props.data.label}</div>
+            <div className="flex dc__no-text-transform flex-justify h-100">
+                {!hideClusterName ? 'Cluster : ' : ''} {data.label}
+            </div>
         </components.GroupHeading>
     )
 }
@@ -218,7 +221,7 @@ export function formatHighlightedText(option: Environment, inputValue: string, e
     const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
     const regex = new RegExp(inputValue, 'gi')
     return (
-        <div className="flex left column dc__highlight-text">
+        <div className="flex left column dc__highlight-text" data-testid={option[environmentfieldName]}>
             <span
                 className="w-100 dc__ellipsis-right"
                 dangerouslySetInnerHTML={{
@@ -236,3 +239,27 @@ export function formatHighlightedText(option: Environment, inputValue: string, e
         </div>
     )
 }
+
+export function formatHighlightedTextDescription(option: Environment, inputValue: string, environmentfieldName: string) {
+    const highLightText = (highlighted) => `<mark>${highlighted}</mark>`
+    const regex = new RegExp(inputValue, 'gi')
+    return (
+        <div className="flex left column dc__highlight-text">
+            <span
+                className="w-100 dc__ellipsis-right"
+                dangerouslySetInnerHTML={{
+                    __html: option[environmentfieldName].replace(regex, highLightText),
+                }}
+            />
+            {option.description && (
+                <small
+                    className="cn-6"
+                    dangerouslySetInnerHTML={{
+                        __html: (option.description + '').replace(regex, highLightText),
+                    }}
+                ></small>
+            )}
+        </div>
+    )
+}
+

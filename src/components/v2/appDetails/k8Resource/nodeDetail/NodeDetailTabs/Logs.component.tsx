@@ -9,7 +9,7 @@ import { getLogsURL } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import WebWorker from '../../../../../app/WebWorker'
 import sseWorker from '../../../../../app/grepSSEworker'
-import { Host } from '../../../../../../config'
+import { Host } from '@devtron-labs/devtron-fe-common-lib';
 import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
 import { useKeyDown } from '../../../../../common'
@@ -26,6 +26,7 @@ import { replaceLastOddBackslash } from '../../../../../../util/Util'
 import {
     flatContainers,
     getFirstOrNull,
+    getGroupedContainerOptions,
     getInitialPodContainerSelection,
     getPodContainerOptions,
     getSelectedPodList,
@@ -58,6 +59,7 @@ function LogsComponent({
     const [highlightString, setHighlightString] = useState('')
     const [logsCleared, setLogsCleared] = useState(false)
     const [readyState, setReadyState] = useState(null)
+    const showStreamErrorRef = useRef(false)
     const logsPausedRef = useRef(false)
     const workerRef = useRef(null)
     const appDetails = IndexStore.getAppDetails()
@@ -130,15 +132,24 @@ function LogsComponent({
         return _args ? { _args: _args.join(' '), a: Number(A || a), b: Number(B || b), v } : null
     }
 
+    const updateLogsAndReadyState = (event: any) => {
+        event.data.result.forEach((log: string) => subject.publish(log))
+        if (event.data.readyState) {
+            setReadyState(event.data.readyState)
+        }
+    }
+
     const handleMessage = (event: any) => {
         if (!event || !event.data || !event.data.result || logsPausedRef.current) {
             return
-        }
-
-        event.data.result.forEach((log: string) => subject.publish(log))
-
-        if (event.data.readyState) {
-            setReadyState(event.data.readyState)
+        } else if (event.data.result?.length === 1 && event.data.signal === 'CUSTOM_ERR_STREAM') {
+            if (!showStreamErrorRef.current) {
+                updateLogsAndReadyState(event)
+                showStreamErrorRef.current = true
+            }
+            return
+        } else {
+            updateLogsAndReadyState(event)
         }
     }
 
@@ -147,6 +158,7 @@ function LogsComponent({
             try {
                 workerRef.current.postMessage({ type: 'stop' })
                 workerRef.current.terminate()
+                showStreamErrorRef.current = false
             } catch (err) {}
         }
     }
@@ -337,7 +349,10 @@ function LogsComponent({
     ) : (
         <React.Fragment>
             <div className="node-container-fluid bcn-0">
-                <div className={`node-row pt-2 pb-2 pl-16 pr-16 ${!isLogAnalyzer ? 'dc__border-top' : ''}`}>
+                <div
+                    data-testid="logs-container-header"
+                    className={`node-row pt-2 pb-2 pl-16 pr-16 ${!isLogAnalyzer ? 'dc__border-top' : ''}`}
+                >
                     <div className="col-6 flexbox flex-align-center">
                         <Tippy
                             className="default-tt"
@@ -348,6 +363,7 @@ function LogsComponent({
                             <div
                                 className={`mr-8 ${logsPaused ? 'play' : 'stop'} flex`}
                                 onClick={(e) => handleLogsPause()}
+                                data-testid="logs-stop-button"
                             >
                                 {logsPaused ? (
                                     <PlayButton className="icon-dim-16 cursor" />
@@ -358,6 +374,7 @@ function LogsComponent({
                         </Tippy>
                         <Tippy className="default-tt" arrow={false} placement="bottom" content={'Clear'}>
                             <Abort
+                                data-testid="clear-logs-container"
                                 onClick={(e) => {
                                     onLogsCleared()
                                 }}
@@ -430,10 +447,8 @@ function LogsComponent({
                                 <div style={{ width: '150px' }}>
                                     <Select
                                         placeholder="Select Containers"
-                                        options={podContainerOptions.containerOptions.map((_container) => ({
-                                            label: _container.name,
-                                            value: _container.name,
-                                        }))}
+                                        classNamePrefix="containers-select"
+                                        options={getGroupedContainerOptions(podContainerOptions.containerOptions)}
                                         value={getFirstOrNull(
                                             podContainerOptions.containerOptions
                                                 .filter((_container) => _container.selected)
@@ -448,6 +463,10 @@ function LogsComponent({
                                         styles={{
                                             ...multiSelectStyles,
                                             menu: (base) => ({ ...base, zIndex: 9999, textAlign: 'left' }),
+                                            menuList: (base) => ({
+                                                ...base,
+                                                paddingTop: 0,
+                                            }),
                                             control: (base, state) => ({
                                                 ...base,
                                                 borderColor: 'transparent',
@@ -528,6 +547,7 @@ function LogsComponent({
             {podContainerOptions.containerOptions.filter((_co) => _co.selected).length > 0 &&
                 podContainerOptions.podOptions.filter((_po) => _po.selected).length > 0 && (
                     <div
+                        data-testid="app-logs-container"
                         style={{
                             gridColumn: '1 / span 2',
                             background: '#0b0f22',
@@ -573,12 +593,21 @@ function LogsComponent({
                             }`}
                         >
                             {readyState === 0 && (
-                                <div className="readyState dc__loading-dots" style={{ color: 'orange' }}>
+                                <div
+                                    className="readyState dc__loading-dots"
+                                    style={{ color: 'orange' }}
+                                    data-testid="logs-connected-status"
+                                >
                                     Connecting
                                 </div>
                             )}
                             {readyState === 1 && (
-                                <div className="readyState dc__loading-dots cg-5 pl-20">Connected</div>
+                                <div
+                                    className="readyState dc__loading-dots cg-5 pl-20"
+                                    data-testid="logs-connected-status"
+                                >
+                                    Connected
+                                </div>
                             )}
                         </div>
                     </div>

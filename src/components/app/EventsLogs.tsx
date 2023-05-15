@@ -1,12 +1,11 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react'
-import { Progressing, showError, useKeyDown, useAsync, useSearchString } from '../common';
+import React, { useEffect, useState, useRef } from 'react'
+import { showError, Progressing, get, Host } from '@devtron-labs/devtron-fe-common-lib'
 import InfoIcon from '../../assets/icons/appstatus/info-filled.svg'
 import { Spinner } from 'patternfly-react';
 import LogViewer from '../LogViewer/LogViewer'
 import { NoPod } from './ResourceTreeNodes'
-import { get } from '../../services/api'
 import { getNodeStatus } from './service'
-import { Routes, Host } from "../../config";
+import { Routes } from "../../config";
 import { toast } from 'react-toastify';
 import YamljsParser from 'yaml';
 import sseWorker from './grepSSEworker';
@@ -20,12 +19,12 @@ import { ReactComponent as CloseImage } from '../../assets/icons/ic-appstatus-ca
 import { ReactComponent as Question } from '../../assets/icons/ic-question.svg';
 import Tippy from '@tippyjs/react';
 import { TerminalView } from '../terminal';
-import { SocketConnectionType } from './details/appDetails/AppDetails';
 import MonacoEditor from 'react-monaco-editor';
 import { editor } from 'monaco-editor';
 import { AutoSizer } from 'react-virtualized'
 import { getSelectedNodeItems } from './details/appDetails/utils';
-import { defaultProps } from 'recompose';
+import { useAsync, useKeyDown, useSearchString } from '../common';
+import { SocketConnectionType } from './details/appDetails/appDetails.type';
 
 const commandLineParser = require('command-line-parser')
 

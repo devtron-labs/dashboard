@@ -1,9 +1,35 @@
-.app-details-page {
+.app-details-page,
+.job-details-page {
     display: grid;
     grid-template-rows: 77px 1fr;
     max-width: 100%;
     width: 100%;
     height: 100%;
+}
+
+.job-details-page {
+    .job-header-wrapper {
+        .tab-list__tab {
+            font-size: 13px;
+
+            .tab-list__tab-link {
+                padding: 0 0 8px 0;
+
+                &.active {
+                    .tab-list__icon path {
+                        fill: var(--B500);
+                    }
+                }
+
+                &:hover path,
+                &.focus {
+                    color: var(--B500);
+                    text-decoration: none;
+                    fill: var(--B500);
+                }
+            }
+        }
+    }
 }
 
 .dc__page-header {
@@ -1809,7 +1835,8 @@ table.resource-tree {
   }
 }
 
-.deployment-status-breakdown-container {
+.deployment-status-breakdown-container,
+.deployment-approval-container {
   .vertical-connector{
     border-left: 1px solid var(--N300);
     height: 15px;
@@ -1867,6 +1894,16 @@ table.resource-tree {
   }
 }
 
+.deployment-approval-container + .deployment-status-breakdown-container {
+    padding-top: 0px;
+}
+
 .deployment-status-breakdown {
     height: calc(100vh - 70px);
+}
+
+.env-select{
+  font-weight: 600 !important;
+  color: var(--B500);
+  margin-left: 8px !important;
 }

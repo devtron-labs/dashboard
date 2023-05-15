@@ -1,5 +1,5 @@
-import { ResponseType } from '../../../../services/service.types'
-import { AppStreamData } from '../../types'
+import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { AggregatedNodes, AppStreamData, OptionType } from '../../types'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
@@ -133,4 +133,53 @@ export interface ErrorInfoStatusBarType {
     nonDeploymentError: string
     type: string
     errorMessage: string
+}
+
+export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING'
+
+export interface NodeSelectorsType {
+  logsPaused: boolean
+  logsCleared: boolean
+  socketConnection: SocketConnectionType
+  nodeName?: string
+  selectedNodes?: string
+  isAppDeployment?: boolean
+  containerName?: string
+  selectedContainer?: string
+  nodes: AggregatedNodes
+  shell: { label: string; value: string }
+  isReconnection: boolean
+  nodeItems: OptionType[]
+  setSelectNode: (flag) => void
+  setIsReconnection: (flag) => void
+  selectShell: (shell: { label: string; value: string }) => void
+  setTerminalCleared: (flag: boolean) => void
+  handleLogsPause: (e: any) => void
+  selectNode: (nodeName: string) => void
+  selectContainer: (containerName: string) => void
+  setSocketConnection: (value: SocketConnectionType) => void
+  setLogsCleared: (e: any) => void
+  children?: any
+}
+
+export interface DetailsType {
+    environment?: any
+    appDetailsAPI: (appId: string, envId: string, timeout: number) => Promise<any>
+    setAppDetailResultInParent?: (appDetails) => void
+    isAppDeployment?: boolean
+    environments: any
+    isPollingRequired?: boolean
+    setIsAppDeleted?: any
+    commitInfo?: boolean
+    isAppDeleted?: boolean
+    showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface DeploymentStatusCardType {
+  deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
+  loadingResourceTree?: boolean
+  hideDeploymentStatusLeftInfo?: boolean
+  hideDetails?: boolean
+  deploymentTriggerTime?: string
+  triggeredBy?: string
 }

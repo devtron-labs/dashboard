@@ -1,21 +1,22 @@
 import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
-import { ErrorBoundary, Progressing, BreadCrumb, useBreadcrumb, useAsync, showError, VisibleModal } from '../../common'
+import { ErrorBoundary } from '../../common'
+import { showError, Progressing, BreadCrumb, useBreadcrumb, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import { URLS } from '../../../config'
 import { AppSelector } from '../../AppSelector'
 import ReactGA from 'react-ga4'
 import AppConfig from './appConfig/AppConfig'
 import './appDetails/appDetails.scss'
-import './app.css'
+import './app.scss'
 import { getAppMetaInfo } from '../service'
-import { AppMetaInfo } from '../types'
+import { AppHeaderType, AppMetaInfo } from '../types'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
-import { ReactComponent as Info } from '../../../assets/icons/ic-info-outlined.svg'
 import { EnvType } from '../../v2/appDetails/appDetails.type'
 import PageHeader from '../../common/header/PageHeader'
 import { AppDetailsProps } from './triggerView/types'
-import AppOverview from './appOverview/AppOverview'
+import Overview from '../Overview/Overview'
+import { importComponentFromFELibrary, trackByGAEvent } from '../../common/helpers/Helpers'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -26,11 +27,14 @@ const IndexComponent = lazy(() => import('../../v2/index'))
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
 const TestRunList = lazy(() => import('./testViewer/TestRunList'))
 
+const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
+
 export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const { path } = useRouteMatch()
     const { appId } = useParams<{ appId }>()
     const [appName, setAppName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
+    const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
 
     useEffect(() => {
         getAppMetaInfoRes()
@@ -42,6 +46,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             if (result) {
                 setAppName(result.appName)
                 setAppMetaInfo(result)
+                setReloadMandatoryProjects(!reloadMandatoryProjects)
                 return result
             }
         } catch (err) {
@@ -51,7 +56,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
 
     return (
         <div className="app-details-page">
-            {!isV2 && <AppHeader appName={appName} />}
+            {!isV2 && <AppHeader appName={appName} appMetaInfo={appMetaInfo} reloadMandatoryProjects={reloadMandatoryProjects}/>}
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
@@ -67,7 +72,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                             />
                         )}
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                            <AppOverview appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
+                            <Overview appMetaInfo={appMetaInfo} getAppMetaInfoRes={getAppMetaInfoRes} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`} render={(props) => <TriggerView />} />
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
@@ -97,12 +102,24 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     )
 }
 
-export function AppHeader({ appName }: { appName: string }) {
+export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: AppHeaderType) {
     const { appId } = useParams<{ appId }>()
     const match = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
     const currentPathname = useRef('')
+
+    function onClickTabPreventDefault(event: React.MouseEvent<Element, MouseEvent>, className: string) {
+        const linkDisabled = (event.target as Element)?.classList.contains(className)
+        if (linkDisabled) {
+            event.preventDefault()
+        }
+    }
+
+    function handleEventClick(event) {
+        trackByGAEvent('App', event.currentTarget.dataset.action)
+        onClickTabPreventDefault(event, 'active')
+    }
 
     useEffect(() => {
         currentPathname.current = location.pathname
@@ -145,28 +162,31 @@ export function AppHeader({ appName }: { appName: string }) {
                     <NavLink
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_OVERVIEW}`}
-                        className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Overview Clicked',
-                            })
-                        }}
+                        className="tab-list__tab-link flex"
+                        data-action="Overview Clicked"
+                        data-testid="overview-click"
+                        onClick={handleEventClick}
                     >
                         Overview
+                        {MandatoryTagWarning && (
+                            <MandatoryTagWarning
+                                labelTags={appMetaInfo?.labels}
+                                handleAddTag={noop}
+                                selectedProjectId={appMetaInfo?.projectId}
+                                showOnlyIcon={true}
+                                reloadProjectTags={reloadMandatoryProjects}
+                            />
+                        )}
                     </NavLink>
                 </li>
                 <li className="tab-list__tab dc__ellipsis-right">
                     <NavLink
+                        data-testid="app-details-tab"
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DETAILS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'App Details Clicked',
-                            })
-                        }}
+                        data-action="App Details Clicked"
+                        onClick={handleEventClick}
                     >
                         App Details
                     </NavLink>
@@ -176,12 +196,10 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_TRIGGER}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Build & Deploy Clicked',
-                            })
-                        }}
+                        data-action="Build & Deploy Clicked"
+                        onClick={handleEventClick}
+                        data-testid="build-deploy-click"
+                        id="build-deploy"
                     >
                         Build & Deploy
                     </NavLink>
@@ -191,12 +209,9 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CI_DETAILS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Build History Clicked',
-                            })
-                        }}
+                        data-action="Build History Clicked"
+                        data-testid="build-history-clicked"
+                        onClick={handleEventClick}
                     >
                         Build History
                     </NavLink>
@@ -206,12 +221,9 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CD_DETAILS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Deployment History Clicked',
-                            })
-                        }}
+                        data-action="Deployment History Clicked"
+                        data-testid="deployment-history-link"
+                        onClick={handleEventClick}
                     >
                         Deployment History
                     </NavLink>
@@ -221,28 +233,21 @@ export function AppHeader({ appName }: { appName: string }) {
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
                         className="tab-list__tab-link"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'Deployment Metrics Clicked',
-                            })
-                        }}
+                        data-testid="deployment-matrix"
+                        data-action="Deployment Metrics Clicked"
+                        onClick={handleEventClick}
                     >
                         Deployment Metrics
                     </NavLink>
                 </li>
-
                 <li className="tab-list__tab">
                     <NavLink
+                        data-testid="app-config-link"
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"
-                        onClick={(event) => {
-                            ReactGA.event({
-                                category: 'App',
-                                action: 'App Configuration Clicked',
-                            })
-                        }}
+                        data-action="App Configuration Clicked"
+                        onClick={handleEventClick}
                     >
                         <Settings className="tab-list__icon icon-dim-16 fcn-9 mr-4" />
                         App Configuration

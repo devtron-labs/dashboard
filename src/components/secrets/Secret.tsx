@@ -1,20 +1,21 @@
-import React, { useState, useEffect, useRef, Component } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
-    Progressing,
-    showError,
-    Select,
     RadioGroup,
-    not,
     Info,
     ToastBody,
     CustomInput,
-    Checkbox,
-    CHECKBOX_VALUE,
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
-    DeleteDialog,
-    useAsync,
 } from '../common'
+import {
+    showError,
+    Progressing,
+    DeleteDialog,
+    Checkbox,
+    CHECKBOX_VALUE,
+    InfoColourBar,
+    not,
+} from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { useParams } from 'react-router'
 import { updateSecret, deleteSecret, getSecretKeys } from '../secrets/service'
@@ -38,9 +39,23 @@ import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { KeyValueFileInput } from '../util/KeyValueFileInput'
 import '../configMaps/ConfigMap.scss'
 import { decode } from '../../util/Util'
-import { dataHeaders, getTypeGroups, GroupHeading, groupStyle, sampleJSONs, SecretOptions, hasHashiOrAWS, hasESO, CODE_EDITOR_RADIO_STATE, DATA_HEADER_MAP, CODE_EDITOR_RADIO_STATE_VALUE, VIEW_MODE, secretValidationInfoToast, handleSecretDataYamlChange } from './secret.utils'
+import {
+    dataHeaders,
+    getTypeGroups,
+    GroupHeading,
+    groupStyle,
+    sampleJSONs,
+    SecretOptions,
+    hasHashiOrAWS,
+    hasESO,
+    CODE_EDITOR_RADIO_STATE,
+    DATA_HEADER_MAP,
+    CODE_EDITOR_RADIO_STATE_VALUE,
+    VIEW_MODE,
+    secretValidationInfoToast,
+    handleSecretDataYamlChange,
+} from './secret.utils'
 import { EsoData, SecretFormProps } from '../deploymentConfig/types'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { NavLink } from 'react-router-dom'
 
 const Secret = ({ respondOnSuccess, ...props }) => {
@@ -119,19 +134,14 @@ const Secret = ({ respondOnSuccess, ...props }) => {
             <h1 className="form__title form__title--artifacts">Secrets</h1>
             <p className="form__subtitle form__subtitle--artifacts">
                 A Secret is an object that contains sensitive data such as passwords, OAuth tokens, and SSH keys.
-                <a
-                    className="dc__link"
-                    rel="noreferer noopener"
-                    href={DOCUMENTATION.APP_CREATE_SECRET}
-                    target="blank"
-                >
+                <a className="dc__link" rel="noreferer noopener" href={DOCUMENTATION.APP_CREATE_SECRET} target="blank">
                     {' '}
                     Learn more about Secrets
                 </a>
             </p>
             <CollapsedSecretForm
                 appId={appId}
-                id={list.id || 0}
+                id={list?.id || 0}
                 title="Add Secret"
                 appChartRef={appChartRef}
                 update={update}
@@ -175,7 +185,7 @@ export function CollapsedSecretForm({
     externalType = '',
     filePermission = '',
     subPath = false,
-    esoSecretData= null,
+    esoSecretData = null,
     ...rest
 }) {
     const [collapsed, toggleCollapse] = useState(true)
@@ -221,7 +231,7 @@ export function Tab({ title, active, onClick }) {
     return (
         <nav className={`form__tab white-card flex left ${active ? 'active' : ''}`} onClick={(e) => onClick(title)}>
             <div className="tab__selector"></div>
-            <div className="tab__title">{title}</div>
+            <div data-testid={`secret-${title.toLowerCase().split(' ').join('-')}-radio-button`} className="tab__title">{title}</div>
         </nav>
     )
 }
@@ -233,7 +243,7 @@ export function ListComponent({ icon = '', title, subtitle = '', onClick, classN
             onClick={typeof onClick === 'function' ? onClick : function () {}}
         >
             <img src={icon} className="configuration-list__logo icon-dim-24 fcb-5" />
-            <div className="configuration-list__info">
+            <div data-testid={`add-secret-button`} className="configuration-list__info">
                 <div className="">{title}</div>
                 {subtitle && <div className="configuration-list__subtitle">{subtitle}</div>}
             </div>
@@ -305,7 +315,9 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         }
         return temp
     })
-    const isEsoSecretData = (props.esoSecretData?.secretStore || props.esoSecretData?.secretStoreRef) && props.esoSecretData?.esoData.length > 0
+    const isEsoSecretData =
+        (props.esoSecretData?.secretStore || props.esoSecretData?.secretStoreRef) &&
+        props.esoSecretData?.esoData.length > 0
     const [esoSecretData, setEsoData] = useState<EsoData[]>(props?.esoSecretData?.esoData)
     const [secretStore, setSecretStore] = useState(props.esoSecretData?.secretStore)
     const [secretData, setSecretData] = useState(tempSecretData)
@@ -481,7 +493,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 isValid = esoSecretData?.reduce((isValid, s) => {
                     isValid = isValid && !!s?.secretKey && !!s.key
                     return isValid
-                }, ((!secretStore != !secretStoreRef)) && !!esoSecretData?.length)
+                }, !secretStore != !secretStoreRef && !!esoSecretData?.length)
             } else {
                 isValid = secretData.reduce((isValid, s) => {
                     isValid = isValid && !!s.fileName && !!s.name
@@ -490,7 +502,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             }
 
             if (!isValid) {
-                secretValidationInfoToast(isESO,secretStore,secretStoreRef)
+                secretValidationInfoToast(isESO, secretStore, secretStoreRef)
                 return
             }
         }
@@ -687,12 +699,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                     External Secrets Operator
                 </NavLink>
                 &nbsp;should be installed in the target cluster.&nbsp;
-                <a
-                    className="dc__link"
-                    href={DOCUMENTATION.EXTERNAL_SECRET}
-                    rel="noreferrer noopener"
-                    target="_blank"
-                >
+                <a className="dc__link" href={DOCUMENTATION.EXTERNAL_SECRET} rel="noreferrer noopener" target="_blank">
                     Learn more
                 </a>
             </div>
@@ -721,6 +728,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <label className="form__label">Data type</label>
                 <div className="form-row__select-external-type flex">
                     <ReactSelect
+                        
                         placeholder="Select Secret Type"
                         options={getTypeGroups()}
                         defaultValue={
@@ -735,6 +743,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                             Option: SecretOptions,
                             GroupHeading,
                         }}
+                        classNamePrefix="secret-data-type"
                     />
                 </div>
                 {isESO && (
@@ -765,6 +774,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             <div className="form-row">
                 <label className="form__label">Name*</label>
                 <input
+                    data-testid="secrets-name-textbox"
                     value={configName.value}
                     autoComplete="off"
                     onChange={props.isUpdate ? null : (e) => setName({ value: e.target.value, error: '' })}
@@ -784,6 +794,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             {selectedTab === 'Data Volume' ? (
                 <div className="form__row">
                     <CustomInput
+                        dataTestid="secrets-volume-path-textbox"
                         value={volumeMountPath.value}
                         autoComplete="off"
                         tabIndex={5}
@@ -799,6 +810,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 <div className="mb-16">
                     <Checkbox
                         isChecked={isSubPathChecked}
+
                         onClick={(e) => {
                             e.stopPropagation()
                         }}
@@ -807,7 +819,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}
                     >
-                        <span className="mr-5">
+                        <span data-testid="configmap-sub-path-checkbox" className="mr-5">
                             Set SubPath (same as
                             <a
                                 href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
@@ -867,7 +879,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         disabled={isChartVersion309OrBelow}
                         onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}
                     >
-                        <span className="mr-5">
+                        <span data-testid="configmap-file-permission-checkbox" className="mr-5">
                             {' '}
                             Set File Permission (same as
                             <a
@@ -903,6 +915,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         autoComplete="off"
                         tabIndex={5}
                         label={''}
+                        dataTestid = "configmap-file-permission-textbox"
                         disabled={isChartVersion309OrBelow}
                         placeholder={'eg. 0400 or 400'}
                         error={filePermissionValue.error}
@@ -913,6 +926,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
             {isHashiOrAWS || isESO ? (
                 <div className="form__row">
                     <CustomInput
+                        dataTestid="enter-role-ARN"
                         value={roleARN.value}
                         autoComplete="off"
                         tabIndex={4}
@@ -934,8 +948,8 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                             disabled={false}
                             onChange={changeEditorMode}
                         >
-                            <RadioGroup.Radio value={VIEW_MODE.GUI}>{VIEW_MODE.GUI.toUpperCase()}</RadioGroup.Radio>
-                            <RadioGroup.Radio value={VIEW_MODE.YAML}>{VIEW_MODE.YAML.toUpperCase()}</RadioGroup.Radio>
+                            <RadioGroup.Radio dataTestId="secrets-data-gui-togglebutton" value={VIEW_MODE.GUI}>{VIEW_MODE.GUI.toUpperCase()}</RadioGroup.Radio>
+                            <RadioGroup.Radio dataTestId="secrets-data-yaml-togglebutton" value={VIEW_MODE.YAML}>{VIEW_MODE.YAML.toUpperCase()}</RadioGroup.Radio>
                         </RadioGroup>
                     )}
                 </div>
@@ -1066,12 +1080,12 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                             ])
                     }}
                 >
-                    <img src={addIcon} alt="add" />
+                    <img data-testid="gui-add-parameters-env-link" src={addIcon} alt="add" />
                     Add parameter
                 </div>
             )}
             <div className="form__buttons">
-                <button type="button" className="cta" onClick={handleSubmit}>
+                <button data-testid="secrets-save-button" type="button" className="cta" onClick={handleSubmit}>
                     {loading ? <Progressing /> : `${props.name ? 'Update' : 'Save'} Secret`}
                 </button>
             </div>

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useHistory, useLocation } from 'react-router';
-import { getCIWebhookPayload, getCIWebhookRes } from './ciWebhook.service';
-import { getCIPipelineURL, Pagination, Progressing, showError, sortCallback, stopPropagation } from '../../../common';
+import { getCIWebhookPayload } from './ciWebhook.service';
+import { showError, Progressing, sortCallback, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { getCIPipelineURL } from '../../../common';
 import { Moment12HourFormat } from '../../../../config';
 import { ReactComponent as Back } from '../../../../assets/icons/ic-back.svg';
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg';
@@ -11,7 +12,19 @@ import { ReactComponent as InfoOutlined } from '../../../../assets/icons/ic-info
 import './ciWebhookModal.css';
 import moment from 'moment';
 
-export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMaterialId, ciPipelineId, isWebhookPayloadLoading, hideWebhookModal, workflowId, fromAppGrouping, fromBulkCITrigger, appId}) {
+export default function CiWebhookModal({
+    context,
+    webhookPayloads,
+    ciPipelineMaterialId,
+    ciPipelineId,
+    isWebhookPayloadLoading,
+    hideWebhookModal,
+    workflowId,
+    fromAppGrouping,
+    fromBulkCITrigger,
+    appId,
+    isJobView,
+}) {
 
     const [showDetailedIncomingPayload, setShowDetailedIncomingPayload] = useState(false)
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
@@ -26,7 +39,7 @@ export default function CiWebhookModal({ context, webhookPayloads, ciPipelineMat
             window.open(
                 window.location.href.replace(
                     location.pathname,
-                    getCIPipelineURL(appId, workflowId, true, ciPipelineId),
+                    getCIPipelineURL(appId, workflowId, true, ciPipelineId, isJobView),
                 ),
                 '_blank',
                 'noreferrer',

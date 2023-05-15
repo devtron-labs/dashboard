@@ -1,7 +1,7 @@
 import React from 'react'
 import { DEPRECATED_EXTERNAL_CI_MESSAGE, DOCUMENTATION } from '../../config'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
+import { InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function DeprecatedPipelineWarning() {
     const ExternalSecretHelpNote = () => {

@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
-    BreadCrumb,
     ButtonWithLoader,
     copyToClipboard,
     handleUTCTime,
-    Pagination,
-    Progressing,
-    showError,
-    useBreadcrumb,
     ToastBodyWithButton,
     filterImageList,
-    toastAccessDenied,
 } from '../common'
+import {
+    showError,
+    Progressing,
+    BreadCrumb,
+    useBreadcrumb,
+    toastAccessDenied,
+    ServerErrors,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -40,6 +42,7 @@ import {
     NodeDetailResponse,
     PodType,
     ResourceDetail,
+    SelectGroupType,
     TEXT_COLOR_CLASS,
     UpdateNodeRequestBody,
 } from './types'
@@ -50,7 +53,6 @@ import { MODES } from '../../config'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
 import './clusterNodes.scss'
-import { ServerErrors } from '../../modals/commonTypes'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterTerminal from './ClusterTerminal'
 import EditTaintsModal from './NodeActions/EditTaintsModal'
@@ -61,7 +63,8 @@ import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 
 export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
     const { clusterId, nodeName } = useParams<{ clusterId: string; nodeName: string }>()
-    const nodeListRef = useRef([nodeName])
+    const selectedNodeName: SelectGroupType = {label: '', options:[{label: nodeName,value: nodeName}]}
+    const nodeListRef = useRef([selectedNodeName])
     const [loader, setLoader] = useState(false)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
@@ -959,7 +962,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         return (
             <ClusterTerminal
                 clusterId={Number(clusterId)}
-                nodeList={nodeListRef.current}
+                nodeGroups={nodeListRef.current}
                 clusterImageList={nodeImageList}
                 isNodeDetailsPage={true}
                 namespaceList={namespaceList[nodeDetail.clusterName]}

@@ -11,6 +11,8 @@ export default function MaterialSource({
     refreshMaterial,
     selectMaterial,
     ciPipelineId,
+    fromTriggerInfo,
+    clearSearch
 }: MaterialSourceProps) {
     const renderErrorMessage = (mat: CIMaterialType): string => {
         if (mat.isRepoError) {
@@ -19,6 +21,8 @@ export default function MaterialSource({
             return mat.dockerFileErrorMsg
         } else if (mat.isBranchError) {
             return mat.branchErrorMsg
+        } else if (mat.isMaterialSelectionError) {
+            return mat.materialSelectionErrorMsg
         } else {
             return ''
         }
@@ -30,11 +34,11 @@ export default function MaterialSource({
                     <div className="material-last-update__fetching dc__loading-dots">Fetching</div>
                 </div>
             )
-        } else if (mat.isBranchError || mat.isRepoError || mat.isDockerFileError) {
+        } else if (mat.isBranchError || mat.isRepoError || mat.isDockerFileError || mat.isMaterialSelectionError) {
             return (
                 <div className="flex fs-10">
                     <Error className="form__icon--error icon-dim-14 mr-5" />
-                    <div className="material__error dc__ellipsis-right">{renderErrorMessage(mat)}</div>
+                    <div data-testid="material-" className="material__error dc__ellipsis-right">{renderErrorMessage(mat)}</div>
                 </div>
             )
         } else {
@@ -49,7 +53,11 @@ export default function MaterialSource({
 
     const handleRefreshAction = (e) => {
         e.stopPropagation()
-        refreshMaterial.refresh(refreshMaterial.pipelineId, refreshMaterial.title, Number(e.currentTarget.dataset.id))
+        refreshMaterial.refresh(refreshMaterial.pipelineId, Number(e.currentTarget.dataset.id))
+
+        if (clearSearch) {
+            clearSearch(e)
+        }
     }
 
     const renderRefreshButton = (mat: CIMaterialType) => {
@@ -72,7 +80,10 @@ export default function MaterialSource({
     }
 
     return (
-        <>
+        <div
+            className="select-material--trigger-view__sidebar dc__overflow-scroll"
+            style={{ height: fromTriggerInfo ? '100%' : 'calc(100% - 44px)' }}
+        >
             {material.map((mat, index) => {
                 return (
                     <div
@@ -103,6 +114,6 @@ export default function MaterialSource({
                     </div>
                 )
             })}
-        </>
+        </div>
     )
 }

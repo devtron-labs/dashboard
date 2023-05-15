@@ -52,8 +52,7 @@ export interface GenerateActionButtonType {
     onCancel: () => void
     onSave: () => void
     buttonText: string
-    showDelete?: boolean
-    onDelete?: () => void
+    regenerateButton?: boolean
 }
 
 export interface GenerateTokenModalType {

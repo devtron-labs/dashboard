@@ -1,10 +1,23 @@
 import React, { Component } from 'react';
-import EmptyState from '../EmptyState/EmptyState';
 import EmptyImage from '../../assets/img/ic-empty-notifications.png';
 import Tippy from '@tippyjs/react';
-import Reload from '../Reload/Reload';
-import { PopupMenu, Checkbox, Progressing, showError, Pagination, DeleteDialog, toastAccessDenied } from '../common';
-import { getNotificationConfigurations, deleteNotifications, updateNotificationEvents, getChannelsAndEmailsFilteredByEmail, deleteNotification } from './notifications.service';
+import { Pagination } from '../common';
+import {
+    showError,
+    Progressing,
+    DeleteDialog,
+    toastAccessDenied,
+    PopupMenu,
+    Checkbox,
+    EmptyState,
+    Reload,
+} from '@devtron-labs/devtron-fe-common-lib'
+import {
+    getNotificationConfigurations,
+    deleteNotifications,
+    updateNotificationEvents,
+    getChannelsAndEmailsFilteredByEmail,
+} from './notifications.service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg';
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg';
 import { ReactComponent as Bell } from '../../assets/icons/ic-bell.svg';
@@ -20,7 +33,7 @@ import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
 import { ViewType, URLS, SourceTypeMap } from '../../config';
 import { ModifyRecipientsModal } from './ModifyRecipientsModal';
 import { toast } from 'react-toastify';
-import { Link, NavLink, useHistory } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { getHostURLConfiguration } from '../../services/service';
 import { HostURLConfig } from '../../services/service.types';
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
@@ -373,7 +386,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             <EmptyState.Image><img src={EmptyImage} alt="so empty" /></EmptyState.Image>
             <EmptyState.Title><h3>Notifications</h3></EmptyState.Title>
             <EmptyState.Subtitle>Receive alerts when a pipeline triggers, completes successfully or fails.</EmptyState.Subtitle>
-            <div onClick={this.CreateNewNotification} className="cta flex dc__no-decor">
+            <div data-testid="add-notification-button" onClick={this.CreateNewNotification} className="cta flex dc__no-decor">
                 <Add className="icon-dim-20 mr-5" />Add Notification
             </div>
         </EmptyState>
@@ -512,13 +525,13 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                 <i>All current and future pipelines matching.</i>
                                 <div className="dc__devtron-tag__container">
                                     {row.appliedFilters.project.map((element) => {
-                                        return <span key={element.name} className="dc__devtron-tag mr-5">Project:{element.name}</span>
+                                        return <span data-testid={`${row.pipelineType}-${element.name}`} key={element.name} className="dc__devtron-tag mr-5">Project:{element.name}</span>
                                     })}
                                     {row.appliedFilters.application.map((element) => {
-                                        return <span key={element.name} className="dc__devtron-tag mr-5">App:{element.name}</span>
+                                        return <span data-testid={`${row.pipelineType}-${element.name}`} key={element.name} className="dc__devtron-tag mr-5">App:{element.name}</span>
                                     })}
                                     {row.appliedFilters.environment.map((element) => {
-                                        return <span key={element.name} className="dc__devtron-tag mr-5">Env:{element.name}</span>
+                                        return <span data-testid={`${row.pipelineType}-${element.name}`} key={element.name} className="dc__devtron-tag mr-5">Env:{element.name}</span>
                                     })}
                                 </div> </> : null}
                         </td>
@@ -586,7 +599,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     renderBody() {
         return <div className="notification-tab">
-            <div onClick={this.CreateNewNotification} style={{ width: "100px" }}
+            <div data-testid="add-new-notification-button" onClick={this.CreateNewNotification} style={{ width: "100px" }}
                 className="cta small flex dc__no-decor">
                 <Add className="icon-dim-16 mr-5" />Add New
             </div>
