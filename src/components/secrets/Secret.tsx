@@ -129,8 +129,6 @@ const Secret = ({ respondOnSuccess, ...props }) => {
         } catch (err) {}
     }
 
-    console.log("Config",list);
-
     if (secretLoading) return <Progressing pageLoader />
     return (
         <div className="form__app-compose">
@@ -576,7 +574,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 )
                 if (typeof props.update === 'function') {
                     props.update(props.index, result)
-                    props.initialise()
                 }
                 props.collapse()
             } else {
