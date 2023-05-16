@@ -15,10 +15,10 @@ import 'monaco-editor';
 import 'monaco-yaml/lib/esm/monaco.contribution';
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import EditorWorker from 'worker-loader!monaco-editor/esm/vs/editor/editor.worker';
+import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker';
 // @ts-ignore
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import YamlWorker from 'worker-loader!monaco-yaml/lib/esm/yaml.worker';
+import YamlWorker from 'monaco-yaml/lib/esm/yaml.worker';
 import { MODES } from '../../../src/config/constants';
 import { cleanKubeManifest } from '../../../src/util/Util';
 
