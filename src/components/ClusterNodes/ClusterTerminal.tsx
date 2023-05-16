@@ -337,7 +337,7 @@ export default function ClusterTerminal({
         }
     }, [socketConnection, terminalAccessIdRef.current])
 
-    const getNewSession = () => {
+    function getNewSession() {
         if (!terminalAccessIdRef.current) return
         setSocketConnection(SocketConnectionType.CONNECTING)
         getClusterData(
@@ -458,13 +458,14 @@ export default function ClusterTerminal({
 
     function updateSelectedContainerName() {
         autoSelectNodeRef.current = null
-        setSocketConnection(SocketConnectionType.DISCONNECTED)
         if (node) {
             if (node !== selectedNodeName.value) {
+                setSocketConnection(SocketConnectionType.DISCONNECTED)
                 setSelectedNodeName({ label: node, value: node })
                 setDebugMode(node !== AUTO_SELECT.value)
             }
         } else {
+            setSocketConnection(SocketConnectionType.DISCONNECTED)
             setManifestData('')
             setReconnect(!isReconnect)
             setNamespace(defaultNameSpace)
@@ -525,7 +526,7 @@ export default function ClusterTerminal({
         }
     }
 
-    const sessionError = (error): void => {
+    function sessionError(error): void{
         showError(error)
         if (error instanceof ServerErrors && Array.isArray(error.errors)) {
             error.errors.map(({ userMessage }) => {
@@ -541,7 +542,7 @@ export default function ClusterTerminal({
         }
     }
 
-    const handleUrlChanges = () => {
+    function handleUrlChanges() {
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('image', selectedImage.value)
         queryParams.set('namespace', selectedNamespace.value)
