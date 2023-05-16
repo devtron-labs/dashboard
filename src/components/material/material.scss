@@ -68,3 +68,8 @@
 .icon-container {
     height: 40px;
 }
+
+.regex-tippy-container {
+    display: grid;
+    grid-template-columns: 180px 220px 1fr;
+}

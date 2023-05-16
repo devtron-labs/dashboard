@@ -301,6 +301,14 @@ a:focus {
     top: 0;
 }
 
+.dc__top-9 {
+    top: 9px;
+}
+
+.dc__top-26 {
+    top: 26px;
+}
+
 .dc__bottom-0 {
     bottom: 0;
 }
@@ -383,6 +391,13 @@ a:focus {
     font-family: monospace;
 }
 
+.build-context-label {
+    justify-content: none;
+}
+.build-context-highlight {
+    background: var(--N200);
+    white-space: nowrap;
+}
 // Pop Up
 .popup {
     position: fixed;
@@ -1946,6 +1961,10 @@ button.anchor {
   max-width: inherit;
 }
 
+.dc__mxw-none {
+    max-width: none !important;
+}
+
 .dc__mxw-200 {
     max-width: 200px;
 }
@@ -2366,6 +2385,10 @@ textarea,
     min-width: 385px;
 }
 
+.w-28 {
+    width: 28px;
+}
+
 .w-54 {
     width: 54px;
 }
@@ -2386,6 +2409,10 @@ textarea,
     width: 100px;
 }
 
+.w-111{
+    width: 111px;
+}
+
 .w-120 {
     width: 120px;
 }
@@ -2402,12 +2429,24 @@ textarea,
     width: 180px;
 }
 
+.w-182 {
+    width: 182px;
+}
+
 .w-200 {
     width: 200px;
 }
 
+.w-216 {
+    width: 216px;
+}
+
 .w-220 {
     width: 220px;
+}
+
+.w-236 {
+    width: 236px;
 }
 
 .w-250 {
@@ -2442,12 +2481,28 @@ textarea,
     width: 400px;
 }
 
+.w-436 {
+    width: 436px;
+}
+
+.w-476 {
+    width: 476px;
+}
+
+.w-505 {
+    width: 510px !important;
+}
+
 .w-600 {
     width: 600px;
 }
 
 .w-800 {
     width: 800px;
+}
+
+.w-885 {
+    width: 885px !important;
 }
 
 // Width in percentage
@@ -2595,8 +2650,16 @@ textarea,
     height: 56px !important;
 }
 
+.h-58 {
+    height: 58px !important;
+}
+
 .h-60 {
     height: 60px !important;
+}
+
+.h-66 {
+    height: 66px !important;
 }
 
 .h-80 {
@@ -2615,12 +2678,28 @@ textarea,
     height: 200px;
 }
 
+.h-82 {
+    height: 82px !important;
+}
+
+.h-112{
+    height: 112px !important;
+}
+
 .h-250 {
     height: 250px !important;
 }
 
 .h-300 {
     height: 300px !important;
+}
+
+.h-365 {
+    height: 365px !important;
+}
+
+.h-380 {
+    height: 380px !important;
 }
 
 // Minimum Height
@@ -2654,6 +2733,10 @@ textarea,
 
 .mh-600 {
     min-height: 600px;
+}
+
+.mxh-140 {
+    max-height: 140px;
 }
 
 .mxh-210 {
@@ -2885,12 +2968,28 @@ textarea,
     column-gap: 24px;
 }
 
+.dc__gap-4 {
+    gap: 4px;
+}
+
+.dc__gap-6 {
+    gap: 6px;
+}
+
 .dc__gap-8 {
     gap: 8px;
 }
 
+.dc__gap-10 {
+    gap: 10px;
+}
+
 .dc__gap-12 {
     gap: 12px;
+}
+
+.dc__gap-16 {
+    gap: 16px;
 }
 
 .dc__flip-180 {
@@ -3080,6 +3179,10 @@ textarea::placeholder {
 
 .dc__zi-4 {
     z-index: 4;
+}
+
+.dc__zi-20 {
+    z-index: 20;
 }
 
 .show-shimmer-loading {

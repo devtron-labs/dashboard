@@ -4,7 +4,7 @@ import { TriggerViewContextType } from './types'
 
 export const TriggerViewContext = createContext<TriggerViewContextType>({
     invalidateCache: false,
-    refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => {},
+    refreshMaterial: (ciNodeId: number, materialId: number) => {},
     onClickTriggerCINode: () => {},
     onClickTriggerCDNode: (nodeType: DeploymentNodeType, _appId: number) => {},
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => {},
@@ -15,7 +15,8 @@ export const TriggerViewContext = createContext<TriggerViewContextType>({
     selectMaterial: (materialId, pipelineId?: number) => {},
     toggleChanges: (materialId: string, hash: string) => {},
     toggleInvalidateCache: () => {},
-    getMaterialByCommit: (ciNodeId: number, pipelineName: string, materialId: number, commitHash: string) => {},
+    getMaterialByCommit: (ciNodeId: number, materialId: number, gitMaterialId: number, commitHash: string) => {},
+    getFilteredMaterial: (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => {},
 })
 
 export enum WorkflowDimensionType {

@@ -151,7 +151,9 @@ export class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
 
         const canTrigger = this.props.material.reduce((isValid, mat) => {
             isValid =
-                (isValid && !mat.isMaterialLoading && !!mat.history.find((history) => history.isSelected)) ||
+                (isValid &&
+                    !mat.isMaterialLoading &&
+                    !!mat.history.find((history) => history.isSelected)) ||
                 (!mat.isDockerFileError && mat.branchErrorMsg === SOURCE_NOT_CONFIGURED && isMaterialActive)
             return isValid
         }, true)
