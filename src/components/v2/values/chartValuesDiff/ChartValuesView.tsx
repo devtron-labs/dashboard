@@ -101,6 +101,7 @@ import {
     MANIFEST_INFO,
 } from './ChartValuesView.constants'
 import { DeploymentAppType } from '../../appDetails/appDetails.type'
+import ChartValues from '../../../charts/chartValues/ChartValues'
 
 function ChartValuesView({
     appId,
@@ -794,8 +795,11 @@ function ChartValuesView({
                     values: commonState.modifiedValuesYaml,
                 }
                 if (chartValueId !== '0') {
+                    const chartVersionObj=commonState.chartVersionsData.find(
+                        (_chartVersion) => _chartVersion.id === commonState.selectedVersion,
+                    )
                     payload['id'] = parseInt(chartValueId)
-                    payload['chartVersion'] = commonState.selectedVersionUpdatePage.version
+                    payload['chartVersion'] = chartVersionObj.version
                     toastMessage = CHART_VALUE_TOAST_MSGS.Updated
                     res = await updateChartValues(payload)
                 } else {
