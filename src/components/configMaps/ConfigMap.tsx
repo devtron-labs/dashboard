@@ -256,6 +256,7 @@ interface ResizableTextareaProps {
     padding?: number
     disabled?: boolean
     name?: string
+    dataTestId?: string
 }
 
 export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
