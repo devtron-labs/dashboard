@@ -1417,8 +1417,6 @@ function ClusterForm({
                         diffView={false}
                         onChange={onChangeEditorValue}
                         mode={MODES.YAML}
-                        dataTestId="code_editor_input"
-                        
                     >
                         <CodeEditor.Header>
                             <div className="user-list__subtitle flex p-8">
@@ -1436,7 +1434,7 @@ function ClusterForm({
                                     onChange={onFileChange}
                                     accept=".yaml"
                                     style={{ display: 'none' }}
-                                    data-testId='code_editor_for_kubeconfig_file'
+                                    data-testid='select_code_editor'
                                 />
                             </div>
                             <CodeEditor.ValidationError />
@@ -1453,6 +1451,7 @@ function ClusterForm({
                         type="button"
                         onClick={handleGetClustersClick}
                         disabled={!saveYamlData}
+                        data-testId="get_cluster_button"
                     >
                         Get cluster
                         <ForwardArrow className="ml-5" />
