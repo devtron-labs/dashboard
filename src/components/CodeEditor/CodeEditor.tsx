@@ -66,6 +66,7 @@ interface CodeEditorInterface {
     validatorSchema?: any;
     isKubernetes?: boolean;
     cleanData?: boolean;
+    dataTestId?: string;
 }
 
 interface CodeEditorHeaderInterface {

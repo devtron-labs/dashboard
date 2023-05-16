@@ -1227,6 +1227,7 @@ function ClusterForm({
                         onChange={handleOnChange}
                         label="Cluster Name"
                         placeholder="Cluster Name"
+                        dataTestid='cluster_name_input'
                     />
                 </div>
                 <div className="form__row mb-8-imp">
@@ -1238,6 +1239,7 @@ function ClusterForm({
                         onChange={handleOnChange}
                         label={clusterLabel()}
                         placeholder="Enter server URL"
+                        dataTestid='enter_server_url_input'
                     />
                 </div>
                 <div className="form__row form__row--bearer-token flex column left top">
@@ -1250,6 +1252,7 @@ function ClusterForm({
                             onBlur={handleOnBlur}
                             onFocus={handleOnFocus}
                             placeholder="Enter bearer token"
+                            dataTestId='enter_bearer_token_input'
                         />
                     </div>
                     {state.token.error && (
@@ -1268,6 +1271,7 @@ function ClusterForm({
                                 rootClassName="form__checkbox-label--ignore-cache mb-0"
                                 value={'CHECKED'}
                                 onChange={toggleCheckTlsConnection}
+                                dataTestId='use_secure_tls_connection_checkbox'
                             >
                                 <div className="mr-4 flex center"> Use secure TLS connection {isTlsConnection}</div>
                             </Checkbox>
@@ -1276,7 +1280,7 @@ function ClusterForm({
                         {isTlsConnection && (
                             <>
                                 <div className="form__row">
-                                    <span className="form__label dc__required-field">Certificate Authority Data</span>
+                                    <span data-testid="certificate_authority_data" className="form__label dc__required-field">Certificate Authority Data</span>
                                     <ResizableTextarea
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="certificateAuthorityData"
@@ -1286,7 +1290,7 @@ function ClusterForm({
                                     />
                                 </div>
                                 <div className="form__row">
-                                    <span className="form__label dc__required-field">TLS Key</span>
+                                    <span data-testid="tls_client_key" className="form__label dc__required-field">TLS Key</span>
                                     <ResizableTextarea
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="tlsClientKey"
@@ -1296,7 +1300,7 @@ function ClusterForm({
                                     />
                                 </div>
                                 <div className="form__row">
-                                    <span className="form__label dc__required-field">TLS Certificate</span>
+                                    <span data-testid="tls_certificate" className="form__label dc__required-field">TLS Certificate</span>
                                     <ResizableTextarea
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="tlsClientCert"
@@ -1420,7 +1424,7 @@ function ClusterForm({
                                 <span className="flex left">Paste the contents of kubeconfig file here</span>
                                 <div className="dc__link ml-auto cursor">
                                     {uploadState !== UPLOAD_STATE.UPLOADING && (
-                                        <div onClick={handleBrowseFileClick} className="flex">
+                                        <div data-testid="browse_file_to_upload" onClick={handleBrowseFileClick} className="flex">
                                             Browse file...
                                         </div>
                                     )}
@@ -1431,6 +1435,7 @@ function ClusterForm({
                                     onChange={onFileChange}
                                     accept=".yaml"
                                     style={{ display: 'none' }}
+                                    data-testid='select_code_editor'
                                 />
                             </div>
                             <CodeEditor.ValidationError />
@@ -1447,6 +1452,7 @@ function ClusterForm({
                         type="button"
                         onClick={handleGetClustersClick}
                         disabled={!saveYamlData}
+                        data-testId="get_cluster_button"
                     >
                         Get cluster
                         <ForwardArrow className="ml-5" />
@@ -1478,7 +1484,7 @@ function ClusterForm({
                             <MechanicalOperation />
                         </EmptyState.Image>
                         <EmptyState.Title>
-                            <h4>Trying to connect to Cluster</h4>
+                            <h4 data-testid="mechanical_loader">Trying to connect to Cluster</h4>
                         </EmptyState.Title>
                         <EmptyState.Subtitle>
                             Please wait while the kubeconfig is verified and cluster details are fetched.
@@ -1639,14 +1645,14 @@ function ClusterForm({
                         {
                             clusterName: _clusterDetailsData.cluster_name,
                             state: true,
-                        },
+                        }
                     ])
                 } else {
                     setIsSeleceted([
                         {
                             clusterName: _clusterDetailsData.cluster_name,
                             state: false,
-                        },
+                        }
                     ])
                 }
                 setDisableState(false)
@@ -1678,6 +1684,7 @@ function ClusterForm({
                     <div className="cluster-form dc__position-rel h-100 bcn-0">
                         <AddClusterHeader />
                         <InfoColourBar
+                            dataTestId='valid_cluster_infocolor_bar'
                             message={`${validCluster()} valid cluster. Select the cluster you want to Add/Update`}
                             classname="info_bar cn-9 mb-20 lh-20"
                             Icon={Info}
@@ -1720,19 +1727,13 @@ function ClusterForm({
                                             <div
                                                 className={`dc__app-summary__icon icon-dim-16 mr-2 ${
                                                     selectedUserNameOptions[clusterDetail.cluster_name]
-                                                        .errorInConnecting === 'cluster-already-exists'
-                                                        ? 'exist'
-                                                        : selectedUserNameOptions[clusterDetail.cluster_name]
-                                                              .errorInConnecting.length === 0
+                                                        .errorInConnecting === 'cluster-already-exists' ||
+                                                    selectedUserNameOptions[clusterDetail.cluster_name]
+                                                        .errorInConnecting.length === 0
                                                         ? 'succeeded'
                                                         : 'failed'
                                                 }`}
-                                            >
-                                                {selectedUserNameOptions[clusterDetail.cluster_name]
-                                                    .errorInConnecting === 'cluster-already-exists' && (
-                                                    <Exist className="dc__app-summary__icon icon-dim-16 mr-2 " />
-                                                )}
-                                            </div>
+                                            ></div>
                                             <div className="flexbox">
                                                 <span className="dc__ellipsis-right">
                                                     {' '}
@@ -1751,13 +1752,14 @@ function ClusterForm({
                 {isKubeConfigFile && (
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
                         <button
-                            className="ml-20  dc_edit_button cb-5"
+                            className="ml-20  cb-5"
                             type="button"
                             onClick={toggleGetCluster}
                             style={{ marginRight: 'auto' }}
                         >
                             <span style={{ display: 'flex', alignItems: 'center' }}>
-                                <Edit className="icon-dim-16 scb-5 mr-4" />
+                                <Pencil style={{ marginLeft: 'auto' }} />
+                                {/* <Edit className="icon-dim-16 scb-5 mr-4" />  */}
                                 Edit Kubeconfig
                             </span>
                         </button>
@@ -1779,9 +1781,7 @@ function ClusterForm({
     const AddClusterHeader = () => {
         return (
             <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
-                <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
-                    Add Cluster
-                </h2>
+                <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">Add Cluster</h2>
                 <button type="button" className="dc__transparent flex icon-dim-24 mr-24" onClick={handleCloseButton}>
                     <Close className="icon-dim-24" />
                 </button>
@@ -1813,7 +1813,7 @@ function ClusterForm({
                             onChange={toggleKubeConfigFile}
                         >
                             <RadioGroupItem value={AppCreationType.Blank}>Use Server URL & Bearer token</RadioGroupItem>
-                            <RadioGroupItem value={AppCreationType.Existing}>From kubeconfig</RadioGroupItem>
+                            <RadioGroupItem dataTestId='add_cluster_from_kubeconfig_file' value={AppCreationType.Existing}>From kubeconfig</RadioGroupItem>
                         </RadioGroup>
                     </div>
 
@@ -1948,7 +1948,9 @@ function Environment({
         <div>
             <div className="bcn-0">
                 <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12">
-                    <div className="fs-16 fw-6 lh-1-43 ml-20">{id ? 'Edit Environment' : 'Add Environment'}</div>
+                    <div className="fs-16 fw-6 lh-1-43 ml-20">
+                        {id ? 'Edit Environment' : 'Add Environment'}
+                    </div>
                     <button type="button" className="dc__transparent flex icon-dim-24" onClick={hideClusterDrawer}>
                         <Close className="icon-dim-24 dc__align-right cursor" />
                     </button>
@@ -1958,7 +1960,7 @@ function Environment({
                 <div className="dc__overflow-scroll p-20">
                     <div className="mb-16">
                         <CustomInput
-                            dataTestid="environment-name"
+                        dataTestid="environment-name"
                             labelClassName="dc__required-field"
                             autoComplete="off"
                             disabled={!!environment_name}
@@ -1972,7 +1974,7 @@ function Environment({
                     </div>
                     <div className="mb-16">
                         <CustomInput
-                            dataTestid="enter-namespace"
+                        dataTestid="enter-namespace"
                             labelClassName="dc__required-field"
                             disabled={!!namespace}
                             name="namespace"
