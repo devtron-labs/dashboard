@@ -15,7 +15,7 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
         return <span>{clusterDetail.userInfos[0].userName}</span>
     } else {
         const userNameOptions = clusterDetail.userInfos.map((user) => {
-            return { label: user.userName, value: user.userName, errorInConnecting: user.errorInConnecting }
+            return { label: user.userName, value: user.userName, errorInConnecting: user.errorInConnecting, config: user.config }
         })
 
         return (
