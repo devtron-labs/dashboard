@@ -167,18 +167,6 @@ function ChartValuesView({
 
     useEffect(() => {
         if (isDeployChartView || isCreateValueView) {
-            getChartValues(commonState.chartValues.id, commonState.chartValues.kind)
-                    .then((response) => {
-                        dispatch({
-                            type: ChartValuesViewActionTypes.multipleOptions,
-                            payload: {
-                                selectedVersion:response.result.appStoreVersionId,
-                                selectedVersionUpdatePage:{id:response.result.appStoreVersionId,version:response.result.chartVersion},
-                            },
-                        })
-                    }) .catch((errors: ServerErrors) => {
-                        showError(errors)
-                    })
             checkGitOpsConfiguration()
             fetchProjectsAndEnvironments(serverMode, dispatch)
             getAndUpdateSchemaValue(
