@@ -25,6 +25,9 @@ import { ReactComponent as Info } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
+import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
+import { ReactComponent as QuestionIcon } from '../../v2/assets/icons/ic-question.svg'
 import {
     showError,
     Progressing,
@@ -43,6 +46,7 @@ import { toast } from 'react-toastify'
 import {
     AboutSection,
     DEVTRON_UPGRADE_MESSAGE,
+    ENABLE_TIPPY_CONTENT,
     handleAction,
     isLatestVersionAvailable,
     MODULE_CONFIGURATION_DETAIL_MAP,
@@ -56,26 +60,43 @@ import './devtronStackManager.component.scss'
 import PageHeader from '../../common/header/PageHeader'
 import Tippy from '@tippyjs/react'
 
-const getInstallationStatusLabel = (installationStatus: ModuleStatus): JSX.Element => {
+const getInstallationStatusLabel = (
+    installationStatus: ModuleStatus,
+    enableStatus: boolean,
+    dataTestId: string,
+): JSX.Element => {
     if (installationStatus === ModuleStatus.INSTALLING) {
         return (
             <div className={`module-details__installation-status flex ${installationStatus}`}>
                 <Progressing size={20} />
-                <span className="fs-13 fw-6 ml-8">Installing</span>
+                <span className="fs-13 fw-6 ml-8" data-testid={`status-${dataTestId}`}>
+                    Installing
+                </span>
             </div>
         )
     } else if (installationStatus === ModuleStatus.INSTALLED) {
         return (
-            <div className={`module-details__installation-status flex ${installationStatus}`}>
-                <InstalledIcon className="icon-dim-20" />
-                <span className="fs-13 fw-6 ml-8">Installed</span>
+            <div className={`module-details__installation-status flex column ${installationStatus}`}>
+                <div className="flex">
+                    <InstalledIcon className="icon-dim-20" />
+                    <span className="fs-13 fw-6 ml-8 " data-testid={`status-${dataTestId}`}>
+                        Installed
+                    </span>
+                </div>
+                {!enableStatus && (
+                    <span className="fs-12 ml-8 mb-20 fw-400 cn-7" data-testid={`enable-status-${dataTestId}`}>
+                        Not Enabled
+                    </span>
+                )}
             </div>
         )
     } else if (installationStatus === ModuleStatus.INSTALL_FAILED || installationStatus === ModuleStatus.TIMEOUT) {
         return (
             <div className={`module-details__installation-status flex installFailed`}>
                 <ErrorIcon className="icon-dim-20" />
-                <span className="fs-13 fw-6 ml-8">Failed</span>
+                <span className="fs-13 fw-6 ml-8" data-testid={`status-${dataTestId}`}>
+                    Failed
+                </span>
             </div>
         )
     }
@@ -88,6 +109,7 @@ const ModuleDetailsCard = ({
     className,
     handleModuleCardClick,
     fromDiscoverModules,
+    datatestid,
 }: ModuleDetailsCardType): JSX.Element => {
     const handleOnClick = (): void => {
         if (moduleDetails.installationStatus === ModuleStatus.UNKNOWN) {
@@ -105,10 +127,11 @@ const ModuleDetailsCard = ({
         <div
             className={`module-details__card flex left column br-8 p-16 mr-20 mb-20 ${className || ''}`}
             onClick={handleOnClick}
+            data-testid={datatestid}
         >
-            {getInstallationStatusLabel(moduleDetails.installationStatus)}
+            {getInstallationStatusLabel(moduleDetails.installationStatus,moduleDetails.enabled?moduleDetails.enabled:true,datatestid)}
             <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
-            <div className="module-details__card-name fs-16 fw-4 cn-9 mb-4">{moduleDetails.title}</div>
+            <div className="module-details__card-name fs-16 fw-4 cn-9 mb-4" data-testid={`title-${datatestid}`}>{moduleDetails.title}</div>
             <div className="module-details__card-info dc__ellipsis-right__2nd-line fs-13 fw-4 cn-7 lh-20">
                 {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
                     <>
@@ -150,6 +173,7 @@ export const ModulesListingView = ({
                         className="cursor"
                         handleModuleCardClick={handleModuleCardClick}
                         fromDiscoverModules={isDiscoverModulesView}
+                        datatestid = {`module-card-${idx}`}
                     />
                 )
             })}
@@ -348,6 +372,11 @@ const InstallationStatus = ({
                     ) : (
                         <div className="module-details__installtion-success flex left">
                             <SuccessIcon className="icon-dim-20 mr-12" /> Installed
+                            {moduleDetails && moduleDetails.enabled == false ? (
+                                <span className="fs-12 ml-60 fw-4 cn-7">Not Enabled</span>
+                            ) : (
+                                ''
+                            )}
                         </div>
                     )}
                 </>
@@ -368,7 +397,12 @@ const InstallationStatus = ({
             {!isCICDModule &&
                 moduleDetails &&
                 (installationStatus == ModuleStatus.INSTALLING || installationStatus === ModuleStatus.TIMEOUT) && (
-                    <a className={`mt-8 dc__no-decor fs-13 fw-6 cursor ${installationStatus === ModuleStatus.INSTALLING? '': 'ml-32'}`} onClick={openCheckResourceStatusModal}>
+                    <a
+                        className={`mt-8 dc__no-decor fs-13 fw-6 cursor ${
+                            installationStatus === ModuleStatus.INSTALLING ? '' : 'ml-32'
+                        }`}
+                        onClick={openCheckResourceStatusModal}
+                    >
                         Check resource status
                     </a>
                 )}
@@ -531,7 +565,15 @@ export const InstallationWrapper = ({
                 }
                 setShowPreRequisiteConfirmationModal && setShowPreRequisiteConfirmationModal(false)
                 updateActionTrigger(true)
-                handleAction(moduleName, isUpgradeView, upgradeVersion, updateActionTrigger, history, location)
+                handleAction(
+                    moduleName,
+                    isUpgradeView,
+                    upgradeVersion,
+                    updateActionTrigger,
+                    history,
+                    location,
+                    moduleDetails && (moduleDetails.moduleType ?? moduleDetails.moduleType),
+                )
             } else {
                 setShowPreRequisiteConfirmationModal(true)
             }
@@ -657,7 +699,7 @@ export const InstallationWrapper = ({
                                         )}
                                     >
                                         <button
-                                            className={`module-details__install-button cta flex mb-16 ${
+                                            className={`module-details__install-button cta flex mb-4 ${
                                                 !isUpgradeView &&
                                                 (belowMinSupportedVersion ||
                                                     isPendingDependency ||
@@ -666,6 +708,7 @@ export const InstallationWrapper = ({
                                                     : ''
                                             }`}
                                             onClick={handleActionButtonClick}
+                                            data-testid="install-module-button"
                                         >
                                             {isActionTriggered && <Progressing />}
                                             {!isActionTriggered &&
@@ -696,7 +739,7 @@ export const InstallationWrapper = ({
                                         </button>
                                     </ConditionalWrap>
                                     {isUpgradeView && preRequisiteList.length > 0 && (
-                                        <div className="flexbox pt-10 pr-16 pb-10 pl-16 bcy-1 ey-2 bw-1 br-4 mb-16">
+                                        <div className="flexbox pt-10 pr-16 pb-10 pl-16 bcy-1 ey-2 bw-1 br-4 mt-12 mb-16">
                                             <Note className="module-details__install-icon icon-dim-16 mt-4 mr-8" />
                                             <div>
                                                 <div className="cn-9 fw-6 fs-13">Pre-requisites for this update</div>
@@ -712,6 +755,7 @@ export const InstallationWrapper = ({
                                     {!isUpgradeView && belowMinSupportedVersion && <UpgradeNote />}
                                 </>
                             )}
+                        {moduleDetails && moduleDetails.enabled === false ? <EnablingStepsView /> : ''}
                         {((installationStatus !== ModuleStatus.NOT_INSTALLED &&
                             installationStatus !== ModuleStatus.HEALTHY) ||
                             (installationStatus === ModuleStatus.HEALTHY && !latestVersionAvailable)) && (
@@ -807,6 +851,43 @@ export const ModuleDetailsView = ({
             </div>
         </div>
     ) : null
+}
+
+export const EnablingStepsView = (): JSX.Element => {
+    return (
+        <div className="form__field fs-12 ml-20 mb-20 color-blue">
+            <label htmlFor="" className="form__label flexbox-imp flex-align-center">
+                <QuestionIcon className="icon-dim-16 ml-4 cursor fcb-5 " />
+                <TippyCustomized
+                    theme={TippyTheme.white}
+                    className="w-300"
+                    placement="bottom"
+                    Icon={HelpIcon}
+                    iconClass="fcv-5"
+                    heading={ENABLE_TIPPY_CONTENT.heading}
+                    showCloseButton={true}
+                    trigger="click"
+                    interactive={true}
+                    additionalContent={
+                        <div className="fs-13 fw-400 ml-20 mb-20 mr-20 mt-20">
+                            <div> You can enable this integration by: </div>
+                            <div className="mb-30">Lorem ipsum dolor Sit amet consectetur magna aliqua adipiscing</div>
+                            <div>
+                                <span className="dc__bold">NOTE: </span>Only one Vulnerability scanning integration can
+                                be enabled at a time.
+                                <span>
+                                    {' '}
+                                    Enabling this integration will automatically disable the other integration.
+                                </span>
+                            </div>
+                        </div>
+                    }
+                >
+                    <span className="fs-12 color-blue"> How can I enable this integration?</span>
+                </TippyCustomized>
+            </label>
+        </div>
+    )
 }
 
 export const NoIntegrationsInstalledView = (): JSX.Element => {
@@ -951,7 +1032,7 @@ const DependentModuleList = ({ modulesList }: { modulesList: ModuleDetails[] }):
     }
     return modulesList?.length ? (
         <div>
-            <div className="fs-14 fw-6 cn-9 mb-16">Pre-requisite integrations</div>
+            <div className="fs-14 fw-6 cn-9 mb-16 mt-16">Pre-requisite integrations</div>
             {modulesList.map((module, idx) => {
                 return (
                     <ModuleDetailsCard

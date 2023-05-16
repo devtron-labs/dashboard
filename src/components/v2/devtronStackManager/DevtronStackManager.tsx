@@ -265,6 +265,8 @@ export default function DevtronStackManager({
                             ...currentModule,
                             installationStatus: result?.status,
                             moduleResourcesStatus: result?.moduleResourcesStatus,
+                            enabled:result?.enabled,
+                            moduleType:result?.moduleType,       
                         }
 
                         /**

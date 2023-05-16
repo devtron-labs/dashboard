@@ -74,6 +74,8 @@ export interface ModuleDetails {
     isModuleConfigurable?: boolean
     isModuleConfigured?: boolean
     moduleResourcesStatus?: ModuleResourceStatus[]
+    enabled?:boolean
+    moduleType ?:string
 }
 
 export interface ModuleResourceStatus {
@@ -150,6 +152,7 @@ export interface ModuleDetailsCardType {
     className?: string
     handleModuleCardClick?: (moduleDetails: ModuleDetails, fromDiscoverModules: boolean) => void
     fromDiscoverModules?: boolean
+    datatestid?:string
 }
 
 export interface AboutDevtronViewType {
@@ -173,6 +176,8 @@ export interface ModuleInfo {
     name: string
     status: ModuleStatus
     moduleResourcesStatus?: ModuleResourceStatus[]
+    enabled?: boolean
+    moduleType?:string
 }
 
 export interface ModuleInfoResponse extends ResponseType {
@@ -201,6 +206,7 @@ export interface ServerInfoResponse extends ResponseType {
 export interface ModuleActionRequest {
     action: ModuleActions
     version: string
+    moduleType:string
 }
 
 export interface ReleaseNotes {

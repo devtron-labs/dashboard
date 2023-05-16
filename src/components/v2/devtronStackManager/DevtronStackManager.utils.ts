@@ -61,11 +61,13 @@ export const handleAction = async (
     updateActionTrigger: (isActionTriggered: boolean) => void,
     history: RouteComponentProps['history'],
     location: RouteComponentProps['location'],
+    moduleType?:string
 ) => {
     try {
         const actionRequest: ModuleActionRequest = {
             action: isUpgradeView ? ModuleActions.UPGRADE : ModuleActions.INSTALL,
             version: upgradeVersion,
+            moduleType: moduleType
         }
 
         const { result } = isUpgradeView
@@ -173,4 +175,9 @@ export const AppStatusClass = {
   [ModuleStatus.TIMEOUT]: 'degraded',
   [ModuleStatus.INSTALL_FAILED]: 'degraded',
   [ModuleStatus.INSTALLED]: 'healthy'
+}
+
+export const ENABLE_TIPPY_CONTENT = {
+    label: 'How can i enable this integration?',
+    heading: 'Enable Integration',
 }
