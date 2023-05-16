@@ -59,6 +59,7 @@ import { ReactComponent as DeleteEnvironment } from '../../assets/icons/ic-delet
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { ReactComponent as ForwardArrow } from '../../assets/icons/ic-arrow-forward.svg'
+import { ReactComponent as Exist } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as MechanicalOperation } from '../../assets/img/ic-mechanical-operation.svg'
 import {
     POLLING_INTERVAL,
@@ -303,7 +304,10 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 })
                             }
                         >
-                            <Add data-testid="add_cluster_button" className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
+                            <Add
+                                data-testid="add_cluster_button"
+                                className="icon-dim-24 fcb-5 dc__vertical-align-middle"
+                            />
                             Add cluster
                         </button>
                     </div>
@@ -629,7 +633,7 @@ function Cluster({
                                                     <div
                                                         className="dc__truncate-text flex left cb-5 cursor"
                                                         onClick={showWindowModal}
-                                                        data-testid = {`env-${environment_name}`}
+                                                        data-testid={`env-${environment_name}`}
                                                     >
                                                         {environment_name}
 
@@ -733,7 +737,7 @@ function Cluster({
                             {...environment}
                             hideClusterDrawer={hideClusterDrawer}
                             isNamespaceMandatory={Array.isArray(environments) && environments.length > 0}
-                />
+                        />
                     </div>
                 </Drawer>
             )}
@@ -851,11 +855,11 @@ function ClusterForm({
             token:
                
                 isDefaultCluster() || id
-                        ? {}
-                        : {
-                              required: true,
-                              validator: { error: 'token is required', regex: /[^]+/ },
-                          },
+                    ? {}
+                    : {
+                          required: true,
+                          validator: { error: 'token is required', regex: /[^]+/ },
+                      },
             endpoint: {
                 required: prometheusToggleEnabled ? true : false,
                 validator: { error: 'endpoint is required', regex: /^.*$/ },
@@ -871,7 +875,7 @@ function ClusterForm({
                 id: null,
                 cluster_name: dataList.cluster_name,
                 insecureSkipTlsVerify: dataList.insecureSkipTlsVerify,
-                config: dataList.userInfos[index].config,
+                config: selectedUserNameOptions[dataList.cluster_name]?.config ?? null,
                 active: dataList.active,
                 prometheus_url: '',
                 prometheusAuth: { userName: '', password: '' },
@@ -884,10 +888,9 @@ function ClusterForm({
     }
 
     const setClusterNameInCLusterList = (cluster_name: string) => {
-        if(isSelected[cluster_name]) {
+        if (isSelected[cluster_name]) {
             return true
-        }
-        else return false
+        } else return false
     }
 
     async function saveClustersDetails() {
@@ -895,26 +898,24 @@ function ClusterForm({
             let payload = getSaveClusterPayload(dataList)
             await saveClusters(payload).then((response) => {
                 response.result.map((_clusterSaveDetails, index) => {
-                   
                     // console.log(_clusterSaveDetails)
                     // console.log(isSelected)
-                    if(isSelected['state'] === true ) {
-                        setSaveClusterList([
-                            {
-                                clusterName: _clusterSaveDetails['cluster_name'],
-                                status:
-                                    _clusterSaveDetails['errorInConnecting'].length === 0
-                                        ? 'Added'
-                                        : _clusterSaveDetails['errorInConnecting'] === 'cluster-already-exists'
-                                        ? 'Updated'
-                                        : 'Failed',
-                                message:
-                                    _clusterSaveDetails['errorInConnecting'].length === 0
-                                        ? 'Cluster Added'
-                                        : _clusterSaveDetails['errorInConnecting'],
-                            },
-                        ])
-                    }
+
+                    setSaveClusterList([
+                        {
+                            clusterName: _clusterSaveDetails['cluster_name'],
+                            status:
+                                _clusterSaveDetails['errorInConnecting'].length === 0
+                                    ? 'Added'
+                                    : _clusterSaveDetails['errorInConnecting'] === 'cluster-already-exists'
+                                    ? 'Updated'
+                                    : 'Failed',
+                            message:
+                                _clusterSaveDetails['errorInConnecting'].length === 0
+                                    ? 'Cluster Added'
+                                    : _clusterSaveDetails['errorInConnecting'],
+                        },
+                    ])
                 })
             })
             setLoadingState(false)
@@ -956,7 +957,6 @@ function ClusterForm({
     async function validateClusterDetail() {
         try {
             let payload = { config: YAMLtoJSON(saveYamlData) }
-            // console.log(payload)
             await validateCluster(payload).then((response) => {
                 const defaultUserNameSelections: Record<string, any> = {}
                 setDataList([
@@ -966,6 +966,7 @@ function ClusterForm({
                             label: _userInfoList[0].userName,
                             value: _userInfoList[0].userName,
                             errorInConnecting: _userInfoList[0].errorInConnecting,
+                            config: _userInfoList[0].config
                         }
 
                         return {
@@ -1558,13 +1559,12 @@ function ClusterForm({
                     </div>
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
                         <button
-                            className="ml-20  cb-5"
+                            className="ml-20 dc_edit_button cb-5"
                             type="button"
                             onClick={toggleGetCluster}
                             style={{ marginRight: 'auto' }}
                         >
-                            <span data-testid="edit_kubeconfig_button" style={{ display: 'flex', alignItems: 'center' }}>
-                                <Pencil style={{ marginLeft: 'auto' }} />
+                            <span style={{ display: 'flex', alignItems: 'center' }}>
                                 <Edit className="icon-dim-16 scb-5 mr-4" />
                                 Edit Kubeconfig
                             </span>

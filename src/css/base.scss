@@ -3251,3 +3251,25 @@ textarea::placeholder {
     padding: 0px 6px;
     border-radius: 50%;
 }
+
+.dc_edit_button{
+    height: 40px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 0 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    outline: none;
+    min-width: 64px;
+    text-transform: capitalize;
+    line-height: 40px;
+    text-align: center;
+    background: #fff;
+    color: var(--B500);
+    border: 1px solid #bbb;
+    cursor: pointer;
+}
+.dc_edit_button:hover {
+    background: #eee;
+    color: var(--B700);
+  }
