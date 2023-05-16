@@ -2,10 +2,8 @@ import React, { useState, useEffect, useRef } from 'react'
 import {
     Select,
     RadioGroup,
-    not,
     Info,
     CustomInput,
-
     isVersionLessThanOrEqualToTarget,
     isChartRef3090OrBelow,
 } from '../common'
@@ -16,6 +14,7 @@ import {
     useThrottledEffect,
     Checkbox,
     CHECKBOX_VALUE,
+    not,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router'
 import { updateConfig, deleteConfig } from './service'
@@ -751,7 +750,7 @@ export function ConfigMapForm({
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={(e) => setIsSubPathChecked(!isSubPathChecked)}
                     >
-                        <span className="mb-0">
+                        <span data-testid="configmap-sub-path-checkbox" className="mb-0">
                             Set SubPath (same as
                             <a
                                 href="https://kubernetes.io/docs/concepts/storage/volumes/#using-subpath"
@@ -812,7 +811,7 @@ export function ConfigMapForm({
                         value={CHECKBOX_VALUE.CHECKED}
                         onChange={(e) => setIsFilePermissionChecked(!isFilePermissionChecked)}
                     >
-                        <span className="mr-5">
+                        <span data-testid="configmap-file-permission-checkbox" className="mr-5">
                             {' '}
                             Set File Permission (same as
                             <a
@@ -848,6 +847,7 @@ export function ConfigMapForm({
                         autoComplete="off"
                         tabIndex={5}
                         label={''}
+                        dataTestid = "configmap-file-permission-textbox"
                         disabled={isChartVersion309OrBelow}
                         placeholder={'eg. 0400 or 400'}
                         error={filePermissionValue.error}

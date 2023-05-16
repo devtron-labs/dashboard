@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import { ServerErrors, Drawer, Progressing, showError, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
-import { noop, useAsync } from '../../../common'
+import { ServerErrors, Drawer, Progressing, showError, stopPropagation, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { useAsync } from '../../../common'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
-import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
+import { ReactComponent as PlayIcon } from '../../../../assets/icons/misc/arrow-solid-right.svg'
 import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
@@ -58,7 +58,6 @@ export default function BulkCITrigger({
         selectMaterial: (materialId, pipelineId?: number) => void
         refreshMaterial: (
             ciNodeId: number,
-            pipelineName: string,
             materialId: number,
             abortController?: AbortController,
         ) => void
@@ -155,8 +154,8 @@ export default function BulkCITrigger({
         }
 
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-17 pr-20 pb-17 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Build image</h2>
+            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">Build image</h2>
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"
@@ -406,9 +405,9 @@ export default function BulkCITrigger({
         }
     }
 
-    const _refreshMaterial = (pipelineId: number, title: string, gitMaterialId: number) => {
+    const _refreshMaterial = (pipelineId: number, gitMaterialId: number) => {
         abortControllerRef.current = new AbortController()
-        refreshMaterial(pipelineId, title, gitMaterialId, abortControllerRef.current)
+        refreshMaterial(pipelineId, gitMaterialId, abortControllerRef.current)
     }
 
     const renderSelectedAppMaterial = (appId: number, selectedMaterialList: any[]): JSX.Element | null => {
@@ -420,7 +419,6 @@ export default function BulkCITrigger({
                         selectMaterial={selectMaterial}
                         refreshMaterial={{
                             refresh: _refreshMaterial,
-                            title: selectedApp.ciPipelineName,
                             pipelineId: +selectedApp.ciPipelineId,
                         }}
                         ciPipelineId={+selectedApp.ciPipelineId}
@@ -505,7 +503,9 @@ export default function BulkCITrigger({
             (app) =>
                 app.errorMessage &&
                 (app.errorMessage !== SOURCE_NOT_CONFIGURED ||
-                    !app.material.some((_mat) => !_mat.isBranchError && !_mat.isRepoError)),
+                    !app.material.some(
+                        (_mat) => !_mat.isBranchError && !_mat.isRepoError && !_mat.isMaterialSelectionError,
+                    )),
         )
     }
 
@@ -547,7 +547,7 @@ export default function BulkCITrigger({
                         <Progressing />
                     ) : (
                         <>
-                            <PlayIcon className="icon-dim-16 dc__no-svg-fill scn-0 mr-8" />
+                            <PlayIcon className="trigger-btn__icon" />
                             Start Build
                         </>
                     )}

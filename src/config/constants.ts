@@ -22,6 +22,8 @@ export const Routes = {
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',
+    CLUSTER_DESCRIPTION: 'cluster/description',
+    CLUSTER_NOTE: 'cluster/description/note',
 
     CD_CONFIG: 'app/cd-pipeline',
     EXTERNAL_CI_CONFIG: 'app/external-ci',
@@ -56,7 +58,7 @@ export const Routes = {
     APP_CI_PIPELINE: 'ci-pipeline/min',
     APP_LABELS: 'app/edit',
 
-    JOB_CI_DETAIL:'job/ci-pipeline/list',
+    JOB_CI_DETAIL: 'job/ci-pipeline/list',
 
     BULK_UPDATE_APIVERSION: 'batch/v1beta1',
     BULK_UPDATE_KIND: 'application',
@@ -187,6 +189,7 @@ export const Routes = {
     HELM_APP_TEMPLATE_CHART: 'application/template-chart',
     TELEMETRY_EVENT: 'telemetry/event',
     DEPLOYMENT_STATUS: 'app/deployment-status/timeline',
+    HELM_DEPLOYMENT_STATUS_TIMELINE_INSTALLED_APP: 'app-store/deployment-status/timeline',
     MANUAL_SYNC: 'app/deployment-status/manual-sync',
     MODULE_CONFIGURED: 'module/config',
     SSO: 'sso',
@@ -218,6 +221,7 @@ export const Routes = {
     USER_ROLE_GROUP: 'user/role/group',
     APP_FILTER_LIST: 'app/app-listing/autocomplete',
     APP_LIST_GROUP: 'app/list/group',
+    CUSTOM_ROLES: 'rbac/role',
     GROUPS: 'groups',
     GROUP: 'group',
 }
@@ -267,11 +271,6 @@ export const PATTERNS = {
 export const TriggerType = {
     Auto: 'AUTOMATIC',
     Manual: 'MANUAL',
-}
-
-export const TriggerTypeMap = {
-    automatic: 'Auto',
-    manual: 'Manual',
 }
 
 export const SourceTypeMap = {
@@ -651,7 +650,7 @@ export const ModuleNameMap = {
 
 export const BUILD_STATUS = {
     NOT_TRIGGERED: 'not triggered',
-    NOT_DEPLOYED: 'not deployed'
+    NOT_DEPLOYED: 'not deployed',
 }
 
 export const EVENT_STREAM_EVENTS_MAP = {
@@ -684,14 +683,14 @@ export const CLUSTER_COMMAND = {
         clusterName: 'K8s',
         title: 'Supports EKS, AKS, GKE, Kops, Digital Ocean managed Kubernetes.',
         command:
-            'curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml',
+            'curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd',
     },
     microK8s: {
         heading: 'MicroK8s',
         clusterName: 'microK8s',
         title: 'MicroK8s is a light weight Kubernetes cluster',
         command:
-            "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/clusterrole.yaml",
+            "curl -O https://raw.githubusercontent.com/devtron-labs/utilities/main/kubeconfig-exporter/kubernetes_export_sa.sh && sed -i 's/kubectl/microk8s kubectl/g' kubernetes_export_sa.sh && bash kubernetes_export_sa.sh cd-user devtroncd",
     },
 }
 
@@ -765,6 +764,7 @@ export enum TIMELINE_STATUS {
     DEGRADED = 'DEGRADED',
     DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
     ABORTED = 'ABORTED',
+    INPROGRESS= 'INPROGRESS'
 }
 
 export const DEPLOYMENT_STATUS = {
@@ -792,10 +792,10 @@ export const DOCKER_FILE_ERROR_MESSAGE = 'Unable to locate Dockerfile as source 
 export const DEFAULT_GIT_BRANCH_VALUE = '--'
 export const SOURCE_NOT_CONFIGURED_MESSAGE =
     'Source is not configured for one or more git repositories. Please configure and try again.'
-
+export const NO_COMMIT_SELECTED = 'No commit is selected'
 export enum MANIFEST_KEY_FIELDS {
-    METADATA= 'metadata',
-    MANAGED_FIELDS= 'managedFields'
+    METADATA = 'metadata',
+    MANAGED_FIELDS = 'managedFields',
 }
 
 export enum KEY_VALUE {
@@ -806,5 +806,5 @@ export enum KEY_VALUE {
 export enum CONFIGURATION_TYPES {
     ENVIRONMENT = 'ENVIRONMENT',
     NAMESPACE = 'NAMESPACE',
-    DESCRIPTION = 'DESCRIPTION'
+    DESCRIPTION = 'DESCRIPTION',
 }

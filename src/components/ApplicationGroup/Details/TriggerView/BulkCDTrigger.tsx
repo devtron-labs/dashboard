@@ -1,6 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Drawer, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { noop } from '../../../common'
+import {
+    CDMaterialResponseType,
+    DeploymentNodeType,
+    Drawer,
+    noop,
+    Progressing,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
@@ -10,7 +16,7 @@ import emptyPreDeploy from '../../../../assets/img/empty-pre-deploy.png'
 import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
 import { getCDMaterialList } from '../../../app/service'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
-import { DeploymentNodeType, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
+import { MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
@@ -80,8 +86,8 @@ export default function BulkCDTrigger({
                 _unauthorizedAppList[appDetails.appId] = false
                 _CDMaterialPromiseList.push(
                     getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType, abortControllerRef.current.signal)
-                        .then((r) => {
-                            return { materialList: r, appId: appDetails.appId }
+                        .then((data) => {
+                            return { appId: appDetails.appId, ...data }
                         })
                         .catch((e) => {
                             if (!abortControllerRef.current.signal.aborted) {
@@ -91,12 +97,17 @@ export default function BulkCDTrigger({
                 )
             }
         }
-        const _materialListMap: Record<string, any[]> = {}
+        const _cdMaterialResponse: Record<string, CDMaterialResponseType> = {}
         Promise.allSettled(_CDMaterialPromiseList)
             .then((responses) => {
                 responses.forEach((response, index) => {
                     if (response.status === 'fulfilled') {
-                        _materialListMap[response.value['appId']] = response.value['materialList']
+                        _cdMaterialResponse[response.value['appId']] = {
+                            approvalUsers: response.value['approvalUsers'],
+                            materials: response.value['materials'],
+                            userApprovalConfig: response.value['userApprovalConfig'],
+                            requestedUserId: response.value['requestedUserId'],
+                        }
                         delete _unauthorizedAppList[response.value['appId']]
                     } else {
                         const errorReason = response.reason
@@ -105,14 +116,12 @@ export default function BulkCDTrigger({
                         }
                     }
                 })
-                updateBulkInputMaterial(_materialListMap)
+                updateBulkInputMaterial(_cdMaterialResponse)
                 setUnauthorizedAppList(_unauthorizedAppList)
                 setLoading(false)
             })
             .catch((error) => {
-                if (!abortControllerRef.current.signal.aborted) {
-                    showError(error)
-                }
+                showError(error)
             })
     }
 
@@ -122,8 +131,8 @@ export default function BulkCDTrigger({
 
     const renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-17 pr-20 pb-17 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Deploy to {appList[0].envName}</h2>
+            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">Deploy to {appList[0].envName}</h2>
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"
@@ -163,7 +172,7 @@ export default function BulkCDTrigger({
         if (isLoading) {
             return <Progressing pageLoader />
         }
-        const _material = appList.find((app) => app.appId === selectedApp.appId)?.material || []
+        const _currentApp = appList.find((app) => app.appId === selectedApp.appId) ?? ({} as BulkCDDetailType)
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
@@ -206,7 +215,8 @@ export default function BulkCDTrigger({
                             appId={selectedApp.appId}
                             pipelineId={+selectedApp.cdPipelineId}
                             stageType={selectedApp.stageType}
-                            material={_material}
+                            triggerType={selectedApp.triggerType}
+                            material={_currentApp.material ?? []}
                             materialType={MATERIAL_TYPE.inputMaterialList}
                             envName={selectedApp.envName}
                             isLoading={isLoading}
@@ -219,6 +229,8 @@ export default function BulkCDTrigger({
                             parentPipelineId={selectedApp.parentPipelineId}
                             parentPipelineType={selectedApp.parentPipelineType}
                             parentEnvironmentName={selectedApp.parentEnvironmentName}
+                            userApprovalConfig={_currentApp.userApprovalConfig}
+                            requestedUserId={_currentApp.requestedUserId}
                             isFromBulkCD={true}
                         />
                     )}
