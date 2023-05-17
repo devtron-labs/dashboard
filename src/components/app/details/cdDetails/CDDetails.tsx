@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, Reload, UserApprovalMetadataType, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    Reload,
+    UserApprovalMetadataType,
+    GenericEmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { useAsync, useInterval, useScrollable, mapByKey, asyncWrap } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
@@ -210,10 +216,10 @@ export default function CDDetails() {
                             subTitle={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.SUBTITLE}
                         />
                     ) : (
-                      <GenericEmptyState
-                      title={EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.TITLE}
-                      subTitle={`${EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.SUBTITLE} ${selectedEnv?.environmentName} environment.`}
-                  />
+                        <GenericEmptyState
+                            title={EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.TITLE}
+                            subTitle={`${EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.SUBTITLE} ${selectedEnv?.environmentName} environment.`}
+                        />
                     )}
                     {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
                 </div>

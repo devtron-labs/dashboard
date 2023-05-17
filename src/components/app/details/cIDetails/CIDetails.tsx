@@ -183,7 +183,9 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                     !loading && (
                                         // Empty state if there is no pipeline
                                         <GenericEmptyState
-                                            title={`${isJobView ? 'Job' : 'Build'} ${EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.TITLE}`}
+                                            title={`${isJobView ? 'Job' : 'Build'} ${
+                                                EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.TITLE
+                                            }`}
                                             subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.SUBTITLE}
                                         />
                                     )
@@ -451,7 +453,12 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     const total = severityCount.critical + severityCount.moderate + severityCount.low
 
     if (['failed', 'cancelled'].includes(status.toLowerCase())) {
-        return <GenericEmptyState title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated} subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError} />
+        return (
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
+                subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
+            />
+        )
     } else if (['starting', 'running'].includes(status.toLowerCase())) {
         return <CIRunningView isSecurityTab={true} />
     } else if (securityData.isLoading) {

@@ -23,7 +23,7 @@ export function ScanDisabledView(props) {
           subTitle={EMPTY_STATE_STATUS.CI_DETAILS_IMAGE_SCANNED_DISABLED}
           isButtonAvailable={true}
           renderButton={renderScanedViewButton}
-          classname='dc__position-rel-imp'
+          classname="dc__position-rel-imp"
       />
   )
 }
