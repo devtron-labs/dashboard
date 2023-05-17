@@ -37,13 +37,6 @@ export interface DataListType{
     active: boolean
     defaultClusterComponent: number
     insecureSkipTlsVerify: boolean
-    //TODO delete
-    // agentInstallationStage: number
-    // k8sVersion: string
-    // userName: string
-    
-    // errorInConnecting: string
-    // isCdArgoSetup: boolean
 }
 
 export interface SaveClusterPayloadType {

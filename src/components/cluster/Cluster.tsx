@@ -884,7 +884,7 @@ function ClusterForm({
         for (const _dataList of dataLists) {
             if (isClusterSelected[_dataList.cluster_name]) {
                 const _clusterDetails: SaveClusterPayloadType = {
-                    id: _dataList.id !== undefined ? _dataList.id : null,
+                    id: _dataList.id,
                     cluster_name: _dataList.cluster_name,
                     insecureSkipTlsVerify: _dataList.insecureSkipTlsVerify,
                     config: selectedUserNameOptions[_dataList.cluster_name]?.config ?? null,
@@ -994,29 +994,6 @@ function ClusterForm({
                 setSelectedUserNameOptions(defaultUserNameSelections)
                 setClusterSeleceted(_clusterSelections)
 
-                //     const map = response.result
-                //     map.forEach((cluster, userInfoObj) => {
-                //         if (otherResponses(cluster)) {
-                //             // const _dataList = []
-                //             // const listOfClusters = [...map.keys()]
-                //             // const map1 = userInfoObj
-                //             // map1.forEach((userName, userNameObj) => {
-                //             //     const map2 = userNameObj
-                //             //     map2.forEach((key, value) => {
-                //             //         let errorMessage: string
-                //             //         const listOfUserName: string[] = [...map2.keys()]
-                //             //         errorMessage = map2.get('errorInConnecting')
-                //             //         setErrorMessage(errorMessage)
-                //             //         _dataList.push({
-                //             //             clusterName: cluster,
-                //             //             userList: listOfUserName,
-                //             //             message: errorMessage,
-                //                     // })
-                //                     // setDataList
-                //                 // })
-                //             })
-                //         }
-                // })
 
                 setLoadingState(false)
             })
@@ -1620,33 +1597,6 @@ function ClusterForm({
         return <LoadingCluster />
     }
 
-    // const setUserList = () => {
-    //     dataList.map((_clusterDetails, index) => {
-    //         setUserList([
-    //             userName: _clusterDetails.userInfos[index].userName,
-    //             message: _clusterDetails.userInfos[index].errorInConnecting,
-    //         ])
-    //     })
-    // }
-
-    // const checkBoxForSelectedCluster = () => {
-    //     const _dataList = dataList
-    //     _dataList.map((_clusterDetailsData, index) => {
-    //         console.log(_clusterDetailsData.userInfos[index].errorInConnecting)
-    //         if (_clusterDetailsData.userInfos[index].errorInConnecting.length === 0) {
-    //             setDisableState(false)
-    //             if(selectedClusterName.state === false) {
-    //                 setSelectedClusterNameOptions({ cluster_name: _clusterDetailsData.cluster_name, state: true })
-    //             }
-    //             else {
-    //                 setSelectedClusterNameOptions({ cluster_name: _clusterDetailsData.cluster_name, state: false })
-    //             }
-    //         } else {
-    //             setDisableState(true)
-    //             setSelectedClusterNameOptions({ cluster_name: _clusterDetailsData.cluster_name, state: false })
-    //         }
-    //     })
-    // }
 
     function toggleIsSelected(clusterName: string, forceUnselect?: boolean) {
         const _currentSelections = {
@@ -1664,44 +1614,24 @@ function ClusterForm({
     }
 
 
-    // function toggleSelectAll() {
-    //     setSelectAll((prevSelectAll) => {
-    //       const updatedSelections = { ...isClusterSelected };
-    //       const disabledClusters = Object.entries(selectedUserNameOptions)
-    //         .filter(
-    //           ([_, options]) =>
-    //             options.errorInConnecting !== 'cluster-already-exists' && options.errorInConnecting.length > 0
-    //         )
-    //         .map(([clusterName]) => clusterName);
-    //       let allEnabledSelected = true;
-    //       Object.keys(updatedSelections).forEach((clusterName) => {
-    //         if (!disabledClusters.includes(clusterName)) {
-    //           updatedSelections[clusterName] = !prevSelectAll;
-    //           if (!updatedSelections[clusterName]) {
-    //             allEnabledSelected = false;
-    //           }
-    //         }
-    //       });
-    //       if (allEnabledSelected) {
-    //         Object.keys(updatedSelections).forEach((clusterName) => {
-    //           if (!disabledClusters.includes(clusterName)) {
-    //             updatedSelections[clusterName] = false;
-    //           }
-    //         });
-    //       }
-    //       setClusterSeleceted(updatedSelections); 
-    //       return !prevSelectAll;
-    //     });
-    //   }
-
     function toggleSelectAll(event) {
-        const currentSelections: Record<string, boolean> = {}
-        const _selectAll = event.currentTarget.checked
-        Object.keys(isClusterSelected).forEach((selection) => {
-            currentSelections[selection] = _selectAll
-        })
-        setSelectAll(_selectAll)
-        setClusterSeleceted(currentSelections)
+        const currentSelections = { ...isClusterSelected };
+        const _selectAll = event.currentTarget.checked;
+      
+        Object.keys(currentSelections).forEach((selection) => {
+          if (
+            selectedUserNameOptions[selection].errorInConnecting !== 'cluster-already-exists' &&
+            selectedUserNameOptions[selection].errorInConnecting.length > 0
+          ) {
+            // Skip disabled checkboxes
+            return;
+          }
+      
+          currentSelections[selection] = _selectAll;
+        });
+      
+        setSelectAll(_selectAll);
+        setClusterSeleceted(currentSelections);
     }
 
     function validCluster() {
