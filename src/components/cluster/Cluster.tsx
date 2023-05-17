@@ -914,9 +914,9 @@ function ClusterForm({
                     return {
                         clusterName: _clusterSaveDetails['cluster_name'],
                         status:
-                            _clusterSaveDetails['errorInConnecting'].length === 0
+                            _clusterSaveDetails['errorInConnecting'].length === 0 && _clusterSaveDetails['clusterUpdated'] === false
                                 ? 'Added'
-                                : _clusterSaveDetails['errorInConnecting'] === 'cluster-already-exists'
+                                : _clusterSaveDetails['clusterUpdated'] === true
                                 ? 'Updated'
                                 : 'Failed',
                         message:
