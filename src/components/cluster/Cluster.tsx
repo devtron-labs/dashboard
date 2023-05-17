@@ -1822,7 +1822,7 @@ function ClusterForm({
                             onClick={toggleGetCluster}
                             style={{ marginRight: 'auto' }}
                         >
-                            <span style={{ display: 'flex', alignItems: 'center' }}>
+                            <span data-testid="edit_kubeconfig_button_cluster_checkbox" style={{ display: 'flex', alignItems: 'center' }}>
                                 <Edit className="icon-dim-16 scb-5 mr-4" />
                                 Edit Kubeconfig
                             </span>
