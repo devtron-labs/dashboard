@@ -1656,15 +1656,17 @@ function ClusterForm({
         return CHECKBOX_VALUE.INTERMEDIATE
     }
 
-     const onChangeUserName = (selectedOption: any, clusterDetail: DataListType) => {
+    const onChangeUserName = (selectedOption: any, clusterDetail: DataListType) => {
         setSelectedUserNameOptions({
             ...selectedUserNameOptions,
             [clusterDetail.cluster_name]: selectedOption,
         })
+        
         toggleIsSelected(clusterDetail.cluster_name, true)
     }
 
     const displayClusterDetails = () => {
+        const isAnyCheckboxSelected = Object.values(isClusterSelected).some(value => value === true);
         return (
             <>
                 {isKubeConfigFile && (
@@ -1766,7 +1768,7 @@ function ClusterForm({
                             className="cta mr-32 ml-20"
                             type="button"
                             onClick={() => handleClusterDetailCall()}
-                            disabled={!saveClusterList}
+                            disabled={!saveClusterList || !isAnyCheckboxSelected}
                         >
                             Save
                         </button>
