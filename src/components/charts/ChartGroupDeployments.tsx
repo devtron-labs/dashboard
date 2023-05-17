@@ -127,6 +127,7 @@ function EmptyStateChartDeploymentList() {
             image={NoDeploymentImg}
             title={EMPTY_STATE_STATUS.CHART_GROUP_DEPLOYMENT.TITLE}
             subTitle={EMPTY_STATE_STATUS.CHART_GROUP_DEPLOYMENT.SUBTITLE}
+            classname='dc__position-rel-imp'
         />
     )
 }

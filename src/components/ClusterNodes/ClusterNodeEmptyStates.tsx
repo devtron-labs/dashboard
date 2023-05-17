@@ -24,6 +24,7 @@ export default function ClusterNodeEmptyState({
             subTitle="We couldn’t find any matching results"
             isButtonAvailable={true}
             renderButton={renderClearSearchButton}
+            classname='dc__position-rel-imp'
         />
     )
 }
