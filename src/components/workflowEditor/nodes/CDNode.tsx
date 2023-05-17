@@ -125,11 +125,13 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                 </span>
                                 {envDescriptionTippy(this.props.environmentName, this.props.description)}
                             </div>
-                            {this.props.isVirtualEnvironment ? (
-                                '' //TODO needs to add paper rocket here
-                            ) : (
-                                <div className="workflow-node__icon-common workflow-node__CD-icon"></div>
-                            )}
+                            <div
+                                className={`workflow-node__icon-common ${
+                                    this.props.isVirtualEnvironment
+                                        ? "workflow-node__CD-rocket-icon"
+                                        : "workflow-node__CD-icon"
+                                }`}
+                            ></div>
                         </div>
                     </div>
                 </Link>

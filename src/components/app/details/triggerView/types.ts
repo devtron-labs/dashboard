@@ -54,6 +54,7 @@ export interface CDMaterialProps {
     userApprovalConfig?: UserApprovalConfigType
     requestedUserId?: number
     triggerType?: string
+    isVirtualEnvironment?: boolean
 }
 
 export enum DeploymentWithConfigType {
@@ -185,6 +186,7 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     fromAppGrouping: boolean
     description: string
     index?: number
+    isVirtualEnvironment: boolean
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {

@@ -185,7 +185,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     ]
                     _selectedMaterial.isMaterialLoading = false
                     _selectedMaterial.showAllCommits = false
-                    _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded 
+                    _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded
                     _selectedMaterial.materialSelectionErrorMsg =_selectedMaterial.history[0].excluded ? NO_COMMIT_SELECTED : ''
                 } else {
                     _selectedMaterial.history = []
@@ -1161,6 +1161,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 parentEnvironmentName={node.parentEnvironmentName}
                                 userApprovalConfig={node.userApprovalConfig}
                                 requestedUserId={node.requestedUserId}
+                                isVirtualEnvironment={node.isVirtualEnvironment
+                                }
                             />
                         )}
                     </div>
