@@ -705,6 +705,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     deleteCD = (force: boolean, cascadeDelete: boolean) => {
+        // reset the delete dialogs
+        this.setState({
+            showForceDeleteDialog: false,
+            showNonCascadeDeleteDialog: false,
+        })
         const isPartialDelete =
             this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps &&
             this.state.pipelineConfig.deploymentAppCreated &&

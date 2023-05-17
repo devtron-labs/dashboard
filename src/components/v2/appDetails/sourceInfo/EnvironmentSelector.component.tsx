@@ -128,6 +128,9 @@ function EnvironmentSelectorComponent({
     }
 
     async function deleteResourceAction(deleteAction: string) {
+        // Reseting the dialog states
+        showForceDeleteDialog(false)
+        showNonCascadeDeleteDialog(false)
         try {
             const response = await getDeleteApplicationApi(deleteAction)
             if (response.result.deleteResponse?.deleteInitiated) {
