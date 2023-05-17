@@ -25,7 +25,6 @@ import { ReactComponent as Info } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
-import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as QuestionIcon } from '../../v2/assets/icons/ic-question.svg'
 import {
@@ -37,6 +36,8 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     EmptyState,
+    TippyCustomized, 
+    TippyTheme 
 } from '@devtron-labs/devtron-fe-common-lib'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
@@ -372,7 +373,7 @@ const InstallationStatus = ({
                     ) : (
                         <div className="module-details__installtion-success flex left">
                             <SuccessIcon className="icon-dim-20 mr-12" /> Installed
-                            {moduleDetails && moduleDetails.enabled == false ? (
+                            {moduleDetails && moduleDetails.enabled === false ? (
                                 <span className="fs-12 ml-60 fw-4 cn-7">Not Enabled</span>
                             ) : (
                                 ''
