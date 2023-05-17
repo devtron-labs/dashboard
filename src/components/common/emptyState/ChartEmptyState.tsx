@@ -1,4 +1,4 @@
-import { EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib';
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib';
 import React from 'react';
 import emptyImage from '../../../assets/img/empty-noresult@2x.png';
 
