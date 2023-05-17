@@ -3,7 +3,13 @@ import { HostURLConfig } from '../../../../services/service.types'
 import { CIBuildConfigType, DockerConfigOverrideType } from '../../../ciPipeline/types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { CIMaterialType } from './MaterialHistory'
-export type CDMdalTabType = 'SECURITY' | 'CHANGES'
+import {
+    CDMaterialType,
+    CDModalTabType,
+    CommonNodeAttr,
+    DeploymentNodeType,
+    UserApprovalConfigType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CDMaterialProps {
     material: CDMaterialType[]
@@ -15,7 +21,7 @@ export interface CDMaterialProps {
     changeTab?: (
         materrialId: string | number,
         artifactId: number,
-        tab: CDMdalTabType,
+        tab: CDModalTabType,
         selectedCDDetail?: { id: number; type: DeploymentNodeType },
         appId?: number,
     ) => void
@@ -45,6 +51,9 @@ export interface CDMaterialProps {
     appId?: number
     pipelineId?: number
     isFromBulkCD?: boolean
+    userApprovalConfig?: UserApprovalConfigType
+    requestedUserId?: number
+    triggerType?: string
 }
 
 export enum DeploymentWithConfigType {
@@ -78,40 +87,17 @@ export interface CDMaterialState {
 }
 
 export interface MaterialInfo {
-  revision: string
-  modifiedTime: string | Date
-  author: string
-  message: string
-  commitLink: string
-  tag: string
-  webhookData: string
-  branch: string
-  url?: string
-  type?: string
+    revision: string
+    modifiedTime: string | Date
+    author: string
+    message: string
+    commitLink: string
+    tag: string
+    webhookData: string
+    branch: string
+    url?: string
+    type?: string
 }
-
-export interface CDMaterialType {
-    id: string
-    materialInfo: MaterialInfo[]
-    tab: CDMdalTabType
-    scanEnabled: boolean
-    scanned: boolean
-    vulnerabilitiesLoading: boolean
-    lastExecution: string //timestamp
-    vulnerabilities: VulnerabilityType[]
-    vulnerable: boolean
-    deployedTime: string
-    deployedBy?: string
-    wfrId?: number
-    buildTime: string
-    image: string
-    isSelected: boolean
-    showSourceInfo: boolean
-    latest: boolean
-    runningOnParentCd?: boolean
-}
-
-interface VulnerabilityType {}
 
 export interface CIMaterialRouterProps {
     appId: string
@@ -161,52 +147,7 @@ export interface CIMaterialState {
     isBlobStorageConfigured?: boolean
 }
 
-export interface NodeAttr {
-    connectingCiPipelineId?: number
-    parents: string | number[] | string[]
-    x: number
-    y: number
-    title: string
-    description?: string
-    triggerType?: string
-    id: string
-    icon?: string
-    status?: string
-    isSource: boolean
-    isGitSource: boolean
-    isRoot: boolean
-    downstreams: string[]
-    type: 'CI' | 'GIT' | 'PRECD' | 'CD' | 'POSTCD' | 'WEBHOOK'
-    parentCiPipeline?: number
-    parentAppId?: number
-    url?: string
-    branch?: string
-    sourceType?: string
-    colorCode?: string
-    isExternalCI?: boolean
-    isLinkedCI?: boolean
-    environmentName?: string //used for CDs
-    environmentId?: number
-    inputMaterialList?: any[]
-    rollbackMaterialList?: any[] //used for CDs
-    linkedCount?: number //used for CI
-    deploymentStrategy?: string
-    height: number
-    width: number
-    preNode?: NodeAttr //used for CDs
-    postNode?: NodeAttr //used for CDs
-    stageIndex?: number //used for CDs
-    sourceNodes?: Array<NodeAttr> //used for CI
-    downstreamNodes?: Array<NodeAttr>
-    parentPipelineId?: string
-    parentPipelineType?: string
-    parentEnvironmentName?: string
-    isRegex?: boolean
-    regex?: string
-    primaryBranchAfterRegex?: string
-    storageConfigured?: boolean
-    deploymentAppDeleteRequest?: boolean
-}
+export interface NodeAttr extends CommonNodeAttr {}
 
 export interface DownStreams {
     id: string
@@ -290,18 +231,24 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
 
 export interface TriggerViewContextType {
     invalidateCache: boolean
-    refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => void
+    refreshMaterial: (ciNodeId: number, materialId: number) => void
     onClickTriggerCINode: () => void
     onClickTriggerCDNode: (nodeType: DeploymentNodeType, _appId: number) => void
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => void
-    onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType) => void
+    onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => void
     onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => void
     closeCIModal: () => void
     selectCommit: (materialId: string, hash: string) => void
     selectMaterial: (materialId) => void
     toggleChanges: (materialId: string, hash: string) => void
     toggleInvalidateCache: () => void
-    getMaterialByCommit: (ciNodeId: number, pipelineName: string, materialId: number, commitHash: string) => void
+    getMaterialByCommit: (
+        ciNodeId: number,
+        materialId: number,
+        gitMaterialId: number,
+        commitHash: string,
+    ) => void
+    getFilteredMaterial: (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => void
 }
 
 export interface TriggerViewRouterProps {
@@ -327,6 +274,7 @@ export interface WorkflowType {
     showTippy?: boolean
     appId?: number
     isSelected?: boolean
+    approvalConfiguredIdsMap?: Record<number, UserApprovalConfigType>
 }
 
 export interface WebhookPayloadDataResponse {
@@ -349,7 +297,8 @@ export interface TriggerViewState {
     workflows: WorkflowType[]
     showCDModal: boolean
     showCIModal: boolean
-    nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD'
+    showApprovalModal: boolean
+    nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD' | 'APPROVAL'
     ciPipelineName: string
     ciNodeId: number | null
     cdNodeId: number
@@ -409,12 +358,6 @@ export enum WorkflowNodeType {
     PRE_CD = 'PRECD',
     CD = 'CD',
     POST_CD = 'POSTCD',
-}
-
-export enum DeploymentNodeType {
-    PRECD = 'PRECD',
-    CD = 'CD',
-    POSTCD = 'POSTCD',
 }
 
 export interface Task {
@@ -577,6 +520,7 @@ export interface CdPipeline {
     parentPipelineType?: string
     deploymentAppDeleteRequest?: boolean
     deploymentAppCreated?: boolean
+    userApprovalConfig?: UserApprovalConfigType
 }
 
 export interface CdPipelineResult {
@@ -669,8 +613,10 @@ export interface EmptyStateCIMaterialProps {
     noSearchResults?: boolean
     noSearchResultsMsg?: string
     toggleWebHookModal?: () => void
-    clearSearch?: () => void
+    clearSearch?: (e) => void
     handleGoToWorkFlowEditor?: (e?: any) => void
+    showAllCommits?: boolean
+    toggleExclude: (e) => void
 }
 
 export interface MaterialSourceProps {
@@ -678,9 +624,9 @@ export interface MaterialSourceProps {
     selectMaterial: (materialId: string, ciPipelineId?: number) => void
     refreshMaterial?: {
         pipelineId: number
-        title: string
-        refresh: (pipelineId: number, title: string, gitMaterialId: number) => void
+        refresh: (pipelineId: number, gitMaterialId: number) => void
     }
     ciPipelineId?: number
     fromTriggerInfo?: boolean
+    clearSearch?: (e: any) => void
 }

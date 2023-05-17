@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
-import { ConditionalWrap, noop } from '../helpers/Helpers'
 import { CardContentDirection, CardLinkIconPlacement, ContentCardProps } from './ContentCard.types'
+import { ConditionalWrap, noop } from '@devtron-labs/devtron-fe-common-lib'
 import './ContentCard.scss'
 
 /**

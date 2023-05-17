@@ -162,8 +162,11 @@ export const APP_GROUP_CI_DETAILS = {
     },
 }
 
-export const DEPLOYMENT_HISTORY_TABS = {
-  SOURCE : 0,
+export const DEPLOYMENT_HISTORY_TAB = {
+  STEPS: 'Steps',
+  SOURCE : 'Source',
+  VALUES_YAML: 'values.yaml',
+  HELM_GENERATED_MANIFEST: 'Helm generated manifest'
 }
 
 export const CONFIGMAPS_SECRETS = {

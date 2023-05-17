@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { showError, EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import { copyToClipboard } from '../../../common'
+import { copyToClipboard, importComponentFromFELibrary } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'
@@ -16,6 +16,8 @@ import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentTy
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+
+const ApprovedArtifact = importComponentFromFELibrary('ApprovedArtifact')
 
 export default function Artifacts({
     status,
@@ -124,7 +126,7 @@ export default function Artifacts({
     }
 }
 
-const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWithTextType): JSX.Element => {
+export const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWithTextType): JSX.Element => {
     const onClickCopyToClipboard = (e): void => {
         copyToClipboard(e.target.dataset.copyText, () => setCopied(true))
     }
@@ -166,7 +168,17 @@ const CIProgressView = (): JSX.Element => {
     )
 }
 
-const CIListItem = ({ type, children }: CIListItemType) => {
+export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children }: CIListItemType) => {
+    if (type === 'approved-artifact') {
+        return ApprovedArtifact ? (
+            <ApprovedArtifact
+                userApprovalMetadata={userApprovalMetadata}
+                triggeredBy={triggeredBy}
+                children={children}
+            />
+        ) : null
+    }
+
     return (
         <div className={`mb-16 ci-artifact ci-artifact--${type}`} data-testid="hover-on-report-artifact">
             <div className="bcn-1 flex br-4">

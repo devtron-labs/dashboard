@@ -19,7 +19,7 @@ function ClusterInfoSteps({ command, clusterName }: ClusterStepModal) {
         {
             additionalInfo: (
                 <div>
-                    <span className="fw-6">Prerequisites:</span> kubectl and Jq should be installed
+                    <span className="fw-6">Prerequisites:</span> kubectl should be installed
                 </div>
             ),
         },

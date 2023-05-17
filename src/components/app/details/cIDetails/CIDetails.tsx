@@ -285,7 +285,7 @@ export const Details = ({
                                     to={`source-code`}
                                     data-testid="source-code-link"
                                 >
-                                    Source code
+                                    Source
                                 </NavLink>
                             </li>
                             <li className="tab-list__tab">

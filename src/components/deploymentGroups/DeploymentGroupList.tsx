@@ -1,6 +1,14 @@
 import React, { Component } from 'react'
 import { RouteComponentProps } from 'react-router'
-import { showError, Progressing, ErrorScreenManager, PopupMenu, DeleteDialog } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    ErrorScreenManager,
+    PopupMenu,
+    DeleteDialog,
+    DeploymentNodeType,
+    CDMaterialType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType, SourceTypeMap, URLS } from '../../config'
 import { deploymentGroupList, triggerGroupDeploy, getCDMaterialList, deleteDeploymentGroup } from './service'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
@@ -8,7 +16,6 @@ import { ReactComponent as Branch } from '../../assets/icons/misc/branch.svg'
 import { ReactComponent as Deploy } from '../../assets/icons/ic-deploy.svg'
 import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import { CDMaterial } from '../app/details/triggerView/cdMaterial'
-import { CDMaterialType, DeploymentNodeType } from '../app/details/triggerView/types'
 import noGroups from '../../assets/img/ic-feature-deploymentgroups@3x.png'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'

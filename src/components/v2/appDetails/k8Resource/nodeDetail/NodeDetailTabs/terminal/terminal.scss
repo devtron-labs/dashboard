@@ -1,0 +1,81 @@
+.k8s-resource-view-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 118px);
+}
+
+.terminal-view-container {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 146px);
+}
+
+.terminal-view-wrapper {
+    position: relative;
+    min-height: 600px;
+    background: var(--terminal-bg);
+    flex: 1;
+}
+
+.terminal-strip {
+    z-index: 4;
+}
+
+.terminal-wrapper {
+    display: flex;
+    flex-direction: column;
+    max-height: 100vh;
+    background: var(--terminal-bg);
+    overflow: hidden;
+    flex: 1;
+    .terminal-component {
+        overflow: hidden;
+        flex: 1;
+    }
+}
+
+.connection-status-strip {
+    animation-name: connection-status-strip;
+    animation-duration: 300ms;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+    opacity: 0;
+    height: 0px;
+}
+
+@keyframes connection-status-strip {
+    0% {
+        height: 0px;
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+
+    100% {
+        height: 22px;
+        opacity: 1;
+    }
+}
+
+.connection-status-strip.unmount {
+    animation-name: connection-status-strip-unmount;
+    animation-direction: reverse;
+}
+
+@keyframes connection-status-strip-unmount {
+    0% {
+        height: 22px;
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+
+    100% {
+        height: 0px;
+        opacity: 0;
+    }
+}

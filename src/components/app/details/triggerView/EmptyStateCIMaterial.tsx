@@ -1,6 +1,7 @@
 import React from 'react'
 import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.png'
+import NoEligibleCommit from '../../../../assets/gif/no-eligible-commit.gif'
 import NoResults from '../../../../assets/img/empty-noresult@2x.png'
 import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-right.svg'
 import { EmptyStateCIMaterialProps } from './types'
@@ -25,6 +26,8 @@ export default function EmptyStateCIMaterial({
     toggleWebHookModal,
     clearSearch,
     handleGoToWorkFlowEditor,
+    showAllCommits,
+    toggleExclude,
 }: EmptyStateCIMaterialProps) {
     const getData = () => {
         if (isRepoError) {
@@ -43,6 +46,7 @@ export default function EmptyStateCIMaterial({
                     </a>
                 ),
                 cta: null,
+                link: null,
             }
         } else if (isDockerFileError) {
             return {
@@ -56,6 +60,7 @@ export default function EmptyStateCIMaterial({
                             <NextIcon className="icon-dim-16 ml-5 scn-0" />
                         </button>
                     ) : null,
+                link: null,
             }
         } else if (isBranchError) {
             return {
@@ -75,6 +80,7 @@ export default function EmptyStateCIMaterial({
                             <NextIcon className="icon-dim-16 ml-5 scn-0" />
                         </button>
                     ) : null,
+                link: null,
             }
         } else if (noSearchResults) {
             return {
@@ -92,6 +98,21 @@ export default function EmptyStateCIMaterial({
                         {CI_MATERIAL_EMPTY_STATE_MESSAGING.ClearSearch}
                     </button>
                 ),
+                link: null,
+            }
+        } else if (!anyCommit && !showAllCommits) {
+            return {
+                img: (
+                    <img
+                        src={NoEligibleCommit}
+                        alt={CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitAltText}
+                        className="empty-state__img--ci-material"
+                    />
+                ),
+                title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommit}</h1>,
+                subtitle: CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitSubtitle,
+                link: <span className="dc__link dc__underline dc__block cursor" onClick={toggleExclude}>{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitButtonText}</span>,
+                cta: null,
             }
         } else if (!anyCommit) {
             return {
@@ -105,6 +126,7 @@ export default function EmptyStateCIMaterial({
                 title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoMaterialFound}</h1>,
                 subtitle: CI_MATERIAL_EMPTY_STATE_MESSAGING.NoMaterialFoundSubtitle,
                 cta: null,
+                link: null,
             }
         } else {
             return {
@@ -122,11 +144,12 @@ export default function EmptyStateCIMaterial({
                         {CI_MATERIAL_EMPTY_STATE_MESSAGING.Retry}
                     </button>
                 ),
+                link: null,
             }
         }
     }
 
-    const { title, subtitle, img, cta } = getData()
+    const { title, subtitle, img, cta, link } = getData()
     return isMaterialLoading ? (
         <EmptyState>
             <EmptyState.Loading text={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />
@@ -135,7 +158,12 @@ export default function EmptyStateCIMaterial({
         <EmptyState>
             <EmptyState.Image>{img}</EmptyState.Image>
             <EmptyState.Title>{title}</EmptyState.Title>
-            <EmptyState.Subtitle className="mb-0">{subtitle}</EmptyState.Subtitle>
+            <EmptyState.Subtitle className="mb-0">
+                <>
+                    {subtitle}
+                    {link}
+                </>
+            </EmptyState.Subtitle>
             <EmptyState.Button>{cta}</EmptyState.Button>
             {isWebHook && (
                 <EmptyState.Button>

@@ -30,6 +30,7 @@ import { getUserRole } from '../../userGroups/userGroup.service'
 import { APP_LIST_HEADERS, StatusConstants } from './Constants'
 import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { createAppListPayload } from '../list/appList.modal'
 
 export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }: AppListPropType) {
     const location = useLocation()
@@ -45,7 +46,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     const [parsedPayloadOnUrlChange, setParsedPayloadOnUrlChange] = useState({})
     const [currentTab, setCurrentTab] = useState(undefined)
     const [syncListData, setSyncListData] = useState<boolean>()
-
+    const [projectMap, setProjectMap] = useState(new Map());
     // API master data
     const [environmentClusterListRes, setEnvironmentClusterListRes] = useState<EnvironmentClusterList>()
 
@@ -90,6 +91,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         getInitData(payloadParsedFromUrl, serverMode)
             .then((initData) => {
                 setEnvironmentClusterListRes(initData.environmentClusterAppListData)
+                setProjectMap(initData.projectMap)
                 setMasterFilters(initData.filters)
                 setDataStateType(AppListViewType.LIST)
                 if (serverMode === SERVER_MODE.EA_ONLY) {
@@ -619,27 +621,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     const getAppListDataToExport = () => {
-        return getAppList(
-            typeof parsedPayloadOnUrlChange === 'object'
-                ? {
-                      ...parsedPayloadOnUrlChange,
-                      appNameSearch: searchString || '',
-                      sortBy: 'appNameSort',
-                      sortOrder: 'ASC',
-                      size: appCount,
-                  }
-                : {
-                      environments: [],
-                      teams: [],
-                      namespaces: [],
-                      appNameSearch: '',
-                      sortBy: 'appNameSort',
-                      sortOrder: 'ASC',
-                      offset: 0,
-                      hOffset: 0,
-                      size: appCount,
-                  },
-        ).then(({ result }) => {
+        return getAppList(createAppListPayload(onRequestUrlChange(), environmentClusterListRes)).then(({ result }) => {
             if (result.appContainers) {
                 const _appDataList = []
                 for (let _app of result.appContainers) {
@@ -655,7 +637,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
                                 appId: _env.appId,
                                 appName: _env.appName,
                                 projectId: _env.teamId,
-                                projectName: _env.teamName,
+                                projectName: projectMap.get(_env.teamId),
                                 environmentId: (_env.environmentName && _env.environmentId) || '-',
                                 environmentName: _env.environmentName || '-',
                                 clusterId: `${(_clusterId ?? _clusterId) || '-'}`,

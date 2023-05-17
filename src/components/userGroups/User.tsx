@@ -384,10 +384,12 @@ export default function UserForm({
             )}
             <div className="flex left mb-16">
                 <RadioGroup
+                    
                     className="permission-type__radio-group"
                     value={localSuperAdmin}
                     name={`permission-type_${id}`}
                     onChange={handlePermissionType}
+                    
                 >
                     {PermissionType.map(({ label, value }) => (
                         <RadioGroupItem

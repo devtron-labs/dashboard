@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as AlertTriangle } from '../../../assets/icons/ic-alert-triangle.svg'
-import { not } from '../../common'
 import IndexStore from './index.store'
 import { renderErrorHeaderMessage } from '../../common/error/error.utils'
 import { AppType, SyncErrorType } from './appDetails.type'
 import { AppDetailsErrorType } from '../../../config'
+import { not } from '@devtron-labs/devtron-fe-common-lib'
 
 const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplicationDetailedModal }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true)
