@@ -110,15 +110,16 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
         toggleCollapsed(not)
     }
 
+    const errorCounter = conditions.length +
+    (isImagePullBackOff && !appDetails.externalCi ? 1 : 0) +
+    (clusterConnectionError && 1)
+
     return (
         <div className="top flex left column w-100 bcr-1 pl-20 pr-20 fs-13">
             <div className="flex left w-100 cursor h-56" onClick={toggleErrorHeader}>
                 <AlertTriangle className="icon-dim-20 mr-8" />
                 <span className="cr-5 fs-14 fw-6">
-                    {conditions.length +
-                        (isImagePullBackOff && !appDetails.externalCi ? 1 : 0) +
-                        (clusterConnectionError && 1)}
-                    Errors
+                    {errorCounter === 1 ? '1 Error' : `${errorCounter} Errors`}
                 </span>
                 {collapsed && (
                     <span className="cn-9 ml-24 w-80 dc__ellipsis-right">
