@@ -25,7 +25,7 @@ export class ButtonWithLoader extends Component<ButtonProps> {
         return (
             <button
                 type="button"
-                data-testid={this.props.dataTestId}
+                data-testid={`${this.props.dataTestId}${!!this.props.disabled?"disabled":""}`}
                 disabled={!!this.props.disabled}
                 className={`${this.props.rootClassName}`}
                 onClick={this.clickHandler}

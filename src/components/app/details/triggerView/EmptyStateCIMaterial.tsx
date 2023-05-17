@@ -111,7 +111,7 @@ export default function EmptyStateCIMaterial({
                 ),
                 title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommit}</h1>,
                 subtitle: CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitSubtitle,
-                link: <span className="dc__link dc__underline dc__block cursor" onClick={toggleExclude}>{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitButtonText}</span>,
+                link: <span data-testid="no-eligible-commit-button" className="dc__link dc__underline dc__block cursor" onClick={toggleExclude}>{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitButtonText}</span>,
                 cta: null,
             }
         } else if (!anyCommit) {
