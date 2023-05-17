@@ -6,8 +6,8 @@ import { DeploymentTemplateList } from '../cd.type'
 import { DeploymentHistoryParamsType } from './types'
 import { getDeploymentHistoryList } from '../service'
 import { DEPLOYMENT_HISTORY_CONFIGURATION_LIST_MAP } from '../../../../../config'
-import CDEmptyState from '../CDEmptyState'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { EMPTY_STATE_STATUS } from '../../../../../config/constantMessaging'
 
 interface TemplateConfiguration {
   setFullScreenView: React.Dispatch<React.SetStateAction<boolean>>
@@ -57,7 +57,10 @@ export default function DeploymentHistoryConfigList({
     return (
         <>
             {!deploymentHistoryList && !deploymentListLoader ? (
-                <CDEmptyState />
+                <GenericEmptyState
+                    title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
+                    subTitle={EMPTY_STATE_STATUS.DEPLOYMENT_HISTORY_CONFIG_LIST.SUBTITLE}
+                />
             ) : deploymentListLoader ? (
                 <Progressing pageLoader />
             ) : (
@@ -84,7 +87,7 @@ export default function DeploymentHistoryConfigList({
                                     )}
                                 </>
                             ) : (
-                                getNavLink(index , historicalComponent.id, historicalComponent.name, `config-${index}`)
+                                getNavLink(index, historicalComponent.id, historicalComponent.name, `config-${index}`)
                             )}
                         </div>
                     )
