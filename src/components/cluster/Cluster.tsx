@@ -884,11 +884,11 @@ function ClusterForm({
         for (const _dataList of dataLists) {
             if (isClusterSelected[_dataList.cluster_name]) {
                 const _clusterDetails: SaveClusterPayloadType = {
-                    id: null,
+                    id: _dataList.id !== undefined ? _dataList.id : null,
                     cluster_name: _dataList.cluster_name,
                     insecureSkipTlsVerify: _dataList.insecureSkipTlsVerify,
                     config: selectedUserNameOptions[_dataList.cluster_name]?.config ?? null,
-                    active: _dataList.active,
+                    active: true,
                     prometheus_url: '',
                     prometheusAuth: { userName: '', password: '' },
                     server_url: _dataList.server_url,
@@ -985,6 +985,7 @@ function ClusterForm({
                             active: _cluster['active'],
                             defaultClusterComponent: _cluster['defaultClusterComponent'],
                             insecureSkipTlsVerify: _cluster['insecureSkipTlsVerify'],
+                            id: _cluster['id']
                         }
                     }),
                 ])
@@ -1654,35 +1655,39 @@ function ClusterForm({
     }
 
 
-    function toggleSelectAll() {
-        setSelectAll((prevSelectAll) => {
-          const updatedSelections = { ...isClusterSelected };
-          const disabledClusters = Object.entries(selectedUserNameOptions)
-            .filter(
-              ([_, options]) =>
-                options.errorInConnecting !== 'cluster-already-exists' && options.errorInConnecting.length > 0
-            )
-            .map(([clusterName]) => clusterName);
-          let allEnabledSelected = true;
-          Object.keys(updatedSelections).forEach((clusterName) => {
-            if (!disabledClusters.includes(clusterName)) {
-              updatedSelections[clusterName] = !prevSelectAll;
-              if (!updatedSelections[clusterName]) {
-                allEnabledSelected = false;
-              }
-            }
-          });
-          if (allEnabledSelected) {
-            Object.keys(updatedSelections).forEach((clusterName) => {
-              if (!disabledClusters.includes(clusterName)) {
-                updatedSelections[clusterName] = false;
-              }
-            });
-          }
-          setClusterSeleceted(updatedSelections); 
-          return !prevSelectAll;
-        });
-      }
+    // function toggleSelectAll() {
+    //     setSelectAll((prevSelectAll) => {
+    //       const updatedSelections = { ...isClusterSelected };
+    //       const disabledClusters = Object.entries(selectedUserNameOptions)
+    //         .filter(
+    //           ([_, options]) =>
+    //             options.errorInConnecting !== 'cluster-already-exists' && options.errorInConnecting.length > 0
+    //         )
+    //         .map(([clusterName]) => clusterName);
+    //       let allEnabledSelected = true;
+    //       Object.keys(updatedSelections).forEach((clusterName) => {
+    //         if (!disabledClusters.includes(clusterName)) {
+    //           updatedSelections[clusterName] = !prevSelectAll;
+    //           if (!updatedSelections[clusterName]) {
+    //             allEnabledSelected = false;
+    //           }
+    //         }
+    //       });
+    //       if (allEnabledSelected) {
+    //         Object.keys(updatedSelections).forEach((clusterName) => {
+    //           if (!disabledClusters.includes(clusterName)) {
+    //             updatedSelections[clusterName] = false;
+    //           }
+    //         });
+    //       }
+    //       setClusterSeleceted(updatedSelections); 
+    //       return !prevSelectAll;
+    //     });
+    //   }
+
+    function toggleSelectAll(event) {
+      
+    }
 
     function validCluster() {
         const _validCluster = dataList

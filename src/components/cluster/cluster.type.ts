@@ -1,4 +1,5 @@
 import { RouteComponentProps } from 'react-router-dom'
+import internal from 'stream'
 import { SERVER_MODE_TYPE } from '../../config'
 import { OptionType } from '../app/types'
 //import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
@@ -24,6 +25,7 @@ export interface UserNameList {
 }
 
 export interface DataListType{
+    id: number;
     cluster_name: string
     userInfos: UserDetails[]
     server_url: string
