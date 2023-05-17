@@ -70,7 +70,6 @@ import {
     UserDetails,
     SaveClusterPayloadType,
     UserNameList,
-    ClusterCheckType,
 } from './cluster.type'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
@@ -96,10 +95,21 @@ import {
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+// import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import TippyHeadless from '@tippyjs/react/headless'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { UPLOAD_STATE } from '../CustomChart/types'
+// import { request } from 'http'
+// import { ConfigCluster, UserInfos, ClusterInfo, ClusterResult } from './cluster.type'
+// import { error } from 'console'
+// import cluster from 'cluster'
+// import { getClusterEvents } from '../ClusterNodes/clusterNodes.service'
+// import { json } from 'stream/consumers'
+// import { stat } from 'fs'
+// import { userInfo } from 'os'
+// import ReactSelect from 'react-select/creatable'
+// import { SELECT_TOKEN_STYLE } from '../ciPipeline/Webhook/webhook.utils'
 import UserNameDropDownList from './UseNameListDropdown'
 import Tippy from '@tippyjs/react/headless'
 
@@ -793,18 +803,9 @@ function ClusterForm({
     const [selectedClusterName, setSelectedClusterNameOptions] = useState<{ clusterNname: string; state: boolean }>()
     const [loader, setLoadingState] = useState<boolean>(false)
     const [selectedUserNameOptions, setSelectedUserNameOptions] = useState<Record<string, any>>({})
-    const [isSelected, setIsSeleceted] = useState<{ clusterName: string; state: boolean }[]>([])
+    const [isClusterSelected, setClusterSeleceted] = useState<Record<string, boolean>>({})
+    const [selectAll, setSelectAll] = useState<boolean>(false)
     const [disableState, setDisableState] = useState<boolean>(false)
-    const [nameSelection, setNameSelection] = useState<Record<string, ClusterCheckType>>({
-        scaleDown: {
-            isChecked: false,
-            value: 'CHECKED',
-        },
-        restore: {
-            isChecked: false,
-            value: 'CHECKED',
-        },
-    })
     // const [selectedClusterState, setSelectedClusterState] = useState<boolean>(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -879,22 +880,24 @@ function ClusterForm({
     )
 
     const getSaveClusterPayload = (dataLists: DataListType[]) => {
-        let SaveClusterPayload: SaveClusterPayloadType[] = []
-        dataLists.forEach((dataList, index) => {
-            const _clusterDetails: SaveClusterPayloadType = {
-                id: null,
-                cluster_name: dataList.cluster_name,
-                insecureSkipTlsVerify: dataList.insecureSkipTlsVerify,
-                config: selectedUserNameOptions[dataList.cluster_name]?.config ?? null,
-                active: dataList.active,
-                prometheus_url: '',
-                prometheusAuth: { userName: '', password: '' },
-                server_url: dataList.server_url,
+        const saveClusterPayload: SaveClusterPayloadType[] = []
+        for (const _dataList of dataLists) {
+            if (isClusterSelected[_dataList.cluster_name]) {
+                const _clusterDetails: SaveClusterPayloadType = {
+                    id: _dataList.id !== undefined ? _dataList.id : null,
+                    cluster_name: _dataList.cluster_name,
+                    insecureSkipTlsVerify: _dataList.insecureSkipTlsVerify,
+                    config: selectedUserNameOptions[_dataList.cluster_name]?.config ?? null,
+                    active: true,
+                    prometheus_url: '',
+                    prometheusAuth: { userName: '', password: '' },
+                    server_url: _dataList.server_url,
+                }
+                saveClusterPayload.push(_clusterDetails)
             }
-            SaveClusterPayload.push(_clusterDetails)
-        })
+        }
 
-        return SaveClusterPayload
+        return saveClusterPayload
     }
 
     // const setClusterNameInCLusterList = (cluster_name: string) => {
@@ -903,71 +906,26 @@ function ClusterForm({
     //     } else return false
     // }
 
-    const handleAllSelectionOfClusters = (isActiveWorkloadsTab: boolean) => {
-        const _nameSelectionKey = isActiveWorkloadsTab ? 'scaleDown' : 'restore'
-        const _nameSelection = nameSelection[_nameSelectionKey]
-        const _clusterNameList = new Map()
-
-        for (let [key, value] of _clusterNameList) {
-            value.value = !_nameSelection.isChecked ? 'CHECKED' : 'INTERMEDIATE'
-            value.isChecked = !_nameSelection.isChecked ? true : false
-            _clusterNameList.set(key, value)
-        }
-
-        setNameSelection({
-            ...nameSelection,
-            [_nameSelectionKey]: {
-                isChecked: !_nameSelection.isChecked,
-                value: _nameSelection.isChecked ? 'INTERMEDIATE' : 'CHECKED',
-            },
-        })
-    }
-
-    const handleSelectionOfClusters = (isActiveWorkloadsTab: boolean, clusterName: string) => {
-        const _workloadsList = isActiveWorkloadsTab ? dataList : null
-        const _setWorkloadsList = isActiveWorkloadsTab
-
-        const selectedWorkload = _workloadsList['cluster_name']
-        selectedWorkload.value = !selectedWorkload.isChecked ? 'CHECKED' : 'INTERMEDIATE'
-        selectedWorkload.isChecked = !selectedWorkload.isChecked
-
-        // _setWorkloadsList(_workloadsList)
-
-        // const _nameSelectionKey = isActiveWorkloadsTab ? 'scaleDown' : 'restore'
-        // const updatedWorkloads = Array.from(_workloadsList.values())
-        // const isAnySelected = updatedWorkloads.some((workload) => workload.isChecked)
-        // const areAllSelected = isAnySelected && updatedWorkloads.every((workload) => workload.isChecked)
-
-        // setNameSelection({
-        //     ...nameSelection,
-        //     [_nameSelectionKey]: {
-        //         isChecked: areAllSelected || isAnySelected ? true : false,
-        //         value: !areAllSelected && isAnySelected ? 'INTERMEDIATE' : 'CHECKED',
-        //     },
-        // })
-    }
-
     async function saveClustersDetails() {
         try {
             let payload = getSaveClusterPayload(dataList)
             await saveClusters(payload).then((response) => {
-                response.result.map((_clusterSaveDetails, index) => {
-                    setSaveClusterList([
-                        {
-                            clusterName: _clusterSaveDetails['cluster_name'],
-                            status:
-                                _clusterSaveDetails['errorInConnecting'].length === 0
-                                    ? 'Added'
-                                    : _clusterSaveDetails['errorInConnecting'] === 'cluster-already-exists'
-                                    ? 'Updated'
-                                    : 'Failed',
-                            message:
-                                _clusterSaveDetails['errorInConnecting'].length === 0
-                                    ? 'Cluster Added'
-                                    : _clusterSaveDetails['errorInConnecting'],
-                        },
-                    ])
+                const _clusterList = response.result.map((_clusterSaveDetails, index) => {
+                    return {
+                        clusterName: _clusterSaveDetails['cluster_name'],
+                        status:
+                            _clusterSaveDetails['errorInConnecting'].length === 0
+                                ? 'Added'
+                                : _clusterSaveDetails['errorInConnecting'] === 'cluster-already-exists'
+                                ? 'Updated'
+                                : 'Failed',
+                        message:
+                            _clusterSaveDetails['errorInConnecting'].length === 0
+                                ? 'Cluster Added'
+                                : _clusterSaveDetails['errorInConnecting'],
+                    }
                 })
+                setSaveClusterList(_clusterList)
             })
             setLoadingState(false)
         } catch (err) {
@@ -1027,10 +985,10 @@ function ClusterForm({
                             active: _cluster['active'],
                             defaultClusterComponent: _cluster['defaultClusterComponent'],
                             insecureSkipTlsVerify: _cluster['insecureSkipTlsVerify'],
+                            id: _cluster['id']
                         }
                     }),
                 ])
-
                 setSelectedUserNameOptions(defaultUserNameSelections)
 
                 //     const map = response.result
@@ -1284,9 +1242,8 @@ function ClusterForm({
                     />
                 </div>
                 <div className="form__row form__row--bearer-token flex column left top">
-                    <div data-testid="enter_bearer_fill_space" className="bearer-token">
+                    <div className="bearer-token">
                         <ResizableTextarea
-                            dataTestId="enter_bearer_token_input"
                             className="dc__resizable-textarea__with-max-height dc__required-field"
                             name="token"
                             value={config && config.bearer_token ? config.bearer_token : ''}
@@ -1294,6 +1251,7 @@ function ClusterForm({
                             onBlur={handleOnBlur}
                             onFocus={handleOnFocus}
                             placeholder="Enter bearer token"
+                            dataTestId="enter_bearer_token_input"
                         />
                     </div>
                     {state.token.error && (
@@ -1312,20 +1270,22 @@ function ClusterForm({
                                 rootClassName="form__checkbox-label--ignore-cache mb-0"
                                 value={'CHECKED'}
                                 onChange={toggleCheckTlsConnection}
+                                dataTestId="use_secure_tls_connection_checkbox"
                             >
-                                <div data-testid="use_secure_tls_connection_checkbox" className="mr-4 flex center">
-                                    {' '}
-                                    Use secure TLS connection {isTlsConnection}
-                                </div>
+                                <div className="mr-4 flex center"> Use secure TLS connection {isTlsConnection}</div>
                             </Checkbox>
                         </div>
 
                         {isTlsConnection && (
                             <>
                                 <div className="form__row">
-                                    <span className="form__label dc__required-field">Certificate Authority Data</span>
+                                    <span
+                                        data-testid="certificate_authority_data"
+                                        className="form__label dc__required-field"
+                                    >
+                                        Certificate Authority Data
+                                    </span>
                                     <ResizableTextarea
-                                        dataTestId="certificate_authority_data"
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="certificateAuthorityData"
                                         value={state.certificateAuthorityData.value}
@@ -1334,9 +1294,10 @@ function ClusterForm({
                                     />
                                 </div>
                                 <div className="form__row">
-                                    <span className="form__label dc__required-field">TLS Key</span>
+                                    <span data-testid="tls_client_key" className="form__label dc__required-field">
+                                        TLS Key
+                                    </span>
                                     <ResizableTextarea
-                                        dataTestId="tls_client_key"
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="tlsClientKey"
                                         value={state.tlsClientKey.value}
@@ -1345,9 +1306,10 @@ function ClusterForm({
                                     />
                                 </div>
                                 <div className="form__row">
-                                    <span className="form__label dc__required-field">TLS Certificate</span>
+                                    <span data-testid="tls_certificate" className="form__label dc__required-field">
+                                        TLS Certificate
+                                    </span>
                                     <ResizableTextarea
-                                        dataTestId="tls_certificate"
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="tlsClientCert"
                                         value={state.tlsClientCert.value}
@@ -1498,7 +1460,7 @@ function ClusterForm({
                     </button>
 
                     <button
-                        className="cta mr-32 ml-20"
+                        className="cta mr-32 ml-20 "
                         type="button"
                         onClick={handleGetClustersClick}
                         disabled={!saveYamlData}
@@ -1583,14 +1545,11 @@ function ClusterForm({
                     <AddClusterHeader />
 
                     <div className="api-token__list en-2 bw-0 bcn-0 br-8">
-                        <div
-                            data-testid="cluster_list_page_after_selection"
-                            className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1"
-                        >
+                        <div className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1">
                             <div></div>
-                            <div data-testid="cluster_validate">CLUSTER</div>
-                            <div data-testid="status_validate">STATUS</div>
-                            <div data-testid="message_validate">MESSAGE</div>
+                            <div>CLUSTER</div>
+                            <div>STATUS</div>
+                            <div>MESSAGE</div>
                             <div></div>
                         </div>
                         <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 161px)' }}>
@@ -1599,7 +1558,6 @@ function ClusterForm({
                             ) : (
                                 saveClusterList.map((clusterListDetail, index) => (
                                     <div
-                                        data-testid="cluster_list_page_after_selecti"
                                         key={`api_${index}`}
                                         className="saved-cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
                                         style={{ height: '40px' }}
@@ -1635,7 +1593,6 @@ function ClusterForm({
                             </span>
                         </button>
                         <button
-                            data-testid="close_after_cluster_list_display"
                             className="cta mr-20"
                             type="button"
                             onClick={handleCloseButton}
@@ -1688,34 +1645,48 @@ function ClusterForm({
     //     })
     // }
 
-    function toggleIsSelected() {
-        const _dataList = dataList
-        _dataList.map((_clusterDetailsData, index) => {
-            if (
-                _clusterDetailsData.userInfos[index].errorInConnecting.length === 0 ||
-                _clusterDetailsData.userInfos[index].errorInConnecting === 'cluster already exists'
-            ) {
-                if (isSelected['state'] === false) {
-                    setIsSeleceted([
-                        {
-                            clusterName: _clusterDetailsData.cluster_name,
-                            state: true,
-                        },
-                    ])
-                } else {
-                    setIsSeleceted([
-                        {
-                            clusterName: _clusterDetailsData.cluster_name,
-                            state: false,
-                        },
-                    ])
-                }
-                setDisableState(false)
-            } else {
-                setDisableState(true)
+    function toggleIsSelected(clusterName: string) {
+        setClusterSeleceted((prevSelections) => {
+            return {
+                ...prevSelections,
+                [clusterName]: !prevSelections[clusterName],
             }
         })
-        return
+    }
+
+
+    // function toggleSelectAll() {
+    //     setSelectAll((prevSelectAll) => {
+    //       const updatedSelections = { ...isClusterSelected };
+    //       const disabledClusters = Object.entries(selectedUserNameOptions)
+    //         .filter(
+    //           ([_, options]) =>
+    //             options.errorInConnecting !== 'cluster-already-exists' && options.errorInConnecting.length > 0
+    //         )
+    //         .map(([clusterName]) => clusterName);
+    //       let allEnabledSelected = true;
+    //       Object.keys(updatedSelections).forEach((clusterName) => {
+    //         if (!disabledClusters.includes(clusterName)) {
+    //           updatedSelections[clusterName] = !prevSelectAll;
+    //           if (!updatedSelections[clusterName]) {
+    //             allEnabledSelected = false;
+    //           }
+    //         }
+    //       });
+    //       if (allEnabledSelected) {
+    //         Object.keys(updatedSelections).forEach((clusterName) => {
+    //           if (!disabledClusters.includes(clusterName)) {
+    //             updatedSelections[clusterName] = false;
+    //           }
+    //         });
+    //       }
+    //       setClusterSeleceted(updatedSelections); 
+    //       return !prevSelectAll;
+    //     });
+    //   }
+
+    function toggleSelectAll(event) {
+      
     }
 
     function validCluster() {
@@ -1736,12 +1707,10 @@ function ClusterForm({
         return (
             <>
                 {isKubeConfigFile && (
-                    <div
-                        data-testid="valid_cluster_infocolor_bar"
-                        className="cluster-form dc__position-rel h-100 bcn-0"
-                    >
+                    <div className="cluster-form dc__position-rel h-100 bcn-0">
                         <AddClusterHeader />
                         <InfoColourBar
+                            dataTestId="valid_cluster_infocolor_bar"
                             message={`${validCluster()} valid cluster. Select the cluster you want to Add/Update`}
                             classname="info_bar cn-9 mb-20 lh-20"
                             Icon={Info}
@@ -1749,15 +1718,15 @@ function ClusterForm({
                         />
                         <div className="api-token__list en-2 bw-1 bcn-0 br-8">
                             <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top">
-                                <div></div>
-                                <Checkbox
-                                    rootClassName="mb-0 fs-13 cursor bcn-0 p"
-                                    isChecked={isSelected['clusterName']}
-                                    value={CHECKBOX_VALUE.CHECKED}
-                                    onChange={toggleIsSelected}
-                                >
-                                    <div>CLUSTER</div>
-                                </Checkbox>
+                                <div>
+                                    <Checkbox
+                                        rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
+                                        onChange={toggleSelectAll}
+                                        isChecked={selectAll}
+                                        value={CHECKBOX_VALUE.CHECKED}
+                                    />
+                                </div>
+                                <div>CLUSTER</div>
                                 <div>USER</div>
                                 <div>MESSAGE</div>
                                 <div></div>
@@ -1773,13 +1742,18 @@ function ClusterForm({
                                             style={{ height: '40px' }}
                                         >
                                             <Checkbox
-                                                dataTestId={`checkbox_selection_of_cluster-${clusterDetail.cluster_name}`}
                                                 key={`app-$${index}`}
                                                 rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
-                                                onChange={toggleIsSelected}
-                                                isChecked={isSelected['clusterName']}
+                                                onChange={() => toggleIsSelected(clusterDetail.cluster_name)}
+                                                isChecked={isClusterSelected[clusterDetail.cluster_name]}
                                                 value={CHECKBOX_VALUE.CHECKED}
-                                                disabled={false}
+                                                disabled={
+                                                    selectedUserNameOptions[clusterDetail.cluster_name]
+                                                        .errorInConnecting === 'cluster-already-exists'
+                                                        ? false
+                                                        : selectedUserNameOptions[clusterDetail.cluster_name]
+                                                              .errorInConnecting.length > 0
+                                                }
                                             />
                                             <div className="flexbox">
                                                 <span className="dc__ellipsis-right">{clusterDetail.cluster_name}</span>
@@ -1828,8 +1802,7 @@ function ClusterForm({
                             </span>
                         </button>
                         <button
-                            data-testid="save_cluster_list_button_after_selection"
-                            className="cta mr-20"
+                            className="cta mr-32 ml-20"
                             type="button"
                             onClick={() => handleClusterDetailCall()}
                             disabled={!saveClusterList}
@@ -1849,12 +1822,7 @@ function ClusterForm({
                 <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                     Add Cluster
                 </h2>
-                <button
-                    data-testid="header_close_icon"
-                    type="button"
-                    className="dc__transparent flex icon-dim-24 mr-24"
-                    onClick={handleCloseButton}
-                >
+                <button type="button" className="dc__transparent flex icon-dim-24 mr-24" onClick={handleCloseButton}>
                     <Close className="icon-dim-24" />
                 </button>
             </div>
@@ -1902,11 +1870,7 @@ function ClusterForm({
                         <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
                             Cancel
                         </button>
-                        <button
-                            data-testid="save_cluster_after_entering_cluster_details"
-                            className="cta mr-20 ml-20"
-                            onClick={() => saveClusterCall()}
-                        >
+                        <button className="cta mr-20 ml-20" onClick={() => saveClusterCall()}>
                             {'Save cluster'}
                         </button>
                     </div>
@@ -2030,12 +1994,7 @@ function Environment({
             <div className="bcn-0">
                 <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12">
                     <div className="fs-16 fw-6 lh-1-43 ml-20">{id ? 'Edit Environment' : 'Add Environment'}</div>
-                    <button
-                        data-testid="close_button_after_cluster_list_display"
-                        type="button"
-                        className="dc__transparent flex icon-dim-24"
-                        onClick={hideClusterDrawer}
-                    >
+                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={hideClusterDrawer}>
                         <Close className="icon-dim-24 dc__align-right cursor" />
                     </button>
                 </div>

@@ -1,5 +1,5 @@
 import React from 'react'
-import ReactSelect from 'react-select'
+import ReactSelect, { NonceProvider } from 'react-select'
 import { DropdownIndicator } from '../v2/common/ReactSelect.utils'
 import { Option } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -12,10 +12,10 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
     }
 
     if (clusterDetail.userInfos.length === 1) {
-        return <span>{clusterDetail.userInfos[0].userName}</span>
+        return <span className="dc__ellipsis-right">{clusterDetail.userInfos[0].userName}</span>
     } else {
         const userNameOptions = clusterDetail.userInfos.map((user) => {
-            return { label: user.userName, value: user.userName, errorInConnecting: user.errorInConnecting, config: user.config }
+            return { label: user.userName, value: user.userName, errorInConnecting: user.errorInConnecting, config: user.c }
         })
 
         return (
@@ -34,11 +34,12 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                 styles={{
                     control: (base) => ({
                         ...base,
-                        backgroundColor: 'var(--N100)',
+                        backgroundColor: 'white',
                         border: 'none',
                         boxShadow: 'none',
                         minHeight: '32px',
                         cursor: 'pointer',
+                        fontWeight: 600,
                     }),
                     option: (base, state) => ({
                         ...base,
@@ -49,6 +50,7 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                         ...base,
                         marginTop: '2px',
                         minWidth: '240px',
+                        zIndex: 4,
                     }),
                     menuList: (base) => ({
                         ...base,
@@ -56,6 +58,7 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                         paddingBottom: 0,
                         paddingTop: 0,
                         maxHeight: '250px',
+                        zIndex: 4,
                     }),
                     dropdownIndicator: (base, state) => ({
                         ...base,
@@ -67,6 +70,7 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                     noOptionsMessage: (base) => ({
                         ...base,
                         color: 'var(--N600)',
+                        zIndex: 4,
                     }),
                 }}
             />
