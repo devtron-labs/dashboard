@@ -191,20 +191,20 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         const cursorValue = isNodeAuto ? 'cursor-not-allowed' : 'cursor'
         return (
             <ul role="tablist" className="tab-list">
-                <li className={`tab-list__tab cursor ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
+                <li className={`tab-list__tab ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
                         {NODE_DETAILS_TABS.summary}
                     </div>
                     {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                 </li>
-                <li className={`tab-list__tab cursor ${cursorValue}`} data-tab-index="1" onClick={changeNodeTab}>
+                <li className={`tab-list__tab ${cursorValue}`} data-tab-index="1" onClick={changeNodeTab}>
                     <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
                         <Edit className="icon-dim-16 mt-2 mr-5 edit-yaml-icon" />
                         {NODE_DETAILS_TABS.yaml}
                     </div>
                     {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
                 </li>
-                <li className={`tab-list__tab cursor ${cursorValue}`} data-tab-index="2" onClick={changeNodeTab}>
+                <li className={`tab-list__tab ${cursorValue}`} data-tab-index="2" onClick={changeNodeTab}>
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
                         {NODE_DETAILS_TABS.nodeConditions}
                     </div>
