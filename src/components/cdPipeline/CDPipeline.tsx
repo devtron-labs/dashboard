@@ -142,6 +142,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppType.Helm,
                 deploymentAppCreated: false,
                 userApprovalConfig: null,
+                isVirtualEnvironment: false
             },
             showPreStage: false,
             showDeploymentStage: true,
@@ -217,6 +218,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                             active: false,
                                             isClusterCdActive: env.isClusterCdActive,
                                             description: env.description,
+                                            isVirtualEnvironment: env.isVirtualEnvironment //Virtual environment is valid for virtual cluster
                                         }
                                     })
                                     sortObjectArrayAlphabetically(list, 'name')
@@ -242,6 +244,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     getCDPipeline(): void {
         getCDPipelineConfig(this.props.match.params.appId, this.props.match.params.cdPipelineId)
             .then((data) => {
+              // console.log(data)
                 let pipelineConfigFromRes = data.pipelineConfig
                 this.updateStateFromResponse(pipelineConfigFromRes, data.environments)
             })
@@ -449,7 +452,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             pipelineConfig.environmentId = selection.id
             pipelineConfig.namespace = selection.namespace
             errorForm.envNameError = this.validationRules.environment(selection.id)
-            errorForm.nameSpaceError = this.validationRules.namespace(selection.namespace)
+            errorForm.nameSpaceError = !this.state.pipelineConfig.isVirtualEnvironment && this.validationRules.namespace(selection.namespace)
 
             pipelineConfig.preStageConfigMapSecretNames = {
                 configMaps: [],
@@ -482,6 +485,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             })
             pipelineConfig.environmentId = 0
             pipelineConfig.namespace = ''
+            pipelineConfig.isVirtualEnvironment = false
             errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)
             this.setState({ environments: list, pipelineConfig, errorForm: errorForm })
         }
@@ -580,7 +584,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     savePipeline() {
         const { pipelineConfig, errorForm } = { ...this.state }
         errorForm.pipelineNameError = this.validationRules.name(pipelineConfig.name)
-        errorForm.nameSpaceError = this.validationRules.namespace(pipelineConfig.namespace)
+        errorForm.nameSpaceError = this.validationRules.namespace('test')
         errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)
         this.setState({ errorForm })
         let valid =
@@ -1167,6 +1171,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         let namespaceEditable = false
         const envList = createClusterEnvGroup(this.state.environments, 'clusterName')
 
+        const groupHeading = (props) => {
+          return <GroupHeading {...props} isVitualEnvironment={this.state.pipelineConfig.isVirtualEnvironment} />
+      }
         return (
             <>
                 <div className="form__row form__row--flex">
@@ -1188,7 +1195,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 IndicatorSeparator: null,
                                 DropdownIndicator,
                                 SingleValue: this.singleOption,
-                                GroupHeading,
+                                GroupHeading: groupHeading,
                             }}
                             styles={{
                                 ...groupStyle(),

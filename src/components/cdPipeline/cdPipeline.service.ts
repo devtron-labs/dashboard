@@ -42,6 +42,7 @@ export async function getCDPipelineConfig(appId: string, pipelineId: string): Pr
     return Promise.all([getCDPipeline(appId, pipelineId), getEnvironmentListMinPublic()]).then(([cdPipelineRes, envListResponse]) => {
         let envId = cdPipelineRes.result.environmentId;
         let environments = envListResponse.result || [];
+        // console.log('cdPipelineRes.resul', cdPipelineRes.result)
         environments = environments.map((env) => {
             return {
                 id: env.id,

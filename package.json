@@ -5,6 +5,7 @@
     "homepage": "/dashboard",
     "dependencies": {
         "@devtron-labs/devtron-fe-common-lib": "0.0.7-beta-39",
+        "@devtron-labs/devtron-fe-lib": "0.0.7-beta-31",
         "@sentry/browser": "^7.3.1",
         "@sentry/integrations": "^7.3.1",
         "@sentry/tracing": "^7.3.1",
@@ -36,7 +37,7 @@
         "react-keybind": "^0.9.4",
         "react-mde": "^11.5.0",
         "react-monaco-editor": "^0.33.0",
-        "react-router-dom": "^5.3.0",
+        "react-router-dom": "^5.3.4",
         "react-select": "^5.2.2",
         "react-toastify": "^8.2.0",
         "react-virtualized": "^9.22.3",
