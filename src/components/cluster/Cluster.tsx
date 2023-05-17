@@ -968,6 +968,7 @@ function ClusterForm({
             let payload = { config: YAMLtoJSON(saveYamlData) }
             await validateCluster(payload).then((response) => {
                 const defaultUserNameSelections: Record<string, any> = {}
+                const _clusterSelections: Record<string, boolean> = {}
                 setDataList([
                     ...Object.values(response.result).map((_cluster) => {
                         const _userInfoList = [...Object.values(_cluster['userInfos'] as UserDetails[])]
@@ -977,6 +978,7 @@ function ClusterForm({
                             errorInConnecting: _userInfoList[0].errorInConnecting,
                             config: _userInfoList[0].config,
                         }
+                        _clusterSelections[_cluster['cluster_name']] = false
 
                         return {
                             cluster_name: _cluster['cluster_name'],
@@ -990,6 +992,7 @@ function ClusterForm({
                     }),
                 ])
                 setSelectedUserNameOptions(defaultUserNameSelections)
+                setClusterSeleceted(_clusterSelections)
 
                 //     const map = response.result
                 //     map.forEach((cluster, userInfoObj) => {
@@ -1645,13 +1648,19 @@ function ClusterForm({
     //     })
     // }
 
-    function toggleIsSelected(clusterName: string) {
-        setClusterSeleceted((prevSelections) => {
-            return {
-                ...prevSelections,
-                [clusterName]: !prevSelections[clusterName],
-            }
-        })
+    function toggleIsSelected(clusterName: string, forceUnselect?: boolean) {
+        const _currentSelections = {
+            ...isClusterSelected,
+            [clusterName]: forceUnselect ? false : !isClusterSelected[clusterName],
+        }
+        setClusterSeleceted(_currentSelections)
+
+        // Show checked states (checked | intermediate) for cluster selection parent checkbox if any of the value is selected
+        if (Object.values(_currentSelections).some((selected) => selected)) {
+            setSelectAll(true)
+        } else {
+            setSelectAll(false)
+        }
     }
 
 
@@ -1686,7 +1695,13 @@ function ClusterForm({
     //   }
 
     function toggleSelectAll(event) {
-      
+        const currentSelections: Record<string, boolean> = {}
+        const _selectAll = event.currentTarget.checked
+        Object.keys(isClusterSelected).forEach((selection) => {
+            currentSelections[selection] = _selectAll
+        })
+        setSelectAll(_selectAll)
+        setClusterSeleceted(currentSelections)
     }
 
     function validCluster() {
@@ -1701,6 +1716,22 @@ function ClusterForm({
             }
         })
         return count
+    }
+
+    const getAllClustersCheckBoxValue = () => {
+        if (Object.values(isClusterSelected).every((_selected) => _selected)) {
+            return CHECKBOX_VALUE.CHECKED
+        }
+
+        return CHECKBOX_VALUE.INTERMEDIATE
+    }
+
+     const onChangeUserName = (selectedOption: any, clusterDetail: DataListType) => {
+        setSelectedUserNameOptions({
+            ...selectedUserNameOptions,
+            [clusterDetail.cluster_name]: selectedOption,
+        })
+        toggleIsSelected(clusterDetail.cluster_name, true)
     }
 
     const displayClusterDetails = () => {
@@ -1723,7 +1754,7 @@ function ClusterForm({
                                         rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
                                         onChange={toggleSelectAll}
                                         isChecked={selectAll}
-                                        value={CHECKBOX_VALUE.CHECKED}
+                                        value={getAllClustersCheckBoxValue()}
                                     />
                                 </div>
                                 <div>CLUSTER</div>
@@ -1761,7 +1792,7 @@ function ClusterForm({
                                             <UserNameDropDownList
                                                 clusterDetail={clusterDetail}
                                                 selectedUserNameOptions={selectedUserNameOptions}
-                                                setSelectedUserNameOptions={setSelectedUserNameOptions}
+                                                onChangeUserName={onChangeUserName}
                                             />
                                             <div
                                                 className={`dc__app-summary__icon icon-dim-16 mr-2 ${

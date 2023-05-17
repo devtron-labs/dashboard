@@ -1,14 +1,11 @@
 import React from 'react'
-import ReactSelect, { NonceProvider } from 'react-select'
+import ReactSelect from 'react-select'
 import { DropdownIndicator } from '../v2/common/ReactSelect.utils'
 import { Option } from '@devtron-labs/devtron-fe-common-lib'
 
-export default function UserNameDropDownList({ clusterDetail, selectedUserNameOptions, setSelectedUserNameOptions }) {
-    const onChangeUserName = (selectedOption: any) => {
-        setSelectedUserNameOptions({
-            ...selectedUserNameOptions,
-            [clusterDetail.cluster_name]: selectedOption,
-        })
+export default function UserNameDropDownList({ clusterDetail, selectedUserNameOptions, onChangeUserName }) {
+    const handleUserChange = (selectedOption) => {
+        onChangeUserName(selectedOption, clusterDetail)
     }
 
     if (clusterDetail.userInfos.length === 1) {
@@ -24,12 +21,11 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                 options={userNameOptions}
                 value={selectedUserNameOptions[clusterDetail.cluster_name]}
                 isSearchable={false}
-                onChange={onChangeUserName}
+                onChange={handleUserChange}
                 components={{
                     IndicatorSeparator: null,
                     Option,
                     DropdownIndicator,
-                    // ValueContainer: customValueContainer,
                 }}
                 styles={{
                     control: (base) => ({
