@@ -521,6 +521,7 @@ export interface CdPipeline {
     deploymentAppDeleteRequest?: boolean
     deploymentAppCreated?: boolean
     userApprovalConfig?: UserApprovalConfigType
+    isVirtualEnvironment?: boolean
 }
 
 export interface CdPipelineResult {
