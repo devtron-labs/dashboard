@@ -11,9 +11,10 @@ import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { NavLink } from 'react-router-dom'
 import { TIMELINE_STATUS } from '../../../../config'
-import { EmptyState, not } from '@devtron-labs/devtron-fe-common-lib'
+import { EmptyState, not, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { CIListItem, CopyTippyWithText } from './Artifacts'
 import { extractImage } from '../../service'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResizeButtonType): JSX.Element => {
     const { pathname } = useLocation()
@@ -81,7 +82,7 @@ export const GitChanges = ({
     const [copied, setCopied] = useState(false)
 
     if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
-        return <EmptyView title="Data not available" subTitle="Source code detail is not available" />
+        return <GenericEmptyState title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE} subTitle={EMPTY_STATE_STATUS.DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE.SUBTITLE} />
     }
     return (
         <div className="flex column left w-100 p-16">
