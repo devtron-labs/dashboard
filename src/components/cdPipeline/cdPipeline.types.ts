@@ -85,6 +85,8 @@ export interface CDPipelineState {
     isAdvanced: boolean
     forceDeleteDialogMessage: string
     forceDeleteDialogTitle: string
+    showNonCascadeDeleteDialog: boolean,
+    clusterName: string,
 }
 
 export interface PipelineConfig {

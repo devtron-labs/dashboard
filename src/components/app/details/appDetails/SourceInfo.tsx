@@ -32,6 +32,9 @@ export function SourceInfo({
     loadingDetails = false,
     loadingResourceTree = false,
 }: SourceInfoType) {
+    const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
+    const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
+    const isPartialDeleteState = isArgoCdApp && isdeploymentAppDeleting
     const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions
@@ -93,19 +96,19 @@ export function SourceInfo({
                         arrow={false}
                         placement="top"
                         content={`Deployed using ${
-                            appDetails?.deploymentAppType === DeploymentAppType.argo_cd
+                            isArgoCdApp
                                 ? DeploymentAppTypeNameMapping.GitOps
                                 : DeploymentAppTypeNameMapping.Helm
                         }`}
                     >
-                        {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (
+                        {isArgoCdApp ? (
                             <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />
                         ) : (
                             <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
                         )}
                     </Tippy>
                 )}
-                {appDetails?.deploymentAppDeleteRequest && (
+                {isdeploymentAppDeleting && (
                     <div data-testid="deleteing-argocd-pipeline">
                         <Trash className="icon-dim-16 mr-8 ml-12" />
                         <span className="cr-5 fw-6">Deleting deployment pipeline </span>
@@ -114,7 +117,7 @@ export function SourceInfo({
                 )}
                 {!loadingResourceTree && environment && (
                     <>
-                        {!appDetails?.deploymentAppDeleteRequest && (
+                        {!isdeploymentAppDeleting && (
                             <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
                                 {showUrlInfo && (
                                     <button
@@ -205,7 +208,7 @@ export function SourceInfo({
                 shimmerLoaderBlocks()
             ) : (
                 <>
-                    {!appDetails?.deploymentAppDeleteRequest && environment && (
+                    {!isdeploymentAppDeleting && environment && (
                         <div className="flex left w-100">
                             <div
                                 data-testid="app-status-card"

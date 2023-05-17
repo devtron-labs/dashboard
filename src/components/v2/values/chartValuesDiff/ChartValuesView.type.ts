@@ -298,6 +298,7 @@ export enum ChartValuesViewActionTypes {
     projects = 'projects',
     environments = 'environments',
     forceDeleteData = 'forceDeleteData',
+    noncascadeDeleteData = 'noncascadeDeleteData',
     errorResponseCode = 'errorResponseCode',
     invalidValueName = 'invalidValueName',
     invalidValueNameMessage = 'invalidValueNameMessage',
@@ -381,7 +382,7 @@ export interface ValuesForDiffStateType {
 
 export interface DeleteChartDialogProps {
     appName: string
-    handleDelete: (force?: boolean) => void
+    handleDelete: (deleteAction: string) => void
     toggleConfirmation: () => void
     isCreateValueView?: boolean
 }

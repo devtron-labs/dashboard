@@ -1,5 +1,5 @@
 import { get, post, put, trash, sortCallback, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes } from '../../config'
+import { DELETE_ACTION, Routes } from '../../config'
 import { handleUTCTime } from '../common'
 import { ChartValuesType, ChartGroup, HelmTemplateChartRequest, HelmProjectUpdatePayload } from './charts.types'
 import { SavedValueListResponse } from './SavedValues/types'
@@ -33,12 +33,12 @@ export function updateChart(request) {
     return put(Routes.UPDATE_APP_API, request)
 }
 
-export function deleteInstalledChart(installedAppId: string | number, isGitops?: boolean, force?: boolean) {
-    let URL
-    if (force) {
-        URL = `app-store/deployment/application/delete/${installedAppId}?force=${force}&partialDelete=false`
-    } else {
-        URL = `app-store/deployment/application/delete/${installedAppId}?partialDelete=${isGitops ? 'true' : 'false'}`
+export function deleteInstalledChart(installedAppId: string | number, isGitops?: boolean, deleteAction?: string,) {
+    let URL:string = `app-store/deployment/application/delete/${installedAppId}?partialDelete=${isGitops ? 'true' : 'false'}`
+    if (deleteAction === DELETE_ACTION.FORCE_DELETE) {
+        URL += `&force=true`
+    } else if (deleteAction === DELETE_ACTION.NONCASCADE_DELETE) {
+        URL += `&cascade=false`
     }
     return trash(URL)
 }

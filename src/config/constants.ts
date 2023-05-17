@@ -152,6 +152,8 @@ export const Routes = {
     DESIRED_MANIFEST: 'application/desired-manifest',
     EVENTS: 'k8s/events',
     LOGS: 'k8s/pods/logs',
+    NONCASCADE_DELETE_HELM_APP: 'app-store/installed-app/delete',
+    NONCASCADE_DELETE_DEVTRON_APP : 'app/delete',
     DELETE_RESOURCE: 'k8s/resource/delete',
     CREATE_RESOURCE: 'k8s/resource/create',
     HELM_RELEASE_APP_DELETE_API: 'application/delete',
@@ -807,4 +809,10 @@ export enum CONFIGURATION_TYPES {
     ENVIRONMENT = 'ENVIRONMENT',
     NAMESPACE = 'NAMESPACE',
     DESCRIPTION = 'DESCRIPTION',
+}
+
+export enum DELETE_ACTION {
+    DELETE= 'delete',
+    FORCE_DELETE= 'force_delete',
+    NONCASCADE_DELETE= 'noncascade_delete',
 }

@@ -1,5 +1,6 @@
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { AggregatedNodes, AppStreamData, OptionType } from '../../types'
+import { type } from 'os'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
@@ -120,6 +121,19 @@ export interface ModuleConfigResponse extends ResponseType {
   result?: {
     enabled: boolean
   }
+}
+
+export interface ClusterConnectionResponse extends ResponseType {
+  result?: {
+    clusterReachable: boolean
+    clusterName: string,
+  }
+}
+
+export type DeleteResponseType = {
+    clusterName: string,
+    clusterReachable: boolean,
+    deleteInitiated: boolean,
 }
 
 export interface DeploymentStatusDetailRowType {

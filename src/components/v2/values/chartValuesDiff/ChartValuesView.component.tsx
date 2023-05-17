@@ -41,6 +41,7 @@ import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../co
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
+import { DELETE_ACTION } from '../../../../config'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -293,7 +294,7 @@ export const DeleteChartDialog = ({
     return (
         <DeleteDialog
             title={`Delete '${appName}' ?`}
-            delete={() => handleDelete(false)}
+            delete={() => handleDelete(DELETE_ACTION.DELETE)}
             closeDelete={toggleConfirmation}
         >
             {isCreateValueView ? (
