@@ -55,6 +55,10 @@ export const initState = (
             title: '',
             message: '',
         },
+        nonCascadeDeleteData: {
+            nonCascade: false,
+            clusterName: '',
+        },
         errorResponseCode: 0,
         invalidAppName: false,
         invalidAppNameMessage: '',
@@ -142,6 +146,8 @@ export const chartValuesReducer = (state: ChartValuesViewState, action: ChartVal
             return { ...state, environments: action.payload }
         case ChartValuesViewActionTypes.forceDeleteData:
             return { ...state, forceDeleteData: action.payload }
+        case ChartValuesViewActionTypes.nonCascadeDeleteData:
+            return { ...state, nonCascadeDeleteData: action.payload }
         case ChartValuesViewActionTypes.errorResponseCode:
             return { ...state, errorResponseCode: action.payload }
         case ChartValuesViewActionTypes.invalidValueName:

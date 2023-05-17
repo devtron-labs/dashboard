@@ -249,6 +249,10 @@ export interface ChartValuesViewState {
         title: string
         message: string
     }
+    nonCascadeDeleteData: {
+        nonCascade: boolean,
+        clusterName: string,
+    },
     errorResponseCode: number
     invalidAppName: boolean
     invalidAppNameMessage: string
@@ -298,7 +302,7 @@ export enum ChartValuesViewActionTypes {
     projects = 'projects',
     environments = 'environments',
     forceDeleteData = 'forceDeleteData',
-    noncascadeDeleteData = 'noncascadeDeleteData',
+    nonCascadeDeleteData = 'nonCascadeDeleteData',
     errorResponseCode = 'errorResponseCode',
     invalidValueName = 'invalidValueName',
     invalidValueNameMessage = 'invalidValueNameMessage',

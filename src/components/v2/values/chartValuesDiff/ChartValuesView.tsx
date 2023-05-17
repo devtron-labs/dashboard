@@ -574,7 +574,7 @@ function ChartValuesView({
         })
         //resetting the delete states
         dispatch({
-            type: ChartValuesViewActionTypes.noncascadeDeleteData,
+            type: ChartValuesViewActionTypes.nonCascadeDeleteData,
             payload: {
                 nonCascade: false,
                 clusterName: ''
@@ -604,7 +604,7 @@ function ChartValuesView({
                     )
                 } else if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
                     dispatch({
-                        type: ChartValuesViewActionTypes.noncascadeDeleteData,
+                        type: ChartValuesViewActionTypes.nonCascadeDeleteData,
                         payload: {
                             nonCascade: true,
                             clusterName: response.result.deleteResponse?.clusterName
@@ -1212,7 +1212,7 @@ function ChartValuesView({
 
     const onClickHideNonCascadeDeletePopup = () => {
         dispatch({
-            type: ChartValuesViewActionTypes.noncascadeDeleteData,
+            type: ChartValuesViewActionTypes.nonCascadeDeleteData,
             payload: {
                 nonCascade: false,
                 clusterName: ''
@@ -1222,7 +1222,7 @@ function ChartValuesView({
     
     const onClickNonCascadeDelete = () => {
         dispatch({
-            type: ChartValuesViewActionTypes.noncascadeDeleteData,
+            type: ChartValuesViewActionTypes.nonCascadeDeleteData,
             payload: {
                 nonCascade: false,
                 clusterName: ''
@@ -1584,9 +1584,9 @@ function ChartValuesView({
                         }}
                     />
                 )}
-                {commonState.noncascadeDeleteData.nonCascade && (
+                {commonState.nonCascadeDeleteData.nonCascade && (
                     <ClusrerNotReachableDialog
-                    clusterName={commonState.noncascadeDeleteData.clusterName}
+                    clusterName={commonState.nonCascadeDeleteData.clusterName}
                     onClickCancel={onClickHideNonCascadeDeletePopup}
                     onClickDelete={onClickNonCascadeDelete}
                 />

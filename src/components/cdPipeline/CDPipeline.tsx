@@ -726,7 +726,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         deleteCDPipeline(payload, force, cascadeDelete)
             .then((response) => {
                 if (response.result) {
-                    if (response.result.deleteResponse?.deleteInitiated) {
+                    if (cascadeDelete && !response.result.deleteResponse?.clusterReachable && !response.result.deleteResponse?.deleteInitiated) {
+                        this.setState({
+                            loadingData: false,
+                            showDeleteModal: false,
+                            showNonCascadeDeleteDialog: true,
+                            clusterName: response.result.deleteResponse?.clusterName,
+                        })
+                    } else {
                         toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
                         this.setState({ loadingData: false })
                         this.props.close()
@@ -734,13 +741,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             this.props.refreshParentWorkflows()
                         }
                         this.props.getWorkflows()
-                    } else if (cascadeDelete && !response.result.deleteResponse?.clusterReachable) {
-                        this.setState({
-                            loadingData: false,
-                            showDeleteModal: false,
-                            showNonCascadeDeleteDialog: true,
-                            clusterName: response.result.deleteResponse?.clusterName,
-                        })
                     }
                 }
             })
