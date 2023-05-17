@@ -900,11 +900,7 @@ function ClusterForm({
         return saveClusterPayload
     }
 
-    // const setClusterNameInCLusterList = (cluster_name: string) => {
-    //     if (isSelected[cluster_name]) {
-    //         return true
-    //     } else return false
-    // }
+
 
     async function saveClustersDetails() {
         try {
