@@ -903,7 +903,6 @@ function ClusterForm({
     //     } else return false
     // }
 
-
     const handleAllSelectionOfClusters = (isActiveWorkloadsTab: boolean) => {
         const _nameSelectionKey = isActiveWorkloadsTab ? 'scaleDown' : 'restore'
         const _nameSelection = nameSelection[_nameSelectionKey]
@@ -922,12 +921,11 @@ function ClusterForm({
                 value: _nameSelection.isChecked ? 'INTERMEDIATE' : 'CHECKED',
             },
         })
-
     }
 
     const handleSelectionOfClusters = (isActiveWorkloadsTab: boolean, clusterName: string) => {
         const _workloadsList = isActiveWorkloadsTab ? dataList : null
-        const _setWorkloadsList = isActiveWorkloadsTab 
+        const _setWorkloadsList = isActiveWorkloadsTab
 
         const selectedWorkload = _workloadsList['cluster_name']
         selectedWorkload.value = !selectedWorkload.isChecked ? 'CHECKED' : 'INTERMEDIATE'
@@ -947,7 +945,6 @@ function ClusterForm({
         //         value: !areAllSelected && isAnySelected ? 'INTERMEDIATE' : 'CHECKED',
         //     },
         // })
-
     }
 
     async function saveClustersDetails() {
@@ -1289,14 +1286,14 @@ function ClusterForm({
                 <div className="form__row form__row--bearer-token flex column left top">
                     <div data-testid="enter_bearer_fill_space" className="bearer-token">
                         <ResizableTextarea
-                            dataTestId='enter_bearer_token_input'
+                            dataTestId="enter_bearer_token_input"
                             className="dc__resizable-textarea__with-max-height dc__required-field"
                             name="token"
                             value={config && config.bearer_token ? config.bearer_token : ''}
                             onChange={handleOnChange}
                             onBlur={handleOnBlur}
                             onFocus={handleOnFocus}
-                            placeholder="Enter bearer token"  
+                            placeholder="Enter bearer token"
                         />
                     </div>
                     {state.token.error && (
@@ -1316,21 +1313,19 @@ function ClusterForm({
                                 value={'CHECKED'}
                                 onChange={toggleCheckTlsConnection}
                             >
-                                <div data-testid="use_secure_tls_connection_checkbox" className="mr-4 flex center"> Use secure TLS connection {isTlsConnection}</div>
+                                <div data-testid="use_secure_tls_connection_checkbox" className="mr-4 flex center">
+                                    {' '}
+                                    Use secure TLS connection {isTlsConnection}
+                                </div>
                             </Checkbox>
                         </div>
 
                         {isTlsConnection && (
                             <>
                                 <div className="form__row">
-                                    <span
-                        
-                                        className="form__label dc__required-field"
-                                    >
-                                        Certificate Authority Data
-                                    </span>
+                                    <span className="form__label dc__required-field">Certificate Authority Data</span>
                                     <ResizableTextarea
-                                        dataTestId='certificate_authority_data'
+                                        dataTestId="certificate_authority_data"
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="certificateAuthorityData"
                                         value={state.certificateAuthorityData.value}
@@ -1339,11 +1334,9 @@ function ClusterForm({
                                     />
                                 </div>
                                 <div className="form__row">
-                                    <span className="form__label dc__required-field">
-                                        TLS Key
-                                    </span>
+                                    <span className="form__label dc__required-field">TLS Key</span>
                                     <ResizableTextarea
-                                        dataTestId='tls_client_key'
+                                        dataTestId="tls_client_key"
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="tlsClientKey"
                                         value={state.tlsClientKey.value}
@@ -1352,11 +1345,9 @@ function ClusterForm({
                                     />
                                 </div>
                                 <div className="form__row">
-                                    <span className="form__label dc__required-field">
-                                        TLS Certificate
-                                    </span>
+                                    <span className="form__label dc__required-field">TLS Certificate</span>
                                     <ResizableTextarea
-                                        dataTestId='tls_certificate'
+                                        dataTestId="tls_certificate"
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="tlsClientCert"
                                         value={state.tlsClientCert.value}
@@ -1507,7 +1498,7 @@ function ClusterForm({
                     </button>
 
                     <button
-                        className="cta mr-32 ml-20 "
+                        className="cta mr-32 ml-20"
                         type="button"
                         onClick={handleGetClustersClick}
                         disabled={!saveYamlData}
@@ -1592,11 +1583,14 @@ function ClusterForm({
                     <AddClusterHeader />
 
                     <div className="api-token__list en-2 bw-0 bcn-0 br-8">
-                        <div data-testid="cluster_list_page_after_selection" className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1">
+                        <div
+                            data-testid="cluster_list_page_after_selection"
+                            className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1"
+                        >
                             <div></div>
-                            <div>CLUSTER</div>
-                            <div>STATUS</div>
-                            <div>MESSAGE</div>
+                            <div data-testid="cluster_validate">CLUSTER</div>
+                            <div data-testid="status_validate">STATUS</div>
+                            <div data-testid="message_validate">MESSAGE</div>
                             <div></div>
                         </div>
                         <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 161px)' }}>
@@ -1742,7 +1736,10 @@ function ClusterForm({
         return (
             <>
                 {isKubeConfigFile && (
-                    <div data-testid="valid_cluster_infocolor_bar" className="cluster-form dc__position-rel h-100 bcn-0">
+                    <div
+                        data-testid="valid_cluster_infocolor_bar"
+                        className="cluster-form dc__position-rel h-100 bcn-0"
+                    >
                         <AddClusterHeader />
                         <InfoColourBar
                             message={`${validCluster()} valid cluster. Select the cluster you want to Add/Update`}
@@ -1826,7 +1823,7 @@ function ClusterForm({
                             style={{ marginRight: 'auto' }}
                         >
                             <span style={{ display: 'flex', alignItems: 'center' }}>
-                            <Edit className="icon-dim-16 scb-5 mr-4" />
+                                <Edit className="icon-dim-16 scb-5 mr-4" />
                                 Edit Kubeconfig
                             </span>
                         </button>
@@ -1852,7 +1849,12 @@ function ClusterForm({
                 <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                     Add Cluster
                 </h2>
-                <button data-testid="header_close_icon" type="button" className="dc__transparent flex icon-dim-24 mr-24" onClick={handleCloseButton}>
+                <button
+                    data-testid="header_close_icon"
+                    type="button"
+                    className="dc__transparent flex icon-dim-24 mr-24"
+                    onClick={handleCloseButton}
+                >
                     <Close className="icon-dim-24" />
                 </button>
             </div>
@@ -1900,7 +1902,11 @@ function ClusterForm({
                         <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
                             Cancel
                         </button>
-                        <button data-testid="save_cluster_after_entering_cluster_details" className="cta mr-20 ml-20" onClick={() => saveClusterCall()}>
+                        <button
+                            data-testid="save_cluster_after_entering_cluster_details"
+                            className="cta mr-20 ml-20"
+                            onClick={() => saveClusterCall()}
+                        >
                             {'Save cluster'}
                         </button>
                     </div>
@@ -2024,7 +2030,12 @@ function Environment({
             <div className="bcn-0">
                 <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12">
                     <div className="fs-16 fw-6 lh-1-43 ml-20">{id ? 'Edit Environment' : 'Add Environment'}</div>
-                    <button data-testid="close_button_after_cluster_list_display" type="button" className="dc__transparent flex icon-dim-24" onClick={hideClusterDrawer}>
+                    <button
+                        data-testid="close_button_after_cluster_list_display"
+                        type="button"
+                        className="dc__transparent flex icon-dim-24"
+                        onClick={hideClusterDrawer}
+                    >
                         <Close className="icon-dim-24 dc__align-right cursor" />
                     </button>
                 </div>
