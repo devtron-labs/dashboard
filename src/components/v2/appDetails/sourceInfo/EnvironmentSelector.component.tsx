@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Select from 'react-select'
-import { showError, PopupMenu, multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, PopupMenu, multiSelectStyles, ForceDeleteDialog, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
 import IndexStore from '../index.store'
 import { AppEnvironment } from './environment.type'
@@ -20,10 +20,11 @@ import { deleteInstalledChart } from '../../../charts/charts.service'
 import { toast } from 'react-toastify'
 import { ReactComponent as Dots } from '../../assets/icons/ic-menu-dot.svg'
 import { DeleteChartDialog } from '../../values/chartValuesDiff/ChartValuesView.component'
-import { checkIfDevtronOperatorHelmRelease } from '../../../../config'
+import { DELETE_ACTION, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
+import ClusrerNotReachableDialog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 function EnvironmentSelectorComponent({
     isExternalApp,
@@ -42,6 +43,11 @@ function EnvironmentSelectorComponent({
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [urlInfo, showUrlInfo] = useState<boolean>(false)
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
+    const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
+    const [forceDeleteDialogTitle, setForceDeleteDialogTitle] = useState<string>('')
+    const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState<string>('')
+    const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false)
+    const [clusterName, setClusterName] = useState<string>('')
     const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
 
     useEffect(() => {
@@ -92,26 +98,51 @@ function EnvironmentSelectorComponent({
             </div>
         )
     }
+    const setForceDeleteDialogData = (serverError) => {
+        if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
+            serverError.errors.map(({ userMessage, internalMessage }) => {
+                setForceDeleteDialogTitle(userMessage)
+                setForceDeleteDialogMessage( internalMessage)
+            })
+        }
+    }
 
-    const getDeleteApplicationApi = (): Promise<any> => {
+    const getDeleteApplicationApi = (deleteAction: string): Promise<any> => {
         if (isExternalApp) {
             return deleteApplicationRelease(params.appId)
         } else {
-            return deleteInstalledChart(params.appId, isGitops)
+            return deleteInstalledChart(params.appId, isGitops, deleteAction)
         }
     }
 
     const toggleShowDeleteConfirmation = () => {
         setShowDeleteConfirmation(!showDeleteConfirmation)
     }
+    const onClickHideNonCascadeDeletePopup = () => {
+        showNonCascadeDeleteDialog(false)
+    }
+    
+    const onClickNonCascadeDelete = () => {
+        showNonCascadeDeleteDialog(false)
+        deleteResourceAction(DELETE_ACTION.NONCASCADE_DELETE)
+    }
 
-    async function deleteResourceAction() {
+    async function deleteResourceAction(deleteAction: string) {
         try {
-            await getDeleteApplicationApi()
-            setShowDeleteConfirmation(false)
-            toast.success('Deletion initiated successfully.')
-            _init()
-        } catch (error) {
+            const response = await getDeleteApplicationApi(deleteAction)
+            if (response.result.deleteResponse?.deleteInitiated) {
+                setShowDeleteConfirmation(false)
+                toast.success('Deletion initiated successfully.')
+                _init()
+            } else if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
+                setClusterName(response.result.deleteResponse?.clusterName)
+                showNonCascadeDeleteDialog(true)
+            }
+        } catch (error: any) {
+            if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && error.code !== 403) { 
+                setForceDeleteDialogData(error)
+                showForceDeleteDialog(true)
+            }
             showError(error)
         }
     }
@@ -228,7 +259,11 @@ function EnvironmentSelectorComponent({
             {!loadingResourceTree && (
                 <div className="flex">
                     {!appDetails.deploymentAppDeleteRequest && (
-                        <button className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2" onClick={showInfoUrl} data-testid="url-button-app-details">
+                        <button
+                            className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2"
+                            onClick={showInfoUrl}
+                            data-testid="url-button-app-details"
+                        >
                             <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
                             Urls
                         </button>
@@ -269,6 +304,23 @@ function EnvironmentSelectorComponent({
                                 />
                             )}
                         </div>
+                    )}
+                    {forceDeleteDialog && (
+                        <ForceDeleteDialog
+                            forceDeleteDialogTitle={forceDeleteDialogTitle}
+                            onClickDelete={() => deleteResourceAction(DELETE_ACTION.FORCE_DELETE)}
+                            closeDeleteModal={() => {
+                                showForceDeleteDialog(false)
+                            }}
+                            forceDeleteDialogMessage={forceDeleteDialogMessage}
+                        />
+                    )}
+                    {nonCascadeDeleteDialog && (
+                        <ClusrerNotReachableDialog
+                            clusterName={clusterName}
+                            onClickCancel={onClickHideNonCascadeDeletePopup}
+                            onClickDelete={onClickNonCascadeDelete}
+                        />
                     )}
                 </div>
             )}
