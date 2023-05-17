@@ -688,7 +688,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         >
                             <div className="ml-12">
                                 {this.props.isJobView ? (
-                                    <span className="mb-4 mt-4 flex left">Set checkout path</span>
+                                    <span data-testid="set-checkout-path-checkbox" className="mb-4 mt-4 flex left">Set checkout path</span>
                                 ) : (
                                     <>
                                         <span className="mb-4 flex left" data-testid="set-clone-directory-checkbox">
