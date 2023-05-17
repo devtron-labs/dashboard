@@ -23,6 +23,11 @@ export interface UserNameList {
     value: string,
 }
 
+export interface ClusterCheckType {
+    isChecked: boolean
+    value: 'INTERMEDIATE' | 'CHECKED'
+}
+
 export interface DataListType{
     cluster_name: string
     userInfos: UserDetails[]
