@@ -289,12 +289,21 @@ a:focus {
     position: relative;
 }
 
+.dc__position-rel-imp {
+    position: relative !important;
+}
+
 .dc__position-abs {
     position: absolute;
 }
 
 .dc__position-sticky {
     position: sticky;
+}
+
+.dc__position-abs-b-20 {
+    position: absolute;
+    bottom: 20px;
 }
 
 .dc__top-0 {
@@ -617,7 +626,6 @@ button.anchor {
 }
 
 .app-summary__status-name {
-
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,
@@ -892,7 +900,6 @@ button.anchor {
 }
 
 .override-button.cta {
-
     &.ghosted,
     &.delete {
         height: 32px;
@@ -1194,12 +1201,12 @@ button.anchor {
         overflow: hidden;
         border-radius: 4px;
 
-        input+.radio__item-label {
+        input + .radio__item-label {
             border-radius: 0;
             border: 1px solid var(--N200);
         }
 
-        input[type='checkbox']:checked+.radio__item-label {
+        input[type='checkbox']:checked + .radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
@@ -1228,19 +1235,19 @@ button.anchor {
                 border-right: unset;
             }
 
-            &:first-child input+.radio__item-label {
+            &:first-child input + .radio__item-label {
                 border-top-left-radius: 4px;
                 border-bottom-left-radius: 4px;
             }
 
-            &:last-child input+.radio__item-label {
+            &:last-child input + .radio__item-label {
                 border-top-right-radius: 4px;
                 border-bottom-right-radius: 4px;
                 border: 1px solid var(--N200);
             }
         }
 
-        input[type='checkbox']:checked+.radio__item-label {
+        input[type='checkbox']:checked + .radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
@@ -1254,7 +1261,7 @@ button.anchor {
 
 .gui-yaml-switch {
     &.radio-group {
-        input[type='checkbox']:checked+.radio__item-label {
+        input[type='checkbox']:checked + .radio__item-label {
             color: var(--N900);
 
             svg path {
@@ -1282,7 +1289,7 @@ button.anchor {
 
 .manual-approvals-switch {
     &.radio-group {
-        input[type='checkbox']:checked+.radio__item-label {
+        input[type='checkbox']:checked + .radio__item-label {
             color: var(--N900);
 
             svg path {
@@ -1301,12 +1308,12 @@ button.anchor {
                 fill: var(--N500);
             }
 
-            &:first-child input+.radio__item-label {
+            &:first-child input + .radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input+.radio__item-label {
+            &:last-child input + .radio__item-label {
                 border-top-right-radius: 4px !important;
                 border-bottom-right-radius: 4px !important;
             }
@@ -1605,7 +1612,7 @@ button.anchor {
     vertical-align: bottom;
 }
 
-.dc__tertiary-tab__radio input:checked~.dc__tertiary-tab {
+.dc__tertiary-tab__radio input:checked ~ .dc__tertiary-tab {
     border: solid 1px var(--B500);
     background-color: var(--B100);
 }
@@ -2196,7 +2203,7 @@ textarea,
     }
 }
 
-.basic-multi-select>.select__control--is-disabled {
+.basic-multi-select > .select__control--is-disabled {
     background-color: var(--N100) !important;
 }
 
