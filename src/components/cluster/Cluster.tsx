@@ -1324,6 +1324,7 @@ function ClusterForm({
                             <>
                                 <div className="form__row">
                                     <span
+                        
                                         className="form__label dc__required-field"
                                     >
                                         Certificate Authority Data
@@ -1819,20 +1820,19 @@ function ClusterForm({
                 {isKubeConfigFile && (
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
                         <button
-                            className="ml-20  cb-5"
+                            className="ml-20 dc_edit_button cb-5"
                             type="button"
                             onClick={toggleGetCluster}
                             style={{ marginRight: 'auto' }}
                         >
                             <span style={{ display: 'flex', alignItems: 'center' }}>
-                                <Pencil style={{ marginLeft: 'auto' }} />
-                                {/* <Edit className="icon-dim-16 scb-5 mr-4" />  */}
+                            <Edit className="icon-dim-16 scb-5 mr-4" />
                                 Edit Kubeconfig
                             </span>
                         </button>
                         <button
                             data-testid="save_cluster_list_button_after_selection"
-                            className="cta mr-32 ml-20"
+                            className="cta mr-20"
                             type="button"
                             onClick={() => handleClusterDetailCall()}
                             disabled={!saveClusterList}
