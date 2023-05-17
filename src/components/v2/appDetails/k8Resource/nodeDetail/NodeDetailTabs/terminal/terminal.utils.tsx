@@ -27,7 +27,7 @@ import {
     EditManifestType,
     DebugModeType,
 } from './terminal.type'
-import { EDIT_MODE_TYPE, MANIFEST_SELECTION_MESSAGE, TERMINAL_WRAPPER_COMPONENT_TYPE } from './constants'
+import { EditModeType, MANIFEST_SELECTION_MESSAGE, TerminalWrapperType } from './constants'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../../../../../ClusterNodes/constants'
 
 const creatableSelectWrapper = (selectData: SelectWrapperType) => {
@@ -232,19 +232,19 @@ const manifestEditButtons = ({
     }
 
     const selectEditMode = () => {
-        setManifestButtonState(EDIT_MODE_TYPE.EDIT)
+        setManifestButtonState(EditModeType.EDIT)
     }
 
     const selectReviewMode = () => {
-        setManifestButtonState(EDIT_MODE_TYPE.REVIEW)
+        setManifestButtonState(EditModeType.REVIEW)
     }
 
     const applyChanges = () => {
-        setManifestButtonState(EDIT_MODE_TYPE.APPLY)
+        setManifestButtonState(EditModeType.APPLY)
     }
 
     const cancelChanges = () => {
-        setManifestButtonState(EDIT_MODE_TYPE.NON_EDIT)
+        setManifestButtonState(EditModeType.NON_EDIT)
     }
 
     const renderButtons = () => {
@@ -280,7 +280,7 @@ const manifestEditButtons = ({
         <>
             <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
             {renderButtons()}
-            {buttonSelectionState !== EDIT_MODE_TYPE.NON_EDIT && (
+            {buttonSelectionState !== EditModeType.NON_EDIT && (
                 <span className="ml-12 cn-7 fw-6 fs-12 cursor" onClick={cancelChanges}>
                     {MANIFEST_SELECTION_MESSAGE.CANCEL}
                 </span>
@@ -291,25 +291,25 @@ const manifestEditButtons = ({
 
 export default function terminalStripTypeData(elementData) {
     switch (elementData.type) {
-        case TERMINAL_WRAPPER_COMPONENT_TYPE.CREATABLE_SELECT:
+        case TerminalWrapperType.CREATABLE_SELECT:
             return creatableSelectWrapper(elementData)
-        case TERMINAL_WRAPPER_COMPONENT_TYPE.CONNECTION_BUTTON:
+        case TerminalWrapperType.CONNECTION_BUTTON:
             return connectionButton(elementData)
-        case TERMINAL_WRAPPER_COMPONENT_TYPE.TITLE_NAME:
+        case TerminalWrapperType.TITLE_NAME:
             return titleName(elementData)
-        case TERMINAL_WRAPPER_COMPONENT_TYPE.CLOSE_EXPAND_VIEW:
+        case TerminalWrapperType.CLOSE_EXPAND_VIEW:
             return closeExpandView(elementData)
-        case TERMINAL_WRAPPER_COMPONENT_TYPE.REACT_SELECT:
+        case TerminalWrapperType.REACT_SELECT:
             return reactSelect(elementData)
-        case TERMINAL_WRAPPER_COMPONENT_TYPE.CONNCTION_SWITCH:
+        case TerminalWrapperType.CONNCTION_SWITCH:
             return connectionSwitch(elementData)
-        case TERMINAL_WRAPPER_COMPONENT_TYPE.CLEAR_BUTTON:
+        case TerminalWrapperType.CLEAR_BUTTON:
             return clearTerminal(elementData)
-        case TERMINAL_WRAPPER_COMPONENT_TYPE.MANIFEST_EDIT_BUTTONS:
+        case TerminalWrapperType.MANIFEST_EDIT_BUTTONS:
             return manifestEditButtons(elementData)
-        case TERMINAL_WRAPPER_COMPONENT_TYPE.DEBUG_MODE_TOGGLE_BUTTON:
+        case TerminalWrapperType.DEBUG_MODE_TOGGLE_BUTTON:
             return debugModeToggleButton(elementData)
-        case TERMINAL_WRAPPER_COMPONENT_TYPE.CUSTOM_COMPONENT:
+        case TerminalWrapperType.CUSTOM_COMPONENT:
             return elementData.customComponent()
         default:
             return null

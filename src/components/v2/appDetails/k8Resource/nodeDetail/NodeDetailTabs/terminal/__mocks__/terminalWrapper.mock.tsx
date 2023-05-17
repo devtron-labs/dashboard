@@ -1,24 +1,23 @@
 import React, { useRef } from 'react'
-import { nodeSelect } from '../../../../../../../ClusterNodes/constants'
-import { SocketConnectionType } from '../../node.type'
-import { TERMINAL_TEXT, TERMINAL_WRAPPER_COMPONENT_TYPE } from '../constants'
+import { nodeSelect, SocketConnectionType } from '../../../../../../../ClusterNodes/constants'
+import { TerminalWrapperType, TERMINAL_TEXT } from '../constants'
 import { TerminalSelectionListDataType } from '../terminal.type'
 
 export const selectionListData: TerminalSelectionListDataType = {
     firstRow: [
         {
-            type: TERMINAL_WRAPPER_COMPONENT_TYPE.TITLE_NAME,
+            type: TerminalWrapperType.TITLE_NAME,
             hideTerminalStripComponent: false,
             title: 'Cluster',
             value: 'default_cluster',
         },
         {
-            type: TERMINAL_WRAPPER_COMPONENT_TYPE.CONNECTION_BUTTON,
+            type: TerminalWrapperType.CONNECTION_BUTTON,
             hideTerminalStripComponent: true,
             connectTerminal: false,
         },
         {
-            type: TERMINAL_WRAPPER_COMPONENT_TYPE.REACT_SELECT,
+            type: TerminalWrapperType.REACT_SELECT,
             title: 'Node',
             placeholder: 'Select node',
             options: [
@@ -73,18 +72,18 @@ export const selectionListDataWithSecondStrip = {
     ...selectionListData,
     secondRow: [
         {
-            type: TERMINAL_WRAPPER_COMPONENT_TYPE.TITLE_NAME,
+            type: TerminalWrapperType.TITLE_NAME,
             hideTerminalStripComponent: false,
             title: 'Cluster',
             value: 'default_cluster',
         },
         {
-            type: TERMINAL_WRAPPER_COMPONENT_TYPE.CONNECTION_BUTTON,
+            type: TerminalWrapperType.CONNECTION_BUTTON,
             hideTerminalStripComponent: true,
             connectTerminal: false,
         },
         {
-            type: TERMINAL_WRAPPER_COMPONENT_TYPE.REACT_SELECT,
+            type: TerminalWrapperType.REACT_SELECT,
             title: 'Node',
             placeholder: 'Select node',
             options: [

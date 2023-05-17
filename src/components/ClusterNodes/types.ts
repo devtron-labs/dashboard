@@ -2,8 +2,8 @@ import React from 'react'
 import { MultiValue } from 'react-select'
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { LabelTag, OptionType } from '../app/types'
-import { EDIT_MODE_TYPE } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { CLUSTER_PAGE_TAB } from './constants'
+import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'VERSION_ERROR',
@@ -174,7 +174,7 @@ export interface ClusterListType {
     namespaceList: string[]
 }
 
-export interface ClusterDetailsPropType extends ClusterListType { 
+export interface ClusterDetailsPropType extends ClusterListType {
     clusterId: string
 }
 
@@ -310,10 +310,10 @@ export interface TerminalDataType {
     terminalAccessId?: number
 }
 
-export interface ClusterManifestType { 
-    terminalAccessId: number,
-    manifestMode: EDIT_MODE_TYPE,
-    setManifestMode: (mode: EDIT_MODE_TYPE) => void
+export interface ClusterManifestType {
+    terminalAccessId: number
+    manifestMode: EditModeType
+    setManifestMode: (mode: EditModeType) => void
     setManifestData: (manifest: string) => void
     errorMessage?: string[]
     setManifestAvailable: (isManifestAvailable: boolean) => void
@@ -332,13 +332,12 @@ export interface ClusterEditManifestType {
     forceDelete?: boolean
 }
 
-
 export interface ManifestPopuptype {
-    closePopup: (isClose: boolean) => void,
-    podName: string, 
-    namespace: string, 
+    closePopup: (isClose: boolean) => void
+    podName: string
+    namespace: string
     forceDeletePod: (deletePod: boolean) => void
 }
-export type MDEditorSelectedTabType = "write" | "preview"
+export type MDEditorSelectedTabType = 'write' | 'preview'
 
 export type CLUSTER_PAGE_TAB_TYPE = CLUSTER_PAGE_TAB.ABOUT | CLUSTER_PAGE_TAB.DETAILS

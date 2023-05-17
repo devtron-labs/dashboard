@@ -2,11 +2,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import { components } from 'react-select'
 import { BUSYBOX_LINK, NETSHOOT_LINK, shellTypes } from '../../config/constants'
 import {
-    ErrorMessageType,
-    POD_LINKS,
-    SocketConnectionType,
-} from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
-import {
     clusterDisconnectAndRetry,
     clusterManifestEdit,
     clusterTerminalDisconnect,
@@ -27,20 +22,23 @@ import {
     clusterSelectStyle,
     CLUSTER_STATUS,
     CLUSTER_TERMINAL_MESSAGING,
+    ErrorMessageType,
     IMAGE_LIST,
     nodeSelect,
+    POD_LINKS,
     PRE_FETCH_DATA_MESSAGING,
     SELECT_TITLE,
+    SocketConnectionType,
 } from './constants'
 import { OptionType } from '../userGroups/userGroups.types'
 import { getClusterTerminalParamsData } from '../cluster/cluster.util'
 import { generatePath, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'
 import {
-    EDIT_MODE_TYPE,
     TERMINAL_STATUS,
     TERMINAL_TEXT,
-    TERMINAL_WRAPPER_COMPONENT_TYPE,
+    EditModeType,
+    TerminalWrapperType,
 } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
 
@@ -95,7 +93,7 @@ export default function ClusterTerminal({
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const [sessionId, setSessionId] = useState<string>()
     const [errorMessage, setErrorMessage] = useState<ErrorMessageType>({ message: '', reason: '' })
-    const [manifestButtonState, setManifestButtonState] = useState<EDIT_MODE_TYPE>(EDIT_MODE_TYPE.NON_EDIT)
+    const [manifestButtonState, setManifestButtonState] = useState<EditModeType>(EditModeType.NON_EDIT)
     const [manifestData, setManifestData] = useState<string>('')
     const [showPodExistPopup, setShowPodExistPopup] = useState<boolean>()
     const [forceDelete, setForceDelete] = useState<boolean>()
@@ -161,7 +159,7 @@ export default function ClusterTerminal({
                         } else if (response.result?.errors) {
                             const errors = response.result.errors
                             setManifestErrors(errors)
-                            setManifestButtonState(EDIT_MODE_TYPE.EDIT)
+                            setManifestButtonState(EditModeType.EDIT)
                             setManifestData('')
                         } else {
                             const result = response.result
@@ -182,7 +180,7 @@ export default function ClusterTerminal({
                             }
                             const namespace = result.namespace
                             setNamespace(namespace ? { label: namespace, value: namespace } : defaultNameSpace)
-                            setManifestButtonState(EDIT_MODE_TYPE.NON_EDIT)
+                            setManifestButtonState(EditModeType.NON_EDIT)
                             terminalAccessIdRef.current = result.terminalAccessId
                             socketConnecting()
                             setShowPodExistPopup(false)
@@ -191,7 +189,7 @@ export default function ClusterTerminal({
                     })
                     .catch((error) => {
                         showError(error)
-                        setManifestButtonState(EDIT_MODE_TYPE.EDIT)
+                        setManifestButtonState(EditModeType.EDIT)
                         setManifestData('')
                     })
                     .finally(() => {
@@ -219,7 +217,7 @@ export default function ClusterTerminal({
             autoSelectNodeRef.current = selectedNodeName.value
             setSelectedTabIndex(0)
             setManifestAvailable(false)
-            setManifestButtonState(EDIT_MODE_TYPE.NON_EDIT)
+            setManifestButtonState(EditModeType.NON_EDIT)
             if (update) {
                 socketDisconnecting()
                 clusterTerminalUpdate(
@@ -479,23 +477,25 @@ export default function ClusterTerminal({
     function closeTerminalModal(e: any, skipRedirection?: boolean): void {
         try {
             if (!isNodeDetailsPage && typeof closeTerminal === 'function') {
-                closeTerminal(skipRedirection);
+                closeTerminal(skipRedirection)
             }
-            setConnectTerminal(false);
+            setConnectTerminal(false)
             if (isPodCreated && terminalAccessIdRef.current) {
-                clusterTerminalDisconnect(terminalAccessIdRef.current).then(() => {
-                    socketDisconnecting();
-                    terminalAccessIdRef.current = null;
-                    toggleOptionChange();
-                    setUpdate(false);
-                }).catch((error) => {
-                    setConnectTerminal(true);
-                    showError(error);
-                })
+                clusterTerminalDisconnect(terminalAccessIdRef.current)
+                    .then(() => {
+                        socketDisconnecting()
+                        terminalAccessIdRef.current = null
+                        toggleOptionChange()
+                        setUpdate(false)
+                    })
+                    .catch((error) => {
+                        setConnectTerminal(true)
+                        showError(error)
+                    })
             }
         } catch (error) {
-            setConnectTerminal(true);
-            showError(error);
+            setConnectTerminal(true)
+            showError(error)
         }
     }
 
@@ -526,7 +526,7 @@ export default function ClusterTerminal({
         }
     }
 
-    function sessionError(error): void{
+    function sessionError(error): void {
         showError(error)
         if (error instanceof ServerErrors && Array.isArray(error.errors)) {
             error.errors.map(({ userMessage }) => {
@@ -693,7 +693,9 @@ export default function ClusterTerminal({
         return <GroupHeading {...props} hideClusterName={true} />
     }
 
-    const terminalClusterDetailsPageClassWrapper = isFullScreen ? 'cluster-details-full-screen' : 'cluster-details-node-details'
+    const terminalClusterDetailsPageClassWrapper = isFullScreen
+        ? 'cluster-details-full-screen'
+        : 'cluster-details-node-details'
 
     const terminalTabWrapper = (terminalView: () => JSX.Element) => {
         return (
@@ -821,7 +823,7 @@ export default function ClusterTerminal({
     }
 
     const closeManifetsPopup = (isClose: boolean): void => {
-        setManifestButtonState(EDIT_MODE_TYPE.REVIEW)
+        setManifestButtonState(EditModeType.REVIEW)
         setManifestData('')
         setShowPodExistPopup(isClose)
     }
@@ -835,20 +837,20 @@ export default function ClusterTerminal({
     const selectionListData: TerminalSelectionListDataType = {
         firstRow: [
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.TITLE_NAME,
+                type: TerminalWrapperType.TITLE_NAME,
                 hideTerminalStripComponent: !clusterName,
                 title: SELECT_TITLE.CLUSTER,
                 value: clusterName,
             },
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CONNECTION_BUTTON,
+                type: TerminalWrapperType.CONNECTION_BUTTON,
                 hideTerminalStripComponent: !isNodeDetailsPage,
                 connectTerminal: connectTerminal,
                 closeTerminalModal: closeTerminalModal,
                 reconnectTerminal: reconnectTerminal,
             },
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.REACT_SELECT,
+                type: TerminalWrapperType.REACT_SELECT,
                 hideTerminalStripComponent: isNodeDetailsPage,
                 title: SELECT_TITLE.NODE,
                 placeholder: 'Select node',
@@ -864,7 +866,7 @@ export default function ClusterTerminal({
                 },
             },
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CREATABLE_SELECT,
+                type: TerminalWrapperType.CREATABLE_SELECT,
                 showInfoTippy: false,
                 title: SELECT_TITLE.NAMESPACE,
                 placeholder: 'Select Namespace',
@@ -879,7 +881,7 @@ export default function ClusterTerminal({
                 },
             },
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CREATABLE_SELECT,
+                type: TerminalWrapperType.CREATABLE_SELECT,
                 title: SELECT_TITLE.IMAGE,
                 placeholder: 'Select Image',
                 options: imageList,
@@ -896,7 +898,7 @@ export default function ClusterTerminal({
                 },
             },
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CLOSE_EXPAND_VIEW,
+                type: TerminalWrapperType.CLOSE_EXPAND_VIEW,
                 hideTerminalStripComponent: isNodeDetailsPage,
                 showExpand: true,
                 isFullScreen: isFullScreen,
@@ -906,11 +908,11 @@ export default function ClusterTerminal({
         ],
         secondRow: [
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CUSTOM_COMPONENT,
+                type: TerminalWrapperType.CUSTOM_COMPONENT,
                 customComponent: renderTabs,
             },
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CONNCTION_SWITCH,
+                type: TerminalWrapperType.CONNCTION_SWITCH,
                 hideTerminalStripComponent: hideShell,
                 stopTerminalConnection,
                 resumePodConnection,
@@ -919,12 +921,12 @@ export default function ClusterTerminal({
                     socketConnection === SocketConnectionType.CONNECTED,
             },
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CLEAR_BUTTON,
+                type: TerminalWrapperType.CLEAR_BUTTON,
                 hideTerminalStripComponent: hideShell,
                 setTerminalCleared: clearTerminal,
             },
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CREATABLE_SELECT,
+                type: TerminalWrapperType.CREATABLE_SELECT,
                 hideTerminalStripComponent: hideShell,
                 title: SELECT_TITLE.SHELL,
                 placeholder: 'Select Shell',
@@ -938,14 +940,14 @@ export default function ClusterTerminal({
                 },
             },
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.DEBUG_MODE_TOGGLE_BUTTON,
+                type: TerminalWrapperType.DEBUG_MODE_TOGGLE_BUTTON,
                 hideTerminalStripComponent: hideShell || selectedNodeName.value === AUTO_SELECT.value,
                 showInfoTippy: true,
                 onToggle: setDebugMode,
                 isEnabled: debugMode,
             },
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.MANIFEST_EDIT_BUTTONS,
+                type: TerminalWrapperType.MANIFEST_EDIT_BUTTONS,
                 hideTerminalStripComponent: !(selectedTabIndex === 2 && isManifestAvailable),
                 buttonSelectionState: manifestButtonState,
                 setManifestButtonState: setManifestButtonState,

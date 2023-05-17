@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router'
 import { NodeDetailTab } from '../nodeDetail.type'
 import IndexStore from '../../../index.store'
-import { SocketConnectionType } from './node.type'
 import MessageUI from '../../../../common/message.ui'
 import { Option } from '../../../../common/ReactSelect.utils'
 import {
@@ -18,7 +17,8 @@ import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
 import { get, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { TERMINAL_WRAPPER_COMPONENT_TYPE } from './terminal/constants'
+import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
+import { TerminalWrapperType } from './terminal/constants'
 
 let clusterTimeOut
 
@@ -151,17 +151,17 @@ function TerminalComponent({
     const selectionListData: TerminalSelectionListDataType = {
         firstRow: [
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CONNECTION_BUTTON,
+                type: TerminalWrapperType.CONNECTION_BUTTON,
                 connectTerminal: connectTerminal,
                 closeTerminalModal: handleDisconnect,
                 reconnectTerminal: handleConnect,
             },
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.CLEAR_BUTTON,
+                type: TerminalWrapperType.CLEAR_BUTTON,
                 setTerminalCleared: handleAbort,
             },
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.REACT_SELECT,
+                type: TerminalWrapperType.REACT_SELECT,
                 showDivider: true,
                 title: 'Container ',
                 placeholder: 'Select container',
@@ -175,7 +175,7 @@ function TerminalComponent({
                 },
             },
             {
-                type: TERMINAL_WRAPPER_COMPONENT_TYPE.REACT_SELECT,
+                type: TerminalWrapperType.REACT_SELECT,
                 showDivider: true,
                 placeholder: 'Select Shell',
                 options: shellTypes,

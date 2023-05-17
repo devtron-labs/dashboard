@@ -191,27 +191,27 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
         const cursorValue = isNodeAuto ? 'cursor-not-allowed' : 'cursor'
         return (
             <ul role="tablist" className="tab-list">
-                <li className={`tab-list__tab pointer ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
+                <li className={`tab-list__tab cursor ${cursorValue}`} data-tab-index="0" onClick={changeNodeTab}>
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 0 ? ' fw-6 active' : ' fw-4'}`}>
                         {NODE_DETAILS_TABS.summary}
                     </div>
                     {selectedTabIndex == 0 && <div className="node-details__active-tab" />}
                 </li>
-                <li className={`tab-list__tab pointer ${cursorValue}`} data-tab-index="1" onClick={changeNodeTab}>
+                <li className={`tab-list__tab cursor ${cursorValue}`} data-tab-index="1" onClick={changeNodeTab}>
                     <div className={`mb-6 flexbox fs-13 tab-hover${selectedTabIndex == 1 ? ' fw-6 active' : ' fw-4'}`}>
                         <Edit className="icon-dim-16 mt-2 mr-5 edit-yaml-icon" />
                         {NODE_DETAILS_TABS.yaml}
                     </div>
                     {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
                 </li>
-                <li className={`tab-list__tab pointer ${cursorValue}`} data-tab-index="2" onClick={changeNodeTab}>
+                <li className={`tab-list__tab cursor ${cursorValue}`} data-tab-index="2" onClick={changeNodeTab}>
                     <div className={`mb-6 fs-13 tab-hover${selectedTabIndex == 2 ? ' fw-6 active' : ' fw-4'}`}>
                         {NODE_DETAILS_TABS.nodeConditions}
                     </div>
                     {selectedTabIndex == 2 && <div className="node-details__active-tab" />}
                 </li>
                 {isSuperAdmin && (
-                    <li className="tab-list__tab pointer" data-tab-index="3" onClick={changeNodeTab}>
+                    <li className="tab-list__tab cursor" data-tab-index="3" onClick={changeNodeTab}>
                         <div
                             className={`mb-6 flexbox fs-13 tab-hover${
                                 selectedTabIndex == 3 ? ' fw-6 active' : ' fw-4'
@@ -292,7 +292,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                     interactive={true}
                 >
                     <Clipboard
-                        className="ml-8 mt-5 pointer hover-only icon-dim-16"
+                        className="ml-8 mt-5 cursor hover-only icon-dim-16"
                         onClick={() => {
                             copyToClipboard(`${key}=${value || ''}`, () => {
                                 setCopied(true)
@@ -350,7 +350,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                     interactive={true}
                 >
                     <Clipboard
-                        className="ml-8 mt-5 pointer hover-only icon-dim-16"
+                        className="ml-8 mt-5 cursor hover-only icon-dim-16"
                         onClick={() => {
                             copyToClipboard(key, () => {
                                 setCopied(true)
@@ -390,7 +390,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     ): JSX.Element => {
         return (
             <div
-                className="cb-5 pointer flexbox fs-13 fw-6"
+                className="cb-5 cursor flexbox fs-13 fw-6"
                 onClick={() => {
                     onClickHandler(!condition)
                 }}
@@ -409,7 +409,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
             <div className="en-2 bw-1 br-4 bcn-0 mt-12">
                 <ul role="tablist" className="tab-list dc__border-bottom pr-20 pl-20 pt-12">
                     <li
-                        className="tab-list__tab pointer"
+                        className="tab-list__tab cursor"
                         onClick={() => {
                             setSelectedSubTabIndex(0)
                         }}
@@ -420,7 +420,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                         {selectedSubTabIndex == 0 && <div className="node-details__active-tab" />}
                     </li>
                     <li
-                        className="tab-list__tab pointer"
+                        className="tab-list__tab cursor"
                         onClick={() => {
                             setSelectedSubTabIndex(1)
                         }}
@@ -431,7 +431,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                         {selectedSubTabIndex == 1 && <div className="node-details__active-tab" />}
                     </li>
                     <li
-                        className="tab-list__tab pointer"
+                        className="tab-list__tab cursor"
                         onClick={() => {
                             setSelectedSubTabIndex(2)
                         }}
@@ -640,7 +640,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     ): JSX.Element => {
         return (
             <div
-                className={`dc__border-bottom fw-6 fs-13 cn-7 list-title h-36 pointer ${className} ${
+                className={`dc__border-bottom fw-6 fs-13 cn-7 list-title h-36 cursor ${className} ${
                     sortByColumnName === sortingFieldName ? 'sort-by' : ''
                 } ${sortOrder === OrderBy.DESC ? 'desc' : ''}`}
                 onClick={() => {
@@ -655,7 +655,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                         {columnName}
                     </span>
                 </Tippy>
-                <Sort className="pointer icon-dim-14 dc__position-rel sort-icon" />
+                <Sort className="cursor icon-dim-14 dc__position-rel sort-icon" />
             </div>
         )
     }
@@ -714,7 +714,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                                                 interactive={true}
                                             >
                                                 <Clipboard
-                                                    className="ml-5 mt-5 pointer hover-only icon-dim-14"
+                                                    className="ml-5 mt-5 cursor hover-only icon-dim-14"
                                                     onClick={() => {
                                                         copyToClipboard(pod.name, () => {
                                                             setCopied(true)

@@ -1,4 +1,5 @@
-import { SelectedResourceType } from "../../../appDetails.type"
+import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
+import { SelectedResourceType } from '../../../appDetails.type'
 
 export interface TerminalViewProps {
     dataTestId?: string
@@ -39,25 +40,4 @@ export interface PodEventsType {
     status: string
     errorReason: string
     eventsResponse: any
-}
-
-export enum SocketConnectionType {
-    CONNECTING = 'CONNECTING',
-    CONNECTED = 'CONNECTED',
-    DISCONNECTING = 'DISCONNECTING',
-    DISCONNECTED = 'DISCONNECTED',
-}
-
-export const ERROR_MESSAGE = {
-    UNAUTHORIZED: 'Not authorized. You do not have permission to access the terminal for this application.',
-}
-
-export const POD_LINKS = {
-    POD_MANIFEST: 'View/Edit Pod Manifest',
-    POD_EVENTS: 'View Pod Events',
-}
-
-export interface ErrorMessageType {
-    message: string,
-    reason: string
 }

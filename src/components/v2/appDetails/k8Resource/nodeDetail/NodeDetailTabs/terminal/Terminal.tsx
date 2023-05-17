@@ -5,18 +5,17 @@ import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import * as XtermWebfont from 'xterm-webfont'
 import SockJS from 'sockjs-client'
-import { SocketConnectionType } from '../node.type'
 import IndexStore from '../../../../index.store'
 import { AppType } from '../../../../appDetails.type'
 import moment from 'moment'
-import { CLUSTER_STATUS } from '../../../../../../ClusterNodes/constants'
+import { CLUSTER_STATUS, SocketConnectionType } from '../../../../../../ClusterNodes/constants'
 import { TERMINAL_STATUS } from './constants'
 import './terminal.scss'
 import { TerminalViewType } from './terminal.type'
 
-let socket 
-let terminal 
-let fitAddon 
+let socket
+let terminal
+let fitAddon
 let clusterTimeOut
 
 export default function TerminalView({
@@ -62,7 +61,7 @@ export default function TerminalView({
     }, [sessionId])
 
     useEffect(() => {
-        if (popupText){
+        if (popupText) {
             setTimeout(() => setPopupText(false), 2000)
         }
     }, [popupText])
@@ -233,7 +232,7 @@ export default function TerminalView({
     }, [])
 
     useEffect(() => {
-        if(terminal){
+        if (terminal) {
             terminal.clear()
             terminal.focus()
         }

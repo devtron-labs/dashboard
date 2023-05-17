@@ -53,19 +53,19 @@ export const termialGAEvents = (actionType, terminalViewProps) => {
 
 export const MANIFEST_SELECTION_MESSAGE = {
     EDIT_MANIFEST: 'Edit manifest',
-    REVIEW_CHANGES: 'Review changes',
+    REVIEW_CHANGES: 'Review & Save changes',
     APPLY_CHANGES: 'Apply changes',
     CANCEL: 'Cancel',
 }
 
-export enum EDIT_MODE_TYPE {
+export enum EditModeType {
     EDIT = 'edit',
     REVIEW = 'review',
     APPLY = 'apply',
     NON_EDIT = 'nonEdit',
 }
 
-export enum TERMINAL_WRAPPER_COMPONENT_TYPE {
+export enum TerminalWrapperType {
     CREATABLE_SELECT = 'creatableSelect',
     CONNECTION_BUTTON = 'connectionButton',
     TITLE_NAME = 'titleName',
