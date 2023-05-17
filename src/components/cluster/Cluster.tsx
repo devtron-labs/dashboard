@@ -95,10 +95,21 @@ import {
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+// import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import TippyHeadless from '@tippyjs/react/headless'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { UPLOAD_STATE } from '../CustomChart/types'
+// import { request } from 'http'
+// import { ConfigCluster, UserInfos, ClusterInfo, ClusterResult } from './cluster.type'
+// import { error } from 'console'
+// import cluster from 'cluster'
+// import { getClusterEvents } from '../ClusterNodes/clusterNodes.service'
+// import { json } from 'stream/consumers'
+// import { stat } from 'fs'
+// import { userInfo } from 'os'
+// import ReactSelect from 'react-select/creatable'
+// import { SELECT_TOKEN_STYLE } from '../ciPipeline/Webhook/webhook.utils'
 import UserNameDropDownList from './UseNameListDropdown'
 import Tippy from '@tippyjs/react/headless'
 
@@ -793,6 +804,7 @@ function ClusterForm({
     const [loader, setLoadingState] = useState<boolean>(false)
     const [selectedUserNameOptions, setSelectedUserNameOptions] = useState<Record<string, any>>({})
     const [isClusterSelected, setClusterSeleceted] = useState<Record<string, boolean>>({})
+    const [selectAll, setSelectAll] = useState<boolean>(false)
     const [disableState, setDisableState] = useState<boolean>(false)
     // const [selectedClusterState, setSelectedClusterState] = useState<boolean>(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
@@ -1641,6 +1653,37 @@ function ClusterForm({
         })
     }
 
+
+    function toggleSelectAll() {
+        setSelectAll((prevSelectAll) => {
+          const updatedSelections = { ...isClusterSelected };
+          const disabledClusters = Object.entries(selectedUserNameOptions)
+            .filter(
+              ([_, options]) =>
+                options.errorInConnecting !== 'cluster-already-exists' && options.errorInConnecting.length > 0
+            )
+            .map(([clusterName]) => clusterName);
+          let allEnabledSelected = true;
+          Object.keys(updatedSelections).forEach((clusterName) => {
+            if (!disabledClusters.includes(clusterName)) {
+              updatedSelections[clusterName] = !prevSelectAll;
+              if (!updatedSelections[clusterName]) {
+                allEnabledSelected = false;
+              }
+            }
+          });
+          if (allEnabledSelected) {
+            Object.keys(updatedSelections).forEach((clusterName) => {
+              if (!disabledClusters.includes(clusterName)) {
+                updatedSelections[clusterName] = false;
+              }
+            });
+          }
+          setClusterSeleceted(updatedSelections); 
+          return !prevSelectAll;
+        });
+      }
+
     function validCluster() {
         const _validCluster = dataList
         let count = 0
@@ -1670,7 +1713,14 @@ function ClusterForm({
                         />
                         <div className="api-token__list en-2 bw-1 bcn-0 br-8">
                             <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top">
-                                <div></div>
+                                <div>
+                                    <Checkbox
+                                        rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
+                                        onChange={toggleSelectAll}
+                                        isChecked={selectAll}
+                                        value={CHECKBOX_VALUE.CHECKED}
+                                    />
+                                </div>
                                 <div>CLUSTER</div>
                                 <div>USER</div>
                                 <div>MESSAGE</div>
@@ -1693,9 +1743,11 @@ function ClusterForm({
                                                 isChecked={isClusterSelected[clusterDetail.cluster_name]}
                                                 value={CHECKBOX_VALUE.CHECKED}
                                                 disabled={
-                                                    selectedUserNameOptions[clusterDetail.cluster_name].errorInConnecting === 'cluster-already-exists'
+                                                    selectedUserNameOptions[clusterDetail.cluster_name]
+                                                        .errorInConnecting === 'cluster-already-exists'
                                                         ? false
-                                                        : selectedUserNameOptions[clusterDetail.cluster_name].errorInConnecting.length > 0
+                                                        : selectedUserNameOptions[clusterDetail.cluster_name]
+                                                              .errorInConnecting.length > 0
                                                 }
                                             />
                                             <div className="flexbox">
@@ -1734,14 +1786,13 @@ function ClusterForm({
                 {isKubeConfigFile && (
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
                         <button
-                            className="ml-20  cb-5"
+                            className="ml-20 dc_edit_button cb-5"
                             type="button"
                             onClick={toggleGetCluster}
                             style={{ marginRight: 'auto' }}
                         >
                             <span style={{ display: 'flex', alignItems: 'center' }}>
-                                <Pencil style={{ marginLeft: 'auto' }} />
-                                {/* <Edit className="icon-dim-16 scb-5 mr-4" />  */}
+                                <Edit className="icon-dim-16 scb-5 mr-4" /> 
                                 Edit Kubeconfig
                             </span>
                         </button>
