@@ -20,6 +20,7 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
 
         return (
             <ReactSelect
+                classNamePrefix="user_name_dropdown_list"
                 options={userNameOptions}
                 value={selectedUserNameOptions[clusterDetail.cluster_name]}
                 isSearchable={false}
