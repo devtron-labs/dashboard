@@ -25,7 +25,7 @@ export default function CDEmptyState({
 }) {
     return (
         <div style={{ backgroundColor: 'var(--window-bg)' }}>
-          {/* TODO replace with genericemptystate after incoporating png support */}
+          {/* TO replace with genericemptystate after incoporating png support */}
             <EmptyState>
                 <EmptyState.Image>
                     <img src={imgSource || AppNotDeployed} alt="" />

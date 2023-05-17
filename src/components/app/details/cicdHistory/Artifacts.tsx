@@ -152,7 +152,7 @@ export const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWith
 }
 
 const CIProgressView = (): JSX.Element => {
-   {/* TODO replace with genericemptystate after incoporating png support */}
+   {/* TO replace with genericemptystate after incoporating png support */}
     return (
         <EmptyState>
             <EmptyState.Image>

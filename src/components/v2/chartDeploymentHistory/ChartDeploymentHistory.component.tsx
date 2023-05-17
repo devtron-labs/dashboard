@@ -20,7 +20,6 @@ import './chartDeploymentHistory.scss'
 import MessageUI from '../common/message.ui'
 import { toast } from 'react-toastify'
 import { useHistory, useRouteMatch } from 'react-router'
-import CDEmptyState from '../../app/details/cdDetails/CDEmptyState'
 import DockerListModal from './DockerListModal'
 import {
     ChartDeploymentDetail,
@@ -324,7 +323,7 @@ function ChartDeploymentHistory({
             <ul className="tab-list deployment-tab-list dc__border-bottom mr-20">
                 { deploymentTabs.map((tab, index) => {
                     return (
-                        <li onClick={() => onClickDeploymentTabs(tab)} key={index} className="tab-list__tab">
+                        <li onClick={() => onClickDeploymentTabs(tab)} key={`deployment-tab-${index}`} className="tab-list__tab">
                             <div
                                 className={`tab-list__tab-link ${selectedDeploymentTabName == tab ? 'active' : ''}`}
                                 data-testid={`nav-bar-option-${index}`}
