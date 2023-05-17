@@ -51,7 +51,7 @@ export default function ClusterManifest({
     }, [terminalAccessId])
 
     useEffect(() => {
-        const regex = /^.*apiVersion:/
+        const regex = /^(.*?apiVersion:)/s
         if (manifestMode === EDIT_MODE_TYPE.NON_EDIT) {
             setManifest(defaultManifest)
         } else if (manifestMode === EDIT_MODE_TYPE.APPLY) {
