@@ -56,19 +56,14 @@ export default function ClusterManifest({
             setManifest(defaultManifest)
         } else if (manifestMode === EditModeType.APPLY) {
             const _manifestValue = manifestValue.replace(regex, 'apiVersion:')
-            if (_manifestValue !== defaultManifest) {
-                try {
-                    if (YAML.parse(_manifestValue)) {
-                        setManifestData(JSON.stringify(YAML.parse(_manifestValue)))
-                    } else {
-                        setManifest(defaultManifestErrorText)
-                    }
-                } catch (error) {
-                    setManifest(defaultManifestErrorText + '# ' + error + '\n#\n' + _manifestValue)
-                    setManifestMode(EditModeType.EDIT)
+            try {
+                if (YAML.parse(_manifestValue)) {
+                    setManifestData(JSON.stringify(YAML.parse(_manifestValue)))
+                } else {
+                    setManifest(defaultManifestErrorText)
                 }
-            } else {
-                setManifest(defaultManifestErrorText + _manifestValue)
+            } catch (error) {
+                setManifest(defaultManifestErrorText + '# ' + error + '\n#\n' + _manifestValue)
                 setManifestMode(EditModeType.EDIT)
             }
         } else if (manifestMode === EditModeType.EDIT) {
