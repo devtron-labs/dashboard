@@ -289,6 +289,10 @@ a:focus {
     position: relative;
 }
 
+.dc__position-rel-imp {
+    position: relative !important;
+}
+
 .dc__position-abs {
     position: absolute;
 }
@@ -297,8 +301,21 @@ a:focus {
     position: sticky;
 }
 
+.dc__position-abs-b-20 {
+    position: absolute;
+    bottom: 20px;
+}
+
 .dc__top-0 {
     top: 0;
+}
+
+.dc__top-9 {
+    top: 9px;
+}
+
+.dc__top-26 {
+    top: 26px;
 }
 
 .dc__bottom-0 {
@@ -383,6 +400,13 @@ a:focus {
     font-family: monospace;
 }
 
+.build-context-label {
+    justify-content: none;
+}
+.build-context-highlight {
+    background: var(--N200);
+    white-space: nowrap;
+}
 // Pop Up
 .popup {
     position: fixed;
@@ -600,7 +624,6 @@ button.anchor {
 }
 
 .app-summary__status-name {
-
     &.f-healthy,
     &.f-synced,
     &.f-sync.ok,
@@ -875,7 +898,6 @@ button.anchor {
 }
 
 .override-button.cta {
-
     &.ghosted,
     &.delete {
         height: 32px;
@@ -1092,8 +1114,8 @@ button.anchor {
         background-size: contain, contain;
     }
     &.timedout {
-      background: url('../assets/icons/ic-timeout-red.svg'), $background;
-      background-size: contain, contain;
+        background: url('../assets/icons/ic-timeout-red.svg'), $background;
+        background-size: contain, contain;
     }
 }
 
@@ -1176,12 +1198,12 @@ button.anchor {
         overflow: hidden;
         border-radius: 4px;
 
-        input+.radio__item-label {
+        input + .radio__item-label {
             border-radius: 0;
             border: 1px solid var(--N200);
         }
 
-        input[type='checkbox']:checked+.radio__item-label {
+        input[type='checkbox']:checked + .radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
@@ -1210,19 +1232,19 @@ button.anchor {
                 border-right: unset;
             }
 
-            &:first-child input+.radio__item-label {
+            &:first-child input + .radio__item-label {
                 border-top-left-radius: 4px;
                 border-bottom-left-radius: 4px;
             }
 
-            &:last-child input+.radio__item-label {
+            &:last-child input + .radio__item-label {
                 border-top-right-radius: 4px;
                 border-bottom-right-radius: 4px;
                 border: 1px solid var(--N200);
             }
         }
 
-        input[type='checkbox']:checked+.radio__item-label {
+        input[type='checkbox']:checked + .radio__item-label {
             border-radius: 0;
             background-color: var(--N100);
             color: var(--N900);
@@ -1236,7 +1258,7 @@ button.anchor {
 
 .gui-yaml-switch {
     &.radio-group {
-        input[type='checkbox']:checked+.radio__item-label {
+        input[type='checkbox']:checked + .radio__item-label {
             color: var(--N900);
 
             svg path {
@@ -1264,7 +1286,7 @@ button.anchor {
 
 .manual-approvals-switch {
     &.radio-group {
-        input[type='checkbox']:checked+.radio__item-label {
+        input[type='checkbox']:checked + .radio__item-label {
             color: var(--N900);
 
             svg path {
@@ -1283,12 +1305,12 @@ button.anchor {
                 fill: var(--N500);
             }
 
-            &:first-child input+.radio__item-label {
+            &:first-child input + .radio__item-label {
                 border-top-left-radius: 4px !important;
                 border-bottom-left-radius: 4px !important;
             }
 
-            &:last-child input+.radio__item-label {
+            &:last-child input + .radio__item-label {
                 border-top-right-radius: 4px !important;
                 border-bottom-right-radius: 4px !important;
             }
@@ -1587,7 +1609,7 @@ button.anchor {
     vertical-align: bottom;
 }
 
-.dc__tertiary-tab__radio input:checked~.dc__tertiary-tab {
+.dc__tertiary-tab__radio input:checked ~ .dc__tertiary-tab {
     border: solid 1px var(--B500);
     background-color: var(--B100);
 }
@@ -1943,7 +1965,11 @@ button.anchor {
 }
 
 .dc__mxw-inherit {
-  max-width: inherit;
+    max-width: inherit;
+}
+
+.dc__mxw-none {
+    max-width: none !important;
 }
 
 .dc__mxw-200 {
@@ -2174,7 +2200,7 @@ textarea,
     }
 }
 
-.basic-multi-select>.select__control--is-disabled {
+.basic-multi-select > .select__control--is-disabled {
     background-color: var(--N100) !important;
 }
 
@@ -2366,6 +2392,10 @@ textarea,
     min-width: 385px;
 }
 
+.w-28 {
+    width: 28px;
+}
+
 .w-54 {
     width: 54px;
 }
@@ -2386,6 +2416,10 @@ textarea,
     width: 100px;
 }
 
+.w-111 {
+    width: 111px;
+}
+
 .w-120 {
     width: 120px;
 }
@@ -2402,12 +2436,24 @@ textarea,
     width: 180px;
 }
 
+.w-182 {
+    width: 182px;
+}
+
 .w-200 {
     width: 200px;
 }
 
+.w-216 {
+    width: 216px;
+}
+
 .w-220 {
     width: 220px;
+}
+
+.w-236 {
+    width: 236px;
 }
 
 .w-250 {
@@ -2442,12 +2488,28 @@ textarea,
     width: 400px;
 }
 
+.w-436 {
+    width: 436px;
+}
+
+.w-476 {
+    width: 476px;
+}
+
+.w-505 {
+    width: 510px !important;
+}
+
 .w-600 {
     width: 600px;
 }
 
 .w-800 {
     width: 800px;
+}
+
+.w-885 {
+    width: 885px !important;
 }
 
 // Width in percentage
@@ -2595,8 +2657,16 @@ textarea,
     height: 56px !important;
 }
 
+.h-58 {
+    height: 58px !important;
+}
+
 .h-60 {
     height: 60px !important;
+}
+
+.h-66 {
+    height: 66px !important;
 }
 
 .h-80 {
@@ -2615,12 +2685,28 @@ textarea,
     height: 200px;
 }
 
+.h-82 {
+    height: 82px !important;
+}
+
+.h-112 {
+    height: 112px !important;
+}
+
 .h-250 {
     height: 250px !important;
 }
 
 .h-300 {
     height: 300px !important;
+}
+
+.h-365 {
+    height: 365px !important;
+}
+
+.h-380 {
+    height: 380px !important;
 }
 
 // Minimum Height
@@ -2654,6 +2740,10 @@ textarea,
 
 .mh-600 {
     min-height: 600px;
+}
+
+.mxh-140 {
+    max-height: 140px;
 }
 
 .mxh-210 {
@@ -2885,12 +2975,28 @@ textarea,
     column-gap: 24px;
 }
 
+.dc__gap-4 {
+    gap: 4px;
+}
+
+.dc__gap-6 {
+    gap: 6px;
+}
+
 .dc__gap-8 {
     gap: 8px;
 }
 
+.dc__gap-10 {
+    gap: 10px;
+}
+
 .dc__gap-12 {
     gap: 12px;
+}
+
+.dc__gap-16 {
+    gap: 16px;
 }
 
 .dc__flip-180 {
@@ -3080,6 +3186,10 @@ textarea::placeholder {
 
 .dc__zi-4 {
     z-index: 4;
+}
+
+.dc__zi-20 {
+    z-index: 20;
 }
 
 .show-shimmer-loading {
