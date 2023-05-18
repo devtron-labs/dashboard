@@ -26,7 +26,7 @@ export const GITOPS_FQDN_MESSAGE = 'This is not a Fully Qualified Domain Name (F
 export const GITOPS_HTTP_MESSAGE = 'Http protocol is not supported.'
 
 export const CONTEXT_NOT_AVAILABLE_ERROR = 'cannot be rendered outside the component'
-
+export const GIT_MATERIAL_IN_USE_MESSAGE = 'This repository is being used as source for Dockerfile or as Build Context. Please select another repository and try again'
 export const enum DeleteComponentsName {
     ChartGroup = 'chart group',
     ContainerRegistry = 'container registry',
