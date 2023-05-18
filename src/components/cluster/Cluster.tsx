@@ -18,7 +18,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-warning.svg'
+import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning.svg'
 import YAML from 'yaml'
 import {
     Pencil,
