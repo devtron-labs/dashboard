@@ -58,7 +58,7 @@ import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation
 import { ReactComponent as DeleteEnvironment } from '../../assets/icons/ic-delete-interactive.svg'
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
-import { ReactComponent as ForwardArrow } from '../../assets/icons/ic-arrow-forward.svg'
+import { ReactComponent as ForwardArrow } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as Exist } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as MechanicalOperation } from '../../assets/img/ic-mechanical-operation.svg'
 import {
@@ -269,16 +269,16 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.setState({ isTlsConnection: !this.state.isTlsConnection })
     }
 
-    toggleClusterDetails() {
-        this.setState({ isClusterDetails: !this.state.isClusterDetails })
+    toggleClusterDetails(updateClusterDetails: boolean) {
+        this.setState({ isClusterDetails: updateClusterDetails })
     }
 
     toggleShowAddCluster() {
         this.setState({ showAddCluster: !this.state.showAddCluster })
     }
 
-    toggleKubeConfigFile() {
-        this.setState({ isKubeConfigFile: !this.state.isKubeConfigFile })
+    toggleKubeConfigFile(updateKubeConfigFile: boolean) {
+        this.setState({ isKubeConfigFile: updateKubeConfigFile })
     }
 
     toggleBrowseFile() {
@@ -896,19 +896,26 @@ function ClusterForm({
             let payload = getSaveClusterPayload(dataList)
             await saveClusters(payload).then((response) => {
                 const _clusterList = response.result.map((_clusterSaveDetails, index) => {
+                    let status
+                    let message
+                    if (
+                        _clusterSaveDetails['errorInConnecting'].length === 0 &&
+                        _clusterSaveDetails['clusterUpdated'] === false
+                    ) {
+                        status = 'Added'
+                        message = 'Cluster Added'
+                    } else if (_clusterSaveDetails['clusterUpdated'] === true) {
+                        status = 'Updated'
+                        message = 'Cluster Updated'
+                    } else {
+                        status = 'Failed'
+                        message = _clusterSaveDetails['errorInConnecting']
+                    }
+
                     return {
                         clusterName: _clusterSaveDetails['cluster_name'],
-                        status:
-                            _clusterSaveDetails['errorInConnecting'].length === 0 &&
-                            _clusterSaveDetails['clusterUpdated'] === false
-                                ? 'Added'
-                                : _clusterSaveDetails['clusterUpdated'] === true
-                                ? 'Updated'
-                                : 'Failed',
-                        message:
-                            _clusterSaveDetails['errorInConnecting'].length === 0
-                                ? 'Cluster Added'
-                                : _clusterSaveDetails['errorInConnecting'],
+                        status: status,
+                        message: message,
                     }
                 })
                 setSaveClusterList(_clusterList)
@@ -1164,13 +1171,13 @@ function ClusterForm({
 
     const handleCloseButton = () => {
         if (isKubeConfigFile) {
-            toggleKubeConfigFile()
+            toggleKubeConfigFile(!isKubeConfigFile)
         }
         if (getClusterVar) {
             toggleGetCluster()
         }
         if (isClusterDetails) {
-            toggleClusterDetails()
+            toggleClusterDetails(!isClusterDetails)
         }
         toggleShowAddCluster()
         setLoadingState(false)
@@ -1430,8 +1437,10 @@ function ClusterForm({
                         disabled={!saveYamlData}
                         data-testId="get_cluster_button"
                     >
-                        Get cluster
-                        <ForwardArrow className="ml-5" />
+                        <div className="flex">
+                            Get cluster
+                            <ForwardArrow className="ml-5" />
+                        </div>
                     </button>
                 </div>
             </>
@@ -1573,8 +1582,8 @@ function ClusterForm({
     const handleClusterDetailCall = async () => {
         setLoadingState(true)
         await saveClustersDetails()
-        toggleKubeConfigFile()
-        toggleClusterDetails()
+        toggleKubeConfigFile(false)
+        toggleClusterDetails(true)
     }
 
     if (loader) {
@@ -1619,14 +1628,24 @@ function ClusterForm({
     function validCluster() {
         const _validCluster = dataList
         let count = 0
-        _validCluster.map((_dataList, index) => {
-            if (
-                _dataList.userInfos[index].errorInConnecting.length === 0 ||
-                _dataList.userInfos[index].errorInConnecting === 'cluster-already-exists'
-            ) {
+
+        _validCluster.forEach((_dataList) => {
+            let found = false
+
+            _dataList.userInfos.forEach((userInfo) => {
+                if (
+                    userInfo.errorInConnecting.length === 0 ||
+                    userInfo.errorInConnecting === 'cluster-already-exists'
+                ) {
+                    found = true
+                }
+            })
+
+            if (found) {
                 count++
             }
         })
+
         return count
     }
 
