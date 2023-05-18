@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactSelect from 'react-select'
-import { DropdownIndicator } from '../v2/common/ReactSelect.utils'
-import { Option } from '@devtron-labs/devtron-fe-common-lib'
+import { DropdownIndicator, Option } from '../v2/common/ReactSelect.utils'
 
 export default function UserNameDropDownList({ clusterDetail, selectedUserNameOptions, onChangeUserName }) {
     const handleUserChange = (selectedOption) => {
@@ -12,7 +11,12 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
         return <span className="dc__ellipsis-right">{clusterDetail.userInfos[0].userName}</span>
     } else {
         const userNameOptions = clusterDetail.userInfos.map((user) => {
-            return { label: user.userName, value: user.userName, errorInConnecting: user.errorInConnecting, config: user.config }
+            return {
+                label: user.userName,
+                value: user.userName,
+                errorInConnecting: user.errorInConnecting,
+                config: user.config,
+            }
         })
 
         return (
@@ -24,8 +28,8 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                 onChange={handleUserChange}
                 components={{
                     IndicatorSeparator: null,
-                    Option,
                     DropdownIndicator,
+                    Option,
                 }}
                 styles={{
                     control: (base) => ({
@@ -56,17 +60,21 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                         maxHeight: '250px',
                         zIndex: 4,
                     }),
-                    dropdownIndicator: (base, state) => ({
-                        ...base,
-                        padding: 0,
-                        color: 'var(--N400)',
-                        transition: 'all .2s ease',
-                        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                    }),
                     noOptionsMessage: (base) => ({
                         ...base,
                         color: 'var(--N600)',
                         zIndex: 4,
+                    }),
+                    dropdownIndicator: (base, state) => ({
+                        ...base,
+                        color: 'var(--N400)',
+                        padding: '0 8px',
+                        transition: 'all .2s ease',
+                        transform: state.selectProps.menuIsOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                    }),
+                    valueContainer: (base, state) => ({
+                        ...base,
+                        padding: 0,
                     }),
                 }}
             />
