@@ -58,7 +58,7 @@ import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation
 import { ReactComponent as DeleteEnvironment } from '../../assets/icons/ic-delete-interactive.svg'
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
-import { ReactComponent as ForwardArrow } from '../../assets/icons/ic-arrow-forward.svg'
+import { ReactComponent as ForwardArrow } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as Exist } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as MechanicalOperation } from '../../assets/img/ic-mechanical-operation.svg'
 import {
@@ -269,16 +269,16 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.setState({ isTlsConnection: !this.state.isTlsConnection })
     }
 
-    toggleClusterDetails() {
-        this.setState({ isClusterDetails: !this.state.isClusterDetails })
+    toggleClusterDetails(updateClusterDetails: boolean) {
+        this.setState({ isClusterDetails: updateClusterDetails })
     }
 
     toggleShowAddCluster() {
         this.setState({ showAddCluster: !this.state.showAddCluster })
     }
 
-    toggleKubeConfigFile() {
-        this.setState({ isKubeConfigFile: !this.state.isKubeConfigFile })
+    toggleKubeConfigFile(updateKubeConfigFile: boolean) {
+        this.setState({ isKubeConfigFile: updateKubeConfigFile })
     }
 
     toggleBrowseFile() {
@@ -891,25 +891,31 @@ function ClusterForm({
         return saveClusterPayload
     }
 
-
-
     async function saveClustersDetails() {
         try {
             let payload = getSaveClusterPayload(dataList)
             await saveClusters(payload).then((response) => {
                 const _clusterList = response.result.map((_clusterSaveDetails, index) => {
+                    let status
+                    let message
+                    if (
+                        _clusterSaveDetails['errorInConnecting'].length === 0 &&
+                        _clusterSaveDetails['clusterUpdated'] === false
+                    ) {
+                        status = 'Added'
+                        message = 'Cluster Added'
+                    } else if (_clusterSaveDetails['clusterUpdated'] === true) {
+                        status = 'Updated'
+                        message = 'Cluster Updated'
+                    } else {
+                        status = 'Failed'
+                        message = _clusterSaveDetails['errorInConnecting']
+                    }
+
                     return {
                         clusterName: _clusterSaveDetails['cluster_name'],
-                        status:
-                            _clusterSaveDetails['errorInConnecting'].length === 0 && _clusterSaveDetails['clusterUpdated'] === false
-                                ? 'Added'
-                                : _clusterSaveDetails['clusterUpdated'] === true
-                                ? 'Updated'
-                                : 'Failed',
-                        message:
-                            _clusterSaveDetails['errorInConnecting'].length === 0
-                                ? 'Cluster Added'
-                                : _clusterSaveDetails['errorInConnecting'],
+                        status: status,
+                        message: message,
                     }
                 })
                 setSaveClusterList(_clusterList)
@@ -974,13 +980,12 @@ function ClusterForm({
                             active: _cluster['active'],
                             defaultClusterComponent: _cluster['defaultClusterComponent'],
                             insecureSkipTlsVerify: _cluster['insecureSkipTlsVerify'],
-                            id: _cluster['id']
+                            id: _cluster['id'],
                         }
                     }),
                 ])
                 setSelectedUserNameOptions(defaultUserNameSelections)
                 setClusterSeleceted(_clusterSelections)
-
 
                 setLoadingState(false)
             })
@@ -1166,13 +1171,13 @@ function ClusterForm({
 
     const handleCloseButton = () => {
         if (isKubeConfigFile) {
-            toggleKubeConfigFile()
+            toggleKubeConfigFile(!isKubeConfigFile)
         }
         if (getClusterVar) {
             toggleGetCluster()
         }
         if (isClusterDetails) {
-            toggleClusterDetails()
+            toggleClusterDetails(!isClusterDetails)
         }
         toggleShowAddCluster()
         setLoadingState(false)
@@ -1433,8 +1438,10 @@ function ClusterForm({
                         disabled={!saveYamlData}
                         data-testId="get_cluster_button"
                     >
-                        Get cluster
-                        <ForwardArrow className="ml-5" />
+                        <div className="flex">
+                            Get cluster
+                            <ForwardArrow className="ml-5" />
+                        </div>
                     </button>
                 </div>
             </>
@@ -1576,14 +1583,13 @@ function ClusterForm({
     const handleClusterDetailCall = async () => {
         setLoadingState(true)
         await saveClustersDetails()
-        toggleKubeConfigFile()
-        toggleClusterDetails()
+        toggleKubeConfigFile(false)
+        toggleClusterDetails(true)
     }
 
     if (loader) {
         return <LoadingCluster />
     }
-
 
     function toggleIsSelected(clusterName: string, forceUnselect?: boolean) {
         const _currentSelections = {
@@ -1600,38 +1606,47 @@ function ClusterForm({
         }
     }
 
-
     function toggleSelectAll(event) {
-        const currentSelections = { ...isClusterSelected };
-        const _selectAll = event.currentTarget.checked;
-      
+        const currentSelections = { ...isClusterSelected }
+        const _selectAll = event.currentTarget.checked
+
         Object.keys(currentSelections).forEach((selection) => {
-          if (
-            selectedUserNameOptions[selection].errorInConnecting !== 'cluster-already-exists' &&
-            selectedUserNameOptions[selection].errorInConnecting.length > 0
-          ) {
-            // Skip disabled checkboxes
-            return;
-          }
-      
-          currentSelections[selection] = _selectAll;
-        });
-      
-        setSelectAll(_selectAll);
-        setClusterSeleceted(currentSelections);
+            if (
+                selectedUserNameOptions[selection].errorInConnecting !== 'cluster-already-exists' &&
+                selectedUserNameOptions[selection].errorInConnecting.length > 0
+            ) {
+                // Skip disabled checkboxes
+                return
+            }
+
+            currentSelections[selection] = _selectAll
+        })
+
+        setSelectAll(_selectAll)
+        setClusterSeleceted(currentSelections)
     }
 
     function validCluster() {
         const _validCluster = dataList
         let count = 0
-        _validCluster.map((_dataList, index) => {
-            if (
-                _dataList.userInfos[index].errorInConnecting.length === 0 ||
-                _dataList.userInfos[index].errorInConnecting === 'cluster already exists'
-            ) {
+
+        _validCluster.forEach((_dataList) => {
+            let found = false
+
+            _dataList.userInfos.forEach((userInfo) => {
+                if (
+                    userInfo.errorInConnecting.length === 0 ||
+                    userInfo.errorInConnecting === 'cluster-already-exists'
+                ) {
+                    found = true
+                }
+            })
+
+            if (found) {
                 count++
             }
         })
+
         return count
     }
 
@@ -1648,12 +1663,12 @@ function ClusterForm({
             ...selectedUserNameOptions,
             [clusterDetail.cluster_name]: selectedOption,
         })
-        
+
         toggleIsSelected(clusterDetail.cluster_name, true)
     }
 
     const displayClusterDetails = () => {
-        const isAnyCheckboxSelected = Object.values(isClusterSelected).some(value => value === true);
+        const isAnyCheckboxSelected = Object.values(isClusterSelected).some((value) => value === true)
         return (
             <>
                 {isKubeConfigFile && (
@@ -1746,7 +1761,10 @@ function ClusterForm({
                             onClick={toggleGetCluster}
                             style={{ marginRight: 'auto' }}
                         >
-                            <span data-testid="edit_kubeconfig_button_cluster_checkbox" style={{ display: 'flex', alignItems: 'center' }}>
+                            <span
+                                data-testid="edit_kubeconfig_button_cluster_checkbox"
+                                style={{ display: 'flex', alignItems: 'center' }}
+                            >
                                 <Edit className="icon-dim-16 scb-5 mr-4" />
                                 Edit Kubeconfig
                             </span>
