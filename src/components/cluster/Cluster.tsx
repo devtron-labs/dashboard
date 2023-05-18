@@ -1186,7 +1186,6 @@ function ClusterForm({
         return (
             <>
                 <div className="form__row">
-                    {/* {console.log(state.cluster_name.value)} */}
                     <CustomInput
                         labelClassName="dc__required-field"
                         autoComplete="off"
@@ -1670,10 +1669,9 @@ function ClusterForm({
         return (
             <>
                 {isKubeConfigFile && (
-                    <div className="cluster-form dc__position-rel h-100 bcn-0">
+                    <div data-testid="valid_cluster_infocolor_bar" className="cluster-form dc__position-rel h-100 bcn-0">
                         <AddClusterHeader />
                         <InfoColourBar
-                            dataTestId="valid_cluster_infocolor_bar"
                             message={`${validCluster()} valid cluster. Select the cluster you want to Add/Update`}
                             classname="info_bar cn-9 mb-20 lh-20"
                             Icon={Info}
