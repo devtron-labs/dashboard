@@ -330,3 +330,19 @@ export interface BuildContextProps {
     ciConfig:  CiPipelineResult
     handleOnChangeConfig: (e) => void
 }
+
+export interface MandatoryPluginDetailType {
+  id: number
+  name: string
+  invalidPost: boolean
+}
+export interface MandatoryPluginDataType {
+    pluginData: MandatoryPluginDetailType[]
+    isValidPre: boolean
+    isValidPost: boolean
+}
+
+export interface CIPipelineSidebarType {
+    isJobView?: boolean
+    mandatoryPluginData: MandatoryPluginDataType
+}

@@ -4,8 +4,12 @@ import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskList } from './TaskList'
 import { ciPipelineContext } from './CIPipeline'
 import { FormType } from '../ciPipeline/types'
+import { importComponentFromFELibrary } from '../common'
+import { CIPipelineSidebarType } from '../ciConfig/types'
 
-export function Sidebar({ isJobView }: { isJobView?: boolean }) {
+const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarning')
+
+export function Sidebar({ isJobView, mandatoryPluginData }: CIPipelineSidebarType) {
     const {
         formData,
         setFormData,
@@ -43,17 +47,22 @@ export function Sidebar({ isJobView }: { isJobView?: boolean }) {
 
     return (
         <div className="">
-            {activeStageName !== BuildStageVariable.Build && (
+            {activeStageName !== BuildStageVariable.Build ? (
                 <div className="sidebar-action-container sidebar-action-container-border">
                     {configurationType === ConfigurationType.GUI && (
                         <>
+                            {MandatoryPluginWarning && mandatoryPluginData &&
+                                ((activeStageName === BuildStageVariable.PreBuild && !mandatoryPluginData.isValidPre) ||
+                                    (activeStageName === BuildStageVariable.PostBuild &&
+                                        !mandatoryPluginData.isValidPost)) && (
+                                    <MandatoryPluginWarning pluginData={mandatoryPluginData.pluginData} />
+                                )}
                             <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
                             <TaskList />
                         </>
                     )}
                 </div>
-            )}
-            {activeStageName === BuildStageVariable.Build && (
+            ) : (
                 <div className="sidebar-action-container sidebar-action-container-border pr-20">
                     <div className="dc__uppercase fw-6 fs-12 cn-6 mb-12">
                         Trigger {isJobView ? 'JOB' : 'BUILD'} PIPELINE
@@ -67,10 +76,18 @@ export function Sidebar({ isJobView }: { isJobView?: boolean }) {
                                 changeTriggerType(event.target.value)
                             }}
                         >
-
-                            <RadioGroupItem value={TriggerType.Auto} dataTestId="trigger-build-pipeline-automatically-checkbox">Automatically</RadioGroupItem>
-                            <RadioGroupItem value={TriggerType.Manual} dataTestId="trigger-build-pipeline-manually-checkbox">Manually</RadioGroupItem>
-                        
+                            <RadioGroupItem
+                                value={TriggerType.Auto}
+                                dataTestId="trigger-build-pipeline-automatically-checkbox"
+                            >
+                                Automatically
+                            </RadioGroupItem>
+                            <RadioGroupItem
+                                value={TriggerType.Manual}
+                                dataTestId="trigger-build-pipeline-manually-checkbox"
+                            >
+                                Manually
+                            </RadioGroupItem>
                         </RadioGroup>
                     </div>
                 </div>
