@@ -122,9 +122,9 @@ function EnvironmentSelectorComponent({
         showNonCascadeDeleteDialog(false)
     }
     
-    const onClickNonCascadeDelete = () => {
+    const onClickNonCascadeDelete = async() => {
         showNonCascadeDeleteDialog(false)
-        deleteResourceAction(DELETE_ACTION.NONCASCADE_DELETE)
+        await deleteResourceAction(DELETE_ACTION.NONCASCADE_DELETE)
     }
 
     async function deleteResourceAction(deleteAction: string) {
@@ -149,6 +149,8 @@ function EnvironmentSelectorComponent({
             showError(error)
         }
     }
+
+    const handleForceDelete = async () => await deleteResourceAction(DELETE_ACTION.FORCE_DELETE)
 
     const deployedAppDetail = isExternalApp && params.appId && params.appId.split('|')
 
@@ -311,7 +313,7 @@ function EnvironmentSelectorComponent({
                     {forceDeleteDialog && (
                         <ForceDeleteDialog
                             forceDeleteDialogTitle={forceDeleteDialogTitle}
-                            onClickDelete={() => deleteResourceAction(DELETE_ACTION.FORCE_DELETE)}
+                            onClickDelete={handleForceDelete}
                             closeDeleteModal={() => {
                                 showForceDeleteDialog(false)
                             }}

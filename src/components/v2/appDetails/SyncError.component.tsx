@@ -25,7 +25,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
     const conditions = appStreamData?.result?.application?.status?.conditions || []
 
     const verifyDeployedClusterConnectionStatus = async () : Promise<void> => { 
-        getClusterConnectionStatus(appDetails.environmentId).then((response : ClusterConnectionResponse) => {
+        await getClusterConnectionStatus(appDetails.environmentId).then((response : ClusterConnectionResponse) => {
             if (response.result) {
                 response.result?.clusterReachable ? setClusterConnectionError(false) : setClusterConnectionError(true)
                 setClusterName(response.result.clusterName)
@@ -101,9 +101,9 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
         showNonCascadeDeleteDialog(false)
     }
 
-    const onClickNonCascadeDelete = () => {
+    const onClickNonCascadeDelete = async() => {
         showNonCascadeDeleteDialog(false)
-        nonCascadeDeleteArgoCDApp(false)
+        await nonCascadeDeleteArgoCDApp(false)
     }
 
     const toggleErrorHeader = () => {

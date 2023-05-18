@@ -126,9 +126,9 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
         showNonCascadeDeleteDialog(false)
     }
     
-    const onClickNonCascadeDelete = () => {
+    const onClickNonCascadeDelete = async() => {
         showNonCascadeDeleteDialog(false)
-        handleDelete(DELETE_ACTION.NONCASCADE_DELETE)
+        await handleDelete(DELETE_ACTION.NONCASCADE_DELETE)
     }
 
     return (

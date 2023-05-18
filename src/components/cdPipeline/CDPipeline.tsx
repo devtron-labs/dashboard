@@ -722,7 +722,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             },
         }
         // cascadeDelete is only applicable for GitOps, Default value of cascadeDelete is true
-        isPartialDelete ? (cascadeDelete = cascadeDelete) : (cascadeDelete = true)
+        if (!isPartialDelete) {
+            cascadeDelete = true
+        }
         deleteCDPipeline(payload, force, cascadeDelete)
             .then((response) => {
                 if (response.result) {
