@@ -1,6 +1,6 @@
 import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { AggregatedNodes, AppStreamData, OptionType } from '../../types'
-import { type } from 'os'
+import { SyncErrorType } from '../../../v2/appDetails/appDetails.type'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
@@ -187,6 +187,10 @@ export interface DetailsType {
     commitInfo?: boolean
     isAppDeleted?: boolean
     showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface DeletedAppComponentType extends SyncErrorType {
+    resourceTreeFetchTimeOut: boolean,
 }
 
 export interface DeploymentStatusCardType {

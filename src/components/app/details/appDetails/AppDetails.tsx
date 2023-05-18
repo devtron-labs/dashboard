@@ -19,6 +19,7 @@ import {
     DEPLOYMENT_STATUS_QUERY_PARAM,
     DEPLOYMENT_STATUS,
     HELM_DEPLOYMENT_STATUS_TEXT,
+    RESOURCES_NOT_FOUND,
 } from '../../../../config'
 import {
     NavigationArrow,
@@ -77,6 +78,7 @@ import { AppType, DeploymentAppType, EnvType } from '../../../v2/appDetails/appD
 import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import { getDeploymentStatusDetail } from './appDetails.service'
 import {
+    DeletedAppComponentType,
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
     DetailsType,
@@ -87,6 +89,7 @@ import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentS
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
+import { EmptyK8sResourceComponent } from '../../../v2/appDetails/k8Resource/K8Resource.component'
 
 export default function AppDetail() {
     const params = useParams<{ appId: string; envId?: string }>()
@@ -177,6 +180,7 @@ export const Details: React.FC<DetailsType> = ({
     const location = useLocation()
     const [streamData, setStreamData] = useState<AppStreamData>(null)
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
+    const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('')
     const [hibernating, setHibernating] = useState<boolean>(false)
@@ -259,7 +263,11 @@ export const Details: React.FC<DetailsType> = ({
             if (setIsAppDeleted) {
                 setIsAppDeleted(true)
             }
-            setAppDetails(null)
+            if (error['code'] === 408) {
+                setResourceTreeFetchTimeOut(true)
+            } else {
+                setAppDetails(null)
+            }
             clearPollingInterval()
         } else if (!appDetails) {
             setAppDetailsError(error)
@@ -422,6 +430,10 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(false)
     }
 
+    const showApplicationDetailedModal = (): void => {
+        toggleDetailedStatus(true)
+    }
+
     if (!loadingResourceTree && (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0)) {
         return (
             <>
@@ -436,7 +448,7 @@ export const Details: React.FC<DetailsType> = ({
                 )}
 
                 {isAppDeleted ? (
-                    <AppDetailsEmptyState envType={EnvType.APPLICATION} />
+                    <DeletedAppComponent resourceTreeFetchTimeOut={resourceTreeFetchTimeOut} showApplicationDetailedModal={showApplicationDetailedModal} appStreamData={streamData} />
                 ) : (
                     <AppNotConfigured
                         style={{ height: 'calc(100vh - 150px)' }}
@@ -451,10 +463,6 @@ export const Details: React.FC<DetailsType> = ({
         )
     }
 
-    const showApplicationDetailedModal = (): void => {
-        toggleDetailedStatus(true)
-    }
-
     return (
         <React.Fragment>
             <div className="w-100 pt-16 pr-20 pb-16 pl-20">
@@ -466,14 +474,16 @@ export const Details: React.FC<DetailsType> = ({
                     showCommitInfo={isAppDeployment ? showCommitInfo : null}
                     showUrlInfo={isAppDeployment ? setUrlInfo : null}
                     showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
-                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData} />
+                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                />
             </div>
-            <SyncErrorComponent
-                showApplicationDetailedModal={showApplicationDetailedModal}
-                appStreamData={streamData}
-            />
-
-            {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && (
+            {!loadingResourceTree && (
+                <SyncErrorComponent
+                    showApplicationDetailedModal={showApplicationDetailedModal}
+                    appStreamData={streamData}
+                />
+            )}
+            {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest ? (
                 <>
                     <SecurityVulnerabilitites
                         imageScanDeployInfoId={lastExecutionDetail.imageScanDeployInfoId}
@@ -499,6 +509,8 @@ export const Details: React.FC<DetailsType> = ({
                         />
                     )}
                 </>
+            ) : (
+                <div className="mb-9"></div>
             )}
             {loadingResourceTree ? (
                 <div className="bcn-0 dc__border-top h-100">
@@ -602,6 +614,27 @@ export const Details: React.FC<DetailsType> = ({
             )}
         </React.Fragment>
     )
+}
+
+const DeletedAppComponent: React.FC<DeletedAppComponentType> = ({
+    resourceTreeFetchTimeOut,
+    showApplicationDetailedModal,
+    appStreamData,
+}) => {
+    if (resourceTreeFetchTimeOut) {
+        return (
+            <>
+                <div className="mt-16 mb-9">
+                    <SyncErrorComponent
+                        showApplicationDetailedModal={showApplicationDetailedModal}
+                        appStreamData={appStreamData}
+                    />
+                </div>
+                <EmptyK8sResourceComponent emptyStateMessage={RESOURCES_NOT_FOUND} />
+            </>
+        )
+    }
+    return <AppDetailsEmptyState envType={EnvType.APPLICATION} />
 }
 
 export function EnvSelector({
