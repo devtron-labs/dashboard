@@ -153,7 +153,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             isTlsConnection: false,
             appCreationType: AppCreationType.Blank,
             isKubeConfigFile: false,
-            getCluster: false,
             browseFile: false,
             isClusterDetails: false,
         }
@@ -161,7 +160,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.toggleCheckTlsConnection = this.toggleCheckTlsConnection.bind(this)
         this.toggleShowAddCluster = this.toggleShowAddCluster.bind(this)
         this.toggleKubeConfigFile = this.toggleKubeConfigFile.bind(this)
-        this.toggleGetCluster = this.toggleGetCluster.bind(this)
         this.toggleBrowseFile = this.toggleBrowseFile.bind(this)
         this.toggleClusterDetails = this.toggleClusterDetails.bind(this)
     }
@@ -283,10 +281,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.setState({ isKubeConfigFile: !this.state.isKubeConfigFile })
     }
 
-    toggleGetCluster() {
-        this.setState({ getCluster: !this.state.getCluster })
-    }
-
     toggleBrowseFile() {
         this.setState({ browseFile: !this.state.browseFile })
     }
@@ -362,8 +356,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 toggleShowAddCluster={this.toggleShowAddCluster}
                                 toggleKubeConfigFile={this.toggleKubeConfigFile}
                                 isKubeConfigFile={this.state.isKubeConfigFile}
-                                getCluster={this.state.getCluster}
-                                toggleGetCluster={this.toggleGetCluster}
                                 browseFile={this.state.browseFile}
                                 toggleBrowseFile={this.toggleBrowseFile}
                                 toggleClusterDetails={this.toggleClusterDetails}
@@ -393,8 +385,6 @@ function Cluster({
     toggleShowAddCluster,
     toggleKubeConfigFile,
     isKubeConfigFile,
-    getCluster,
-    toggleGetCluster,
     browseFile,
     toggleBrowseFile,
     toggleClusterDetails,
@@ -726,8 +716,6 @@ function Cluster({
                                 toggleShowAddCluster,
                                 toggleKubeConfigFile,
                                 isKubeConfigFile,
-                                getCluster,
-                                toggleGetCluster,
                                 browseFile,
                                 toggleBrowseFile,
                                 toggleClusterDetails,
@@ -773,8 +761,6 @@ function ClusterForm({
     toggleShowAddCluster,
     toggleKubeConfigFile,
     isKubeConfigFile,
-    toggleGetCluster,
-    getCluster,
     browseFile,
     toggleBrowseFile,
     isClusterDetails,
@@ -805,6 +791,7 @@ function ClusterForm({
     const [selectedUserNameOptions, setSelectedUserNameOptions] = useState<Record<string, any>>({})
     const [isClusterSelected, setClusterSeleceted] = useState<Record<string, boolean>>({})
     const [selectAll, setSelectAll] = useState<boolean>(false)
+    const [getClusterVar, setGetClusterState] = useState<boolean>(false)
     const [disableState, setDisableState] = useState<boolean>(false)
     // const [selectedClusterState, setSelectedClusterState] = useState<boolean>(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
@@ -878,6 +865,10 @@ function ClusterForm({
         },
         onValidation,
     )
+
+    const toggleGetCluster = () => {
+        setGetClusterState(!getClusterVar)
+    }
 
     const getSaveClusterPayload = (dataLists: DataListType[]) => {
         const saveClusterPayload: SaveClusterPayloadType[] = []
@@ -1204,7 +1195,7 @@ function ClusterForm({
         if (isKubeConfigFile) {
             toggleKubeConfigFile()
         }
-        if (getCluster) {
+        if (getClusterVar) {
             toggleGetCluster()
         }
         if (isClusterDetails) {
@@ -1663,7 +1654,6 @@ function ClusterForm({
         }
     }
 
-
     // function toggleSelectAll() {
     //     setSelectAll((prevSelectAll) => {
     //       const updatedSelections = { ...isClusterSelected };
@@ -1865,7 +1855,7 @@ function ClusterForm({
         toggleShowAddCluster()
     }
 
-    return getCluster ? (
+    return getClusterVar ? (
         displayClusterDetails()
     ) : (
         <>
