@@ -53,8 +53,7 @@ import {
 import { getUserRole } from '../../../userGroups/userGroup.service'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
-import { DeleteComponentsName } from '../../../../config/constantMessaging'
-import { DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE } from '../../../../config/constantMessaging'
+import {DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE} from '../../../../config/constantMessaging'
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'))
@@ -617,8 +616,8 @@ function Navigation({
                                     visible={showCannotDeleteTooltip}
                                     iconClass="repo-configured-icon"
                                     iconSize={32}
-                                    infoTextHeading={`${DeleteComponentsName.GitRepo} '${getRepo}' is configured as source for Dockerfile`}
-                                    infoText={DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE}
+                                    infoTextHeading={`${DeleteComponentsName.GitRepo} '${getRepo}' is in use`}
+                                    infoText={GIT_MATERIAL_IN_USE_MESSAGE}
                                     showCloseButton={true}
                                     trigger="manual"
                                     interactive={true}

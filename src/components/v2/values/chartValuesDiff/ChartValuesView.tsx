@@ -102,6 +102,7 @@ import {
     MANIFEST_INFO,
 } from './ChartValuesView.constants'
 import { DeploymentAppType } from '../../appDetails/appDetails.type'
+import ChartValues from '../../../charts/chartValues/ChartValues'
 import ClusrerNotReachableDialog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 function ChartValuesView({
@@ -176,7 +177,7 @@ function ChartValuesView({
                 convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
                 dispatch,
             )
-
+           
             const _fetchedReadMe = commonState.fetchedReadMe
             _fetchedReadMe.set(0, commonState.installedConfig.readme)
             dispatch({
@@ -338,7 +339,9 @@ function ChartValuesView({
                         })
                         let _valueName
                         if (isCreateValueView && commonState.chartValues.kind === ChartKind.TEMPLATE) {
-                            setValueName(response.result.name)
+                            if (valueName === '') {
+                                setValueName(response.result.name)
+                            }
                             _valueName = response.result.name
                         }
 
@@ -385,7 +388,7 @@ function ChartValuesView({
             }
         }
     }, [commonState.chartValues])
-
+    
     useEffect(() => {
         if (commonState.selectedVersionUpdatePage?.id) {
             getChartRelatedReadMe(
@@ -819,8 +822,11 @@ function ChartValuesView({
                     values: commonState.modifiedValuesYaml,
                 }
                 if (chartValueId !== '0') {
+                    const chartVersionObj=commonState.chartVersionsData.find(
+                        (_chartVersion) => _chartVersion.id === commonState.selectedVersion,
+                    )
                     payload['id'] = parseInt(chartValueId)
-                    payload['chartVersion'] = commonState.chartValues.chartVersion
+                    payload['chartVersion'] = chartVersionObj.version
                     toastMessage = CHART_VALUE_TOAST_MSGS.Updated
                     res = await updateChartValues(payload)
                 } else {
