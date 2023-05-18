@@ -298,11 +298,14 @@ export const DeleteChartDialog = ({
     toggleConfirmation,
     isCreateValueView,
 }: DeleteChartDialogProps) => {
+    const closeConfirmation = () => {
+        toggleConfirmation(false)
+    }
     return (
         <DeleteDialog
             title={`Delete '${appName}' ?`}
             delete={() => handleDelete(DELETE_ACTION.DELETE)}
-            closeDelete={toggleConfirmation}
+            closeDelete={closeConfirmation}
         >
             {isCreateValueView ? (
                 <DeleteDialog.Description>

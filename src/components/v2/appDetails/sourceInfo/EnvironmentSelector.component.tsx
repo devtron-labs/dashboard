@@ -115,9 +115,6 @@ function EnvironmentSelectorComponent({
         }
     }
 
-    const toggleShowDeleteConfirmation = () => {
-        setShowDeleteConfirmation(!showDeleteConfirmation)
-    }
     const onClickHideNonCascadeDeletePopup = () => {
         showNonCascadeDeleteDialog(false)
     }
@@ -304,7 +301,7 @@ function EnvironmentSelectorComponent({
                                 <DeleteChartDialog
                                     appName={appDetails.appName}
                                     handleDelete={deleteResourceAction}
-                                    toggleConfirmation={toggleShowDeleteConfirmation}
+                                    toggleConfirmation={setShowDeleteConfirmation}
                                     isCreateValueView={false}
                                 />
                             )}

@@ -387,7 +387,7 @@ export interface ValuesForDiffStateType {
 export interface DeleteChartDialogProps {
     appName: string
     handleDelete: (deleteAction: string) => void
-    toggleConfirmation: () => void
+    toggleConfirmation: (isDeleteConfirmation:boolean) => void
     isCreateValueView?: boolean
 }
 
