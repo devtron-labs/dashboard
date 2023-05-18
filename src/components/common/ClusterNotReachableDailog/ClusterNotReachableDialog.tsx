@@ -9,10 +9,11 @@ interface ClusrerNotReachableDialogType {
     onClickDelete: () => void
 }
 function ClusrerNotReachableDialog({ clusterName, onClickCancel, onClickDelete }: ClusrerNotReachableDialogType) {
+    const clusterNameString:string = clusterName ? ` '${clusterName}'` : ''
     return (
         <ConfirmationDialog>
             <ConfirmationDialog.Icon src={warningIconSrc} />
-            <ConfirmationDialog.Body title={`The cluster${clusterName ? ` '${clusterName}'` : ''} is not reachable`} />
+            <ConfirmationDialog.Body title={`The cluster${clusterNameString} is not reachable`} />
             {NONCASCADE_DELETE_DIALOG_INTERNAL_MESSAGE.map((message, index) => (
                 <p key={`dailog-msg-${index}`} className="fs-14 cn-7 lh-20 mt-12">
                     {message}

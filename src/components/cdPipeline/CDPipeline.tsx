@@ -24,7 +24,6 @@ import {
     InfoColourBar,
     RadioGroup,
     RadioGroupItem,
-    ConfirmationDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,
@@ -48,7 +47,6 @@ import { ReactComponent as BotIcon } from '../../assets/icons/ic-bot.svg'
 import { ReactComponent as PersonIcon } from '../../assets/icons/ic-person.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import yamlJsParser from 'yaml'
-import warningIconSrc from '../../assets/icons/ic-warning-y5.svg'
 import settings from '../../assets/icons/ic-settings.svg'
 import trash from '../../assets/icons/misc/delete.svg'
 import error from '../../assets/icons/misc/errorInfo.svg'
@@ -71,8 +69,6 @@ import {
     MULTI_REQUIRED_FIELDS_MSG,
     TOAST_INFO,
     CONFIGMAPS_SECRETS,
-    NONCASCADE_DELETE_DIALOG_INTERNAL_MESSAGE,
-    BUTTON_TEXT,
 } from '../../config/constantMessaging'
 import ClusrerNotReachableDialog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 

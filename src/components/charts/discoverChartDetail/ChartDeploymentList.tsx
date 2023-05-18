@@ -7,11 +7,9 @@ import { deleteInstalledChart } from '../charts.service';
 import { toast } from 'react-toastify';
 import AppNotDeployedIcon from '../../../assets/img/app-not-configured.png';
 import dots from '../../../assets/icons/appstatus/ic-menu-dots.svg'
-import warningIconSrc from '../../../assets/icons/ic-warning-y5.svg'
 import trash from '../../../assets/icons/ic-delete.svg';
 import deleteIcon from '../../../assets/img/warning-medium.svg';
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api';
-import { BUTTON_TEXT, NONCASCADE_DELETE_DIALOG_INTERNAL_MESSAGE } from '../../../config/constantMessaging';
 import ClusrerNotReachableDialog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog';
 
 export function ChartDeploymentList({ chartId }) {

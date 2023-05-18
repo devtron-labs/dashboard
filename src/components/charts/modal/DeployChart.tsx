@@ -5,7 +5,7 @@ import {
     DropdownIcon,
     useJsonYaml,
 } from '../../common'
-import { ServerErrors, showError, Progressing, DeleteDialog, ForceDeleteDialog, sortCallback, getTeamListMin, ConfirmationDialog, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerErrors, showError, Progressing, DeleteDialog, ForceDeleteDialog, sortCallback, getTeamListMin, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { getEnvironmentListHelmApps, getEnvironmentListMin } from '../../../services/service'
 import { toast } from 'react-toastify'
 import { DeployChartProps } from './deployChart.types'
@@ -35,7 +35,6 @@ import { mainContext } from '../../common/navigation/NavigationRoutes'
 import HyperionEnvironmentSelect from '../../hyperion/EnvironmentSelect'
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import { DeploymentAppType } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
-import { BUTTON_TEXT, NONCASCADE_DELETE_DIALOG_INTERNAL_MESSAGE } from '../../../config/constantMessaging'
 import ClusrerNotReachableDialog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 function mapById(arr) {
@@ -757,7 +756,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                         forceDeleteDialogMessage={forceDeleteDialogMessage}
                     />
                 )}
-                {showNonCascadeDeleteDialog && (
+                {nonCascadeDeleteDialog && (
                     <ClusrerNotReachableDialog
                         clusterName={clusterName}
                         onClickCancel={onClickHideNonCascadeDeletePopup}

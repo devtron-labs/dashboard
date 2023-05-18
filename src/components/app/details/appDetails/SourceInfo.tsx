@@ -34,7 +34,6 @@ export function SourceInfo({
 }: SourceInfoType) {
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
-    const isPartialDeleteState = isArgoCdApp && isdeploymentAppDeleting
     const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions
