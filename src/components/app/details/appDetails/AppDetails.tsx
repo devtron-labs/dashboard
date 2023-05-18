@@ -266,6 +266,7 @@ export const Details: React.FC<DetailsType> = ({
             if (error['code'] === 408) {
                 setResourceTreeFetchTimeOut(true)
             } else {
+                setResourceTreeFetchTimeOut(false)
                 setAppDetails(null)
             }
             clearPollingInterval()
