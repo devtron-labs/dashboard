@@ -317,6 +317,7 @@ export interface ClusterManifestType {
     setManifestData: (manifest: string) => void
     errorMessage?: string[]
     setManifestAvailable: (isManifestAvailable: boolean) => void
+    selectTerminalTab: () => void
 }
 
 export interface ClusterEditManifestType {

@@ -721,6 +721,7 @@ export default function ClusterTerminal({
                             setManifestData={setManifestData}
                             errorMessage={manifestErrors}
                             setManifestAvailable={setManifestAvailable}
+                            selectTerminalTab={selectTerminalTab}
                         />
                     </div>
                 )}
