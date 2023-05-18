@@ -153,9 +153,11 @@ export function K8SResourceList({
                                             content={resourceData.name}
                                         >
                                             <a
-                                                className="dc__highlight-text dc__link dc__ellipsis-right dc__block cursor"
+                                                className="dc__link dc__ellipsis-right dc__block cursor"
                                                 data-name={resourceData.name}
-                                                onClick={handleResourceClick}>
+                                                onClick={handleResourceClick}
+                                            >
+                                                {resourceData.name}
                                             </a>
                                         </Tippy>
                                     </div>
@@ -178,6 +180,7 @@ export function K8SResourceList({
                                     : ''
                             }`}
                         >
+                            {resourceData[columnName]}
                         </div>
                     ),
                 )}
