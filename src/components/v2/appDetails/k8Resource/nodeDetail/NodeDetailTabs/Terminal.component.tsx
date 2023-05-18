@@ -178,6 +178,7 @@ function TerminalComponent({
             {
                 type: 'reactSelect',
                 showDivider: true,
+                classNamePrefix: 'terminal-select-shell',
                 placeholder: 'Select Shell',
                 options: shellTypes,
                 defaultValue: shellTypes[0],
