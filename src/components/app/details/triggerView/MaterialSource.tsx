@@ -30,20 +30,20 @@ export default function MaterialSource({
     const renderMaterialUpdateInfo = (mat: CIMaterialType) => {
         if (mat.isMaterialLoading) {
             return (
-                <div className="flex fs-10">
+                <div data-testid="fetching-material-loading" className="flex fs-10">
                     <div className="material-last-update__fetching dc__loading-dots">Fetching</div>
                 </div>
             )
         } else if (mat.isBranchError || mat.isRepoError || mat.isDockerFileError || mat.isMaterialSelectionError) {
             return (
-                <div className="flex fs-10">
+                <div data-testid="material-error" className="flex fs-10">
                     <Error className="form__icon--error icon-dim-14 mr-5" />
-                    <div data-testid="material-" className="material__error dc__ellipsis-right">{renderErrorMessage(mat)}</div>
+                    <div className="material__error dc__ellipsis-right">{renderErrorMessage(mat)}</div>
                 </div>
             )
         } else {
             return (
-                <div className="flex fs-10">
+                <div data-testid="material-last-fetch-time" className="flex fs-10">
                     {mat.lastFetchTime ? 'Updated' : ''}
                     <span className="fw-6 ml-5"> {mat.lastFetchTime}</span>
                 </div>
@@ -89,6 +89,7 @@ export default function MaterialSource({
                     <div
                         key={index}
                         data-id={mat.id}
+                        data-testid={`material-list-item-${index}`}
                         className={`material-list__item ${mat.isSelected ? 'material-selected' : ''}`}
                         onClick={handleSelectMaterialAction}
                     >

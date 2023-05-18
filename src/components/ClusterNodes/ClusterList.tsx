@@ -113,7 +113,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     }
 
     const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText) >= 0)
+        const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText.toLowerCase()) >= 0)
         setFilteredClusterList(_filteredData)
         setNoResults(_filteredData.length === 0)
     }
