@@ -193,14 +193,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                     return agg
                 }, {})
                 let clusters = clusterRes.result || []
-                clusters = clusters.concat({
-                    id: null,
-                    cluster_name: '',
-                    server_url: '',
-                    active: true,
-                    config: {},
-                    environments: [],
-                })
                 clusters = clusters.map((c) => {
                     return {
                         ...c,
@@ -335,6 +327,8 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             reload={this.initialise}
                             key={cluster.id || Math.random().toString(36).substr(2, 5)}
                             serverMode={this.props.serverMode}
+                            isGrafanaModuleInstalled={true}
+                            toggleEditMode={() => {}}
                         />
                     ))}
                     {this.state.showAddCluster && (
@@ -357,8 +351,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 toggleShowAddCluster={this.toggleShowAddCluster}
                                 toggleKubeConfigFile={this.toggleKubeConfigFile}
                                 isKubeConfigFile={this.state.isKubeConfigFile}
-                                browseFile={this.state.browseFile}
-                                toggleBrowseFile={this.toggleBrowseFile}
                                 toggleClusterDetails={this.toggleClusterDetails}
                             />
                         </Drawer>
@@ -370,6 +362,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
 }
 
 function Cluster({
+    id,
     id: clusterId,
     cluster_name,
     defaultClusterComponent,
@@ -389,6 +382,7 @@ function Cluster({
     browseFile,
     toggleBrowseFile,
     toggleClusterDetails,
+    isGrafanaModuleInstalled,
     isClusterDetails,
 }) {
     const [editMode, toggleEditMode] = useState(false)
@@ -399,12 +393,98 @@ function Cluster({
     const [showWindow, setShowWindow] = useState(false)
     const [envDelete, setDeleteEnv] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
+    const [deleting, setDeleting] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false)
     const [, grafanaModuleStatus] = useAsync(
         () => getModuleInfo(ModuleNameMap.GRAFANA),
         [clusterId],
         !window._env_.K8S_CLIENT,
     )
+
+    const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
+        type: prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
+    })
+    let authenTicationType =
+        prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
+
     const editLabelRef = useRef(null)
+
+    const isDefaultCluster = (): boolean => {
+        return id == 1
+    }
+
+    const { state, disable, handleOnChange, handleOnSubmit } = useForm(
+        {
+            cluster_name: { value: cluster_name, error: '' },
+            url: { value: server_url, error: '' },
+            userName: { value: prometheusAuth?.userName, error: '' },
+            password: { value: prometheusAuth?.password, error: '' },
+            tlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
+            tlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
+            certificateAuthorityData: { value: prometheusAuth?.certificateAuthorityData, error: '' },
+            token: { value: config && config.bearer_token ? config.bearer_token : '', error: '' },
+            endpoint: { value: prometheus_url || '', error: '' },
+            authType: { value: authenTicationType, error: '' },
+        },
+        {
+            cluster_name: {
+                required: true,
+                validators: [
+                    { error: 'Name is required', regex: /^.*$/ },
+                    { error: "Use only lowercase alphanumeric characters, '-', '_' or '.'", regex: /^[a-z0-9-\.\_]+$/ },
+                    { error: "Cannot start/end with '-', '_' or '.'", regex: /^(?![-._]).*[^-._]$/ },
+                    { error: 'Minimum 3 and Maximum 63 characters required', regex: /^.{3,63}$/ },
+                ],
+            },
+            url: {
+                required: true,
+                validator: { error: 'URL is required', regex: /^.*$/ },
+            },
+            authType: {
+                required: false,
+                validator: { error: 'Authentication Type is required', regex: /^(?!\s*$).+/ },
+            },
+            userName: {
+                required:
+                    prometheusToggleEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC
+                        ? true
+                        : false,
+                validator: { error: 'username is required', regex: /^(?!\s*$).+/ },
+            },
+            password: {
+                required:
+                    prometheusToggleEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC
+                        ? true
+                        : false,
+                validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
+            },
+            tlsClientKey: {
+                required: false,
+                validator: { error: 'TLS Key is required', regex: /^(?!\s*$).+/ },
+            },
+            tlsClientCert: {
+                required: false,
+                validator: { error: 'TLS Certificate is required', regex: /^(?!\s*$).+/ },
+            },
+            certificateAuthorityData: {
+                required: false,
+                validator: { error: 'Certificate authority data is required', regex: /^(?!\s*$).+/ },
+            },
+            token:
+                isDefaultCluster() || id
+                    ? {}
+                    : {
+                          required: true,
+                          validator: { error: 'token is required', regex: /[^]+/ },
+                      },
+            endpoint: {
+                required: prometheusToggleEnabled ? true : false,
+                validator: { error: 'endpoint is required', regex: /^.*$/ },
+            },
+        },
+        onValidation,
+    )
 
     const history = useHistory()
     const newEnvs = useMemo(() => {
@@ -465,6 +545,77 @@ function Cluster({
         }
     }
 
+    async function onValidation() {
+        let payload = getClusterPayload()
+        const urlValue = state.url.value?.trim() ?? ''
+        if (urlValue.endsWith('/')) {
+            payload['server_url'] = urlValue.slice(0, -1)
+        } else {
+            payload['server_url'] = urlValue
+        }
+
+        if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
+            let isValid = state.userName?.value && state.password?.value
+            if (!isValid) {
+                toast.error('Please add both username and password')
+                return
+            } else {
+                payload.prometheusAuth['userName'] = state.userName.value || ''
+                payload.prometheusAuth['password'] = state.password.value || ''
+            }
+        }
+        if (isTlsConnection) {
+            if (
+                (state.tlsClientKey.value || state.tlsClientCert.value || state.certificateAuthorityData.value) &&
+                prometheusToggleEnabled
+            ) {
+                let isValid =
+                    state.tlsClientKey.value?.length &&
+                    state.tlsClientCert.value?.length &&
+                    state.certificateAuthorityData?.length
+                if (!isValid) {
+                    toast.error('Please add TLS Key, Certificate and Certificate Authority Data')
+                    return
+                } else {
+                    payload.prometheusAuth['tlsClientKey'] = state.tlsClientKey.value || ''
+                    payload.prometheusAuth['tlsClientCert'] = state.tlsClientCert.value || ''
+                    payload.prometheusAuth['certificateAuthorityData'] = state.certificateAuthorityData.value || ''
+                }
+            }
+        }
+
+        const api = id ? updateCluster : saveCluster
+        try {
+            setLoading(true)
+            const { result } = await api(payload)
+            toast.success(`Successfully ${id ? 'updated' : 'saved'}.`)
+            reload()
+            toggleEditMode((e) => !e)
+        } catch (err) {
+            showError(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const getClusterPayload = () => {
+        // console.log(state.cluster_name.value)
+        return {
+            id,
+            cluster_name: state.cluster_name.value,
+            config: {
+                bearer_token:
+                    state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value : '',
+            },
+            active,
+            prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
+            prometheusAuth: {
+                userName: prometheusToggleEnabled ? state.userName.value : '',
+                password: prometheusToggleEnabled ? state.password.value : '',
+            },
+        }
+    }
+
     const outsideClickHandler = (evt): void => {
         if (editLabelRef.current && !editLabelRef.current.contains(evt.target) && showWindow) {
             setShowWindow(false)
@@ -519,6 +670,266 @@ function Cluster({
         if (!clusterId) {
             toggleEditMode((t) => !t)
         }
+    }
+
+    const ClusterInfoComponent = () => {
+        const k8sClusters = Object.values(CLUSTER_COMMAND)
+        return (
+            <>
+                {k8sClusters.map((cluster, key) => (
+                    <>
+                        <TippyHeadless
+                            className=""
+                            theme="light"
+                            placement="bottom"
+                            trigger="click"
+                            interactive={true}
+                            render={() => (
+                                <ClusterInfoStepsModal
+                                    subTitle={cluster.title}
+                                    command={cluster.command}
+                                    clusterName={cluster.clusterName}
+                                />
+                            )}
+                            maxWidth="468px"
+                        >
+                            <span className="ml-4 mr-2 cb-5 cursor">{cluster.heading}</span>
+                        </TippyHeadless>
+                        {key !== k8sClusters.length - 1 && <span className="cn-2">|</span>}
+                    </>
+                ))}
+            </>
+        )
+    }
+
+    const setPrometheusToggle = () => {
+        setPrometheusToggleEnabled(!prometheusToggleEnabled)
+    }
+
+    const clusterLabel = () => {
+        return (
+            <div className="flex left ">
+                Server URL & Bearer token{isDefaultCluster() ? '' : '*'}
+                <span className="icon-dim-16 fcn-9 mr-4 ml-16">
+                    <Question className="icon-dim-16" />
+                </span>
+                <span>How to find for </span>
+                <ClusterInfoComponent />
+            </div>
+        )
+    }
+
+    const handleOnFocus = (e): void => {
+        if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
+            e.target.value = ''
+        }
+    }
+
+    const handleOnBlur = (e): void => {
+        if (id && id != 1 && !e.target.value) {
+            e.target.value = DEFAULT_SECRET_PLACEHOLDER
+        }
+    }
+
+    const OnPrometheusAuthTypeChange = (e) => {
+        handleOnChange(e)
+        if (state.authType.value == AuthenticationType.BASIC) {
+            setPrometheusAuthenticationType({ type: AuthenticationType.ANONYMOUS })
+        } else {
+            setPrometheusAuthenticationType({ type: AuthenticationType.BASIC })
+        }
+    }
+
+    let payload = {
+        id,
+        cluster_name,
+        config: { bearer_token: state.token.value },
+        active,
+        prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
+        prometheusAuth: {
+            userName: prometheusToggleEnabled ? state.userName.value : '',
+            password: prometheusToggleEnabled ? state.password.value : '',
+        },
+        server_url,
+        defaultClusterComponent: defaultClusterComponent,
+        k8sversion: '',
+    }
+
+    const clusterTitle = () => {
+        if(id) {
+            return 'Edit Cluster'
+        }
+    }
+
+    const EditCluster = () => {
+        return (
+            <form action="" className="cluster-form " onSubmit={handleOnSubmit}>
+                <div className="flex left mb-20">
+                    {id && <Pencil color="#363636" className="icon-dim-24 dc__vertical-align-middle mr-8" />}
+                    <span className="fw-6 fs-14 cn-9">{clusterTitle()}</span>
+                </div>
+                <div className="form__row">
+                    <CustomInput
+                        autoComplete="off"
+                        name="cluster_name"
+                        disabled={isDefaultCluster()}
+                        value={state.cluster_name.value}
+                        error={state.cluster_name.error}
+                        onChange={handleOnChange}
+                        label="Name*"
+                        placeholder="Cluster name"
+                    />
+                </div>
+                <div className="form__row mb-8-imp">
+                    <CustomInput
+                        autoComplete="off"
+                        name="url"
+                        value={state.url.value}
+                        error={state.url.error}
+                        onChange={handleOnChange}
+                        label={clusterLabel()}
+                        placeholder="Enter server URL"
+                    />
+                </div>
+                <div className="form__row form__row--bearer-token flex column left top">
+                    <div className="bearer-token">
+                        <ResizableTextarea
+                            className="dc__resizable-textarea__with-max-height"
+                            name="token"
+                            value={config && config.bearer_token ? config.bearer_token : ''}
+                            onChange={handleOnChange}
+                            onBlur={handleOnBlur}
+                            onFocus={handleOnFocus}
+                            placeholder="Enter bearer token"
+                        />
+                    </div>
+                    {state.token.error && (
+                        <label htmlFor="" className="form__error">
+                            <FormError className="form__icon form__icon--error" />
+                            {state.token.error}
+                        </label>
+                    )}
+                </div>
+                {isGrafanaModuleInstalled && (
+                    <>
+                        <hr />
+                        <div
+                            className={`${
+                                prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'
+                            } mt-20`}
+                        >
+                            <div className="dc__content-space flex">
+                                <span className="form__input-header">See metrics for applications in this cluster</span>
+                                <div className="" style={{ width: '32px', height: '20px' }}>
+                                    <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
+                                </div>
+                            </div>
+                            <span className="cn-6 fs-12">
+                                Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications
+                                running in this cluster
+                            </span>
+                        </div>
+                    </>
+                )}
+                {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheus_url && <PrometheusWarningInfo />}
+                {isGrafanaModuleInstalled && prometheusToggleEnabled && (
+                    <div className="">
+                        {(state.userName.error || state.password.error || state.endpoint.error) && (
+                            <PrometheusRequiredFieldInfo />
+                        )}
+                        <div className="form__row">
+                            <CustomInput
+                                autoComplete="off"
+                                name="endpoint"
+                                value={state.endpoint.value}
+                                error={state.endpoint.error}
+                                onChange={handleOnChange}
+                                label="Prometheus endpoint*"
+                            />
+                        </div>
+                        <div className="form__row">
+                            <span className="form__label">Authentication Type*</span>
+                            <RadioGroup
+                                value={state.authType.value}
+                                name={`authType`}
+                                onChange={(e) => OnPrometheusAuthTypeChange(e)}
+                            >
+                                <RadioGroupItem value={AuthenticationType.BASIC}> Basic </RadioGroupItem>
+                                <RadioGroupItem value={AuthenticationType.ANONYMOUS}> Anonymous </RadioGroupItem>
+                            </RadioGroup>
+                        </div>
+                        {state.authType.value === AuthenticationType.BASIC ? (
+                            <div className="form__row form__row--flex">
+                                <div className="w-50 mr-8">
+                                    <CustomInput
+                                        name="userName"
+                                        value={state.userName.value}
+                                        error={state.userName.error}
+                                        onChange={handleOnChange}
+                                        label="Username*"
+                                    />
+                                </div>
+                                <div className="w-50 ml-8">
+                                    <CustomPassword
+                                        name="password"
+                                        value={state.password.value}
+                                        error={state.userName.error}
+                                        onChange={handleOnChange}
+                                        label="Password*"
+                                    />
+                                </div>
+                            </div>
+                        ) : null}
+                        <div className="form__row">
+                            <span className="form__label">TLS Key</span>
+                            <ResizableTextarea
+                                className="dc__resizable-textarea__with-max-height w-100"
+                                name="tlsClientKey"
+                                value={state.tlsClientKey.value}
+                                onChange={handleOnChange}
+                            />
+                        </div>
+                        <div className="form__row">
+                            <span className="form__label">TLS Certificate</span>
+                            <ResizableTextarea
+                                className="dc__resizable-textarea__with-max-height w-100"
+                                name="tlsClientCert"
+                                value={state.tlsClientCert.value}
+                                onChange={handleOnChange}
+                            />
+                        </div>
+                    </div>
+                )}
+                <div className={`form__buttons`}>
+                    {id && (
+                        <button
+                            style={{ margin: 'auto', marginLeft: 0 }}
+                            className="flex cta override-button delete scr-5 h-32"
+                            type="button"
+                            onClick={() => toggleConfirmation(true)}
+                        >
+                            {deleting ? <Progressing /> : 'Delete'}
+                        </button>
+                    )}
+                    <button className="cta cancel" type="button" onClick={(e) => toggleEditMode((t) => !t)}>
+                        Cancel
+                    </button>
+                    <button className="cta">{loading ? <Progressing /> : 'Save cluster'}</button>
+                </div>
+                {confirmation && (
+                    <DeleteComponent
+                        setDeleting={setDeleting}
+                        deleteComponent={deleteCluster}
+                        payload={payload}
+                        title={cluster_name}
+                        toggleConfirmation={toggleConfirmation}
+                        component={DeleteComponentsName.Cluster}
+                        confirmationDialogDescription={DC_CLUSTER_CONFIRMATION_MESSAGE}
+                        reload={reload}
+                    />
+                )}
+            </form>
+        )
     }
 
     return (
@@ -700,7 +1111,7 @@ function Cluster({
                     </>
                 ) : (
                     <>
-                        <ClusterForm
+                        {/* <ClusterForm
                             {...{
                                 id: clusterId,
                                 cluster_name,
@@ -724,7 +1135,8 @@ function Cluster({
                                 isGrafanaModuleInstalled:
                                     grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED,
                             }}
-                        />
+                        /> */}
+                        <EditCluster />
                     </>
                 )}
             </article>
@@ -762,8 +1174,6 @@ function ClusterForm({
     toggleShowAddCluster,
     toggleKubeConfigFile,
     isKubeConfigFile,
-    browseFile,
-    toggleBrowseFile,
     isClusterDetails,
     toggleClusterDetails,
 }) {
@@ -1241,7 +1651,10 @@ function ClusterForm({
                                 value={'CHECKED'}
                                 onChange={toggleCheckTlsConnection}
                             >
-                                <div data-testid="use_secure_tls_connection_checkbox" className="mr-4 flex center"> Use secure TLS connection {isTlsConnection}</div>
+                                <div data-testid="use_secure_tls_connection_checkbox" className="mr-4 flex center">
+                                    {' '}
+                                    Use secure TLS connection {isTlsConnection}
+                                </div>
                             </Checkbox>
                         </div>
 
@@ -1255,7 +1668,7 @@ function ClusterForm({
                                         Certificate Authority Data
                                     </span>
                                     <ResizableTextarea
-                                        dataTestId='certificate_authority_data_input'
+                                        dataTestId="certificate_authority_data_input"
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="certificateAuthorityData"
                                         value={state.certificateAuthorityData.value}
@@ -1268,7 +1681,7 @@ function ClusterForm({
                                         TLS Key
                                     </span>
                                     <ResizableTextarea
-                                        dataTestId='tls_client_key_input'
+                                        dataTestId="tls_client_key_input"
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="tlsClientKey"
                                         value={state.tlsClientKey.value}
@@ -1426,7 +1839,12 @@ function ClusterForm({
                     </CodeEditor>
                 </div>
                 <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
-                    <button data-testid="cancel_kubeconfig_button" className="cta cancel" type="button" onClick={handleCloseButton}>
+                    <button
+                        data-testid="cancel_kubeconfig_button"
+                        className="cta cancel"
+                        type="button"
+                        onClick={handleCloseButton}
+                    >
                         Cancel
                     </button>
 
@@ -1518,7 +1936,10 @@ function ClusterForm({
                     <AddClusterHeader />
 
                     <div className="api-token__list en-2 bw-0 bcn-0 br-8">
-                        <div data-testid="cluster_list_page_after_selection" className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1">
+                        <div
+                            data-testid="cluster_list_page_after_selection"
+                            className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1"
+                        >
                             <div></div>
                             <div data-testid="cluster_validate">CLUSTER</div>
                             <div data-testid="status_validate">STATUS</div>
@@ -1673,7 +2094,10 @@ function ClusterForm({
         return (
             <>
                 {isKubeConfigFile && (
-                    <div data-testid="valid_cluster_infocolor_bar" className="cluster-form dc__position-rel h-100 bcn-0">
+                    <div
+                        data-testid="valid_cluster_infocolor_bar"
+                        className="cluster-form dc__position-rel h-100 bcn-0"
+                    >
                         <AddClusterHeader />
                         <InfoColourBar
                             message={`${validCluster()} valid cluster. Select the cluster you want to Add/Update`}
@@ -1795,7 +2219,12 @@ function ClusterForm({
                 <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                     Add Cluster
                 </h2>
-                <button data-testid="header_close_icon" type="button" className="dc__transparent flex icon-dim-24 mr-24" onClick={handleCloseButton}>
+                <button
+                    data-testid="header_close_icon"
+                    type="button"
+                    className="dc__transparent flex icon-dim-24 mr-24"
+                    onClick={handleCloseButton}
+                >
                     <Close className="icon-dim-24" />
                 </button>
             </div>
@@ -1823,7 +2252,7 @@ function ClusterForm({
                             className="radio-group-no-border"
                             value={isKubeConfigFile ? 'EXISTING' : 'BLANK'}
                             name="trigger-type"
-                            onChange={()=>toggleKubeConfigFile(!isKubeConfigFile)}
+                            onChange={() => toggleKubeConfigFile(!isKubeConfigFile)}
                         >
                             <RadioGroupItem value={AppCreationType.Blank}>Use Server URL & Bearer token</RadioGroupItem>
                             <RadioGroupItem
@@ -1840,10 +2269,19 @@ function ClusterForm({
 
                 {!isKubeConfigFile && (
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
-                        <button data-testid="cancel_button" className="cta cancel" type="button" onClick={toggleShowAddCluster}>
+                        <button
+                            data-testid="cancel_button"
+                            className="cta cancel"
+                            type="button"
+                            onClick={toggleShowAddCluster}
+                        >
                             Cancel
                         </button>
-                        <button data-testid="save_cluster_after_entering_cluster_details" className="cta mr-20 ml-20" onClick={() => saveClusterCall()}>
+                        <button
+                            data-testid="save_cluster_after_entering_cluster_details"
+                            className="cta mr-20 ml-20"
+                            onClick={() => saveClusterCall()}
+                        >
                             {'Save cluster'}
                         </button>
                     </div>
