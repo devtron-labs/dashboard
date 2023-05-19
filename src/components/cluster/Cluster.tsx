@@ -18,7 +18,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning.svg'
+import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
 import YAML from 'yaml'
 import {
     Pencil,
@@ -2159,7 +2159,7 @@ function ClusterForm({
                                             />
                                             {selectedUserNameOptions[clusterDetail.cluster_name].errorInConnecting ===
                                             'cluster-already-exists' ? (
-                                                <ErrorIcon className="dc__app-summary__icon icon-dim-16 mr-2" />
+                                                <ErrorIcon className="dc__app-summary__icon icon-dim-16 mr-2 " />
                                             ) : (
                                                 <div
                                                     className={`dc__app-summary__icon icon-dim-16 mr-2 ${
