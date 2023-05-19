@@ -296,12 +296,20 @@ export const Details: React.FC<DetailsType> = ({
             })
         fetchResourceTreeInTime(params.appId, params.envId, 25000)
             .then((response) => {
-                appDetailsRef.current = {
-                    ...appDetailsRef.current,
-                    resourceTree: response.result,
+                if (response.errors && response.errors.length === 1 && response.errors[0].code === '7000' && appDetailsRequestRef.current) {
+                    if (setIsAppDeleted) {
+                        setIsAppDeleted(true)
+                    }
+                    setResourceTreeFetchTimeOut(true)
+                    clearPollingInterval()
+                } else {
+                    appDetailsRef.current = {
+                        ...appDetailsRef.current,
+                        resourceTree: response.result,
+                    }
+                    IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
+                    setAppDetails(appDetailsRef.current)
                 }
-                IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
-                setAppDetails(appDetailsRef.current)
             })
             .catch(handleAppDetailsCallError)
             .finally(() => {
@@ -449,7 +457,11 @@ export const Details: React.FC<DetailsType> = ({
                 )}
 
                 {isAppDeleted ? (
-                    <DeletedAppComponent resourceTreeFetchTimeOut={resourceTreeFetchTimeOut} showApplicationDetailedModal={showApplicationDetailedModal} appStreamData={streamData} />
+                    <DeletedAppComponent
+                        resourceTreeFetchTimeOut={resourceTreeFetchTimeOut}
+                        showApplicationDetailedModal={showApplicationDetailedModal}
+                        appStreamData={streamData}
+                    />
                 ) : (
                     <AppNotConfigured
                         style={{ height: 'calc(100vh - 150px)' }}

@@ -11,6 +11,8 @@ import trash from '../../../assets/icons/ic-delete.svg';
 import deleteIcon from '../../../assets/img/warning-medium.svg';
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api';
 import ClusrerNotReachableDialog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog';
+import { DeploymentAppType } from '../../v2/appDetails/appDetails.type';
+import AppStatus from '../../app/AppStatus';
 
 export function ChartDeploymentList({ chartId }) {
     const [installs, setInstalls] = React.useState([]);
@@ -48,6 +50,7 @@ export function ChartDeploymentList({ chartId }) {
                 <thead className="deployment-table-header">
                     <tr>
                         <th>App name</th>
+                        <th>App Status</th>
                         <th>Environment</th>
                         <th>Deployed By</th>
                         <th>Deployed at</th>
@@ -63,7 +66,7 @@ export function ChartDeploymentList({ chartId }) {
     </div>
 }
 
-export function DeploymentRow({ installedAppId, appName, status, environmentId, environmentName, deployedBy, deployedAt, appOfferingMode, clusterId, namespace, setView, fetchDeployments }) {
+export function DeploymentRow({ installedAppId, appName, status, deploymentAppType, environmentId, environmentName, deployedBy, deployedAt, appOfferingMode, clusterId, namespace, setView, fetchDeployments }) {
     const link = _buildAppDetailUrl();
     const [confirmation, toggleConfirmation] = useState(false)
     const [deleting, setDeleting] = useState(false);
@@ -93,7 +96,7 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
     async function handleDelete(deleteAction: string) {
         setDeleting(true)
         try {
-            let response: ResponseType = await deleteInstalledChart(Number(installedAppId), false, deleteAction)
+            let response: ResponseType = await deleteInstalledChart(Number(installedAppId), deploymentAppType === DeploymentAppType.argo_cd, deleteAction)
             if (response.result.deleteResponse?.deleteInitiated) {
                 toast.success('Successfully deleted')
                 toggleConfirmation(false)
@@ -136,7 +139,9 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
             <tr className="deployment-table-row">
                 <Td to={link} className="app-detail">
                     <div className="deployed-app-name dc__ellipsis-right">{appName}</div>
-                    <div className={`app-summary__status-name f-${status.toLowerCase()}`}>{status.toUpperCase()}</div>
+                </Td>
+                <Td to={link} className="dc__ellipsis-right">
+                    <AppStatus appStatus={status} />
                 </Td>
                 <Td to={link} className="dc__ellipsis-right">
                     {environmentName}
