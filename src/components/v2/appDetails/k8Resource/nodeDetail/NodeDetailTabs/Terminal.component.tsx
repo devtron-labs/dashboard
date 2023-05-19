@@ -158,11 +158,13 @@ function TerminalComponent({
             },
             {
                 type: TerminalWrapperType.CLEAR_BUTTON,
+                dataTestId: 'clear-terminal-editor',
                 setTerminalCleared: handleAbort,
             },
             {
                 type: TerminalWrapperType.REACT_SELECT,
                 showDivider: true,
+                classNamePrefix: 'containers-select',
                 title: 'Container ',
                 placeholder: 'Select container',
                 options: getGroupedContainerOptions(containers),
@@ -177,6 +179,7 @@ function TerminalComponent({
             {
                 type: TerminalWrapperType.REACT_SELECT,
                 showDivider: true,
+                classNamePrefix: 'terminal-select-shell',
                 placeholder: 'Select Shell',
                 options: shellTypes,
                 defaultValue: shellTypes[0],
@@ -191,6 +194,7 @@ function TerminalComponent({
         tabSwitcher: {
             terminalData: {
                 terminalRef: terminalRef,
+                dataTestId: 'app-terminal-container',
                 clearTerminal: terminalCleared,
                 setSocketConnection: setSocketConnection,
                 socketConnection: socketConnection,
@@ -201,6 +205,7 @@ function TerminalComponent({
 
     return (
         <TerminalWrapper
+            dataTestId="terminal-editor-header"
             selectionListData={selectionListData}
             socketConnection={socketConnection}
             setSocketConnection={setSocketConnection}

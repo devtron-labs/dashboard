@@ -28,6 +28,7 @@ export default function TerminalView({
     registerLinkMatcher,
     terminalMessageData,
     clearTerminal,
+    dataTestId
 }: TerminalViewType) {
     const [firstMessageReceived, setFirstMessageReceived] = useState(false)
     const [isReconnection, setIsReconnection] = useState(false)
@@ -239,9 +240,9 @@ export default function TerminalView({
     }, [clearTerminal])
 
     return (
-        <div className="terminal-wrapper">
+        <div className="terminal-wrapper" data-testid={dataTestId}>
             {renderConnectionStrip()}
-            <div ref={myDivRef} id="terminal-id" className="mt-8 mb-4 terminal-component ml-20">
+            <div ref={myDivRef} id="terminal-id" data-testid="terminal-editor-container" className="mt-8 mb-4 terminal-component ml-20">
                 <CopyToast showCopyToast={popupText} />
             </div>
         </div>

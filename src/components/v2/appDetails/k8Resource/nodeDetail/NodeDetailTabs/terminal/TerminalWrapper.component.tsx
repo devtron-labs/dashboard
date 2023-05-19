@@ -11,6 +11,7 @@ export default function TerminalWrapper({
     socketConnection,
     setSocketConnection,
     className,
+    dataTestId,
 }: TerminalWrapperProps) {
     const firstStrip = () => {
         return (
@@ -34,6 +35,7 @@ export default function TerminalWrapper({
         return (
             <TerminalView
                 terminalRef={terminalData.terminalRef}
+                dataTestId={terminalData.dataTestId}
                 sessionId={terminalData.sessionId}
                 socketConnection={terminalData.socketConnection}
                 setSocketConnection={terminalData.setSocketConnection}
@@ -53,7 +55,7 @@ export default function TerminalWrapper({
     }
 
     return (
-        <div className={className}>
+        <div className={className} data-testid={dataTestId}>
             <div className="flex bcn-0 pl-20 dc__border-top h-32">{firstStrip()}</div>
             {selectionListData.secondRow && (
                 <div className="flex left bcn-0 pl-20 dc__border-top h-28">{secondStrip()}</div>
@@ -121,5 +123,5 @@ export function RenderConnectionStrip({
         }
     }
 
-    return <div>{renderStrip()}</div>
+    return <div data-testid="terminal-strip-message">{renderStrip()}</div>
 }
