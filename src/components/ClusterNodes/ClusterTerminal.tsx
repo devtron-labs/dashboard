@@ -689,6 +689,7 @@ export default function ClusterTerminal({
                     Disconnected
                     <span>.&nbsp;</span>
                     <button
+                        data-testid="reconnect-button"
                         type="button"
                         onClick={socketConnecting}
                         className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
