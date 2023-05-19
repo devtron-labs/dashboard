@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router'
 import { NodeDetailTab } from '../nodeDetail.type'
 import IndexStore from '../../../index.store'
-import { SocketConnectionType } from './node.type'
 import MessageUI from '../../../../common/message.ui'
 import { Option } from '../../../../common/ReactSelect.utils'
 import {
@@ -18,6 +17,8 @@ import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
 import { get, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
+import { TerminalWrapperType } from './terminal/constants'
 
 let clusterTimeOut
 
@@ -150,18 +151,18 @@ function TerminalComponent({
     const selectionListData: TerminalSelectionListDataType = {
         firstRow: [
             {
-                type: 'connectionButton',
+                type: TerminalWrapperType.CONNECTION_BUTTON,
                 connectTerminal: connectTerminal,
                 closeTerminalModal: handleDisconnect,
                 reconnectTerminal: handleConnect,
             },
             {
-                type: 'clearButton',
+                type: TerminalWrapperType.CLEAR_BUTTON,
                 dataTestId: 'clear-terminal-editor',
                 setTerminalCleared: handleAbort,
             },
             {
-                type: 'reactSelect',
+                type: TerminalWrapperType.REACT_SELECT,
                 showDivider: true,
                 classNamePrefix: 'containers-select',
                 title: 'Container ',
@@ -176,7 +177,7 @@ function TerminalComponent({
                 },
             },
             {
-                type: 'reactSelect',
+                type: TerminalWrapperType.REACT_SELECT,
                 showDivider: true,
                 classNamePrefix: 'terminal-select-shell',
                 placeholder: 'Select Shell',

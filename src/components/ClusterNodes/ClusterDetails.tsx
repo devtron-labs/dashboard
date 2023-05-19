@@ -23,15 +23,13 @@ import { OrderBy } from '../app/list/types'
 import ClusterNodeEmptyState from './ClusterNodeEmptyStates'
 import Tippy from '@tippyjs/react'
 import ClusterTerminal from './ClusterTerminal'
-import {
-    COLUMN_METADATA,
-    NODE_SEARCH_TEXT,
-} from './constants'
+import { COLUMN_METADATA, NODE_SEARCH_TEXT } from './constants'
 import NodeActionsMenu from './NodeActions/NodeActionsMenu'
 import './clusterNodes.scss'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import { ReactComponent as CloudIcon } from '../../assets/icons/ic-cloud.svg'
 import { ReactComponent as SyncIcon } from '../../assets/icons/ic-arrows_clockwise.svg'
+import { createTaintsList } from '../cluster/cluster.util'
 
 export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList, clusterId }: ClusterDetailsPropType) {
     const match = useRouteMatch()
@@ -206,7 +204,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
 
                     if (_nodeErrors.length > 0) {
                         _errorTitle += (_errorTitle ? ', ' : '') + _nodeErrors.join(', ')
-                        for ( const _nodeError of _nodeErrors) {
+                        for (const _nodeError of _nodeErrors) {
                             const _errorLength = response[1].result.nodeErrors[_nodeError].length
                             _errorList.push({
                                 errorText: `${_nodeError} on ${
@@ -528,7 +526,9 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
     }
 
     const renderNodeListHeader = (column: ColumnMetadataType): JSX.Element => {
-        const nodeColumnClassName = fixedNodeNameColumn ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
+        const nodeColumnClassName = fixedNodeNameColumn
+            ? 'bcn-0 dc__position-sticky  sticky-column dc__border-right'
+            : ''
         return (
             <div
                 className={`h-36 list-title dc__inline-block mr-16 pt-8 pb-8 ${
@@ -764,12 +764,13 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                 <ClusterTerminal
                     clusterId={Number(clusterId)}
                     nodeGroups={createGroupSelectList(filteredFlattenNodeList, 'name')}
-                    isClusterDetailsPage={true}
                     closeTerminal={closeTerminal}
                     clusterImageList={nodeImageList}
+                    isClusterDetailsPage={true}
                     namespaceList={namespaceList[clusterName]}
                     node={selectedNode}
                     setSelectedNode={setSelectedNode}
+                    taints={createTaintsList(filteredFlattenNodeList, 'name')}
                 />
             )}
         </>

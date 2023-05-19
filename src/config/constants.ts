@@ -224,6 +224,7 @@ export const Routes = {
     CUSTOM_ROLES: 'rbac/role',
     GROUPS: 'groups',
     GROUP: 'group',
+    EDIT: 'edit',
 }
 
 export const ViewType = {
@@ -807,4 +808,16 @@ export enum CONFIGURATION_TYPES {
     ENVIRONMENT = 'ENVIRONMENT',
     NAMESPACE = 'NAMESPACE',
     DESCRIPTION = 'DESCRIPTION',
+}
+
+export const ManifestMessaging = {
+    POD_NAME_EXIST_IN_NAMESPACE: 'Pod with provided name already exists in namespace',
+    POD_NAME: 'A pod named',
+    ALREADY_EXIST: 'already exists in',
+    NAMESPACE: 'namespace',
+    CONTINUE_TERMINATE_EXISTING_POD:
+        'Continuing will terminate the existing pod and create a new one with the provided manifest.',
+    SURE_WANT_TO_CONTINUE: 'Are you sure you want to continue?',
+    CANCEL: 'Cancel',
+    TERMINATE_EXISTING_POD: 'Terminate existing pod',
 }

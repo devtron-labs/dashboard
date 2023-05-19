@@ -9,8 +9,8 @@ import {
     selectionListDataWithSecondStrip,
     selectionListDataWithTerminalWrapper,
 } from '../__mocks__/terminalWrapper.mock'
-import { SocketConnectionType } from '../../node.type'
 import * as data from '../../../../../../../../components/common/helpers/Helpers'
+import { SocketConnectionType } from '../../../../../../../ClusterNodes/constants'
 
 describe('TerminalWrapper', () => {
     it('renders without crashing', () => {

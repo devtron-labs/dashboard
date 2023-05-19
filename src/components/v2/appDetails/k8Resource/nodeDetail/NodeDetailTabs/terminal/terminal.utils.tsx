@@ -7,11 +7,15 @@ import { ReactComponent as ExitScreen } from '../../../../../../../assets/icons/
 import { ReactComponent as HelpIcon } from '../../../../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Connect } from '../../../../../../../assets/icons/ic-connected.svg'
 import { ReactComponent as Help } from '../../../../../../../assets/icons/ic-help.svg'
-import { ReactComponent as Play } from '../../../../../../../assets/icons/ic-play.svg'
+import { ReactComponent as Play } from '../../../../../../../assets/icons/ic-play-filled.svg'
 import { ReactComponent as Abort } from '../../../../../../../assets/icons/ic-abort.svg'
+import { ReactComponent as Check } from '../../../../../../../assets/icons/ic-check.svg'
+import { ReactComponent as Pencil } from '../../../../../../../assets/icons/ic-pencil.svg'
+import { ReactComponent as Edit } from '../../../../../../../assets/icons/ic-visibility-on.svg'
+import { ReactComponent as Stop } from '../../../../../../../assets/icons/ic-stop-filled.svg'
 import Tippy from '@tippyjs/react'
 import ReactSelect from 'react-select'
-import { TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { TippyCustomized, TippyTheme, Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import {
     SelectWrapperType,
     ReactSelectType,
@@ -20,14 +24,17 @@ import {
     CloseExpandView,
     ConnectionSwitchType,
     ClearTerminalType,
+    EditManifestType,
+    DebugModeType,
 } from './terminal.type'
+import { EditModeType, MANIFEST_SELECTION_MESSAGE, TerminalWrapperType } from './constants'
+import { CLUSTER_TERMINAL_MESSAGING } from '../../../../../../ClusterNodes/constants'
 
 const creatableSelectWrapper = (selectData: SelectWrapperType) => {
     if (selectData.hideTerminalStripComponent) return null
     return (
         <>
             <span className="bcn-2 mr-8" style={{ width: '1px', height: '16px' }} />
-            <div className="cn-6 ml-8 mr-4">{selectData.title}</div>
             {selectData.showInfoTippy && (
                 <TippyCustomized
                     theme={TippyTheme.white}
@@ -41,9 +48,10 @@ const creatableSelectWrapper = (selectData: SelectWrapperType) => {
                     iconClass="icon-dim-20 fcv-5"
                     additionalContent={selectData.infoContent}
                 >
-                    <HelpIcon className="icon-dim-16 mr-8 cursor" />
+                    <HelpIcon className="icon-dim-16 cursor" />
                 </TippyCustomized>
             )}
+            <div className="cn-6 ml-8 mr-4">{selectData.title}</div>
             <div>
                 <CreatableSelect
                     placeholder={selectData.placeholder}
@@ -164,15 +172,12 @@ const connectionSwitch = (switchProps: ConnectionSwitchType) => {
                 content={switchProps.toggleButton ? 'Disconnect from pod' : 'Reconnect to pod'}
             >
                 {switchProps.toggleButton ? (
-                    <span className="mr-8 cursor" data-testid="disconnect-button">
-                        <div
-                            className="icon-dim-12 mt-4 mr-4 mb-4 br-2 bcr-5"
-                            onClick={switchProps.stopTerminalConnection}
-                        />
+                    <span className="mr-8 flex" data-testid="disconnect-button">
+                        <Stop className="icon-dim-16 fcr-5 mr-4 cursor" onClick={switchProps.stopTerminalConnection} />
                     </span>
                 ) : (
                     <span className="mr-8 flex" data-testid="play-button">
-                        <Play className="icon-dim-16 mr-4 cursor" onClick={switchProps.resumePodConnection} />
+                        <Play className="icon-dim-16 fcg-5 mr-4 cursor" onClick={switchProps.resumePodConnection} />
                     </span>
                 )}
             </Tippy>
@@ -191,23 +196,125 @@ const clearTerminal = (clearProps: ClearTerminalType) => {
     )
 }
 
+const debugModeToggleButton = (selectData: DebugModeType) => {
+    if (selectData.hideTerminalStripComponent) return null
+    return (
+        <>
+            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+            {selectData.showInfoTippy && (
+                <TippyCustomized
+                    theme={TippyTheme.white}
+                    heading="Debug mode"
+                    placement="top"
+                    interactive={true}
+                    trigger="click"
+                    className="w-300"
+                    Icon={Help}
+                    showCloseButton={true}
+                    iconClass="icon-dim-20 fcv-5"
+                    additionalContent={
+                        <div className="p-12 w-300 fs-13 fw-4">{CLUSTER_TERMINAL_MESSAGING.DEBUG_MODE_TEXT}</div>
+                    }
+                >
+                    <HelpIcon className="icon-dim-16 mr-8 cursor" />
+                </TippyCustomized>
+            )}
+            <span>Debug Mode</span>
+            <span className="toggle-icon-dim ml-8">
+                <Toggle onSelect={selectData.onToggle} selected={selectData.isEnabled} />
+            </span>
+        </>
+    )
+}
+
+const manifestEditButtons = ({
+    hideTerminalStripComponent,
+    buttonSelectionState,
+    setManifestButtonState,
+}: EditManifestType) => {
+    if (hideTerminalStripComponent) {
+        return null
+    }
+
+    const selectEditMode = () => {
+        setManifestButtonState(EditModeType.EDIT)
+    }
+
+    const selectReviewMode = () => {
+        setManifestButtonState(EditModeType.REVIEW)
+    }
+
+    const applyChanges = () => {
+        setManifestButtonState(EditModeType.APPLY)
+    }
+
+    const cancelChanges = () => {
+        setManifestButtonState(EditModeType.NON_EDIT)
+    }
+
+    const renderButtons = () => {
+        const buttonConfig = {
+            edit: {
+                icon: <Edit className="icon-dim-16 mr-6" />,
+                message: MANIFEST_SELECTION_MESSAGE.REVIEW_CHANGES,
+                onClick: selectReviewMode,
+            },
+            review: {
+                icon: <Check className="icon-dim-16 mr-6" />,
+                message: MANIFEST_SELECTION_MESSAGE.APPLY_CHANGES,
+                onClick: applyChanges,
+            },
+            noEdit: {
+                icon: <Pencil className="icon-dim-16 mr-6" />,
+                message: MANIFEST_SELECTION_MESSAGE.EDIT_MANIFEST,
+                onClick: selectEditMode,
+            },
+        }
+
+        const config = buttonConfig[buttonSelectionState] || buttonConfig.noEdit
+
+        return (
+            <span className="flex cb-5 ml-4 cursor fw-6 fs-12 scb-5 left" onClick={config.onClick}>
+                {config.icon}
+                {config.message}
+            </span>
+        )
+    }
+
+    return (
+        <>
+            <span className="bcn-2 mr-8 h-28" style={{ width: '1px' }} />
+            {renderButtons()}
+            {buttonSelectionState !== EditModeType.NON_EDIT && (
+                <span className="ml-12 cn-7 fw-6 fs-12 cursor" onClick={cancelChanges}>
+                    {MANIFEST_SELECTION_MESSAGE.CANCEL}
+                </span>
+            )}
+        </>
+    )
+}
+
 export default function terminalStripTypeData(elementData) {
     switch (elementData.type) {
-        case 'creatableSelect':
+        case TerminalWrapperType.CREATABLE_SELECT:
             return creatableSelectWrapper(elementData)
-        case 'connectionButton':
+        case TerminalWrapperType.CONNECTION_BUTTON:
             return connectionButton(elementData)
-        case 'titleName':
+        case TerminalWrapperType.TITLE_NAME:
             return titleName(elementData)
-        case 'closeExpandView':
+        case TerminalWrapperType.CLOSE_EXPAND_VIEW:
             return closeExpandView(elementData)
-        case 'reactSelect':
+        case TerminalWrapperType.REACT_SELECT:
             return reactSelect(elementData)
-        case 'connectionSwitch':
+        case TerminalWrapperType.CONNCTION_SWITCH:
             return connectionSwitch(elementData)
-        case 'clearButton':
+        case TerminalWrapperType.CLEAR_BUTTON:
             return clearTerminal(elementData)
-        case 'customComponent':
+        case TerminalWrapperType.MANIFEST_EDIT_BUTTONS:
+            return manifestEditButtons(elementData)
+        case TerminalWrapperType.DEBUG_MODE_TOGGLE_BUTTON:
+            return debugModeToggleButton(elementData)
+        case TerminalWrapperType.CUSTOM_COMPONENT:
             return elementData.customComponent()
         default:
             return null
