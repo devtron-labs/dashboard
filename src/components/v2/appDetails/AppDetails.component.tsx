@@ -13,11 +13,7 @@ import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLi
 import { getSaveTelemetry } from './appDetails.api'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentStatusDetail } from '../../app/details/appDetails/appDetails.service'
-import {
-    DEFAULT_STATUS,
-    DEPLOYMENT_STATUS,
-    DEPLOYMENT_STATUS_QUERY_PARAM,
-} from '../../../config'
+import { DEFAULT_STATUS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
 import DeploymentStatusDetailModal from '../../app/details/appDetails/DeploymentStatusDetailModal'
 import {
     DeploymentStatusDetailsBreakdownDataType,
@@ -64,12 +60,12 @@ const AppDetailsComponent = ({
     }, [])
 
     useEffect(() => {
-      // Get deployment status timeline on argocd apps
+        // Get deployment status timeline on argocd apps
         if (appDetails?.deploymentAppType === DeploymentAppType.argo_cd) {
             getDeploymentDetailStepsData()
         }
         return () => {
-          clearDeploymentStatusTimer()
+            clearDeploymentStatusTimer()
         }
     }, [appDetails.appId])
 
@@ -111,17 +107,17 @@ const AppDetailsComponent = ({
         (event) => setStreamData(JSON.parse(event.data)),
     )
 
-    const renderHelmAppDetails= () =>{
-      if ( VirtualAppDetailsEmptyState) {
-        return  <VirtualAppDetailsEmptyState
-            environmentName={''}
-         />
-     }
-      return <NodeTreeDetailTab
-      appDetails={appDetails}
-      externalLinks={externalLinks}
-      monitoringTools={monitoringTools}
-  />
+    const renderHelmAppDetails = (): JSX.Element => {
+        if (VirtualAppDetailsEmptyState) {
+            return <VirtualAppDetailsEmptyState environmentName={''} />
+        }
+        return (
+            <NodeTreeDetailTab
+                appDetails={appDetails}
+                externalLinks={externalLinks}
+                monitoringTools={monitoringTools}
+            />
+        )
     }
     return (
         <div className="helm-details" data-testid="app-details-wrapper">
@@ -155,8 +151,9 @@ const AppDetailsComponent = ({
                 <div className="bcn-0 dc__border-top h-100">
                     <Progressing pageLoader fullHeight size={32} fillColor="var(--N500)" />
                 </div>
-            ) : renderHelmAppDetails()
-            }
+            ) : (
+                renderHelmAppDetails()
+            )}
 
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
