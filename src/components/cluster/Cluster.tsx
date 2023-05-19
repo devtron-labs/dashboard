@@ -756,7 +756,7 @@ function Cluster({
     }
 
     const clusterTitle = () => {
-        if(id) {
+        if (id) {
             return 'Edit Cluster'
         }
     }
@@ -2153,16 +2153,21 @@ function ClusterForm({
                                                 selectedUserNameOptions={selectedUserNameOptions}
                                                 onChangeUserName={onChangeUserName}
                                             />
-                                            <div
-                                                className={`dc__app-summary__icon icon-dim-16 mr-2 ${
-                                                    selectedUserNameOptions[clusterDetail.cluster_name]
-                                                        .errorInConnecting === 'cluster-already-exists' ||
-                                                    selectedUserNameOptions[clusterDetail.cluster_name]
-                                                        .errorInConnecting.length === 0
-                                                        ? 'succeeded'
-                                                        : 'failed'
-                                                }`}
-                                            ></div>
+                                            {selectedUserNameOptions[clusterDetail.cluster_name].errorInConnecting ===
+                                            'cluster-already-exists' ? (
+                                                <ErrorIcon className="dc__app-summary__icon icon-dim-16 mr-2" />
+                                            ) : (
+                                                <div
+                                                    className={`dc__app-summary__icon icon-dim-16 mr-2 ${
+                                                        selectedUserNameOptions[clusterDetail.cluster_name]
+                                                            .errorInConnecting.length !== 0 &&
+                                                        selectedUserNameOptions[clusterDetail.cluster_name]
+                                                            .errorInConnecting !== 'cluster-already-exists'
+                                                            ? 'failed'
+                                                            : 'succeeded'
+                                                    }`}
+                                                ></div>
+                                            )}
                                             <div className="flexbox">
                                                 <span className="dc__ellipsis-right">
                                                     {' '}
