@@ -699,6 +699,7 @@ function Cluster({
                     </>
                 ) : (
                     <>
+                    <Drawer position="right" width="1000px" onEscape={toggleShowAddCluster}>
                         <ClusterForm
                             {...{
                                 id: clusterId,
@@ -724,6 +725,7 @@ function Cluster({
                                     grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED,
                             }}
                         />
+                        </Drawer>
                     </>
                 )}
             </article>
@@ -1241,9 +1243,8 @@ function ClusterForm({
                                 rootClassName="form__checkbox-label--ignore-cache mb-0"
                                 value={'CHECKED'}
                                 onChange={toggleCheckTlsConnection}
-                                dataTestId="use_secure_tls_connection_checkbox"
                             >
-                                <div className="mr-4 flex center"> Use secure TLS connection {isTlsConnection}</div>
+                                <div data-testid="use_secure_tls_connection_checkbox" className="mr-4 flex center"> Use secure TLS connection {isTlsConnection}</div>
                             </Checkbox>
                         </div>
 
@@ -1257,6 +1258,7 @@ function ClusterForm({
                                         Certificate Authority Data
                                     </span>
                                     <ResizableTextarea
+                                        dataTestId='certificate_authority_data_input'
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="certificateAuthorityData"
                                         value={state.certificateAuthorityData.value}
@@ -1269,6 +1271,7 @@ function ClusterForm({
                                         TLS Key
                                     </span>
                                     <ResizableTextarea
+                                        dataTestId='tls_client_key_input'
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="tlsClientKey"
                                         value={state.tlsClientKey.value}
@@ -1281,6 +1284,7 @@ function ClusterForm({
                                         TLS Certificate
                                     </span>
                                     <ResizableTextarea
+                                        dataTestId="tls_certificate_input"
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="tlsClientCert"
                                         value={state.tlsClientCert.value}
@@ -1426,7 +1430,7 @@ function ClusterForm({
                     </CodeEditor>
                 </div>
                 <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
-                    <button className="cta cancel" type="button" onClick={handleCloseButton}>
+                    <button data-testid="cancel_kubeconfig_button" className="cta cancel" type="button" onClick={handleCloseButton}>
                         Cancel
                     </button>
 
@@ -1518,11 +1522,11 @@ function ClusterForm({
                     <AddClusterHeader />
 
                     <div className="api-token__list en-2 bw-0 bcn-0 br-8">
-                        <div className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1">
+                        <div data-testid="cluster_list_page_after_selection" className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1">
                             <div></div>
-                            <div>CLUSTER</div>
-                            <div>STATUS</div>
-                            <div>MESSAGE</div>
+                            <div data-testid="cluster_validate">CLUSTER</div>
+                            <div data-testid="status_validate">STATUS</div>
+                            <div data-testid="message_validate">MESSAGE</div>
                             <div></div>
                         </div>
                         <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 161px)' }}>
@@ -1541,6 +1545,7 @@ function ClusterForm({
                                         </div>
                                         <div className="flexbox dc__align-items-center">
                                             <div
+                                                data-testid="status_icon_visibility"
                                                 className={`dc__app-summary__icon icon-dim-16 mr-2 ${
                                                     clusterListDetail.status === 'Failed' ? 'failed' : 'succeeded'
                                                 }`}
@@ -1566,6 +1571,7 @@ function ClusterForm({
                             </span>
                         </button>
                         <button
+                            data-testid="close_after_cluster_list_display"
                             className="cta mr-20"
                             type="button"
                             onClick={handleCloseButton}
@@ -1681,7 +1687,7 @@ function ClusterForm({
                         />
                         <div className="api-token__list en-2 bw-1 bcn-0 br-8">
                             <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top">
-                                <div>
+                                <div data-testid="select_all_cluster_checkbox">
                                     <Checkbox
                                         rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
                                         onChange={toggleSelectAll}
@@ -1706,6 +1712,7 @@ function ClusterForm({
                                         >
                                             <Checkbox
                                                 key={`app-$${index}`}
+                                                dataTestId={`checkbox_selection_of_cluster-${clusterDetail.cluster_name}`}
                                                 rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
                                                 onChange={() => toggleIsSelected(clusterDetail.cluster_name)}
                                                 isChecked={isClusterSelected[clusterDetail.cluster_name]}
@@ -1768,6 +1775,7 @@ function ClusterForm({
                             </span>
                         </button>
                         <button
+                            data-testid="save_cluster_list_button_after_selection"
                             className="cta mr-32 ml-20"
                             type="button"
                             onClick={() => handleClusterDetailCall()}
@@ -1788,7 +1796,7 @@ function ClusterForm({
                 <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                     Add Cluster
                 </h2>
-                <button type="button" className="dc__transparent flex icon-dim-24 mr-24" onClick={handleCloseButton}>
+                <button data-testid="header_close_icon" type="button" className="dc__transparent flex icon-dim-24 mr-24" onClick={handleCloseButton}>
                     <Close className="icon-dim-24" />
                 </button>
             </div>
@@ -1833,10 +1841,10 @@ function ClusterForm({
 
                 {!isKubeConfigFile && (
                     <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
-                        <button className="cta cancel" type="button" onClick={toggleShowAddCluster}>
+                        <button data-testid="cancel_button" className="cta cancel" type="button" onClick={toggleShowAddCluster}>
                             Cancel
                         </button>
-                        <button className="cta mr-20 ml-20" onClick={() => saveClusterCall()}>
+                        <button data-testid="save_cluster_after_entering_cluster_details" className="cta mr-20 ml-20" onClick={() => saveClusterCall()}>
                             {'Save cluster'}
                         </button>
                     </div>
