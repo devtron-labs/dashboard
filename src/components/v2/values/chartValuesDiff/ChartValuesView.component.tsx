@@ -301,10 +301,13 @@ export const DeleteChartDialog = ({
     const closeConfirmation = () => {
         toggleConfirmation(false)
     }
+    const handleForceDelete = () => {
+        handleDelete(DELETE_ACTION.DELETE)
+    }
     return (
         <DeleteDialog
             title={`Delete '${appName}' ?`}
-            delete={() => handleDelete(DELETE_ACTION.DELETE)}
+            delete={handleForceDelete}
             closeDelete={closeConfirmation}
         >
             {isCreateValueView ? (

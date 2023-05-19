@@ -134,6 +134,9 @@ export function DeploymentRow({ installedAppId, appName, status, deploymentAppTy
         await handleDelete(DELETE_ACTION.NONCASCADE_DELETE)
     }
 
+    const handleForceDelete = () => {handleDelete(DELETE_ACTION.FORCE_DELETE)}
+    const handleCascadeDelete = () => {handleDelete(DELETE_ACTION.DELETE)}
+
     return (
         <>
             <tr className="deployment-table-row">
@@ -182,7 +185,7 @@ export function DeploymentRow({ installedAppId, appName, status, deploymentAppTy
                         <button
                             className="cta delete"
                             type="button"
-                            onClick={() => handleDelete(DELETE_ACTION.DELETE)}
+                            onClick={handleCascadeDelete}
                             disabled={deleting}
                         >
                             {deleting ? <Progressing /> : 'Delete'}
@@ -192,7 +195,7 @@ export function DeploymentRow({ installedAppId, appName, status, deploymentAppTy
             )}
             {showForceDeleteDialog && (
                 <ForceDeleteDialog
-                    onClickDelete={() => handleDelete(DELETE_ACTION.FORCE_DELETE)}
+                    onClickDelete={handleForceDelete}
                     closeDeleteModal={() => {
                         toggleConfirmation(false)
                         setForceDeleteDialog(false)

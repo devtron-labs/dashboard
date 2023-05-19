@@ -17,7 +17,7 @@ export function isDatasourceHealthy(datasourceId: number | string) {
     return fetchWithFullRoute(URL, 'GET')
 }
 
-export function getClusterConnectionStatus(envId: number) : Promise<ClusterConnectionResponse> {
+export function getClusterConnectionStatus(envId: number): Promise<ClusterConnectionResponse> {
     const URL = `${Routes.CLUSTER_ENV_MAPPING}/${envId}/connection`
     return get(URL)
 }

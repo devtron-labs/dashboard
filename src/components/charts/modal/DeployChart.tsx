@@ -498,6 +498,9 @@ const DeployChart: React.FC<DeployChartProps> = ({
         await handleDelete(DELETE_ACTION.NONCASCADE_DELETE)
     }
 
+    const handleForceDelete = () => {handleDelete(DELETE_ACTION.FORCE_DELETE)}
+    const handleCascadeDelete = () => {handleDelete(DELETE_ACTION.DELETE)}
+
     return (
         <>
             <div
@@ -738,7 +741,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 {confirmation && (
                     <DeleteDialog
                         title={`Delete '${originalName}' ?`}
-                        delete={() => handleDelete(DELETE_ACTION.DELETE)}
+                        delete={handleCascadeDelete}
                         closeDelete={() => toggleConfirmation(false)}
                     >
                         <DeleteDialog.Description>
@@ -750,7 +753,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                 {showForceDeleteDialog && (
                     <ForceDeleteDialog
                         forceDeleteDialogTitle={forceDeleteDialogTitle}
-                        onClickDelete={() => handleDelete(DELETE_ACTION.FORCE_DELETE)}
+                        onClickDelete={handleForceDelete}
                         closeDeleteModal={() => {
                             toggleConfirmation(false)
                             setForceDeleteDialog(false)

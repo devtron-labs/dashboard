@@ -24,8 +24,8 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
     const appDetails = IndexStore.getAppDetails()
     const conditions = appStreamData?.result?.application?.status?.conditions || []
 
-    const verifyDeployedClusterConnectionStatus = async () : Promise<void> => { 
-        await getClusterConnectionStatus(appDetails.environmentId).then((response : ClusterConnectionResponse) => {
+    const verifyDeployedClusterConnectionStatus = async (): Promise<void> => {
+        await getClusterConnectionStatus(appDetails.environmentId).then((response: ClusterConnectionResponse) => {
             if (response.result) {
                 response.result?.clusterReachable ? setClusterConnectionError(false) : setClusterConnectionError(true)
                 setClusterName(response.result.clusterName)
@@ -61,7 +61,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
     }, [appDetails])
 
     useEffect(() => {
-        if (appDetails.deploymentAppType === DeploymentAppType.argo_cd && appDetails.deploymentAppDeleteRequest) { 
+        if (appDetails.deploymentAppType === DeploymentAppType.argo_cd && appDetails.deploymentAppDeleteRequest) {
             verifyDeployedClusterConnectionStatus()
         }
     }, [appDetails.appId, appDetails.environmentId])
@@ -74,7 +74,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
                 setForceDeleteDialogTitle(userMessage)
-                setForceDeleteDialogMessage( internalMessage)
+                setForceDeleteDialogMessage(internalMessage)
             })
         }
     }
@@ -101,7 +101,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
         showNonCascadeDeleteDialog(false)
     }
 
-    const onClickNonCascadeDelete = async() => {
+    const onClickNonCascadeDelete = async () => {
         showNonCascadeDeleteDialog(false)
         await nonCascadeDeleteArgoCDApp(false)
     }
@@ -111,8 +111,16 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
     }
 
     const errorCounter = conditions.length +
-    (isImagePullBackOff && !appDetails.externalCi ? 1 : 0) +
-    (clusterConnectionError && 1)
+        (isImagePullBackOff && !appDetails.externalCi ? 1 : 0) +
+        (clusterConnectionError && 1)
+    
+    const handleForceDelete = () => {
+        nonCascadeDeleteArgoCDApp(true)
+    }
+
+    const setNonCascadeDelete = () => {
+        showNonCascadeDeleteDialog(true)
+    }
 
     return (
         <div className="top flex left column w-100 bcr-1 pl-20 pr-20 fs-13">
@@ -151,7 +159,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
                                     reachable at the moment.`}
                                     <span
                                         className="pointer ml-8 cb-5"
-                                        onClick={() => showNonCascadeDeleteDialog(true)}
+                                        onClick={setNonCascadeDelete}
                                     >
                                         Force Delete
                                     </span>
@@ -178,7 +186,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
             {forceDeleteDialog && (
                 <ForceDeleteDialog
                     forceDeleteDialogTitle={forceDeleteDialogTitle}
-                    onClickDelete={() => nonCascadeDeleteArgoCDApp(true)}
+                    onClickDelete={handleForceDelete}
                     closeDeleteModal={() => showForceDeleteDialog(false)}
                     forceDeleteDialogMessage={forceDeleteDialogMessage}
                 />
