@@ -252,5 +252,4 @@ export const EMPTY_STATE_STATUS = {
       TITLE: 'No URLs available',
       SUBTITLE: 'No URLs found in ingress and service resources'
     }
-
 }
