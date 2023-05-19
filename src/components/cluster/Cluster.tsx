@@ -386,7 +386,7 @@ function Cluster({
 
     const clusterIcon = () => {
         if (isVirtualCluster) {
-            return <VirtualClusterIcon className="cluster-icon icon-dim-24 dc__vertical-align-middle mr-16" />
+            return <VirtualClusterIcon className="fcb-5 icon-dim-24 dc__vertical-align-middle mr-16" />
         } else {
             return <ClusterIcon className="cluster-icon icon-dim-24 dc__vertical-align-middle mr-16" />
         }
@@ -394,7 +394,7 @@ function Cluster({
 
     const envIcon = () => {
         if (isVirtualCluster) {
-            return <VirtualEnvIcon className="icon-dim-20" />
+            return <VirtualEnvIcon className="fcb-5 icon-dim-20" />
         } else {
             return <Database className="icon-dim-20" />
         }
