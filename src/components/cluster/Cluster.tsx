@@ -383,6 +383,7 @@ function Cluster({
     toggleBrowseFile,
     toggleClusterDetails,
     isGrafanaModuleInstalled,
+    insecureSkipTlsVerify,
     isClusterDetails,
 }) {
     const [editMode, toggleEditMode] = useState(false)
@@ -553,7 +554,6 @@ function Cluster({
         } else {
             payload['server_url'] = urlValue
         }
-
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             let isValid = state.userName?.value && state.password?.value
             if (!isValid) {
@@ -613,6 +613,7 @@ function Cluster({
                 userName: prometheusToggleEnabled ? state.userName.value : '',
                 password: prometheusToggleEnabled ? state.password.value : '',
             },
+            insecureSkipTlsVerify: !isTlsConnection,
         }
     }
 
@@ -753,6 +754,7 @@ function Cluster({
         server_url,
         defaultClusterComponent: defaultClusterComponent,
         k8sversion: '',
+        insecureSkipTlsVerify: !isTlsConnection,
     }
 
     const clusterTitle = () => {
@@ -1422,6 +1424,7 @@ function ClusterForm({
         // console.log(state.cluster_name.value)
         return {
             id,
+            insecureSkipTlsVerify : !isTlsConnection,
             cluster_name: state.cluster_name.value,
             config: {
                 bearer_token:
@@ -1515,6 +1518,7 @@ function ClusterForm({
         server_url,
         defaultClusterComponent: defaultClusterComponent,
         k8sversion: '',
+        insecureSkipTlsVerify: !isTlsConnection,
     }
 
     const ClusterInfoComponent = () => {
