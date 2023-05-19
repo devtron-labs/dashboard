@@ -355,23 +355,25 @@ const DeployChart: React.FC<DeployChartProps> = ({
 
     async function handleDelete(deleteAction: string) {
         setDeleting(true)
-        // Reseting the dialog states
-        setForceDeleteDialog(false)
-        showNonCascadeDeleteDialog(false)
-        toggleConfirmation(false)
         try {
             let response: ResponseType = await deleteInstalledChart(Number(installedAppId), false, deleteAction)
             if (response.result.deleteResponse?.deleteInitiated) {
                 toast.success('Successfully deleted.')
+                toggleConfirmation(false)
+                showNonCascadeDeleteDialog(false)
+                setForceDeleteDialog(false)
                 push(URLS.CHARTS)
             } else if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
                 setClusterName(response.result.deleteResponse?.clusterName)
+                toggleConfirmation(false)
                 showNonCascadeDeleteDialog(true)
             }
         } catch (err: any) {
             if (deleteAction !== DELETE_ACTION.FORCE_DELETE && err.code != 403) {
-                setForceDeleteDialog(true)
+                toggleConfirmation(false)
+                showNonCascadeDeleteDialog(false)
                 setForceDeleteDialogData(err)
+                setForceDeleteDialog(true)
             } else {
                 showError(err)
             }

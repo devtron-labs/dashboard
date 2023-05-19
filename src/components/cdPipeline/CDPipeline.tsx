@@ -701,11 +701,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     }
 
     deleteCD = (force: boolean, cascadeDelete: boolean) => {
-        // reset the delete dialogs
-        this.setState({
-            showForceDeleteDialog: false,
-            showNonCascadeDeleteDialog: false,
-        })
         const isPartialDelete =
             this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps &&
             this.state.pipelineConfig.deploymentAppCreated &&
@@ -716,10 +711,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             pipeline: {
                 id: this.state.pipelineConfig.id,
             },
-        }
-        // cascadeDelete is only applicable for GitOps, Default value of cascadeDelete is true
-        if (!isPartialDelete) {
-            cascadeDelete = true
         }
         deleteCDPipeline(payload, force, cascadeDelete)
             .then((response) => {
@@ -733,7 +724,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         })
                     } else {
                         toast.success(TOAST_INFO.PIPELINE_DELETION_INIT)
-                        this.setState({ loadingData: false })
+                        this.setState({
+                            loadingData: false,
+                            showDeleteModal: false,
+                            showForceDeleteDialog: false,
+                            showNonCascadeDeleteDialog: false,
+                        })
                         this.props.close()
                         if (this.isWebhookCD) {
                             this.props.refreshParentWorkflows()
@@ -749,6 +745,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         code: error.code,
                         loadingData: false,
                         showDeleteModal: false,
+                        showNonCascadeDeleteDialog: false,
                         showForceDeleteDialog: true,
                     })
                 } else {
@@ -762,7 +759,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             case DELETE_ACTION.DELETE:
                 return this.deleteCD(false, true)
             case DELETE_ACTION.NONCASCADE_DELETE:
-                return this.deleteCD(false, false)
+                return this.state.pipelineConfig?.deploymentAppType === DeploymentAppType.GitOps
+                    ? this.deleteCD(false, false)
+                    : this.deleteCD(false, true)
             case DELETE_ACTION.FORCE_DELETE:
                 return this.deleteCD(true, false)
         }

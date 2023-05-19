@@ -120,26 +120,27 @@ function EnvironmentSelectorComponent({
     }
     
     const onClickNonCascadeDelete = async() => {
-        showNonCascadeDeleteDialog(false)
         await deleteResourceAction(DELETE_ACTION.NONCASCADE_DELETE)
     }
 
     async function deleteResourceAction(deleteAction: string) {
-        // Reseting the dialog states
-        showForceDeleteDialog(false)
-        showNonCascadeDeleteDialog(false)
         try {
             const response = await getDeleteApplicationApi(deleteAction)
             if (response.result.deleteResponse?.deleteInitiated) {
                 setShowDeleteConfirmation(false)
+                showNonCascadeDeleteDialog(false)
+                showForceDeleteDialog(false)
                 toast.success('Deletion initiated successfully.')
                 _init()
             } else if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
                 setClusterName(response.result.deleteResponse?.clusterName)
+                setShowDeleteConfirmation(false)
                 showNonCascadeDeleteDialog(true)
             }
         } catch (error: any) {
             if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && error.code !== 403) { 
+                setShowDeleteConfirmation(false)
+                showNonCascadeDeleteDialog(false)
                 setForceDeleteDialogData(error)
                 showForceDeleteDialog(true)
             }
@@ -147,7 +148,13 @@ function EnvironmentSelectorComponent({
         }
     }
 
-    const handleForceDelete = async () => await deleteResourceAction(DELETE_ACTION.FORCE_DELETE)
+    const handleForceDelete = async () => {
+        await deleteResourceAction(DELETE_ACTION.FORCE_DELETE)
+    }
+    const handleDelete = async () => {
+        setShowDeleteConfirmation(true)
+        await deleteResourceAction(DELETE_ACTION.DELETE)
+    }
 
     const deployedAppDetail = isExternalApp && params.appId && params.appId.split('|')
 
@@ -300,7 +307,7 @@ function EnvironmentSelectorComponent({
                             {showDeleteConfirmation && (
                                 <DeleteChartDialog
                                     appName={appDetails.appName}
-                                    handleDelete={deleteResourceAction}
+                                    handleDelete={handleDelete}
                                     toggleConfirmation={setShowDeleteConfirmation}
                                     isCreateValueView={false}
                                 />

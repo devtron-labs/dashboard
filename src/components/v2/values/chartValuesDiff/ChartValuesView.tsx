@@ -568,29 +568,6 @@ function ChartValuesView({
         if (commonState.isDeleteInProgress) {
             return
         }
-        dispatch({
-            type: ChartValuesViewActionTypes.multipleOptions,
-            payload: {
-                isDeleteInProgress: true,
-                showDeleteAppConfirmationDialog: false,
-            },
-        })
-        //resetting the delete states
-        dispatch({
-            type: ChartValuesViewActionTypes.nonCascadeDeleteData,
-            payload: {
-                nonCascade: false,
-                clusterName: ''
-            },
-        })
-        dispatch({
-            type: ChartValuesViewActionTypes.forceDeleteData,
-            payload: {
-                forceDelete: false,
-                title: '',
-                message: '',
-            },
-        })
         getDeleteApplicationApi(deleteAction)
             .then((response: ResponseType) => {
                 dispatch({
@@ -607,11 +584,22 @@ function ChartValuesView({
                     )
                 } else if (deleteAction !== DELETE_ACTION.NONCASCADE_DELETE && !response.result.deleteResponse?.clusterReachable) {
                     dispatch({
+                        type: ChartValuesViewActionTypes.multipleOptions,
+                        payload: {
+                            isDeleteInProgress: true,
+                            showDeleteAppConfirmationDialog: false,
+                        },
+                    })
+                    dispatch({
                         type: ChartValuesViewActionTypes.nonCascadeDeleteData,
                         payload: {
                             nonCascade: true,
                             clusterName: response.result.deleteResponse?.clusterName
                         },
+                    })
+                    dispatch({
+                        type: ChartValuesViewActionTypes.isDeleteInProgress,
+                        payload: false,
                     })
                 }
             })
@@ -625,7 +613,20 @@ function ChartValuesView({
                             forceDeleteMessage = internalMessage
                         })
                     }
-
+                    dispatch({
+                        type: ChartValuesViewActionTypes.multipleOptions,
+                        payload: {
+                            isDeleteInProgress: true,
+                            showDeleteAppConfirmationDialog: false,
+                        },
+                    })
+                    dispatch({
+                        type: ChartValuesViewActionTypes.nonCascadeDeleteData,
+                        payload: {
+                            nonCascade: false,
+                            clusterName: ''
+                        },
+                    })
                     dispatch({
                         type: ChartValuesViewActionTypes.forceDeleteData,
                         payload: {
