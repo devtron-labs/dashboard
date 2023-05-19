@@ -5,6 +5,7 @@ import {
     ErrorScreenManager,
     ConfirmationDialog,
     ServerErrors,
+    GenericEmptyState
 } from '@devtron-labs/devtron-fe-common-lib'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
@@ -19,7 +20,6 @@ import './chartDeploymentHistory.scss'
 import MessageUI from '../common/message.ui'
 import { toast } from 'react-toastify'
 import { useHistory, useRouteMatch } from 'react-router'
-import CDEmptyState from '../../app/details/cdDetails/CDEmptyState'
 import DockerListModal from './DockerListModal'
 import {
     ChartDeploymentDetail,
@@ -31,7 +31,7 @@ import {
     RollbackReleaseRequest,
 } from './chartDeploymentHistory.service'
 import IndexStore from '../appDetails/index.store'
-import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN } from '../../../config/constantMessaging'
+import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN, EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 import DeploymentDetailSteps from '../../app/details/cdDetails/DeploymentDetailSteps'
 import { DeploymentAppType } from '../values/chartValuesDiff/ChartValuesView.type'
 
@@ -323,7 +323,7 @@ function ChartDeploymentHistory({
             <ul className="tab-list deployment-tab-list dc__border-bottom mr-20">
                 { deploymentTabs.map((tab, index) => {
                     return (
-                        <li onClick={() => onClickDeploymentTabs(tab)} key={index} className="tab-list__tab">
+                        <li onClick={() => onClickDeploymentTabs(tab)} key={`deployment-tab-${index}`} className="tab-list__tab">
                             <div
                                 className={`tab-list__tab-link ${selectedDeploymentTabName == tab ? 'active' : ''}`}
                                 data-testid={`nav-bar-option-${index}`}
@@ -375,8 +375,9 @@ function ChartDeploymentHistory({
         ) {
             return (
                 <div className="flex h-100">
-                    <CDEmptyState
-                        subtitle={`${deploymentTabs[selectedDeploymentTabName]} ${ERROR_EMPTY_SCREEN.TAB_NOT_AVAILABLE_POSTFIX}`}
+                    <GenericEmptyState
+                        title= {EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
+                        subTitle={`${deploymentTabs[selectedDeploymentTabName]} ${ERROR_EMPTY_SCREEN.TAB_NOT_AVAILABLE_POSTFIX}`}
                     />
                 </div>
             )
@@ -639,7 +640,10 @@ function ChartDeploymentHistory({
             )
         } else if (!deploymentHistoryArr || deploymentHistoryArr.length <= 0) {
             return (
-                <CDEmptyState subtitle="Data for previous deployments is not available. History for any new deployment will be available here." />
+                <GenericEmptyState
+                    title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
+                    subTitle={EMPTY_STATE_STATUS.CHART_DEPLOYMENT_HISTORY.SUBTITLE}
+                />
             )
         }
 

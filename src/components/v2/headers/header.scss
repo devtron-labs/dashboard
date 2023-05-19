@@ -31,7 +31,7 @@
 
 
     }
-    .helm-app-page-header {
+    &.helm-app-page-header {
         z-index: var(--page-header-index);
         position: sticky;
         top: 0;
