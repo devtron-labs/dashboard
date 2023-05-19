@@ -138,11 +138,7 @@ export default function AppDetail() {
     }
 
     const environment = otherEnvsResult?.result?.find((env) => env.environmentId === +params.envId)
-    const getDetailView = () => {
-     if(otherEnvsResult && !otherEnvsLoading && !isVirtualEnvironment){
-       return  renderAppNotConfigured()
-      }
-    }
+
     return (
         <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
             {!params.envId && otherEnvsResult?.result?.length > 0 && (
@@ -469,7 +465,7 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(true)
     }
 
-    const renderVirtualEnvironment = () => {
+    const renderAppDetails = (): JSX.Element => {
       if (isVirtualEnvironment) {
           return (
               <div className="bcn-0 m-20 h-100 w-100 dc__position-rel">
@@ -541,7 +537,7 @@ export const Details: React.FC<DetailsType> = ({
                     <Progressing pageLoader fullHeight size={32} fillColor="var(--N500)" />
                 </div>
             ) : (
-                renderVirtualEnvironment()
+                renderAppDetails()
             )}
 
             {detailedStatus && (
