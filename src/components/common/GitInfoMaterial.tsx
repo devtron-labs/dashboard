@@ -288,9 +288,9 @@ export default function GitInfoMaterial({
                     >
                         {renderBranchChangeHeader(selectedMaterial)}
                         {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && (
-                            <div className="flex right mr-20">
+                            <div className={`flex right ${!window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && "mr-20"}`}>
                                 {renderSearch()}
-                                {renderExcludedCommitsOption()}
+                                {!window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && renderExcludedCommitsOption()}
                             </div>
                         )}
                     </div>
