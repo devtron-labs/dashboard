@@ -771,18 +771,8 @@ export const DeploymentTemplateEditorView = ({
         setBasicFieldValues(_basicFieldValues)
     }
 
-    return yamlMode || (selectedChart.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT) ? (
-        <>
-            {showReadme && (
-                <div className="dt-readme dc__border-right">
-                    <div className="code-editor__header flex left fs-12 fw-6 cn-9">Readme</div>
-                    {chartConfigLoading ? (
-                        <Progressing pageLoader />
-                    ) : (
-                        <MarkDown markdown={readme} className="dt-readme-markdown" />
-                    )}
-                </div>
-            )}
+    const displayCodeEditor = (): JSX.Element => {
+        return (
             <div className="form__row--code-editor-container dc__border-top dc__border-bottom">
                 <CodeEditor
                     defaultValue={(selectedOption?.id === -1 ? defaultValue : fetchedValues[selectedOption?.id]) || ''}
@@ -827,6 +817,28 @@ export const DeploymentTemplateEditorView = ({
                     )}
                 </CodeEditor>
             </div>
+        )
+    }
+
+    return yamlMode || (selectedChart.name !== ROLLOUT_DEPLOYMENT && selectedChart?.name !== DEPLOYMENT) ? (
+        <>
+            {showReadme ? (
+                <>
+                <div className="dt-readme dc__border-right">
+                    <div className="code-editor__header flex left fs-12 fw-6 cn-9">Readme</div>
+                    {chartConfigLoading ? (
+                        <Progressing pageLoader />
+                    ) : (
+                        <MarkDown markdown={readme} className="dt-readme-markdown" />
+                    )}
+                </div>
+                {displayCodeEditor()}
+                </>
+            )
+                :
+                displayCodeEditor()
+            }
+            
         </>
     ) : (
         <>
