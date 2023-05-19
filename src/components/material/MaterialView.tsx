@@ -45,7 +45,6 @@ import {
     INFO_BAR,
     INCLUDE_EXCLUDE_PLACEHOLDER,
     USE_REGEX_TIPPY_CONTENT,
-    ENV_HIDE_EXCLUDE_INCLUDE_GIT_COMMITS,
 } from './constants'
 import TippyHeadless from '@tippyjs/react/headless'
 
@@ -548,7 +547,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         iconClass="icon-dim-20"
                     />
                 )}
-                {ENV_HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && (
+                {!window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && (
                     <>
                         <div className="flex left">
                             <Checkbox
