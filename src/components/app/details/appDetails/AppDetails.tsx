@@ -98,6 +98,7 @@ export default function AppDetail() {
     const [isAppDeleted, setIsAppDeleted] = useState(false)
     const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironmentMin(params.appId), [params.appId])
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
+    const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>(false)
 
     useEffect(() => {
         if (otherEnvsLoading) return
@@ -125,10 +126,10 @@ export default function AppDetail() {
             otherEnvsResult &&
             !otherEnvsLoading && (
                 <>
-                    {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) && !isAppDeleted && (
+                    {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) && !isAppDeleted && !isVirtualEnvironment && (
                         <AppNotConfigured />
                     )}
-                    {!params.envId && otherEnvsResult?.result?.length > 0 && (
+                    {!params.envId && otherEnvsResult?.result?.length > 0 && !isVirtualEnvironment && (
                         <EnvironmentNotConfigured environments={otherEnvsResult?.result} />
                     )}
                 </>
@@ -137,6 +138,11 @@ export default function AppDetail() {
     }
 
     const environment = otherEnvsResult?.result?.find((env) => env.environmentId === +params.envId)
+    const getDetailView = () => {
+     if(otherEnvsResult && !otherEnvsLoading && !isVirtualEnvironment){
+       return  renderAppNotConfigured()
+      }
+    }
     return (
         <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
             {!params.envId && otherEnvsResult?.result?.length > 0 && (
@@ -156,9 +162,12 @@ export default function AppDetail() {
                     commitInfo={commitInfo}
                     showCommitInfo={showCommitInfo}
                     isAppDeleted={isAppDeleted}
+                    isVirtualEnvironment={isVirtualEnvironment}
+                    setIsVirtualEnvironment = {setIsVirtualEnvironment}
                 />
             </Route>
-            {otherEnvsResult && !otherEnvsLoading && renderAppNotConfigured()}
+            {otherEnvsResult && !otherEnvsLoading &&  !isVirtualEnvironment && renderAppNotConfigured()}
+
         </div>
     )
 }
@@ -174,6 +183,8 @@ export const Details: React.FC<DetailsType> = ({
     commitInfo,
     showCommitInfo,
     isAppDeleted,
+    isVirtualEnvironment,
+    setIsVirtualEnvironment
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
@@ -275,6 +286,7 @@ export const Details: React.FC<DetailsType> = ({
                     ...appDetailsRef.current,
                     ...response.result,
                 }
+                setIsVirtualEnvironment(response.result?.isVirtualEnvironment)
                 IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
                 setAppDetails(appDetailsRef.current)
                 _getDeploymentStatusDetail(appDetailsRef.current.deploymentAppType)
@@ -424,9 +436,7 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(false)
     }
 
-    const isVirtualEnvironment = true // TODO appDetails.isVirtualEnvironment
-
-    if (!loadingResourceTree && (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0)) {
+    if (!loadingResourceTree && (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0) && !isVirtualEnvironment) {
         return (
             <>
                 {environments?.length > 0 && (
@@ -625,6 +635,7 @@ export const Details: React.FC<DetailsType> = ({
         </React.Fragment>
     )
 }
+
 
 export function EnvSelector({
     environments,
