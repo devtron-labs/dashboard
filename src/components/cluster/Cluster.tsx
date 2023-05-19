@@ -700,7 +700,6 @@ function Cluster({
                     </>
                 ) : (
                     <>
-                    <Drawer position="right" width="1000px" onEscape={toggleShowAddCluster}>
                         <ClusterForm
                             {...{
                                 id: clusterId,
@@ -726,7 +725,6 @@ function Cluster({
                                     grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED,
                             }}
                         />
-                        </Drawer>
                     </>
                 )}
             </article>
