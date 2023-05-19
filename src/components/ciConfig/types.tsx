@@ -346,3 +346,7 @@ export interface CIPipelineSidebarType {
     isJobView?: boolean
     mandatoryPluginData: MandatoryPluginDataType
 }
+
+export interface TaskListType{
+  withWarning: boolean
+}

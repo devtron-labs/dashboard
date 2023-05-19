@@ -7,8 +7,9 @@ import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-tri
 import { ciPipelineContext } from './CIPipeline'
 import { FormErrorObjectType, FormType, StepType, TaskErrorObj, VariableType } from '../ciPipeline/types'
 import { PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
+import { TaskListType } from '../ciConfig/types'
 
-export function TaskList() {
+export function TaskList({ withWarning }: TaskListType) {
     const {
         formData,
         setFormData,
@@ -116,7 +117,7 @@ export function TaskList() {
 
     return (
         <>
-            <div className="task-container pr-20">
+            <div className={`task-container pr-20 ${withWarning? 'with-warning': ''}`}>
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
                     <Fragment key={`task-item-${index}`}>
                         <div
@@ -155,7 +156,11 @@ export function TaskList() {
                     </Fragment>
                 ))}
             </div>
-            <div data-testid="sidebar-add-task-button" className="task-item add-task-container cb-5 fw-6 fs-13 flexbox mr-20" onClick={addNewTask}>
+            <div
+                data-testid="sidebar-add-task-button"
+                className="task-item add-task-container cb-5 fw-6 fs-13 flexbox mr-20"
+                onClick={addNewTask}
+            >
                 <Add className="add-icon" /> Add task
             </div>
         </>

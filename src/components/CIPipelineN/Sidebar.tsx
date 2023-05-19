@@ -45,20 +45,25 @@ export function Sidebar({ isJobView, mandatoryPluginData }: CIPipelineSidebarTyp
         }
     }, [activeStageName])
 
+    const showMandatoryWarning = (): boolean => {
+        return (
+            mandatoryPluginData &&
+            ((activeStageName === BuildStageVariable.PreBuild && !mandatoryPluginData.isValidPre) ||
+                (activeStageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
+        )
+    }
+
     return (
-        <div className="">
+        <div className="dc__position-rel">
             {activeStageName !== BuildStageVariable.Build ? (
                 <div className="sidebar-action-container sidebar-action-container-border">
                     {configurationType === ConfigurationType.GUI && (
                         <>
-                            {MandatoryPluginWarning && mandatoryPluginData &&
-                                ((activeStageName === BuildStageVariable.PreBuild && !mandatoryPluginData.isValidPre) ||
-                                    (activeStageName === BuildStageVariable.PostBuild &&
-                                        !mandatoryPluginData.isValidPost)) && (
-                                    <MandatoryPluginWarning pluginData={mandatoryPluginData.pluginData} />
-                                )}
+                            {MandatoryPluginWarning && showMandatoryWarning() && (
+                                <MandatoryPluginWarning pluginData={mandatoryPluginData.pluginData} />
+                            )}
                             <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
-                            <TaskList />
+                            <TaskList withWarning={showMandatoryWarning()} />
                         </>
                     )}
                 </div>
