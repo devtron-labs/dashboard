@@ -45,6 +45,7 @@ import {
     INFO_BAR,
     INCLUDE_EXCLUDE_PLACEHOLDER,
     USE_REGEX_TIPPY_CONTENT,
+    ENV_HIDE_EXCLUDE_INCLUDE_GIT_COMMITS,
 } from './constants'
 import TippyHeadless from '@tippyjs/react/headless'
 
@@ -161,7 +162,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
 
     regexInfoSteps = (): JSX.Element => {
         return (
-
             <div data-testid="exclude-include-use-regex-info" className="w-500 h-380 fs-13 bcn-0">
                 <div className="h-365 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-scroll">
                     <div className="w-476 h-112 flex column dc__align-start p-0 dc__gap-4">
@@ -548,7 +548,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         iconClass="icon-dim-20"
                     />
                 )}
-                {!window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && (
+                {ENV_HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && (
                     <>
                         <div className="flex left">
                             <Checkbox
