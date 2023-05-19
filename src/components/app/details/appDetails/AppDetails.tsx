@@ -67,7 +67,7 @@ import {
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
 import { TriggerInfoModal } from '../../list/TriggerInfo'
-import { sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers'
+import { importComponentFromFELibrary, sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
 import { getExternalLinks } from '../../../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
@@ -87,8 +87,9 @@ import { TriggerUrlModal } from '../../list/TriggerUrl'
 import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
-import { APP_DETAILS, APP_DETAILS_VIRTUAL, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
-import virtualRocketDeployment from '../../../../assets/img/paper-rocket-deployment.png'
+import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
+
+const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 
 export default function AppDetail() {
     const params = useParams<{ appId: string; envId?: string }>()
@@ -206,6 +207,7 @@ export const Details: React.FC<DetailsType> = ({
     const [loadingResourceTree, setLoadingResourceTree] = useState(true)
     const appDetailsRef = useRef(null)
     const appDetailsRequestRef = useRef(null)
+    const { envId } = useParams<{ appId: string; envId?: string }>()
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -465,17 +467,19 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(true)
     }
 
+    const environmentsMap = Array.isArray(environments)
+    ? environments.reduce((agg, curr) => {
+          agg[curr.environmentId] = curr.environmentName
+          return agg
+      }, {})
+    : {}
+    const environmentName = environmentsMap[+envId]
+
     const renderAppDetails = (): JSX.Element => {
-      if (isVirtualEnvironment) {
-          return (
-              <div className="bcn-0 m-20 h-100 w-100 dc__position-rel">
-                  <GenericEmptyState
-                      image={virtualRocketDeployment}
-                      title={APP_DETAILS_VIRTUAL.TITLE}
-                      subTitle={APP_DETAILS_VIRTUAL.SUBTITLE}
-                  />
-              </div>
-          )
+      if (isVirtualEnvironment && VirtualAppDetailsEmptyState) {
+         return  <VirtualAppDetailsEmptyState
+             environmentName={environmentName}
+          />
       }
       return <NodeTreeDetailTab
           appDetails={appDetails}

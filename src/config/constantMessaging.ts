@@ -180,8 +180,3 @@ export const API_COMPONENTS = {
     NEW_API_TITLE: "/ New API token",
     EDIT_API_TITLE: "/ Edit API token"
 }
-
-export const APP_DETAILS_VIRTUAL = {
-  TITLE: 'argo-test is a virtual environment',
-  SUBTITLE:'Deployments to this environment generate a helm chart package. The packaged helm chart contains all the necessary configuration and metadata to deploy the application to any Kubernetes cluster'
-}
