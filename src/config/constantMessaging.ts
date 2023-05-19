@@ -255,4 +255,4 @@ export const EMPTY_STATE_STATUS = {
 
 }
 
-export const JSON_UNMARSHAL_ERROR = "unmarshal failed for data, please provide valid json";
+export const INVALID_YAML_MSG = "Please provide data in valid YAML format";

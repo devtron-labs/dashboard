@@ -57,7 +57,7 @@ import {
 } from './secret.utils'
 import { EsoData, SecretFormProps } from '../deploymentConfig/types'
 import { NavLink } from 'react-router-dom'
-import { JSON_UNMARSHAL_ERROR } from '../../config/constantMessaging'
+import { INVALID_YAML_MSG } from '../../config/constantMessaging'
 
 const Secret = ({ respondOnSuccess, ...props }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -480,7 +480,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         let dataArray = yamlMode ? tempArray.current : externalValues
         const { isValid, arr } = validateKeyValuePair(dataArray)
         if (!isValid) {
-            toast.error(JSON_UNMARSHAL_ERROR);
+            toast.error(INVALID_YAML_MSG);
             setKeyValueArray(arr)
             return
         }
