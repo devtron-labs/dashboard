@@ -141,6 +141,7 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
 }
 }
 
+//TODO replace it everthere with DEPLOYMENT_APP_TYPE
 export enum DeploymentAppType {
     helm = 'helm',
     argo_cd = 'argo_cd',

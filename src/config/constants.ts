@@ -808,3 +808,14 @@ export enum CONFIGURATION_TYPES {
     NAMESPACE = 'NAMESPACE',
     DESCRIPTION = 'DESCRIPTION',
 }
+
+export enum DEPLOYMENT_APP_TYPE {
+  HELM = 'helm',
+  GITOPS = 'argo_cd',
+  MANIFEST_DOWNLOAD = 'manifest_download'
+}
+
+export const DEPLOYMENT_APP_TYPE_WITH_VALUE = [
+  { value: DEPLOYMENT_APP_TYPE.HELM, label: 'Helm' },
+  { value: DEPLOYMENT_APP_TYPE.GITOPS, label: 'GitOps' },
+]

@@ -80,7 +80,6 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                 {this.props.triggerType}
                             </div>
                             <div className="workflow-node__title flex">
-                                {/* <img src={pipelineDeploy} className="icon-dim-24 mr-16" /> */}
                                 <div className="workflow-node__full-width-minus-Icon">
                                     <span className="workflow-node__text-light">
                                         Deploy: {this.props.deploymentStrategy}

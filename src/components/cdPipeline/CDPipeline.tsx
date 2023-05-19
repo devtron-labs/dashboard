@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { DEPLOYMENT_APP_TYPE_WITH_VALUE, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
     Select,
     ButtonWithLoader,
@@ -154,6 +154,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             isAdvanced: false,
             forceDeleteDialogMessage: '',
             forceDeleteDialogTitle: '',
+            isVirtualEnvironmentOnEnvSelection: false
         }
         this.validationRules = new ValidationRules()
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this)
@@ -210,6 +211,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 .then((response) => {
                                     let list = response.result || []
                                     list = list.map((env) => {
+                                      this.setState({isVirtualEnvironmentOnEnvSelection: env.isVirtualEnvironment })
                                         return {
                                             id: env.id,
                                             clusterName: env.cluster_name,
@@ -218,7 +220,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                             active: false,
                                             isClusterCdActive: env.isClusterCdActive,
                                             description: env.description,
-                                            isVirtualEnvironment: env.isVirtualEnvironment //Virtual environment is valid for virtual cluster
+                                            isVirtualEnvironment: env.isVirtualEnvironment //Virtual environment is valid for virtual cluster on selection of environment
                                         }
                                     })
                                     sortObjectArrayAlphabetically(list, 'name')
@@ -244,7 +246,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     getCDPipeline(): void {
         getCDPipelineConfig(this.props.match.params.appId, this.props.match.params.cdPipelineId)
             .then((data) => {
-              // console.log(data)
                 let pipelineConfigFromRes = data.pipelineConfig
                 this.updateStateFromResponse(pipelineConfigFromRes, data.environments)
             })
@@ -449,8 +450,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     active: item.id == selection.id,
                 }
             })
+            this.setState({isVirtualEnvironmentOnEnvSelection : selection.isVirtualEnvironment})
             pipelineConfig.environmentId = selection.id
             pipelineConfig.namespace = selection.namespace
+            pipelineConfig.isVirtualEnvironment = selection.isVirtualEnvironment
             errorForm.envNameError = this.validationRules.environment(selection.id)
             errorForm.nameSpaceError = !this.state.pipelineConfig.isVirtualEnvironment && this.validationRules.namespace(selection.namespace)
 
@@ -584,16 +587,19 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     savePipeline() {
         const { pipelineConfig, errorForm } = { ...this.state }
         errorForm.pipelineNameError = this.validationRules.name(pipelineConfig.name)
-        errorForm.nameSpaceError = this.validationRules.namespace('test')
+        if (!this.state.pipelineConfig.isVirtualEnvironment) {
+            errorForm.nameSpaceError = this.validationRules.namespace(pipelineConfig.namespace)
+        }
         errorForm.envNameError = this.validationRules.environment(pipelineConfig.environmentId)
         this.setState({ errorForm })
         let valid =
             !!pipelineConfig.environmentId &&
             errorForm.pipelineNameError.isValid &&
-            !!pipelineConfig.namespace &&
+           ( !!pipelineConfig.isVirtualEnvironment ||
+            !!pipelineConfig.namespace) &&
             !!pipelineConfig.triggerType &&
             !!(pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
-        if (!pipelineConfig.name || !pipelineConfig.namespace) {
+        if (!pipelineConfig.name || (!pipelineConfig.isVirtualEnvironment && !pipelineConfig.namespace)) {
             toast.error(MULTI_REQUIRED_FIELDS_MSG)
             return
         }
@@ -629,6 +635,10 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         }
         pipeline.preStage.config = pipeline.preStage.config.replace(/^\s+|\s+$/g, '')
         pipeline.postStage.config = pipeline.postStage.config.replace(/^\s+|\s+$/g, '')
+
+        if(this.state.pipelineConfig.isVirtualEnvironment){
+          pipeline.deploymentAppType = 'manifest_download'
+        }
 
         let msg
         if (!this.props.match.params.cdPipelineId) {
@@ -1058,6 +1068,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     name="deployment-app-type"
                     onChange={this.handleDeploymentAppTypeChange}
                     disabled={!!this.props.match.params.cdPipelineId}
+                    className="chartrepo-type__radio-group"
                 >
                     <RadioGroupItem dataTestId="helm-deployment-type-button" value={DeploymentAppType.Helm}>
                         Helm
@@ -1172,8 +1183,21 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         const envList = createClusterEnvGroup(this.state.environments, 'clusterName')
 
         const groupHeading = (props) => {
-          return <GroupHeading {...props} isVitualEnvironment={this.state.pipelineConfig.isVirtualEnvironment} />
-      }
+            return <GroupHeading isVirtualEnvironment={this.state.isVirtualEnvironmentOnEnvSelection} {...props} />
+        }
+
+        const getNamespaceplaceholder = (): string => {
+            if (this.state.isVirtualEnvironmentOnEnvSelection) {
+                if (this.state.pipelineConfig.namespace) {
+                    return 'Will be auto-populated based on environment'
+                } else {
+                    return 'Not available'
+                }
+            } else {
+                return 'Will be auto-populated based on environment'
+            }
+        }
+
         return (
             <>
                 <div className="form__row form__row--flex">
@@ -1215,7 +1239,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <input
                             className="form__input"
                             autoComplete="off"
-                            placeholder="Namespace"
+                            placeholder={getNamespaceplaceholder()}
                             data-testid="cd-pipeline-namespace-textbox"
                             type="text"
                             disabled={!namespaceEditable}
@@ -1229,7 +1253,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                             }}
                         />
 
-                        {!this.state.errorForm.nameSpaceError.isValid ? (
+                        {!this.state.errorForm.nameSpaceError.isValid &&
+                        !this.state.isVirtualEnvironmentOnEnvSelection ? (
                             <span className="form__error">
                                 <img src={error} className="form__icon" />
                                 {this.state.errorForm.nameSpaceError.message}
@@ -1238,7 +1263,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     </label>
                 </div>
                 {this.renderNamespaceInfo(namespaceEditable)}
-                {this.renderTriggerType()}
+                {!this.state.isVirtualEnvironmentOnEnvSelection && this.renderTriggerType()}
             </>
         )
     }
@@ -1443,7 +1468,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <div className="divider mt-12 mb-12" />
                     </>
                 )}
-                {this.renderDeploymentStage()}
+                {!this.state.pipelineConfig.isVirtualEnvironment && this.renderDeploymentStage()}
                 <div className="divider mt-12 mb-12" />
                 {this.renderPostStage()}
                 <div className="divider mt-12 mb-12" />

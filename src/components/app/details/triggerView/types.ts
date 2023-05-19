@@ -317,6 +317,7 @@ export interface TriggerViewState {
     filteredCIPipelines: any[]
     isChangeBranchClicked: boolean
     loader: boolean
+    downloadManifestLoader: boolean
 }
 
 //-- begining of response type objects for trigger view
