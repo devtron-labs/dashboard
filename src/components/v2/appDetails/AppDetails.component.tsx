@@ -6,7 +6,7 @@ import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component'
 import SyncErrorComponent from './SyncError.component'
-import { useEventSource } from '../../common'
+import { importComponentFromFELibrary, useEventSource } from '../../common'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import NodeTreeDetailTab from './NodeTreeDetailTab'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
@@ -25,7 +25,10 @@ import {
 } from '../../app/details/appDetails/appDetails.type'
 import { processDeploymentStatusDetailsData } from '../../app/details/appDetails/utils'
 import { useSharedState } from '../utils/useSharedState'
+
 let deploymentStatusTimer = null
+const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
+
 const AppDetailsComponent = ({
     externalLinks,
     monitoringTools,
@@ -108,6 +111,18 @@ const AppDetailsComponent = ({
         (event) => setStreamData(JSON.parse(event.data)),
     )
 
+    const renderHelmAppDetails= () =>{
+      if ( VirtualAppDetailsEmptyState) {
+        return  <VirtualAppDetailsEmptyState
+            environmentName={''}
+         />
+     }
+      return <NodeTreeDetailTab
+      appDetails={appDetails}
+      externalLinks={externalLinks}
+      monitoringTools={monitoringTools}
+  />
+    }
     return (
         <div className="helm-details" data-testid="app-details-wrapper">
             <div>
@@ -115,6 +130,7 @@ const AppDetailsComponent = ({
                     isExternalApp={isExternalApp}
                     _init={_init}
                     loadingResourceTree={loadingResourceTree}
+                    isVirtualEnvironment={appDetails.isVirtualEnvironment}
                 />
                 {!appDetails.deploymentAppDeleteRequest && (
                     <EnvironmentStatusComponent
@@ -122,6 +138,7 @@ const AppDetailsComponent = ({
                         loadingDetails={loadingDetails}
                         loadingResourceTree={loadingResourceTree}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                        isVirtualEnvironment={appDetails.isVirtualEnvironment}
                     />
                 )}
             </div>
@@ -138,13 +155,9 @@ const AppDetailsComponent = ({
                 <div className="bcn-0 dc__border-top h-100">
                     <Progressing pageLoader fullHeight size={32} fillColor="var(--N500)" />
                 </div>
-            ) : (
-                <NodeTreeDetailTab
-                    appDetails={appDetails}
-                    externalLinks={externalLinks}
-                    monitoringTools={monitoringTools}
-                />
-            )}
+            ) : renderHelmAppDetails()
+            }
+
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
                     appName={appDetails.appName}
