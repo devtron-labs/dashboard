@@ -8,7 +8,6 @@ import {
     stopPropagation,
     multiSelectStyles,
     useEffectAfterMount,
-    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
