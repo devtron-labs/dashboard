@@ -186,7 +186,7 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     fromAppGrouping: boolean
     description: string
     index?: number
-    isVirtualEnvironment: boolean
+    isVirtualEnvironment?: boolean
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -317,7 +317,7 @@ export interface TriggerViewState {
     filteredCIPipelines: any[]
     isChangeBranchClicked: boolean
     loader: boolean
-    downloadManifestLoader: boolean
+    downloadManifestLoader?: boolean
 }
 
 //-- begining of response type objects for trigger view

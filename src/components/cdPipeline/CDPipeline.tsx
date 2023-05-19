@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { DEPLOYMENT_APP_TYPE_WITH_VALUE, SourceTypeMap, TriggerType, ViewType } from '../../config'
+import { DeploymentAppTypes, SourceTypeMap, TriggerType, ViewType } from '../../config'
 import {
     Select,
     ButtonWithLoader,
@@ -637,7 +637,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         pipeline.postStage.config = pipeline.postStage.config.replace(/^\s+|\s+$/g, '')
 
         if(this.state.pipelineConfig.isVirtualEnvironment){
-          pipeline.deploymentAppType = 'manifest_download'
+          pipeline.deploymentAppType = DeploymentAppTypes.MANIFEST_DOWNLOAD
         }
 
         let msg

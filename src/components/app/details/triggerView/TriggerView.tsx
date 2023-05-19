@@ -646,7 +646,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     onClickManifestDownload = (appId: number, envId: number) => {
-        getDeployManifestDownload(appId, envId, this.setManifestLoader)
+      if (getDeployManifestDownload) {
+          getDeployManifestDownload(appId, envId, this.setManifestLoader)
+      }
     }
 
     onClickTriggerCDNode = (
