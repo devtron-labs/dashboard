@@ -18,6 +18,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
+import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning.svg'
 import YAML from 'yaml'
 import {
     Pencil,
@@ -988,13 +989,11 @@ function ClusterForm({
                 ])
                 setSelectedUserNameOptions(defaultUserNameSelections)
                 setClusterSeleceted(_clusterSelections)
-
                 setLoadingState(false)
+                toggleGetCluster()
             })
         } catch (err) {
             setLoadingState(false)
-            toggleGetCluster()
-            setUploadState(UPLOAD_STATE.UPLOAD)
             showError(err)
         }
     }
@@ -1384,7 +1383,6 @@ function ClusterForm({
     const handleGetClustersClick = async () => {
         setLoadingState(true)
         await validateClusterDetail()
-        toggleGetCluster()
     }
 
     const onChangeEditorValue = (val: string) => {
@@ -1747,7 +1745,10 @@ function ClusterForm({
                                                 <span className="dc__ellipsis-right">
                                                     {' '}
                                                     {selectedUserNameOptions[clusterDetail.cluster_name]
-                                                        ?.errorInConnecting || 'No error'}{' '}
+                                                        ?.errorInConnecting === 'cluster-already-exists'
+                                                        ? 'Cluster already exists. Cluster will be updated.'
+                                                        : selectedUserNameOptions[clusterDetail.cluster_name]
+                                                              ?.errorInConnecting || 'No error'}{' '}
                                                 </span>
                                             </div>
                                         </div>
@@ -1824,7 +1825,7 @@ function ClusterForm({
                             className="radio-group-no-border"
                             value={isKubeConfigFile ? 'EXISTING' : 'BLANK'}
                             name="trigger-type"
-                            onChange={toggleKubeConfigFile}
+                            onChange={()=>toggleKubeConfigFile(!isKubeConfigFile)}
                         >
                             <RadioGroupItem value={AppCreationType.Blank}>Use Server URL & Bearer token</RadioGroupItem>
                             <RadioGroupItem
