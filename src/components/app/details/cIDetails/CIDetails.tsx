@@ -41,6 +41,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                 getCIPipelines(+appId),
                 getModuleInfo(ModuleNameMap.SECURITY),
                 getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
+                getModuleInfo(ModuleNameMap.SECURITY_TRIVY)
             ]),
         [appId],
     )
@@ -162,8 +163,9 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                             synchroniseState={synchroniseState}
                                             triggerHistory={triggerHistory}
                                             isSecurityModuleInstalled={
-                                                initDataResults[1]?.['value']?.['result']?.status ===
-                                                    ModuleStatus.INSTALLED || false
+                                                (initDataResults[1]?.['value']?.['result']?.status ===
+                                                    ModuleStatus.INSTALLED|| initDataResults[3]?.['value']?.['result']?.status ===
+                                                    ModuleStatus.INSTALLED )|| false
                                             }
                                             isBlobStorageConfigured={
                                                 initDataResults[2]?.['value']?.['result']?.enabled || false

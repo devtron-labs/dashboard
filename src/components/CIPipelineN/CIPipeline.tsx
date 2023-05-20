@@ -233,7 +233,8 @@ export default function CIPipeline({
     const getSecurityModuleStatus = async (): Promise<void> => {
         try {
             const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
-            if (result?.status === ModuleStatus.INSTALLED) {
+            const { result:result2 } =await getModuleInfo(ModuleNameMap.SECURITY_TRIVY)
+            if (result?.status === ModuleStatus.INSTALLED || result2?.status === ModuleStatus.INSTALLED  ) {
                 setSecurityModuleInstalled(true)
             }
         } catch (error) {}

@@ -130,7 +130,7 @@ const ModuleDetailsCard = ({
             onClick={handleOnClick}
             data-testid={datatestid}
         >
-            {getInstallationStatusLabel(moduleDetails.installationStatus,moduleDetails.enabled?moduleDetails.enabled:true,datatestid)}
+            {getInstallationStatusLabel(moduleDetails.installationStatus,moduleDetails.enabled,datatestid)}
             <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
             <div className="module-details__card-name fs-16 fw-4 cn-9 mb-4" data-testid={`title-${datatestid}`}>{moduleDetails.title}</div>
             <div className="module-details__card-info dc__ellipsis-right__2nd-line fs-13 fw-4 cn-7 lh-20">
@@ -373,7 +373,7 @@ const InstallationStatus = ({
                     ) : (
                         <div className="module-details__installtion-success flex left">
                             <SuccessIcon className="icon-dim-20 mr-12" /> Installed
-                            {moduleDetails && moduleDetails.enabled === false ? (
+                            {moduleDetails &&(moduleDetails.enabled === false && moduleDetails.installationStatus === ModuleStatus.INSTALLED )? (
                                 <span className="fs-12 ml-60 fw-4 cn-7">Not Enabled</span>
                             ) : (
                                 ''
@@ -756,7 +756,7 @@ export const InstallationWrapper = ({
                                     {!isUpgradeView && belowMinSupportedVersion && <UpgradeNote />}
                                 </>
                             )}
-                        {moduleDetails && moduleDetails.enabled === false ? <EnablingStepsView /> : ''}
+                        {moduleDetails && (moduleDetails.enabled === false && moduleDetails.installationStatus === ModuleStatus.INSTALLED ) ? <EnablingStepsView /> : ''}
                         {((installationStatus !== ModuleStatus.NOT_INSTALLED &&
                             installationStatus !== ModuleStatus.HEALTHY) ||
                             (installationStatus === ModuleStatus.HEALTHY && !latestVersionAvailable)) && (

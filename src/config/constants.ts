@@ -646,6 +646,7 @@ export const ModuleNameMap = {
     BLOB_STORAGE: 'blob-storage',
     GRAFANA: 'monitoring.grafana',
     NOTIFICATION: 'notifier',
+    SECURITY_TRIVY:'security.trivy'
 }
 
 export const BUILD_STATUS = {
