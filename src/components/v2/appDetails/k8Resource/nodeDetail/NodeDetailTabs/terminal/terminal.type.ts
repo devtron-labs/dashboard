@@ -28,6 +28,8 @@ export interface TerminalWrapperComponentType {
     resumePodConnection?: () => void
     toggleButton?: boolean
     setTerminalCleared?: () => void
+    dataTestId?: string
+    classNamePrefix?: string
 }
 
 export interface TerminalSelectionListDataType {
@@ -44,6 +46,7 @@ export interface TerminalWrapperProps {
     socketConnection: SocketConnectionType
     setSocketConnection: (type: SocketConnectionType) => void
     className?: string
+    dataTestId?: string
 }
 
 export interface TerminalViewType {
@@ -56,6 +59,7 @@ export interface TerminalViewType {
     registerLinkMatcher?: any
     terminalMessageData?: any
     clearTerminal: boolean
+    dataTestId?: string
 }
 
 export interface ConnectionStripMessageType {
@@ -76,6 +80,7 @@ export interface SelectWrapperType {
     onChange: (newValue: any, actionMeta: ActionMeta<any>) => void
     styles?: StylesConfig<any, false, GroupBase<any>>
     components?: Partial<SelectComponents<any, false, GroupBase<any>>>
+    classNamePrefix?: string
 }
 
 export interface ReactSelectType {
@@ -89,12 +94,14 @@ export interface ReactSelectType {
     onChange: (newValue: any, actionMeta: ActionMeta<any>) => void
     styles?: StylesConfig<any, false, GroupBase<any>>
     components?: Partial<SelectComponents<any, false, GroupBase<any>>>
+    classNamePrefix?: string
 }
 
 export interface WrapperTitleType {
     hideTerminalStripComponent?: boolean
     title: string
     value: string
+    dataTestId?: string
 }
 
 export interface ConnectionButtonType {
@@ -122,4 +129,5 @@ export interface ConnectionSwitchType {
 export interface ClearTerminalType {
     hideTerminalStripComponent?: boolean
     setTerminalCleared: () => void
+    dataTestId?: string
 }

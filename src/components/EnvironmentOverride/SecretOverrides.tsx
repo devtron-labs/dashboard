@@ -435,7 +435,7 @@ export function OverrideSecretForm({ name, appChartRef, toggleCollapse }) {
                 payload['secretData'] = payload['secretData'].filter((s) => s.key || s.name || s.property)
             } else if (externalType === '') {
                 payload[CODE_EDITOR_RADIO_STATE.DATA] = dataArray.reduce((agg, { k, v }) => {
-                    agg[k] = externalType === '' ? btoa(v || '') : v || ''
+                    agg[k] = externalType === '' ? btoa(v ?? '') : v ?? ''
                     return agg
                 }, {})
             } else if (isESO) {
