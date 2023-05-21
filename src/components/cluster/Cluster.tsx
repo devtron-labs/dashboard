@@ -18,7 +18,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning.svg'
+import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
 import YAML from 'yaml'
 import {
     Pencil,
@@ -394,6 +394,7 @@ function Cluster({
     toggleBrowseFile,
     toggleClusterDetails,
     isGrafanaModuleInstalled,
+    insecureSkipTlsVerify,
     isClusterDetails,
 }) {
     const [editMode, toggleEditMode] = useState(false)
@@ -564,7 +565,6 @@ function Cluster({
         } else {
             payload['server_url'] = urlValue
         }
-
         if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
             let isValid = state.userName?.value && state.password?.value
             if (!isValid) {
@@ -624,6 +624,7 @@ function Cluster({
                 userName: prometheusToggleEnabled ? state.userName.value : '',
                 password: prometheusToggleEnabled ? state.password.value : '',
             },
+            insecureSkipTlsVerify: !isTlsConnection,
         }
     }
 
@@ -764,6 +765,7 @@ function Cluster({
         server_url,
         defaultClusterComponent: defaultClusterComponent,
         k8sversion: '',
+        insecureSkipTlsVerify: !isTlsConnection,
     }
 
     const clusterTitle = () => {
@@ -1507,6 +1509,7 @@ function ClusterForm({
         // console.log(state.cluster_name.value)
         return {
             id,
+            insecureSkipTlsVerify : !isTlsConnection,
             cluster_name: state.cluster_name.value,
             config: {
                 bearer_token:
@@ -1600,6 +1603,7 @@ function ClusterForm({
         server_url,
         defaultClusterComponent: defaultClusterComponent,
         k8sversion: '',
+        insecureSkipTlsVerify: !isTlsConnection,
     }
 
     const ClusterInfoComponent = () => {
@@ -2237,16 +2241,21 @@ function ClusterForm({
                                                 selectedUserNameOptions={selectedUserNameOptions}
                                                 onChangeUserName={onChangeUserName}
                                             />
-                                            <div
-                                                className={`dc__app-summary__icon icon-dim-16 mr-2 ${
-                                                    selectedUserNameOptions[clusterDetail.cluster_name]
-                                                        .errorInConnecting === 'cluster-already-exists' ||
-                                                    selectedUserNameOptions[clusterDetail.cluster_name]
-                                                        .errorInConnecting.length === 0
-                                                        ? 'succeeded'
-                                                        : 'failed'
-                                                }`}
-                                            ></div>
+                                            {selectedUserNameOptions[clusterDetail.cluster_name].errorInConnecting ===
+                                            'cluster-already-exists' ? (
+                                                <ErrorIcon className="dc__app-summary__icon icon-dim-16 mr-2 " />
+                                            ) : (
+                                                <div
+                                                    className={`dc__app-summary__icon icon-dim-16 mr-2 ${
+                                                        selectedUserNameOptions[clusterDetail.cluster_name]
+                                                            .errorInConnecting.length !== 0 &&
+                                                        selectedUserNameOptions[clusterDetail.cluster_name]
+                                                            .errorInConnecting !== 'cluster-already-exists'
+                                                            ? 'failed'
+                                                            : 'succeeded'
+                                                    }`}
+                                                ></div>
+                                            )}
                                             <div className="flexbox">
                                                 <span className="dc__ellipsis-right">
                                                     {' '}
