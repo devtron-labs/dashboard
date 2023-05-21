@@ -156,6 +156,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
             isKubeConfigFile: false,
             browseFile: false,
             isClusterDetails: false,
+            showEditCluster: false,
         }
         this.initialise = this.initialise.bind(this)
         this.toggleCheckTlsConnection = this.toggleCheckTlsConnection.bind(this)
@@ -163,6 +164,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.toggleKubeConfigFile = this.toggleKubeConfigFile.bind(this)
         this.toggleBrowseFile = this.toggleBrowseFile.bind(this)
         this.toggleClusterDetails = this.toggleClusterDetails.bind(this)
+        this.toggleShowEditCluster = this.toggleShowEditCluster.bind(this)
     }
 
     componentDidMount() {
@@ -266,6 +268,10 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.setState({ isClusterDetails: updateClusterDetails })
     }
 
+    toggleShowEditCluster() {
+        this.setState({ showEditCluster: !this.state.showEditCluster })
+    }
+
     toggleShowAddCluster() {
         this.setState({ showAddCluster: !this.state.showAddCluster })
     }
@@ -328,6 +334,9 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             key={cluster.id || Math.random().toString(36).substr(2, 5)}
                             serverMode={this.props.serverMode}
                             isGrafanaModuleInstalled={true}
+                            showEditCluster={this.state.showEditCluster}
+                            toggleShowAddCluster={this.toggleShowEditCluster}
+                            toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                             toggleEditMode={() => {}}
                         />
                     ))}
@@ -375,6 +384,8 @@ function Cluster({
     prometheus_url,
     serverMode,
     isTlsConnection,
+    toggleShowEditCluster,
+    showEditCluster,
     toggleCheckTlsConnection,
     toggleShowAddCluster,
     toggleKubeConfigFile,
@@ -756,81 +767,109 @@ function Cluster({
     }
 
     const clusterTitle = () => {
-        if(id) {
+        if (id) {
             return 'Edit Cluster'
         }
     }
 
+    const EditClusterHeader = () => {
+        return (
+            <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
+                <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
+                    Edit Cluster
+                </h2>
+                <button
+                    data-testid="header_close_icon"
+                    type="button"
+                    className="dc__transparent flex icon-dim-24 mr-24"
+                    onClick={toggleShowEditCluster}
+                >
+                    <Close className="icon-dim-24" />
+                </button>
+            </div>
+        )
+    }
+
     const EditCluster = () => {
         return (
-            <form action="" className="cluster-form " onSubmit={handleOnSubmit}>
-                <div className="flex left mb-20">
+            <div
+                className="cluster-form dc__position-rel h-100 bcn-0"
+                style={{ padding: 'auto 0' }}
+                onSubmit={handleOnSubmit}
+            >
+                {/* <div className="flex left mb-20">
                     {id && <Pencil color="#363636" className="icon-dim-24 dc__vertical-align-middle mr-8" />}
                     <span className="fw-6 fs-14 cn-9">{clusterTitle()}</span>
-                </div>
-                <div className="form__row">
-                    <CustomInput
-                        autoComplete="off"
-                        name="cluster_name"
-                        disabled={isDefaultCluster()}
-                        value={state.cluster_name.value}
-                        error={state.cluster_name.error}
-                        onChange={handleOnChange}
-                        label="Name*"
-                        placeholder="Cluster name"
-                    />
-                </div>
-                <div className="form__row mb-8-imp">
-                    <CustomInput
-                        autoComplete="off"
-                        name="url"
-                        value={state.url.value}
-                        error={state.url.error}
-                        onChange={handleOnChange}
-                        label={clusterLabel()}
-                        placeholder="Enter server URL"
-                    />
-                </div>
-                <div className="form__row form__row--bearer-token flex column left top">
-                    <div className="bearer-token">
-                        <ResizableTextarea
-                            className="dc__resizable-textarea__with-max-height"
-                            name="token"
-                            value={config && config.bearer_token ? config.bearer_token : ''}
+                </div> */}
+                <EditClusterHeader />
+                <div className="pl-20 pr-20" style={{ overflow: 'auto', height: 'calc(100vh - 169px)' }}>
+                    <div className="form__row">
+                        <CustomInput
+                            autoComplete="off"
+                            name="cluster_name"
+                            disabled={isDefaultCluster()}
+                            value={state.cluster_name.value}
+                            error={state.cluster_name.error}
                             onChange={handleOnChange}
-                            onBlur={handleOnBlur}
-                            onFocus={handleOnFocus}
-                            placeholder="Enter bearer token"
+                            label="Name*"
+                            placeholder="Cluster name"
                         />
                     </div>
-                    {state.token.error && (
-                        <label htmlFor="" className="form__error">
-                            <FormError className="form__icon form__icon--error" />
-                            {state.token.error}
-                        </label>
+                    <div className="form__row mb-8-imp">
+                        <CustomInput
+                            autoComplete="off"
+                            name="url"
+                            value={state.url.value}
+                            error={state.url.error}
+                            onChange={handleOnChange}
+                            label={clusterLabel()}
+                            placeholder="Enter server URL"
+                        />
+                    </div>
+                    <div className="form__row form__row--bearer-token flex column left top">
+                        <div className="bearer-token">
+                            <ResizableTextarea
+                                className="dc__resizable-textarea__with-max-height"
+                                name="token"
+                                value={config && config.bearer_token ? config.bearer_token : ''}
+                                onChange={handleOnChange}
+                                onBlur={handleOnBlur}
+                                onFocus={handleOnFocus}
+                                placeholder="Enter bearer token"
+                            />
+                        </div>
+                        {state.token.error && (
+                            <label htmlFor="" className="form__error">
+                                <FormError className="form__icon form__icon--error" />
+                                {state.token.error}
+                            </label>
+                        )}
+                    </div>
+
+                    {isGrafanaModuleInstalled && (
+                        <>
+                            <hr />
+                            <div
+                                className={`${
+                                    prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'
+                                } mt-20`}
+                            >
+                                <div className="dc__content-space flex">
+                                    <span className="form__input-header">
+                                        See metrics for applications in this cluster
+                                    </span>
+                                    <div className="" style={{ width: '32px', height: '20px' }}>
+                                        <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
+                                    </div>
+                                </div>
+                                <span className="cn-6 fs-12">
+                                    Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications
+                                    running in this cluster
+                                </span>
+                            </div>
+                        </>
                     )}
                 </div>
-                {isGrafanaModuleInstalled && (
-                    <>
-                        <hr />
-                        <div
-                            className={`${
-                                prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'
-                            } mt-20`}
-                        >
-                            <div className="dc__content-space flex">
-                                <span className="form__input-header">See metrics for applications in this cluster</span>
-                                <div className="" style={{ width: '32px', height: '20px' }}>
-                                    <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
-                                </div>
-                            </div>
-                            <span className="cn-6 fs-12">
-                                Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications
-                                running in this cluster
-                            </span>
-                        </div>
-                    </>
-                )}
                 {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheus_url && <PrometheusWarningInfo />}
                 {isGrafanaModuleInstalled && prometheusToggleEnabled && (
                     <div className="">
@@ -900,6 +939,50 @@ function Cluster({
                         </div>
                     </div>
                 )}
+
+                {isTlsConnection && (
+                    <>
+                        <div className="form__row">
+                            <span data-testid="certificate_authority_data" className="form__label dc__required-field">
+                                Certificate Authority Data
+                            </span>
+                            <ResizableTextarea
+                                dataTestId="certificate_authority_data_input"
+                                className="dc__resizable-textarea__with-max-height w-100"
+                                name="certificateAuthorityData"
+                                value={state.certificateAuthorityData.value}
+                                onChange={handleOnChange}
+                                placeholder={'Enter CA Data'}
+                            />
+                        </div>
+                        <div className="form__row">
+                            <span data-testid="tls_client_key" className="form__label dc__required-field">
+                                TLS Key
+                            </span>
+                            <ResizableTextarea
+                                dataTestId="tls_client_key_input"
+                                className="dc__resizable-textarea__with-max-height w-100"
+                                name="tlsClientKey"
+                                value={state.tlsClientKey.value}
+                                onChange={handleOnChange}
+                                placeholder={'Enter tls Key'}
+                            />
+                        </div>
+                        <div className="form__row">
+                            <span data-testid="tls_certificate" className="form__label dc__required-field">
+                                TLS Certificate
+                            </span>
+                            <ResizableTextarea
+                                dataTestId="tls_certificate_input"
+                                className="dc__resizable-textarea__with-max-height w-100"
+                                name="tlsClientCert"
+                                value={state.tlsClientCert.value}
+                                onChange={handleOnChange}
+                                placeholder={'Enter tls Certificate'}
+                            />
+                        </div>
+                    </>
+                )}
                 <div className={`form__buttons`}>
                     {id && (
                         <button
@@ -928,7 +1011,7 @@ function Cluster({
                         reload={reload}
                     />
                 )}
-            </form>
+            </div>
         )
     }
 
@@ -1136,7 +1219,9 @@ function Cluster({
                                     grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED,
                             }}
                         /> */}
-                        <EditCluster />
+                        <Drawer position="right" width="1000px" onEscape={toggleShowEditCluster}>
+                            <EditCluster />
+                        </Drawer>
                     </>
                 )}
             </article>
@@ -1934,7 +2019,6 @@ function ClusterForm({
             <>
                 <div className="cluster-form dc__position-rel h-100 bcn-0">
                     <AddClusterHeader />
-
                     <div className="api-token__list en-2 bw-0 bcn-0 br-8">
                         <div
                             data-testid="cluster_list_page_after_selection"
