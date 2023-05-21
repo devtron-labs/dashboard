@@ -617,6 +617,7 @@ function Cluster({
             config: {
                 bearer_token:
                     state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value : '',
+                
             },
             active,
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
@@ -2194,7 +2195,7 @@ function ClusterForm({
                                 Icon={Info}
                                 iconClass="icon-dim-18"
                             />
-                            <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top">
+                            <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom">
                                 <div data-testid="select_all_cluster_checkbox">
                                     <Checkbox
                                         rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
