@@ -1509,7 +1509,7 @@ function ClusterForm({
         // console.log(state.cluster_name.value)
         return {
             id,
-            insecureSkipTlsVerify : !isTlsConnection,
+            insecureSkipTlsVerify: !isTlsConnection,
             cluster_name: state.cluster_name.value,
             config: {
                 bearer_token:
@@ -2187,13 +2187,13 @@ function ClusterForm({
                         className="cluster-form dc__position-rel h-100 bcn-0"
                     >
                         <AddClusterHeader />
-                        <InfoColourBar
-                            message={`${validCluster()} valid cluster. Select the cluster you want to Add/Update`}
-                            classname="info_bar cn-9 mb-20 lh-20"
-                            Icon={Info}
-                            iconClass="icon-dim-18"
-                        />
-                        <div className="api-token__list en-2 bw-1 bcn-0 br-8">
+                        <div className="api-token__list en-2 bw-1 bcn-0 br-8 mr-20 ml-20 mt-16">
+                            <InfoColourBar
+                                message={`${validCluster()} valid cluster. Select the cluster you want to Add/Update`}
+                                classname="info_bar cn-9 lh-20"
+                                Icon={Info}
+                                iconClass="icon-dim-18"
+                            />
                             <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top">
                                 <div data-testid="select_all_cluster_checkbox">
                                     <Checkbox
@@ -2208,7 +2208,7 @@ function ClusterForm({
                                 <div>MESSAGE</div>
                                 <div></div>
                             </div>
-                            <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 219px)' }}>
+                            <div className="dc__overflow-scroll" style={{ height: 'auto' }}>
                                 {!dataList || dataList.length === 0 ? (
                                     <NoMatchingResults />
                                 ) : (
@@ -2233,7 +2233,10 @@ function ClusterForm({
                                                               .errorInConnecting.length > 0
                                                 }
                                             />
-                                            <div className="flexbox">
+                                            <div
+                                                className="flexbox"
+                                                onClick={() => toggleIsSelected(clusterDetail.cluster_name)}
+                                            >
                                                 <span className="dc__ellipsis-right">{clusterDetail.cluster_name}</span>
                                             </div>
                                             <UserNameDropDownList
