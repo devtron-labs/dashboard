@@ -2209,7 +2209,7 @@ function ClusterForm({
                                 <div>MESSAGE</div>
                                 <div></div>
                             </div>
-                            <div className="dc__overflow-scroll" style={{ height: 'auto' }}>
+                            <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 219px)' }}>
                                 {!dataList || dataList.length === 0 ? (
                                     <NoMatchingResults />
                                 ) : (
