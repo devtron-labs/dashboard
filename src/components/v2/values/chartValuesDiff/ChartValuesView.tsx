@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react'
 import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { toast } from 'react-toastify'
-import { RadioGroup, useJsonYaml } from '../../../common'
+import { importComponentFromFELibrary, RadioGroup, useJsonYaml } from '../../../common'
 import {
     showError,
     Progressing,
@@ -101,7 +101,7 @@ import {
     MANIFEST_INFO,
 } from './ChartValuesView.constants'
 import { DeploymentAppType } from '../../appDetails/appDetails.type'
-import ChartValues from '../../../charts/chartValues/ChartValues'
+const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 
 function ChartValuesView({
     appId,
@@ -132,6 +132,7 @@ function ChartValuesView({
     const [isUnlinkedCLIApp, setIsUnlinkedCLIApp] = useState(false)
     const [deploymentVersion, setDeploymentVersion] = useState(1)
     const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
+    const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>(false)
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -153,7 +154,7 @@ function ChartValuesView({
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
-
+console.log(commonState)
     const checkGitOpsConfiguration = async (): Promise<void> => {
         try {
             const { result } = await isGitOpsModuleInstalledAndConfigured()
@@ -175,7 +176,7 @@ function ChartValuesView({
                 convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
                 dispatch,
             )
-           
+
             const _fetchedReadMe = commonState.fetchedReadMe
             _fetchedReadMe.set(0, commonState.installedConfig.readme)
             dispatch({
@@ -386,7 +387,7 @@ function ChartValuesView({
             }
         }
     }, [commonState.chartValues])
-    
+
     useEffect(() => {
         if (commonState.selectedVersionUpdatePage?.id) {
             getChartRelatedReadMe(
@@ -1118,7 +1119,7 @@ function ChartValuesView({
 
     const handleEnvironmentSelection = (selected: ChartEnvironmentOptionType) => {
         dispatch({ type: ChartValuesViewActionTypes.selectedEnvironment, payload: selected })
-
+        setIsVirtualEnvironment(selected.isVirtualEnvironment)
         if (commonState.invalidaEnvironment) {
             dispatch({
                 type: ChartValuesViewActionTypes.invalidaEnvironment,
@@ -1307,6 +1308,17 @@ function ChartValuesView({
         setShowUpdateAppModal(!showUpdateAppModal)
     }
 
+    const renderGeneratedDownloadManifest = (): JSX.Element => {
+        return (
+            GeneratedHelmDownload && (
+                <div>
+                    <GeneratedHelmDownload />
+                    <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
+                </div>
+            )
+        )
+    }
+
     const renderData = () => {
         const deployedAppDetail = isExternalApp && appId && appId.split('|')
         return (
@@ -1393,9 +1405,10 @@ function ChartValuesView({
                                 handleEnvironmentSelection={handleEnvironmentSelection}
                                 environments={commonState.environments}
                                 invalidaEnvironment={commonState.invalidaEnvironment}
+                                isVirtualEnvironment={isVirtualEnvironment}
                             />
                         )}
-                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp && !isCreateValueView && (
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp && !isCreateValueView && !isVirtualEnvironment && (
                             <DeploymentAppSelector
                                 commonState={commonState}
                                 isUpdate={isUpdate}
@@ -1437,6 +1450,9 @@ function ChartValuesView({
                                     linkText={renderConnectToHelmChart()}
                                 />
                             )}
+                            {
+                              isVirtualEnvironment  && renderGeneratedDownloadManifest()
+                            }
                         {(!isExternalApp ||
                             commonState.installedAppInfo ||
                             commonState.repoChartValue?.chartRepoName) && (
