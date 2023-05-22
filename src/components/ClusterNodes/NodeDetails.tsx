@@ -470,7 +470,7 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
     const renderProbableIssuesOverviewCard = (): JSX.Element | null => {
         const isCPUOverCommitted = Number(cpuData.usagePercentage?.slice(0, -1)) > 100
         const issueCount =
-            (isCPUOverCommitted ? 1 : 0) + (nodeDetail.unschedulable ? 1 : 0) + (nodeDetail.taintCount > 0 ? 1 : 0)
+            (isCPUOverCommitted ? 1 : 0) + (nodeDetail.unschedulable ? 1 : 0) + (nodeDetail.taints.length > 0 ? 1 : 0)
         if (!issueCount) return null
         return (
             <div className="mb-12 en-2 bw-1 br-4 bcn-0">
@@ -487,9 +487,9 @@ export default function NodeDetails({ imageList, isSuperAdmin, namespaceList }: 
                             <p className="fw-4 fs-13 cn-7 mb-12">Limits for “cpu” is over 100%</p>
                         </div>
                     )}
-                    {nodeDetail.taintCount && (
+                    {nodeDetail.taints.length && (
                         <div>
-                            <div className="fw-6 fs-13 cn-9">{nodeDetail.taintCount} taints applied</div>
+                            <div className="fw-6 fs-13 cn-9">{nodeDetail.taints.length} taints applied</div>
                             <p className="fw-4 fs-13 cn-7 mb-12">
                                 Taints may be restricting pods from being scheduled on this node
                             </p>
