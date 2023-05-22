@@ -8,7 +8,10 @@ import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.s
 import CIAdvancedConfig from './CIAdvancedConfig'
 import { CI_BUILDTYPE_ALIAS, _multiSelectStyles } from './CIConfig.utils'
 import { CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import CIBuildpackBuildOptions, {
+    checkOutPathControls,
+    checkoutPathOption,
     renderOptionIcon,
     repositoryControls,
     repositoryOption,
@@ -101,6 +104,11 @@ export default function CIDockerFileConfig({
     }
 
     const [isCollapsed, setIsCollapsed] = useState<boolean>(!isDefaultBuildContext())
+    const buildContextCheckpoutPath = selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial.checkoutPath : currentMaterial?.checkoutPath
+    const [checkoutPathOptions, setCheckoutPathOptions] = useState<OptionType[]>([{label: './', value: './'},{label: buildContextCheckpoutPath,value: buildContextCheckpoutPath}])
+    useEffect( () => {
+        setCheckoutPathOptions([{label: './', value: './'},{label: selectedBuildContextGitMaterial?.checkoutPath, value: selectedBuildContextGitMaterial?.checkoutPath}])
+    },[selectedBuildContextGitMaterial])
     useEffect(() => {
         setInProgress(true)
         Promise.all([getDockerfileTemplate(), getBuildpackMetadata()])
@@ -206,9 +214,36 @@ export default function CIDockerFileConfig({
             </div>
         )
     }
+    const useRootBuildContextFlagFormState = currentCIBuildConfig?.useRootBuildContext
+    const [useRootBuildContextFlag,setUseRootBuildContextFlag] = useState<boolean>(useRootBuildContextFlagFormState)
 
+    const handleBuildContextCheckoutPathChange = (checkoutPath) => {
+        const val = checkoutPath.value
+        let flag = false
+        if(val === './'){
+            flag = true
+        }
+        setUseRootBuildContextFlag(flag)
+        formState.useRootBuildContext.value = flag
+        setCurrentCIBuildConfig({
+                ...currentCIBuildConfig,
+                useRootBuildContext: flag,
+            }
+        )
+
+    }
     const toggleCollapse = (e) => {
         setIsCollapsed(!isCollapsed)
+    }
+
+    const getCheckoutPathValue = (selectedMaterial:any,currentMaterial:any,useRootBuildContextFlag:boolean) : OptionType => {
+        const val = configOverrideView && !allowOverride
+            ? useRootBuildContextFlag ?
+                './' : currentBuildContextGitMaterial.checkoutPath
+            : selectedBuildContextGitMaterial ? useRootBuildContextFlag ?
+                './' : selectedBuildContextGitMaterial.checkoutPath : useRootBuildContextFlag ?
+                './' : currentMaterial.checkoutPath
+        return {label:val,value:val}
     }
 
     const renderInfoCard = (): JSX.Element => {
@@ -470,22 +505,45 @@ export default function CIDockerFileConfig({
                             </label>
                             {configOverrideView && !allowOverride ? (
                                 <span className="fs-14 fw-4 lh-20 cn-9">
-                                    {`${selectedBuildContextGitMaterial?.checkoutPath}/${
+                                    {`${ciConfig?.ciBuildConfig?.useRootBuildContext ? './' : selectedBuildContextGitMaterial?.checkoutPath}/${
                                         ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || ''
                                     }`.replace('//', '/')}
                                 </span>
                             ) : (
                                 <div className="docker-file-container">
-                                    <Tippy
-                                        className="default-tt"
-                                        arrow={false}
-                                        placement="top"
-                                        content={selectedBuildContextGitMaterial?.checkoutPath}
-                                    >
-                                        <span className="checkout-path-container bcn-1 en-2 bw-1 dc__no-right-border dc__ellipsis-right">
-                                            {selectedBuildContextGitMaterial?.checkoutPath}
-                                        </span>
-                                    </Tippy>
+                                    <ReactSelect
+                                        className="m-0 br-0"
+                                        classNamePrefix="build-config__select-checkout-path-for-build-context"
+                                        tabIndex={3}
+                                        isMulti={false}
+                                        isClearable={false}
+                                        isSearchable={false}
+                                        options={checkoutPathOptions}
+                                        getOptionLabel={(option) => `${option.label}`}
+                                        getOptionValue={(option) => `${option.value}`}
+                                        value={
+                                            getCheckoutPathValue(selectedMaterial,currentMaterial,useRootBuildContextFlag)
+                                        }
+                                        styles={{
+                                            ..._multiSelectStyles,
+                                            menu: (base) => ({
+                                                ...base,
+                                                marginTop: '0',
+                                                paddingBottom: '4px',
+                                            }),
+                                            control: (base) => ({
+                                                ...base,
+                                                borderRadius: '0px',
+                                            })
+                                        }}
+                                        components={{
+                                            IndicatorSeparator: null,
+                                            Option: checkoutPathOption,
+                                            Control: checkOutPathControls,
+                                        }}
+                                        onChange={handleBuildContextCheckoutPathChange}
+                                        isDisabled={configOverrideView && !allowOverride}
+                                    />
                                     <input
                                         tabIndex={4}
                                         type="text"
@@ -542,6 +600,10 @@ export default function CIDockerFileConfig({
                     handleOnChangeConfig={handleOnChangeConfig}
                     renderInfoCard={renderInfoCard}
                     isDefaultBuildContext={isDefaultBuildContext}
+                    handleBuildContextCheckoutPathChange={handleBuildContextCheckoutPathChange}
+                    getCheckoutPathValue={getCheckoutPathValue}
+                    useRootBuildContextFlag={useRootBuildContextFlag}
+                    checkoutPathOptions={checkoutPathOptions}
                 />
             )}
             {ciBuildTypeOption === CIBuildType.BUILDPACK_BUILD_TYPE && (

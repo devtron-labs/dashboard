@@ -65,6 +65,14 @@ export const repositoryOption = (props): JSX.Element => {
     )
 }
 
+export const checkoutPathOption = (props) : JSX.Element => {
+    props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    return (
+        <components.Option {...props}>
+            {props.value}
+        </components.Option>
+    )
+}
 export const repositoryControls = (props): JSX.Element => {
     let value = ''
     if (props.hasValue) {
@@ -77,6 +85,14 @@ export const repositoryControls = (props): JSX.Element => {
             {value.includes('gitlab') && <GitLab className="icon-dim-20 ml-10" />}
             {value.includes('bitbucket') && <BitBucket className="icon-dim-20 ml-10" />}
             {showGit && <Git className="icon-dim-20 ml-10" />}
+            {props.children}
+        </components.Control>
+    )
+}
+
+export const checkOutPathControls = (props): JSX.Element => {
+    return (
+        <components.Control {...props}>
             {props.children}
         </components.Control>
     )

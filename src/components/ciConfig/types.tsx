@@ -1,5 +1,5 @@
 import React from 'react'
-import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import { ServerError,OptionType as  _OptionType} from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { CiPipeline, CiPipelineResult, Material, WorkflowType } from '../app/details/triggerView/types'
@@ -266,6 +266,10 @@ export interface CICreateDockerfileOptionProps {
     handleOnChangeConfig: (e) => void
     renderInfoCard: () => JSX.Element
     isDefaultBuildContext: () => boolean
+    handleBuildContextCheckoutPathChange: (checkoutPath : any) => void
+    getCheckoutPathValue: (selectedBuildContextGitMaterial: any,currentMaterial :any, useRootBuildContextFlag: boolean) => _OptionType
+    useRootBuildContextFlag: boolean
+    checkoutPathOptions: _OptionType[]
 }
 
 export interface CIBuildpackBuildOptionsProps {
