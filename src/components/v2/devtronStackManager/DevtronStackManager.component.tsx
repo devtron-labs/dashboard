@@ -872,7 +872,7 @@ export const EnablingStepsView = (): JSX.Element => {
                     additionalContent={
                         <div className="fs-13 fw-400 ml-20 mb-20 mr-20 mt-20">
                             <div> You can enable this integration by: </div>
-                            <div className="mb-30">Lorem ipsum dolor Sit amet consectetur magna aliqua adipiscing</div>
+                            <div className="mb-30">You can hit an api orchestrator/module/enable?name=security.(NAMEOFMODULE)</div>
                             <div>
                                 <span className="dc__bold">NOTE: </span>Only one Vulnerability scanning integration can
                                 be enabled at a time.
