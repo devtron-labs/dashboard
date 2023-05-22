@@ -47,11 +47,11 @@ export const ChartEnvironmentSelector = ({
     isDeployChartView,
     installedAppInfo,
     releaseInfo,
-    isUpdate,
     selectedEnvironment,
     handleEnvironmentSelection,
     environments,
     invalidaEnvironment,
+    isVirtualEnvironment
 }: ChartEnvironmentSelectorType): JSX.Element => {
     const singleOption = (props) => {
         return <EnvFormatOptions {...props} environmentfieldName="label" />
@@ -99,6 +99,7 @@ export const ChartEnvironmentSelector = ({
                 formatOptionLabel={handleFormatHighlightedText}
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
+            {isVirtualEnvironment && renderVirtualEnvironmentInfoText()}
         </div>
     )
 }
@@ -327,6 +328,11 @@ const renderValidationErrorLabel = (message?: string): JSX.Element => {
             <div className="ml-4 cr-5">{message || REQUIRED_FIELD_MSG}</div>
         </div>
     )
+}
+
+const renderVirtualEnvironmentInfoText = (): JSX.Element => {
+  // return GeneratedHelmDownload && <GeneratedHelmDownload />
+  return<div><div className="ml-4 cn-7">This is a virtual environment</div></div>
 }
 
 export const ValueNameInput = ({
