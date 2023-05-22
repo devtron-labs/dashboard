@@ -64,7 +64,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
     const clusterName: string = filteredFlattenNodeList[0]?.['clusterName'] || ''
     const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
     const [selectedNode, setSelectedNode] = useState<string>()
-    const pageSize = 15
+    const pageSize = 2
 
     useEffect(() => {
         if (appliedColumns.length > 0) {

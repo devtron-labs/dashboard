@@ -701,7 +701,7 @@ export function EnvSelector({
                     }}
                     styles={envSelectorStyle}
                     isDisabled={disabled}
-                    isSearchable={false}
+                    isSearchable={true}
                     classNamePrefix="app-environment-select"
                     formatOptionLabel={formatOptionLabel}
                 />
