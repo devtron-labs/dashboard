@@ -1470,7 +1470,7 @@ function ClusterForm({
                                 </div>
                             </>
                         )}
-                        <hr />
+                     
                         <div
                             className={`${
                                 prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'
