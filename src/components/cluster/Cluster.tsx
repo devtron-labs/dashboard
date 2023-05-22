@@ -618,6 +618,7 @@ function Cluster({
             config: {
                 bearer_token:
                     state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value : '',
+                
             },
             active,
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
@@ -2220,14 +2221,14 @@ function ClusterForm({
                         className="cluster-form dc__position-rel h-100 bcn-0"
                     >
                         <AddClusterHeader />
-                        <InfoColourBar
-                            message={`${validCluster()} valid cluster. Select the cluster you want to Add/Update`}
-                            classname="info_bar cn-9 mb-20 lh-20"
-                            Icon={Info}
-                            iconClass="icon-dim-18"
-                        />
-                        <div className="api-token__list en-2 bw-1 bcn-0 br-8">
-                            <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top">
+                        <div className="api-token__list en-2 bw-1 bcn-0 br-8 mr-20 ml-20 mt-16">
+                            <InfoColourBar
+                                message={`${validCluster()} valid cluster. Select the cluster you want to Add/Update`}
+                                classname="info_bar cn-9 lh-20"
+                                Icon={Info}
+                                iconClass="icon-dim-18"
+                            />
+                            <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom">
                                 <div data-testid="select_all_cluster_checkbox">
                                     <Checkbox
                                         rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
@@ -2266,7 +2267,10 @@ function ClusterForm({
                                                               .errorInConnecting.length > 0
                                                 }
                                             />
-                                            <div className="flexbox">
+                                            <div
+                                                className="flexbox"
+                                                onClick={() => toggleIsSelected(clusterDetail.cluster_name)}
+                                            >
                                                 <span className="dc__ellipsis-right">{clusterDetail.cluster_name}</span>
                                             </div>
                                             <UserNameDropDownList
