@@ -756,7 +756,6 @@ export const InstallationWrapper = ({
                                     {!isUpgradeView && belowMinSupportedVersion && <UpgradeNote />}
                                 </>
                             )}
-                        {moduleDetails && (moduleDetails.enabled === false && moduleDetails.installationStatus === ModuleStatus.INSTALLED ) ? <EnablingStepsView /> : ''}
                         {((installationStatus !== ModuleStatus.NOT_INSTALLED &&
                             installationStatus !== ModuleStatus.HEALTHY) ||
                             (installationStatus === ModuleStatus.HEALTHY && !latestVersionAvailable)) && (
@@ -772,6 +771,7 @@ export const InstallationWrapper = ({
                                 setShowResourceStatusModal={setShowResourceStatusModal}
                             />
                         )}
+                        {moduleDetails && (moduleDetails.enabled === false && moduleDetails.installationStatus === ModuleStatus.INSTALLED ) ? <EnablingStepsView /> : ''}
                         {moduleDetails && moduleDetails.isModuleConfigurable && !moduleDetails.isModuleConfigured && (
                             <ModuleNotConfigured moduleName={moduleName} />
                         )}
