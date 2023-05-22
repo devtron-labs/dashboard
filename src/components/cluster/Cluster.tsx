@@ -817,7 +817,6 @@ function Cluster({
                             </label>
                         )}
                     </div>
-
                     {isGrafanaModuleInstalled && (
                         <>
                             <hr />
@@ -834,6 +833,7 @@ function Cluster({
                                     </div>
                                 </Checkbox>
                             </div>
+                            <hr />
                             {isTlsConnection && (
                                 <>
                                     <div className="form__row">
@@ -880,6 +880,7 @@ function Cluster({
                                     </div>
                                 </>
                             )}
+                            <hr />
                             <div
                                 className={`${
                                     prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'
@@ -968,7 +969,9 @@ function Cluster({
                         <button className="cta cancel" type="button" onClick={(e) => toggleEditMode((t) => !t)}>
                             Cancel
                         </button>
-                        <button  onClick={onValidation} className="cta">{'Save cluster'}</button>
+                        <button onClick={onValidation} className="cta">
+                            {'Save cluster'}
+                        </button>
                     </div>
                 </div>
                 {confirmation && (
@@ -1519,12 +1522,12 @@ function ClusterForm({
         try {
             setLoading(true)
             const { result } = await api(payload)
-          toast.success(
+            toast.success(
                 <ToastBody
-                  data-testid="validate-toast-for-kubeconfig"
-                  title={`Successfully ${id ? 'updated' : 'saved'}`}
+                    data-testid="validate-toast-for-kubeconfig"
+                    title={`Successfully ${id ? 'updated' : 'saved'}`}
                 />,
-              );
+            )
             toggleEditMode((e) => !e)
         } catch (err) {
             showError(err)
@@ -1703,7 +1706,7 @@ function ClusterForm({
                                 </div>
                             </Checkbox>
                         </div>
-
+                        <hr />
                         {isTlsConnection && (
                             <>
                                 <div className="form__row">
@@ -2131,12 +2134,11 @@ function ClusterForm({
 
     const getAllClustersCheckBoxValue = () => {
         if (Object.values(isClusterSelected).every((_selected) => _selected)) {
-            return CHECKBOX_VALUE.CHECKED;
+            return CHECKBOX_VALUE.CHECKED
         } else if (Object.values(isClusterSelected).some((_selected) => _selected)) {
-            return CHECKBOX_VALUE.INTERMEDIATE;
+            return CHECKBOX_VALUE.INTERMEDIATE
         }
     }
-    
 
     const onChangeUserName = (selectedOption: any, clusterDetail: DataListType) => {
         setSelectedUserNameOptions({
