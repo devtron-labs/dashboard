@@ -37,6 +37,8 @@ interface customEnv {
     CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL?: number
     CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT?: number
     ENABLE_CHART_SEARCH_IN_HELM_DEPLOY?: boolean
+    HIDE_EXCLUDE_INCLUDE_GIT_COMMITS?: boolean
+    ENABLE_BUILD_CONTEXT?: boolean
 }
 declare global {
     interface Window {
@@ -132,6 +134,8 @@ if (!window || !window._env_) {
         CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000,
         CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
         ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
+        HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
+        ENABLE_BUILD_CONTEXT: false
     }
 }
 
