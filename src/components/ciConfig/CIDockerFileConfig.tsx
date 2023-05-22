@@ -104,10 +104,18 @@ export default function CIDockerFileConfig({
     }
 
     const [isCollapsed, setIsCollapsed] = useState<boolean>(!isDefaultBuildContext())
-    const buildContextCheckpoutPath = selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial.checkoutPath : currentMaterial?.checkoutPath
-    const [checkoutPathOptions, setCheckoutPathOptions] = useState<OptionType[]>([{label: './', value: './'},{label: buildContextCheckpoutPath,value: buildContextCheckpoutPath}])
+    const buildContextCheckoutPath = selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial.checkoutPath : currentMaterial?.checkoutPath
+    let checkoutPathArray = [{label: './', value: './'}]
+    if(buildContextCheckoutPath !== './'){
+        checkoutPathArray.push({label: buildContextCheckoutPath,value: buildContextCheckoutPath})
+    }
+    const [checkoutPathOptions, setCheckoutPathOptions] = useState<OptionType[]>(checkoutPathArray)
     useEffect( () => {
-        setCheckoutPathOptions([{label: './', value: './'},{label: selectedBuildContextGitMaterial?.checkoutPath, value: selectedBuildContextGitMaterial?.checkoutPath}])
+        let checkoutPathArray = [{label: './', value: './'}]
+        if(selectedBuildContextGitMaterial?.checkoutPath !== './'){
+            checkoutPathArray.push({label: selectedBuildContextGitMaterial?.checkoutPath, value: selectedBuildContextGitMaterial?.checkoutPath})
+        }
+        setCheckoutPathOptions(checkoutPathArray)
     },[selectedBuildContextGitMaterial])
     useEffect(() => {
         setInProgress(true)
