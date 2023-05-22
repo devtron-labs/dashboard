@@ -62,6 +62,7 @@ import {
     getPodNameSuffix,
     processDeploymentStatusDetailsData,
     ValueContainer,
+    processVirtualEnvironmentDeploymentData,
 } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
@@ -98,7 +99,8 @@ export default function AppDetail() {
     const [isAppDeleted, setIsAppDeleted] = useState(false)
     const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironmentMin(params.appId), [params.appId])
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
-    const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>(false)
+    // const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>(false)
+    const isVirtualEnvironment = useRef(false)
 
     useEffect(() => {
         if (otherEnvsLoading) return
@@ -159,7 +161,6 @@ export default function AppDetail() {
                     showCommitInfo={showCommitInfo}
                     isAppDeleted={isAppDeleted}
                     isVirtualEnvironment={isVirtualEnvironment}
-                    setIsVirtualEnvironment = {setIsVirtualEnvironment}
                 />
             </Route>
             {otherEnvsResult && !otherEnvsLoading &&  !isVirtualEnvironment && renderAppNotConfigured()}
@@ -179,8 +180,7 @@ export const Details: React.FC<DetailsType> = ({
     commitInfo,
     showCommitInfo,
     isAppDeleted,
-    isVirtualEnvironment,
-    setIsVirtualEnvironment
+    isVirtualEnvironment
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
@@ -210,7 +210,7 @@ export const Details: React.FC<DetailsType> = ({
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
-            ...processDeploymentStatusDetailsData(),
+            ...(isVirtualEnvironment.current ? processVirtualEnvironmentDeploymentData():  processDeploymentStatusDetailsData()),
             deploymentStatus: DEFAULT_STATUS,
             deploymentStatusText: DEFAULT_STATUS,
         })
@@ -241,8 +241,8 @@ export const Details: React.FC<DetailsType> = ({
         })
     }
 
-    const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
-        const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+    const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => { 
+        const processedDeploymentStatusDetailsData = isVirtualEnvironment.current ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes): processDeploymentStatusDetailsData(deploymentStatusDetailRes)
         clearDeploymentStatusTimer()
         if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
             deploymentStatusTimer = setTimeout(() => {
@@ -283,7 +283,7 @@ export const Details: React.FC<DetailsType> = ({
                     ...appDetailsRef.current,
                     ...response.result,
                 }
-                setIsVirtualEnvironment(response.result?.isVirtualEnvironment)
+                isVirtualEnvironment.current = response.result?.isVirtualEnvironment
                 IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
                 setAppDetails(appDetailsRef.current)
                 _getDeploymentStatusDetail(appDetailsRef.current.deploymentAppType)
@@ -433,7 +433,7 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(false)
     }
 
-    if (!loadingResourceTree && (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0) && !isVirtualEnvironment) {
+    if (!loadingResourceTree && (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0) && !isVirtualEnvironment.current) {
         return (
             <>
                 {environments?.length > 0 && (
@@ -500,7 +500,7 @@ export const Details: React.FC<DetailsType> = ({
                     showUrlInfo={isAppDeployment ? setUrlInfo : null}
                     showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                    isVirtualEnvironment={isVirtualEnvironment}
+                    isVirtualEnvironment={isVirtualEnvironment.current}
                 />
             </div>
             <SyncErrorComponent
@@ -517,7 +517,7 @@ export const Details: React.FC<DetailsType> = ({
                             toggleScanDetailsModal(true)
                         }}
                     />
-                    {environment && !isVirtualEnvironment && (
+                    {environment && !isVirtualEnvironment.current && (
                         <AppMetrics
                             appName={appDetails.appName}
                             addExtraSpace={!isExternalToolAvailable}
@@ -556,6 +556,7 @@ export const Details: React.FC<DetailsType> = ({
                     environmentName={appDetails?.environmentName}
                     streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                    isVirtualEnvironment={isVirtualEnvironment.current}
                 />
             )}
             {showScanDetailsModal && (

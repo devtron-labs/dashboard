@@ -385,7 +385,53 @@ export function addQueryParamToGrafanaURL(url: string, appId: string | number, e
     return url;
 }
 
+export const processVirtualEnvironmentDeploymentData = (data?: DeploymentStatusDetailsType): DeploymentStatusDetailsBreakdownDataType => {
+    const deploymentData = {
+        deploymentStatus: 'inprogress',
+        deploymentStatusText: 'In progress',
+        deploymentTriggerTime: data?.deploymentStartedOn || '',
+        deploymentEndTime: data?.deploymentFinishedOn || '',
+        deploymentError: '',
+        triggeredBy: data?.triggeredBy || '',
+        nonDeploymentError: '',
+        deploymentStatusBreakdown: {
+            DEPLOYMENT_INITIATED: {
+                icon: 'success',
+                displayText: `Deployment initiated ${data?.triggeredBy ? `by ${data?.triggeredBy}` : ''}`,
+                displaySubText: '',
+                time: '',
+            },
+            HELM_PACKAGE_GENERATED: {
+                icon: '',
+                displayText: 'Generate helm chart package',
+                displaySubText: '',
+                timelineStatus: '',
+                time: '',
+                isCollapsed: true,
+            }
+        }}
+
+
+        if(data?.timelines?.length){
+            for (let index = data.timelines.length - 1; index >= 0; index--) {
+                const element = data.timelines[index]
+                if (element['status'] === TIMELINE_STATUS.HELM_PACKAGE_GENERATED) {
+                    deploymentData.deploymentStatus = DEPLOYMENT_STATUS.SUCCEEDED
+                    deploymentData.deploymentStatusText = 'Succeeded'
+                    deploymentData.deploymentStatusBreakdown.HELM_PACKAGE_GENERATED.icon = 'success'
+                    deploymentData.deploymentStatusBreakdown.HELM_PACKAGE_GENERATED.time = element['statusTime']
+    
+                } else if (element['status'] === TIMELINE_STATUS.DEPLOYMENT_INITIATED && deploymentData.deploymentStatus === DEPLOYMENT_STATUS.SUCCEEDED) {
+                    deploymentData.deploymentStatusBreakdown.DEPLOYMENT_INITIATED.time = element['statusTime']
+                }
+            }
+        }
+
+    return deploymentData
+}
+
 export const processDeploymentStatusDetailsData = (data?: DeploymentStatusDetailsType): DeploymentStatusDetailsBreakdownDataType => {
+
   const deploymentData = {
       deploymentStatus: 'inprogress',
       deploymentStatusText: 'In progress',

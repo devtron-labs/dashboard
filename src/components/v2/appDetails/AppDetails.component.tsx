@@ -160,7 +160,8 @@ const AppDetailsComponent = ({
                     appName={appDetails.appName}
                     environmentName={appDetails.environmentName}
                     streamData={streamData}
-                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData} 
+                    isVirtualEnvironment={false}                    
                 />
             )}
         </div>
