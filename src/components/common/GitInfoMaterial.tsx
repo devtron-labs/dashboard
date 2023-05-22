@@ -279,7 +279,7 @@ export default function GitInfoMaterial({
     function renderMaterialHistory(selectedMaterial: CIMaterialType) {
         let anyCommit = selectedMaterial.history?.length > 0
         const isWebhook = selectedMaterial.type === SourceTypeMap.WEBHOOK
-        const excludeIncludeEnv = window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS
+        const excludeIncludeEnv = !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS
         return (
             <div className="select-material select-material--trigger-view">
                 {!isWebhook && !hideSearchHeader && (
@@ -289,9 +289,9 @@ export default function GitInfoMaterial({
                     >
                         {renderBranchChangeHeader(selectedMaterial)}
                         {!selectedMaterial.isRepoError && !selectedMaterial.isBranchError && (
-                            <div className={`flex right ${!excludeIncludeEnv && "mr-20"}`}>
+                            <div className={`flex right ${excludeIncludeEnv && "mr-20"}`}>
                                 {renderSearch()}
-                                {!excludeIncludeEnv && renderExcludedCommitsOption()}
+                                {excludeIncludeEnv && renderExcludedCommitsOption()}
                             </div>
                         )}
                     </div>
