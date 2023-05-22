@@ -8,6 +8,7 @@ import {
     stopPropagation,
     CHECKBOX_VALUE,
     Drawer,
+    ToastBody,
     sortCallback,
     Checkbox,
     RadioGroupItem,
@@ -1601,7 +1602,12 @@ function ClusterForm({
         try {
             setLoading(true)
             const { result } = await api(payload)
-            toast.success(`Successfully ${id ? 'updated' : 'saved'}.`)
+          toast.success(
+                <ToastBody
+                  data-testid="validate-toast-for-kubeconfig"
+                  title={`Successfully ${id ? 'updated' : 'saved'}`}
+                />,
+              );
             reload()
             toggleEditMode((e) => !e)
         } catch (err) {
@@ -2224,7 +2230,7 @@ function ClusterForm({
                         <div className="api-token__list en-2 bw-1 bcn-0 br-8 mr-20 ml-20 mt-16">
                             <InfoColourBar
                                 message={`${validCluster()} valid cluster. Select the cluster you want to Add/Update`}
-                                classname="info_bar cn-9 lh-20"
+                                classname="info_bar cn-9 lh-20 dc__no-border-imp"
                                 Icon={Info}
                                 iconClass="icon-dim-18"
                             />

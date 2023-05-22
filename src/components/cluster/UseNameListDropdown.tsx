@@ -25,6 +25,7 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                 options={userNameOptions}
                 value={selectedUserNameOptions[clusterDetail.cluster_name]}
                 isSearchable={false}
+                menuPosition="absolute"
                 onChange={handleUserChange}
                 components={{
                     IndicatorSeparator: null,
