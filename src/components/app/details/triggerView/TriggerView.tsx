@@ -52,6 +52,7 @@ import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
+const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null , 'function')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -84,6 +85,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             filteredCIPipelines: [],
             isChangeBranchClicked: false,
             loader: false,
+            downloadManifestLoader: true
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -102,6 +104,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     componentDidMount() {
         this.getHostURLConfig()
         this.getWorkflows()
+    }
+
+    setManifestLoader=() => {
+         this.setState({downloadManifestLoader : false})
     }
 
     getWorkflows = () => {
@@ -185,8 +191,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                     ]
                     _selectedMaterial.isMaterialLoading = false
                     _selectedMaterial.showAllCommits = false
-                    _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded 
-                    _selectedMaterial.materialSelectionErrorMsg =_selectedMaterial.history[0].excluded ? NO_COMMIT_SELECTED : ''
+                    _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded
+                    _selectedMaterial.materialSelectionErrorMsg = _selectedMaterial.history[0].excluded
+                        ? NO_COMMIT_SELECTED
+                        : ''
                 } else {
                     _selectedMaterial.history = []
                     _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
@@ -239,9 +247,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: !commitInLocalHistory.excluded }]
                 _selectedMaterial.isMaterialLoading = false
                 _selectedMaterial.showAllCommits = false
-                if(commitInLocalHistory.excluded){
+                if (commitInLocalHistory.excluded) {
                     _selectedMaterial.isMaterialSelectionError = true
-                    _selectedMaterial.materialSelectionErrorMsg =  NO_COMMIT_SELECTED
+                    _selectedMaterial.materialSelectionErrorMsg = NO_COMMIT_SELECTED
                 }
                 this.setState({
                     workflows: workflows,
@@ -637,6 +645,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
+    onClickManifestDownload = (appId: number, envId: number) => {
+      if (getDeployManifestDownload) {
+          getDeployManifestDownload(appId, envId, this.setManifestLoader)
+      }
+    }
+
     onClickTriggerCDNode = (
         nodeType: DeploymentNodeType,
         _appId: number,
@@ -645,7 +659,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     ): void => {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
         this.setState({ isLoading: true })
-        let node
+        let node: NodeAttr
         for (let i = 0; i < this.state.workflows.length; i++) {
             let workflow = this.state.workflows[i]
             node = workflow.nodes.find((nd) => +nd.id == this.state.cdNodeId && nd.type == nodeType)
@@ -658,6 +672,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
+                        this.onClickManifestDownload(_appId, node.environmentId)
                         const msg =
                             this.state.materialType == MATERIAL_TYPE.rollbackMaterialList
                                 ? 'Rollback Initiated'
@@ -1120,7 +1135,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         if (this.state.showCDModal) {
             const node: NodeAttr = this.getCDNode()
             const material = node[this.state.materialType] || []
-
             return (
                 <VisibleModal className="" parentClassName="dc__overflow-hidden" close={this.closeCDModal}>
                     <div
@@ -1129,7 +1143,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         }`}
                         onClick={stopPropagation}
                     >
-                        {this.state.isLoading ? (
+                        {this.state.isLoading && this.state.downloadManifestLoader ? (
                             <>
                                 <div className="trigger-modal__header flex right">
                                     <button type="button" className="dc__transparent" onClick={this.closeCDModal}>
@@ -1161,6 +1175,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 parentEnvironmentName={node.parentEnvironmentName}
                                 userApprovalConfig={node.userApprovalConfig}
                                 requestedUserId={node.requestedUserId}
+                                isVirtualEnvironment={node.isVirtualEnvironment}
                             />
                         )}
                     </div>

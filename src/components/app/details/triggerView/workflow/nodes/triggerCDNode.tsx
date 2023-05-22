@@ -80,14 +80,13 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                 {this.props.triggerType}
                             </div>
                             <div className="workflow-node__title flex">
-                                {/* <img src={pipelineDeploy} className="icon-dim-24 mr-16" /> */}
                                 <div className="workflow-node__full-width-minus-Icon">
                                     <span className="workflow-node__text-light">
                                         Deploy: {this.props.deploymentStrategy}
                                     </span>
                                     {envDescriptionTippy(this.props.environmentName, this.props.description)}
                                 </div>
-                                <div className="workflow-node__icon-common ml-8 workflow-node__CD-icon" />
+                                <div className={`workflow-node__icon-common ml-8 ${this.props.isVirtualEnvironment ? "workflow-node__CD-rocket-icon" : "workflow-node__CD-icon"}`} />
                             </div>
                             {this.renderStatus(this.props.title)}
                             <div className="workflow-node__btn-grp">

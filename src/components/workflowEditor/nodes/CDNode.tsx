@@ -100,7 +100,10 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         return (
             <>
                 <Link to={this.props.to} onClick={this.onClickNodeCard} className="dc__no-decor">
-                    <div data-testid={`workflow-editor-cd-node-${this.props.environmentName}`} className={`workflow-node cursor ${this.props.deploymentAppDeleteRequest ? 'pl-0' : 'pl-16'}`}>
+                    <div
+                        data-testid={`workflow-editor-cd-node-${this.props.environmentName}`}
+                        className={`workflow-node cursor ${this.props.deploymentAppDeleteRequest ? 'pl-0' : 'pl-16'}`}
+                    >
                         {this.props.deploymentAppDeleteRequest ? (
                             <div className="workflow-node__trigger-type-delete workflow-node__trigger-type--create-delete bcr-5 m-0 dc__position-abs fs-10 dc__uppercase dc__top-radius-8 dc__text-center"></div>
                         ) : (
@@ -122,7 +125,13 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                 </span>
                                 {envDescriptionTippy(this.props.environmentName, this.props.description)}
                             </div>
-                            <div className="workflow-node__icon-common workflow-node__CD-icon"></div>
+                            <div
+                                className={`workflow-node__icon-common ${
+                                    this.props.isVirtualEnvironment
+                                        ? "workflow-node__CD-rocket-icon"
+                                        : "workflow-node__CD-icon"
+                                }`}
+                            ></div>
                         </div>
                     </div>
                 </Link>

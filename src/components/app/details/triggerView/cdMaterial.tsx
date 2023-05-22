@@ -1019,7 +1019,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         ) : (
                             <>
                                 {this.getDeployButtonIcon()}
-                                {buttonLabel}
+                                {buttonLabel} {this.props.isVirtualEnvironment && 'to virtual env'}
                             </>
                         )}
                     </button>
