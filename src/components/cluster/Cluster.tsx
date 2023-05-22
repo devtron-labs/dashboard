@@ -7,6 +7,7 @@ import {
     stopPropagation,
     CHECKBOX_VALUE,
     Drawer,
+    ToastBody,
     sortCallback,
     Checkbox,
     RadioGroupItem,
@@ -1455,7 +1456,6 @@ function ClusterForm({
     }
 
     const getClusterPayload = () => {
-        // console.log(state.cluster_name.value)
         return {
             id,
             insecureSkipTlsVerify: !isTlsConnection,
@@ -1463,6 +1463,9 @@ function ClusterForm({
             config: {
                 bearer_token:
                     state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value : '',
+                tls_key: state.tlsClientKey.value,
+                cert_data: state.tlsClientCert.value,
+                cert_auth_data: state.certificateAuthorityData.value,
             },
             active,
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
@@ -1516,8 +1519,12 @@ function ClusterForm({
         try {
             setLoading(true)
             const { result } = await api(payload)
-            toast.success(`Successfully ${id ? 'updated' : 'saved'}.`)
-            reload()
+          toast.success(
+                <ToastBody
+                  data-testid="validate-toast-for-kubeconfig"
+                  title={`Successfully ${id ? 'updated' : 'saved'}`}
+                />,
+              );
             toggleEditMode((e) => !e)
         } catch (err) {
             showError(err)
@@ -2123,11 +2130,12 @@ function ClusterForm({
 
     const getAllClustersCheckBoxValue = () => {
         if (Object.values(isClusterSelected).every((_selected) => _selected)) {
-            return CHECKBOX_VALUE.CHECKED
+            return CHECKBOX_VALUE.CHECKED;
+        } else if (Object.values(isClusterSelected).some((_selected) => _selected)) {
+            return CHECKBOX_VALUE.INTERMEDIATE;
         }
-
-        return CHECKBOX_VALUE.INTERMEDIATE
     }
+    
 
     const onChangeUserName = (selectedOption: any, clusterDetail: DataListType) => {
         setSelectedUserNameOptions({
@@ -2151,7 +2159,7 @@ function ClusterForm({
                         <div className="api-token__list en-2 bw-1 bcn-0 br-8 mr-20 ml-20 mt-16">
                             <InfoColourBar
                                 message={`${validCluster()} valid cluster. Select the cluster you want to Add/Update`}
-                                classname="info_bar cn-9 lh-20"
+                                classname="info_bar cn-9 lh-20 dc__no-border-imp"
                                 Icon={Info}
                                 iconClass="icon-dim-18"
                             />
