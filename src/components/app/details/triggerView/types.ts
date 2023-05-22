@@ -84,7 +84,19 @@ export interface CDMaterialState {
     specificDeploymentConfig: any
     selectedMaterial: CDMaterialType
     isSelectImageTrigger: boolean
-    requestInProgress: boolean
+}
+
+export interface MaterialInfo {
+    revision: string
+    modifiedTime: string | Date
+    author: string
+    message: string
+    commitLink: string
+    tag: string
+    webhookData: string
+    branch: string
+    url?: string
+    type?: string
 }
 
 export interface CIMaterialRouterProps {
@@ -219,7 +231,7 @@ export interface WorkflowProps extends RouteComponentProps<{ appId: string }> {
 
 export interface TriggerViewContextType {
     invalidateCache: boolean
-    refreshMaterial: (ciNodeId: number, pipelineName: string, materialId: number) => void
+    refreshMaterial: (ciNodeId: number, materialId: number) => void
     onClickTriggerCINode: () => void
     onClickTriggerCDNode: (nodeType: DeploymentNodeType, _appId: number) => void
     onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => void
@@ -230,7 +242,13 @@ export interface TriggerViewContextType {
     selectMaterial: (materialId) => void
     toggleChanges: (materialId: string, hash: string) => void
     toggleInvalidateCache: () => void
-    getMaterialByCommit: (ciNodeId: number, pipelineName: string, materialId: number, commitHash: string) => void
+    getMaterialByCommit: (
+        ciNodeId: number,
+        materialId: number,
+        gitMaterialId: number,
+        commitHash: string,
+    ) => void
+    getFilteredMaterial: (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => void
 }
 
 export interface TriggerViewRouterProps {
@@ -595,8 +613,10 @@ export interface EmptyStateCIMaterialProps {
     noSearchResults?: boolean
     noSearchResultsMsg?: string
     toggleWebHookModal?: () => void
-    clearSearch?: () => void
+    clearSearch?: (e) => void
     handleGoToWorkFlowEditor?: (e?: any) => void
+    showAllCommits?: boolean
+    toggleExclude: (e) => void
 }
 
 export interface MaterialSourceProps {
@@ -604,9 +624,9 @@ export interface MaterialSourceProps {
     selectMaterial: (materialId: string, ciPipelineId?: number) => void
     refreshMaterial?: {
         pipelineId: number
-        title: string
-        refresh: (pipelineId: number, title: string, gitMaterialId: number) => void
+        refresh: (pipelineId: number, gitMaterialId: number) => void
     }
     ciPipelineId?: number
     fromTriggerInfo?: boolean
+    clearSearch?: (e: any) => void
 }

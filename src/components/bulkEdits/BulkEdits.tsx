@@ -552,7 +552,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div>
                 <div>
                     *CONFIGMAPS: <br /> <br />
-                    {this.state.impactedObjects.configMap.length === 0 ? (
+                    {!this.state.impactedObjects?.configMap?.length ? (
                         <>No Result Found </>
                     ) : (
                         <>

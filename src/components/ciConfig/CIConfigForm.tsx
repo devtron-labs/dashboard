@@ -54,7 +54,17 @@ export default function CIConfigForm({
             : ciConfig?.ciBuildConfig?.gitMaterialId
             ? sourceConfig.material.find((material) => material.id === ciConfig?.ciBuildConfig?.gitMaterialId)
             : sourceConfig.material[0]
+    const buildCtxGitMaterial =
+        allowOverride && selectedCIPipeline?.isDockerConfigOverridden
+            ? sourceConfig.material.find(
+                (material) => material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
+            )
+            : ciConfig?.ciBuildConfig?.buildContextGitMaterialId
+                ? sourceConfig.material.find((material) => material.id === ciConfig?.ciBuildConfig?.buildContextGitMaterialId)
+                : sourceConfig.material[0]
+    const currentBuildContextGitMaterial = buildCtxGitMaterial ? buildCtxGitMaterial : currentMaterial
     const [selectedMaterial, setSelectedMaterial] = useState(currentMaterial)
+    const [selectedBuildContextGitMaterial, setSelectedBuildContextGitMaterial] = useState(currentBuildContextGitMaterial)
     const currentRegistry =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? dockerRegistries.find((reg) => reg.id === selectedCIPipeline.dockerConfigOverride?.dockerRegistry)
@@ -88,7 +98,7 @@ export default function CIConfigForm({
     })
     const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden)
     const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>(
-        initCurrentCIBuildConfig(allowOverride, ciConfig, selectedCIPipeline, selectedMaterial, state.dockerfile.value),
+        initCurrentCIBuildConfig(allowOverride, ciConfig, selectedCIPipeline, selectedMaterial, selectedBuildContextGitMaterial, state.dockerfile.value, state.buildContext.value),
     )
 
     useEffect(() => {
@@ -170,6 +180,7 @@ export default function CIConfigForm({
                 }, {}),
                 dockerfileRepository: repository.value,
                 targetPlatform: targetPlatforms,
+                buildContext: buildContext.value,
             }
         }
 
@@ -284,6 +295,15 @@ export default function CIConfigForm({
                         },
                     })
                     break
+                case DockerConfigOverrideKeys.buildContext:
+                    updateDockerConfigOverride(DockerConfigOverrideKeys.buildContext, {
+                        ...currentCIBuildConfig,
+                        dockerBuildConfig: {
+                            ...currentCIBuildConfig.dockerBuildConfig,
+                            buildContext: e.target.value,
+                         },
+                    })
+                    break
                 default:
                     break
             }
@@ -297,7 +317,7 @@ export default function CIConfigForm({
         }
     }
 
-    const { repository, dockerfile, projectPath, registry, repository_name, key, value } = state
+    const { repository, dockerfile, projectPath, registry, repository_name, buildContext, key, value } = state
     return (
         <>
             <div className={`form__app-compose ${configOverrideView ? 'config-override-view' : ''}`}>
@@ -339,8 +359,11 @@ export default function CIConfigForm({
                     allowOverride={allowOverride}
                     selectedCIPipeline={selectedCIPipeline}
                     currentMaterial={currentMaterial}
+                    currentBuildContextGitMaterial={currentBuildContextGitMaterial}
                     selectedMaterial={selectedMaterial}
+                    selectedBuildContextGitMaterial={selectedBuildContextGitMaterial}
                     setSelectedMaterial={setSelectedMaterial}
+                    setSelectedBuildContextGitMaterial={setSelectedBuildContextGitMaterial}
                     formState={state}
                     updateDockerConfigOverride={updateDockerConfigOverride}
                     args={args}
@@ -395,6 +418,7 @@ export default function CIConfigForm({
                     processedWorkflows={processedWorkflows}
                     toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
                     reload={reload}
+                    gitMaterials = {sourceConfig.material}
                 />
             )}
         </>

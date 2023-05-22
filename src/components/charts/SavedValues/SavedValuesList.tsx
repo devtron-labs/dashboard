@@ -105,7 +105,7 @@ export default function SavedValuesList() {
     }
 
     const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = savedValueList.filter((cluster) => cluster.name.indexOf(_searchText) >= 0)
+        const _filteredData = savedValueList.filter((cluster) => cluster.name.indexOf(_searchText.toLowerCase()) >= 0)
         setFilteredSavedValueList(_filteredData)
     }
 
