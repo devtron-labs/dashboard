@@ -915,7 +915,7 @@ function Cluster({
                                 value={state.endpoint.value}
                                 error={state.endpoint.error}
                                 onChange={handleOnChange}
-                                label="Prometheus endpoint"
+                                label="Prometheus endpoint*"
                             />
                         </div>
                         <div className="form__row">
@@ -931,13 +931,13 @@ function Cluster({
                         </div>
                         {state.authType.value === AuthenticationType.BASIC ? (
                             <div className="form__row form__row--flex">
-                                <div className="w-50 mr-8 ">
+                                <div className="w-50 mr-8">
                                     <CustomInput
                                         name="userName"
                                         value={state.userName.value}
                                         error={state.userName.error}
                                         onChange={handleOnChange}
-                                        label="Username"
+                                        label="Username*"
                                     />
                                 </div>
                                 <div className="w-50 ml-8">
@@ -946,7 +946,7 @@ function Cluster({
                                         value={state.password.value}
                                         error={state.userName.error}
                                         onChange={handleOnChange}
-                                        label="Password"
+                                        label="Password*"
                                     />
                                 </div>
                             </div>
@@ -1633,6 +1633,7 @@ function ClusterForm({
         if (isClusterDetails) {
             toggleClusterDetails(!isClusterDetails)
         }
+        toggleCheckTlsConnection(false)
         toggleShowAddCluster()
         setLoadingState(false)
     }
@@ -2338,7 +2339,7 @@ function ClusterForm({
                             data-testid="cancel_button"
                             className="cta cancel"
                             type="button"
-                            onClick={toggleShowAddCluster}
+                            onClick={handleCloseButton}
                         >
                             Cancel
                         </button>
