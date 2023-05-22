@@ -528,6 +528,7 @@ export default function CICreateDockerfileOption({
                                             ...base,
                                             borderTopRightRadius: '0px',
                                             borderBottomRightRadius: '0px',
+                                            borderRight: '0px' ,
                                         })
                                     }}
                                     components={{

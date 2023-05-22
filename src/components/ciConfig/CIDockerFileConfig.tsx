@@ -541,7 +541,9 @@ export default function CIDockerFileConfig({
                                             }),
                                             control: (base) => ({
                                                 ...base,
-                                                borderRadius: '0px',
+                                                borderTopRightRadius: '0px',
+                                                borderBottomRightRadius: '0px',
+                                                borderRight: '0px' ,
                                             })
                                         }}
                                         components={{
