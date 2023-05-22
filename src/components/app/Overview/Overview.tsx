@@ -297,7 +297,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                     </div>
 
                     <div className="env-deployments-info-body">
-                        {otherEnvsResult[0].result.map(
+                        {sortedOtherEnvsResult.map(
                             (_env, index) =>
                                 !_env.deploymentAppDeleteRequest && (
                                     <div

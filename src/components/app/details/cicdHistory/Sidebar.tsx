@@ -76,7 +76,8 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
             return HISTORY_LABEL.ENVIRONMENT
         }
     }
-    console.log(filterOptions)
+    const sortedfilterOptions=filterOptions.sort((a,b)=>(a.label > b.label)?1:-1)
+    const _sortedfilterOptions=_filterOptions.sort((a,b)=>(a.label>b.label)?1:-1)
     return (
         <>
             <div className="select-pipeline-wrapper w-100 pl-16 pr-16 dc__overflow-hidden">
@@ -88,8 +89,8 @@ const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setP
                     value={selectedFilter}
                     options={
                         type === HistoryComponentType.CI || type === HistoryComponentType.GROUP_CI
-                            ? filterOptions.sort((a,b)=>(a.label > b.label)?1:-1)
-                            : _filterOptions.sort((a,b)=>(a.label>b.label)?1:-1)
+                            ? sortedfilterOptions
+                            : _sortedfilterOptions
                     }
                     onChange={handleFilterChange}
                     components={{
