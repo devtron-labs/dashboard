@@ -62,12 +62,15 @@ import {
     getPodNameSuffix,
     processDeploymentStatusDetailsData,
     ValueContainer,
-    processVirtualEnvironmentDeploymentData,
 } from './utils'
 import { AppMetrics } from './AppMetrics'
 import IndexStore from '../../../v2/appDetails/index.store'
 import { TriggerInfoModal } from '../../list/TriggerInfo'
-import { importComponentFromFELibrary, sortObjectArrayAlphabetically, sortOptionsByValue } from '../../../common/helpers/Helpers'
+import {
+    importComponentFromFELibrary,
+    sortObjectArrayAlphabetically,
+    sortOptionsByValue,
+} from '../../../common/helpers/Helpers'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
 import { getExternalLinks } from '../../../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
@@ -90,6 +93,11 @@ import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
+const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
+    'processVirtualEnvironmentDeploymentData',
+    null,
+    'function',
+)
 
 export default function AppDetail() {
     const params = useParams<{ appId: string; envId?: string }>()
@@ -128,9 +136,9 @@ export default function AppDetail() {
             otherEnvsResult &&
             !otherEnvsLoading && (
                 <>
-                    {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) && !isAppDeleted && !isVirtualEnvironment && (
-                        <AppNotConfigured />
-                    )}
+                    {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) &&
+                        !isAppDeleted &&
+                        !isVirtualEnvironment && <AppNotConfigured />}
                     {!params.envId && otherEnvsResult?.result?.length > 0 && !isVirtualEnvironment && (
                         <EnvironmentNotConfigured environments={otherEnvsResult?.result} />
                     )}
@@ -163,8 +171,7 @@ export default function AppDetail() {
                     isVirtualEnvironment={isVirtualEnvironment}
                 />
             </Route>
-            {otherEnvsResult && !otherEnvsLoading &&  !isVirtualEnvironment && renderAppNotConfigured()}
-
+            {otherEnvsResult && !otherEnvsLoading && !isVirtualEnvironment && renderAppNotConfigured()}
         </div>
     )
 }
@@ -180,7 +187,7 @@ export const Details: React.FC<DetailsType> = ({
     commitInfo,
     showCommitInfo,
     isAppDeleted,
-    isVirtualEnvironment
+    isVirtualEnvironment,
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
@@ -210,7 +217,9 @@ export const Details: React.FC<DetailsType> = ({
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
-            ...(isVirtualEnvironment.current ? processVirtualEnvironmentDeploymentData():  processDeploymentStatusDetailsData()),
+            ...(isVirtualEnvironment.current
+                ? processVirtualEnvironmentDeploymentData()
+                : processDeploymentStatusDetailsData()),
             deploymentStatus: DEFAULT_STATUS,
             deploymentStatusText: DEFAULT_STATUS,
         })
@@ -235,14 +244,16 @@ export const Details: React.FC<DetailsType> = ({
     }, [appDetails])
 
     const getDeploymentDetailStepsData = (): void => {
-       // Deployments status details for Devtron apps
+        // Deployments status details for Devtron apps
         getDeploymentStatusDetail(params.appId, params.envId).then((deploymentStatusDetailRes) => {
             processDeploymentStatusData(deploymentStatusDetailRes.result)
         })
     }
 
-    const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => { 
-        const processedDeploymentStatusDetailsData = isVirtualEnvironment.current ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes): processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+    const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
+        const processedDeploymentStatusDetailsData = isVirtualEnvironment.current
+            ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
+            : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
         clearDeploymentStatusTimer()
         if (processedDeploymentStatusDetailsData.deploymentStatus === 'inprogress') {
             deploymentStatusTimer = setTimeout(() => {
@@ -433,7 +444,11 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(false)
     }
 
-    if (!loadingResourceTree && (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0) && !isVirtualEnvironment.current) {
+    if (
+        !loadingResourceTree &&
+        (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0) &&
+        !isVirtualEnvironment.current
+    ) {
         return (
             <>
                 {environments?.length > 0 && (
@@ -467,25 +482,25 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     const environmentsMap = Array.isArray(environments)
-    ? environments.reduce((agg, curr) => {
-          agg[curr.environmentId] = curr.environmentName
-          return agg
-      }, {})
-    : {}
+        ? environments.reduce((agg, curr) => {
+              agg[curr.environmentId] = curr.environmentName
+              return agg
+          }, {})
+        : {}
     const environmentName = environmentsMap[+envId]
 
     const renderAppDetails = (): JSX.Element => {
-      if (isVirtualEnvironment && VirtualAppDetailsEmptyState) {
-         return  <VirtualAppDetailsEmptyState
-             environmentName={environmentName}
-          />
-      }
-      return <NodeTreeDetailTab
-          appDetails={appDetails}
-          externalLinks={externalLinksAndTools.externalLinks}
-          monitoringTools={externalLinksAndTools.monitoringTools}
-          isDevtronApp={true}
-      />
+        if (isVirtualEnvironment && VirtualAppDetailsEmptyState) {
+            return <VirtualAppDetailsEmptyState environmentName={environmentName} />
+        }
+        return (
+            <NodeTreeDetailTab
+                appDetails={appDetails}
+                externalLinks={externalLinksAndTools.externalLinks}
+                monitoringTools={externalLinksAndTools.monitoringTools}
+                isDevtronApp={true}
+            />
+        )
     }
 
     return (
@@ -635,7 +650,6 @@ export const Details: React.FC<DetailsType> = ({
         </React.Fragment>
     )
 }
-
 
 export function EnvSelector({
     environments,

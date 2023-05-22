@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './appDetails.scss'
 import { useLocation, useParams } from 'react-router'
 import { AppStreamData, AppType, DeploymentAppType } from './appDetails.type'
@@ -24,6 +24,7 @@ import { useSharedState } from '../utils/useSharedState'
 
 let deploymentStatusTimer = null
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
+const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary('processVirtualEnvironmentDeploymentData', null, 'function')
 
 const AppDetailsComponent = ({
     externalLinks,
@@ -43,12 +44,13 @@ const AppDetailsComponent = ({
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const [streamData, setStreamData] = useState<AppStreamData>(null)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
+    const isVirtualEnv = useRef(appDetails?.isVirtualEnvironment)
     const Host = process.env.REACT_APP_ORCHESTRATOR_ROOT
     const location = useLocation()
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
-            ...processDeploymentStatusDetailsData(),
+            ...(isVirtualEnv.current ? processVirtualEnvironmentDeploymentData():  processDeploymentStatusDetailsData()),
             deploymentStatus: DEFAULT_STATUS,
             deploymentStatusText: DEFAULT_STATUS,
         })
@@ -61,9 +63,10 @@ const AppDetailsComponent = ({
 
     useEffect(() => {
         // Get deployment status timeline on argocd apps
-        if (appDetails?.deploymentAppType === DeploymentAppType.argo_cd) {
+        if (appDetails?.deploymentAppType === DeploymentAppType.argo_cd || appDetails?.deploymentAppType === DeploymentAppType.manifest_download) {
             getDeploymentDetailStepsData()
         }
+        isVirtualEnv.current = appDetails?.isVirtualEnvironment
         return () => {
             clearDeploymentStatusTimer()
         }
@@ -82,7 +85,7 @@ const AppDetailsComponent = ({
     }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
-        const processedDeploymentStatusDetailsData = processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+        const processedDeploymentStatusDetailsData = isVirtualEnv.current ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes): processDeploymentStatusDetailsData(deploymentStatusDetailRes)
         clearDeploymentStatusTimer()
         // If deployment status is in progress then fetch data in every 10 seconds
         if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
@@ -108,7 +111,7 @@ const AppDetailsComponent = ({
     )
 
     const renderHelmAppDetails = (): JSX.Element => {
-        if (appDetails?.isVirtualEnvironment && VirtualAppDetailsEmptyState) {
+        if (isVirtualEnv.current && VirtualAppDetailsEmptyState) {
             return <VirtualAppDetailsEmptyState environmentName={''} />
         }
         return (
@@ -119,6 +122,7 @@ const AppDetailsComponent = ({
             />
         )
     }
+    
     return (
         <div className="helm-details" data-testid="app-details-wrapper">
             <div>
@@ -126,7 +130,7 @@ const AppDetailsComponent = ({
                     isExternalApp={isExternalApp}
                     _init={_init}
                     loadingResourceTree={loadingResourceTree}
-                    isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                    isVirtualEnvironment={isVirtualEnv.current}
                 />
                 {!appDetails.deploymentAppDeleteRequest && (
                     <EnvironmentStatusComponent
@@ -134,7 +138,7 @@ const AppDetailsComponent = ({
                         loadingDetails={loadingDetails}
                         loadingResourceTree={loadingResourceTree}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                        isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                        isVirtualEnvironment={isVirtualEnv.current}
                     />
                 )}
             </div>
@@ -161,7 +165,7 @@ const AppDetailsComponent = ({
                     environmentName={appDetails.environmentName}
                     streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData} 
-                    isVirtualEnvironment={false}                    
+                    isVirtualEnvironment={isVirtualEnv.current}                    
                 />
             )}
         </div>

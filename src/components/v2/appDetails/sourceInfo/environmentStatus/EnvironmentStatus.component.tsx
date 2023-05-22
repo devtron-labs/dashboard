@@ -23,7 +23,7 @@ function EnvironmentStatusComponent({
     loadingDetails,
     loadingResourceTree,
     deploymentStatusDetailsBreakdownData,
-    isVirtualEnvironment
+    isVirtualEnvironment,
 }: EnvironmentStatusComponentType) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
@@ -35,7 +35,9 @@ function EnvironmentStatusComponent({
     const history = useHistory()
     const params = useParams<{ appId: string; envId: string }>()
     const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
-    const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
+    const isGitops =
+        appDetails?.deploymentAppType === DeploymentAppType.argo_cd ||
+        appDetails?.deploymentAppType === DeploymentAppType.manifest_download
 
     const onClickUpgrade = () => {
         let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
@@ -149,16 +151,16 @@ function EnvironmentStatusComponent({
         )
     }
 
-
     const renderLastUpdatedBlock = () => {
         return (
             appDetails?.lastDeployedTime && (
-              <DeploymentStatusCard
-              deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-              hideDeploymentStatusLeftInfo={!isGitops}
-              deploymentTriggerTime = {appDetails?.lastDeployedTime}
-              triggeredBy ={appDetails?.lastDeployedBy}
-          />
+                <DeploymentStatusCard
+                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                    hideDeploymentStatusLeftInfo={!isGitops}
+                    deploymentTriggerTime={appDetails?.lastDeployedTime}
+                    triggeredBy={appDetails?.lastDeployedBy}
+                    isVirtualEnvironment={isVirtualEnvironment}
+                />
             )
         )
     }

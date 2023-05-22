@@ -5,12 +5,12 @@ import {
     ErrorScreenManager,
     ConfirmationDialog,
     ServerErrors,
-    GenericEmptyState
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
 import { InstalledAppInfo } from '../../external-apps/ExternalAppService'
-import { DEPLOYMENT_STATUS, Moment12HourFormat, URLS } from '../../../config'
+import { DeploymentAppTypes, DEPLOYMENT_STATUS, Moment12HourFormat, URLS } from '../../../config'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -33,7 +33,9 @@ import {
 import IndexStore from '../appDetails/index.store'
 import { DEPLOYMENT_HISTORY_TAB, ERROR_EMPTY_SCREEN, EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
 import DeploymentDetailSteps from '../../app/details/cdDetails/DeploymentDetailSteps'
-import { DeploymentAppType } from '../values/chartValuesDiff/ChartValuesView.type'
+import { importComponentFromFELibrary } from '../../common'
+import { useParams } from 'react-router-dom'
+const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
 interface DeploymentManifestDetail extends ChartDeploymentManifestDetail {
     loading?: boolean
@@ -46,11 +48,14 @@ function ChartDeploymentHistory({
     appId,
     appName,
     isExternal,
+    isVirtualEnvironment,
 }: {
     appId: string
     appName?: string
     isExternal: boolean
+    isVirtualEnvironment?: boolean
 }) {
+    const params = useParams<{ envId: string }>()
     const [isLoading, setIsLoading] = useState(true)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const [deploymentHistoryArr, setDeploymentHistoryArr] = useState<ChartDeploymentDetail[]>([])
@@ -66,31 +71,33 @@ function ChartDeploymentHistory({
     const [selectedDeploymentTabName, setSelectedDeploymentTabName] = useState<string>()
     let initTimer = null
     // Checking if deployment app type is argocd only then show steps tab
-    const deploymentTabs =
-        installedAppInfo?.deploymentType === DeploymentAppType.GitOps
-            ? [
-                  DEPLOYMENT_HISTORY_TAB.STEPS,
-                  DEPLOYMENT_HISTORY_TAB.SOURCE,
-                  DEPLOYMENT_HISTORY_TAB.VALUES_YAML,
-                  DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST,
-              ]
-            : [
-                  DEPLOYMENT_HISTORY_TAB.SOURCE,
-                  DEPLOYMENT_HISTORY_TAB.VALUES_YAML,
-                  DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST,
-              ]
+
+    const deploymentTabs = () => {
+        let tabs = [
+            DEPLOYMENT_HISTORY_TAB.SOURCE,
+            DEPLOYMENT_HISTORY_TAB.VALUES_YAML,
+            DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST,
+        ]
+        if (installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) {
+            tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
+        } else if (installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD) {
+            tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
+            tabs.push(DEPLOYMENT_HISTORY_TAB.ARTIFACTS)
+        }
+        return tabs
+    }
+
     // component load
+
     useEffect(() => {
-      getDeploymentHistoryData()
+        getDeploymentHistoryData()
 
         return (): void => {
-          if (initTimer) {
-              clearTimeout(initTimer)
-          }
-      }
-
+            if (initTimer) {
+                clearTimeout(initTimer)
+            }
+        }
     }, [])
-
 
     const getDeploymentHistoryData = () => {
         getDeploymentHistory(appId, isExternal)
@@ -104,7 +111,9 @@ function ChartDeploymentHistory({
                 setSelectedDeploymentTabName((prevValue) => {
                     if (!prevValue) {
                         return deploymentHistoryResponse.result?.installedAppInfo?.deploymentType ===
-                            DeploymentAppType.GitOps
+                            DeploymentAppTypes.GITOPS ||
+                            deploymentHistoryResponse.result?.installedAppInfo?.deploymentType ===
+                                DeploymentAppTypes.MANIFEST_DOWNLOAD
                             ? DEPLOYMENT_HISTORY_TAB.STEPS
                             : DEPLOYMENT_HISTORY_TAB.SOURCE
                     }
@@ -155,15 +164,18 @@ function ChartDeploymentHistory({
             })
     }
 
-
-
     const getDeploymentData = (_selectedDeploymentTabName: string, _selectedDeploymentHistoryIndex: number) => {
-        if (_selectedDeploymentTabName !== DEPLOYMENT_HISTORY_TAB.STEPS || _selectedDeploymentTabName !== DEPLOYMENT_HISTORY_TAB.SOURCE) { // Checking if the tab in not source, then fetching api for all except source tab
+        if (
+            _selectedDeploymentTabName !== DEPLOYMENT_HISTORY_TAB.STEPS ||
+            _selectedDeploymentTabName !== DEPLOYMENT_HISTORY_TAB.SOURCE
+        ) {
+            // Checking if the tab in not source, then fetching api for all except source tab
             checkAndFetchDeploymentDetail(deploymentHistoryArr[_selectedDeploymentHistoryIndex].version)
         }
     }
 
-    function onClickDeploymentTabs( tabName: string) {  // This will call whenever we change the tabs internally eg, source,value etc
+    function onClickDeploymentTabs(tabName: string) {
+        // This will call whenever we change the tabs internally eg, source,value etc
         if (selectedDeploymentTabName == tabName) {
             return
         }
@@ -171,7 +183,8 @@ function ChartDeploymentHistory({
         setSelectedDeploymentTabName(tabName)
     }
 
-    function onClickDeploymentHistorySidebar(index: number) {   // This will call whenever we change the deployment from sidebar
+    function onClickDeploymentHistorySidebar(index: number) {
+        // This will call whenever we change the deployment from sidebar
         if (selectedDeploymentHistoryIndex == index) {
             return
         }
@@ -267,9 +280,12 @@ function ChartDeploymentHistory({
                                 >
                                     <div
                                         className={`dc__app-summary__icon icon-dim-22 ${
-                                            deployment?.status && installedAppInfo?.deploymentType === DeploymentAppType.GitOps ? deployment?.status.toLowerCase() : ''
+                                            deployment?.status &&
+                                            installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS
+                                                ? deployment?.status.toLowerCase()
+                                                : ''
                                         } ${
-                                            installedAppInfo?.deploymentType === DeploymentAppType.Helm
+                                            installedAppInfo?.deploymentType === DeploymentAppTypes.HELM
                                                 ? 'succeeded'
                                                 : ''
                                         }`}
@@ -321,14 +337,17 @@ function ChartDeploymentHistory({
     function renderSelectedDeploymentTabs() {
         return (
             <ul className="tab-list deployment-tab-list dc__border-bottom mr-20">
-                { deploymentTabs.map((tab, index) => {
+                {deploymentTabs().map((tab, index) => {
                     return (
-                        <li onClick={() => onClickDeploymentTabs(tab)} key={`deployment-tab-${index}`} className="tab-list__tab">
+                        <li
+                            onClick={() => onClickDeploymentTabs(tab)}
+                            key={`deployment-tab-${index}`}
+                            className="tab-list__tab"
+                        >
                             <div
                                 className={`tab-list__tab-link ${selectedDeploymentTabName == tab ? 'active' : ''}`}
                                 data-testid={`nav-bar-option-${index}`}
                             >
-
                                 {tab}
                             </div>
                         </li>
@@ -370,13 +389,15 @@ function ChartDeploymentHistory({
         } else if (
             !selectedDeploymentManifestDetail.loading &&
             ((selectedDeploymentManifestDetail.error && selectedDeploymentManifestDetail.errorCode === 404) ||
-                (selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML && !selectedDeploymentManifestDetail.valuesYaml) ||
-                (selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST && !selectedDeploymentManifestDetail.manifest))
+                (selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML &&
+                    !selectedDeploymentManifestDetail.valuesYaml) ||
+                (selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST &&
+                    !selectedDeploymentManifestDetail.manifest))
         ) {
             return (
                 <div className="flex h-100">
                     <GenericEmptyState
-                        title= {EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
+                        title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
                         subTitle={`${deploymentTabs[selectedDeploymentTabName]} ${ERROR_EMPTY_SCREEN.TAB_NOT_AVAILABLE_POSTFIX}`}
                     />
                 </div>
@@ -420,9 +441,22 @@ function ChartDeploymentHistory({
         const chartMetadata = deployment.chartMetadata
 
         return (
-            <div className={`trigger-outputs-container ${selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE ? 'pt-20' : ''}`}>
-              {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.STEPS &&
-               <DeploymentDetailSteps isHelmApps={true} isGitops={installedAppInfo?.deploymentType === DeploymentAppType.GitOps}  installedAppVersionHistoryId={deployment.version} />}
+            <div
+                className={`trigger-outputs-container ${
+                    selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE ? 'pt-20' : ''
+                }`}
+            >
+                {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.STEPS && (
+                    <DeploymentDetailSteps
+                        isHelmApps={true}
+                        isGitops={
+                            installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS ||
+                            installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
+                        }
+                        installedAppVersionHistoryId={deployment.version}
+                        isVirtualEnvironment={isVirtualEnvironment}
+                    />
+                )}
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.SOURCE && (
                     <div
                         className="ml-20 w-100 p-16 bcn-0 br-4 en-2 bw-1 pb-12 mb-12"
@@ -493,7 +527,17 @@ function ChartDeploymentHistory({
                         </div>
                     </div>
                 )}
-                {(selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST || selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML ) && renderCodeEditor()}
+                {(selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST ||
+                    selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML) &&
+                    renderCodeEditor()}
+                {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.ARTIFACTS && (
+                    <VirtualHistoryArtifact
+                        titleName={'titleNmae'}
+                        appId={appId}
+                        envId={params.envId}
+                        cd_workflow_id={installedAppInfo.installedAppVersionId}
+                    />
+                )}
             </div>
         )
     }

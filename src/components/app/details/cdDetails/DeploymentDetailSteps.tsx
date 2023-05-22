@@ -4,7 +4,7 @@ import { GenericEmptyState, Progressing } from '@devtron-labs/devtron-fe-common-
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { getDeploymentStatusDetail } from '../appDetails/appDetails.service'
 import DeploymentStatusDetailBreakdown from '../appDetails/DeploymentStatusBreakdown'
-import { processDeploymentStatusDetailsData, processVirtualEnvironmentDeploymentData } from '../appDetails/utils'
+import { processDeploymentStatusDetailsData } from '../appDetails/utils'
 import { DeploymentDetailStepsType } from './cd.type'
 import CDEmptyState from './CDEmptyState'
 import mechanicalOperation from '../../../../assets/img/ic-mechanical-operation.svg'
@@ -15,6 +15,7 @@ import { DeploymentStatusDetailsBreakdownDataType, DeploymentStatusDetailsType }
 import { importComponentFromFELibrary } from '../../../common'
 
 const DeploymentApprovalInfo = importComponentFromFELibrary('DeploymentApprovalInfo')
+const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary('processVirtualEnvironmentDeploymentData', null, 'function')
 
 let deploymentStatusTimer = null
 export default function DeploymentDetailSteps({
