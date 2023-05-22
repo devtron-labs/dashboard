@@ -2203,9 +2203,12 @@ function ClusterForm({
 
     const getAllClustersCheckBoxValue = () => {
         if (Object.values(isClusterSelected).every((_selected) => _selected)) {
-            return CHECKBOX_VALUE.CHECKED
+            return CHECKBOX_VALUE.CHECKED;
+        } else if (Object.values(isClusterSelected).some((_selected) => _selected)) {
+            return CHECKBOX_VALUE.INTERMEDIATE;
         }
     }
+    
 
     const onChangeUserName = (selectedOption: any, clusterDetail: DataListType) => {
         setSelectedUserNameOptions({
