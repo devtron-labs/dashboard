@@ -108,7 +108,7 @@ const AppDetailsComponent = ({
     )
 
     const renderHelmAppDetails = (): JSX.Element => {
-        if (VirtualAppDetailsEmptyState) {
+        if (appDetails?.isVirtualEnvironment && VirtualAppDetailsEmptyState) {
             return <VirtualAppDetailsEmptyState environmentName={''} />
         }
         return (
