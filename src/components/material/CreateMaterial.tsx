@@ -180,10 +180,10 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
                         checkoutPath: this.state.material.checkoutPath,
                         gitProviderId: this.state.material.gitProvider.id,
                         fetchSubmodules: this.state.material.fetchSubmodules,
-                        filterPattern: this.state.material.includeExcludeFilePath
+                        filterPattern: !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS ? this.state.material.includeExcludeFilePath
                             .trim()
                             .split(/\r?\n/)
-                            .filter((path) => path.trim()),
+                            .filter((path) => path.trim()) : [],
                     },
                 ],
             }
