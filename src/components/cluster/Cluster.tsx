@@ -672,74 +672,6 @@ function Cluster({
         }
     }
 
-    const ClusterInfoComponent = () => {
-        const k8sClusters = Object.values(CLUSTER_COMMAND)
-        return (
-            <>
-                {k8sClusters.map((cluster, key) => (
-                    <>
-                        <TippyHeadless
-                            className=""
-                            theme="light"
-                            placement="bottom"
-                            trigger="click"
-                            interactive={true}
-                            render={() => (
-                                <ClusterInfoStepsModal
-                                    subTitle={cluster.title}
-                                    command={cluster.command}
-                                    clusterName={cluster.clusterName}
-                                />
-                            )}
-                            maxWidth="468px"
-                        >
-                            <span className="ml-4 mr-2 cb-5 cursor">{cluster.heading}</span>
-                        </TippyHeadless>
-                        {key !== k8sClusters.length - 1 && <span className="cn-2">|</span>}
-                    </>
-                ))}
-            </>
-        )
-    }
-
-    const setPrometheusToggle = () => {
-        setPrometheusToggleEnabled(!prometheusToggleEnabled)
-    }
-
-    const clusterLabel = () => {
-        return (
-            <div className="flex left ">
-                Server URL & Bearer token{isDefaultCluster() ? '' : '*'}
-                <span className="icon-dim-16 fcn-9 mr-4 ml-16">
-                    <Question className="icon-dim-16" />
-                </span>
-                <span>How to find for </span>
-                <ClusterInfoComponent />
-            </div>
-        )
-    }
-
-    const handleOnFocus = (e): void => {
-        if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
-            e.target.value = ''
-        }
-    }
-
-    const handleOnBlur = (e): void => {
-        if (id && id != 1 && !e.target.value) {
-            e.target.value = DEFAULT_SECRET_PLACEHOLDER
-        }
-    }
-
-    const OnPrometheusAuthTypeChange = (e) => {
-        handleOnChange(e)
-        if (state.authType.value == AuthenticationType.BASIC) {
-            setPrometheusAuthenticationType({ type: AuthenticationType.ANONYMOUS })
-        } else {
-            setPrometheusAuthenticationType({ type: AuthenticationType.BASIC })
-        }
-    }
-
     let payload = {
         id,
         cluster_name,
@@ -754,24 +686,6 @@ function Cluster({
         defaultClusterComponent: defaultClusterComponent,
         k8sversion: '',
         insecureSkipTlsVerify: !isTlsConnection,
-    }
-
-    const EditClusterHeader = () => {
-        return (
-            <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
-                <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
-                    Edit Cluster
-                </h2>
-                <button
-                    data-testid="header_close_icon"
-                    type="button"
-                    className="dc__transparent flex icon-dim-24 mr-24"
-                    onClick={(e) => toggleEditMode((t) => !t)}
-                >
-                    <Close onClick={toggleShowEditCluster} className="icon-dim-24" />
-                </button>
-            </div>
-        )
     }
 
     return (
@@ -1042,13 +956,11 @@ function ClusterForm({
     const [saveClusterList, setSaveClusterList] = useState<{ clusterName: string; status: string; message: string }[]>(
         [],
     )
-    const [selectedClusterName, setSelectedClusterNameOptions] = useState<{ clusterNname: string; state: boolean }>()
     const [loader, setLoadingState] = useState<boolean>(false)
     const [selectedUserNameOptions, setSelectedUserNameOptions] = useState<Record<string, any>>({})
     const [isClusterSelected, setClusterSeleceted] = useState<Record<string, boolean>>({})
     const [selectAll, setSelectAll] = useState<boolean>(false)
     const [getClusterVar, setGetClusterState] = useState<boolean>(false)
-    const [disableState, setDisableState] = useState<boolean>(false)
     // const [selectedClusterState, setSelectedClusterState] = useState<boolean>(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
@@ -2086,11 +1998,20 @@ function ClusterForm({
         )
     }
 
+    const clusterTitle = () => {
+        if (!id) {
+            return 'Add Cluster'
+        } else {
+            return 'Edit Cluster'
+        }
+    }
+
     const AddClusterHeader = () => {
         return (
             <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
                 <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
-                    Add Cluster
+                    {id && <Pencil color="#363636" className="icon-dim-24 dc__vertical-align-middle mr-8" />}
+                    <span className="fw-6 fs-14 cn-9">{clusterTitle()}</span>
                 </h2>
                 <button
                     data-testid="header_close_icon"
@@ -2118,7 +2039,8 @@ function ClusterForm({
                 style={{ padding: 'auto 0' }}
                 onSubmit={handleOnSubmit}
             >
-                <AddClusterHeader />
+                <AddClusterHeader/>
+
                 <div className="pl-20 pr-20" style={{ overflow: 'auto', height: 'calc(100vh - 169px)' }}>
                     {!id && (
                         <div className="form__row clone-apps dc__inline-block pd-0 pt-0 pb-12">
