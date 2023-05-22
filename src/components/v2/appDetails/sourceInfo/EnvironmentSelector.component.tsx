@@ -29,10 +29,12 @@ function EnvironmentSelectorComponent({
     isExternalApp,
     _init,
     loadingResourceTree,
+    isVirtualEnvironment
 }: {
     isExternalApp: boolean
     _init?: () => void
     loadingResourceTree: boolean
+    isVirtualEnvironment?: boolean
 }) {
     const params = useParams<{ appId: string; envId?: string }>()
     const { url } = useRouteMatch()
@@ -227,13 +229,13 @@ function EnvironmentSelectorComponent({
 
             {!loadingResourceTree && (
                 <div className="flex">
-                    {!appDetails.deploymentAppDeleteRequest && (
+                    {!appDetails.deploymentAppDeleteRequest  && !isVirtualEnvironment &&  (
                         <button className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2" onClick={showInfoUrl} data-testid="url-button-app-details">
                             <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
                             Urls
                         </button>
                     )}
-                    {!showWorkloadsModal && (
+                    {!showWorkloadsModal  && !isVirtualEnvironment && (
                         <button
                             className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
                             onClick={() => setWorkloadsModal(true)}

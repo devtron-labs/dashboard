@@ -183,6 +183,7 @@ export interface AppDetails {
     dockerRegistryId?: string
     deploymentAppDeleteRequest?: boolean
     userApprovalConfig?: string
+    isVirtualEnvironment?: boolean
 }
 
 interface MaterialInfo {
