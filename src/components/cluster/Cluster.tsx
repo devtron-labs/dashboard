@@ -148,6 +148,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         }
         this.initialise = this.initialise.bind(this)
         this.toggleCheckTlsConnection = this.toggleCheckTlsConnection.bind(this)
+        this.setTlsConnectionFalse = this.setTlsConnectionFalse.bind(this)
         this.toggleShowAddCluster = this.toggleShowAddCluster.bind(this)
         this.toggleKubeConfigFile = this.toggleKubeConfigFile.bind(this)
         this.toggleBrowseFile = this.toggleBrowseFile.bind(this)
@@ -252,6 +253,10 @@ export default class ClusterList extends Component<ClusterListProps, any> {
         this.setState({ isTlsConnection: !this.state.isTlsConnection })
     }
 
+    setTlsConnectionFalse(){
+        this.setState({ isTlsConnection: false })
+    }
+
     toggleClusterDetails(updateClusterDetails: boolean) {
         this.setState({ isClusterDetails: updateClusterDetails })
     }
@@ -325,6 +330,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             showEditCluster={this.state.showEditCluster}
                             toggleShowAddCluster={this.toggleShowEditCluster}
                             toggleCheckTlsConnection={this.toggleCheckTlsConnection}
+                            setTlsConnectionFalse = {this.setTlsConnectionFalse}
                             isTlsConnection={this.state.isTlsConnection}
                             toggleEditMode={() => {}}
                         />
@@ -346,6 +352,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 isTlsConnection={this.state.isTlsConnection}
                                 isClusterDetails={this.state.isClusterDetails}
                                 toggleCheckTlsConnection={this.toggleCheckTlsConnection}
+                                setTlsConnectionFalse = {this.setTlsConnectionFalse}
                                 toggleShowAddCluster={this.toggleShowAddCluster}
                                 toggleKubeConfigFile={this.toggleKubeConfigFile}
                                 isKubeConfigFile={this.state.isKubeConfigFile}
@@ -375,6 +382,7 @@ function Cluster({
     isTlsConnection,
     toggleShowEditCluster,
     toggleCheckTlsConnection,
+    setTlsConnectionFalse,
     isGrafanaModuleInstalled,
 }) {
     const [editMode, toggleEditMode] = useState(false)
@@ -1208,6 +1216,7 @@ function ClusterForm({
     isGrafanaModuleInstalled,
     isTlsConnection,
     toggleCheckTlsConnection,
+    setTlsConnectionFalse,
     toggleShowAddCluster,
     toggleKubeConfigFile,
     isKubeConfigFile,
@@ -1633,7 +1642,7 @@ function ClusterForm({
         if (isClusterDetails) {
             toggleClusterDetails(!isClusterDetails)
         }
-        toggleCheckTlsConnection(false)
+        setTlsConnectionFalse()
         toggleShowAddCluster()
         setLoadingState(false)
     }
