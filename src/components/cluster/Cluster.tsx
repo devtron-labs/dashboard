@@ -1541,7 +1541,6 @@ function ClusterForm({
     }
 
     const getClusterPayload = () => {
-        // console.log(state.cluster_name.value)
         return {
             id,
             insecureSkipTlsVerify: !isTlsConnection,
@@ -1549,6 +1548,9 @@ function ClusterForm({
             config: {
                 bearer_token:
                     state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value : '',
+                tls_key: state.tlsClientKey.value,
+                cert_data: state.tlsClientCert.value,
+                cert_auth_data: state.certificateAuthorityData.value,
             },
             active,
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
@@ -1608,7 +1610,6 @@ function ClusterForm({
                   title={`Successfully ${id ? 'updated' : 'saved'}`}
                 />,
               );
-            reload()
             toggleEditMode((e) => !e)
         } catch (err) {
             showError(err)
@@ -2204,8 +2205,6 @@ function ClusterForm({
         if (Object.values(isClusterSelected).every((_selected) => _selected)) {
             return CHECKBOX_VALUE.CHECKED
         }
-
-        return CHECKBOX_VALUE.INTERMEDIATE
     }
 
     const onChangeUserName = (selectedOption: any, clusterDetail: DataListType) => {
