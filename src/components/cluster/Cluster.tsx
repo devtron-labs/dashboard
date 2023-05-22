@@ -2049,8 +2049,8 @@ function ClusterForm({
                         {id && (
                             <button
                                 data-testid="delete_cluster"
-                                style={{ margin: 'auto', marginLeft: 0 }}
-                                className="flex cta override-button delete scr-5 h-32 ml-20"
+                                style={{ margin: 'auto', marginLeft: 20}}
+                                className="flex cta delete scr-5"
                                 type="button"
                                 onClick={() => toggleConfirmation(true)}
                             >
