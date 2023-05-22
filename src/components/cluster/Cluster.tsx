@@ -1605,29 +1605,7 @@ function ClusterForm({
                         </CodeEditor.Header>
                     </CodeEditor>
                 </div>
-                <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
-                    <button
-                        data-testid="cancel_kubeconfig_button"
-                        className="cta cancel"
-                        type="button"
-                        onClick={handleCloseButton}
-                    >
-                        Cancel
-                    </button>
 
-                    <button
-                        className="cta mr-32 ml-20 "
-                        type="button"
-                        onClick={handleGetClustersClick}
-                        disabled={!saveYamlData}
-                        data-testId="get_cluster_button"
-                    >
-                        <div className="flex">
-                            Get cluster
-                            <ForwardArrow className="ml-5" />
-                        </div>
-                    </button>
-                </div>
             </>
         )
     }
@@ -2093,6 +2071,31 @@ function ClusterForm({
                             onClick={() => saveClusterCall()}
                         >
                             {'Save cluster'}
+                        </button>
+                    </div>
+                )}
+                {isKubeConfigFile && (
+                        <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                        <button
+                            data-testid="cancel_kubeconfig_button"
+                            className="cta cancel"
+                            type="button"
+                            onClick={handleCloseButton}
+                        >
+                            Cancel
+                        </button>
+    
+                        <button
+                            className="cta mr-32 ml-20 "
+                            type="button"
+                            onClick={handleGetClustersClick}
+                            disabled={!saveYamlData}
+                            data-testId="get_cluster_button"
+                        >
+                            <div className="flex">
+                                Get cluster
+                                <ForwardArrow className="ml-5" />
+                            </div>
                         </button>
                     </div>
                 )}
