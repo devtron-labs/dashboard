@@ -1,5 +1,4 @@
 import React, { useState, useMemo, Component, useRef, useEffect } from 'react'
-// import { Pencil, useForm, CustomPassword, useAsync } from '../common'
 import {
     showError,
     Progressing,
@@ -93,24 +92,12 @@ import {
     DC_ENVIRONMENT_CONFIRMATION_MESSAGE,
     DeleteComponentsName,
 } from '../../config/constantMessaging'
-import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
-// import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import TippyHeadless from '@tippyjs/react/headless'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { UPLOAD_STATE } from '../CustomChart/types'
-// import { request } from 'http'
-// import { ConfigCluster, UserInfos, ClusterInfo, ClusterResult } from './cluster.type'
-// import { error } from 'console'
-// import cluster from 'cluster'
-// import { getClusterEvents } from '../ClusterNodes/clusterNodes.service'
-// import { json } from 'stream/consumers'
-// import { stat } from 'fs'
-// import { userInfo } from 'os'
-// import ReactSelect from 'react-select/creatable'
-// import { SELECT_TOKEN_STYLE } from '../ciPipeline/Webhook/webhook.utils'
 import UserNameDropDownList from './UseNameListDropdown'
 import Tippy from '@tippyjs/react/headless'
 
@@ -386,17 +373,8 @@ function Cluster({
     serverMode,
     isTlsConnection,
     toggleShowEditCluster,
-    showEditCluster,
     toggleCheckTlsConnection,
-    toggleShowAddCluster,
-    toggleKubeConfigFile,
-    isKubeConfigFile,
-    browseFile,
-    toggleBrowseFile,
-    toggleClusterDetails,
     isGrafanaModuleInstalled,
-    insecureSkipTlsVerify,
-    isClusterDetails,
 }) {
     const [editMode, toggleEditMode] = useState(false)
     const [environment, setEnvironment] = useState(null)
@@ -618,7 +596,6 @@ function Cluster({
             config: {
                 bearer_token:
                     state.token.value && state.token.value !== DEFAULT_SECRET_PLACEHOLDER ? state.token.value : '',
-                
             },
             active,
             prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
@@ -795,12 +772,8 @@ function Cluster({
                 style={{ padding: 'auto 0' }}
                 onSubmit={handleOnSubmit}
             >
-                {/* <div className="flex left mb-20">
-                    {id && <Pencil color="#363636" className="icon-dim-24 dc__vertical-align-middle mr-8" />}
-                    <span className="fw-6 fs-14 cn-9">{clusterTitle()}</span>
-                </div> */}
                 <EditClusterHeader />
-                <div className="pl-20 pr-20" style={{ overflow: 'auto', height: 'calc(100vh - 470px)' }}>
+                <div className="pl-20 pr-20" style={{ overflow: 'auto', height: 'calc(100vh - 120px)' }}>
                     <div className="form__row">
                         <CustomInput
                             autoComplete="off"
@@ -860,7 +833,6 @@ function Cluster({
                                     </div>
                                 </Checkbox>
                             </div>
-
                             {isTlsConnection && (
                                 <>
                                     <div className="form__row">
@@ -907,7 +879,6 @@ function Cluster({
                                     </div>
                                 </>
                             )}
-                            <hr />
                             <div
                                 className={`${
                                     prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'
@@ -937,12 +908,13 @@ function Cluster({
                         )}
                         <div className="form__row">
                             <CustomInput
+                                labelClassName="dc__required-field"
                                 autoComplete="off"
                                 name="endpoint"
                                 value={state.endpoint.value}
                                 error={state.endpoint.error}
                                 onChange={handleOnChange}
-                                label="Prometheus endpoint*"
+                                label="Prometheus endpoint"
                             />
                         </div>
                         <div className="form__row">
@@ -958,13 +930,13 @@ function Cluster({
                         </div>
                         {state.authType.value === AuthenticationType.BASIC ? (
                             <div className="form__row form__row--flex">
-                                <div className="w-50 mr-8">
+                                <div className="w-50 mr-8 ">
                                     <CustomInput
                                         name="userName"
                                         value={state.userName.value}
                                         error={state.userName.error}
                                         onChange={handleOnChange}
-                                        label="Username*"
+                                        label="Username"
                                     />
                                 </div>
                                 <div className="w-50 ml-8">
@@ -973,74 +945,12 @@ function Cluster({
                                         value={state.password.value}
                                         error={state.userName.error}
                                         onChange={handleOnChange}
-                                        label="Password*"
+                                        label="Password"
                                     />
                                 </div>
                             </div>
                         ) : null}
-                        {/* <div className="form__row">
-                            <span className="form__label">TLS Key</span>
-                            <ResizableTextarea
-                                className="dc__resizable-textarea__with-max-height w-100"
-                                name="tlsClientKey"
-                                value={state.tlsClientKey.value}
-                                onChange={handleOnChange}
-                            />
-                        </div>
-                        <div className="form__row">
-                            <span className="form__label">TLS Certificate</span>
-                            <ResizableTextarea
-                                className="dc__resizable-textarea__with-max-height w-100"
-                                name="tlsClientCert"
-                                value={state.tlsClientCert.value}
-                                onChange={handleOnChange}
-                            />
-                        </div> */}
                     </div>
-                )}
-
-                {isTlsConnection && (
-                    <>
-                        <div className="form__row">
-                            <span data-testid="certificate_authority_data" className="form__label dc__required-field">
-                                Certificate Authority Data
-                            </span>
-                            <ResizableTextarea
-                                dataTestId="certificate_authority_data_input"
-                                className="dc__resizable-textarea__with-max-height w-100"
-                                name="certificateAuthorityData"
-                                value={state.certificateAuthorityData.value}
-                                onChange={handleOnChange}
-                                placeholder={'Enter CA Data'}
-                            />
-                        </div>
-                        <div className="form__row">
-                            <span data-testid="tls_client_key" className="form__label dc__required-field">
-                                TLS Key
-                            </span>
-                            <ResizableTextarea
-                                dataTestId="tls_client_key_input"
-                                className="dc__resizable-textarea__with-max-height w-100"
-                                name="tlsClientKey"
-                                value={state.tlsClientKey.value}
-                                onChange={handleOnChange}
-                                placeholder={'Enter tls Key'}
-                            />
-                        </div>
-                        <div className="form__row">
-                            <span data-testid="tls_certificate" className="form__label dc__required-field">
-                                TLS Certificate
-                            </span>
-                            <ResizableTextarea
-                                dataTestId="tls_certificate_input"
-                                className="dc__resizable-textarea__with-max-height w-100"
-                                name="tlsClientCert"
-                                value={state.tlsClientCert.value}
-                                onChange={handleOnChange}
-                                placeholder={'Enter tls Certificate'}
-                            />
-                        </div>
-                    </>
                 )}
                 <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
                     <div className={`form__buttons`}>
@@ -1057,7 +967,7 @@ function Cluster({
                         <button className="cta cancel" type="button" onClick={(e) => toggleEditMode((t) => !t)}>
                             Cancel
                         </button>
-                        <button className="cta">{'Save cluster'}</button>
+                        <button  onClick={onValidation} className="cta">{'Save cluster'}</button>
                     </div>
                 </div>
                 {confirmation && (
@@ -1117,7 +1027,12 @@ function Cluster({
                                 )}
                             </div>
                             {clusterId && (
-                                <Tippy className="default-tt cursor" arrow={false} content="Edit Cluster">
+                                <Tippy
+                                    data-testid="edit_cluster_pencil"
+                                    className="default-tt cursor"
+                                    arrow={false}
+                                    content="Edit Cluster"
+                                >
                                     <PencilEdit onClick={handleEdit} />
                                 </Tippy>
                             )}
@@ -1901,6 +1816,7 @@ function ClusterForm({
                 <div className={`form__buttons`}>
                     {id && (
                         <button
+                            data-testid="delete_cluster"
                             style={{ margin: 'auto', marginLeft: 0 }}
                             className="flex cta override-button delete scr-5 h-32"
                             type="button"
@@ -2036,7 +1952,9 @@ function ClusterForm({
                     <img src={NoResults} width="250" height="200" alt="No matching results" />
                 </EmptyState.Image>
                 <EmptyState.Title>
-                    <h2 data-testid="no_matchin_result" className="fs-16 fw-4 c-9">No matching results</h2>
+                    <h2 data-testid="no_matching_result" className="fs-16 fw-4 c-9">
+                        No matching results
+                    </h2>
                 </EmptyState.Title>
                 <EmptyState.Subtitle>We couldn't find any matching cluster</EmptyState.Subtitle>
             </EmptyState>
@@ -2079,7 +1997,10 @@ function ClusterForm({
                                         style={{ height: '40px' }}
                                     >
                                         <div></div>
-                                        <div data-testid={`validate-cluster-${clusterListDetail.clusterName}`} className="flexbox">
+                                        <div
+                                            data-testid={`validate-cluster-${clusterListDetail.clusterName}`}
+                                            className="flexbox"
+                                        >
                                             <span className="dc__ellipsis-right">{clusterListDetail.clusterName}</span>
                                         </div>
                                         <div className="flexbox dc__align-items-center">
@@ -2089,7 +2010,13 @@ function ClusterForm({
                                                     clusterListDetail.status === 'Failed' ? 'failed' : 'succeeded'
                                                 }`}
                                             ></div>
-                                            <div data-testid={`validate-cluster-${clusterListDetail.status}`} className="dc__ellipsis-right"> {clusterListDetail.status} </div>
+                                            <div
+                                                data-testid={`validate-cluster-${clusterListDetail.status}`}
+                                                className="dc__ellipsis-right"
+                                            >
+                                                {' '}
+                                                {clusterListDetail.status}{' '}
+                                            </div>
                                         </div>
                                         <div className="dc__ellipsis-right"> {clusterListDetail.message}</div>
                                     </div>
