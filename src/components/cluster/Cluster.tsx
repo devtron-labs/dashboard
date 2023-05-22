@@ -337,6 +337,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             showEditCluster={this.state.showEditCluster}
                             toggleShowAddCluster={this.toggleShowEditCluster}
                             toggleCheckTlsConnection={this.toggleCheckTlsConnection}
+                            isTlsConnection={this.state.isTlsConnection}
                             toggleEditMode={() => {}}
                         />
                     ))}
@@ -768,12 +769,6 @@ function Cluster({
         insecureSkipTlsVerify: !isTlsConnection,
     }
 
-    const clusterTitle = () => {
-        if (id) {
-            return 'Edit Cluster'
-        }
-    }
-
     const EditClusterHeader = () => {
         return (
             <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
@@ -784,9 +779,9 @@ function Cluster({
                     data-testid="header_close_icon"
                     type="button"
                     className="dc__transparent flex icon-dim-24 mr-24"
-                    onClick={toggleShowEditCluster}
+                    onClick={(e) => toggleEditMode((t) => !t)}
                 >
-                    <Close className="icon-dim-24" />
+                    <Close onClick={toggleShowEditCluster} className="icon-dim-24" />
                 </button>
             </div>
         )
@@ -804,7 +799,7 @@ function Cluster({
                     <span className="fw-6 fs-14 cn-9">{clusterTitle()}</span>
                 </div> */}
                 <EditClusterHeader />
-                <div className="pl-20 pr-20" style={{ overflow: 'auto', height: 'calc(100vh - 169px)' }}>
+                <div className="pl-20 pr-20" style={{ overflow: 'auto', height: 'calc(100vh - 470px)' }}>
                     <div className="form__row">
                         <CustomInput
                             autoComplete="off"
@@ -850,6 +845,67 @@ function Cluster({
 
                     {isGrafanaModuleInstalled && (
                         <>
+                            <hr />
+                            <div className="dc__position-rel flex left cursor dc__hover mb-20">
+                                <Checkbox
+                                    isChecked={isTlsConnection}
+                                    rootClassName="form__checkbox-label--ignore-cache mb-0"
+                                    value={'CHECKED'}
+                                    onChange={toggleCheckTlsConnection}
+                                >
+                                    <div data-testid="use_secure_tls_connection_checkbox" className="mr-4 flex center">
+                                        {' '}
+                                        Use secure TLS connection {isTlsConnection}
+                                    </div>
+                                </Checkbox>
+                            </div>
+
+                            {isTlsConnection && (
+                                <>
+                                    <div className="form__row">
+                                        <span
+                                            data-testid="certificate_authority_data"
+                                            className="form__label dc__required-field"
+                                        >
+                                            Certificate Authority Data
+                                        </span>
+                                        <ResizableTextarea
+                                            dataTestId="certificate_authority_data_input"
+                                            className="dc__resizable-textarea__with-max-height w-100"
+                                            name="certificateAuthorityData"
+                                            value={state.certificateAuthorityData.value}
+                                            onChange={handleOnChange}
+                                            placeholder={'Enter CA Data'}
+                                        />
+                                    </div>
+                                    <div className="form__row">
+                                        <span data-testid="tls_client_key" className="form__label dc__required-field">
+                                            TLS Key
+                                        </span>
+                                        <ResizableTextarea
+                                            dataTestId="tls_client_key_input"
+                                            className="dc__resizable-textarea__with-max-height w-100"
+                                            name="tlsClientKey"
+                                            value={state.tlsClientKey.value}
+                                            onChange={handleOnChange}
+                                            placeholder={'Enter tls Key'}
+                                        />
+                                    </div>
+                                    <div className="form__row">
+                                        <span data-testid="tls_certificate" className="form__label dc__required-field">
+                                            TLS Certificate
+                                        </span>
+                                        <ResizableTextarea
+                                            dataTestId="tls_certificate_input"
+                                            className="dc__resizable-textarea__with-max-height w-100"
+                                            name="tlsClientCert"
+                                            value={state.tlsClientCert.value}
+                                            onChange={handleOnChange}
+                                            placeholder={'Enter tls Certificate'}
+                                        />
+                                    </div>
+                                </>
+                            )}
                             <hr />
                             <div
                                 className={`${
@@ -921,7 +977,7 @@ function Cluster({
                                 </div>
                             </div>
                         ) : null}
-                        <div className="form__row">
+                        {/* <div className="form__row">
                             <span className="form__label">TLS Key</span>
                             <ResizableTextarea
                                 className="dc__resizable-textarea__with-max-height w-100"
@@ -938,7 +994,7 @@ function Cluster({
                                 value={state.tlsClientCert.value}
                                 onChange={handleOnChange}
                             />
-                        </div>
+                        </div> */}
                     </div>
                 )}
 
@@ -985,21 +1041,23 @@ function Cluster({
                         </div>
                     </>
                 )}
-                <div className={`form__buttons`}>
-                    {id && (
-                        <button
-                            style={{ margin: 'auto', marginLeft: 0 }}
-                            className="flex cta override-button delete scr-5 h-32"
-                            type="button"
-                            onClick={() => toggleConfirmation(true)}
-                        >
-                            {deleting ? <Progressing /> : 'Delete'}
+                <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                    <div className={`form__buttons`}>
+                        {id && (
+                            <button
+                                style={{ margin: 'auto', marginLeft: 0 }}
+                                className="flex cta override-button delete scr-5 h-32"
+                                type="button"
+                                onClick={() => toggleConfirmation(true)}
+                            >
+                                {deleting ? <Progressing /> : 'Delete'}
+                            </button>
+                        )}
+                        <button className="cta cancel" type="button" onClick={(e) => toggleEditMode((t) => !t)}>
+                            Cancel
                         </button>
-                    )}
-                    <button className="cta cancel" type="button" onClick={(e) => toggleEditMode((t) => !t)}>
-                        Cancel
-                    </button>
-                    <button className="cta">{loading ? <Progressing /> : 'Save cluster'}</button>
+                        <button className="cta">{'Save cluster'}</button>
+                    </div>
                 </div>
                 {confirmation && (
                     <DeleteComponent
@@ -1196,31 +1254,6 @@ function Cluster({
                     </>
                 ) : (
                     <>
-                        {/* <ClusterForm
-                            {...{
-                                id: clusterId,
-                                cluster_name,
-                                server_url,
-                                active,
-                                config,
-                                toggleEditMode,
-                                reload,
-                                prometheus_url,
-                                isTlsConnection,
-                                toggleCheckTlsConnection,
-                                prometheusAuth,
-                                defaultClusterComponent,
-                                toggleShowAddCluster,
-                                toggleKubeConfigFile,
-                                isKubeConfigFile,
-                                browseFile,
-                                toggleBrowseFile,
-                                toggleClusterDetails,
-                                isClusterDetails,
-                                isGrafanaModuleInstalled:
-                                    grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED,
-                            }}
-                        /> */}
                         <Drawer position="right" width="1000px" onEscape={toggleShowEditCluster}>
                             <EditCluster />
                         </Drawer>
@@ -1509,7 +1542,7 @@ function ClusterForm({
         // console.log(state.cluster_name.value)
         return {
             id,
-            insecureSkipTlsVerify : !isTlsConnection,
+            insecureSkipTlsVerify: !isTlsConnection,
             cluster_name: state.cluster_name.value,
             config: {
                 bearer_token:
@@ -2002,7 +2035,7 @@ function ClusterForm({
                     <img src={NoResults} width="250" height="200" alt="No matching results" />
                 </EmptyState.Image>
                 <EmptyState.Title>
-                    <h2 className="fs-16 fw-4 c-9">No matching results</h2>
+                    <h2 data-testid="no_matchin_result" className="fs-16 fw-4 c-9">No matching results</h2>
                 </EmptyState.Title>
                 <EmptyState.Subtitle>We couldn't find any matching cluster</EmptyState.Subtitle>
             </EmptyState>
@@ -2045,7 +2078,7 @@ function ClusterForm({
                                         style={{ height: '40px' }}
                                     >
                                         <div></div>
-                                        <div className="flexbox">
+                                        <div data-testid={`validate-cluster-${clusterListDetail.clusterName}`} className="flexbox">
                                             <span className="dc__ellipsis-right">{clusterListDetail.clusterName}</span>
                                         </div>
                                         <div className="flexbox dc__align-items-center">
@@ -2055,7 +2088,7 @@ function ClusterForm({
                                                     clusterListDetail.status === 'Failed' ? 'failed' : 'succeeded'
                                                 }`}
                                             ></div>
-                                            <div className="dc__ellipsis-right"> {clusterListDetail.status} </div>
+                                            <div data-testid={`validate-cluster-${clusterListDetail.status}`} className="dc__ellipsis-right"> {clusterListDetail.status} </div>
                                         </div>
                                         <div className="dc__ellipsis-right"> {clusterListDetail.message}</div>
                                     </div>
