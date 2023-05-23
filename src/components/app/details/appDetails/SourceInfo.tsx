@@ -19,7 +19,7 @@ import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import { ConditionalWrap, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from './DeploymentStatusCard'
-import { ReactComponent as VirtualCluster } from '../../../../assets/icons/ic-virtual-cluster.svg'
+import { ReactComponent as VirtualCluster } from '../../../../assets/icons/ic-environment-temp.svg'
 
 export function SourceInfo({
     appDetails,
@@ -84,7 +84,7 @@ export function SourceInfo({
 
     const renderDeploymentTypeIcon = (): void => {
       if (appDetails?.deploymentAppType === DeploymentAppType.manifest_download || isVirtualEnvironment) {
-          return <VirtualCluster data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
+          return <VirtualCluster data-testid="helm-app-logo" className="icon-dim-32 fcb-5 ml-16" />
       } else if (appDetails?.deploymentAppType === DeploymentAppType.argo_cd) {
           return <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />
       } else if (appDetails?.deploymentAppType === DeploymentAppType.helm) {
