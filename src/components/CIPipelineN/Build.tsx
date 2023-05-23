@@ -3,15 +3,9 @@ import { SourceTypeMap, ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials } from '../ciPipeline/SourceMaterials'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { Progressing, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, Toggle, CiPipelineSourceTypeOption, FormType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
 import { ciPipelineContext } from './CIPipeline'
-import {
-    BuildType,
-    CiPipelineSourceTypeOption,
-    FormErrorObjectType,
-    FormType,
-    WebhookCIProps,
-} from '../ciPipeline/types'
+import { BuildType, WebhookCIProps } from '../ciPipeline/types'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as BugScanner } from '../../assets/icons/scanner.svg'
 import AdvancedConfigOptions from './AdvancedConfigOptions'
@@ -23,20 +17,20 @@ export function Build({
     pageState,
     isSecurityModuleInstalled,
     setDockerConfigOverridden,
-    isJobView
+    isJobView,
 }: BuildType) {
     const {
         formData,
         setFormData,
         formDataErrorObj,
         setLoadingData,
-        setFormDataErrorObj
+        setFormDataErrorObj,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         formDataErrorObj: FormErrorObjectType
         setLoadingData: React.Dispatch<React.SetStateAction<boolean>>
-        setFormDataErrorObj:React.Dispatch<React.SetStateAction<FormErrorObjectType>>        
+        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
     } = useContext(ciPipelineContext)
     const validationRules = new ValidationRules()
 
@@ -90,7 +84,7 @@ export function Build({
                 isSelected: sourceTypeOption.label === selectedSource.label,
             }
         })
-       
+
         _formData.ciPipelineSourceTypeOptions = _ciPipelineSourceTypeOptions
 
         // if selected source is of type webhook, then set eventId in value, assume single git material, set condition list

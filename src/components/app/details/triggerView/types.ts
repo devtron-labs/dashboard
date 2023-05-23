@@ -1,6 +1,5 @@
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../../../services/service.types'
-import { CIBuildConfigType, DockerConfigOverrideType } from '../../../ciPipeline/types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { CIMaterialType } from './MaterialHistory'
 import {
@@ -9,6 +8,8 @@ import {
     CommonNodeAttr,
     DeploymentNodeType,
     UserApprovalConfigType,
+    CIBuildConfigType,
+    DockerConfigOverrideType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CDMaterialProps {
@@ -242,12 +243,7 @@ export interface TriggerViewContextType {
     selectMaterial: (materialId) => void
     toggleChanges: (materialId: string, hash: string) => void
     toggleInvalidateCache: () => void
-    getMaterialByCommit: (
-        ciNodeId: number,
-        materialId: number,
-        gitMaterialId: number,
-        commitHash: string,
-    ) => void
+    getMaterialByCommit: (ciNodeId: number, materialId: number, gitMaterialId: number, commitHash: string) => void
     getFilteredMaterial: (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => void
 }
 

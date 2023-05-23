@@ -1,5 +1,6 @@
 import React, { useState, useEffect, createContext } from 'react'
 import { NavLink } from 'react-router-dom'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
 import { ButtonWithLoader, importComponentFromFELibrary } from '../common'
 import {
     ServerErrors,
@@ -8,8 +9,18 @@ import {
     VisibleModal,
     Drawer,
     DeleteDialog,
+    ConditionType,
+    DockerConfigOverrideType,
+    FormType,
+    PluginType,
+    RefVariableStageType,
+    RefVariableType,
+    ScriptType,
+    StepType,
+    VariableType,
+    MandatoryPluginDataType,
+    TaskErrorObj
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
 import {
     BuildStageVariable,
     BuildTabText,
@@ -30,21 +41,7 @@ import {
 } from '../ciPipeline/ciPipeline.service'
 import { toast } from 'react-toastify'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import {
-    CIPipelineDataType,
-    CIPipelineType,
-    ConditionType,
-    DockerConfigOverrideType,
-    FormType,
-    PluginDetailType,
-    PluginType,
-    RefVariableStageType,
-    RefVariableType,
-    ScriptType,
-    StepType,
-    TaskErrorObj,
-    VariableType,
-} from '../ciPipeline/types'
+import { CIPipelineDataType, CIPipelineType, PluginDetailType } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
 import { PreBuild } from './PreBuild'
@@ -54,7 +51,6 @@ import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
-import { MandatoryPluginDataType } from '../ciConfig/types'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 export const ciPipelineContext = createContext(null)
@@ -170,7 +166,7 @@ export default function CIPipeline({
         setPageState(ViewType.LOADING)
         getSecurityModuleStatus()
         if (ciPipelineId) {
-            Promise.all([getInitDataWithCIPipeline(appId, ciPipelineId, true),processPluginData(!!ciPipelineId, ciPipelineId ?? appId)])
+            Promise.all([getInitDataWithCIPipeline(appId, ciPipelineId, true), processPluginData(false, ciPipelineId)])
                 .then(([ciResponse, pluginResponse]) => {
                     const preBuildVariable = calculateLastStepDetail(
                         false,
@@ -200,10 +196,16 @@ export default function CIPipeline({
                     showError(error)
                 })
         } else {
-            getInitData(appId, true, !isJobView)
-                .then((response) => {
-                    setFormData(response.result.form)
+            Promise.all([
+                getInitData(appId, true, !isJobView),
+                processPluginData(!!ciPipelineId, ciPipelineId ?? appId),
+            ])
+                .then(([ciResponse, pluginResponse]) => {
+                    validateStage(BuildStageVariable.PreBuild, ciResponse.form, pluginResponse)
+                    validateStage(BuildStageVariable.PostBuild, ciResponse.form, pluginResponse)
+                    setFormData(ciResponse.result.form)
                     setPageState(ViewType.FORM)
+                    setMandatoryPluginData(pluginResponse)
                 })
                 .catch((error: ServerErrors) => {
                     setPageState(ViewType.ERROR)
@@ -247,19 +249,6 @@ export default function CIPipeline({
                 }
                 setPresetPlugins(_presetPlugin)
                 setSharedPlugins(_sharedPlugin)
-            })
-            .catch((error: ServerErrors) => {
-                showError(error)
-            })
-    }
-
-    const validatePlugins = (): void => {
-        processPluginData(!!ciPipelineId, ciPipelineId ?? appId)
-            .then((response) => {
-                console.log(response)
-                setMandatoryPluginData(response)
-                validateStage(BuildStageVariable.PreBuild, formData, response)
-                validateStage(BuildStageVariable.PostBuild, formData, response)
             })
             .catch((error: ServerErrors) => {
                 showError(error)
@@ -582,7 +571,11 @@ export default function CIPipeline({
         }
     }
 
-    const validateStage = (stageName: string, _formData: FormType, _mandatoryPluginData?: MandatoryPluginDataType): void => {
+    const validateStage = (
+        stageName: string,
+        _formData: FormType,
+        _mandatoryPluginData?: MandatoryPluginDataType,
+    ): void => {
         const _formDataErrorObj = { ...formDataErrorObj, name: validationRules.name(_formData.name) } // validating name always as it's a mandatory field
         if (stageName === BuildStageVariable.Build) {
             _formDataErrorObj[BuildStageVariable.Build].isValid = _formDataErrorObj.name.isValid
@@ -763,7 +756,9 @@ export default function CIPipeline({
                     }}
                 >
                     {isJobView ? JobPipelineTabText[stageName] : BuildTabText[stageName]}
-                    {!formDataErrorObj[stageName].isValid && <WarningTriangle className="icon-dim-16 mr-5 ml-5 mt-3 warning-icon-y7-imp" />}
+                    {!formDataErrorObj[stageName].isValid && (
+                        <WarningTriangle className="icon-dim-16 mr-5 ml-5 mt-3 warning-icon-y7-imp" />
+                    )}
                 </NavLink>
             </li>
         )
@@ -831,7 +826,7 @@ export default function CIPipeline({
                     <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
                         {isAdvanced && (
                             <div className="sidebar-container">
-                                <Sidebar isJobView={isJobView} mandatoryPluginData={mandatoryPluginData}/>
+                                <Sidebar isJobView={isJobView} mandatoryPluginData={mandatoryPluginData} />
                             </div>
                         )}
                         <Switch>

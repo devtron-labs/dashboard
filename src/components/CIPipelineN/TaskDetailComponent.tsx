@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { ConfigurationType, ViewType, BuildStageVariable } from '../../config'
 import { RadioGroup } from '../common'
-import {
-    ConditionContainerType,
-    FormErrorObjectType,
-    FormType,
-    PluginType,
-    PluginVariableType,
-    ScriptType,
-    VariableType,
-} from '../ciPipeline/types'
+import { ConditionContainerType, PluginVariableType } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
 import { getPluginDetail } from '../ciPipeline/ciPipeline.service'
-import { ServerErrors, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ServerErrors,
+    Progressing,
+    showError,
+    FormType,
+    PluginType,
+    ScriptType,
+    VariableType,
+    FormErrorObjectType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import CustomInputOutputVariables from './CustomInputOutputVariables'

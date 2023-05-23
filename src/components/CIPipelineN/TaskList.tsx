@@ -5,8 +5,14 @@ import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dot
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ciPipelineContext } from './CIPipeline'
-import { FormErrorObjectType, FormType, StepType, TaskErrorObj, VariableType } from '../ciPipeline/types'
-import { PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    PopupMenu,
+    FormType,
+    StepType,
+    VariableType,
+    FormErrorObjectType,
+    TaskErrorObj,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { TaskListType } from '../ciConfig/types'
 
 export function TaskList({ withWarning }: TaskListType) {
@@ -117,7 +123,7 @@ export function TaskList({ withWarning }: TaskListType) {
 
     return (
         <>
-            <div className={`task-container pr-20 ${withWarning? 'with-warning': ''}`}>
+            <div className={`task-container pr-20 ${withWarning ? 'with-warning' : ''}`}>
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
                     <Fragment key={`task-item-${index}`}>
                         <div

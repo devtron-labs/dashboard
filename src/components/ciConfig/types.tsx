@@ -1,16 +1,17 @@
 import React from 'react'
-import { ServerError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ServerError,
+    CIBuildConfigType,
+    CIBuildType,
+    DockerConfigOverrideType,
+    FormType,
+    MandatoryPluginDataType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { CiPipeline, CiPipelineResult, Material, WorkflowType } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
-import {
-    CIBuildConfigType,
-    CIBuildType,
-    CIPipelineDataType,
-    DockerConfigOverrideType,
-    FormType,
-} from '../ciPipeline/types'
+import { CIPipelineDataType } from '../ciPipeline/types'
 import { ComponentStates } from '../EnvironmentOverride/EnvironmentOverrides.type'
 
 export interface ArgsFieldSetProps {
@@ -310,15 +311,15 @@ export interface CIBuildConfigDiffProps {
 }
 
 export interface TargetPlatformSelectorType {
-  allowOverride?: boolean
-  selectedTargetPlatforms: OptionType[]
-  setSelectedTargetPlatforms: React.Dispatch<React.SetStateAction<OptionType[]>>
-  showCustomPlatformWarning: boolean
-  setShowCustomPlatformWarning: (value: boolean) => void
-  targetPlatformMap: Map<string, boolean>
-  targetPlatform?: string
-  configOverrideView?: boolean
-  updateDockerConfigOverride?: (key: string, value: CIBuildConfigType | OptionType[] | boolean | string) => void
+    allowOverride?: boolean
+    selectedTargetPlatforms: OptionType[]
+    setSelectedTargetPlatforms: React.Dispatch<React.SetStateAction<OptionType[]>>
+    showCustomPlatformWarning: boolean
+    setShowCustomPlatformWarning: (value: boolean) => void
+    targetPlatformMap: Map<string, boolean>
+    targetPlatform?: string
+    configOverrideView?: boolean
+    updateDockerConfigOverride?: (key: string, value: CIBuildConfigType | OptionType[] | boolean | string) => void
 }
 
 export interface BuildContextProps {
@@ -327,19 +328,8 @@ export interface BuildContextProps {
     formState: any
     configOverrideView: boolean
     allowOverride: boolean
-    ciConfig:  CiPipelineResult
+    ciConfig: CiPipelineResult
     handleOnChangeConfig: (e) => void
-}
-
-export interface MandatoryPluginDetailType {
-  id: number
-  name: string
-  invalidPost: boolean
-}
-export interface MandatoryPluginDataType {
-    pluginData: MandatoryPluginDetailType[]
-    isValidPre: boolean
-    isValidPost: boolean
 }
 
 export interface CIPipelineSidebarType {
@@ -347,6 +337,6 @@ export interface CIPipelineSidebarType {
     mandatoryPluginData: MandatoryPluginDataType
 }
 
-export interface TaskListType{
-  withWarning: boolean
+export interface TaskListType {
+    withWarning: boolean
 }

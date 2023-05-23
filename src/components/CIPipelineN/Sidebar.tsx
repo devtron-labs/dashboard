@@ -1,9 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { BuildStageVariable, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
-import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    RadioGroup,
+    RadioGroupItem,
+    FormType,
+    MandatoryPluginDataType,
+    FormErrorObjectType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { TaskList } from './TaskList'
 import { ciPipelineContext } from './CIPipeline'
-import { FormType } from '../ciPipeline/types'
 import { importComponentFromFELibrary } from '../common'
 import { CIPipelineSidebarType } from '../ciConfig/types'
 
@@ -16,12 +21,16 @@ export function Sidebar({ isJobView, mandatoryPluginData }: CIPipelineSidebarTyp
         configurationType,
         setConfigurationType,
         activeStageName,
+        formDataErrorObj,
+        setFormDataErrorObj,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         configurationType: string
         setConfigurationType: React.Dispatch<React.SetStateAction<string>>
         activeStageName: string
+        formDataErrorObj: FormErrorObjectType
+        setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
     } = useContext(ciPipelineContext)
     const [helpData, setHelpData] = useState<{ helpText: string; docLink: string }>({
         helpText: 'Docs: Configure build stage',
@@ -60,7 +69,14 @@ export function Sidebar({ isJobView, mandatoryPluginData }: CIPipelineSidebarTyp
                     {configurationType === ConfigurationType.GUI && (
                         <>
                             {MandatoryPluginWarning && showMandatoryWarning() && (
-                                <MandatoryPluginWarning pluginData={mandatoryPluginData.pluginData} />
+                                <MandatoryPluginWarning
+                                    stage={activeStageName}
+                                    mandatoryPluginData={mandatoryPluginData}
+                                    formData={formData}
+                                    setFormData={setFormData}
+                                    formDataErrorObj={formDataErrorObj}
+                                    setFormDataErrorObj={setFormDataErrorObj}
+                                />
                             )}
                             <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
                             <TaskList withWarning={showMandatoryWarning()} />

@@ -3,9 +3,15 @@ import { toast } from 'react-toastify'
 import { DOCUMENTATION } from '../../config'
 import { getWorkflowList } from '../../services/service'
 import { OptionType } from '../app/types'
-import { CIBuildConfigType, CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
+import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { useForm } from '../common'
-import { showError, Progressing, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CIBuildConfigType,
+    CIBuildType,
+    showError,
+    Progressing,
+    ConfirmationDialog,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { saveCIConfig, updateCIConfig } from './service'
 import { CIBuildArgType, CIConfigFormProps, ProcessedWorkflowsType } from './types'
 import { processWorkflow } from '../app/details/triggerView/workflow.service'
@@ -57,13 +63,17 @@ export default function CIConfigForm({
     const currentBuildContextGitMaterial =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? sourceConfig.material.find(
-                (material) => material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
-            )
+                  (material) =>
+                      material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
+              )
             : ciConfig?.ciBuildConfig?.buildContextGitMaterialId
-                ? sourceConfig.material.find((material) => material.id === ciConfig?.ciBuildConfig?.buildContextGitMaterialId)
-                : sourceConfig.material[0]
+            ? sourceConfig.material.find(
+                  (material) => material.id === ciConfig?.ciBuildConfig?.buildContextGitMaterialId,
+              )
+            : sourceConfig.material[0]
     const [selectedMaterial, setSelectedMaterial] = useState(currentMaterial)
-    const [selectedBuildContextGitMaterial, setSelectedBuildContextGitMaterial] = useState(currentBuildContextGitMaterial)
+    const [selectedBuildContextGitMaterial, setSelectedBuildContextGitMaterial] =
+        useState(currentBuildContextGitMaterial)
     const currentRegistry =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? dockerRegistries.find((reg) => reg.id === selectedCIPipeline.dockerConfigOverride?.dockerRegistry)
@@ -97,7 +107,15 @@ export default function CIConfigForm({
     })
     const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden)
     const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>(
-        initCurrentCIBuildConfig(allowOverride, ciConfig, selectedCIPipeline, selectedMaterial, selectedBuildContextGitMaterial, state.dockerfile.value, state.buildContext.value),
+        initCurrentCIBuildConfig(
+            allowOverride,
+            ciConfig,
+            selectedCIPipeline,
+            selectedMaterial,
+            selectedBuildContextGitMaterial,
+            state.dockerfile.value,
+            state.buildContext.value,
+        ),
     )
 
     useEffect(() => {
@@ -300,7 +318,7 @@ export default function CIConfigForm({
                         dockerBuildConfig: {
                             ...currentCIBuildConfig.dockerBuildConfig,
                             buildContext: e.target.value,
-                         },
+                        },
                     })
                     break
                 default:
@@ -417,7 +435,7 @@ export default function CIConfigForm({
                     processedWorkflows={processedWorkflows}
                     toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
                     reload={reload}
-                    gitMaterials = {sourceConfig.material}
+                    gitMaterials={sourceConfig.material}
                 />
             )}
         </>

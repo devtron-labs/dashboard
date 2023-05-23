@@ -1,12 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
-import {
-    FormErrorObjectType,
-    FormType,
-    PluginDetailType,
-    PluginType,
-    ScriptType,
-    VariableType,
-} from '../ciPipeline/types'
+import { FormType, PluginType, ScriptType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
+import { PluginDetailType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
 import EmptyPostBuild from '../../assets/img/post-build-empty.png'
 import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
