@@ -110,6 +110,7 @@ export default function CIDockerFileConfig({
         checkoutPathArray.push({label: buildContextCheckoutPath,value: buildContextCheckoutPath})
     }
     const [checkoutPathOptions, setCheckoutPathOptions] = useState<OptionType[]>(checkoutPathArray)
+
     useEffect( () => {
         let checkoutPathArray = [{label: './', value: './'}]
         if(selectedBuildContextGitMaterial?.checkoutPath !== './'){
@@ -117,6 +118,7 @@ export default function CIDockerFileConfig({
         }
         setCheckoutPathOptions(checkoutPathArray)
     },[selectedBuildContextGitMaterial])
+
     useEffect(() => {
         setInProgress(true)
         Promise.all([getDockerfileTemplate(), getBuildpackMetadata()])
@@ -522,7 +524,7 @@ export default function CIDockerFileConfig({
                                     <ReactSelect
                                         className="m-0 br-0"
                                         classNamePrefix="build-config__select-checkout-path-for-build-context"
-                                        tabIndex={3}
+                                        tabIndex={4}
                                         isMulti={false}
                                         isClearable={false}
                                         isSearchable={false}
@@ -538,13 +540,19 @@ export default function CIDockerFileConfig({
                                                 ...base,
                                                 marginTop: '0',
                                                 paddingBottom: '4px',
+                                                width: checkoutPathOptions?.length === 2 && checkoutPathOptions[1].value.length > 3 ? '120px' : '100%',
                                             }),
                                             control: (base) => ({
                                                 ...base,
                                                 borderTopRightRadius: '0px',
                                                 borderBottomRightRadius: '0px',
-                                                borderRight: '0px' ,
-                                            })
+                                                borderRight: '0px',
+                                            }),
+                                            dropdownIndicator: (base) => ({
+                                                ...base,
+                                                paddingLeft: '0px',
+                                            }),
+
                                         }}
                                         components={{
                                             IndicatorSeparator: null,

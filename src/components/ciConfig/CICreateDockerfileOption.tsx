@@ -505,9 +505,9 @@ export default function CICreateDockerfileOption({
                         ) : (
                             <div className="docker-file-container">
                                 <ReactSelect
-                                    className="m-0 br-0"
+                                    className="m-0 w-25"
                                     classNamePrefix="build-config__select-checkout-path-for-build-context"
-                                    tabIndex={3}
+                                    tabIndex={4}
                                     isMulti={false}
                                     isClearable={false}
                                     isSearchable={false}
@@ -523,13 +523,18 @@ export default function CICreateDockerfileOption({
                                             ...base,
                                             marginTop: '0',
                                             paddingBottom: '4px',
+                                            width: checkoutPathOptions?.length === 2 && checkoutPathOptions[1].value.length > 3 ? '120px' : '100%',
                                         }),
                                         control: (base) => ({
                                             ...base,
                                             borderTopRightRadius: '0px',
                                             borderBottomRightRadius: '0px',
-                                            borderRight: '0px' ,
-                                        })
+                                            borderRight: '0px',
+                                        }),
+                                        dropdownIndicator: (base) => ({
+                                            ...base,
+                                            paddingLeft: '0px',
+                                        }),
                                     }}
                                     components={{
                                         IndicatorSeparator: null,
