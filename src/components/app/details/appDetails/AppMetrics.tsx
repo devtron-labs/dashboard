@@ -236,22 +236,20 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                         </span>
                         <div className="flex">
                             <div className="mr-16">
-                                <label className="dc__tertiary-tab__radio">
+                                <label data-testid="app-metrics-aggregate-status" className="dc__tertiary-tab__radio">
                                     <input
                                         type="radio"
                                         name="status"
-                                        data-testid="app-metrics-aggregate-status"
                                         checked={tab === AppMetricsTab.Aggregate}
                                         value={AppMetricsTab.Aggregate}
                                         onChange={handleTabChange}
                                     />
                                     <span className="dc__tertiary-tab">Aggregate</span>
                                 </label>
-                                <label className="dc__tertiary-tab__radio">
+                                <label data-testid="app-metrics-per-pod-status" className="dc__tertiary-tab__radio">
                                     <input
                                         type="radio"
                                         name="status"
-                                        data-testid="app-metrics-per-pod-status"
                                         checked={tab === AppMetricsTab.Pod}
                                         value={AppMetricsTab.Pod}
                                         onChange={handleTabChange}
