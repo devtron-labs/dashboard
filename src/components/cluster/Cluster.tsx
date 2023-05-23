@@ -8,11 +8,8 @@ import {
     sortCallback,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
-import {
-    useForm,
-    useAsync,
-} from '../common'
-import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
+import { useForm, useAsync } from '../common'
+import { List } from '../globalConfigurations/GlobalConfiguration'
 import {
     getClusterList,
     saveCluster,
@@ -28,12 +25,7 @@ import { ReactComponent as PencilEdit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as DeleteEnvironment } from '../../assets/icons/ic-delete-interactive.svg'
 import { ClusterComponentModal } from './ClusterComponentModal'
 import { ClusterInstallStatus } from './ClusterInstallStatus'
-import {
-    POLLING_INTERVAL,
-    ClusterListProps,
-    AuthenticationType,
-    DEFAULT_SECRET_PLACEHOLDER,
-} from './cluster.type'
+import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from './cluster.type'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
 
@@ -48,15 +40,11 @@ import {
 } from '../../config'
 import { getEnvName } from './cluster.util'
 import DeleteComponent from '../../util/DeleteComponent'
-import {
-    DC_ENVIRONMENT_CONFIRMATION_MESSAGE,
-    DeleteComponentsName,
-} from '../../config/constantMessaging'
+import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import Tippy from '@tippyjs/react/headless'
-import ClusterForm from'./ClusterForm'
+import ClusterForm from './ClusterForm'
 import Environment from './Environment'
-
 
 export default class ClusterList extends Component<ClusterListProps, any> {
     timerRef
@@ -98,7 +86,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     initialise() {
-        console.log("here")
+        console.log('here')
         if (this.timerRef) clearInterval(this.timerRef)
         Promise.all([
             getClusterList(),
@@ -312,7 +300,6 @@ function Cluster({
     toggleShowAddCluster,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
-    isGrafanaModuleInstalled,
 }) {
     const [editMode, toggleEditMode] = useState(false)
     const [environment, setEnvironment] = useState(null)
@@ -322,7 +309,6 @@ function Cluster({
     const [showWindow, setShowWindow] = useState(false)
     const [envDelete, setDeleteEnv] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
-    const [deleting, setDeleting] = useState(false)
     const [loading, setLoading] = useState(false)
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false)
     const [, grafanaModuleStatus] = useAsync(
@@ -600,22 +586,6 @@ function Cluster({
         }
     }
 
-    let payload = {
-        id,
-        cluster_name,
-        config: { bearer_token: state.token.value },
-        active,
-        prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
-        prometheusAuth: {
-            userName: prometheusToggleEnabled ? state.userName.value : '',
-            password: prometheusToggleEnabled ? state.password.value : '',
-        },
-        server_url,
-        defaultClusterComponent: defaultClusterComponent,
-        k8sversion: '',
-        insecureSkipTlsVerify: !isTlsConnection,
-    }
-
     return (
         <>
             <article
@@ -799,29 +769,29 @@ function Cluster({
                         )}
                     </>
                 ) : (
-                        <Drawer position="right" width="1000px" onEscape={toggleShowAddCluster}>
-                            <ClusterForm
-                                id={clusterId}
-                                cluster_name={cluster_name}
-                                server_url={server_url}
-                                active={true}
-                                config={{}}
-                                reload={reload}
-                                prometheus_url=""
-                                prometheusAuth={state.prometheus}
-                                defaultClusterComponent={state.defaultClusterComponent}
-                                isGrafanaModuleInstalled={true}
-                                isTlsConnection={isTlsConnection}
-                                isClusterDetails={state.isClusterDetails}
-                                toggleCheckTlsConnection={toggleCheckTlsConnection}
-                                setTlsConnectionFalse={setTlsConnectionFalse}
-                                toggleShowAddCluster={toggleShowAddCluster}
-                                toggleKubeConfigFile={true}
-                                isKubeConfigFile={state.isKubeConfigFile}
-                                toggleEditMode={toggleEditMode}
-                                toggleClusterDetails={true}
-                            />
-                        </Drawer>
+                    <Drawer position="right" width="1000px" onEscape={toggleShowAddCluster}>
+                        <ClusterForm
+                            id={clusterId}
+                            cluster_name={cluster_name}
+                            server_url={server_url}
+                            active={true}
+                            config={{}}
+                            reload={reload}
+                            prometheus_url=""
+                            prometheusAuth={state.prometheus}
+                            defaultClusterComponent={state.defaultClusterComponent}
+                            isGrafanaModuleInstalled={true}
+                            isTlsConnection={isTlsConnection}
+                            isClusterDetails={state.isClusterDetails}
+                            toggleCheckTlsConnection={toggleCheckTlsConnection}
+                            setTlsConnectionFalse={setTlsConnectionFalse}
+                            toggleShowAddCluster={toggleShowAddCluster}
+                            toggleKubeConfigFile={true}
+                            isKubeConfigFile={state.isKubeConfigFile}
+                            toggleEditMode={toggleEditMode}
+                            toggleClusterDetails={true}
+                        />
+                    </Drawer>
                 )}
             </article>
             {showWindow && (

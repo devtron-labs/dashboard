@@ -19,7 +19,7 @@ export default function ClusterCodeEditor() {
         const reader = new FileReader()
         reader.onload = () => {
             try {
-                const data = YAML.parseDocument(reader.result.toString())
+                YAML.parseDocument(reader.result.toString())
                 setSaveYamlData(reader.result.toString())
             } catch (e) {}
         }
