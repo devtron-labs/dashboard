@@ -2,13 +2,8 @@ import React, { useState, useMemo, Component, useRef, useEffect } from 'react'
 import {
     showError,
     Progressing,
-    ErrorScreenNotAuthorized,
-    Reload,
-    stopPropagation,
     CHECKBOX_VALUE,
-    Drawer,
     ToastBody,
-    sortCallback,
     Checkbox,
     RadioGroupItem,
     RadioGroup,
@@ -16,7 +11,6 @@ import {
     InfoColourBar,
     Toggle,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
 import YAML from 'yaml'
@@ -24,83 +18,50 @@ import {
     Pencil,
     useForm,
     CustomPassword,
-    useAsync,
-    DevtronSwitch as Switch,
-    DevtronSwitchItem as SwitchItem,
-    ButtonWithLoader,
-    DropdownIcon,
     Info,
 } from '../common'
 // import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
-import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
+import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import {
-    getClusterList,
     saveCluster,
     updateCluster,
-    saveEnvironment,
-    updateEnvironment,
-    getEnvironmentList,
-    getCluster,
-    retryClusterInstall,
     deleteCluster,
-    deleteEnvironment,
     validateCluster,
     saveClusters,
 } from './cluster.service'
 import { ResizableTextarea } from '../configMaps/ConfigMap'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as Database } from '../../assets/icons/ic-env.svg'
-import { ReactComponent as PencilEdit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as DeleteEnvironment } from '../../assets/icons/ic-delete-interactive.svg'
-import { ClusterComponentModal } from './ClusterComponentModal'
-import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { ReactComponent as ForwardArrow } from '../../assets/icons/ic-arrow-right.svg'
-import { ReactComponent as Exist } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as MechanicalOperation } from '../../assets/img/ic-mechanical-operation.svg'
 import {
-    POLLING_INTERVAL,
-    ClusterListProps,
     AuthenticationType,
     DEFAULT_SECRET_PLACEHOLDER,
     DataListType,
     UserDetails,
     SaveClusterPayloadType,
-    UserNameList,
 } from './cluster.type'
-import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
 
 import {
-    DOCUMENTATION,
-    SERVER_MODE,
-    ViewType,
-    URLS,
-    ModuleNameMap,
     CLUSTER_COMMAND,
-    CONFIGURATION_TYPES,
     AppCreationType,
     MODES,
 } from '../../config'
-import { getEnvName } from './cluster.util'
 import DeleteComponent from '../../util/DeleteComponent'
 import {
     DC_CLUSTER_CONFIRMATION_MESSAGE,
-    DC_ENVIRONMENT_CONFIRMATION_MESSAGE,
     DeleteComponentsName,
 } from '../../config/constantMessaging'
-import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import TippyHeadless from '@tippyjs/react/headless'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { UPLOAD_STATE } from '../CustomChart/types'
 import UserNameDropDownList from './UseNameListDropdown'
-import Tippy from '@tippyjs/react/headless'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -116,7 +77,6 @@ const PrometheusWarningInfo = () => {
     )
 }
 
-
 const PrometheusRequiredFieldInfo = () => {
     return (
         <div className="pt-10 pb-10 pl-16 pr-16 bcr-1 br-4 bw-1 er-2 mb-16">
@@ -129,7 +89,6 @@ const PrometheusRequiredFieldInfo = () => {
         </div>
     )
 }
-
 
 export default function ClusterForm({
     id,
@@ -177,7 +136,6 @@ export default function ClusterForm({
     const [isClusterSelected, setClusterSeleceted] = useState<Record<string, boolean>>({})
     const [selectAll, setSelectAll] = useState<boolean>(false)
     const [getClusterVar, setGetClusterState] = useState<boolean>(false)
-    // const [selectedClusterState, setSelectedClusterState] = useState<boolean>(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
@@ -440,21 +398,21 @@ export default function ClusterForm({
             if (
                 (state.tlsClientKey.value || state.tlsClientCert.value || state.certificateAuthorityData.value) &&
                 prometheusToggleEnabled
-              ) {
+            ) {
                 let isValid =
-                  state.tlsClientKey.value?.length > 0 &&
-                  state.tlsClientCert.value?.length > 0 &&
-                  state.certificateAuthorityData.value?.length > 0;
-              
+                    state.tlsClientKey.value?.length > 0 &&
+                    state.tlsClientCert.value?.length > 0 &&
+                    state.certificateAuthorityData.value?.length > 0
+
                 if (!isValid) {
-                  toast.error('Please add TLS Key, Certificate, and Certificate Authority Data');
-                  return;
+                    toast.error('Please add TLS Key, Certificate, and Certificate Authority Data')
+                    return
                 } else {
-                  payload.prometheusAuth['tlsClientKey'] = state.tlsClientKey.value || '';
-                  payload.prometheusAuth['tlsClientCert'] = state.tlsClientCert.value || '';
-                  payload.prometheusAuth['certificateAuthorityData'] = state.certificateAuthorityData.value || '';
+                    payload.prometheusAuth['tlsClientKey'] = state.tlsClientKey.value || ''
+                    payload.prometheusAuth['tlsClientCert'] = state.tlsClientCert.value || ''
+                    payload.prometheusAuth['certificateAuthorityData'] = state.certificateAuthorityData.value || ''
                 }
-              }
+            }
         }
 
         const api = id ? updateCluster : saveCluster
@@ -567,9 +525,9 @@ export default function ClusterForm({
     }
 
     const handleCloseButton = () => {
-        if(id){
+        if (id) {
             setTlsConnectionFalse()
-            toggleEditMode((e)=>!e)
+            toggleEditMode((e) => !e)
             return
         }
         if (isKubeConfigFile) {
@@ -700,7 +658,7 @@ export default function ClusterForm({
                                 </div>
                             </>
                         )}
-                     
+
                         <div
                             className={`${
                                 prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'
@@ -835,7 +793,6 @@ export default function ClusterForm({
                         </CodeEditor.Header>
                     </CodeEditor>
                 </div>
-
             </>
         )
     }
@@ -1247,7 +1204,7 @@ export default function ClusterForm({
                 style={{ padding: 'auto 0' }}
                 onSubmit={handleOnSubmit}
             >
-                <AddClusterHeader/>
+                <AddClusterHeader />
 
                 <div className="pl-20 pr-20" style={{ overflow: 'auto', height: 'calc(100vh - 169px)' }}>
                     {!id && (
@@ -1279,7 +1236,7 @@ export default function ClusterForm({
                         {id && (
                             <button
                                 data-testid="delete_cluster"
-                                style={{ margin: 'auto', marginLeft: 20}}
+                                style={{ margin: 'auto', marginLeft: 20 }}
                                 className="flex cta delete scr-5"
                                 type="button"
                                 onClick={() => toggleConfirmation(true)}
@@ -1300,12 +1257,12 @@ export default function ClusterForm({
                             className="cta mr-20 ml-20"
                             onClick={() => saveClusterCall()}
                         >
-                            {id ? 'Update cluster':'Save cluster'}
+                            {id ? 'Update cluster' : 'Save cluster'}
                         </button>
                     </div>
                 )}
                 {isKubeConfigFile && (
-                        <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                    <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
                         <button
                             data-testid="cancel_kubeconfig_button"
                             className="cta cancel"
@@ -1314,7 +1271,7 @@ export default function ClusterForm({
                         >
                             Cancel
                         </button>
-    
+
                         <button
                             className="cta mr-32 ml-20 "
                             type="button"
