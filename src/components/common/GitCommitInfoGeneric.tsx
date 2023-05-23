@@ -172,7 +172,7 @@ export default function GitCommitInfoGeneric({
                     content={MATERIAL_EXCLUDE_TIPPY_TEXT}
                     interactive={true}
                 >
-                    <span className="flex left cr-5 cursor-not-allowed">
+                    <span data-testid="excluded-git-commit" className="flex left cr-5 cursor-not-allowed">
                         <Abort className="mr-4 fcr-5" />
                         Excluded
                     </span>
@@ -180,7 +180,7 @@ export default function GitCommitInfoGeneric({
             )
         }
 
-        return <span>Select</span>
+        return <span data-testid="valid-git-commit" >Select</span>
     }
 
     return (
@@ -219,7 +219,7 @@ export default function GitCommitInfoGeneric({
                             {selectedCommitInfo ? (
                                 <div className="material-history__select-text dc_max-width__max-content">
                                     {_lowerCaseCommitInfo.isselected ? (
-                                        <Check className="dc__align-right" />
+                                        <Check data-testid="selected-git-commit" className="dc__align-right" />
                                     ) : (
                                         matSelectionText()
                                     )}
@@ -238,7 +238,7 @@ export default function GitCommitInfoGeneric({
                         </div>
                     ) : null}
                     {_lowerCaseCommitInfo.message ? (
-                        <div className="material-history__text flex left top material-history-text--padded">
+                        <div data-testid={`${_lowerCaseCommitInfo.message.trim()}-${isExcluded ? "excluded": "included"}`} className="material-history__text flex left top material-history-text--padded">
                             <MessageIcon className="icon-dim-16 mw-16 mr-8 mt-2" />
                             {_lowerCaseCommitInfo.message}
                         </div>

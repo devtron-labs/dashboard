@@ -161,7 +161,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
 
     regexInfoSteps = (): JSX.Element => {
         return (
-            
             <div data-testid="exclude-include-use-regex-info" className="w-500 h-380 fs-13 bcn-0">
                 <div className="h-365 dc__align-start p-12 dc__gap-12 dc__position-sticky dc__overflow-scroll">
                     <div className="w-476 h-112 flex column dc__align-start p-0 dc__gap-4">
@@ -548,134 +547,138 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         iconClass="icon-dim-20"
                     />
                 )}
-                <div className="flex left">
-                    <Checkbox
-                        isChecked={this.props.material.isExcludeRepoChecked}
-                        value={CHECKBOX_VALUE.CHECKED}
-                        tabIndex={3}
-                        onChange={this.props.handleExcludeRepoCheckbox}
-                        rootClassName="fs-14 cn-9 mb-8 flex top dc_max-width__max-content"
-                    >
-                        <div className="ml-12">
-                            <span data-testid="exclude-include-checkbox" className="mt-1 flex left">Exclude specific file/folder in this repo</span>
-                        </div>
-                    </Checkbox>
-                    <span>
-                        <TippyCustomized
-                            theme={TippyTheme.white}
-                            iconClass="fcv-5"
-                            className="bcn-0 deafult-tt"
-                            placement="bottom"
-                            Icon={QuestionFilled}
-                            heading="Exclude file/folders"
-                            infoText=""
-                            showCloseButton={true}
-                            additionalContent={this.tippyContent()}
-                            trigger="click"
-                            interactive={true}
-                        >
-                            <Question onClick={stopPropagation} className="icon-dim-16 ml-4 cursor" />
-                        </TippyCustomized>
-                    </span>
-                </div>
-                {this.props.material.isExcludeRepoChecked && (
-                    <div className="dc__border br-4 mt-8 ml-35">
-                        <div className="p-8 dc__border-bottom">
-                            <p className="fw-4 fs-13 mb-0-imp">
-                                Enter file or folder paths to be included or excluded.
-                                <a
-                                    data-testid={`${!this.props.isLearnHowClicked ? "exclude-include-learn" : "exclude-include-hide"}`}
-                                    className="dc__link ml-4 cursor"
-                                    onClick={this.props.handleLearnHowClick}
-                                    rel="noopener noreferer"
-                                    target="_blank"
-                                >
-                                    {!this.props.isLearnHowClicked ? 'Learn how' : 'Hide info'}
-                                </a>
-                            </p>
-                            {this.props.isLearnHowClicked && (
-                                <div data-testid="exclude-include-learn-how-steps" className="ml-8 mt-8">
-                                    <div className="flex left">
-                                        <div className="dc__bullet mr-6 ml-6"></div>
-                                        <span className="fs-13 fw-4">
-                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partOne}
-                                        </span>
-                                        <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
-                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partTwo}
-                                        </span>
-                                        <span className="ml-4 fs-13 fw-4">
-                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partThree}
-                                        </span>
-                                        <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
-                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partFour}
-                                        </span>
-                                        <br />
-                                    </div>
-                                    <div className="flex left mt-4">
-                                        <div className="dc__bullet mr-6 ml-6"></div>
-                                        <span className="fs-13 fw-4">
-                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partOne}
-                                        </span>
-                                        <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
-                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partTwo}
-                                        </span>
-                                        <span className="fs-13 fw-4 ml-2">,</span>
-                                        <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
-                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partThree}
-                                        </span>
-                                        <span className="fs-13 fw-4 ml-2">,</span>
-                                        <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
-                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFour}
-                                        </span>
-                                        <>
-                                            <TippyCustomized
-                                                theme={TippyTheme.white}
-                                                iconClass="fcv-5"
-                                                className="dc__mxw-none w-505 bcn-0 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
-                                                heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
-                                                placement="bottom"
-                                                Icon={QuestionFilled}
-                                                infoText=""
-                                                showCloseButton={true}
-                                                additionalContent={this.regexInfoSteps()}
-                                                trigger="click"
-                                                interactive={true}
-                                            >
-                                                <span data-testid="exclude-include-use-regex" className="dc__link cursor fs-13 fw-4 ml-8">
-                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFive}
-                                                </span>
-                                            </TippyCustomized>
-                                        </>
-                                        <br />
-                                    </div>
-                                    <div className="flex left mt-6">
-                                        <div className="dc__bullet mr-6 ml-6"></div>
-                                        <span className="fs-13 fw-4">
-                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineThree}
-                                        </span>
-                                        <br />
-                                    </div>
-                                    <div className="ml-10 mt-4 dc__ff-monospace fs-13 fw-4">
-                                        {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineOne}
-                                        <br />
-                                        {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineTwo}
-                                        <br />
-                                    </div>
+                {!window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && (
+                    <>
+                        <div className="flex left">
+                            <Checkbox
+                                isChecked={this.props.material.isExcludeRepoChecked}
+                                value={CHECKBOX_VALUE.CHECKED}
+                                tabIndex={3}
+                                onChange={this.props.handleExcludeRepoCheckbox}
+                                rootClassName="fs-14 cn-9 mb-8 flex top dc_max-width__max-content"
+                            >
+                                <div className="ml-12">
+                                    <span data-testid="exclude-include-checkbox" className="mt-1 flex left">Exclude specific file/folder in this repo</span>
                                 </div>
-                            )}
+                            </Checkbox>
+                            <span>
+                                <TippyCustomized
+                                    theme={TippyTheme.white}
+                                    iconClass="fcv-5"
+                                    className="bcn-0 deafult-tt"
+                                    placement="bottom"
+                                    Icon={QuestionFilled}
+                                    heading="Exclude file/folders"
+                                    infoText=""
+                                    showCloseButton={true}
+                                    additionalContent={this.tippyContent()}
+                                    trigger="click"
+                                    interactive={true}
+                                >
+                                    <Question onClick={stopPropagation} className="icon-dim-16 ml-4 cursor" />
+                                </TippyCustomized>
+                            </span>
                         </div>
-                        <textarea
-                            data-testid="exclude-include-commit-textbox"
-                            className="form__textarea dc__no-border-imp mxh-140"
-                            autoComplete={'off'}
-                            autoFocus
-                            placeholder={INCLUDE_EXCLUDE_PLACEHOLDER}
-                            rows={3}
-                            value={this.props.material.includeExcludeFilePath}
-                            onChange={this.props.handleFileChange}
-                        />
-                        {this.renderIncludeExcludeInfoBar()}
-                    </div>
+                        {this.props.material.isExcludeRepoChecked && (
+                            <div className="dc__border br-4 mt-8 ml-35">
+                                <div className="p-8 dc__border-bottom">
+                                    <p className="fw-4 fs-13 mb-0-imp">
+                                        Enter file or folder paths to be included or excluded.
+                                        <a
+                                            data-testid={`${!this.props.isLearnHowClicked ? "exclude-include-learn" : "exclude-include-hide"}`}
+                                            className="dc__link ml-4 cursor"
+                                            onClick={this.props.handleLearnHowClick}
+                                            rel="noopener noreferer"
+                                            target="_blank"
+                                        >
+                                            {!this.props.isLearnHowClicked ? 'Learn how' : 'Hide info'}
+                                        </a>
+                                    </p>
+                                    {this.props.isLearnHowClicked && (
+                                        <div data-testid="exclude-include-learn-how-steps" className="ml-8 mt-8">
+                                            <div className="flex left">
+                                                <div className="dc__bullet mr-6 ml-6"></div>
+                                                <span className="fs-13 fw-4">
+                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partOne}
+                                                </span>
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partTwo}
+                                                </span>
+                                                <span className="ml-4 fs-13 fw-4">
+                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partThree}
+                                                </span>
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineOne.partFour}
+                                                </span>
+                                                <br />
+                                            </div>
+                                            <div className="flex left mt-4">
+                                                <div className="dc__bullet mr-6 ml-6"></div>
+                                                <span className="fs-13 fw-4">
+                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partOne}
+                                                </span>
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partTwo}
+                                                </span>
+                                                <span className="fs-13 fw-4 ml-2">,</span>
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partThree}
+                                                </span>
+                                                <span className="fs-13 fw-4 ml-2">,</span>
+                                                <span className="bcn-1 lh-20 br-6 pl-4 pr-4 dc__ff-monospace fs-13 fw-4 ml-4 cn-7">
+                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFour}
+                                                </span>
+                                                <>
+                                                    <TippyCustomized
+                                                        theme={TippyTheme.white}
+                                                        iconClass="fcv-5"
+                                                        className="dc__mxw-none w-505 bcn-0 dc__border-radius-8-imp tippy-box default-white tippy-shadow"
+                                                        heading={USE_REGEX_TIPPY_CONTENT.insructionsList.heading}
+                                                        placement="bottom"
+                                                        Icon={QuestionFilled}
+                                                        infoText=""
+                                                        showCloseButton={true}
+                                                        additionalContent={this.regexInfoSteps()}
+                                                        trigger="click"
+                                                        interactive={true}
+                                                    >
+                                                        <span data-testid="exclude-include-use-regex" className="dc__link cursor fs-13 fw-4 ml-8">
+                                                            {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineTwo.partFive}
+                                                        </span>
+                                                    </TippyCustomized>
+                                                </>
+                                                <br />
+                                            </div>
+                                            <div className="flex left mt-6">
+                                                <div className="dc__bullet mr-6 ml-6"></div>
+                                                <span className="fs-13 fw-4">
+                                                    {INCLUDE_EXCLUDE_COMMIT_INFO.infoList.lineThree}
+                                                </span>
+                                                <br />
+                                            </div>
+                                            <div className="ml-10 mt-4 dc__ff-monospace fs-13 fw-4">
+                                                {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineOne}
+                                                <br />
+                                                {INCLUDE_EXCLUDE_COMMIT_INFO.example.lineTwo}
+                                                <br />
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                <textarea
+                                    data-testid="exclude-include-commit-textbox"
+                                    className="form__textarea dc__no-border-imp mxh-140"
+                                    autoComplete={'off'}
+                                    autoFocus
+                                    placeholder={INCLUDE_EXCLUDE_PLACEHOLDER}
+                                    rows={3}
+                                    value={this.props.material.includeExcludeFilePath}
+                                    onChange={this.props.handleFileChange}
+                                />
+                                {this.renderIncludeExcludeInfoBar()}
+                            </div>
+                        )}
+                    </>
                 )}
                 <label>
                     <div className="pt-16">
@@ -688,7 +691,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         >
                             <div className="ml-12">
                                 {this.props.isJobView ? (
-                                    <span className="mb-4 mt-4 flex left">Set checkout path</span>
+                                    <span data-testid="set-checkout-path-checkbox" className="mb-4 mt-4 flex left">Set checkout path</span>
                                 ) : (
                                     <>
                                         <span className="mb-4 flex left" data-testid="set-clone-directory-checkbox">

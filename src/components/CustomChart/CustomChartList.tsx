@@ -8,7 +8,7 @@ import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import { ReactComponent as Clear } from '../../assets/icons/ic-error.svg'
 import { getChartList } from './customChart.service'
 import { sortObjectArrayAlphabetically } from '../common'
-import { showError, Progressing, ErrorScreenManager, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDetailType, ChartListResponse } from './types'
 import Tippy from '@tippyjs/react'
 
@@ -132,19 +132,14 @@ export default function CustomChartList() {
 
     const renderEmptyState = (): JSX.Element => {
         return (
-            <EmptyState>
-                <EmptyState.Image>
-                    <img src={emptyCustomChart} alt="Empty external links" />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h4 className="title" data-testid="use-custom-chart-in-application-heading">Use custom charts in applications</h4>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>
-                    Import custom charts to use them in apps instead of the default system template.&nbsp;
-                    {renderLearnMoreLink()}
-                </EmptyState.Subtitle>
-                <EmptyState.Button>{renderUploadButton()}</EmptyState.Button>
-            </EmptyState>
+            <GenericEmptyState
+                image={emptyCustomChart}
+                title="Use custom charts in applications"
+                subTitle={`Import custom charts to use them in apps instead of the default system template.&nbsp;
+          ${renderLearnMoreLink()}`}
+                isButtonAvailable={true}
+                renderButton={renderUploadButton}
+            />
         )
     }
 
