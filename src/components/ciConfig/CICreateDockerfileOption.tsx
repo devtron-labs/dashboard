@@ -469,7 +469,9 @@ export default function CICreateDockerfileOption({
                                 value={
                                     configOverrideView && !allowOverride
                                         ? currentBuildContextGitMaterial
-                                        : selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial : currentMaterial
+                                        : selectedBuildContextGitMaterial
+                                        ? selectedBuildContextGitMaterial
+                                        : currentMaterial
                                 }
                                 styles={{
                                     ..._multiSelectStyles,
@@ -497,9 +499,10 @@ export default function CICreateDockerfileOption({
                         </label>
                         {configOverrideView && !allowOverride ? (
                             <span className="fs-14 fw-4 lh-20 cn-9">
-                                {`${selectedBuildContextGitMaterial?.checkoutPath}/${
-                                    ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext
-                                }`.replace('//', '/')}
+                                {`${selectedBuildContextGitMaterial?.checkoutPath}/${ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext}`.replace(
+                                    '//',
+                                    '/',
+                                )}
                             </span>
                         ) : (
                             <div className="docker-file-container">
@@ -513,16 +516,22 @@ export default function CICreateDockerfileOption({
                                     options={checkoutPathOptions}
                                     getOptionLabel={(option) => `${option.label}`}
                                     getOptionValue={(option) => `${option.value}`}
-                                    value={
-                                        getCheckoutPathValue(selectedMaterial,currentMaterial,useRootBuildContextFlag)
-                                    }
+                                    value={getCheckoutPathValue(
+                                        selectedMaterial,
+                                        currentMaterial,
+                                        useRootBuildContextFlag,
+                                    )}
                                     styles={{
                                         ..._multiSelectStyles,
                                         menu: (base) => ({
                                             ...base,
                                             marginTop: '0',
                                             paddingBottom: '4px',
-                                            width: checkoutPathOptions?.length === 2 && checkoutPathOptions[1].value.length > 3 ? '120px' : '100%',
+                                            width:
+                                                checkoutPathOptions?.length === 2 &&
+                                                checkoutPathOptions[1].value.length > 3
+                                                    ? '120px'
+                                                    : '100%',
                                         }),
                                         control: (base) => ({
                                             ...base,

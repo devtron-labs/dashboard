@@ -1,5 +1,5 @@
 import React from 'react'
-import { ServerError,OptionType as  _OptionType} from '@devtron-labs/devtron-fe-common-lib'
+import { ServerError, OptionType as _OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
 import { CiPipeline, CiPipelineResult, Material, WorkflowType } from '../app/details/triggerView/types'
