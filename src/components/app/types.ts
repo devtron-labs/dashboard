@@ -468,4 +468,5 @@ export interface SourceInfoType {
   deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
   loadingDetails?: boolean
   loadingResourceTree?: boolean
+  isVirtualEnvironment?: boolean
 }

@@ -19,6 +19,7 @@ import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import { ConditionalWrap, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from './DeploymentStatusCard'
+import { ReactComponent as VirtualCluster } from '../../../../assets/icons/ic-environment-temp.svg'
 
 export function SourceInfo({
     appDetails,
@@ -31,6 +32,7 @@ export function SourceInfo({
     deploymentStatusDetailsBreakdownData = null,
     loadingDetails = false,
     loadingResourceTree = false,
+    isVirtualEnvironment
 }: SourceInfoType) {
     const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
@@ -80,6 +82,16 @@ export function SourceInfo({
         )
     }
 
+    const renderDeploymentTypeIcon = (): void => {
+      if (appDetails?.deploymentAppType === DeploymentAppType.manifest_download || isVirtualEnvironment) {
+          return <VirtualCluster data-testid="helm-app-logo" className="icon-dim-32 fcb-5 ml-16" />
+      } else if (appDetails?.deploymentAppType === DeploymentAppType.argo_cd) {
+          return <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />
+      } else if (appDetails?.deploymentAppType === DeploymentAppType.helm) {
+          return <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
+      }
+    }
+
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         return (
             <div className="flex left w-100 mb-16">
@@ -98,11 +110,7 @@ export function SourceInfo({
                                 : DeploymentAppTypeNameMapping.Helm
                         }`}
                     >
-                        {appDetails?.deploymentAppType === DeploymentAppType.argo_cd ? (
-                            <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />
-                        ) : (
-                            <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
-                        )}
+                        {renderDeploymentTypeIcon()}
                     </Tippy>
                 )}
                 {appDetails?.deploymentAppDeleteRequest && (
@@ -116,7 +124,7 @@ export function SourceInfo({
                     <>
                         {!appDetails?.deploymentAppDeleteRequest && (
                             <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
-                                {showUrlInfo && (
+                                {(!isVirtualEnvironment && showUrlInfo) && (
                                     <button
                                         className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                         onClick={onClickShowUrlInfo}
@@ -136,7 +144,7 @@ export function SourceInfo({
                                         commit info
                                     </button>
                                 )}
-                                {showHibernateModal && (
+                                {(!isVirtualEnvironment && showHibernateModal) && (
                                     <ConditionalWrap
                                         condition={appDetails?.userApprovalConfig?.length > 0}
                                         wrap={conditionalScalePodsButton}
@@ -207,81 +215,86 @@ export function SourceInfo({
                 <>
                     {!appDetails?.deploymentAppDeleteRequest && environment && (
                         <div className="flex left w-100">
-                            <div
-                                data-testid="app-status-card"
-                                onClick={loadingResourceTree ? noop : showApplicationDetailedModal}
-                                className="pointer flex left bcn-0 p-16 br-8 mw-340 mr-12 lh-20"
-                            >
-                                <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
-                                    {loadingResourceTree ? (
-                                        <div className="icon-dim-32 shimmer-loading" />
-                                    ) : (
-                                        <figure
-                                            className={`${status.toLowerCase()} dc__app-summary__icon mr-8 h-32 w-32`}
-                                            style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
-                                        ></figure>
-                                    )}
-                                </div>
-                                <div className="flex left column">
-                                    <div className="flexbox">
-                                        <span className="fs-12 mr-5 fw-4 cn-9">Application status</span>
-
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="top"
-                                            content="The health status of your app"
-                                        >
-                                            <Question className="icon-dim-16 mt-2" />
-                                        </Tippy>
+                            {!isVirtualEnvironment && (
+                                <div
+                                    data-testid="app-status-card"
+                                    onClick={loadingResourceTree ? noop : showApplicationDetailedModal}
+                                    className="pointer flex left bcn-0 p-16 br-8 mw-340 mr-12 lh-20"
+                                >
+                                    <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
+                                        {loadingResourceTree ? (
+                                            <div className="icon-dim-32 shimmer-loading" />
+                                        ) : (
+                                            <figure
+                                                className={`${status.toLowerCase()} dc__app-summary__icon mr-8 h-32 w-32`}
+                                                style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
+                                            ></figure>
+                                        )}
                                     </div>
-                                    {loadingResourceTree ? (
-                                        <div className="flex left column mt-6">
-                                            <div className="shimmer-loading w-120 h-16 br-2 mb-6" />
-                                            <div className="shimmer-loading w-54 h-12 br-2" />
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <div
-                                                data-testid="app-status-name"
-                                                className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}
+                                    <div className="flex left column">
+                                        <div className="flexbox">
+                                            <span className="fs-12 mr-5 fw-4 cn-9">Application status</span>
+
+                                            <Tippy
+                                                className="default-tt"
+                                                arrow={false}
+                                                placement="top"
+                                                content="The health status of your app"
                                             >
-                                                {isHibernated ? 'Hibernating' : status}
+                                                <Question className="icon-dim-16 mt-2" />
+                                            </Tippy>
+                                        </div>
+                                        {loadingResourceTree ? (
+                                            <div className="flex left column mt-6">
+                                                <div className="shimmer-loading w-120 h-16 br-2 mb-6" />
+                                                <div className="shimmer-loading w-54 h-12 br-2" />
                                             </div>
-                                            <div className="flex left">
-                                                {appDetails?.deploymentAppType === DeploymentAppType.helm ? (
-                                                    <span data-testid="app-status-card-details" className="cb-5 fw-6">
-                                                        Details
-                                                    </span>
-                                                ) : (
-                                                    <>
-                                                        {message && (
-                                                            <span className="select-material-message">
-                                                                {message.slice(0, 30)}
-                                                            </span>
-                                                        )}
+                                        ) : (
+                                            <>
+                                                <div
+                                                    data-testid="app-status-name"
+                                                    className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}
+                                                >
+                                                    {isHibernated ? 'Hibernating' : status}
+                                                </div>
+                                                <div className="flex left">
+                                                    {appDetails?.deploymentAppType === DeploymentAppType.helm ? (
                                                         <span
                                                             data-testid="app-status-card-details"
-                                                            className={`${
-                                                                message?.length > 30 ? 'more-message' : ''
-                                                            } cb-5 fw-6`}
+                                                            className="cb-5 fw-6"
                                                         >
                                                             Details
                                                         </span>
-                                                    </>
-                                                )}
-                                            </div>
-                                        </>
-                                    )}
+                                                    ) : (
+                                                        <>
+                                                            {message && (
+                                                                <span className="select-material-message">
+                                                                    {message.slice(0, 30)}
+                                                                </span>
+                                                            )}
+                                                            <span
+                                                                data-testid="app-status-card-details"
+                                                                className={`${
+                                                                    message?.length > 30 ? 'more-message' : ''
+                                                                } cb-5 fw-6`}
+                                                            >
+                                                                Details
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-
+                            )}
                             <DeploymentStatusCard
                                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                 loadingResourceTree={loadingResourceTree}
                                 hideDetails={appDetails?.deploymentAppType === DeploymentAppType.helm}
+                                isVirtualEnvironment={isVirtualEnvironment}
                             />
-                             <div className="flex right ml-auto">
+                            <div className="flex right ml-auto">
                                 {appDetails?.appStoreChartId && (
                                     <>
                                         <span className="mr-8 fs-12 cn-7">Chart:</span>

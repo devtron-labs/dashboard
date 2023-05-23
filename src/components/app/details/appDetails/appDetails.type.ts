@@ -173,6 +173,8 @@ export interface DetailsType {
     commitInfo?: boolean
     isAppDeleted?: boolean
     showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
+    isVirtualEnvironment?: boolean
+    setIsVirtualEnvironment?: (isVirtuakEnvironment: boolean) => void
 }
 
 export interface DeploymentStatusCardType {
@@ -182,4 +184,5 @@ export interface DeploymentStatusCardType {
   hideDetails?: boolean
   deploymentTriggerTime?: string
   triggeredBy?: string
+  isVirtualEnvironment?: boolean
 }

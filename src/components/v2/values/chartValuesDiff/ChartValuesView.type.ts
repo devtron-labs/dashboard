@@ -312,6 +312,7 @@ export enum ChartValuesViewActionTypes {
     selectedDeploymentApp = 'selectedDeploymentApp',
 }
 
+// TOdo replace this with the common
 export enum DeploymentAppType {
     Helm = 'helm',
     GitOps = 'argo_cd',

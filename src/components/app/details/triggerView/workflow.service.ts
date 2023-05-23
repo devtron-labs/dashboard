@@ -569,6 +569,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         parentPipelineType: cdPipeline.parentPipelineType,
         deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest,
         userApprovalConfig: cdPipeline.userApprovalConfig,
+        isVirtualEnvironment: cdPipeline.isVirtualEnvironment
     } as NodeAttr
     stageIndex++
 

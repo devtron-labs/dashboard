@@ -141,9 +141,11 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
 }
 }
 
+//TODO replace it everthere with DeploymentAppType from common constant
 export enum DeploymentAppType {
     helm = 'helm',
     argo_cd = 'argo_cd',
+    manifest_download = 'manifest_download'
 }
 
 export interface AppDetails {
@@ -182,6 +184,7 @@ export interface AppDetails {
     dockerRegistryId?: string
     deploymentAppDeleteRequest?: boolean
     userApprovalConfig?: string
+    isVirtualEnvironment?: boolean
 }
 
 interface MaterialInfo {

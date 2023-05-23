@@ -808,3 +808,9 @@ export enum CONFIGURATION_TYPES {
     NAMESPACE = 'NAMESPACE',
     DESCRIPTION = 'DESCRIPTION',
 }
+
+export enum DeploymentAppTypes {
+  HELM = 'helm',
+  GITOPS = 'argo_cd',
+  MANIFEST_DOWNLOAD = 'manifest_download'
+}

@@ -968,8 +968,8 @@ export const convertToOptionsList = (
 export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: string) => {
     try {
         const module = require('@devtron-labs/devtron-fe-lib')
-        if(type==='function'){
-          return module[componentName] || defaultComponent || null
+        if (type === 'function') {
+            return module[componentName] || defaultComponent || null
         }
         return module[componentName]?.default || defaultComponent || null
     } catch (e) {

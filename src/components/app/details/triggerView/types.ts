@@ -54,6 +54,7 @@ export interface CDMaterialProps {
     userApprovalConfig?: UserApprovalConfigType
     requestedUserId?: number
     triggerType?: string
+    isVirtualEnvironment?: boolean
 }
 
 export enum DeploymentWithConfigType {
@@ -185,6 +186,7 @@ export interface TriggerCDNodeProps extends RouteComponentProps<{ appId: string 
     fromAppGrouping: boolean
     description: string
     index?: number
+    isVirtualEnvironment?: boolean
 }
 
 export interface TriggerPrePostCDNodeProps extends RouteComponentProps<{ appId: string }> {
@@ -315,6 +317,7 @@ export interface TriggerViewState {
     filteredCIPipelines: any[]
     isChangeBranchClicked: boolean
     loader: boolean
+    downloadManifestLoader?: boolean
 }
 
 //-- begining of response type objects for trigger view
@@ -521,6 +524,7 @@ export interface CdPipeline {
     deploymentAppDeleteRequest?: boolean
     deploymentAppCreated?: boolean
     userApprovalConfig?: UserApprovalConfigType
+    isVirtualEnvironment?: boolean
 }
 
 export interface CdPipelineResult {

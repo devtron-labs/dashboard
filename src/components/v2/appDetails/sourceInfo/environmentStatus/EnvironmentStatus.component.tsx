@@ -22,7 +22,8 @@ function EnvironmentStatusComponent({
     appStreamData,
     loadingDetails,
     loadingResourceTree,
-    deploymentStatusDetailsBreakdownData
+    deploymentStatusDetailsBreakdownData,
+    isVirtualEnvironment
 }: EnvironmentStatusComponentType) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
@@ -232,10 +233,10 @@ function EnvironmentStatusComponent({
                 shimmerLoaderBlocks()
             ) : (
                 <div className="flex left ml-20 mb-16 lh-20">
-                    {renderStatusBlock()}
+                    {!isVirtualEnvironment && renderStatusBlock()}
                     {renderHelmConfigApplyStatusBlock()}
                     {renderLastUpdatedBlock()}
-                    {renderChartUsedBlock()}
+                    {!isVirtualEnvironment && renderChartUsedBlock()}
                     {renderUpgraderChartBlock()}
                 </div>
             )}
