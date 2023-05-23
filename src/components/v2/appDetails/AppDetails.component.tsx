@@ -6,18 +6,14 @@ import IndexStore from './index.store'
 import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
 import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component'
 import SyncErrorComponent from './SyncError.component'
-import { useEventSource } from '../../common'
+import { importComponentFromFELibrary, useEventSource } from '../../common'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import NodeTreeDetailTab from './NodeTreeDetailTab'
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { getSaveTelemetry } from './appDetails.api'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { getDeploymentStatusDetail } from '../../app/details/appDetails/appDetails.service'
-import {
-    DEFAULT_STATUS,
-    DEPLOYMENT_STATUS,
-    DEPLOYMENT_STATUS_QUERY_PARAM,
-} from '../../../config'
+import { DEFAULT_STATUS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
 import DeploymentStatusDetailModal from '../../app/details/appDetails/DeploymentStatusDetailModal'
 import {
     DeploymentStatusDetailsBreakdownDataType,
@@ -25,7 +21,10 @@ import {
 } from '../../app/details/appDetails/appDetails.type'
 import { processDeploymentStatusDetailsData } from '../../app/details/appDetails/utils'
 import { useSharedState } from '../utils/useSharedState'
+
 let deploymentStatusTimer = null
+const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
+
 const AppDetailsComponent = ({
     externalLinks,
     monitoringTools,
@@ -61,12 +60,12 @@ const AppDetailsComponent = ({
     }, [])
 
     useEffect(() => {
-      // Get deployment status timeline on argocd apps
+        // Get deployment status timeline on argocd apps
         if (appDetails?.deploymentAppType === DeploymentAppType.argo_cd) {
             getDeploymentDetailStepsData()
         }
         return () => {
-          clearDeploymentStatusTimer()
+            clearDeploymentStatusTimer()
         }
     }, [appDetails.appId])
 
@@ -108,6 +107,18 @@ const AppDetailsComponent = ({
         (event) => setStreamData(JSON.parse(event.data)),
     )
 
+    const renderHelmAppDetails = (): JSX.Element => {
+        if (appDetails?.isVirtualEnvironment && VirtualAppDetailsEmptyState) {
+            return <VirtualAppDetailsEmptyState environmentName={''} />
+        }
+        return (
+            <NodeTreeDetailTab
+                appDetails={appDetails}
+                externalLinks={externalLinks}
+                monitoringTools={monitoringTools}
+            />
+        )
+    }
     return (
         <div className="helm-details" data-testid="app-details-wrapper">
             <div>
@@ -115,6 +126,7 @@ const AppDetailsComponent = ({
                     isExternalApp={isExternalApp}
                     _init={_init}
                     loadingResourceTree={loadingResourceTree}
+                    isVirtualEnvironment={appDetails.isVirtualEnvironment}
                 />
                 {!appDetails.deploymentAppDeleteRequest && (
                     <EnvironmentStatusComponent
@@ -122,6 +134,7 @@ const AppDetailsComponent = ({
                         loadingDetails={loadingDetails}
                         loadingResourceTree={loadingResourceTree}
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                        isVirtualEnvironment={appDetails.isVirtualEnvironment}
                     />
                 )}
             </div>
@@ -139,12 +152,9 @@ const AppDetailsComponent = ({
                     <Progressing pageLoader fullHeight size={32} fillColor="var(--N500)" />
                 </div>
             ) : (
-                <NodeTreeDetailTab
-                    appDetails={appDetails}
-                    externalLinks={externalLinks}
-                    monitoringTools={monitoringTools}
-                />
+                renderHelmAppDetails()
             )}
+
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
                     appName={appDetails.appName}
