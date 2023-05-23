@@ -330,7 +330,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             serverMode={this.props.serverMode}
                             isGrafanaModuleInstalled={true}
                             showEditCluster={this.state.showEditCluster}
-                            toggleShowAddCluster={this.toggleShowEditCluster}
+                            toggleShowAddCluster={this.toggleShowAddCluster}
                             toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                             setTlsConnectionFalse={this.setTlsConnectionFalse}
                             isTlsConnection={this.state.isTlsConnection}
@@ -1352,6 +1352,7 @@ function ClusterForm({
 
     const handleCloseButton = () => {
         if(id){
+            setTlsConnectionFalse()
             toggleEditMode((e)=>!e)
             return
         }
