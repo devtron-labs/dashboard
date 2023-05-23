@@ -169,6 +169,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     initialise() {
+        console.log("here")
         if (this.timerRef) clearInterval(this.timerRef)
         Promise.all([
             getClusterList(),
@@ -344,7 +345,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 active={true}
                                 config={{}}
                                 toggleEditMode={() => {}}
-                                reload={true}
+                                reload={this.initialise}
                                 prometheus_url=""
                                 prometheusAuth={this.state.prometheus}
                                 defaultClusterComponent={this.state.defaultClusterComponent}
@@ -380,7 +381,7 @@ function Cluster({
     prometheus_url,
     serverMode,
     isTlsConnection,
-    toggleShowEditCluster,
+    toggleShowAddCluster,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
     isGrafanaModuleInstalled,
@@ -849,16 +850,14 @@ function Cluster({
                         )}
                     </>
                 ) : (
-                    <>
-                        <Drawer position="right" width="1000px" onEscape={editModeToggle}>
+                        <Drawer position="right" width="1000px" onEscape={toggleShowAddCluster}>
                             <ClusterForm
                                 id={clusterId}
                                 cluster_name={cluster_name}
                                 server_url={server_url}
                                 active={true}
                                 config={{}}
-                                toggleEditMode={() => {}}
-                                reload={true}
+                                reload={reload}
                                 prometheus_url=""
                                 prometheusAuth={state.prometheus}
                                 defaultClusterComponent={state.defaultClusterComponent}
@@ -870,10 +869,10 @@ function Cluster({
                                 toggleShowAddCluster={editModeToggle}
                                 toggleKubeConfigFile={true}
                                 isKubeConfigFile={state.isKubeConfigFile}
+                                toggleEditMode={toggleEditMode}
                                 toggleClusterDetails={true}
                             />
                         </Drawer>
-                    </>
                 )}
             </article>
             {showWindow && (
@@ -1014,6 +1013,11 @@ function ClusterForm({
 
     const toggleGetCluster = () => {
         setGetClusterState(!getClusterVar)
+    }
+
+    const handleEditConfigClick = () => {
+        toggleGetCluster()
+        toggleKubeConfigFile(true)
     }
 
     const getSaveClusterPayload = (dataLists: DataListType[]) => {
@@ -1204,6 +1208,7 @@ function ClusterForm({
                     title={`Successfully ${id ? 'updated' : 'saved'}`}
                 />,
             )
+            reload()
             toggleEditMode((e) => !e)
         } catch (err) {
             showError(err)
@@ -1303,6 +1308,10 @@ function ClusterForm({
     }
 
     const handleCloseButton = () => {
+        if(id){
+            toggleEditMode((e)=>!e)
+            return
+        }
         if (isKubeConfigFile) {
             toggleKubeConfigFile(!isKubeConfigFile)
         }
@@ -1315,7 +1324,9 @@ function ClusterForm({
 
         setTlsConnectionFalse()
         toggleShowAddCluster()
+
         setLoadingState(false)
+        reload()
     }
 
     const renderUrlAndBearerToken = () => {
@@ -1443,7 +1454,7 @@ function ClusterForm({
                                 </div>
                             </>
                         )}
-                        <hr />
+                     
                         <div
                             className={`${
                                 prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'
@@ -1565,29 +1576,7 @@ function ClusterForm({
                         </CodeEditor.Header>
                     </CodeEditor>
                 </div>
-                <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
-                    <button
-                        data-testid="cancel_kubeconfig_button"
-                        className="cta cancel"
-                        type="button"
-                        onClick={handleCloseButton}
-                    >
-                        Cancel
-                    </button>
 
-                    <button
-                        className="cta mr-32 ml-20 "
-                        type="button"
-                        onClick={handleGetClustersClick}
-                        disabled={!saveYamlData}
-                        data-testId="get_cluster_button"
-                    >
-                        <div className="flex">
-                            Get cluster
-                            <ForwardArrow className="ml-5" />
-                        </div>
-                    </button>
-                </div>
             </>
         )
     }
@@ -1716,7 +1705,7 @@ function ClusterForm({
                         <button
                             className="ml-20 dc_edit_button cb-5"
                             type="button"
-                            onClick={toggleKubeConfigFile}
+                            onClick={handleEditConfigClick}
                             style={{ marginRight: 'auto' }}
                         >
                             <span style={{ display: 'flex', alignItems: 'center' }}>
@@ -1931,7 +1920,7 @@ function ClusterForm({
                         <button
                             className="ml-20 dc_edit_button cb-5"
                             type="button"
-                            onClick={toggleGetCluster}
+                            onClick={handleEditConfigClick}
                             style={{ marginRight: 'auto' }}
                         >
                             <span
@@ -2035,32 +2024,54 @@ function ClusterForm({
                         {id && (
                             <button
                                 data-testid="delete_cluster"
-                                style={{ margin: 'auto', marginLeft: 0 }}
-                                className="flex cta override-button delete scr-5 h-32 ml-20"
+                                style={{ margin: 'auto', marginLeft: 20}}
+                                className="flex cta delete scr-5"
                                 type="button"
                                 onClick={() => toggleConfirmation(true)}
                             >
                                 {deleting ? <Progressing /> : 'Delete'}
                             </button>
                         )}
-
-                        <div>
-                            <button
-                                data-testid="cancel_button"
-                                className="cta cancel"
-                                type="button"
-                                onClick={closeEdit}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                data-testid="save_cluster_after_entering_cluster_details"
-                                className="cta mr-20 ml-20"
-                                onClick={() => saveClusterCall()}
-                            >
-                                {'Save cluster'}
-                            </button>
-                        </div>
+                        <button
+                            data-testid="cancel_button"
+                            className="cta cancel"
+                            type="button"
+                            onClick={handleCloseButton}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            data-testid="save_cluster_after_entering_cluster_details"
+                            className="cta mr-20 ml-20"
+                            onClick={() => saveClusterCall()}
+                        >
+                            {id ? 'Update cluster':'Save cluster'}
+                        </button>
+                    </div>
+                )}
+                {isKubeConfigFile && (
+                        <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                        <button
+                            data-testid="cancel_kubeconfig_button"
+                            className="cta cancel"
+                            type="button"
+                            onClick={handleCloseButton}
+                        >
+                            Cancel
+                        </button>
+    
+                        <button
+                            className="cta mr-32 ml-20 "
+                            type="button"
+                            onClick={handleGetClustersClick}
+                            disabled={!saveYamlData}
+                            data-testId="get_cluster_button"
+                        >
+                            <div className="flex">
+                                Get cluster
+                                <ForwardArrow className="ml-5" />
+                            </div>
+                        </button>
                     </div>
                 )}
                 {confirmation && (
