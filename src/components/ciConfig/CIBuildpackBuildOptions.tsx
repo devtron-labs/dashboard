@@ -90,14 +90,6 @@ export const repositoryControls = (props): JSX.Element => {
     )
 }
 
-export const checkOutPathControls = (props): JSX.Element => {
-    return (
-        <components.Control {...props}>
-            {props.children}
-        </components.Control>
-    )
-}
-
 const menuListComponent = (props): JSX.Element => {
     return (
         <components.MenuList {...props}>

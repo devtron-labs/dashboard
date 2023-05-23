@@ -17,14 +17,12 @@ import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwi
 import { CIBuildType } from '../ciPipeline/types'
 import { CICreateDockerfileOptionProps, FrameworkOptionType, LanguageOptionType, TemplateDataType } from './types'
 import {
-    checkOutPathControls,
     checkoutPathOption,
     renderOptionIcon,
     repositoryControls,
     repositoryOption
 } from './CIBuildpackBuildOptions'
 import { _customStyles, _multiSelectStyles } from './CIConfig.utils'
-import { RootBuildContext } from './ciConfigConstant'
 
 export default function CICreateDockerfileOption({
     configOverrideView,
@@ -540,7 +538,6 @@ export default function CICreateDockerfileOption({
                                     components={{
                                         IndicatorSeparator: null,
                                         Option: checkoutPathOption,
-                                        Control: checkOutPathControls,
                                     }}
                                     onChange={handleBuildContextCheckoutPathChange}
                                     isDisabled={configOverrideView && !allowOverride}

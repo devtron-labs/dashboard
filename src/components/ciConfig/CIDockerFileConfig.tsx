@@ -10,7 +10,6 @@ import { CI_BUILDTYPE_ALIAS, _multiSelectStyles } from './CIConfig.utils'
 import { CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import CIBuildpackBuildOptions, {
-    checkOutPathControls,
     checkoutPathOption,
     renderOptionIcon,
     repositoryControls,
@@ -558,7 +557,6 @@ export default function CIDockerFileConfig({
                                         components={{
                                             IndicatorSeparator: null,
                                             Option: checkoutPathOption,
-                                            Control: checkOutPathControls,
                                         }}
                                         onChange={handleBuildContextCheckoutPathChange}
                                         isDisabled={configOverrideView && !allowOverride}
