@@ -99,6 +99,12 @@ export default function CDDetails() {
                     ?.deploymentAppType,
             )
         }
+        if(result && result[0]){
+            let _selectedEnvironment=  (result[0]['value']?.result || []).find((envData) => {
+                return +envId===envData.environmentId
+            })
+            setSelectedEnv(_selectedEnvironment)
+        }
 
         return () => {
             setTriggerHistory(new Map())
