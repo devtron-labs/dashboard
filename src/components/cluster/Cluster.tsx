@@ -393,14 +393,8 @@ function Cluster({
     const [showWindow, setShowWindow] = useState(false)
     const [envDelete, setDeleteEnv] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
-    const [deleting, setDeleting] = useState(false)
     const [loading, setLoading] = useState(false)
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false)
-    const [, grafanaModuleStatus] = useAsync(
-        () => getModuleInfo(ModuleNameMap.GRAFANA),
-        [clusterId],
-        !window._env_.K8S_CLIENT,
-    )
 
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
         type: prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
@@ -494,7 +488,6 @@ function Cluster({
         }
         return namespacesInAll && clusterId ? [{ id: null }].concat(environments || []) : environments || []
     }, [environments])
-    const sortedNewEnvs = newEnvs.sort((a, b) => sortCallback('environment_name', a, b))
 
     async function handleEdit(e) {
         try {
@@ -667,25 +660,10 @@ function Cluster({
     }
 
     const editModeToggle = (): void => {
-        if (!clusterId) {
-            toggleEditMode((t) => !t)
-        }
-    }
-
-    let payload = {
-        id,
-        cluster_name,
-        config: { bearer_token: state.token.value },
-        active,
-        prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
-        prometheusAuth: {
-            userName: prometheusToggleEnabled ? state.userName.value : '',
-            password: prometheusToggleEnabled ? state.password.value : '',
-        },
-        server_url,
-        defaultClusterComponent: defaultClusterComponent,
-        k8sversion: '',
-        insecureSkipTlsVerify: !isTlsConnection,
+        toggleEditMode((t) => !t)
+        // if (!clusterId) {
+        //     toggleEditMode((t) => !t)
+        // }
     }
 
     return (
@@ -872,7 +850,7 @@ function Cluster({
                     </>
                 ) : (
                     <>
-                        <Drawer position="right" width="1000px" onEscape={toggleShowEditCluster}>
+                        <Drawer position="right" width="1000px" onEscape={editModeToggle}>
                             <ClusterForm
                                 id={clusterId}
                                 cluster_name={cluster_name}
@@ -889,7 +867,7 @@ function Cluster({
                                 isClusterDetails={state.isClusterDetails}
                                 toggleCheckTlsConnection={toggleCheckTlsConnection}
                                 setTlsConnectionFalse={setTlsConnectionFalse}
-                                toggleShowAddCluster={toggleShowEditCluster}
+                                toggleShowAddCluster={editModeToggle}
                                 toggleKubeConfigFile={true}
                                 isKubeConfigFile={state.isKubeConfigFile}
                                 toggleClusterDetails={true}
@@ -1093,25 +1071,6 @@ function ClusterForm({
             setLoadingState(false)
             showError(err)
         }
-    }
-
-    const otherResponses = (responseKey: string): boolean => {
-        const listOfResponses = [
-            'cluster_name',
-            'server_url',
-            'active',
-            'defaultClusterComponent',
-            'agentInstallationStage',
-            'k8sVersion',
-            'userName',
-            'insecureSkipTlsVerify',
-            'errorInConnecting',
-            'isCdArgoSetup',
-        ]
-        for (var responses in listOfResponses) {
-            if (responseKey === responses) return false
-        }
-        return true
     }
 
     function YAMLtoJSON(saveYamlData) {
@@ -1353,6 +1312,7 @@ function ClusterForm({
         if (isClusterDetails) {
             toggleClusterDetails(!isClusterDetails)
         }
+
         setTlsConnectionFalse()
         toggleShowAddCluster()
         setLoadingState(false)
@@ -1388,18 +1348,33 @@ function ClusterForm({
                     />
                 </div>
                 <div className="form__row form__row--bearer-token flex column left top">
-                    <div className="bearer-token">
-                        <ResizableTextarea
-                            className="dc__resizable-textarea__with-max-height dc__required-field"
-                            name="token"
-                            value={config && config.bearer_token ? config.bearer_token : ''}
-                            onChange={handleOnChange}
-                            onBlur={handleOnBlur}
-                            onFocus={handleOnFocus}
-                            placeholder="Enter bearer token"
-                            dataTestId="enter_bearer_token_input"
-                        />
-                    </div>
+                    {id ? (
+                        <div className="bearer-token">
+                            <ResizableTextarea
+                                className="dc__resizable-textarea__with-max-height dc__required-field"
+                                name="token"
+                                value={config && config.bearer_token ? config.bearer_token : '*****'}
+                                onChange={handleOnChange}
+                                onBlur={handleOnBlur}
+                                onFocus={handleOnFocus}
+                                placeholder="Enter bearer token"
+                                dataTestId="enter_bearer_token_input"
+                            />
+                        </div>
+                    ) : (
+                        <div className="bearer-token">
+                            <ResizableTextarea
+                                className="dc__resizable-textarea__with-max-height dc__required-field"
+                                name="token"
+                                value={config && config.bearer_token ? config.bearer_token : ''}
+                                onChange={handleOnChange}
+                                onBlur={handleOnBlur}
+                                onFocus={handleOnFocus}
+                                placeholder="Enter bearer token"
+                                dataTestId="enter_bearer_token_input"
+                            />
+                        </div>
+                    )}
                     {state.token.error && (
                         <label htmlFor="" className="form__error">
                             <FormError className="form__icon form__icon--error" />
@@ -1409,7 +1384,6 @@ function ClusterForm({
                 </div>
                 {isGrafanaModuleInstalled && (
                     <>
-                        <hr />
                         <div className="dc__position-rel flex left cursor dc__hover mb-20">
                             <Checkbox
                                 isChecked={isTlsConnection}
@@ -1423,7 +1397,6 @@ function ClusterForm({
                                 </div>
                             </Checkbox>
                         </div>
-                        <hr />
                         {isTlsConnection && (
                             <>
                                 <div className="form__row">
@@ -1541,19 +1514,6 @@ function ClusterForm({
                         ) : null}
                     </div>
                 )}
-                {/* <div className={`form__buttons`}>
-                    {id && (
-                        <button
-                            data-testid="delete_cluster"
-                            style={{ margin: 'auto', marginLeft: 0 }}
-                            className="flex cta override-button delete scr-5 h-32"
-                            type="button"
-                            onClick={() => toggleConfirmation(true)}
-                        >
-                            {deleting ? <Progressing /> : 'Delete'}
-                        </button>
-                    )}
-                </div> */}
             </>
         )
     }
@@ -1693,9 +1653,9 @@ function ClusterForm({
         return <LoadingCluster />
     }
 
-    const editKubeConfigState = () => {
+    const handleEditKubeconfig = () => {
+        toggleKubeConfigFile(true)
         toggleGetCluster()
-        setUploadState(UPLOAD_STATE.UPLOAD)
     }
 
     const saveClusterDetails = (): JSX.Element => {
@@ -1756,7 +1716,7 @@ function ClusterForm({
                         <button
                             className="ml-20 dc_edit_button cb-5"
                             type="button"
-                            onClick={toggleGetCluster}
+                            onClick={toggleKubeConfigFile}
                             style={{ marginRight: 'auto' }}
                         >
                             <span style={{ display: 'flex', alignItems: 'center' }}>
@@ -2017,7 +1977,7 @@ function ClusterForm({
                     data-testid="header_close_icon"
                     type="button"
                     className="dc__transparent flex icon-dim-24 mr-24"
-                    onClick={handleCloseButton}
+                    onClick={id ? (e) => toggleEditMode((t) => !t) : handleCloseButton}
                 >
                     <Close className="icon-dim-24" />
                 </button>
@@ -2030,6 +1990,10 @@ function ClusterForm({
         toggleShowAddCluster()
     }
 
+    const closeEdit = () => {
+        toggleShowAddCluster()
+    }
+
     return getClusterVar ? (
         displayClusterDetails()
     ) : (
@@ -2039,7 +2003,7 @@ function ClusterForm({
                 style={{ padding: 'auto 0' }}
                 onSubmit={handleOnSubmit}
             >
-                <AddClusterHeader/>
+                <AddClusterHeader />
 
                 <div className="pl-20 pr-20" style={{ overflow: 'auto', height: 'calc(100vh - 169px)' }}>
                     {!id && (
@@ -2079,21 +2043,24 @@ function ClusterForm({
                                 {deleting ? <Progressing /> : 'Delete'}
                             </button>
                         )}
-                        <button
-                            data-testid="cancel_button"
-                            className="cta cancel"
-                            type="button"
-                            onClick={handleCloseButton}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            data-testid="save_cluster_after_entering_cluster_details"
-                            className="cta mr-20 ml-20"
-                            onClick={() => saveClusterCall()}
-                        >
-                            {'Save cluster'}
-                        </button>
+
+                        <div>
+                            <button
+                                data-testid="cancel_button"
+                                className="cta cancel"
+                                type="button"
+                                onClick={closeEdit}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                data-testid="save_cluster_after_entering_cluster_details"
+                                className="cta mr-20 ml-20"
+                                onClick={() => saveClusterCall()}
+                            >
+                                {'Save cluster'}
+                            </button>
+                        </div>
                     </div>
                 )}
                 {confirmation && (
