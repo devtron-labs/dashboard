@@ -417,7 +417,7 @@ export default function CICreateDockerfileOption({
                     </CodeEditor.Header>
                 </CodeEditor>
             </div>
-            {(!configOverrideView || allowOverride) && (
+            {window._env_.ENABLE_BUILD_CONTEXT && (!configOverrideView || allowOverride) && (
                 <div className="flex left row ml-0 build-context-label fs-13 mb-6">
                     <span className="flex pointer" onClick={toggleCollapse}>
                         <Dropdown
@@ -432,7 +432,7 @@ export default function CICreateDockerfileOption({
                     ) : null}
                 </div>
             )}
-            {(!configOverrideView || allowOverride ? isCollapsed : true) && (
+            {window._env_.ENABLE_BUILD_CONTEXT && (!configOverrideView || allowOverride ? isCollapsed : true) && (
                 <div className={`form-row__docker ${!configOverrideView || allowOverride ? 'ml-24' : ''}`}>
                     <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                         <label className="form__label">{`${
