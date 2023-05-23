@@ -17,7 +17,6 @@ import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
-import { log } from 'console'
 
 export function K8SResourceList({
     selectedResource,
