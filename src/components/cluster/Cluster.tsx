@@ -1224,20 +1224,21 @@ function ClusterForm({
             if (
                 (state.tlsClientKey.value || state.tlsClientCert.value || state.certificateAuthorityData.value) &&
                 prometheusToggleEnabled
-            ) {
+              ) {
                 let isValid =
-                    state.tlsClientKey.value?.length &&
-                    state.tlsClientCert.value?.length &&
-                    state.certificateAuthorityData?.length
+                  state.tlsClientKey.value?.length > 0 &&
+                  state.tlsClientCert.value?.length > 0 &&
+                  state.certificateAuthorityData.value?.length > 0;
+              
                 if (!isValid) {
-                    toast.error('Please add TLS Key, Certificate and Certificate Authority Data')
-                    return
+                  toast.error('Please add TLS Key, Certificate, and Certificate Authority Data');
+                  return;
                 } else {
-                    payload.prometheusAuth['tlsClientKey'] = state.tlsClientKey.value || ''
-                    payload.prometheusAuth['tlsClientCert'] = state.tlsClientCert.value || ''
-                    payload.prometheusAuth['certificateAuthorityData'] = state.certificateAuthorityData.value || ''
+                  payload.prometheusAuth['tlsClientKey'] = state.tlsClientKey.value || '';
+                  payload.prometheusAuth['tlsClientCert'] = state.tlsClientCert.value || '';
+                  payload.prometheusAuth['certificateAuthorityData'] = state.certificateAuthorityData.value || '';
                 }
-            }
+              }
         }
 
         const api = id ? updateCluster : saveCluster
