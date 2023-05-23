@@ -245,7 +245,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             serverMode={this.props.serverMode}
                             isGrafanaModuleInstalled={true}
                             showEditCluster={this.state.showEditCluster}
-                            toggleShowAddCluster={this.toggleShowAddCluster}
+                            toggleShowAddCluster={this.toggleShowEditCluster}
                             toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                             setTlsConnectionFalse={this.setTlsConnectionFalse}
                             isTlsConnection={this.state.isTlsConnection}

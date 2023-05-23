@@ -1,4 +1,4 @@
-import React, { useState,useRef,} from 'react'
+import React, { useState, useRef } from 'react'
 import {
     showError,
     Progressing,
@@ -14,21 +14,10 @@ import {
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
 import YAML from 'yaml'
-import {
-    Pencil,
-    useForm,
-    CustomPassword,
-    Info,
-} from '../common'
+import { Pencil, useForm, CustomPassword, Info } from '../common'
 import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
-import {
-    saveCluster,
-    updateCluster,
-    deleteCluster,
-    validateCluster,
-    saveClusters,
-} from './cluster.service'
+import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
 import { ResizableTextarea } from '../configMaps/ConfigMap'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.svg'
@@ -45,16 +34,9 @@ import {
 } from './cluster.type'
 import { toast } from 'react-toastify'
 
-import {
-    CLUSTER_COMMAND,
-    AppCreationType,
-    MODES,
-} from '../../config'
+import { CLUSTER_COMMAND, AppCreationType, MODES } from '../../config'
 import DeleteComponent from '../../util/DeleteComponent'
-import {
-    DC_CLUSTER_CONFIRMATION_MESSAGE,
-    DeleteComponentsName,
-} from '../../config/constantMessaging'
+import { DC_CLUSTER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import TippyHeadless from '@tippyjs/react/headless'
