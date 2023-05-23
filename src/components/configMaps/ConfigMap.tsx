@@ -29,6 +29,7 @@ import { ReactComponent as File } from '../../assets/icons/ic-file.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg'
 import './ConfigMap.scss'
+import { INVALID_YAML_MSG } from '../../config/constantMessaging'
 
 const EXTERNAL_TYPES = {
     '': 'Kubernetes ConfigMap',
@@ -545,6 +546,7 @@ export function ConfigMapForm({
         let dataArray = yamlMode ? tempArray.current : externalValues
         const { isValid, arr } = validateKeyValuePair(dataArray)
         if (!isValid) {
+            toast.error(INVALID_YAML_MSG)
             setExternalValues(arr)
             return
         }
@@ -555,7 +557,7 @@ export function ConfigMapForm({
         try {
             let data = arr.reduce((agg, curr) => {
                 if (!curr.k) return agg
-                agg[curr.k] = curr.v || ''
+                agg[curr.k] = curr.v ?? ''
                 return agg
             }, {})
             setLoading(true)
@@ -996,7 +998,7 @@ export function useKeyValueYaml(keyValueArray, setKeyValueArray, keyPattern, key
                     keyErr = keyError
                     errorneousKeys.push(k)
                 }
-                return [...agg, { k, v: v || '', keyError: keyErr, valueError: '' }]
+                return [...agg, { k, v: v ?? '', keyError: keyErr, valueError: '' }]
             }, [])
             setKeyValueArray(tempArray)
             let error = ''

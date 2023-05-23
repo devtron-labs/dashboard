@@ -88,13 +88,16 @@ export default function CIDockerFileConfig({
         },
     ]
     const isDefaultBuildContext = (): boolean => {
-        let currentOverriddenGitMaterialId = 0,currentOverriddenBuildContextGitMaterialId = 0;
-        let currentOverriddenBuildContext = ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
-        currentOverriddenGitMaterialId = ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.gitMaterialId
-        currentOverriddenBuildContextGitMaterialId = ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.buildContextGitMaterialId
-        return (configOverrideView && allowOverride) ?
-            (currentOverriddenGitMaterialId === currentOverriddenBuildContextGitMaterialId) && (!currentOverriddenBuildContext || (currentOverriddenBuildContext === ''))
-            : ((currentMaterial.id === currentBuildContextGitMaterial.id) && (!(ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext) || ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext === ''))
+        if(window._env_.ENABLE_BUILD_CONTEXT) {
+            let currentOverriddenGitMaterialId = 0, currentOverriddenBuildContextGitMaterialId = 0;
+            let currentOverriddenBuildContext = ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
+            currentOverriddenGitMaterialId = ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.gitMaterialId
+            currentOverriddenBuildContextGitMaterialId = ciConfig?.ciPipelines?.[0]?.dockerConfigOverride?.ciBuildConfig?.buildContextGitMaterialId
+            return (configOverrideView && allowOverride) ?
+                (currentOverriddenGitMaterialId === currentOverriddenBuildContextGitMaterialId) && (!currentOverriddenBuildContext || (currentOverriddenBuildContext === ''))
+                : ((currentMaterial.id === currentBuildContextGitMaterial.id) && (!(ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext) || ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext === ''))
+        }
+        return false
     }
 
     const [isCollapsed, setIsCollapsed] = useState<boolean>(!isDefaultBuildContext())
@@ -148,17 +151,20 @@ export default function CIDockerFileConfig({
 
     const handleFileLocationChange = (selectedMaterial): void => {
         let buildContextGitMaterialId = 0
-        buildContextGitMaterialId = currentCIBuildConfig.buildContextGitMaterialId
-        setSelectedMaterial(selectedMaterial)
-        if(isDefaultBuildContext()){
-            setSelectedBuildContextGitMaterial(selectedMaterial)
-            buildContextGitMaterialId = selectedMaterial?.id
+        if(window._env_.ENABLE_BUILD_CONTEXT){
+            buildContextGitMaterialId = currentCIBuildConfig.buildContextGitMaterialId
+
+            if(isDefaultBuildContext()){
+                setSelectedBuildContextGitMaterial(selectedMaterial)
+                buildContextGitMaterialId = selectedMaterial?.id
+            }
         }
+        setSelectedMaterial(selectedMaterial)
         formState.repository.value = selectedMaterial.name
         setCurrentCIBuildConfig({
             ...currentCIBuildConfig,
             gitMaterialId: selectedMaterial.id,
-            buildContextGitMaterialId: buildContextGitMaterialId,
+            buildContextGitMaterialId: window._env_.ENABLE_BUILD_CONTEXT ? buildContextGitMaterialId : selectedMaterial.id,
         })
     }
 
@@ -392,7 +398,7 @@ export default function CIDockerFileConfig({
                     </div>
                 </div>
 
-                {(!configOverrideView || allowOverride) && (
+                {window._env_.ENABLE_BUILD_CONTEXT && (!configOverrideView || allowOverride) && (
                     <div className="flex left row ml-0 build-context-label fs-13 mb-6">
                         <span className="flex pointer" onClick={toggleCollapse}>
                             <Dropdown
@@ -408,7 +414,7 @@ export default function CIDockerFileConfig({
                     </div>
                 )}
 
-                {(!configOverrideView || allowOverride ? isCollapsed : true) && (
+                {window._env_.ENABLE_BUILD_CONTEXT && (!configOverrideView || allowOverride ? isCollapsed : true) && (
                     <div className={`form-row__docker ${!configOverrideView || allowOverride ? 'ml-24' : ''}`}>
                         <div className={`form__field ${configOverrideView ? 'mb-0-imp' : ''}`}>
                             <label className="form__label">{`${
