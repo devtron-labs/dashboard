@@ -1136,6 +1136,7 @@ export default function ClusterForm({
     const saveClusterCall = () => {
         onValidation()
         toggleShowAddCluster()
+        setTlsConnectionFalse()
     }
 
     return getClusterVar ? (
