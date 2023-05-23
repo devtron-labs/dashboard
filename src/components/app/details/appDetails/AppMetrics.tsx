@@ -240,6 +240,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                                     <input
                                         type="radio"
                                         name="status"
+                                        data-testid="app-metrics-aggregate-status"
                                         checked={tab === AppMetricsTab.Aggregate}
                                         value={AppMetricsTab.Aggregate}
                                         onChange={handleTabChange}
@@ -250,6 +251,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                                     <input
                                         type="radio"
                                         name="status"
+                                        data-testid="app-metrics-per-pod-status"
                                         checked={tab === AppMetricsTab.Pod}
                                         value={AppMetricsTab.Pod}
                                         onChange={handleTabChange}
@@ -292,7 +294,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                 <div className={`chart-containers`}>
                     {infraMetrics ? (
                         <>
-                            <div className={`app-metrics-graph chart`}>
+                            <div data-testid="app-metrics-cpu-usage" className={`app-metrics-graph chart`}>
                                 <div className="app-metrics-graph__title flexbox flex-justify">
                                     CPU Usage
                                     <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
@@ -306,7 +308,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                                 </div>
                                 <iframe title={ChartType.Cpu} src={graphs.cpu} className="app-metrics-graph__iframe" />
                             </div>
-                            <div className={`app-metrics-graph chart`}>
+                            <div data-testid="app-metrics-memory-usage" className={`app-metrics-graph chart`}>
                                 <div className="app-metrics-graph__title flexbox flex-justify">
                                     Memory Usage
                                     <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
@@ -326,7 +328,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                     )}
                     {appMetrics ? (
                         <>
-                            <div className={`app-metrics-graph chart`}>
+                            <div data-testid="app-metrics-throughput" className={`app-metrics-graph chart`}>
                                 <div className="flexbox flex-justify">
                                     <h3 className="app-details-graph__title flexbox m-0">
                                         <ThroughputSelect status={statusCode} handleStatusChange={handleStatusChange} />
@@ -346,7 +348,7 @@ export const AppMetrics: React.FC<{ appName: string, environment, podMap: Map<st
                                     className="app-metrics-graph__iframe"
                                 />
                             </div>
-                            <div className={`app-metrics-graph chart`}>
+                            <div data-testid="app-metrics-latency" className={`app-metrics-graph chart`}>
                                 <div className="app-metrics-graph__title flexbox flex-justify">
                                     <div className="flexbox">
                                         <h3 className="app-details-graph__title flexbox m-0 pr-4">Latency</h3>
@@ -404,7 +406,7 @@ function EnableAppMetrics() {
     const LINK = getAppComposeURL(appId, APP_COMPOSE_STAGE.DEPLOYMENT_TEMPLATE);
     return (
         <div
-            data-testid="app-metrices-wrapper"
+            data-testid="app-metrices-not-enabled"
             className="flex column br-4"
             style={{ gridColumn: '3 / span 2', background: 'var(--window-bg)' }}
         >
