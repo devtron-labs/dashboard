@@ -116,7 +116,6 @@ const PrometheusWarningInfo = () => {
     )
 }
 
-
 const PrometheusRequiredFieldInfo = () => {
     return (
         <div className="pt-10 pb-10 pl-16 pr-16 bcr-1 br-4 bw-1 er-2 mb-16">
@@ -170,7 +169,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     initialise() {
-        console.log("here")
+        console.log('here')
         if (this.timerRef) clearInterval(this.timerRef)
         Promise.all([
             getClusterList(),
@@ -395,7 +394,6 @@ function Cluster({
     const [showWindow, setShowWindow] = useState(false)
     const [envDelete, setDeleteEnv] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
-    const [deleting, setDeleting] = useState(false)
     const [loading, setLoading] = useState(false)
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false)
     const [, grafanaModuleStatus] = useAsync(
@@ -674,22 +672,6 @@ function Cluster({
         }
     }
 
-    let payload = {
-        id,
-        cluster_name,
-        config: { bearer_token: state.token.value },
-        active,
-        prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
-        prometheusAuth: {
-            userName: prometheusToggleEnabled ? state.userName.value : '',
-            password: prometheusToggleEnabled ? state.password.value : '',
-        },
-        server_url,
-        defaultClusterComponent: defaultClusterComponent,
-        k8sversion: '',
-        insecureSkipTlsVerify: !isTlsConnection,
-    }
-
     return (
         <>
             <article
@@ -732,12 +714,13 @@ function Cluster({
                             </div>
                             {clusterId && (
                                 <Tippy
-                                    data-testid="edit_cluster_pencil"
                                     className="default-tt cursor"
                                     arrow={false}
                                     content="Edit Cluster"
                                 >
-                                    <PencilEdit onClick={handleEdit} />
+                                    <div data-testid={`edit_cluster_pencil-${clusterId}`}>
+                                        <PencilEdit onClick={handleEdit} />
+                                    </div>
                                 </Tippy>
                             )}
                         </List>
@@ -873,29 +856,29 @@ function Cluster({
                         )}
                     </>
                 ) : (
-                        <Drawer position="right" width="1000px" onEscape={toggleShowAddCluster}>
-                            <ClusterForm
-                                id={clusterId}
-                                cluster_name={cluster_name}
-                                server_url={server_url}
-                                active={true}
-                                config={{}}
-                                reload={reload}
-                                prometheus_url=""
-                                prometheusAuth={state.prometheus}
-                                defaultClusterComponent={state.defaultClusterComponent}
-                                isGrafanaModuleInstalled={true}
-                                isTlsConnection={isTlsConnection}
-                                isClusterDetails={state.isClusterDetails}
-                                toggleCheckTlsConnection={toggleCheckTlsConnection}
-                                setTlsConnectionFalse={setTlsConnectionFalse}
-                                toggleShowAddCluster={toggleShowAddCluster}
-                                toggleKubeConfigFile={true}
-                                isKubeConfigFile={state.isKubeConfigFile}
-                                toggleEditMode={toggleEditMode}
-                                toggleClusterDetails={true}
-                            />
-                        </Drawer>
+                    <Drawer position="right" width="1000px" onEscape={toggleShowAddCluster}>
+                        <ClusterForm
+                            id={clusterId}
+                            cluster_name={cluster_name}
+                            server_url={server_url}
+                            active={true}
+                            config={{}}
+                            reload={reload}
+                            prometheus_url=""
+                            prometheusAuth={state.prometheus}
+                            defaultClusterComponent={state.defaultClusterComponent}
+                            isGrafanaModuleInstalled={true}
+                            isTlsConnection={isTlsConnection}
+                            isClusterDetails={state.isClusterDetails}
+                            toggleCheckTlsConnection={toggleCheckTlsConnection}
+                            setTlsConnectionFalse={setTlsConnectionFalse}
+                            toggleShowAddCluster={toggleShowAddCluster}
+                            toggleKubeConfigFile={true}
+                            isKubeConfigFile={state.isKubeConfigFile}
+                            toggleEditMode={toggleEditMode}
+                            toggleClusterDetails={true}
+                        />
+                    </Drawer>
                 )}
             </article>
             {showWindow && (
@@ -961,7 +944,6 @@ function ClusterForm({
     const [isClusterSelected, setClusterSeleceted] = useState<Record<string, boolean>>({})
     const [selectAll, setSelectAll] = useState<boolean>(false)
     const [getClusterVar, setGetClusterState] = useState<boolean>(false)
-    // const [selectedClusterState, setSelectedClusterState] = useState<boolean>(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
@@ -1098,25 +1080,6 @@ function ClusterForm({
             setLoadingState(false)
             showError(err)
         }
-    }
-
-    const otherResponses = (responseKey: string): boolean => {
-        const listOfResponses = [
-            'cluster_name',
-            'server_url',
-            'active',
-            'defaultClusterComponent',
-            'agentInstallationStage',
-            'k8sVersion',
-            'userName',
-            'insecureSkipTlsVerify',
-            'errorInConnecting',
-            'isCdArgoSetup',
-        ]
-        for (var responses in listOfResponses) {
-            if (responseKey === responses) return false
-        }
-        return true
     }
 
     function YAMLtoJSON(saveYamlData) {
@@ -1350,8 +1313,8 @@ function ClusterForm({
     }
 
     const handleCloseButton = () => {
-        if(id){
-            toggleEditMode((e)=>!e)
+        if (id) {
+            toggleEditMode((e) => !e)
             return
         }
         if (isKubeConfigFile) {
@@ -1482,7 +1445,7 @@ function ClusterForm({
                                 </div>
                             </>
                         )}
-                     
+
                         <div
                             className={`${
                                 prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'
@@ -1553,19 +1516,6 @@ function ClusterForm({
                         ) : null}
                     </div>
                 )}
-                {/* <div className={`form__buttons`}>
-                    {id && (
-                        <button
-                            data-testid="delete_cluster"
-                            style={{ margin: 'auto', marginLeft: 0 }}
-                            className="flex cta override-button delete scr-5 h-32"
-                            type="button"
-                            onClick={() => toggleConfirmation(true)}
-                        >
-                            {deleting ? <Progressing /> : 'Delete'}
-                        </button>
-                    )}
-                </div> */}
             </>
         )
     }
@@ -1617,7 +1567,6 @@ function ClusterForm({
                         </CodeEditor.Header>
                     </CodeEditor>
                 </div>
-
             </>
         )
     }
@@ -1681,11 +1630,6 @@ function ClusterForm({
 
     if (loader) {
         return <LoadingCluster />
-    }
-
-    const editKubeConfigState = () => {
-        toggleGetCluster()
-        setUploadState(UPLOAD_STATE.UPLOAD)
     }
 
     const saveClusterDetails = (): JSX.Element => {
@@ -2029,7 +1973,7 @@ function ClusterForm({
                 style={{ padding: 'auto 0' }}
                 onSubmit={handleOnSubmit}
             >
-                <AddClusterHeader/>
+                <AddClusterHeader />
 
                 <div className="pl-20 pr-20" style={{ overflow: 'auto', height: 'calc(100vh - 169px)' }}>
                     {!id && (
@@ -2061,7 +2005,7 @@ function ClusterForm({
                         {id && (
                             <button
                                 data-testid="delete_cluster"
-                                style={{ margin: 'auto', marginLeft: 20}}
+                                style={{ margin: 'auto', marginLeft: 20 }}
                                 className="flex cta delete scr-5"
                                 type="button"
                                 onClick={() => toggleConfirmation(true)}
@@ -2082,12 +2026,12 @@ function ClusterForm({
                             className="cta mr-20 ml-20"
                             onClick={() => saveClusterCall()}
                         >
-                            {id ? 'Update cluster':'Save cluster'}
+                            {id ? 'Update cluster' : 'Save cluster'}
                         </button>
                     </div>
                 )}
                 {isKubeConfigFile && (
-                        <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                    <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
                         <button
                             data-testid="cancel_kubeconfig_button"
                             className="cta cancel"
@@ -2096,7 +2040,7 @@ function ClusterForm({
                         >
                             Cancel
                         </button>
-    
+
                         <button
                             className="cta mr-32 ml-20 "
                             type="button"
