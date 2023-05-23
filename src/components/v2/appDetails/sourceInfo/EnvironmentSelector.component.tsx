@@ -24,12 +24,13 @@ import { checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
+import { ReactComponent as VirtualCluster } from '../../../../assets/icons/ic-environment-temp.svg'
 
 function EnvironmentSelectorComponent({
     isExternalApp,
     _init,
     loadingResourceTree,
-    isVirtualEnvironment
+    isVirtualEnvironment,
 }: {
     isExternalApp: boolean
     _init?: () => void
@@ -118,6 +119,28 @@ function EnvironmentSelectorComponent({
         }
     }
 
+    const deploymentAppTypeIcon = () => {
+        if (isGitops) {
+            return <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16 mr-8" />
+        } else if (appDetails?.deploymentAppType === DeploymentAppType.helm) {
+            return <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
+        } else {
+            return <VirtualCluster data-testid="helm-app-logo" className="icon-dim-32 fcb-5 ml-16" />
+        }
+    }
+
+////// Need to confirm //// 
+
+    // const iconTippyMessage = () => {
+    //     if (isVirtualEnvironment) {
+    //         return
+    //     } else if (isGitops) {
+    //         return DeploymentAppTypeNameMapping.GitOps
+    //     } else {
+    //         return DeploymentAppTypeNameMapping.Helm
+    //     }
+    // }
+
     const deployedAppDetail = isExternalApp && params.appId && params.appId.split('|')
 
     return (
@@ -205,16 +228,13 @@ function EnvironmentSelectorComponent({
                         <Tippy
                             className="default-tt"
                             arrow={false}
+                            disabled={isVirtualEnvironment}
                             placement="top"
                             content={`Deployed using ${
                                 isGitops ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
                             }`}
                         >
-                            {isGitops ? (
-                                <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16 mr-8" />
-                            ) : (
-                                <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
-                            )}
+                            {deploymentAppTypeIcon()}
                         </Tippy>
                     )}
                     {appDetails?.deploymentAppDeleteRequest && (
@@ -229,13 +249,17 @@ function EnvironmentSelectorComponent({
 
             {!loadingResourceTree && (
                 <div className="flex">
-                    {!appDetails.deploymentAppDeleteRequest  && !isVirtualEnvironment &&  (
-                        <button className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2" onClick={showInfoUrl} data-testid="url-button-app-details">
+                    {!appDetails.deploymentAppDeleteRequest && !isVirtualEnvironment && (
+                        <button
+                            className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2"
+                            onClick={showInfoUrl}
+                            data-testid="url-button-app-details"
+                        >
                             <LinkIcon className="icon-dim-16 mr-6 icon-color-n7" />
                             Urls
                         </button>
                     )}
-                    {!showWorkloadsModal  && !isVirtualEnvironment && (
+                    {!showWorkloadsModal && !isVirtualEnvironment && (
                         <button
                             className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
                             onClick={() => setWorkloadsModal(true)}
