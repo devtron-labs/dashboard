@@ -23,6 +23,7 @@ import Tippy from '@tippyjs/react'
 import { BuildersAndFrameworksType, CIDockerFileConfigProps } from './types'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { RootBuildContext } from './ciConfigConstant'
 
 export default function CIDockerFileConfig({
     configOverrideView,
@@ -105,15 +106,15 @@ export default function CIDockerFileConfig({
 
     const [isCollapsed, setIsCollapsed] = useState<boolean>(!isDefaultBuildContext())
     const buildContextCheckoutPath = selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial.checkoutPath : currentMaterial?.checkoutPath
-    let checkoutPathArray = [{label: './', value: './'}]
-    if(buildContextCheckoutPath !== './'){
+    let checkoutPathArray = [{label: RootBuildContext, value: RootBuildContext}]
+    if(buildContextCheckoutPath !== RootBuildContext){
         checkoutPathArray.push({label: buildContextCheckoutPath,value: buildContextCheckoutPath})
     }
     const [checkoutPathOptions, setCheckoutPathOptions] = useState<OptionType[]>(checkoutPathArray)
 
     useEffect( () => {
-        let checkoutPathArray = [{label: './', value: './'}]
-        if(selectedBuildContextGitMaterial?.checkoutPath !== './'){
+        let checkoutPathArray = [{label: RootBuildContext, value: RootBuildContext}]
+        if(selectedBuildContextGitMaterial?.checkoutPath !== RootBuildContext){
             checkoutPathArray.push({label: selectedBuildContextGitMaterial?.checkoutPath, value: selectedBuildContextGitMaterial?.checkoutPath})
         }
         setCheckoutPathOptions(checkoutPathArray)
@@ -230,7 +231,7 @@ export default function CIDockerFileConfig({
     const handleBuildContextCheckoutPathChange = (checkoutPath) => {
         const val = checkoutPath.value
         let flag = false
-        if(val === './'){
+        if(val === RootBuildContext){
             flag = true
         }
         setUseRootBuildContextFlag(flag)
@@ -249,10 +250,10 @@ export default function CIDockerFileConfig({
     const getCheckoutPathValue = (selectedMaterial:any,currentMaterial:any,useRootBuildContextFlag:boolean) : OptionType => {
         const val = configOverrideView && !allowOverride
             ? useRootBuildContextFlag ?
-                './' : currentBuildContextGitMaterial.checkoutPath
+                RootBuildContext : currentBuildContextGitMaterial.checkoutPath
             : selectedBuildContextGitMaterial ? useRootBuildContextFlag ?
-                './' : selectedBuildContextGitMaterial.checkoutPath : useRootBuildContextFlag ?
-                './' : currentMaterial.checkoutPath
+                RootBuildContext : selectedBuildContextGitMaterial.checkoutPath : useRootBuildContextFlag ?
+                RootBuildContext : currentMaterial.checkoutPath
         return {label:val,value:val}
     }
 
@@ -515,7 +516,7 @@ export default function CIDockerFileConfig({
                             </label>
                             {configOverrideView && !allowOverride ? (
                                 <span className="fs-14 fw-4 lh-20 cn-9">
-                                    {`${ciConfig?.ciBuildConfig?.useRootBuildContext ? './' : selectedBuildContextGitMaterial?.checkoutPath}/${
+                                    {`${ciConfig?.ciBuildConfig?.useRootBuildContext ? RootBuildContext : selectedBuildContextGitMaterial?.checkoutPath}/${
                                         ciConfig?.ciBuildConfig?.dockerBuildConfig?.buildContext || ''
                                     }`.replace('//', '/')}
                                 </span>

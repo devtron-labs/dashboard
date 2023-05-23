@@ -5,6 +5,7 @@ import { CIBuildType, CIPipelineDataType, DockerConfigOverrideType } from '../ci
 import { deepEqual } from '../common'
 import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 import { CIBuildArgType, CIConfigDiffType } from './types'
+import {RootBuildContext} from "./ciConfigConstant";
 
 export const _customStyles = {
     control: (base) => ({
@@ -539,9 +540,9 @@ export const getCIConfigDiffValues = (
             },
             {
                 configName: 'Build context',
-                changeBGColor: (globalUseRootBuildContext ? './' : globalBuildContextGitMaterialItem?.checkoutPath + (globalBuildContext ?  globalBuildContext : '')) !== (currentUseRootBuildContext ? './' : currentBuildContextGitMaterialItem?.checkoutPath + (currentBuildContext ? currentBuildContext: '')),
-                baseValue: globalUseRootBuildContext ? './' : globalBuildContextGitMaterialItem?.checkoutPath + (globalBuildContext ?  globalBuildContext : ''),
-                overridenValue: currentUseRootBuildContext ? './' : currentBuildContextGitMaterialItem?.checkoutPath + (currentBuildContext ? currentBuildContext: ''),
+                changeBGColor: (globalUseRootBuildContext ? RootBuildContext : globalBuildContextGitMaterialItem?.checkoutPath + (globalBuildContext ?  globalBuildContext : '')) !== (currentUseRootBuildContext ? RootBuildContext : currentBuildContextGitMaterialItem?.checkoutPath + (currentBuildContext ? currentBuildContext: '')),
+                baseValue: globalUseRootBuildContext ? RootBuildContext : globalBuildContextGitMaterialItem?.checkoutPath + (globalBuildContext ?  globalBuildContext : ''),
+                overridenValue: currentUseRootBuildContext ? RootBuildContext : currentBuildContextGitMaterialItem?.checkoutPath + (currentBuildContext ? currentBuildContext: ''),
             },
         )
     }
