@@ -505,7 +505,7 @@ export default function CICreateDockerfileOption({
                         ) : (
                             <div className="docker-file-container">
                                 <ReactSelect
-                                    className="m-0 w-25"
+                                    className="m-0"
                                     classNamePrefix="build-config__select-checkout-path-for-build-context"
                                     tabIndex={4}
                                     isMulti={false}
