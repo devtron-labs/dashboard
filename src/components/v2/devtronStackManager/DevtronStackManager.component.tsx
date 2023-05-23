@@ -345,10 +345,10 @@ const InstallationStatus = ({
             setShowResourceStatusModal(true)
         }
     }
-
+    const moduleNotEnabled= moduleDetails &&(moduleDetails.enabled === false && moduleDetails.installationStatus === ModuleStatus.INSTALLED )
     return (
         <div
-            className={`module-details__installtion-status cn-9 br-4 fs-13 fw-6 mb-16 status-${installationStatus} ${
+            className={`module-details__installtion-status cn-9 br-4 fs-13 fw-6 status-${moduleNotEnabled? 'notEnabled mb-6' : `${installationStatus} mb-16`} ${
                 isUpgradeView ? 'upgrade' : ''
             }`}
         >
@@ -371,10 +371,12 @@ const InstallationStatus = ({
                             <span className="mt-12">You're using the latest version of Devtron.</span>
                         </div>
                     ) : (
-                        <div className="module-details__installtion-success flex left">
+                        <div className="module-details__installtion-success flexbox dc__content-space">
+                            <span className="flexbox left">
                             <SuccessIcon className="icon-dim-20 mr-12" /> Installed
-                            {moduleDetails &&(moduleDetails.enabled === false && moduleDetails.installationStatus === ModuleStatus.INSTALLED )? (
-                                <span className="fs-12 ml-60 fw-4 cn-7">Not Enabled</span>
+                            </span>
+                            {moduleNotEnabled ? (
+                                <span className="flex right fs-12 fw-4 cn-7">Not Enabled</span>
                             ) : (
                                 ''
                             )}
@@ -858,7 +860,7 @@ export const EnablingStepsView = (): JSX.Element => {
     return (
         <div className="form__field fs-12 ml-20 mb-20 color-blue">
             <label htmlFor="" className="form__label flexbox-imp flex-align-center">
-                <QuestionIcon className="icon-dim-16 ml-4 cursor fcb-5 " />
+                <QuestionIcon className="icon-dim-16 ml-4 cursor fcb-5 mr-4 " />
                 <TippyCustomized
                     theme={TippyTheme.white}
                     className="w-300"
@@ -868,7 +870,6 @@ export const EnablingStepsView = (): JSX.Element => {
                     heading={ENABLE_TIPPY_CONTENT.heading}
                     showCloseButton={true}
                     trigger="click"
-                    interactive={true}
                     additionalContent={
                         <div className="fs-13 fw-400 ml-20 mb-20 mr-20 mt-20">
                             <div> You can enable this integration by: </div>
@@ -877,14 +878,13 @@ export const EnablingStepsView = (): JSX.Element => {
                                 <span className="dc__bold">NOTE: </span>Only one Vulnerability scanning integration can
                                 be enabled at a time.
                                 <span>
-                                    {' '}
                                     Enabling this integration will automatically disable the other integration.
                                 </span>
                             </div>
                         </div>
                     }
                 >
-                    <span className="fs-12 color-blue"> How can I enable this integration?</span>
+                    <span className="fs-12 cb-5 pointer"> How can I enable this integration?</span>
                 </TippyCustomized>
             </label>
         </div>

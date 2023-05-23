@@ -157,6 +157,10 @@
             border: 1px solid var(--G200);
         }
 
+        &.status-notEnabled {
+            padding: 8px 16px 8px 16px;
+            border: 1px solid var(--N200);
+        }
         &.status-installFailed,
         &.status-timeout,
         &.status-upgradeFailed,
