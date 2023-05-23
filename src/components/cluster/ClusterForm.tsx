@@ -1,4 +1,4 @@
-import React, { useState, useMemo, Component, useRef, useEffect } from 'react'
+import React, { useState,useRef,} from 'react'
 import {
     showError,
     Progressing,
@@ -20,7 +20,6 @@ import {
     CustomPassword,
     Info,
 } from '../common'
-// import { RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import {
@@ -272,25 +271,6 @@ export default function ClusterForm({
             setLoadingState(false)
             showError(err)
         }
-    }
-
-    const otherResponses = (responseKey: string): boolean => {
-        const listOfResponses = [
-            'cluster_name',
-            'server_url',
-            'active',
-            'defaultClusterComponent',
-            'agentInstallationStage',
-            'k8sVersion',
-            'userName',
-            'insecureSkipTlsVerify',
-            'errorInConnecting',
-            'isCdArgoSetup',
-        ]
-        for (var responses in listOfResponses) {
-            if (responseKey === responses) return false
-        }
-        return true
     }
 
     function YAMLtoJSON(saveYamlData) {
@@ -729,19 +709,6 @@ export default function ClusterForm({
                         ) : null}
                     </div>
                 )}
-                {/* <div className={`form__buttons`}>
-                    {id && (
-                        <button
-                            data-testid="delete_cluster"
-                            style={{ margin: 'auto', marginLeft: 0 }}
-                            className="flex cta override-button delete scr-5 h-32"
-                            type="button"
-                            onClick={() => toggleConfirmation(true)}
-                        >
-                            {deleting ? <Progressing /> : 'Delete'}
-                        </button>
-                    )}
-                </div> */}
             </>
         )
     }
@@ -962,7 +929,6 @@ export default function ClusterForm({
         }
         setClusterSeleceted(_currentSelections)
 
-        // Show checked states (checked | intermediate) for cluster selection parent checkbox if any of the value is selected
         if (Object.values(_currentSelections).some((selected) => selected)) {
             setSelectAll(true)
         } else {
@@ -979,7 +945,6 @@ export default function ClusterForm({
                 selectedUserNameOptions[selection].errorInConnecting !== 'cluster-already-exists' &&
                 selectedUserNameOptions[selection].errorInConnecting.length > 0
             ) {
-                // Skip disabled checkboxes
                 return
             }
 
@@ -996,7 +961,6 @@ export default function ClusterForm({
 
         _validCluster.forEach((_dataList) => {
             let found = false
-
             _dataList.userInfos.forEach((userInfo) => {
                 if (
                     userInfo.errorInConnecting.length === 0 ||
@@ -1005,12 +969,10 @@ export default function ClusterForm({
                     found = true
                 }
             })
-
             if (found) {
                 count++
             }
         })
-
         return count
     }
 
@@ -1027,7 +989,6 @@ export default function ClusterForm({
             ...selectedUserNameOptions,
             [clusterDetail.cluster_name]: selectedOption,
         })
-
         toggleIsSelected(clusterDetail.cluster_name, true)
     }
 
