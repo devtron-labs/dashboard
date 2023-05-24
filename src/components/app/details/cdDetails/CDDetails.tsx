@@ -418,6 +418,13 @@ const HistoryLogs: React.FC<{
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
 
+    const paramsData = {
+        appId,
+        envId,
+        appName: triggerDetails.artifact,
+        workflowId: triggerDetails.id, 
+    }
+
     return (
         <>
             <div className="trigger-outputs-container">
@@ -485,9 +492,7 @@ const HistoryLogs: React.FC<{
                                     {triggerDetails.IsVirtualEnvironment ? (
                                         <VirtualHistoryArtifact
                                             titleName={triggerDetails.artifact}
-                                            appId={appId}
-                                            envId={envId}
-                                            cd_workflow_id={pipelineId}
+                                            params={paramsData}
                                         />
                                     ) : (
                                         <Artifacts
