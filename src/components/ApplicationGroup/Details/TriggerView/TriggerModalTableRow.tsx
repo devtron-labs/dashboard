@@ -12,6 +12,11 @@ const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifes
 
 export function TriggerModalTabelRow({ rowData, index, isVirtualEnv }: TriggerModalTabelRowType) {
     const [downloader, setDownLoader] = useState(false)
+    const params = {
+        appId: rowData.appId,
+        envId: rowData.envId,
+        appName: rowData.appName
+    }
 
     const renderStatusIcon = (rowData: ResponseRowType): JSX.Element => {
         if (rowData.status === BulkResponseStatus.UNAUTHORIZE) {
@@ -23,15 +28,10 @@ export function TriggerModalTabelRow({ rowData, index, isVirtualEnv }: TriggerMo
         }
     }
 
-    const closeLoader = () => {
-        setDownLoader(false)
-    }
-
     const downloadPackage = (e) => {
         e.stopPropagation()
         if (getDeployManifestDownload) {
-            setDownLoader(true)
-            getDeployManifestDownload(e.currentTarget.dataset.appId, e.currentTarget.dataset.envId, null, closeLoader)
+            getDeployManifestDownload(params, setDownLoader)
         }
     }
 
@@ -46,8 +46,6 @@ export function TriggerModalTabelRow({ rowData, index, isVirtualEnv }: TriggerMo
             {isVirtualEnv && rowData.envId && rowData.status === BulkResponseStatus.PASS && (
                 <div
                     className="flex cursor"
-                    data-app-id={rowData.appId}
-                    data-env-id={rowData.envId}
                     onClick={downloadPackage}
                 >
                     {downloader ? (
