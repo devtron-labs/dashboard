@@ -41,7 +41,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
-import { DOCUMENTATION, ModuleNameMap, URLS } from '../../../config'
+import { DOCUMENTATION, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
 import { toast } from 'react-toastify'
 import {
@@ -130,7 +130,7 @@ const ModuleDetailsCard = ({
             onClick={handleOnClick}
             data-testid={datatestid}
         >
-            {getInstallationStatusLabel(moduleDetails.installationStatus,moduleDetails.enabled,datatestid)}
+            {getInstallationStatusLabel(moduleDetails.installationStatus,moduleDetails?.moduleType===MODULE_TYPE_SECURITY?moduleDetails.enabled:true,datatestid)}
             <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
             <div className="module-details__card-name fs-16 fw-4 cn-9 mb-4" data-testid={`title-${datatestid}`}>{moduleDetails.title}</div>
             <div className="module-details__card-info dc__ellipsis-right__2nd-line fs-13 fw-4 cn-7 lh-20">
@@ -345,7 +345,7 @@ const InstallationStatus = ({
             setShowResourceStatusModal(true)
         }
     }
-    const moduleNotEnabled= moduleDetails &&(moduleDetails.enabled === false && moduleDetails.installationStatus === ModuleStatus.INSTALLED )
+    const moduleNotEnabled= moduleDetails &&(moduleDetails.enabled === false && moduleDetails.installationStatus === ModuleStatus.INSTALLED ) && (moduleDetails.moduleType===MODULE_TYPE_SECURITY)
     return (
         <div
             className={`module-details__installtion-status cn-9 br-4 fs-13 fw-6 status-${moduleNotEnabled? 'notEnabled mb-6' : `${installationStatus} mb-16`} ${
@@ -773,7 +773,7 @@ export const InstallationWrapper = ({
                                 setShowResourceStatusModal={setShowResourceStatusModal}
                             />
                         )}
-                        {moduleDetails && (moduleDetails.enabled === false && moduleDetails.installationStatus === ModuleStatus.INSTALLED ) ? <EnablingStepsView /> : ''}
+                        {moduleDetails && (moduleDetails.moduleType===MODULE_TYPE_SECURITY&& moduleDetails.enabled === false && moduleDetails.installationStatus === ModuleStatus.INSTALLED ) ? <EnablingStepsView /> : ''}
                         {moduleDetails && moduleDetails.isModuleConfigurable && !moduleDetails.isModuleConfigured && (
                             <ModuleNotConfigured moduleName={moduleName} />
                         )}

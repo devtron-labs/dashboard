@@ -638,6 +638,7 @@ export const EXTERNAL_TYPES = {
 
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
 export const DEPLOYMENT = 'Deployment'
+export const MODULE_TYPE_SECURITY='security'
 
 export const ModuleNameMap = {
     ARGO_CD: 'argo-cd',
