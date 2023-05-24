@@ -138,26 +138,23 @@ export const GitChanges = ({
 }
 
 export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyViewType) => {
+
+    const EmptyButton = () => {
+        return (
+            <>
+                {link && (
+                    <EmptyState.Button>
+                        <NavLink to={link} className="cta cta--ci-details flex" target="_blank">
+                            <OpenInNew className="mr-5 mr-5 scn-0 fcb-5 icon-fill-blue-imp" />
+                            {linkText}
+                        </NavLink>
+                    </EmptyState.Button>
+                )}
+            </>
+        )
+    }
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <img src={imgSrc ?? AppNotDeployed} alt="" />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
-                    {title}
-                </h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>{subTitle}</EmptyState.Subtitle>
-            {link && (
-                <EmptyState.Button>
-                    <NavLink to={link} className="cta cta--ci-details flex" target="_blank">
-                        <OpenInNew className="mr-5 mr-5 scn-0 fcb-5 icon-fill-blue-imp" />
-                        {linkText}
-                    </NavLink>
-                </EmptyState.Button>
-            )}
-        </EmptyState>
+        <GenericEmptyState image={imgSrc} title={title} subTitle={subTitle} isButtonAvailable={!!link} renderButton={EmptyButton}/>
     )
 }
 
