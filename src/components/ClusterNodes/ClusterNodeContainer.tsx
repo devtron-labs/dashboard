@@ -10,6 +10,7 @@ import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { clusterNamespaceList } from './clusterNodes.service'
 import { ClusterImageList } from './types'
 
+
 export default function ClusterNodeContainer() {
     const [imageList, setImageList] = useState<ClusterImageList[]>(null)
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>(window._env_.K8S_CLIENT ? true : false)
@@ -45,10 +46,10 @@ export default function ClusterNodeContainer() {
     return (
         <Switch>
             <Route path={URLS.CLUSTER_LIST} exact>
-                <ClusterList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList} />
+                <ClusterList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList}  />
             </Route>
-            <Route path={`${URLS.CLUSTER_LIST}/:clusterId`} exact>
-                <NodeList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList} />
+            <Route path={`${URLS.CLUSTER_LIST}/:clusterId`}exact>
+                <NodeList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList}   />
             </Route>
             <Route path={`${URLS.CLUSTER_LIST}/:clusterId/:nodeName`} exact>
                 <NodeDetails imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList} />
