@@ -51,6 +51,8 @@ export interface ResponseRowType {
     status: BulkResponseStatus
     statusText: string
     message: string
+    isVirtual?: boolean
+    envId?: number
 }
 
 export interface BulkCITriggerType {
@@ -90,6 +92,7 @@ export interface BulkCDTriggerType {
     responseList: ResponseRowType[]
     isLoading: boolean
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
+    isVirtualEnv?: boolean
 }
 
 export interface ProcessWorkFlowStatusType {
@@ -122,6 +125,13 @@ export interface TriggerResponseModalType {
     responseList: ResponseRowType[]
     isLoading: boolean
     onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
+    isVirtualEnv?: boolean
+}
+
+export interface TriggerModalTabelRowType {
+    rowData: ResponseRowType
+    index: number
+    isVirtualEnv?: boolean
 }
 
 export interface WorkflowNodeSelectionType {
@@ -162,6 +172,7 @@ export interface EnvAppList {
     isClusterCdActive: boolean
     environmentIdentifier: string
     appCount: number
+    isVirtualEnvironment?: boolean
 }
 
 export interface EmptyEnvState {
@@ -232,6 +243,7 @@ export interface AppGroupAdminType {
 export interface AppGroupDetailDefaultType {
     filteredAppIds: string
     appGroupListData?: AppGroupListType
+    isVirtualEnv?: boolean
 }
 
 interface CIPipeline {

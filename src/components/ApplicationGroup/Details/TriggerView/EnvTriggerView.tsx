@@ -82,7 +82,7 @@ import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 
 let inprogressStatusTimer
-export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefaultType) {
+export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultType) {
     const { envId } = useParams<{ envId: string }>()
     const location = useLocation()
     const history = useHistory()
@@ -1212,7 +1212,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
         setCDLoading(true)
         const _appIdMap = new Map<string, string>(),
             nodeList: NodeAttr[] = [],
-            triggeredAppList: { appId: number; appName: string }[] = []
+            triggeredAppList: { appId: number; envId?: number; appName: string }[] = []
         for (const _wf of filteredWorkflows) {
             if (_wf.isSelected && (!appsToRetry || appsToRetry[_wf.appId])) {
                 const _cdNode = _wf.nodes.find(
@@ -1227,20 +1227,22 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     _selectedNode = _cdNode.postNode
                 }
 
-                if (_selectedNode && _selectedNode[materialType]) {
+                if (_selectedNode && _selectedNode[materialType]?.length) {
                     nodeList.push(_selectedNode)
                     _appIdMap.set(_selectedNode.id, _wf.appId.toString())
-                    triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
+                    triggeredAppList.push({ appId: _wf.appId, appName: _wf.name, envId: _selectedNode.environmentId })
                 }
             }
         }
         const _CDTriggerPromiseList = []
-        nodeList.forEach((node) => {
+        nodeList.forEach((node, index) => {
             const ciArtifact = node[materialType].find((artifact) => artifact.isSelected == true)
             if (ciArtifact) {
                 _CDTriggerPromiseList.push(
                     triggerCDNode(node.id, ciArtifact.id, _appIdMap.get(node.id), bulkTriggerType),
                 )
+            } else {
+                triggeredAppList.splice(index,1)
             }
         })
         handleBulkTrigger(_CDTriggerPromiseList, triggeredAppList, WorkflowNodeType.CD)
@@ -1248,7 +1250,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
 
     const handleBulkTrigger = (
         promiseList: any[],
-        triggeredAppList: { appId: number; appName: string }[],
+        triggeredAppList: { appId: number; envId?: number; appName: string }[],
         type: WorkflowNodeType,
     ): void => {
         if (promiseList.length) {
@@ -1264,6 +1266,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                                     ? BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS]
                                     : BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS],
                             status: BulkResponseStatus.PASS,
+                            envId: triggeredAppList[index].envId,
                             message: '',
                         })
                     } else {
@@ -1293,7 +1296,14 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                         }
                     }
                 })
-                setResponseList(_responseList)
+                setResponseList(_responseList.sort((a, b) => {
+                    const order = {
+                      [BulkResponseStatus.FAIL]: 0,
+                      [BulkResponseStatus.UNAUTHORIZE]: 1,
+                      [BulkResponseStatus.PASS]: 2
+                    }
+                    return order[a.status] - order[b.status];
+                  }))
                 setCDLoading(false)
                 setCILoading(false)
                 preventBodyScroll(false)
@@ -1329,11 +1339,11 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
             triggeredAppList: { appId: number; appName: string }[] = []
         for (const _wf of filteredWorkflows) {
             if (_wf.isSelected && (!appsToRetry || appsToRetry[_wf.appId])) {
-                triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
                 node = _wf.nodes.find((node) => {
                     return node.type === WorkflowNodeType.CI
                 })
                 if (node && !node.isLinkedCI) {
+                    triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
                     nodeList.push(node)
                 }
             }
@@ -1647,6 +1657,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                 responseList={responseList}
                 isLoading={isCDLoading}
                 setLoading={setCDLoading}
+                isVirtualEnv={isVirtualEnv}
             />
         )
     }

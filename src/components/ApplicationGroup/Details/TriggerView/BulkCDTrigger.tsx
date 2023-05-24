@@ -34,6 +34,7 @@ export default function BulkCDTrigger({
     responseList,
     isLoading,
     setLoading,
+    isVirtualEnv
 }: BulkCDTriggerType) {
     const ciTriggerDetailRef = useRef<HTMLDivElement>(null)
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
@@ -283,6 +284,7 @@ export default function BulkCDTrigger({
                         responseList={responseList}
                         isLoading={isLoading}
                         onClickRetryBuild={onClickTriggerBulkCD}
+                        isVirtualEnv={isVirtualEnv}
                     />
                 ) : (
                     <>

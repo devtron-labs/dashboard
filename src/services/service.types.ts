@@ -165,6 +165,7 @@ export interface Cluster {
     cluster_name: string
     active: boolean
     errorInConnecting?: string
+    isVirtualCluster?: boolean
 }
 export interface LoginCountType extends ResponseType {
   result?: LoginCount
