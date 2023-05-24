@@ -135,7 +135,7 @@ if (!window || !window._env_) {
         CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
         ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
         HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
-        ENABLE_BUILD_CONTEXT: false
+        ENABLE_BUILD_CONTEXT: true
     }
 }
 
