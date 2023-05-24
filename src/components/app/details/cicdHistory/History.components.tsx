@@ -141,16 +141,14 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyView
 
     const renderEmptyButton = () => {
         return (
-            <>
-                {link && (
-                    <EmptyState.Button>
-                        <NavLink to={link} className="cta cta--ci-details flex" target="_blank">
-                            <OpenInNew className="mr-5 mr-5 scn-0 fcb-5 icon-fill-blue-imp" />
-                            {linkText}
-                        </NavLink>
-                    </EmptyState.Button>
-                )}
-            </>
+            link && (
+                <EmptyState.Button>
+                    <NavLink to={link} className="cta cta--ci-details flex" target="_blank">
+                        <OpenInNew className="mr-5 mr-5 scn-0 fcb-5 icon-fill-blue-imp" />
+                        {linkText}
+                    </NavLink>
+                </EmptyState.Button>
+            )
         )
     }
     return (
