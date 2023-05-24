@@ -588,6 +588,10 @@ function Cluster({
         }
     }
 
+    const DisableEditMode = () : void => {
+        toggleEditMode((t) => !t)
+    }
+
     return (
         <>
             <article
@@ -772,7 +776,7 @@ function Cluster({
                         )}
                     </>
                 ) : (
-                    <Drawer position="right" width="1000px" onEscape={toggleShowAddCluster}>
+                    <Drawer position="right" width="1000px" onEscape={DisableEditMode}>
                         <ClusterForm
                             id={clusterId}
                             cluster_name={cluster_name}
