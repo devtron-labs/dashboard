@@ -311,7 +311,7 @@ export default function ClusterForm({
     }
 
     const handleOnBlur = (e): void => {
-        if (id && id != 1 && !e.target.value) {
+        if (id && id !== 1 && !e.target.value) {
             e.target.value = DEFAULT_SECRET_PLACEHOLDER
         }
     }
@@ -542,7 +542,7 @@ export default function ClusterForm({
                         <ResizableTextarea
                             className="dc__resizable-textarea__with-max-height dc__required-field"
                             name="token"
-                            value={config && config.bearer_token ? config.bearer_token : ''}
+                            value={(id && id !== 1) ? DEFAULT_SECRET_PLACEHOLDER : (config && config.bearer_token ? config.bearer_token : '')}
                             onChange={handleOnChange}
                             onBlur={handleOnBlur}
                             onFocus={handleOnFocus}
@@ -587,8 +587,10 @@ export default function ClusterForm({
                                         dataTestId="certificate_authority_data_input"
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="certificateAuthorityData"
-                                        value={state.certificateAuthorityData.value}
+                                        value={(id && id !== 1 && isTlsConnection) ? DEFAULT_SECRET_PLACEHOLDER : (state.certificateAuthorityData.value)}
                                         onChange={handleOnChange}
+                                        onBlur={handleOnBlur}
+                                        onFocus={handleOnFocus}
                                         placeholder={'Enter CA Data'}
                                     />
                                 </div>
@@ -600,8 +602,10 @@ export default function ClusterForm({
                                         dataTestId="tls_client_key_input"
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="tlsClientKey"
-                                        value={state.tlsClientKey.value}
+                                        value={(id && id !== 1 && isTlsConnection) ? DEFAULT_SECRET_PLACEHOLDER : (state.tlsClientKey.value)}
                                         onChange={handleOnChange}
+                                        onBlur={handleOnBlur}
+                                        onFocus={handleOnFocus}
                                         placeholder={'Enter tls Key'}
                                     />
                                 </div>
@@ -613,8 +617,10 @@ export default function ClusterForm({
                                         dataTestId="tls_certificate_input"
                                         className="dc__resizable-textarea__with-max-height w-100"
                                         name="tlsClientCert"
-                                        value={state.tlsClientCert.value}
+                                        value={(id && id !== 1 && isTlsConnection) ? DEFAULT_SECRET_PLACEHOLDER : (state.tlsClientCert.value)}
                                         onChange={handleOnChange}
+                                        onBlur={handleOnBlur}
+                                        onFocus={handleOnFocus}
                                         placeholder={'Enter tls Certificate'}
                                     />
                                 </div>
