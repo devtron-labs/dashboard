@@ -676,20 +676,19 @@ console.log(match.url)
             </div>
         )
     }
-      const changePage  =(pageNo:number):void=>{
-        let offset = pageSize * (pageNo - 1);
-        setNodeListOffset(offset)
-        let qs = queryString.parse(location.search);
-        let keys = Object.keys(qs);
-        let query = {};
-        keys.map((key) => {
-            query[key] = qs[key];
-        })
-        query['offset'] = offset;
-        let queryStr = queryString.stringify(query);
-        let url = `${URLS.CLUSTER_LIST}/${clusterId}?${queryStr}`;
-        history.push(url);
-
+      const changePage = (pageNo: number): void => {
+          let offset = pageSize * (pageNo - 1)
+          setNodeListOffset(offset)
+          let qs = queryString.parse(location.search)
+          let keys = Object.keys(qs)
+          let query = {}
+          keys.forEach((key) => {
+              query[key] = qs[key]
+          })
+          query['offset'] = offset
+          let queryStr = queryString.stringify(query)
+          let url = `${URLS.CLUSTER_LIST}/${clusterId}?${queryStr}`
+          history.push(url)
       }
     const renderPagination = (): JSX.Element => {
         return (
