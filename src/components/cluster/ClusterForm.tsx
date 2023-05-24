@@ -1124,8 +1124,7 @@ export default function ClusterForm({
         return (
             <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
                 <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
-                    {id && <Pencil color="#363636" className="icon-dim-24 dc__vertical-align-middle mr-8" />}
-                    <span className="fw-6 fs-14 cn-9">{clusterTitle()}</span>
+                    <span className="fw-6 fs-16 cn-9">{clusterTitle()}</span>
                 </h2>
                 <button
                     data-testid="header_close_icon"
