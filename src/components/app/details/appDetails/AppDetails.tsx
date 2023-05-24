@@ -446,7 +446,7 @@ export const Details: React.FC<DetailsType> = ({
 
     if (
         !loadingResourceTree &&
-        (!appDetails?.resourceTree || appDetails?.resourceTree?.nodes?.length <= 0) &&
+        (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) &&
         !isVirtualEnvironment.current
     ) {
         return (
