@@ -13,10 +13,12 @@ import { useRouteMatch, useHistory, useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
-import { useAsync } from '../../../../common'
+import { importComponentFromFELibrary, useAsync } from '../../../../common'
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
 import { EnvironmentStatusComponentType } from '../environment.type'
+
+const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
 function EnvironmentStatusComponent({
     appStreamData,
@@ -35,7 +37,7 @@ function EnvironmentStatusComponent({
     const history = useHistory()
     const params = useParams<{ appId: string; envId: string }>()
     const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
-    const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
+    const hideDeploymentStatusLeftInfo = appDetails?.deploymentAppType === DeploymentAppType.helm // Todo test for helm/gitops app details
 
     const onClickUpgrade = () => {
         let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
@@ -149,13 +151,18 @@ function EnvironmentStatusComponent({
         )
     }
 
+    const renderGeneratedManifestDownloadCard = (): JSX.Element => {
+        if (isVirtualEnvironment && AppDetailsDownloadCard) {
+            return <AppDetailsDownloadCard envId={+params.envId} appId={+params.appId} isHelmApp={true} />
+        }
+    }
 
     const renderLastUpdatedBlock = () => {
         return (
             appDetails?.lastDeployedTime && (
               <DeploymentStatusCard
               deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-              hideDeploymentStatusLeftInfo={!isGitops}
+              hideDeploymentStatusLeftInfo={hideDeploymentStatusLeftInfo}
               deploymentTriggerTime = {appDetails?.lastDeployedTime}
               triggeredBy ={appDetails?.lastDeployedBy}
           />
@@ -234,6 +241,7 @@ function EnvironmentStatusComponent({
             ) : (
                 <div className="flex left ml-20 mb-16 lh-20">
                     {!isVirtualEnvironment && renderStatusBlock()}
+                    { isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
                     {renderHelmConfigApplyStatusBlock()}
                     {renderLastUpdatedBlock()}
                     {!isVirtualEnvironment && renderChartUsedBlock()}
