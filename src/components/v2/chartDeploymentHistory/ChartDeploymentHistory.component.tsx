@@ -439,6 +439,13 @@ function ChartDeploymentHistory({
     function renderSelectedDeploymentTabData() {
         const deployment = deploymentHistoryArr[selectedDeploymentHistoryIndex]
         const chartMetadata = deployment.chartMetadata
+        const paramsData = {
+            appId,
+            envId: params.envId,
+            appName: chartMetadata.chartName,
+            workflowId: deployment.version,
+            isHelmApp: true
+        }
 
         return (
             <div
@@ -532,10 +539,8 @@ function ChartDeploymentHistory({
                     renderCodeEditor()}
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.ARTIFACTS && (
                     <VirtualHistoryArtifact
-                        titleName={'titleNmae'}
-                        appId={appId}
-                        envId={params.envId}
-                        cd_workflow_id={installedAppInfo.installedAppVersionId}
+                        titleName={chartMetadata.chartName}
+                        params={paramsData}
                     />
                 )}
             </div>
