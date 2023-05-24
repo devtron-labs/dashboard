@@ -56,6 +56,7 @@ import {
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
 import { ARTIFACT_STATUS } from './Constants'
+import { CD_ROLLBACK_MSG } from '../../../../config/constantMessaging'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -1230,12 +1231,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             )
         }
         const title="No image available"
-        const subTitle=this.props.materialType === MATERIAL_TYPE.rollbackMaterialList
-            ? 'Previously deployed images will be available here for rollback.'
-            : 'Please Trigger CI Pipeline and find the image here for deployment.'
-        return (
-            <GenericEmptyState image={noartifact} title={title} subTitle={subTitle}/>
-        )
+        const subTitle =
+            this.props.materialType === MATERIAL_TYPE.rollbackMaterialList
+                ? CD_ROLLBACK_MSG.previousDeploy
+                : CD_ROLLBACK_MSG.triggerCI
+        return <GenericEmptyState image={noartifact} title={title} subTitle={subTitle} />
     }
 
     render() {

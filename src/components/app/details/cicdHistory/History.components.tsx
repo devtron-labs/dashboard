@@ -139,7 +139,7 @@ export const GitChanges = ({
 
 export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyViewType) => {
 
-    const EmptyButton = () => {
+    const renderEmptyButton = () => {
         return (
             <>
                 {link && (
@@ -154,7 +154,7 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyView
         )
     }
     return (
-        <GenericEmptyState image={imgSrc ?? AppNotDeployed} title={title} subTitle={subTitle} isButtonAvailable={!!link} renderButton={EmptyButton}/>
+        <GenericEmptyState image={imgSrc ?? AppNotDeployed} title={title} subTitle={subTitle} isButtonAvailable={!!link} renderButton={renderEmptyButton}/>
     )
 }
 

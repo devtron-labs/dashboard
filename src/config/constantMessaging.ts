@@ -256,3 +256,8 @@ export const EMPTY_STATE_STATUS = {
 }
 
 export const INVALID_YAML_MSG = "Please provide data in valid YAML format";
+
+export const CD_ROLLBACK_MSG = {
+    previousDeploy: 'Previously deployed images will be available here for rollback.',
+    triggerCI: 'Please Trigger CI Pipeline and find the image here for deployment.'
+}
