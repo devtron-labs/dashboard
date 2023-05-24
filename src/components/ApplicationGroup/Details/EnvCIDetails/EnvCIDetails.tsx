@@ -184,8 +184,8 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 <div className="ci-details__body">
                     {!pipelineId ? (
                         <EmptyView
-                            title="No application selected"
-                            subTitle="Please select an application to see build history."
+                            title={APP_GROUP_CI_DETAILS.noSelectedApp.title}
+                            subTitle={APP_GROUP_CI_DETAILS.noSelectedApp.subTitle}
                         />
                     ) : (
                         pipeline && renderPipelineDetails()

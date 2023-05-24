@@ -152,6 +152,10 @@ export const APP_GROUP_CD_DETAILS = {
 }
 
 export const APP_GROUP_CI_DETAILS = {
+    noSelectedApp: {
+        title: 'No application selected',
+        subTitle: 'Please select an application to see build history.',
+    },
     linkedCI: {
         title: 'This is a Linked CI Pipeline',
         linkText: 'View Source Pipeline',
