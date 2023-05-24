@@ -632,7 +632,7 @@ function Cluster({
                                     arrow={false}
                                     content="Edit Cluster"
                                 >
-                                    <div data-testid={`edit_cluster_pencil-${clusterId}`}>
+                                    <div data-testid={`edit_cluster_pencil-${cluster_name}`}>
                                         <PencilEdit onClick={handleEdit} />
                                     </div>
                                 </Tippy>
