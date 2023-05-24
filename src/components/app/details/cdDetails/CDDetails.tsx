@@ -28,7 +28,6 @@ import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../c
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { AppEnvironment } from '../../../../services/service.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
-const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -418,13 +417,6 @@ const HistoryLogs: React.FC<{
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
 
-    const paramsData = {
-        appId,
-        envId,
-        appName: triggerDetails.artifact,
-        workflowId: triggerDetails.id, 
-    }
-
     return (
         <>
             <div className="trigger-outputs-container">
@@ -489,12 +481,6 @@ const HistoryLogs: React.FC<{
                         {triggerDetails.stage !== 'DEPLOY' ||
                             (triggerDetails.IsVirtualEnvironment && (
                                 <Route path={`${path}/artifacts`}>
-                                    {triggerDetails.IsVirtualEnvironment ? (
-                                        <VirtualHistoryArtifact
-                                            titleName={triggerDetails.artifact}
-                                            params={paramsData}
-                                        />
-                                    ) : (
                                         <Artifacts
                                             status={triggerDetails.status}
                                             artifact={triggerDetails.artifact}
@@ -503,8 +489,8 @@ const HistoryLogs: React.FC<{
                                                 getCDBuildReport(appId, envId, pipelineId, triggerId)
                                             }
                                             type={HistoryComponentType.CD}
+                                            isVirtualEnv={triggerDetails.IsVirtualEnvironment}
                                         />
-                                    )}
                                 </Route>
                             ))}
                         <Redirect

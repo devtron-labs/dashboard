@@ -18,6 +18,7 @@ import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const ApprovedArtifact = importComponentFromFELibrary('ApprovedArtifact')
+const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
 export default function Artifacts({
     status,
@@ -27,12 +28,21 @@ export default function Artifacts({
     getArtifactPromise,
     isJobView,
     type,
+    isVirtualEnv,
 }: ArtifactType) {
-    const { triggerId, buildId } = useParams<{
+    const { appId, envId, triggerId, buildId } = useParams<{
+        appId: string
+        envId: string
         triggerId: string
-        buildId: string;
+        buildId: string
     }>()
     const [copied, setCopied] = useState(false)
+    const paramsData = {
+        appId,
+        envId,
+        appName: artifact,
+        workflowId: triggerId,
+    }
 
     useEffect(() => {
         if (!copied) return
@@ -64,7 +74,9 @@ export default function Artifacts({
                 />
                 <div className="flexbox pt-8 pr-12 pb-8 pl-12 bcv-1 ev-2 bw-1 br-4 dc__position-abs-b-20">
                     <Question className="icon-dim-20 fcv-5" />
-                    <span className="fs-13 fw-4 mr-8 ml-8">{EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}</span>
+                    <span className="fs-13 fw-4 mr-8 ml-8">
+                        {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}
+                    </span>
                     <a className="fs-13 fw-6 cb-5 dc__no-decor" href={DOCUMENTATION.BLOB_STORAGE} target="_blank">
                         {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.ConfigureBlobStorage}
                     </a>
@@ -90,6 +102,8 @@ export default function Artifacts({
                 subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
             />
         )
+    } else if (isVirtualEnv && VirtualHistoryArtifact) {
+        return <VirtualHistoryArtifact titleName={artifact} params={paramsData} />
     } else {
         return (
             <div className="flex left column p-16">
@@ -155,7 +169,9 @@ export const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWith
 }
 
 const CIProgressView = (): JSX.Element => {
-   {/* TO replace with genericemptystate after incoporating png support */}
+    {
+        /* TO replace with genericemptystate after incoporating png support */
+    }
     return (
         <EmptyState>
             <EmptyState.Image>

@@ -70,6 +70,7 @@ export interface AppEnvironment {
     lastDeployed?: string
     appStatus?: string
     deploymentAppDeleteRequest?: boolean
+    isVirtualEnvironment?: boolean
 }
 
 export interface AppOtherEnvironment extends ResponseType {

@@ -55,5 +55,8 @@ export const StatusConstants = {
     ENVIRONMENT: {
         pluralLower: 'environments',
         lowerCase: 'environment'
+    },
+    NOT_AVILABLE: {
+        normalCase: 'Not available',
     }
 }
