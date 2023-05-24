@@ -86,7 +86,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
     }
 
     initialise() {
-        console.log('here')
         if (this.timerRef) clearInterval(this.timerRef)
         Promise.all([
             getClusterList(),
@@ -151,10 +150,10 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                 active: true,
                 config: {},
                 environments: [],
+                insecureSkipTlsVerify: true,
             })
             clusters = clusters.sort((a, b) => sortCallback('cluster_name', a, b))
             this.setState({ clusters: clusters })
-
             let cluster = this.state.clusters.find(
                 (c) => c.agentInstallationStage === 1 || c.agentInstallationStage === 3,
             )
@@ -236,7 +235,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             Learn more
                         </a>
                     </p>
-
                     {this.state.clusters.map((cluster) => (
                         <Cluster
                             {...cluster}
@@ -287,6 +285,7 @@ function Cluster({
     id,
     id: clusterId,
     cluster_name,
+    insecureSkipTlsVerify,
     defaultClusterComponent,
     agentInstallationStage,
     server_url,
@@ -782,7 +781,7 @@ function Cluster({
                             prometheusAuth={state.prometheus}
                             defaultClusterComponent={state.defaultClusterComponent}
                             isGrafanaModuleInstalled={true}
-                            isTlsConnection={isTlsConnection}
+                            isTlsConnection={!insecureSkipTlsVerify}
                             isClusterDetails={state.isClusterDetails}
                             toggleCheckTlsConnection={toggleCheckTlsConnection}
                             setTlsConnectionFalse={setTlsConnectionFalse}
