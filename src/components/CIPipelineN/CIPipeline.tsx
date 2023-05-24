@@ -198,8 +198,6 @@ export default function CIPipeline({
         } else {
             getInitData(appId, true, !isJobView)
                 .then((ciResponse) => {
-                    validateStage(BuildStageVariable.PreBuild, ciResponse.form)
-                    validateStage(BuildStageVariable.PostBuild, ciResponse.form)
                     setFormData(ciResponse.result.form)
                     setPageState(ViewType.FORM)
                     getMandatoryPluginData(ciResponse.form)
@@ -352,12 +350,15 @@ export default function CIPipeline({
                 <button
                     type="button"
                     data-testid="create-build-pipeline-advanced-options-button"
-                    className={`cta cta--workflow cancel mr-16`}
+                    className="cta cta--workflow cancel mr-16 flex"
                     onClick={() => {
                         setIsAdvanced(true)
                     }}
                 >
                     Advanced options
+                    {mandatoryPluginData && (!mandatoryPluginData.isValidPre || !mandatoryPluginData.isValidPost) && (
+                        <WarningTriangle className="ml-6 icon-dim-16 warning-icon-y7-imp" />
+                    )}
                 </button>
             )
         }
