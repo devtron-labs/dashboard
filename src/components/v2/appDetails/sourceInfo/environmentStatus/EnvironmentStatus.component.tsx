@@ -25,7 +25,7 @@ function EnvironmentStatusComponent({
     loadingDetails,
     loadingResourceTree,
     deploymentStatusDetailsBreakdownData,
-    isVirtualEnvironment
+    isVirtualEnvironment,
 }: EnvironmentStatusComponentType) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
@@ -152,20 +152,26 @@ function EnvironmentStatusComponent({
     }
 
     const renderGeneratedManifestDownloadCard = (): JSX.Element => {
-        if (isVirtualEnvironment && AppDetailsDownloadCard) {
-            return <AppDetailsDownloadCard envId={+params.envId} appId={+params.appId} isHelmApp={true} />
+        if (AppDetailsDownloadCard) {
+            const deploymentManifestParams = {
+                appId: +params.appId,
+                envId: +params.envId,
+                appName: appDetails?.appName,
+                isHelmApps: true,
+            }
+            return <AppDetailsDownloadCard params={deploymentManifestParams} />
         }
     }
 
     const renderLastUpdatedBlock = () => {
         return (
             appDetails?.lastDeployedTime && (
-              <DeploymentStatusCard
-              deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-              hideDeploymentStatusLeftInfo={hideDeploymentStatusLeftInfo}
-              deploymentTriggerTime = {appDetails?.lastDeployedTime}
-              triggeredBy ={appDetails?.lastDeployedBy}
-          />
+                <DeploymentStatusCard
+                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+                    hideDeploymentStatusLeftInfo={hideDeploymentStatusLeftInfo}
+                    deploymentTriggerTime={appDetails?.lastDeployedTime}
+                    triggeredBy={appDetails?.lastDeployedBy}
+                />
             )
         )
     }
@@ -241,7 +247,7 @@ function EnvironmentStatusComponent({
             ) : (
                 <div className="flex left ml-20 mb-16 lh-20">
                     {!isVirtualEnvironment && renderStatusBlock()}
-                    { isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
+                    {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
                     {renderHelmConfigApplyStatusBlock()}
                     {renderLastUpdatedBlock()}
                     {!isVirtualEnvironment && renderChartUsedBlock()}

@@ -211,9 +211,14 @@ export function SourceInfo({
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
 
       const renderGeneratedManifestDownloadCard = (): JSX.Element => {
-          if (isVirtualEnvironment && AppDetailsDownloadCard) {
-              return <AppDetailsDownloadCard envId={+params.envId} appId={+params.appId} />
-          }
+        const paramsId = {
+            appId: +params.appId,
+            envId: +params.envId,
+            appName: appDetails?.appName,
+        }
+        if (isVirtualEnvironment && AppDetailsDownloadCard) {
+            return <AppDetailsDownloadCard params={paramsId} />
+        }
       }
 
     return (
