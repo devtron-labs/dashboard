@@ -252,27 +252,27 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                     ))}
                     {this.state.showAddCluster && (
                         <Drawer position="right" width="1000px" onEscape={this.toggleShowAddCluster}>
-                            <ClusterForm
-                                id={null}
-                                cluster_name={this.state.cluster_name}
-                                server_url={this.state.server_url}
-                                active={true}
-                                config={{}}
-                                toggleEditMode={() => {}}
-                                reload={this.initialise}
-                                prometheus_url=""
-                                prometheusAuth={this.state.prometheus}
-                                defaultClusterComponent={this.state.defaultClusterComponent}
-                                isGrafanaModuleInstalled={true}
-                                isTlsConnection={this.state.isTlsConnection}
-                                isClusterDetails={this.state.isClusterDetails}
-                                toggleCheckTlsConnection={this.toggleCheckTlsConnection}
-                                setTlsConnectionFalse={this.setTlsConnectionFalse}
-                                toggleShowAddCluster={this.toggleShowAddCluster}
-                                toggleKubeConfigFile={this.toggleKubeConfigFile}
-                                isKubeConfigFile={this.state.isKubeConfigFile}
-                                toggleClusterDetails={this.toggleClusterDetails}
-                            />
+                                <ClusterForm
+                                    id={null}
+                                    cluster_name={this.state.cluster_name}
+                                    server_url={this.state.server_url}
+                                    active={true}
+                                    config={{}}
+                                    toggleEditMode={() => {}}
+                                    reload={this.initialise}
+                                    prometheus_url=""
+                                    prometheusAuth={this.state.prometheus}
+                                    defaultClusterComponent={this.state.defaultClusterComponent}
+                                    isGrafanaModuleInstalled={true}
+                                    isTlsConnection={this.state.isTlsConnection}
+                                    isClusterDetails={this.state.isClusterDetails}
+                                    toggleCheckTlsConnection={this.toggleCheckTlsConnection}
+                                    setTlsConnectionFalse={this.setTlsConnectionFalse}
+                                    toggleShowAddCluster={this.toggleShowAddCluster}
+                                    toggleKubeConfigFile={this.toggleKubeConfigFile}
+                                    isKubeConfigFile={this.state.isKubeConfigFile}
+                                    toggleClusterDetails={this.toggleClusterDetails}
+                                />
                         </Drawer>
                     )}
                 </section>
@@ -323,6 +323,7 @@ function Cluster({
         prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
 
     const editLabelRef = useRef(null)
+    const drawerRef = useRef(null)
 
     const isDefaultCluster = (): boolean => {
         return id == 1
@@ -529,6 +530,20 @@ function Cluster({
         }
     }
 
+    useEffect(() => {
+        const handleClickOutsideDrawer = (event) => {
+            if (drawerRef.current && !drawerRef.current.contains(event.target)) {
+                toggleEditMode(false)
+            }
+        }
+
+        window.addEventListener('click', handleClickOutsideDrawer)
+
+        return () => {
+            window.removeEventListener('click', handleClickOutsideDrawer)
+        }
+    }, [])
+
     const outsideClickHandler = (evt): void => {
         if (editLabelRef.current && !editLabelRef.current.contains(evt.target) && showWindow) {
             setShowWindow(false)
@@ -588,7 +603,7 @@ function Cluster({
         }
     }
 
-    const DisableEditMode = () : void => {
+    const DisableEditMode = (): void => {
         toggleEditMode((t) => !t)
     }
 
@@ -633,11 +648,7 @@ function Cluster({
                                 )}
                             </div>
                             {clusterId && (
-                                <Tippy
-                                    className="default-tt cursor"
-                                    arrow={false}
-                                    content="Edit Cluster"
-                                >
+                                <Tippy className="default-tt cursor" arrow={false} content="Edit Cluster">
                                     <div data-testid={`edit_cluster_pencil-${cluster_name}`}>
                                         <PencilEdit onClick={handleEdit} />
                                     </div>
@@ -777,27 +788,29 @@ function Cluster({
                     </>
                 ) : (
                     <Drawer position="right" width="1000px" onEscape={DisableEditMode}>
-                        <ClusterForm
-                            id={clusterId}
-                            cluster_name={cluster_name}
-                            server_url={server_url}
-                            active={true}
-                            config={{}}
-                            reload={reload}
-                            prometheus_url=""
-                            prometheusAuth={state.prometheus}
-                            defaultClusterComponent={state.defaultClusterComponent}
-                            isGrafanaModuleInstalled={true}
-                            isTlsConnection={isTlsConnection}
-                            isClusterDetails={state.isClusterDetails}
-                            toggleCheckTlsConnection={toggleCheckTlsConnection}
-                            setTlsConnectionFalse={setTlsConnectionFalse}
-                            toggleShowAddCluster={toggleShowAddCluster}
-                            toggleKubeConfigFile={true}
-                            isKubeConfigFile={state.isKubeConfigFile}
-                            toggleEditMode={toggleEditMode}
-                            toggleClusterDetails={true}
-                        />
+                        <div className="h-100 bcn-0" ref={drawerRef}>
+                            <ClusterForm
+                                id={clusterId}
+                                cluster_name={cluster_name}
+                                server_url={server_url}
+                                active={true}
+                                config={{}}
+                                reload={reload}
+                                prometheus_url=""
+                                prometheusAuth={state.prometheus}
+                                defaultClusterComponent={state.defaultClusterComponent}
+                                isGrafanaModuleInstalled={true}
+                                isTlsConnection={isTlsConnection}
+                                isClusterDetails={state.isClusterDetails}
+                                toggleCheckTlsConnection={toggleCheckTlsConnection}
+                                setTlsConnectionFalse={setTlsConnectionFalse}
+                                toggleShowAddCluster={toggleShowAddCluster}
+                                toggleKubeConfigFile={true}
+                                isKubeConfigFile={state.isKubeConfigFile}
+                                toggleEditMode={toggleEditMode}
+                                toggleClusterDetails={true}
+                            />
+                        </div>
                     </Drawer>
                 )}
             </article>
