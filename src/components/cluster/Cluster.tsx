@@ -583,6 +583,9 @@ function Cluster({
         if (!clusterId) {
             toggleEditMode((t) => !t)
         }
+        if (isTlsConnection === insecureSkipTlsVerify) {
+            toggleCheckTlsConnection()
+        }
     }
 
     return (
@@ -781,7 +784,7 @@ function Cluster({
                             prometheusAuth={state.prometheus}
                             defaultClusterComponent={state.defaultClusterComponent}
                             isGrafanaModuleInstalled={true}
-                            isTlsConnection={!insecureSkipTlsVerify}
+                            isTlsConnection={isTlsConnection}
                             isClusterDetails={state.isClusterDetails}
                             toggleCheckTlsConnection={toggleCheckTlsConnection}
                             setTlsConnectionFalse={setTlsConnectionFalse}
