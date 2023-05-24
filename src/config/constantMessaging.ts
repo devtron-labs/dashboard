@@ -254,7 +254,6 @@ export const EMPTY_STATE_STATUS = {
     }
 
 }
-
 export const INVALID_YAML_MSG = "Please provide data in valid YAML format";
 
 export const CD_ROLLBACK_MSG = {
