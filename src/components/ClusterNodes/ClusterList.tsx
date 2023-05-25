@@ -113,7 +113,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     }
 
     const handleFilterChanges = (_searchText: string): void => {
-        const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText) >= 0)
+        const _filteredData = clusterList.filter((cluster) => cluster.name.indexOf(_searchText.toLowerCase()) >= 0)
         setFilteredClusterList(_filteredData)
         setNoResults(_filteredData.length === 0)
     }
@@ -198,8 +198,9 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                     clusterData.nodeCount && isSuperAdmin ? 'dc__visible-hover--parent' : ''
                 } ${loader ? 'show-shimmer-loading' : ''}`}
             >
-                <div className="cb-5 dc__ellipsis-right flex left">
+                <div data-testid={`cluster-row-${clusterData.name}`} className="cb-5 dc__ellipsis-right flex left">
                     <NavLink
+                        data-testid={`cluster-${clusterData.name}-link`}
                         to={`${match.url}/${clusterData.id}`}
                         onClick={(e) => {
                             handleClusterClick(e, clusterData.errorInNodeListing)
@@ -208,6 +209,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                         {clusterData.name}
                     </NavLink>
                     <TerminalIcon
+                        data-testid={`cluster-terminal-${clusterData.name}`}
                         className="cursor icon-dim-16 dc__visible-hover--child ml-8"
                         onClick={() => openTerminalComponent(clusterData)}
                     />
@@ -228,7 +230,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                     )}
                 </div>
                 <div className="child-shimmer-loading">{clusterData.nodeCount}</div>
-                <div  className="child-shimmer-loading">
+                <div className="child-shimmer-loading">
                     {errorCount > 0 && (
                         <>
                             <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
@@ -241,8 +243,8 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                         <span>{clusterData.serverVersion}</span>
                     </Tippy>
                 </div>
-                <div  className="child-shimmer-loading">{clusterData.cpu?.capacity}</div>
-                <div  className="child-shimmer-loading">{clusterData.memory?.capacity}</div>
+                <div className="child-shimmer-loading">{clusterData.cpu?.capacity}</div>
+                <div className="child-shimmer-loading">{clusterData.memory?.capacity}</div>
             </div>
         )
     }
@@ -250,7 +252,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     const renderClusterList = (): JSX.Element => {
         if (minLoader) {
             return (
-                <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 116px)' }}>
+                <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 112px)' }}>
                     <Progressing pageLoader />
                 </div>
             )
@@ -259,12 +261,13 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
         } else {
             return (
                 <div
+                    data-testid="cluster-list-container"
                     className="dc__overflow-scroll"
-                    style={{ height: `calc(${showTerminalModal ? '50vh - 125px)' : '100vh - 116px)'}` }}
+                    style={{ height: `calc(${showTerminalModal ? '50vh - 112px)' : '100vh - 112px)'}` }}
                 >
                     <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase">
                         <div>Cluster</div>
-                        <div>Connection status</div>
+                        <div data-testid="cluster-list-connection-status">Connection status</div>
                         <div>Nodes</div>
                         <div>NODE Errors</div>
                         <div>K8S version</div>
@@ -280,7 +283,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
     return (
         <div>
             <PageHeader headerName="Clusters" />
-            <div className={`cluster-list bcn-0 ${noResults ? 'no-result-container' : ''}`}>
+            <div className={`cluster-list-main-container bcn-0 ${noResults ? 'no-result-container' : ''}`}>
                 <div className="flexbox dc__content-space pl-20 pr-20 pt-16 pb-16">
                     {renderSearch()}
                     <div className="fs-13">
@@ -289,7 +292,11 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: 
                             : lastDataSyncTimeString && (
                                   <span>
                                       {lastDataSyncTimeString}
-                                      <button className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13" onClick={getData}>
+                                      <button
+                                          data-testid="cluster-list-refresh-button"
+                                          className="btn btn-link p-0 fw-6 cb-5 ml-5 fs-13"
+                                          onClick={getData}
+                                      >
                                           Refresh
                                       </button>
                                   </span>

@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useCallback, useRef, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, NavLink } from 'react-router-dom'
 import { ErrorBoundary } from '../../common'
-import { showError, Progressing, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, BreadCrumb, useBreadcrumb, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useRouteMatch, useHistory, generatePath, useLocation } from 'react-router'
 import { URLS } from '../../../config'
 import { AppSelector } from '../../AppSelector'
@@ -16,7 +16,7 @@ import { EnvType } from '../../v2/appDetails/appDetails.type'
 import PageHeader from '../../common/header/PageHeader'
 import { AppDetailsProps } from './triggerView/types'
 import Overview from '../Overview/Overview'
-import { importComponentFromFELibrary, noop, trackByGAEvent } from '../../common/helpers/Helpers'
+import { importComponentFromFELibrary, trackByGAEvent } from '../../common/helpers/Helpers'
 
 const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
@@ -164,6 +164,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         to={`${match.url}/${URLS.APP_OVERVIEW}`}
                         className="tab-list__tab-link flex"
                         data-action="Overview Clicked"
+                        data-testid="overview-click"
                         onClick={handleEventClick}
                     >
                         Overview
@@ -180,6 +181,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                 </li>
                 <li className="tab-list__tab dc__ellipsis-right">
                     <NavLink
+                        data-testid="app-details-tab"
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DETAILS}`}
                         className="tab-list__tab-link"
@@ -196,6 +198,8 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         className="tab-list__tab-link"
                         data-action="Build & Deploy Clicked"
                         onClick={handleEventClick}
+                        data-testid="build-deploy-click"
+                        id="build-deploy"
                     >
                         Build & Deploy
                     </NavLink>
@@ -206,6 +210,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         to={`${match.url}/${URLS.APP_CI_DETAILS}`}
                         className="tab-list__tab-link"
                         data-action="Build History Clicked"
+                        data-testid="build-history-clicked"
                         onClick={handleEventClick}
                     >
                         Build History
@@ -217,6 +222,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         to={`${match.url}/${URLS.APP_CD_DETAILS}`}
                         className="tab-list__tab-link"
                         data-action="Deployment History Clicked"
+                        data-testid="deployment-history-link"
                         onClick={handleEventClick}
                     >
                         Deployment History
@@ -227,6 +233,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_DEPLOYMENT_METRICS}`}
                         className="tab-list__tab-link"
+                        data-testid="deployment-matrix"
                         data-action="Deployment Metrics Clicked"
                         onClick={handleEventClick}
                     >
@@ -235,6 +242,7 @@ export function AppHeader({ appName, appMetaInfo, reloadMandatoryProjects }: App
                 </li>
                 <li className="tab-list__tab">
                     <NavLink
+                        data-testid="app-config-link"
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"

@@ -5,7 +5,7 @@ import CustomizableCalendarDay from 'react-dates/lib/components/CustomizableCale
 import ReactGA from 'react-ga4'
 import moment, { Moment } from 'moment'
 import { isInclusivelyBeforeDay, DateRangePicker, SingleDatePicker } from 'react-dates'
-import { noop } from '../helpers/Helpers'
+import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import './calendar.css'
 
 interface DatePickerProps {

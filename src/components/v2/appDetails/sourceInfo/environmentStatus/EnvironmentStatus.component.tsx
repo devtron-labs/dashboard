@@ -5,36 +5,37 @@ import { ReactComponent as Question } from '../../../assets/icons/ic-question.sv
 import { ReactComponent as Alert } from '../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
 import IndexStore from '../../index.store'
-import moment from 'moment'
 import { URLS } from '../../../../../config'
-import { AppType } from '../../../appDetails/appDetails.type'
+import { AppType, DeploymentAppType } from '../../../appDetails/appDetails.type'
 import { useSharedState } from '../../../utils/useSharedState'
 import { Link } from 'react-router-dom'
 import { useRouteMatch, useHistory, useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
-import { noop, useAsync } from '../../../../common'
+import { useAsync } from '../../../../common'
+import { noop } from '@devtron-labs/devtron-fe-common-lib'
+import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
+import { EnvironmentStatusComponentType } from '../environment.type'
 
 function EnvironmentStatusComponent({
     appStreamData,
     loadingDetails,
     loadingResourceTree,
-}: {
-    appStreamData: any
-    loadingDetails: boolean
-    loadingResourceTree: boolean
-}) {
+    deploymentStatusDetailsBreakdownData
+}: EnvironmentStatusComponentType) {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
     const [showNotes, setShowNotes] = useState(false)
     const status = appDetails.resourceTree?.status || ''
     const showHibernationStatusMessage =
         status.toLowerCase() === 'hibernated' || status.toLowerCase() === 'partially hibernated'
-    const { path, url } = useRouteMatch()
+    const { url } = useRouteMatch()
     const history = useHistory()
     const params = useParams<{ appId: string; envId: string }>()
     const [, notesResult] = useAsync(() => getInstalledChartNotesDetail(+params.appId, +params.envId), [])
+    const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
+
     const onClickUpgrade = () => {
         let _url = `${url.split('/').slice(0, -1).join('/')}/${URLS.APP_VALUES}`
         history.push(_url)
@@ -49,19 +50,19 @@ function EnvironmentStatusComponent({
     const shimmerLoaderBlocks = () => {
         return (
             <div className="flex left ml-20 mb-16">
-                <div className="bcn-0 w-150 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
+                <div className="bcn-0 w-150 mh-92  mr-12 br-8 dc__position-rel">
                     <div className="flex left column mt-6 w-85 ml-16 dc__place-abs-shimmer-center">
                         <div className="shimmer-loading w-80px h-20 br-2 mb-6" />
                         <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
                     </div>
                 </div>
-                <div className="bcn-0 w-150 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
+                <div className="bcn-0 w-150 mh-92  mr-12 br-8 dc__position-rel">
                     <div className="flex left column mt-6 w-85 ml-16 dc__place-abs-shimmer-center">
                         <div className="shimmer-loading w-80px h-20 br-2 mb-6" />
                         <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
                     </div>
                 </div>
-                <div className="bcn-0 w-150 mh-92 en-2 bw-1 mr-12 br-8 dc__position-rel">
+                <div className="bcn-0 w-150 mh-92  mr-12 br-8 dc__position-rel">
                     <div className="flex left column mt-6 w-85 ml-16 dc__place-abs-shimmer-center">
                         <div className="shimmer-loading w-80px h-20 br-2 mb-6" />
                         <div className="shimmer-loading w-60 h-16 br-2 mb-6" />
@@ -74,11 +75,11 @@ function EnvironmentStatusComponent({
     const renderStatusBlock = () => {
         return (
             <div
-                className="app-status-card bcn-0 mr-12 br-8 p-16 cursor en-2 bw-1"
+                className="app-status-card bcn-0 mr-12 br-8 p-16 cursor  "
                 onClick={loadingResourceTree ? noop : handleShowAppStatusDetail}
             >
                 <div className="cn-9 flex left">
-                    <span>Application status</span>
+                    <span data-testid="application-status-heading">Application status</span>
                     <Tippy className="default-tt cursor" arrow={false} content={'The health status of your app'}>
                         <Question className="cursor icon-dim-16 ml-4" />
                     </Tippy>
@@ -91,7 +92,7 @@ function EnvironmentStatusComponent({
                 ) : (
                     <>
                         <div className={`f-${status.toLowerCase()} dc__capitalize fw-6 fs-14 flex left`}>
-                            <span>{status}</span>
+                            <span data-testid="application-status-app-details">{status}</span>
                             <figure
                                 className={`${
                                     showHibernationStatusMessage ? 'hibernating' : status.toLowerCase()
@@ -99,7 +100,9 @@ function EnvironmentStatusComponent({
                             ></figure>
                         </div>
                         <div>
-                            <span className="details-hover cb-5 fw-6">Details</span>
+                            <span className="details-hover cb-5 fw-6" data-testid="details-button-app-details">
+                                Details
+                            </span>
                         </div>
                     </>
                 )}
@@ -114,7 +117,7 @@ function EnvironmentStatusComponent({
     const renderHelmConfigApplyStatusBlock = () => {
         return (
             appDetails?.appType == AppType.EXTERNAL_HELM_CHART && (
-                <div className="app-status-card bcn-0 mr-12 br-8 p-16 en-2 bw-1">
+                <div className="app-status-card bcn-0 mr-12 br-8 p-16  ">
                     <div className="cn-9 flex left">
                         <span>Config apply status</span>
                         <Tippy
@@ -145,31 +148,16 @@ function EnvironmentStatusComponent({
         )
     }
 
+
     const renderLastUpdatedBlock = () => {
         return (
             appDetails?.lastDeployedTime && (
-                <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12 en-2 bw-1">
-                    <div className="cn-9 flex left">
-                        <span>Last updated</span>
-                        <Tippy className="default-tt cursor" arrow={false} content={'When was this app last updated'}>
-                            <Question className="cursor icon-dim-16 ml-4" />
-                        </Tippy>
-                    </div>
-                    <div className=" fw-6 fs-14">
-                        {moment(appDetails?.lastDeployedTime, 'YYYY-MM-DDTHH:mm:ssZ').fromNow()}
-                    </div>
-                    {appDetails?.lastDeployedBy && appDetails?.lastDeployedBy}
-                    {appDetails.appType == AppType.EXTERNAL_HELM_CHART && (
-                        <div>
-                            <Link
-                                className="cb-5 fw-6"
-                                to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/${appDetails.appId}/${appDetails.appName}/${URLS.APP_DEPLOYMNENT_HISTORY}`}
-                            >
-                                Details
-                            </Link>
-                        </div>
-                    )}
-                </div>
+              <DeploymentStatusCard
+              deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+              hideDeploymentStatusLeftInfo={!isGitops}
+              deploymentTriggerTime = {appDetails?.lastDeployedTime}
+              triggeredBy ={appDetails?.lastDeployedBy}
+          />
             )
         )
     }
@@ -177,9 +165,9 @@ function EnvironmentStatusComponent({
     const renderChartUsedBlock = () => {
         return (
             appDetails?.appStoreAppName && (
-                <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12 en-2 bw-1">
+                <div className="app-status-card bcn-0 br-8 pt-16 pl-16 pb-16 pr-16 mr-12  ">
                     <div className="cn-9 flex left">
-                        <span>Chart used</span>
+                        <span data-testid="chart-used-heading">Chart used</span>
                         <Tippy
                             className="default-tt cursor"
                             arrow={false}
@@ -188,19 +176,25 @@ function EnvironmentStatusComponent({
                             <Question className="cursor icon-dim-16 ml-4" />
                         </Tippy>
                     </div>
-                    <div className=" fw-6 fs-14">
-                        {appDetails.appStoreChartName && <span>{appDetails.appStoreChartName}/</span>}
+                    <div className=" fw-6 fs-14" data-testid="full-chart-name-with-version">
+                        {appDetails.appStoreChartName && (
+                            <span data-testid="chart-name-value">{appDetails.appStoreChartName}/</span>
+                        )}
                         {appDetails.appStoreAppName}({appDetails.appStoreAppVersion})
                     </div>
                     <div className="flex left">
                         {notes && (
-                            <div className="details-hover flex cb-5 fw-6 cursor" onClick={onClickShowNotes}>
+                            <div
+                                className="details-hover flex cb-5 fw-6 cursor"
+                                onClick={onClickShowNotes}
+                                data-testid="notes.txt-heading"
+                            >
                                 <File className="app-notes__icon icon-dim-16 mr-4" /> Notes.txt
                             </div>
                         )}
                         {!!notes && !!appDetails.appStoreChartId && <div className="app-status-card__divider" />}
                         {appDetails.appStoreChartId && (
-                            <div>
+                            <div data-testid="view-chart-button">
                                 <Link
                                     className="cb-5 fw-6"
                                     to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
@@ -218,7 +212,7 @@ function EnvironmentStatusComponent({
     const renderUpgraderChartBlock = () => {
         return (
             appDetails?.deprecated && (
-                <div className="app-status-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12 en-2 bw-1">
+                <div className="app-status-card er-2 bw-1 bcr-1 br-8 pt-16 pl-16 pb-16 pr-16 mr-12  ">
                     <div className="cn-9 flex left">
                         <span>Chart deprecated</span>
                         <Alert className="icon-dim-16 ml-4" />

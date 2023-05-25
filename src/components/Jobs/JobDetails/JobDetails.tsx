@@ -143,6 +143,7 @@ function JobHeader({ jobName }: { jobName: string }) {
             <ul role="tablist" className="tab-list">
                 <li className="tab-list__tab dc__ellipsis-right">
                     <NavLink
+                        data-testid="overview-link"
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_OVERVIEW}`}
                         className="tab-list__tab-link"
@@ -154,6 +155,7 @@ function JobHeader({ jobName }: { jobName: string }) {
                 </li>
                 <li className="tab-list__tab">
                     <NavLink
+                        data-testid="trigger-job-link"
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_TRIGGER}`}
                         className="tab-list__tab-link"
@@ -165,6 +167,7 @@ function JobHeader({ jobName }: { jobName: string }) {
                 </li>
                 <li className="tab-list__tab">
                     <NavLink
+                        data-testid="run-history-link"
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CI_DETAILS}`}
                         className="tab-list__tab-link"
@@ -176,6 +179,7 @@ function JobHeader({ jobName }: { jobName: string }) {
                 </li>
                 <li className="tab-list__tab tab-list__config-tab">
                     <NavLink
+                        data-testid="job-config-link"
                         activeClassName="active"
                         to={`${match.url}/${URLS.APP_CONFIG}`}
                         className="tab-list__tab-link flex"

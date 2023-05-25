@@ -4,8 +4,10 @@ import {
     Progressing,
     ConfirmationDialog,
     Host,
+    noop,
     stopPropagation,
     multiSelectStyles,
+    useEffectAfterMount,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
@@ -20,9 +22,7 @@ import {
 } from '../../../../config'
 import {
     NavigationArrow,
-    useEffectAfterMount,
     useAppContext,
-    noop,
     useEventSource,
     FragmentHOC,
     useSearchString,
@@ -136,7 +136,7 @@ export default function AppDetail() {
 
     const environment = otherEnvsResult?.result?.find((env) => env.environmentId === +params.envId)
     return (
-        <div className="app-details-page-wrapper">
+        <div data-testid="app-details-wrapper" className="app-details-page-wrapper">
             {!params.envId && otherEnvsResult?.result?.length > 0 && (
                 <div className="w-100 pt-16 pr-20 pb-20 pl-20">
                     <SourceInfo appDetails={null} environments={otherEnvsResult?.result} environment={environment} />
@@ -225,6 +225,7 @@ export const Details: React.FC<DetailsType> = ({
     }, [appDetails])
 
     const getDeploymentDetailStepsData = (): void => {
+       // Deployments status details for Devtron apps
         getDeploymentStatusDetail(params.appId, params.envId).then((deploymentStatusDetailRes) => {
             processDeploymentStatusData(deploymentStatusDetailRes.result)
         })
@@ -384,7 +385,6 @@ export const Details: React.FC<DetailsType> = ({
         }
     }, [appDetailsError])
 
-    // useInterval(polling, interval);
     useEffect(() => {
         if (isPollingRequired) {
             callAppDetailsAPI(true)
@@ -463,16 +463,10 @@ export const Details: React.FC<DetailsType> = ({
                     setDetailed={toggleDetailedStatus}
                     environment={environment}
                     environments={environments}
-                    showCommitInfo={isAppDeployment && appDetails?.dataSource !== 'EXTERNAL' ? showCommitInfo : null}
+                    showCommitInfo={isAppDeployment ? showCommitInfo : null}
                     showUrlInfo={isAppDeployment ? setUrlInfo : null}
                     showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
-                    deploymentStatus={deploymentStatusDetailsBreakdownData.deploymentStatus}
-                    deploymentStatusText={deploymentStatusDetailsBreakdownData.deploymentStatusText}
-                    deploymentTriggerTime={deploymentStatusDetailsBreakdownData.deploymentTriggerTime}
-                    triggeredBy={deploymentStatusDetailsBreakdownData.triggeredBy}
-                    loadingDetails={loadingDetails}
-                    loadingResourceTree={loadingResourceTree}
-                />
+                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData} />
             </div>
             <SyncErrorComponent
                 showApplicationDetailedModal={showApplicationDetailedModal}
@@ -527,8 +521,8 @@ export const Details: React.FC<DetailsType> = ({
             )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                 <DeploymentStatusDetailModal
-                    appName={appDetails.appName}
-                    environmentName={appDetails.environmentName}
+                    appName={appDetails?.appName}
+                    environmentName={appDetails?.environmentName}
                     streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                 />
@@ -549,7 +543,7 @@ export const Details: React.FC<DetailsType> = ({
             {urlInfo && <TriggerUrlModal appId={params.appId} envId={params.envId} close={() => setUrlInfo(false)} />}
             {commitInfo && (
                 <TriggerInfoModal
-                    appId={appDetails?.appId}
+                    envId={appDetails?.environmentId}
                     ciArtifactId={appDetails?.ciArtifactId}
                     close={() => showCommitInfo(false)}
                 />
@@ -587,7 +581,14 @@ export const Details: React.FC<DetailsType> = ({
                         >
                             Cancel
                         </button>
-                        <button className="cta" disabled={hibernating} onClick={handleHibernate}>
+                        <button
+                            className="cta"
+                            disabled={hibernating}
+                            data-testid={`app-details-${
+                                hibernateConfirmationModal === 'hibernate' ? 'hibernate' : 'restore'
+                            }`}
+                            onClick={handleHibernate}
+                        >
                             {hibernating ? (
                                 <Progressing />
                             ) : hibernateConfirmationModal === 'hibernate' ? (
@@ -677,7 +678,7 @@ export function EnvSelector({
                     ENV
                 </div>
             </div>
-            <div className="app-details__selector w-200">
+            <div data-testid="app-deployed-env-name" className="app-details__selector w-200">
                 <Select
                     placeholder="Select Environment"
                     options={
@@ -701,6 +702,7 @@ export function EnvSelector({
                     styles={envSelectorStyle}
                     isDisabled={disabled}
                     isSearchable={false}
+                    classNamePrefix="app-environment-select"
                     formatOptionLabel={formatOptionLabel}
                 />
             </div>
@@ -1065,7 +1067,7 @@ export const NodeSelectors: React.FC<NodeSelectorsType> = ({
             {params.tab === NodeDetailTabs.TERMINAL && (
                 <>
                     <span style={{ width: '1px', height: '16px', background: '#0b0f22' }} />
-                    <div style={{ width: '130px' }}>
+                    <div style={{ width: '130px' }} data-testid="terminal-select-dropdown">
                         <Select
                             placeholder="Select shell"
                             className="pl-20"

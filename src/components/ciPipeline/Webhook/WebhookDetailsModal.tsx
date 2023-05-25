@@ -501,7 +501,7 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
 
     const renderCodeSnippet = (value: string, showCopyOption?: boolean): JSX.Element => {
         return (
-            <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel dc__word-break">
+            <pre className="br-4 fs-13 fw-4 cn-9 dc__position-rel dc__word-break" data-testid="sample-script">
                 {showCopyOption && (
                     <Tippy
                         className="default-tt font-open-sans"
@@ -903,8 +903,8 @@ export function WebhookDetailsModal({ close }: WebhookDetailType) {
 
     const renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pr-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Webhook Details</h2>
+            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">Webhook Details</h2>
                 <button type="button" className="dc__transparent flex icon-dim-24" onClick={closeWebhook}>
                     <Close className="icon-dim-24" />
                 </button>

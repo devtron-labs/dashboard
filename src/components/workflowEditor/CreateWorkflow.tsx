@@ -71,7 +71,7 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
     }
 
     isNameValid(): boolean {
-        return !!this.state.name.length;
+        return !!this.state.name?.length;
     }
 
     render() {

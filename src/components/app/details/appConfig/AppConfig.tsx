@@ -53,8 +53,7 @@ import {
 import { getUserRole } from '../../../userGroups/userGroup.service'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
-import { DeleteComponentsName } from '../../../../config/constantMessaging'
-import { DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE } from '../../../../config/constantMessaging'
+import {DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE} from '../../../../config/constantMessaging'
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'))
@@ -361,8 +360,14 @@ export default function AppConfig({ appName, isJobView }: AppConfigProps) {
                 .slice()
                 .reverse()
                 .find((stage) => stage.status)
-            _lastConfiguredStage = lastConfiguredStage.stageName
-            _configs = isUnlocked(_lastConfiguredStage)
+            if (!lastConfiguredStage) {
+                _configs = {} as AppStageUnlockedType
+                _lastConfiguredStage = ''
+            } else {
+                _lastConfiguredStage = lastConfiguredStage.stageName
+                _configs = isUnlocked(_lastConfiguredStage)
+            }
+            
         }
 
         return {
@@ -546,8 +551,10 @@ const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, current
 }
 
 function renderNavItem(item: CustomNavItemsType) {
+    const linkDataTestName = item.title.toLowerCase().split(' ').join('-')
     return (
         <NavLink
+            data-testid={`${linkDataTestName}-link`}
             key={item.title}
             onClick={(event) => {
                 if (item.isLocked) event.preventDefault()
@@ -556,7 +563,12 @@ function renderNavItem(item: CustomNavItemsType) {
             to={item.href}
         >
             <span className="dc__ellipsis-right nav-text">{item.title}</span>
-            {item.isLocked && <Lock className="app-compose__nav-icon icon-dim-20" />}
+            {item.isLocked && (
+                <Lock
+                    className="app-compose__nav-icon icon-dim-20"
+                    data-testid={`${linkDataTestName}-lockicon`}
+                />
+            )}
         </NavLink>
     )
 }
@@ -604,8 +616,8 @@ function Navigation({
                                     visible={showCannotDeleteTooltip}
                                     iconClass="repo-configured-icon"
                                     iconSize={32}
-                                    infoTextHeading={`${DeleteComponentsName.GitRepo} '${getRepo}' is configured as source for Dockerfile`}
-                                    infoText={DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE}
+                                    infoTextHeading={`${DeleteComponentsName.GitRepo} '${getRepo}' is in use`}
+                                    infoText={GIT_MATERIAL_IN_USE_MESSAGE}
                                     showCloseButton={true}
                                     trigger="manual"
                                     interactive={true}
@@ -625,9 +637,15 @@ function Navigation({
                     return <EnvironmentOverrideRouter key={item.title} />
                 }
             })}
+
             {isJobView && <div className="h-100" />}
             <div className="cta-delete-app flex w-100 dc__position-sticky pt-2 pb-16 bcn-0">
-                <button type="button" className="flex cta delete mt-8 w-100 h-36" onClick={deleteApp}>
+                <button
+                    data-testid="delete-job-app-button"
+                    type="button"
+                    className="flex cta delete mt-8 w-100 h-36"
+                    onClick={deleteApp}
+                >
                     Delete {isJobView ? 'Job' : 'Application'}
                 </button>
             </div>
@@ -824,7 +842,11 @@ const EnvOverrideRoute = ({ envOverride }: EnvironmentOverrideRouteProps) => {
             </div>
             {!collapsed && (
                 <div className="environment-routes">
-                    <NavLink className="app-compose__nav-item cursor" to={`${LINK}/deployment-template`}>
+                    <NavLink
+                        data-testid="env-deployment-template"
+                        className="app-compose__nav-item cursor"
+                        to={`${LINK}/deployment-template`}
+                    >
                         Deployment template
                     </NavLink>
                     <NavLink className="app-compose__nav-item cursor" to={`${LINK}/configmap`}>
@@ -845,7 +867,7 @@ const EnvironmentOverrides = ({ environmentResult, environmentsLoading }: Enviro
     if (Array.isArray(environmentResult?.result)) {
         const environments = environmentResult.result.sort((a, b) => a.environmentName.localeCompare(b.environmentName))
         return (
-            <div className="w-100" style={{ height: 'calc(100% - 60px)' }}>
+            <div className="w-100" style={{ height: 'calc(100% - 60px)' }} data-testid="env-override-list">
                 {environments.map((env) => {
                     return (
                         !env.deploymentAppDeleteRequest && (

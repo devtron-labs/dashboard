@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import { not, useKeyDown } from '../../../common'
+import React, { useEffect, useState } from 'react'
+import { useKeyDown } from '../../../common'
 import { useLocation } from 'react-router'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as ZoomIn } from '../../../../assets/icons/ic-fullscreen.svg'
@@ -11,7 +11,10 @@ import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { NavLink } from 'react-router-dom'
 import { TIMELINE_STATUS } from '../../../../config'
-import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { EmptyState, not, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { CIListItem, CopyTippyWithText } from './Artifacts'
+import { extractImage } from '../../service'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 export const LogResizeButton = ({ fullScreenView, setFullScreenView }: LogResizeButtonType): JSX.Element => {
     const { pathname } = useLocation()
@@ -69,9 +72,17 @@ export const Scroller = ({ scrollToTop, scrollToBottom, style }: ScrollerType): 
     )
 }
 
-export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
+export const GitChanges = ({
+    gitTriggers,
+    ciMaterials,
+    artifact,
+    userApprovalMetadata,
+    triggeredByEmail,
+}: GitChangesType) => {
+    const [copied, setCopied] = useState(false)
+
     if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
-        return <EmptyView title="Data not available" subTitle="Source code detail is not available" />
+        return <GenericEmptyState title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE} subTitle={EMPTY_STATE_STATUS.DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE.SUBTITLE} />
     }
     return (
         <div className="flex column left w-100 p-16">
@@ -81,9 +92,11 @@ export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
                     <div
                         key={`mat-${gitTrigger?.Commit}-${index}`}
                         className="bcn-0 pt-12 br-4 en-2 bw-1 pb-12 mb-12"
+                        data-testid="source-code-git-hash"
                         style={{ width: 'min( 100%, 800px )' }}
                     >
                         <GitCommitInfoGeneric
+                            index={index}
                             materialUrl={gitTrigger?.GitRepoUrl ? gitTrigger.GitRepoUrl : ciMaterial?.url}
                             showMaterialInfoHeader={true}
                             commitInfo={gitTrigger}
@@ -100,6 +113,26 @@ export const GitChanges = ({ gitTriggers, ciMaterials }: GitChangesType) => {
                     </div>
                 ) : null
             })}
+            {artifact && userApprovalMetadata && (
+                <CIListItem
+                    type="approved-artifact"
+                    userApprovalMetadata={userApprovalMetadata}
+                    triggeredBy={triggeredByEmail}
+                >
+                    <div className="flex column left hover-trigger">
+                        <div className="cn-9 fs-14 flex left">
+                            <CopyTippyWithText
+                                copyText={extractImage(artifact)}
+                                copied={copied}
+                                setCopied={setCopied}
+                            />
+                        </div>
+                        <div className="cn-7 fs-12 flex left">
+                            <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
+                        </div>
+                    </div>
+                </CIListItem>
+            )}
         </div>
     )
 }
@@ -111,7 +144,9 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyView
                 <img src={imgSrc ?? AppNotDeployed} alt="" />
             </EmptyState.Image>
             <EmptyState.Title>
-                <h4 className="fw-6 w-300 dc__text-center lh-1-4">{title}</h4>
+                <h4 className="fw-6 w-300 dc__text-center lh-1-4" data-testid="empty-view-heading">
+                    {title}
+                </h4>
             </EmptyState.Title>
             <EmptyState.Subtitle>{subTitle}</EmptyState.Subtitle>
             {link && (
@@ -132,6 +167,8 @@ export const triggerStatus = (triggerDetailStatus: string): string => {
         return 'Failed'
     } else if (triggerStatus === TIMELINE_STATUS.HEALTHY) {
         return 'Succeeded'
+    } else if (triggerStatus === TIMELINE_STATUS.INPROGRESS) {
+        return 'Inprogress'
     } else {
         return triggerDetailStatus
     }

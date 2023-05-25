@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import './pageHeader.css'
 import LogoutCard from '../LogoutCard'
-import { getLoginInfo, getRandomColor, setActionWithExpiry } from '../helpers/Helpers'
+import { setActionWithExpiry } from '../helpers/Helpers'
 import { InstallationType, ServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import { getServerInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import GettingStartedCard from '../gettingStartedCard/GettingStarted'
@@ -17,7 +17,8 @@ import HelpNav from './HelpNav'
 import { ReactComponent as Question } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { PageHeaderType } from './header.type'
-import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg';
+import { ReactComponent as DropDownIcon } from '../../../assets/icons/ic-chevron-down.svg'
+import { getLoginInfo, getRandomColor } from '@devtron-labs/devtron-fe-common-lib'
 
 function PageHeader({
     headerName,
@@ -100,20 +101,21 @@ function PageHeader({
         return (
             <>
                 <div className="flex left cursor mr-16" onClick={onClickHelp}>
-                    <span className="icon-dim-24 fcn-9 mr-4 ml-16">
+                    <span className="icon-dim-24 fcn-9 mr-4 ml-16" >
                         <Question />
                     </span>
-                    <span className="fs-13 cn-9">Help</span>
+                    <span className="fs-13 cn-9" data-testid="go-to-get-started">Help</span>
                     <DropDownIcon
-                    style={{ ['--rotateBy' as any]: `${180 * Number(showHelpCard)}deg` }}
-                    className="fcn-9 icon-dim-20 rotate pointer"
-                />
+                        style={{ ['--rotateBy' as any]: `${180 * Number(showHelpCard)}deg` }}
+                        className="fcn-9 icon-dim-20 rotate pointer"
+                    />
                 </div>
                 {!window._env_.K8S_CLIENT && (
                     <div
                         className="logout-card__initial cursor fs-13 icon-dim-24 flex logout-card__initial--nav"
                         onClick={onClickLogoutButton}
                         style={{ backgroundColor: getRandomColor(email) }}
+                        data-testid="profile-button"
                     >
                         {email[0]}
                     </div>
@@ -152,11 +154,14 @@ function PageHeader({
                             <Close className="dc__page-header__close-icon icon-dim-24 cursor" />
                         </button>
                     )}
-                    <span className="fw-6">{headerName}</span>
+                    <span className="fw-6" data-testid="main-header">
+                        {headerName}
+                    </span>
                     {additionalHeaderInfo && additionalHeaderInfo()}
                     {isBreadcrumbs && breadCrumbs()}
                     {isTippyShown && (
                         <a
+                            data-testid="learn-more-symbol"
                             className="dc__link flex"
                             target="_blank"
                             href={tippyRedirectLink}

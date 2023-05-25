@@ -1835,7 +1835,8 @@ table.resource-tree {
   }
 }
 
-.deployment-status-breakdown-container {
+.deployment-status-breakdown-container,
+.deployment-approval-container {
   .vertical-connector{
     border-left: 1px solid var(--N300);
     height: 15px;
@@ -1891,6 +1892,10 @@ table.resource-tree {
     border-radius: 0 0 4px 4px;
     border-top: 0;
   }
+}
+
+.deployment-approval-container + .deployment-status-breakdown-container {
+    padding-top: 0px;
 }
 
 .deployment-status-breakdown {

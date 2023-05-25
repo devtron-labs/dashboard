@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, SourceTypeMap, ViewType } from '../../../../config'
+import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, NO_COMMIT_SELECTED, SourceTypeMap, ViewType } from '../../../../config'
 import {
+    CDMaterialResponseType,
+    CDModalTab,
+    DeploymentNodeType,
     ServerErrors,
     ErrorScreenManager,
     PopupMenu,
@@ -20,7 +23,6 @@ import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { CIMaterialType } from '../../../app/details/triggerView/MaterialHistory'
 import {
     CIMaterialRouterProps,
-    DeploymentNodeType,
     MATERIAL_TYPE,
     NodeAttr,
     WorkflowNodeType,
@@ -28,7 +30,6 @@ import {
 } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import {
-    CDModalTab,
     getCDMaterialList,
     getCIMaterialList,
     getGitMaterialByCommitHash,
@@ -37,7 +38,13 @@ import {
     triggerCDNode,
     triggerCINode,
 } from '../../../app/service'
-import { createGitCommitUrl, ISTTimeModal, preventBodyScroll, sortObjectArrayAlphabetically } from '../../../common'
+import {
+    createGitCommitUrl,
+    importComponentFromFELibrary,
+    ISTTimeModal,
+    preventBodyScroll,
+    sortObjectArrayAlphabetically,
+} from '../../../common'
 import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING, TIME_STAMP_ORDER } from '../../../app/details/triggerView/Constants'
 import { toast } from 'react-toastify'
@@ -69,9 +76,13 @@ import {
 } from '../../AppGroup.types'
 import { handleSourceNotConfigured, processWorkflowStatuses } from '../../AppGroup.utils'
 import Tippy from '@tippyjs/react'
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
+
+const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 
 let inprogressStatusTimer
-export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultType) {
+export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefaultType) {
     const { envId } = useParams<{ envId: string }>()
     const location = useLocation()
     const history = useHistory()
@@ -84,6 +95,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     const [errorCode, setErrorCode] = useState(0)
     const [showCIModal, setShowCIModal] = useState(false)
     const [showCDModal, setShowCDModal] = useState(false)
+    const [showApprovalModal, setShowApprovalModal] = useState(false)
     const [showBulkCDModal, setShowBulkCDModal] = useState(false)
     const [showBulkCIModal, setShowBulkCIModal] = useState(false)
     const [showWebhookModal, setShowWebhookModal] = useState(false)
@@ -108,9 +120,20 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     const [selectAllValue, setSelectAllValue] = useState<CHECKBOX_VALUE>(CHECKBOX_VALUE.CHECKED)
     const abortControllerRef = useRef(new AbortController())
 
+    useEffect(() => {
+        if (envId) {
+            setPageViewType(ViewType.LOADING)
+            setSelectedAppList([])
+            getWorkflowsData()
+        }
+        return () => {
+            inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
+        }
+    }, [filteredAppIds])
+
     const getWorkflowsData = async (): Promise<void> => {
         try {
-            const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId)
+            const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
             if (showCIModal) {
                 _workflows.forEach((wf) =>
                     wf.nodes.forEach((n) => {
@@ -131,11 +154,48 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             setErrorCode(0)
             setPageViewType(ViewType.FORM)
             getWorkflowStatusData(_workflows)
+            processFilteredData(_workflows)
         } catch (error) {
             showError(error)
             setErrorCode(error['code'])
             setPageViewType(ViewType.ERROR)
         }
+    }
+
+    const processFilteredData = (_filteredWorkflows: WorkflowType[]): void => {
+        const _selectedAppList = []
+        let _preNodeExist, _postNodeExist
+        _filteredWorkflows.forEach((wf) => {
+            if (wf.isSelected) {
+                const _currentAppDetail = {
+                    id: wf.appId,
+                    name: wf.name,
+                    preNodeAvailable: false,
+                    postNodeAvailable: false,
+                }
+                for (const node of wf.nodes) {
+                    if (node.environmentId === +envId && node.type === WorkflowNodeType.CD) {
+                        _preNodeExist = _preNodeExist || !!node.preNode
+                        _postNodeExist = _postNodeExist || !!node.postNode
+                        _currentAppDetail.preNodeAvailable = !!node.preNode
+                        _currentAppDetail.postNodeAvailable = !!node.postNode
+                        break
+                    }
+                }
+                _selectedAppList.push(_currentAppDetail)
+            }
+        })
+        setShowPreDeployment(_preNodeExist)
+        setShowPostDeployment(_postNodeExist)
+        setSelectedAppList(_selectedAppList)
+        setSelectAll(_selectedAppList.length !== 0)
+        setSelectAllValue(
+            _filteredWorkflows.length === _selectedAppList.length
+                ? CHECKBOX_VALUE.CHECKED
+                : CHECKBOX_VALUE.INTERMEDIATE,
+        )
+        _filteredWorkflows.sort((a, b) => sortCallback('name', a, b))
+        setFilteredWorkflows(_filteredWorkflows)
     }
 
     const pollWorkflowStatus = (_processedWorkflowsData: ProcessWorkFlowStatusType) => {
@@ -149,7 +209,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     }
 
     const getWorkflowStatusData = (workflowsList: WorkflowType[]) => {
-        getWorkflowStatus(envId)
+        getWorkflowStatus(envId, filteredAppIds)
             .then((response) => {
                 const _processedWorkflowsData = processWorkflowStatuses(
                     response?.result?.ciWorkflowStatus ?? [],
@@ -158,6 +218,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                 )
                 pollWorkflowStatus(_processedWorkflowsData)
                 setWorkflows(_processedWorkflowsData.workflows)
+                processFilteredData(_processedWorkflowsData.workflows)
             })
             .catch((errors: ServerErrors) => {
                 showError(errors)
@@ -165,65 +226,6 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                 pollWorkflowStatus({ cicdInProgress: true, workflows: workflowsList })
             })
     }
-
-    useEffect(() => {
-        if (envId) {
-            setPageViewType(ViewType.LOADING)
-            setSelectedAppList([])
-            getWorkflowsData()
-        }
-        return () => {
-            inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
-        }
-    }, [envId])
-
-    useEffect(() => {
-        if (filteredApps.length) {
-            const _filteredAppMap = new Map<number, string>()
-            filteredApps.forEach((app) => {
-                _filteredAppMap.set(+app.value, app.label)
-            })
-            const _filteredWorkflows: WorkflowType[] = []
-            workflows.forEach((wf) => {
-                if (_filteredAppMap.get(wf.appId)) {
-                    _filteredWorkflows.push(wf)
-                }
-            })
-            const _selectedAppList = []
-            let _preNodeExist, _postNodeExist
-            _filteredWorkflows.forEach((wf) => {
-                if (wf.isSelected) {
-                    const _currentAppDetail = {
-                        id: wf.appId,
-                        name: wf.name,
-                        preNodeAvailable: false,
-                        postNodeAvailable: false,
-                    }
-                    for (const node of wf.nodes) {
-                        if (node.environmentId === +envId && node.type === WorkflowNodeType.CD) {
-                            _preNodeExist = showPreDeployment || !!node.preNode
-                            _postNodeExist = showPostDeployment || !!node.postNode
-                            _currentAppDetail.preNodeAvailable = !!node.preNode
-                            _currentAppDetail.postNodeAvailable = !!node.postNode
-                            break
-                        }
-                    }
-                    _selectedAppList.push(_currentAppDetail)
-                }
-            })
-            setShowPreDeployment(_preNodeExist)
-            setShowPostDeployment(_postNodeExist)
-            setSelectedAppList(_selectedAppList)
-            setSelectAll(_selectedAppList.length !== 0)
-            setSelectAllValue(
-                _filteredWorkflows.length === _selectedAppList.length
-                    ? CHECKBOX_VALUE.CHECKED
-                    : CHECKBOX_VALUE.INTERMEDIATE,
-            )
-            _filteredWorkflows.sort((a, b) => sortCallback('name', a, b))
-            setFilteredWorkflows(_filteredWorkflows)
-        }
-    }, [filteredApps, workflows])
 
     const clearAppList = (): void => {
         setSelectedAppList([])
@@ -342,15 +344,22 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                             changes: _result.Changes || [],
                             showChanges: true,
                             webhookData: _result.WebhookData,
-                            isSelected: true,
+                            isSelected: !_result.Excluded,
+                            excluded: _result.Excluded,
                         },
                     ]
                     _selectedMaterial.isMaterialLoading = false
+                    _selectedMaterial.showAllCommits = false
+                    _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded 
+                    _selectedMaterial.materialSelectionErrorMsg =_selectedMaterial.history[0].excluded ? NO_COMMIT_SELECTED : ''
                 } else {
                     _selectedMaterial.history = []
                     _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
                     _selectedMaterial.noSearchResult = true
                     _selectedMaterial.isMaterialLoading = false
+                    _selectedMaterial.showAllCommits = false
+                    _selectedMaterial.isMaterialSelectionError = true
+                    _selectedMaterial.materialSelectionErrorMsg = NO_COMMIT_SELECTED
                 }
                 setFilteredWorkflows(workflows)
             })
@@ -363,8 +372,8 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
 
     const getMaterialByCommit = async (
         _ciNodeId: number,
-        pipelineName: string,
         ciPipelineMaterialId: number,
+        gitMaterialId: number,
         commitHash = null,
     ) => {
         let _selectedMaterial
@@ -374,6 +383,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
                         if (material.isSelected && material.searchText !== commitHash) {
                             material.isMaterialLoading = true
+                            material.showAllCommits = false
                             material.searchText = commitHash
                             _selectedMaterial = material
                         }
@@ -388,9 +398,9 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         if (commitHash && _selectedMaterial) {
             const commitInLocalHistory = _selectedMaterial.history.find((material) => material.commit === commitHash)
             if (commitInLocalHistory) {
-                _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: true }]
+                _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: !commitInLocalHistory.excluded }]
                 _selectedMaterial.isMaterialLoading = false
-
+                _selectedMaterial.showAllCommits = false
                 setFilteredWorkflows(_workflows)
             } else {
                 setFilteredWorkflows(_workflows)
@@ -399,31 +409,116 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         } else {
             setFilteredWorkflows(_workflows)
             abortControllerRef.current = new AbortController()
-            updateCIMaterialList(
+            getMaterialHistory(
                 selectedCINode.id.toString(),
-                pipelineName,
-                true,
                 abortControllerRef.current.signal,
+                gitMaterialId,
+                false,
             ).catch((errors: ServerErrors) => {
-                showError(errors)
-                setErrorCode(errors.code)
+                if (!abortControllerRef.current.signal.aborted) {
+                    showError(errors)
+                }
             })
         }
     }
 
-    //NOTE: GIT MATERIAL ID
-    const refreshMaterial = (
-        ciNodeId: number,
-        pipelineName: string,
-        gitMaterialId: number,
-        abortController?: AbortController,
-    ) => {
+    const getFilteredMaterial = async (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => {
         const _workflows = [...filteredWorkflows].map((wf) => {
             wf.nodes = wf.nodes.map((node) => {
                 if (node.id === ciNodeId.toString() && node.type === 'CI') {
                     node.inputMaterialList = node.inputMaterialList.map((material) => {
-                        material.isMaterialLoading =
-                            material.gitMaterialId === gitMaterialId ? true : material.isMaterialLoading
+                        if (material.gitMaterialId === gitMaterialId) {
+                            material.isMaterialLoading = true
+                            material.showAllCommits = showExcluded
+                        }
+                        return material
+                    })
+                    return node
+                }
+                return node
+            })
+            return wf
+        })
+        setFilteredWorkflows(_workflows)
+        abortControllerRef.current = new AbortController()
+        getMaterialHistory(ciNodeId.toString(), abortControllerRef.current.signal, gitMaterialId, showExcluded).catch(
+            (errors: ServerErrors) => {
+                if (!abortControllerRef.current.signal.aborted) {
+                    showError(errors)
+                }
+            },
+        )
+    }
+
+    const getMaterialHistory = (
+        ciNodeId: string,
+        abortSignal: AbortSignal,
+        gitMaterialId?: number,
+        showExcluded?: boolean,
+    ) => {
+        const params = {
+            pipelineId: ciNodeId,
+            materialId: gitMaterialId,
+            showExcluded: showExcluded,
+        }
+        return getCIMaterialList(params, abortSignal).then((response) => {
+            let showRegexModal = false
+            const _workflows = [...filteredWorkflows].map((wf) => {
+                wf.nodes.map((node) => {
+                    if (node.type === 'CI' && node.id == ciNodeId) {
+                        const selectedCIPipeline = filteredCIPipelines
+                            .get(wf.appId)
+                            ?.find((_ci) => _ci.id === +ciNodeId)
+                        if (selectedCIPipeline?.ciMaterial) {
+                            for (const mat of selectedCIPipeline.ciMaterial) {
+                                if (mat.isRegex && mat.gitMaterialId === response.result[0].gitMaterialId) {
+                                    node.isRegex = !!response.result[0].regex
+                                    if (response.result[0].value) {
+                                        node.branch = response.result[0].value
+                                    } else {
+                                        showRegexModal = !response.result[0].value
+                                    }
+                                    break
+                                }
+                            }
+                        }
+                        node.inputMaterialList = node.inputMaterialList.map((mat) => {
+                            if (mat.id === response.result[0].id) {
+                                return {
+                                    ...response.result[0],
+                                    isSelected: mat.isSelected,
+                                    isMaterialLoading: false,
+                                    searchText: mat.searchText,
+                                    showAllCommits: showExcluded,
+                                }
+                            } else return mat
+                        })
+                    }
+                    return node
+                })
+                return wf
+            })
+            setFilteredWorkflows(_workflows)
+            if (!showBulkCIModal) {
+                setShowCIModal(!showRegexModal)
+                setShowMaterialRegexModal(showRegexModal)
+            }
+            getWorkflowStatusData(_workflows)
+            preventBodyScroll(true)
+        })
+    }
+
+    //NOTE: GIT MATERIAL ID
+    const refreshMaterial = (ciNodeId: number, gitMaterialId: number, abortController?: AbortController) => {
+        let showExcluded = false
+        const _workflows = [...filteredWorkflows].map((wf) => {
+            wf.nodes = wf.nodes.map((node) => {
+                if (node.id === ciNodeId.toString() && node.type === 'CI') {
+                    node.inputMaterialList = node.inputMaterialList.map((material) => {
+                        if (material.gitMaterialId === gitMaterialId) {
+                            material.isMaterialLoading = true
+                            showExcluded = material.showAllCommits
+                        }
                         return material
                     })
                     return node
@@ -436,14 +531,16 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         abortControllerRef.current = abortController ?? new AbortController()
         refreshGitMaterial(gitMaterialId.toString(), abortControllerRef.current.signal)
             .then((response) => {
-                updateCIMaterialList(ciNodeId.toString(), pipelineName, true, abortControllerRef.current.signal).catch(
-                    (errors: ServerErrors) => {
-                        if (!abortControllerRef.current.signal.aborted) {
-                            showError(errors)
-                            setErrorCode(errors.code)
-                        }
-                    },
-                )
+                getMaterialHistory(
+                    ciNodeId.toString(),
+                    abortControllerRef.current.signal,
+                    gitMaterialId,
+                    showExcluded,
+                ).catch((errors: ServerErrors) => {
+                    if (!abortControllerRef.current.signal.aborted) {
+                        showError(errors)
+                    }
+                })
             })
             .catch((error: ServerErrors) => {
                 if (!abortControllerRef.current.signal.aborted) {
@@ -467,7 +564,9 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                 showRegexModal = false
             const _workflows = [...filteredWorkflows].map((workflow) => {
                 workflow.nodes.map((node) => {
-                    if (node.type === 'CI' && +node.id == +ciNodeId) {
+                    if (node.type === 'CI' && node.id == ciNodeId) {
+                        _workflowId = workflow.id
+                        _appID = workflow.appId
                         const selectedCIPipeline = filteredCIPipelines.get(_appID)?.find((_ci) => _ci.id === +ciNodeId)
                         if (selectedCIPipeline?.ciMaterial) {
                             for (const mat of selectedCIPipeline.ciMaterial) {
@@ -480,8 +579,6 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                                 }
                             }
                         }
-                        _workflowId = workflow.id
-                        _appID = workflow.appId
                         if (preserveMaterialSelection) {
                             const selectMaterial = node.inputMaterialList.find((mat) => mat.isSelected)
                             node.inputMaterialList = response.result.map((material) => {
@@ -545,19 +642,34 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
             })
     }
 
-    const onClickCDMaterial = (cdNodeId, nodeType: DeploymentNodeType) => {
-        ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.ImageClicked)
+    const onClickCDMaterial = (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => {
+        ReactGA.event(
+            isApprovalNode ? ENV_TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : ENV_TRIGGER_VIEW_GA_EVENTS.ImageClicked,
+        )
         let _workflowId, _appID
         setCDLoading(true)
-        setShowCDModal(true)
+        setShowCDModal(!isApprovalNode)
+        setShowApprovalModal(isApprovalNode)
         abortControllerRef.current = new AbortController()
-        getCDMaterialList(cdNodeId, nodeType, abortControllerRef.current.signal)
+        getCDMaterialList(
+            cdNodeId,
+            isApprovalNode ? DeploymentNodeType.APPROVAL : nodeType,
+            abortControllerRef.current.signal,
+            isApprovalNode,
+        )
             .then((data) => {
                 let _selectedNode
                 const _workflows = [...filteredWorkflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (cdNodeId == node.id && node.type === nodeType) {
-                            node[MATERIAL_TYPE.inputMaterialList] = data
+                            node[MATERIAL_TYPE.inputMaterialList] = data.materials
+
+                            if (node.type === 'CD') {
+                                node.approvalUsers = data.approvalUsers
+                                node.userApprovalConfig = data.userApprovalConfig
+                                node.requestedUserId = data.requestedUserId
+                            }
+
                             _selectedNode = node
                             _workflowId = workflow.id
                             _appID = workflow.appId
@@ -572,7 +684,8 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                 setFilteredWorkflows(_workflows)
                 setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
                 setMaterialType(MATERIAL_TYPE.inputMaterialList)
-                setShowCDModal(true)
+                setShowCDModal(!isApprovalNode)
+                setShowApprovalModal(isApprovalNode)
                 setCDLoading(false)
                 preventBodyScroll(true)
             })
@@ -606,11 +719,14 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                 const _workflows = [...filteredWorkflows].map((workflow) => {
                     const nodes = workflow.nodes.map((node) => {
                         if (response.result && node.type === 'CD' && +node.id == cdNodeId) {
+                            node.userApprovalConfig = workflow.approvalConfiguredIdsMap[cdNodeId]
+                            node.requestedUserId = response.result.requestedUserId
                             _selectedNode = node
+
                             if (!offset && !size) {
-                                node.rollbackMaterialList = response.result
+                                node.rollbackMaterialList = response.result.materials
                             } else {
-                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result)
+                                node.rollbackMaterialList = node.rollbackMaterialList.concat(response.result.materials)
                             }
                         }
                         return node
@@ -647,8 +763,6 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         deploymentWithConfig?: string,
         wfrId?: number,
     ): void => {
-        ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
-        setCDLoading(true)
         let node
         for (const _wf of filteredWorkflows) {
             node = _wf.nodes.find((nd) => +nd.id == selectedCDNode.id && nd.type == selectedCDNode.type)
@@ -658,6 +772,8 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         const pipelineId = node.id
         const ciArtifact = node[materialType].find((artifact) => artifact.isSelected)
         if (_appId && pipelineId && ciArtifact.id) {
+            ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
+            setCILoading(true)
             triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
@@ -667,7 +783,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                                 : 'Deployment Initiated'
                         toast.success(msg)
                         setShowCDModal(false)
-                        setCDLoading(false)
+                        setCILoading(false)
                         setErrorCode(response.code)
                         preventBodyScroll(false)
                         getWorkflowStatusData(workflows)
@@ -675,7 +791,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                 })
                 .catch((errors: ServerErrors) => {
                     showError(errors)
-                    setCDLoading(false)
+                    setCILoading(false)
                     setErrorCode(errors.code)
                 })
         } else {
@@ -775,11 +891,18 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     node.inputMaterialList.map((material) => {
                         if (material.id == materialId && material.isSelected) {
                             material.history.map((hist) => {
-                                if (material.type == SourceTypeMap.WEBHOOK) {
-                                    hist.isSelected =
-                                        hist.webhookData && hist.webhookData.id && hash == hist.webhookData.id
+                                if (!hist.excluded) {
+                                    if (material.type == SourceTypeMap.WEBHOOK) {
+                                        if(hist?.webhookData && hist.webhookData?.id && hash == hist.webhookData.id) {
+                                            hist.isSelected = true
+                                        }else {
+                                            hist.isSelected = false
+                                        }
+                                    } else {
+                                        hist.isSelected = hash == hist.commit
+                                    }
                                 } else {
-                                    hist.isSelected = hash == hist.commit
+                                    hist.isSelected = false
                                 }
                             })
                         }
@@ -982,6 +1105,11 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         setShowCDModal(false)
     }
 
+    const closeApprovalModal = (e): void => {
+        preventBodyScroll(false)
+        setShowApprovalModal(false)
+    }
+
     const hideWebhookModal = (e?) => {
         if (e) {
             stopPropagation(e)
@@ -1043,10 +1171,13 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
 
     const onShowBulkCIModal = () => {
         setCILoading(true)
-        setShowBulkCIModal(true)
+        //setShowBulkCIModal(true)
+        setTimeout(() => {
+            setShowBulkCIModal(true)
+        }, 100)
     }
 
-    const updateBulkCDInputMaterial = (materialList: Record<string, any[]>): void => {
+    const updateBulkCDInputMaterial = (cdMaterialResponse: Record<string, CDMaterialResponseType>): void => {
         const _workflows = filteredWorkflows.map((wf) => {
             if (wf.isSelected) {
                 const _appId = wf.appId
@@ -1054,15 +1185,20 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
                 )
                 let _selectedNode: NodeAttr
+                const _materialData = cdMaterialResponse[_appId]
                 if (bulkTriggerType === DeploymentNodeType.PRECD) {
                     _selectedNode = _cdNode.preNode
                 } else if (bulkTriggerType === DeploymentNodeType.CD) {
                     _selectedNode = _cdNode
+                    _selectedNode.approvalUsers = _materialData.approvalUsers
+                    _selectedNode.requestedUserId = _materialData.requestedUserId
+                    _selectedNode.userApprovalConfig = _materialData.userApprovalConfig
                 } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
                     _selectedNode = _cdNode.postNode
                 }
+
                 if (_selectedNode) {
-                    _selectedNode.inputMaterialList = materialList[_appId]
+                    _selectedNode.inputMaterialList = _materialData.materials
                 }
             }
             return wf
@@ -1265,11 +1401,15 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                         cdPipelineName: _cdNode.title,
                         cdPipelineId: _cdNode.id,
                         stageType: DeploymentNodeType[_selectedNode.type],
+                        triggerType: _cdNode.triggerType,
                         envName: _selectedNode.environmentName,
                         parentPipelineId: _selectedNode.parentPipelineId,
                         parentPipelineType: WorkflowNodeType[_selectedNode.parentPipelineType],
                         parentEnvironmentName: _selectedNode.parentEnvironmentName,
                         material: _selectedNode.inputMaterialList,
+                        approvalUsers: _selectedNode.approvalUsers,
+                        userApprovalConfig: _selectedNode.userApprovalConfig,
+                        requestedUserId: _selectedNode.requestedUserId,
                     })
                 } else {
                     let warningMessage = ''
@@ -1314,6 +1454,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                             _mat.isBranchError ||
                             _mat.isRepoError ||
                             _mat.isDockerFileError ||
+                            _mat.isMaterialSelectionError ||
                             (_mat.type === SourceTypeMap.WEBHOOK && _mat.history.length === 0)
                         )
                     })
@@ -1324,6 +1465,8 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                             errorMessage = invalidInputMaterial.dockerFileErrorMsg
                         } else if (invalidInputMaterial.isBranchError) {
                             errorMessage = invalidInputMaterial.branchErrorMsg
+                        } else if (invalidInputMaterial.isMaterialSelectionError) {
+                            errorMessage = invalidInputMaterial.materialSelectionErrorMsg
                         } else {
                             errorMessage = CI_MATERIAL_EMPTY_STATE_MESSAGING.NoMaterialFound
                         }
@@ -1572,10 +1715,11 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                                 appId={_appID}
                                 pipelineId={selectedCDNode?.id}
                                 stageType={DeploymentNodeType[selectedCDNode?.type]}
+                                triggerType={node?.triggerType}
                                 material={material}
                                 materialType={materialType}
                                 envName={node?.environmentName}
-                                isLoading={isCDLoading}
+                                isLoading={isCILoading}
                                 changeTab={changeTab}
                                 triggerDeploy={onClickTriggerCDNode}
                                 onClickRollbackMaterial={onClickRollbackMaterial}
@@ -1585,10 +1729,48 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                                 parentPipelineId={node?.parentPipelineId}
                                 parentPipelineType={node?.parentPipelineType}
                                 parentEnvironmentName={node?.parentEnvironmentName}
+                                userApprovalConfig={node?.userApprovalConfig}
+                                requestedUserId={node?.requestedUserId}
                             />
                         )}
                     </div>
                 </VisibleModal>
+            )
+        }
+
+        return null
+    }
+
+    const renderApprovalMaterial = () => {
+        if (ApprovalMaterialModal && showApprovalModal) {
+            let node: NodeAttr, _appID
+            if (selectedCDNode?.id) {
+                for (const _wf of filteredWorkflows) {
+                    node = _wf.nodes.find((el) => {
+                        return +el.id == selectedCDNode.id && el.type == selectedCDNode.type
+                    })
+                    if (node) {
+                        _appID = _wf.appId
+                        break
+                    }
+                }
+            }
+
+            return (
+                <ApprovalMaterialModal
+                    appId={_appID}
+                    pipelineId={selectedCDNode?.id}
+                    stageType={DeploymentNodeType[selectedCDNode?.type]}
+                    node={node ?? ({} as NodeAttr)}
+                    materialType={materialType}
+                    isLoading={isCDLoading}
+                    changeTab={changeTab}
+                    closeApprovalModal={closeApprovalModal}
+                    toggleSourceInfo={toggleSourceInfo}
+                    onClickCDMaterial={onClickCDMaterial}
+                    getModuleInfo={getModuleInfo}
+                    GitCommitInfoGeneric={GitCommitInfoGeneric}
+                />
             )
         }
 
@@ -1601,6 +1783,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                 <PopupMenu.Button
                     isKebab
                     rootClassName="h-36 popup-button-kebab dc__border-left-b4 pl-8 pr-8 dc__no-left-radius flex bcb-5"
+                    dataTestId="deploy-popup"
                 >
                     <Dropdown className="icon-dim-20 fcn-0" />
                 </PopupMenu.Button>
@@ -1610,6 +1793,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                             className="flex left p-10 dc__hover-n50 pointer fs-13"
                             data-trigger-type={'PRECD'}
                             onClick={onShowBulkCDModal}
+                            data-testid="pre-deploy-popup-button"
                         >
                             Trigger Pre-deployment stage
                         </div>
@@ -1618,6 +1802,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                         className="flex left p-10 dc__hover-n50 pointer fs-13"
                         data-trigger-type={'CD'}
                         onClick={onShowBulkCDModal}
+                        data-testid="deploy-popup-button"
                     >
                         Trigger Deployment
                     </div>
@@ -1626,6 +1811,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                             className="flex left p-10 dc__hover-n50 pointer fs-13"
                             data-trigger-type={'POSTCD'}
                             onClick={onShowBulkCDModal}
+                            data-testid="post-deploy-popup-button"
                         >
                             Trigger Post-deployment stage
                         </div>
@@ -1639,12 +1825,17 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
         const _showPopupMenu = showPreDeployment || showPostDeployment
         return (
             <div className="flex dc__min-width-fit-content">
-                <button className="cta flex h-36 mr-12" onClick={onShowBulkCIModal}>
+                <button
+                    className="cta flex h-36 mr-12"
+                    data-testid="bulk-build-image-button"
+                    onClick={onShowBulkCIModal}
+                >
                     {isCILoading ? <Progressing /> : 'Build image'}
                 </button>
                 <button
                     className={`cta flex h-36 ${_showPopupMenu ? 'dc__no-right-radius' : ''}`}
                     data-trigger-type={'CD'}
+                    data-testid="bulk-deploy-button"
                     onClick={onShowBulkCDModal}
                 >
                     {isCDLoading ? (
@@ -1668,10 +1859,10 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     <Close className="icon-dim-18 scr-5 mr-16 cursor mw-18" onClick={clearAppList} />
                 </Tippy>
                 <div>
-                    <div className="fs-13 fw-6 cn-9">
+                    <div data-testid="selected-application-text" className="fs-13 fw-6 cn-9">
                         {selectedAppList.length} application{selectedAppList.length > 1 ? 's' : ''} selected
                     </div>
-                    <div className="fs-13 fw-4 cn-7 dc__ellipsis-right__2nd-line">
+                    <div className="fs-13 fw-4 cn-7 dc__ellipsis-right__2nd-line" data-testid="selected-apps-name">
                         {sortObjectArrayAlphabetically(selectedAppList, 'name').map((app, index) => (
                             <span key={`selected-app-${app['id']}`}>
                                 {app['name']}
@@ -1687,7 +1878,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
     const renderWorkflow = (): JSX.Element => {
         return (
             <>
-                {filteredWorkflows.map((workflow) => {
+                {filteredWorkflows.map((workflow, index) => {
                     return (
                         <Workflow
                             key={workflow.id}
@@ -1705,6 +1896,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                             history={history}
                             location={location}
                             match={match}
+                            index={index}
                         />
                     )
                 })}
@@ -1731,6 +1923,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     isChecked={isSelectAll}
                     value={selectAllValue}
                     onChange={handleSelectAll}
+                    dataTestId="select-all-apps"
                 >
                     Select all apps
                 </Checkbox>
@@ -1750,6 +1943,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                     toggleChanges: toggleChanges,
                     toggleInvalidateCache: toggleInvalidateCache,
                     getMaterialByCommit: getMaterialByCommit,
+                    getFilteredMaterial: getFilteredMaterial,
                 }}
             >
                 {renderWorkflow()}
@@ -1757,6 +1951,7 @@ export default function EnvTriggerView({ filteredApps }: AppGroupDetailDefaultTy
                 {renderCDMaterial()}
                 {renderBulkCDMaterial()}
                 {renderBulkCIMaterial()}
+                {renderApprovalMaterial()}
             </TriggerViewContext.Provider>
             <div></div>
         </div>

@@ -1,6 +1,8 @@
 import { TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
+import { AppEnvironment } from '../../services/service.types'
 import { DeploymentAppType } from '../v2/appDetails/appDetails.type'
+import { DeploymentStatusDetailsBreakdownDataType } from './details/appDetails/appDetails.type'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: (e) => void
@@ -435,6 +437,7 @@ export interface DeleteComponentProps {
     url?: string
     reload?: () => void
     configuration?: string
+    dataTestid?: string
     closeCustomComponent?: () => void
 }
 
@@ -448,8 +451,21 @@ export interface JobPipeline {
     ci_pipeline_name: string
     started_on: string
     status: string
+    dataTestId?: string
 }
 
 export interface TagChipsContainerType {
   labelTags: TagType[]
+}
+export interface SourceInfoType {
+  appDetails
+  setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
+  environment: AppEnvironment
+  environments: AppEnvironment[]
+  showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
+  showUrlInfo?: React.Dispatch<React.SetStateAction<boolean>>
+  showHibernateModal?: React.Dispatch<React.SetStateAction<'' | 'resume' | 'hibernate'>>
+  deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
+  loadingDetails?: boolean
+  loadingResourceTree?: boolean
 }

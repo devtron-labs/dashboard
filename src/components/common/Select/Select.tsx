@@ -2,8 +2,7 @@
 //@ts-nocheck
 
 import React, { useEffect } from 'react';
-import { useEffectAfterMount } from '../../common'
-import { showError, Progressing, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, PopupMenu, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib'
 import { SelectComposition, SelectProps, OptionGroupProps, SelectAsync } from './types';
 
 import arrowTriangle from '../../../assets/icons/ic-chevron-down.svg'
@@ -27,7 +26,8 @@ const Select: React.FC<SelectProps> & SelectComposition = function ({
     valueComparator,
     rootClassName = "",
     disabled = false, tabIndex = 0, name = "select",
-    autoWidth = true, isKebab = false
+    autoWidth = true, isKebab = false,
+    dataTestId=""
 }) {
     const [selected, select] = React.useState(value);
     const [popupOpen, togglePopup] = React.useState(false)
@@ -71,7 +71,7 @@ const Select: React.FC<SelectProps> & SelectComposition = function ({
 
     return <SelectContext.Provider value={{ selected, select, popupOpen, valueComparator, searchString, search, handleClick, disabled, loading, setLoading }}>
         <PopupMenu onToggleCallback={isOpen => togglePopup(isOpen)} autoClose={popupOpen}>
-            <PopupMenu.Button isKebab={isKebab} disabled={disabled} tabIndex={tabIndex} rootClassName={rootClassName}>
+            <PopupMenu.Button isKebab={isKebab} disabled={disabled} tabIndex={tabIndex} rootClassName={rootClassName} dataTestId={dataTestId}>
                 {button}
             </PopupMenu.Button>
             {popupOpen && AsyncComponent}
@@ -85,14 +85,14 @@ const Select: React.FC<SelectProps> & SelectComposition = function ({
     </SelectContext.Provider>
 }
 
-function Option({ children, value, disabled = false, style = {}, active = false, name = "", rootClassName = "" }) {
+function Option({ dataTestIdMenuList, children, value, disabled = false, style = {}, active = false, name = "", rootClassName = "" }) {
     const { selected, searchString, valueComparator, handleClick } = useSelectContext()
     active = active || selected === value;
     if (typeof value === 'object') {
         active = active || valueComparator(value)
     }
     return name.includes(searchString) ?
-        <div className={`select__option ${rootClassName} ${active ? 'selected' : ''}`}
+        <div data-testid={`list-${dataTestIdMenuList}`} className={`select__option ${rootClassName} ${active ? 'selected' : ''}`}
             style={{ ...style, }}
             onClick={e => { if (!disabled) { e.persist(); handleClick(e, value) } }}>
             {children}
@@ -106,14 +106,14 @@ const OptionGroup: React.SFC<OptionGroupProps> = function ({ children, label, ro
     </div>
 }
 
-function Button({ children, style = {}, rootClassName = "", arrowAsset = "" }) {
+function Button({ dataTestIdDropdown, children, style = {}, rootClassName = "", arrowAsset = "" }) {
     const { popupOpen, loading } = useSelectContext()
-    return <div className={`select-button flex ${rootClassName} ${popupOpen ? 'focused' : ''}`} style={{ ...style }}>
+    return <div data-testid={dataTestIdDropdown} className={`select-button flex ${rootClassName} ${popupOpen ? 'focused' : ''}`} style={{ ...style }}>
         {children}
         {loading ? <div><Progressing /></div> : <img src={arrowAsset || arrowTriangle} className="rotate select-button-sort-image" style={{ ['--rotateBy' as any]: popupOpen ? '180deg' : '0deg' }} />}
     </div>
 }
-
+ 
 function Search({ placeholder = "search", style = {}, inputStyle = {}, rootClassName = "" }) {
     const { searchString, search } = useSelectContext();
     return <div className={`${rootClassName} search search--select-menu`}

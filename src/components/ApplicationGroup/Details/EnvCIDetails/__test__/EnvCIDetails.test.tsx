@@ -11,28 +11,31 @@ import * as serviceData from '../../../../app/service'
 describe('EnvCIDetails', () => {
     it('EnvCIDetails render without error', () => {
         const { container } = renderWithRouter(
-            <Route path="application-group/:envId/ci-details/:pipelineId/:buildId">
-                <EnvCIDetails filteredApps={filteredData} />
+            <Route path="application-group/:envId/ci-details/:pipelineId">
+                <EnvCIDetails filteredAppIds={'29,98'} />
             </Route>,
-            { route: 'application-group/1/ci-details/1' },
+            { route: 'application-group/3/ci-details/45' },
         )
         expect(container).toBeInTheDocument()
     })
 
-    it('EnvCIDetails render without error', async () => {
+    it('EnvCIDetails render without error async', async () => {
         let component
         jest.spyOn(configData, 'getCIConfigList').mockImplementation(mockCIList)
         jest.spyOn(serviceData, 'getTriggerHistory').mockImplementation(mockTrigger)
         await act(async () => {
             component = renderWithRouter(
             <Route path="application-group/:envId/ci-details/:pipelineId/:buildId">
-                <EnvCIDetails filteredApps={filteredData} />
+                <EnvCIDetails filteredAppIds={'29,98'} />
             </Route>,
-            { route: 'application-group/1/ci-details/1/1' },
+            { route: 'application-group/3/ci-details/45/363' },
             )
         })
+
         expect(component.container).toBeInTheDocument()
-        const loadState = component.container.querySelector('.ci-details__history')
-        expect(loadState).toBeInTheDocument()
+        const leftState = component.container.querySelector('.ci-details__history')
+        const rightState = component.container.querySelector('.ci-details__body')
+        expect(leftState).toBeInTheDocument()
+        expect(rightState).toBeInTheDocument()
     })
 })

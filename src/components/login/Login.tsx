@@ -1,16 +1,14 @@
 import React, { Component } from 'react'
 import dt from '../../assets/icons/logo/logo-dt.svg'
 import LoginIcons from '../../assets/icons/LoginSprite.svg'
-import { Switch, Redirect, NavLink } from 'react-router-dom'
-import { Route } from 'react-router'
+import { Switch, Redirect, Route, NavLink } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { ServerErrors, Host, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME} from '../../config'
-import { getCookie } from '../common'
+import { getCookie, ServerErrors, Host, Progressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS, DOCUMENTATION, TOKEN_COOKIE_NAME } from '../../config'
 import { LoginProps, LoginFormState } from './login.types'
 import { getSSOConfigList, loginAsAdmin } from './login.service'
-import './login.scss'
 import { dashboardAccessed } from '../../services/service'
+import './login.scss'
 
 export default class Login extends Component<LoginProps, LoginFormState> {
     constructor(props) {
@@ -143,7 +141,10 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                                 <svg className="icon-dim-24 mr-8" viewBox="0 0 24 24">
                                     <use href={`${LoginIcons}#${item.name}`}></use>
                                 </svg>
-                                Login with <span className="ml-5 dc__first-letter-capitalize">{item.name}</span>
+                                Login with
+                                <span className="ml-5 dc__first-letter-capitalize" data-testid="login-with-text">
+                                    {item.name}
+                                </span>
                             </a>
                         )
                     })}
@@ -165,6 +166,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                 <form className="login-dt__form" autoComplete="on" onSubmit={this.login}>
                     <input
                         type="text"
+                        data-testid="username-textbox"
                         className="form__input fs-14 mb-24"
                         placeholder="Username"
                         value={this.state.form.username}
@@ -173,6 +175,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                     />
                     <input
                         type={process.env.NODE_ENV !== 'development' ? 'password' : 'text'}
+                        data-testid="password-textbox"
                         className="form__input fs-14"
                         placeholder="Password"
                         value={this.state.form.password}
@@ -189,7 +192,11 @@ export default class Login extends Component<LoginProps, LoginFormState> {
                             What is my admin password?
                         </a>
                     </div>
-                    <button disabled={this.isFormNotValid() || this.state.loading} className="cta login__button">
+                    <button
+                        disabled={this.isFormNotValid() || this.state.loading}
+                        className="cta login__button"
+                        data-testid="login-button"
+                    >
                         {this.state.loading ? <Progressing /> : 'Login'}
                     </button>
                     {this.state.loginList.length ? (

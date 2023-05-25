@@ -174,3 +174,12 @@ export interface DetailsType {
     isAppDeleted?: boolean
     showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
 }
+
+export interface DeploymentStatusCardType {
+  deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
+  loadingResourceTree?: boolean
+  hideDeploymentStatusLeftInfo?: boolean
+  hideDetails?: boolean
+  deploymentTriggerTime?: string
+  triggeredBy?: string
+}

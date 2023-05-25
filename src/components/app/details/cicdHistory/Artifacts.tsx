@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { showError, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import { copyToClipboard } from '../../../common'
+import { showError, EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { copyToClipboard, importComponentFromFELibrary } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'
@@ -11,12 +11,13 @@ import docker from '../../../../assets/icons/misc/docker.svg'
 import folder from '../../../../assets/icons/ic-folder.svg'
 import noartifact from '../../../../assets/img/no-artifact@2x.png'
 import Tippy from '@tippyjs/react'
-import { EmptyView } from './History.components'
 import '../cIDetails/ciDetails.scss'
 import { ArtifactType, CIListItemType, CopyTippyWithTextType, HistoryComponentType } from './types'
 import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
-import { ARTIFACTS_EMPTY_STATE_TEXTS } from './Constants'
 import { extractImage } from '../../service'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+
+const ApprovedArtifact = importComponentFromFELibrary('ApprovedArtifact')
 
 export default function Artifacts({
     status,
@@ -53,16 +54,16 @@ export default function Artifacts({
     } else if (isJobView && !blobStorageEnabled) {
         return (
             <div className="flex column p-24 w-100 h-100">
-                <EmptyView
-                    title={ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesFound}
-                    subTitle={ARTIFACTS_EMPTY_STATE_TEXTS.BlobStorageNotConfigured}
-                    imgSrc={noartifact}
+                <GenericEmptyState
+                    title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesFound}
+                    subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.BlobStorageNotConfigured}
+                    image={noartifact}
                 />
-                <div className="flexbox pt-8 pr-12 pb-8 pl-12 bcv-1 ev-2 bw-1 br-4">
+                <div className="flexbox pt-8 pr-12 pb-8 pl-12 bcv-1 ev-2 bw-1 br-4 dc__position-abs-b-20">
                     <Question className="icon-dim-20 fcv-5" />
-                    <span className="fs-13 fw-4 mr-8 ml-8">{ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}</span>
+                    <span className="fs-13 fw-4 mr-8 ml-8">{EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}</span>
                     <a className="fs-13 fw-6 cb-5 dc__no-decor" href={DOCUMENTATION.BLOB_STORAGE} target="_blank">
-                        {ARTIFACTS_EMPTY_STATE_TEXTS.ConfigureBlobStorage}
+                        {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.ConfigureBlobStorage}
                     </a>
                     <OpenInNew className="icon-dim-20 ml-8" />
                 </div>
@@ -70,10 +71,10 @@ export default function Artifacts({
         )
     } else if (isJobView && !isArtifactUploaded) {
         return (
-            <EmptyView
-                title={ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesFound}
-                subTitle={ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesGenerated}
-                imgSrc={noartifact}
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesFound}
+                subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoFilesGenerated}
+                image={noartifact}
             />
         )
     } else if (
@@ -81,9 +82,9 @@ export default function Artifacts({
         status.toLowerCase() === TERMINAL_STATUS_MAP.CANCELLED
     ) {
         return (
-            <EmptyView
-                title={ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
-                subTitle={ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
+                subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
             />
         )
     } else {
@@ -92,14 +93,14 @@ export default function Artifacts({
                 {!isJobView && (
                     <CIListItem type="artifact">
                         <div className="flex column left hover-trigger">
-                            <div className="cn-9 fs-14 flex left">
+                            <div className="cn-9 fs-14 flex left" data-testid="artifact-text-visibility">
                                 <CopyTippyWithText
                                     copyText={extractImage(artifact)}
                                     copied={copied}
                                     setCopied={setCopied}
                                 />
                             </div>
-                            <div className="cn-7 fs-12 flex left">
+                            <div className="cn-7 fs-12 flex left" data-testid="artifact-image-text">
                                 <CopyTippyWithText copyText={artifact} copied={copied} setCopied={setCopied} />
                             </div>
                         </div>
@@ -125,7 +126,7 @@ export default function Artifacts({
     }
 }
 
-const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWithTextType): JSX.Element => {
+export const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWithTextType): JSX.Element => {
     const onClickCopyToClipboard = (e): void => {
         copyToClipboard(e.target.dataset.copyText, () => setCopied(true))
     }
@@ -151,6 +152,7 @@ const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWithTextTyp
 }
 
 const CIProgressView = (): JSX.Element => {
+   {/* TO replace with genericemptystate after incoporating png support */}
     return (
         <EmptyState>
             <EmptyState.Image>
@@ -166,9 +168,19 @@ const CIProgressView = (): JSX.Element => {
     )
 }
 
-const CIListItem = ({ type, children }: CIListItemType) => {
+export const CIListItem = ({ type, userApprovalMetadata, triggeredBy, children }: CIListItemType) => {
+    if (type === 'approved-artifact') {
+        return ApprovedArtifact ? (
+            <ApprovedArtifact
+                userApprovalMetadata={userApprovalMetadata}
+                triggeredBy={triggeredBy}
+                children={children}
+            />
+        ) : null
+    }
+
     return (
-        <div className={`mb-16 ci-artifact ci-artifact--${type}`}>
+        <div className={`mb-16 ci-artifact ci-artifact--${type}`} data-testid="hover-on-report-artifact">
             <div className="bcn-1 flex br-4">
                 <img src={type === 'artifact' ? docker : folder} className="icon-dim-24" />
             </div>

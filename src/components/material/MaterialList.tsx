@@ -37,7 +37,9 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                 materials = materials.map((mat) => {
                     return {
                         ...mat,
+                        includeExcludeFilePath: mat.filterPattern?.length ? mat.filterPattern.join('\n') : '',
                         gitProvider: providers.find((p) => mat.gitProviderId === p.id),
+                        isExcludeRepoChecked: !!mat.filterPattern?.length
                     }
                 })
                 this.setState({
@@ -74,6 +76,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             let materials = response.result.material.map((mat) => {
                 return {
                     ...mat,
+                    includeExcludeFilePath: mat.filterPattern?.length ? mat.filterPattern.join('\n') : '',
                     gitProvider: this.state.providers.find((p) => mat.gitProviderId === p.id),
                 }
             })
@@ -110,7 +113,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
     renderPageHeader() {
         return (
             <>
-                <h2 className="form__title form__title--artifacts">
+                <h2 className="form__title form__title--artifacts" data-testid={`${this.props.isJobView ? 'source-code-heading' : 'git-repositories-heading'}`}>
                     {this.props.isJobView ? 'Source code' : 'Git Repositories'}
                 </h2>
                 <p className="form__subtitle form__subtitle--artifacts">
@@ -182,7 +185,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         reload={this.getGitProviderConfig}
                         isJobView={this.props.isJobView}
                     />
-                    {this.state.materials.map((mat) => {
+                    {this.state.materials.map((mat, index) => {
                         return (
                             <UpdateMaterial
                                 key={mat.name}
