@@ -199,10 +199,10 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                         id: this.state.material.id,
                         url: this.state.material.url,
                         checkoutPath: this.state.material.checkoutPath,
-                        filterPattern: this.state.material.includeExcludeFilePath
+                        filterPattern: !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS ? this.state.material.includeExcludeFilePath 
                             .trim()
                             .split(/\r?\n/)
-                            .filter((path) => path.trim()),
+                            .filter((path) => path.trim()) : [],
                         gitProviderId: this.state.material.gitProvider.id,
                         fetchSubmodules: this.state.material.fetchSubmodules ? true : false,
                     },
