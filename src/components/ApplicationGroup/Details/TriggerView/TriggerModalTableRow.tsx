@@ -43,7 +43,7 @@ export function TriggerModalTabelRow({ rowData, index, isVirtualEnv }: TriggerMo
                 <span data-testid={`response-status-text-${index}`}>{rowData.statusText}</span>
             </div>
             <div className="fs-13 fw-4 cn-9">{rowData.message}</div>
-            {isVirtualEnv && rowData.envId && rowData.status === BulkResponseStatus.PASS && (
+            {isVirtualEnv && rowData.status === BulkResponseStatus.PASS && (
                 <div
                     className="flex cursor"
                     onClick={downloadPackage}
