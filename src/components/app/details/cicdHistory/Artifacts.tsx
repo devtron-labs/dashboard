@@ -18,7 +18,6 @@ import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const ApprovedArtifact = importComponentFromFELibrary('ApprovedArtifact')
-const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
 export default function Artifacts({
     status,
@@ -28,21 +27,12 @@ export default function Artifacts({
     getArtifactPromise,
     isJobView,
     type,
-    isVirtualEnv,
 }: ArtifactType) {
-    const { appId, envId, triggerId, buildId } = useParams<{
-        appId: string
-        envId: string
+    const { triggerId, buildId } = useParams<{
         triggerId: string
         buildId: string
     }>()
     const [copied, setCopied] = useState(false)
-    const paramsData = {
-        appId,
-        envId,
-        appName: artifact,
-        workflowId: triggerId,
-    }
 
     useEffect(() => {
         if (!copied) return
@@ -102,8 +92,6 @@ export default function Artifacts({
                 subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
             />
         )
-    } else if (isVirtualEnv && VirtualHistoryArtifact) {
-        return <VirtualHistoryArtifact titleName={artifact} params={paramsData} />
     } else {
         return (
             <div className="flex left column p-16">

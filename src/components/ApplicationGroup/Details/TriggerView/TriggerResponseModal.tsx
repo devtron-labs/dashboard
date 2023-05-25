@@ -3,7 +3,7 @@ import { Progressing, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as RetryIcon } from '../../../../assets/icons/ic-arrow-clockwise.svg'
 import { TriggerResponseModalType } from '../../AppGroup.types'
 import { BulkResponseStatus } from '../../Constants'
-import { TriggerModalTabelRow } from './TriggerModalTableRow'
+import { TriggerModalRow } from './TriggerModalTableRow'
 
 export default function TriggerResponseModal({
     closePopup,
@@ -31,7 +31,7 @@ export default function TriggerResponseModal({
                 {responseList
                     .sort((a, b) => sortCallback('appName', a, b))
                     .map((response, index) => (
-                        <TriggerModalTabelRow rowData={response} key={index} isVirtualEnv={isVirtualEnv} />
+                        <TriggerModalRow rowData={response} key={index} isVirtualEnv={isVirtualEnv} />
                     ))}
             </div>
         )

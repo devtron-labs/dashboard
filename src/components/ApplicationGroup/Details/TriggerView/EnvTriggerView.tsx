@@ -57,6 +57,7 @@ import {
     BulkResponseStatus,
     ENV_TRIGGER_VIEW_GA_EVENTS,
     BULK_CD_RESPONSE_STATUS_TEXT,
+    responseListOrder,
 } from '../../Constants'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
@@ -1180,12 +1181,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const sortResponseList = (a, b) => {
-        const order = {
-            [BulkResponseStatus.FAIL]: 0,
-            [BulkResponseStatus.UNAUTHORIZE]: 1,
-            [BulkResponseStatus.PASS]: 2,
-        }
-        return order[a.status] - order[b.status]
+        return responseListOrder[a.status] - responseListOrder[b.status]
     }
 
     const updateBulkCDInputMaterial = (cdMaterialResponse: Record<string, CDMaterialResponseType>): void => {
@@ -1259,6 +1255,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         handleBulkTrigger(_CDTriggerPromiseList, triggeredAppList, WorkflowNodeType.CD)
     }
 
+    const updateResponseListData = (_responseList) => {
+        setResponseList((prevList) => {
+          const resultMap = new Map(_responseList.map((data) => [data.appId, data]));
+          const updatedArray = prevList?.map((prevItem) => resultMap.get(prevItem.appId) || prevItem);
+          return (updatedArray?.length > 0 ? updatedArray : _responseList).sort(sortResponseList);
+        });
+      };
+      
+
     const handleBulkTrigger = (
         promiseList: any[],
         triggeredAppList: { appId: number; envId?: number; appName: string }[],
@@ -1307,14 +1312,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         }
                     }
                 })
-                const responseSortedList = _responseList.sort(sortResponseList)
-                setResponseList((prevList) => {
-                    const updatedArray = prevList.map((prevItem) => {
-                        const latestObj = responseSortedList.find((obj) => obj.appId === prevItem.appId)
-                        return latestObj || prevItem
-                    })
-                    return updatedArray.length > 0 ?  updatedArray : responseSortedList
-                })
+                updateResponseListData(_responseList)
                 setCDLoading(false)
                 setCILoading(false)
                 preventBodyScroll(false)

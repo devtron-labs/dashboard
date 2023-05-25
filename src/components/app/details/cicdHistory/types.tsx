@@ -69,7 +69,6 @@ export interface ArtifactType {
     getArtifactPromise?: () => Promise<any>
     isJobView?: boolean
     type: HistoryComponentType
-    isVirtualEnv?: boolean
 }
 
 export interface CopyTippyWithTextType {

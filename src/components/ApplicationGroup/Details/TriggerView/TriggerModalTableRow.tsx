@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ResponseRowType, TriggerModalTabelRowType } from '../../AppGroup.types'
+import { ResponseRowType, TriggerModalRowType } from '../../AppGroup.types'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-arrow-line-down.svg'
@@ -10,7 +10,7 @@ import { importComponentFromFELibrary } from '../../../common'
 
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
 
-export function TriggerModalTabelRow({ rowData, key, isVirtualEnv }: TriggerModalTabelRowType) {
+export function TriggerModalRow({ rowData, key, isVirtualEnv }: TriggerModalRowType) {
     const [downloader, setDownLoader] = useState(false)
     const params = {
         appId: rowData.appId,

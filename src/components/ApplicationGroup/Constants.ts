@@ -59,6 +59,12 @@ export const BULK_CD_RESPONSE_STATUS_TEXT = {
     [BulkResponseStatus.UNAUTHORIZE]: 'Not authorized',
 }
 
+export const responseListOrder = {
+    [BulkResponseStatus.FAIL]: 0,
+    [BulkResponseStatus.UNAUTHORIZE]: 1,
+    [BulkResponseStatus.PASS]: 2,
+}
+
 export const BULK_CI_MESSAGING = {
     emptyLinkedCI: {
         title: 'is using a linked build pipeline',

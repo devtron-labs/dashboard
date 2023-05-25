@@ -82,9 +82,7 @@ function ChartDeploymentHistory({
             tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
         } else if (installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD) {
             tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
-            if(deploymentHistoryArr[selectedDeploymentHistoryIndex].status === 'Succeeded'){
-                tabs.push(DEPLOYMENT_HISTORY_TAB.ARTIFACTS)
-            }
+            tabs.push(DEPLOYMENT_HISTORY_TAB.ARTIFACTS)
         }
         return tabs
     }
@@ -539,10 +537,11 @@ function ChartDeploymentHistory({
                 {(selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST ||
                     selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML) &&
                     renderCodeEditor()}
-                {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.ARTIFACTS && (
+                {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.ARTIFACTS && VirtualHistoryArtifact && (
                     <VirtualHistoryArtifact
                         titleName={chartMetadata.chartName}
                         params={paramsData}
+                        status={deployment.status}
                     />
                 )}
             </div>

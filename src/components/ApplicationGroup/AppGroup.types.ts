@@ -128,7 +128,7 @@ export interface TriggerResponseModalType {
     isVirtualEnv?: boolean
 }
 
-export interface TriggerModalTabelRowType {
+export interface TriggerModalRowType {
     rowData: ResponseRowType
     key: number
     isVirtualEnv?: boolean

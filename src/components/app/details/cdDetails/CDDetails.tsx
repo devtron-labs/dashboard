@@ -31,6 +31,7 @@ import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
+const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
 export default function CDDetails() {
     const { appId, envId, triggerId, pipelineId } = useParams<{
@@ -413,6 +414,13 @@ const HistoryLogs: React.FC<{
         envId: string
     }>()
 
+    const paramsData = {
+        appId,
+        envId,
+        appName: triggerDetails.artifact,
+        workflowId: triggerId,
+    }
+
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
@@ -478,9 +486,16 @@ const HistoryLogs: React.FC<{
                                 />
                             </Route>
                         )}
-                        {triggerDetails.stage !== 'DEPLOY' ||
-                            (triggerDetails.IsVirtualEnvironment && (
+                        {(triggerDetails.stage !== 'DEPLOY' ||
+                            triggerDetails.IsVirtualEnvironment) && (
                                 <Route path={`${path}/artifacts`}>
+                                    {triggerDetails.IsVirtualEnvironment && VirtualHistoryArtifact ? (
+                                        <VirtualHistoryArtifact
+                                            status={triggerDetails.status}
+                                            titleName={triggerDetails.artifact}
+                                            params={paramsData}
+                                        />
+                                    ) : (
                                         <Artifacts
                                             status={triggerDetails.status}
                                             artifact={triggerDetails.artifact}
@@ -489,10 +504,10 @@ const HistoryLogs: React.FC<{
                                                 getCDBuildReport(appId, envId, pipelineId, triggerId)
                                             }
                                             type={HistoryComponentType.CD}
-                                            isVirtualEnv={triggerDetails.IsVirtualEnvironment}
                                         />
+                                    )}
                                 </Route>
-                            ))}
+                            )}
                         <Redirect
                             to={`${path}/${
                                 triggerDetails.stage === 'DEPLOY'
