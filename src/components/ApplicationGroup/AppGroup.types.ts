@@ -46,7 +46,7 @@ export interface BulkCDDetailType extends BulkTriggerAppDetailType {
 }
 
 export interface ResponseRowType {
-    appId: string
+    appId: number
     appName: string
     status: BulkResponseStatus
     statusText: string

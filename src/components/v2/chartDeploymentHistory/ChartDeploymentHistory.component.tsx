@@ -82,7 +82,9 @@ function ChartDeploymentHistory({
             tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
         } else if (installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD) {
             tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
-            tabs.push(DEPLOYMENT_HISTORY_TAB.ARTIFACTS)
+            if(deploymentHistoryArr[selectedDeploymentHistoryIndex].status === 'Succeeded'){
+                tabs.push(DEPLOYMENT_HISTORY_TAB.ARTIFACTS)
+            }
         }
         return tabs
     }
