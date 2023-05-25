@@ -12,7 +12,7 @@ import {
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
-import { Select } from '../../../common'
+import { importComponentFromFELibrary, Select } from '../../../common'
 import { Progressing, DeleteDialog, EmptyState, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
@@ -41,6 +41,8 @@ import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../co
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
+
+const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -331,6 +333,9 @@ const renderValidationErrorLabel = (message?: string): JSX.Element => {
 }
 
 const renderVirtualEnvironmentInfoText = (): JSX.Element => {
+  const deploymentManifestDownload = {
+
+  }
   // return GeneratedHelmDownload && <GeneratedHelmDownload />
   return<div><div className="ml-4 cn-7">This is a virtual environment</div></div>
 }
