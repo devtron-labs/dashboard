@@ -10,7 +10,7 @@ import { importComponentFromFELibrary } from '../../../common'
 
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
 
-export function TriggerModalTabelRow({ rowData, index, isVirtualEnv }: TriggerModalTabelRowType) {
+export function TriggerModalTabelRow({ rowData, key, isVirtualEnv }: TriggerModalTabelRowType) {
     const [downloader, setDownLoader] = useState(false)
     const params = {
         appId: rowData.appId,
@@ -40,7 +40,7 @@ export function TriggerModalTabelRow({ rowData, index, isVirtualEnv }: TriggerMo
             <div className="fs-13 fw-4 cn-9">{rowData.appName}</div>
             <div className="flex left top fs-13 fw-4 cn-9">
                 {renderStatusIcon(rowData)}
-                <span data-testid={`response-status-text-${index}`}>{rowData.statusText}</span>
+                <span data-testid={`response-status-text-${key}`}>{rowData.statusText}</span>
             </div>
             <div className="fs-13 fw-4 cn-9">{rowData.message}</div>
             {isVirtualEnv && rowData.status === BulkResponseStatus.PASS && (

@@ -1179,6 +1179,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         }, 100)
     }
 
+    const sortResponseList = (a, b) => {
+        const order = {
+            [BulkResponseStatus.FAIL]: 0,
+            [BulkResponseStatus.UNAUTHORIZE]: 1,
+            [BulkResponseStatus.PASS]: 2,
+        }
+        return order[a.status] - order[b.status]
+    }
+
     const updateBulkCDInputMaterial = (cdMaterialResponse: Record<string, CDMaterialResponseType>): void => {
         const _workflows = filteredWorkflows.map((wf) => {
             if (wf.isSelected) {
@@ -1298,14 +1307,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         }
                     }
                 })
-                const responseSortedList = _responseList.sort((a, b) => {
-                    const order = {
-                        [BulkResponseStatus.FAIL]: 0,
-                        [BulkResponseStatus.UNAUTHORIZE]: 1,
-                        [BulkResponseStatus.PASS]: 2,
-                    }
-                    return order[a.status] - order[b.status]
-                })
+                const responseSortedList = _responseList.sort(sortResponseList)
                 setResponseList((prevList) => {
                     const updatedArray = prevList.map((prevItem) => {
                         const latestObj = responseSortedList.find((obj) => obj.appId === prevItem.appId)

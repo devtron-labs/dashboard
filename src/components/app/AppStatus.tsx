@@ -19,6 +19,8 @@ export default function AppStatus({
     const appStatusLowerCase = status?.toLowerCase()
     const isNotDeployed = appStatusLowerCase === StatusConstants.NOT_DEPLOYED.noSpaceLower
     const iconClass = isNotDeployed ? StatusConstants.NOT_DEPLOYED.lowerCase : appStatusLowerCase
+    const statusMessage = status || (isVirtualEnv ? StatusConstants.NOT_AVILABLE.normalCase :  '-')
+    const notDeployed = isJobView ? YET_TO_RUN : StatusConstants.NOT_DEPLOYED.normalCase
 
     const renderIcon = () => {
         if (iconClass) {
@@ -48,9 +50,9 @@ export default function AppStatus({
             {renderIcon()}
             <p data-testid={`${status}-app-status`} className="dc__truncate-text dc__first-letter-capitalize cn-6 m-0">
                 {isNotDeployed ? (
-                    isJobView ? YET_TO_RUN : StatusConstants.NOT_DEPLOYED.normalCase
+                    notDeployed
                 ) : (
-                    status || (isVirtualEnv ? StatusConstants.NOT_AVILABLE.normalCase :  '-')
+                    statusMessage
                 )}
             </p>
         </div>
