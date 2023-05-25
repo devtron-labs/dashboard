@@ -803,7 +803,7 @@ export const ModuleDetailsView = ({
                         alt={moduleDetails.title}
                     />
                     <h2
-                        data-testid={"module-details-title"}
+                        data-testid="module-details-title"
                         className="module-details__feature-heading cn-9 fs-20 fw-6"
                     >
                         {moduleDetails.title}
