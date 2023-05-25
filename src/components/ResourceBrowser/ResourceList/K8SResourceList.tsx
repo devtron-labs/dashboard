@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { highlightSearchedText, Pagination } from '../../common'
+import { highlightSearchedText } from '../../common/helpers/Helpers'
+import { Pagination } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
     K8S_EMPTY_GROUP,
