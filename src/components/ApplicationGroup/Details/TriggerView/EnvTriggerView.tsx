@@ -350,8 +350,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     ]
                     _selectedMaterial.isMaterialLoading = false
                     _selectedMaterial.showAllCommits = false
-                    _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded 
-                    _selectedMaterial.materialSelectionErrorMsg =_selectedMaterial.history[0].excluded ? NO_COMMIT_SELECTED : ''
+                    _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded
+                    _selectedMaterial.materialSelectionErrorMsg = _selectedMaterial.history[0].excluded
+                        ? NO_COMMIT_SELECTED
+                        : ''
                 } else {
                     _selectedMaterial.history = []
                     _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
@@ -893,9 +895,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             material.history.map((hist) => {
                                 if (!hist.excluded) {
                                     if (material.type == SourceTypeMap.WEBHOOK) {
-                                        if(hist?.webhookData && hist.webhookData?.id && hash == hist.webhookData.id) {
+                                        if (hist?.webhookData && hist.webhookData?.id && hash == hist.webhookData.id) {
                                             hist.isSelected = true
-                                        }else {
+                                        } else {
                                             hist.isSelected = false
                                         }
                                     } else {
@@ -1242,7 +1244,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     triggerCDNode(node.id, ciArtifact.id, _appIdMap.get(node.id), bulkTriggerType),
                 )
             } else {
-                triggeredAppList.splice(index,1)
+                triggeredAppList.splice(index, 1)
             }
         })
         handleBulkTrigger(_CDTriggerPromiseList, triggeredAppList, WorkflowNodeType.CD)
@@ -1296,14 +1298,21 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         }
                     }
                 })
-                setResponseList(_responseList.sort((a, b) => {
+                const responseSortedList = _responseList.sort((a, b) => {
                     const order = {
-                      [BulkResponseStatus.FAIL]: 0,
-                      [BulkResponseStatus.UNAUTHORIZE]: 1,
-                      [BulkResponseStatus.PASS]: 2
+                        [BulkResponseStatus.FAIL]: 0,
+                        [BulkResponseStatus.UNAUTHORIZE]: 1,
+                        [BulkResponseStatus.PASS]: 2,
                     }
-                    return order[a.status] - order[b.status];
-                  }))
+                    return order[a.status] - order[b.status]
+                })
+                setResponseList((prevList) => {
+                    const updatedArray = prevList.map((prevItem) => {
+                        const latestObj = responseSortedList.find((obj) => obj.appId === prevItem.appId)
+                        return latestObj || prevItem
+                    })
+                    return updatedArray.length > 0 ?  updatedArray : responseSortedList
+                })
                 setCDLoading(false)
                 setCILoading(false)
                 preventBodyScroll(false)
