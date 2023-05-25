@@ -337,7 +337,7 @@ const InstallationStatus = ({
             {(installationStatus === ModuleStatus.INSTALLING || installationStatus === ModuleStatus.UPGRADING) && (
                 <>
                     <Progressing size={24} />
-                    <div data-test-id="module-status-progressing" className="mt-12 dc__loading-dots">
+                    <div data-testid="module-status-progressing" className="mt-12 dc__loading-dots">
                         {getProgressingLabel(isUpgradeView, canViewLogs, logPodName)}
                     </div>
                 </>
@@ -348,7 +348,7 @@ const InstallationStatus = ({
                 <>
                     {isUpgradeView ? (
                         <div
-                            data-test-id="module-status-updated"
+                            data-testid="module-status-updated"
                             className="module-details__upgrade-success flex column"
                         >
                             <img src={LatestVersionCelebration} />
@@ -357,7 +357,7 @@ const InstallationStatus = ({
                         </div>
                     ) : (
                         <div
-                            data-test-id="module-status-installed"
+                            data-testid="module-status-installed"
                             className="module-details__installtion-success flex left"
                         >
                             <SuccessIcon className="icon-dim-20 mr-12" /> Installed
@@ -369,7 +369,7 @@ const InstallationStatus = ({
                 installationStatus === ModuleStatus.UPGRADE_FAILED ||
                 installationStatus === ModuleStatus.TIMEOUT ||
                 installationStatus === ModuleStatus.UNKNOWN) && (
-                <div data-test-id="module-status-failed" className="module-details__installtion-failed flex left">
+                <div data-testid="module-status-failed" className="module-details__installtion-failed flex left">
                     <ErrorIcon className="icon-dim-20 mr-12" />
                     {installationStatus === ModuleStatus.UNKNOWN
                         ? 'Last update status: Unknown'
