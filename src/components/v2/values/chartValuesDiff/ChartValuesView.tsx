@@ -154,7 +154,6 @@ function ChartValuesView({
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
-console.log(commonState)
     const checkGitOpsConfiguration = async (): Promise<void> => {
         try {
             const { result } = await isGitOpsModuleInstalledAndConfigured()
@@ -1310,6 +1309,7 @@ console.log(commonState)
 
     const renderGeneratedDownloadManifest = (): JSX.Element => {
         return (
+            isVirtualEnvironment &&
             GeneratedHelmDownload && (
                 <div>
                     <GeneratedHelmDownload />
@@ -1408,14 +1408,17 @@ console.log(commonState)
                                 isVirtualEnvironment={isVirtualEnvironment}
                             />
                         )}
-                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp && !isCreateValueView && !isVirtualEnvironment && (
-                            <DeploymentAppSelector
-                                commonState={commonState}
-                                isUpdate={isUpdate}
-                                handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
-                                isDeployChartView={isDeployChartView}
-                            />
-                        )}
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
+                            !isExternalApp &&
+                            !isCreateValueView &&
+                            !isVirtualEnvironment && (
+                                <DeploymentAppSelector
+                                    commonState={commonState}
+                                    isUpdate={isUpdate}
+                                    handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
+                                    isDeployChartView={isDeployChartView}
+                                />
+                            )}
                         <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
                         {/**
                          * ChartRepoSelector will be displayed only when,
@@ -1450,9 +1453,7 @@ console.log(commonState)
                                     linkText={renderConnectToHelmChart()}
                                 />
                             )}
-                            {
-                              isVirtualEnvironment  && renderGeneratedDownloadManifest()
-                            }
+                        {renderGeneratedDownloadManifest()}
                         {(!isExternalApp ||
                             commonState.installedAppInfo ||
                             commonState.repoChartValue?.chartRepoName) && (

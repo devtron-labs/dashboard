@@ -41,6 +41,7 @@ import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../co
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
+import { ReactComponent as Info } from '../../../../assets/icons/appstatus/info-filled.svg'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 
@@ -333,11 +334,11 @@ const renderValidationErrorLabel = (message?: string): JSX.Element => {
 }
 
 const renderVirtualEnvironmentInfoText = (): JSX.Element => {
-  const deploymentManifestDownload = {
-
-  }
-  // return GeneratedHelmDownload && <GeneratedHelmDownload />
-  return<div><div className="ml-4 cn-7">This is a virtual environment</div></div>
+    return (
+        <div className="ml-4 cn-7 flex left">
+            <Info className="mr-8 icon-dim-16"/> This is a virtual environment
+        </div>
+    )
 }
 
 export const ValueNameInput = ({
