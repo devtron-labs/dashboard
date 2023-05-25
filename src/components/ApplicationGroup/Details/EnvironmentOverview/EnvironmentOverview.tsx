@@ -10,7 +10,11 @@ import { getDeploymentStatus } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, AppGroupListType, AppInfoListType, AppListDataType } from '../../AppGroup.types'
 import './envOverview.scss'
 
-export default function EnvironmentOverview({ appGroupListData, filteredAppIds }: AppGroupDetailDefaultType) {
+export default function EnvironmentOverview({
+    appGroupListData,
+    filteredAppIds,
+    isVirtualEnv,
+}: AppGroupDetailDefaultType) {
     const { envId } = useParams<{ envId: string }>()
     const [appListData, setAppListData] = useState<AppListDataType>()
     const [loading, setLoading] = useState<boolean>()
@@ -50,7 +54,7 @@ export default function EnvironmentOverview({ appGroupListData, filteredAppIds }
     const parseAppListData = (data: AppGroupListType, statusRecord: Record<string, string>): void => {
         const parsedData = {
             environment: data.environmentName,
-            namespace: data.namespace,
+            namespace: data.namespace || '-',
             cluster: data.clusterName,
             appInfoList: [],
         }
@@ -84,8 +88,16 @@ export default function EnvironmentOverview({ appGroupListData, filteredAppIds }
                 className="app-deployments-info-row display-grid dc__align-items-center"
             >
                 <span className="fs-13 fw-4 cn-7">{item.application}</span>
-                <AppStatus appStatus={item.lastDeployed ? item.appStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower} />
-                <AppStatus appStatus={item.lastDeployed ? item.deploymentStatus : '-'} isDeploymentStatus={true} />
+                {!isVirtualEnv && (
+                    <AppStatus
+                        appStatus={item.lastDeployed ? item.appStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower}
+                    />
+                )}
+                <AppStatus
+                    appStatus={item.lastDeployed ? item.deploymentStatus : ''}
+                    isDeploymentStatus={true}
+                    isVirtualEnv={isVirtualEnv}
+                />
                 <span className="fs-13 fw-4 cn-7">{processDeployedTime(item.lastDeployed, true)}</span>
             </div>
         )
@@ -115,7 +127,7 @@ export default function EnvironmentOverview({ appGroupListData, filteredAppIds }
                     <div className="app-deployments-info-wrapper w-100">
                         <div className="app-deployments-info-header display-grid dc__align-items-center dc__border-bottom-n1 dc__uppercase fs-12 fw-6 cn-7">
                             <span>{OVERVIEW_HEADER.APPLICATION}</span>
-                            <span>{OVERVIEW_HEADER.APP_STATUS}</span>
+                            {!isVirtualEnv && <span>{OVERVIEW_HEADER.APP_STATUS}</span>}
                             <span>{OVERVIEW_HEADER.DEPLOYMENT_STATUS}</span>
                             <span>{OVERVIEW_HEADER.LAST_DEPLOYED}</span>
                         </div>

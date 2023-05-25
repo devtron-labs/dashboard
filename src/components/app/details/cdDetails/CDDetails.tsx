@@ -28,10 +28,10 @@ import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../c
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { AppEnvironment } from '../../../../services/service.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
-const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
+const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
 export default function CDDetails() {
     const { appId, envId, triggerId, pipelineId } = useParams<{
@@ -414,16 +414,16 @@ const HistoryLogs: React.FC<{
         envId: string
     }>()
 
-    const [ref, scrollToTop, scrollToBottom] = useScrollable({
-        autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
-    })
-
     const paramsData = {
         appId,
         envId,
         appName: triggerDetails.artifact,
-        workflowId: triggerDetails.id, 
+        workflowId: triggerId,
     }
+
+    const [ref, scrollToTop, scrollToBottom] = useScrollable({
+        autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
+    })
 
     return (
         <>
@@ -486,11 +486,12 @@ const HistoryLogs: React.FC<{
                                 />
                             </Route>
                         )}
-                        {triggerDetails.stage !== 'DEPLOY' ||
-                            (triggerDetails.IsVirtualEnvironment && (
+                        {(triggerDetails.stage !== 'DEPLOY' ||
+                            triggerDetails.IsVirtualEnvironment) && (
                                 <Route path={`${path}/artifacts`}>
-                                    {triggerDetails.IsVirtualEnvironment ? (
+                                    {triggerDetails.IsVirtualEnvironment && VirtualHistoryArtifact ? (
                                         <VirtualHistoryArtifact
+                                            status={triggerDetails.status}
                                             titleName={triggerDetails.artifact}
                                             params={paramsData}
                                         />
@@ -506,7 +507,7 @@ const HistoryLogs: React.FC<{
                                         />
                                     )}
                                 </Route>
-                            ))}
+                            )}
                         <Redirect
                             to={`${path}/${
                                 triggerDetails.stage === 'DEPLOY'

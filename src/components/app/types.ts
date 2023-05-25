@@ -445,6 +445,7 @@ export interface AppStatusType {
     appStatus: string
     isDeploymentStatus?: boolean
     isJobView?: boolean
+    isVirtualEnv?: boolean
 }
 export interface JobPipeline {
     ci_pipeline_id: number

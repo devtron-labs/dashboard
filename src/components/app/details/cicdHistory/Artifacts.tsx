@@ -30,7 +30,7 @@ export default function Artifacts({
 }: ArtifactType) {
     const { triggerId, buildId } = useParams<{
         triggerId: string
-        buildId: string;
+        buildId: string
     }>()
     const [copied, setCopied] = useState(false)
 
@@ -64,7 +64,9 @@ export default function Artifacts({
                 />
                 <div className="flexbox pt-8 pr-12 pb-8 pl-12 bcv-1 ev-2 bw-1 br-4 dc__position-abs-b-20">
                     <Question className="icon-dim-20 fcv-5" />
-                    <span className="fs-13 fw-4 mr-8 ml-8">{EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}</span>
+                    <span className="fs-13 fw-4 mr-8 ml-8">
+                        {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.StoreFiles}
+                    </span>
                     <a className="fs-13 fw-6 cb-5 dc__no-decor" href={DOCUMENTATION.BLOB_STORAGE} target="_blank">
                         {EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.ConfigureBlobStorage}
                     </a>
@@ -155,7 +157,9 @@ export const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWith
 }
 
 const CIProgressView = (): JSX.Element => {
-   {/* TO replace with genericemptystate after incoporating png support */}
+    {
+        /* TO replace with genericemptystate after incoporating png support */
+    }
     return (
         <EmptyState>
             <EmptyState.Image>

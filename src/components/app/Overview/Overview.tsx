@@ -315,6 +315,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                                                         ? _env.appStatus
                                                         : StatusConstants.NOT_DEPLOYED.noSpaceLower
                                                 }
+                                                isVirtualEnv={_env.isVirtualEnvironment}
                                             />
                                         )}
                                         <span className="fs-13 fw-4 cn-7" data-testid="overview-deployed-time">

@@ -36,7 +36,8 @@ export interface AppEnvironmentDetail {
     environmentId: number,
     namespace: string,
     clusterName: string,
-    clusterId: number
+    clusterId: number,
+    isVirtualEnvironment?: boolean
 }
 
 export const getInitData = (payloadParsedFromUrl : any, serverMode : string): Promise<any> => {

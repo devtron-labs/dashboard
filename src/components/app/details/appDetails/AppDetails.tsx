@@ -107,8 +107,7 @@ export default function AppDetail() {
     const [isAppDeleted, setIsAppDeleted] = useState(false)
     const [otherEnvsLoading, otherEnvsResult] = useAsync(() => getAppOtherEnvironmentMin(params.appId), [params.appId])
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
-    // const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>(false)
-    const isVirtualEnvironment = useRef(false)
+    const isVirtualEnvRef = useRef(false)
 
     useEffect(() => {
         if (otherEnvsLoading) return
@@ -138,8 +137,8 @@ export default function AppDetail() {
                 <>
                     {(!otherEnvsResult?.result || otherEnvsResult?.result?.length === 0) &&
                         !isAppDeleted &&
-                        !isVirtualEnvironment && <AppNotConfigured />}
-                    {!params.envId && otherEnvsResult?.result?.length > 0 && !isVirtualEnvironment && (
+                        !isVirtualEnvRef.current && <AppNotConfigured />}
+                    {!params.envId && otherEnvsResult?.result?.length > 0 && !isVirtualEnvRef.current && (
                         <EnvironmentNotConfigured environments={otherEnvsResult?.result} />
                     )}
                 </>
@@ -168,10 +167,10 @@ export default function AppDetail() {
                     commitInfo={commitInfo}
                     showCommitInfo={showCommitInfo}
                     isAppDeleted={isAppDeleted}
-                    isVirtualEnvironment={isVirtualEnvironment}
+                    isVirtualEnvRef={isVirtualEnvRef}
                 />
             </Route>
-            {otherEnvsResult && !otherEnvsLoading && !isVirtualEnvironment && renderAppNotConfigured()}
+            {otherEnvsResult && !otherEnvsLoading && !isVirtualEnvRef.current && renderAppNotConfigured()}
         </div>
     )
 }
@@ -187,7 +186,7 @@ export const Details: React.FC<DetailsType> = ({
     commitInfo,
     showCommitInfo,
     isAppDeleted,
-    isVirtualEnvironment,
+    isVirtualEnvRef,
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
@@ -217,7 +216,7 @@ export const Details: React.FC<DetailsType> = ({
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
-            ...(isVirtualEnvironment.current
+            ...(isVirtualEnvRef.current
                 ? processVirtualEnvironmentDeploymentData()
                 : processDeploymentStatusDetailsData()),
             deploymentStatus: DEFAULT_STATUS,
@@ -251,7 +250,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
-        const processedDeploymentStatusDetailsData = isVirtualEnvironment.current
+        const processedDeploymentStatusDetailsData = isVirtualEnvRef.current
             ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
             : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
         clearDeploymentStatusTimer()
@@ -294,7 +293,7 @@ export const Details: React.FC<DetailsType> = ({
                     ...appDetailsRef.current,
                     ...response.result,
                 }
-                isVirtualEnvironment.current = response.result?.isVirtualEnvironment
+                isVirtualEnvRef.current = response.result?.isVirtualEnvironment
                 IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
                 setAppDetails(appDetailsRef.current)
                 _getDeploymentStatusDetail(appDetailsRef.current.deploymentAppType)
@@ -447,7 +446,7 @@ export const Details: React.FC<DetailsType> = ({
     if (
         !loadingResourceTree &&
         (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) &&
-        !isVirtualEnvironment.current
+        !isVirtualEnvRef.current
     ) {
         return (
             <>
@@ -490,7 +489,7 @@ export const Details: React.FC<DetailsType> = ({
     const environmentName = environmentsMap[+envId]
 
     const renderAppDetails = (): JSX.Element => {
-        if (isVirtualEnvironment && VirtualAppDetailsEmptyState) {
+        if (isVirtualEnvRef.current && VirtualAppDetailsEmptyState) {
             return <VirtualAppDetailsEmptyState environmentName={environmentName} />
         }
         return (
@@ -515,7 +514,7 @@ export const Details: React.FC<DetailsType> = ({
                     showUrlInfo={isAppDeployment ? setUrlInfo : null}
                     showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                    isVirtualEnvironment={isVirtualEnvironment.current}
+                    isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             </div>
             <SyncErrorComponent
@@ -532,7 +531,7 @@ export const Details: React.FC<DetailsType> = ({
                             toggleScanDetailsModal(true)
                         }}
                     />
-                    {environment && !isVirtualEnvironment.current && (
+                    {environment && !isVirtualEnvRef.current && (
                         <AppMetrics
                             appName={appDetails.appName}
                             addExtraSpace={!isExternalToolAvailable}
@@ -571,7 +570,7 @@ export const Details: React.FC<DetailsType> = ({
                     environmentName={appDetails?.environmentName}
                     streamData={streamData}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                    isVirtualEnvironment={isVirtualEnvironment.current}
+                    isVirtualEnvironment={isVirtualEnvRef.current}
                 />
             )}
             {showScanDetailsModal && (

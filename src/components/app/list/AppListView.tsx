@@ -187,7 +187,7 @@ export class AppListView extends Component<AppListViewProps> {
                                                 className="app-list__cell app-list__cell--app_status"
                                                 data-testid="devtron-app-status"
                                             >
-                                                <AppStatus appStatus={app.defaultEnv.appStatus} />
+                                                <AppStatus appStatus={app.defaultEnv.appStatus} isVirtualEnv={app.defaultEnv.isVirtualEnvironment} />
                                             </div>
                                         )}
                                         {this.renderEnvironmentList(app)}
