@@ -235,44 +235,47 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                             Learn more
                         </a>
                     </p>
-                    {this.state.clusters.map((cluster) => (
-                        <Cluster
-                            {...cluster}
-                            reload={this.initialise}
-                            key={cluster.id || Math.random().toString(36).substr(2, 5)}
-                            serverMode={this.props.serverMode}
-                            isGrafanaModuleInstalled={true}
-                            showEditCluster={this.state.showEditCluster}
-                            toggleShowAddCluster={this.toggleShowEditCluster}
-                            toggleCheckTlsConnection={this.toggleCheckTlsConnection}
-                            setTlsConnectionFalse={this.setTlsConnectionFalse}
-                            isTlsConnection={this.state.isTlsConnection}
-                            toggleEditMode={() => {}}
-                        />
-                    ))}
-                    {this.state.showAddCluster && (
-                        <Drawer position="right" width="1000px" onEscape={this.toggleShowAddCluster}>
-                                <ClusterForm
-                                    id={null}
-                                    cluster_name={this.state.cluster_name}
-                                    server_url={this.state.server_url}
-                                    active={true}
-                                    config={{}}
-                                    toggleEditMode={() => {}}
+                    {this.state.clusters.map(
+                        (cluster) =>
+                            cluster.id && ( 
+                                <Cluster
+                                    {...cluster}
                                     reload={this.initialise}
-                                    prometheus_url=""
-                                    prometheusAuth={this.state.prometheus}
-                                    defaultClusterComponent={this.state.defaultClusterComponent}
+                                    key={cluster.id || Math.random().toString(36).substr(2, 5)}
+                                    serverMode={this.props.serverMode}
                                     isGrafanaModuleInstalled={true}
-                                    isTlsConnection={this.state.isTlsConnection}
-                                    isClusterDetails={this.state.isClusterDetails}
+                                    showEditCluster={this.state.showEditCluster}
+                                    toggleShowAddCluster={this.toggleShowEditCluster}
                                     toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                                     setTlsConnectionFalse={this.setTlsConnectionFalse}
-                                    toggleShowAddCluster={this.toggleShowAddCluster}
-                                    toggleKubeConfigFile={this.toggleKubeConfigFile}
-                                    isKubeConfigFile={this.state.isKubeConfigFile}
-                                    toggleClusterDetails={this.toggleClusterDetails}
+                                    isTlsConnection={this.state.isTlsConnection}
+                                    toggleEditMode={() => {}}
                                 />
+                            ),
+                    )}
+                    {this.state.showAddCluster && (
+                        <Drawer position="right" width="1000px" onEscape={this.toggleShowAddCluster}>
+                            <ClusterForm
+                                id={null}
+                                cluster_name={this.state.cluster_name}
+                                server_url={this.state.server_url}
+                                active={true}
+                                config={{}}
+                                toggleEditMode={() => {}}
+                                reload={this.initialise}
+                                prometheus_url=""
+                                prometheusAuth={this.state.prometheus}
+                                defaultClusterComponent={this.state.defaultClusterComponent}
+                                isGrafanaModuleInstalled={true}
+                                isTlsConnection={this.state.isTlsConnection}
+                                isClusterDetails={this.state.isClusterDetails}
+                                toggleCheckTlsConnection={this.toggleCheckTlsConnection}
+                                setTlsConnectionFalse={this.setTlsConnectionFalse}
+                                toggleShowAddCluster={this.toggleShowAddCluster}
+                                toggleKubeConfigFile={this.toggleKubeConfigFile}
+                                isKubeConfigFile={this.state.isKubeConfigFile}
+                                toggleClusterDetails={this.toggleClusterDetails}
+                            />
                         </Drawer>
                     )}
                 </section>
@@ -614,7 +617,7 @@ function Cluster({
                     clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'
                 }`}
             >
-                {!editMode ? (
+               
                     <>
                         <List className="dc__border" key={clusterId} onClick={editModeToggle}>
                             {!clusterId && (
@@ -786,8 +789,8 @@ function Cluster({
                             clusterId && renderNoEnvironmentTab()
                         )}
                     </>
-                ) : (
-                    <Drawer position="right" width="1000px" onEscape={DisableEditMode}>
+                    {editMode &&(
+                        <Drawer position="right" width="1000px" onEscape={DisableEditMode}>
                         <div className="h-100 bcn-0" ref={drawerRef}>
                             <ClusterForm
                                 id={clusterId}
@@ -812,7 +815,8 @@ function Cluster({
                             />
                         </div>
                     </Drawer>
-                )}
+                    )}
+           
             </article>
             {showWindow && (
                 <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
