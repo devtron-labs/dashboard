@@ -1145,7 +1145,7 @@ export default function ClusterForm({
 
     const AddClusterHeader = () => {
         return (
-            <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
+            <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12  pl-20 ">
                 <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                     <span className="fw-6 fs-16 cn-9">{clusterTitle()}</span>
                 </h2>
@@ -1178,7 +1178,7 @@ export default function ClusterForm({
             >
                 <AddClusterHeader />
 
-                <div className="pl-20 pr-20" style={{ overflow: 'auto', height: 'calc(100vh - 169px)' }}>
+                <div className="p-20" style={{ overflow: 'auto', height: 'calc(100vh - 106px)' }}>
                     {!id && (
                         <div className="form__row clone-apps dc__inline-block pd-0 pt-0 pb-12">
                             <RadioGroup
