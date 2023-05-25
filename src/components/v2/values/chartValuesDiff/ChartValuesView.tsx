@@ -132,7 +132,7 @@ function ChartValuesView({
     const [isUnlinkedCLIApp, setIsUnlinkedCLIApp] = useState(false)
     const [deploymentVersion, setDeploymentVersion] = useState(1)
     const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
-    const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>(false)
+    const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>()
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,

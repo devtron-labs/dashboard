@@ -22,6 +22,7 @@ export function DeploymentStatusDetailRow({
     deploymentDetailedData,
     streamData,
 }: DeploymentStatusDetailRowType) {
+    
     const { appId, envId } = useParams<{ appId: string; envId: string }>()
     const statusBreakDownType = deploymentDetailedData.deploymentStatusBreakdown[type]
     const [collapsed, toggleCollapsed] = useState<boolean>(

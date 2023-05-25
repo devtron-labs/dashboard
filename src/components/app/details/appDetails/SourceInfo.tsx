@@ -19,7 +19,10 @@ import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import { ConditionalWrap, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from './DeploymentStatusCard'
-import { ReactComponent as VirtualCluster } from '../../../../assets/icons/ic-environment-temp.svg'
+import { ReactComponent as VirtualCluster } from '../../../../assets/icons/ic-virtual-cluster.svg'
+import { importComponentFromFELibrary} from '../../../common/helpers/Helpers'
+
+const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
 export function SourceInfo({
     appDetails,
@@ -206,6 +209,18 @@ export function SourceInfo({
     }
 
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
+
+      const renderGeneratedManifestDownloadCard = (): JSX.Element => {
+        const paramsId = {
+            appId: +params.appId,
+            envId: +params.envId,
+            appName: appDetails?.appName,
+        }
+        if ( AppDetailsDownloadCard) {
+            return <AppDetailsDownloadCard params={paramsId} />
+        }
+      }
+
     return (
         <div className="flex left w-100 column source-info-container">
             {renderDevtronAppsEnvironmentSelector(environment)}
@@ -288,6 +303,9 @@ export function SourceInfo({
                                     </div>
                                 </div>
                             )}
+                            {
+                              isVirtualEnvironment && renderGeneratedManifestDownloadCard()
+                            }
                             <DeploymentStatusCard
                                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                 loadingResourceTree={loadingResourceTree}

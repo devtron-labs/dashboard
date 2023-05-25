@@ -66,7 +66,7 @@ export const ChartEnvironmentSelector = ({
     return !isDeployChartView ? (
         <div className="chart-values__environment-container mb-12">
             <h2 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7" data-testid="environment-heading">
-                Environment
+                Environment {isVirtualEnvironment && `(Virtual)`}
             </h2>
             {isExternal ? (
                 <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9">
