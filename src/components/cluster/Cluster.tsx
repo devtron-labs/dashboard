@@ -536,7 +536,7 @@ function Cluster({
     useEffect(() => {
         const handleClickOutsideDrawer = (event) => {
             if (drawerRef.current && !drawerRef.current.contains(event.target)) {
-                toggleEditMode(false)
+                // toggleEditMode(false)
             }
         }
 
