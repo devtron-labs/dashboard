@@ -24,7 +24,7 @@ import { checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
-import { ReactComponent as VirtualCluster } from '../../../../assets/icons/ic-environment-temp.svg'
+import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 
 function EnvironmentSelectorComponent({
     isExternalApp,
@@ -119,28 +119,6 @@ function EnvironmentSelectorComponent({
         }
     }
 
-    const deploymentAppTypeIcon = () => {
-        if (isGitops) {
-            return <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16 mr-8" />
-        } else if (appDetails?.deploymentAppType === DeploymentAppType.helm) {
-            return <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
-        } else {
-            return <VirtualCluster data-testid="helm-app-logo" className="icon-dim-32 fcb-5 ml-16" />
-        }
-    }
-
-////// Need to confirm //// 
-
-    // const iconTippyMessage = () => {
-    //     if (isVirtualEnvironment) {
-    //         return
-    //     } else if (isGitops) {
-    //         return DeploymentAppTypeNameMapping.GitOps
-    //     } else {
-    //         return DeploymentAppTypeNameMapping.Helm
-    //     }
-    // }
-
     const deployedAppDetail = isExternalApp && params.appId && params.appId.split('|')
 
     return (
@@ -234,7 +212,7 @@ function EnvironmentSelectorComponent({
                                 isGitops ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
                             }`}
                         >
-                            {deploymentAppTypeIcon()}
+                            <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
                         </Tippy>
                     )}
                     {appDetails?.deploymentAppDeleteRequest && (

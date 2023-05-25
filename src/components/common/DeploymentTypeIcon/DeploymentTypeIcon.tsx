@@ -1,6 +1,6 @@
 import React from 'react'
 import { ReactComponent as Helm } from '../../../assets/icons/helm-app.svg'
-import { ReactComponent as VirtualCluster } from '../../../assets/icons/ic-virtual-cluster.svg'
+import { ReactComponent as VirtualCluster } from '../../../assets/icons/ic-environment-temp.svg'
 import { DeploymentAppType } from '../../v2/appDetails/appDetails.type'
 import { ReactComponent as ArgoCD } from '../../../assets/icons/argo-cd-app.svg'
 
