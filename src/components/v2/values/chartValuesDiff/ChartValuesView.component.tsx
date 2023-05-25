@@ -12,7 +12,7 @@ import {
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
-import { importComponentFromFELibrary, Select } from '../../../common'
+import { Select } from '../../../common'
 import { Progressing, DeleteDialog, EmptyState, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
