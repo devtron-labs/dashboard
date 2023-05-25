@@ -216,7 +216,7 @@ export function SourceInfo({
             envId: +params.envId,
             appName: appDetails?.appName,
         }
-        if (isVirtualEnvironment && AppDetailsDownloadCard) {
+        if ( AppDetailsDownloadCard) {
             return <AppDetailsDownloadCard params={paramsId} />
         }
       }
