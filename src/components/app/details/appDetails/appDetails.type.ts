@@ -176,7 +176,7 @@ export interface DetailsType {
     commitInfo?: boolean
     isAppDeleted?: boolean
     showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
-    isVirtualEnvironment?: React.MutableRefObject<boolean>
+    isVirtualEnvRef?: React.MutableRefObject<boolean>
 }
 
 export interface DeploymentStatusCardType {
