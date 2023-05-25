@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react'
 import { useHistory, useRouteMatch, useParams } from 'react-router'
 import { toast } from 'react-toastify'
-import { RadioGroup, useJsonYaml } from '../../../common'
+import { importComponentFromFELibrary, RadioGroup, useJsonYaml } from '../../../common'
 import {
     showError,
     Progressing,
@@ -101,7 +101,7 @@ import {
     MANIFEST_INFO,
 } from './ChartValuesView.constants'
 import { DeploymentAppType } from '../../appDetails/appDetails.type'
-import ChartValues from '../../../charts/chartValues/ChartValues'
+const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 
 function ChartValuesView({
     appId,
@@ -132,6 +132,7 @@ function ChartValuesView({
     const [isUnlinkedCLIApp, setIsUnlinkedCLIApp] = useState(false)
     const [deploymentVersion, setDeploymentVersion] = useState(1)
     const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
+    const [isVirtualEnvironmentOnSelector, setIsVirtualEnvironmentOnSelector] = useState<boolean>()
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -153,7 +154,6 @@ function ChartValuesView({
     const isUpdate = isExternalApp || (commonState.installedConfig?.environmentId && commonState.installedConfig.teamId)
     const validationRules = new ValidationRules()
     const [showUpdateAppModal, setShowUpdateAppModal] = useState(false)
-
     const checkGitOpsConfiguration = async (): Promise<void> => {
         try {
             const { result } = await isGitOpsModuleInstalledAndConfigured()
@@ -1118,7 +1118,7 @@ function ChartValuesView({
 
     const handleEnvironmentSelection = (selected: ChartEnvironmentOptionType) => {
         dispatch({ type: ChartValuesViewActionTypes.selectedEnvironment, payload: selected })
-
+        setIsVirtualEnvironmentOnSelector(selected.isVirtualEnvironment)
         if (commonState.invalidaEnvironment) {
             dispatch({
                 type: ChartValuesViewActionTypes.invalidaEnvironment,
@@ -1307,6 +1307,18 @@ function ChartValuesView({
         setShowUpdateAppModal(!showUpdateAppModal)
     }
 
+    const renderGeneratedDownloadManifest = (): JSX.Element => {
+        return (
+          isVirtualEnvironmentOnSelector &&
+            GeneratedHelmDownload && (
+                <div>
+                    <GeneratedHelmDownload />
+                    <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
+                </div>
+            )
+        )
+    }
+
     const renderData = () => {
         const deployedAppDetail = isExternalApp && appId && appId.split('|')
         return (
@@ -1393,17 +1405,21 @@ function ChartValuesView({
                                 handleEnvironmentSelection={handleEnvironmentSelection}
                                 environments={commonState.environments}
                                 invalidaEnvironment={commonState.invalidaEnvironment}
+                                isVirtualEnvironmentOnSelector={isVirtualEnvironmentOnSelector}
                                 isVirtualEnvironment={appDetails?.isVirtualEnvironment}
                             />
                         )}
-                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp && !isCreateValueView && !appDetails?.isVirtualEnvironment && (
-                            <DeploymentAppSelector
-                                commonState={commonState}
-                                isUpdate={isUpdate}
-                                handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
-                                isDeployChartView={isDeployChartView}
-                            />
-                        )}
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
+                            !isExternalApp &&
+                            !isCreateValueView &&
+                            !appDetails?.isVirtualEnvironment && (
+                                <DeploymentAppSelector
+                                    commonState={commonState}
+                                    isUpdate={isUpdate}
+                                    handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
+                                    isDeployChartView={isDeployChartView}
+                                />
+                            )}
                         <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
                         {/**
                          * ChartRepoSelector will be displayed only when,
@@ -1438,6 +1454,7 @@ function ChartValuesView({
                                     linkText={renderConnectToHelmChart()}
                                 />
                             )}
+                        {renderGeneratedDownloadManifest()}
                         {(!isExternalApp ||
                             commonState.installedAppInfo ||
                             commonState.repoChartValue?.chartRepoName) && (

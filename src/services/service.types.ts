@@ -155,6 +155,7 @@ export interface EnvironmentHelmResult {
     environmentName: string,
     namespace: string,
     environmentIdentifier: string
+    isVirtualEnvironment?: boolean // Need to confirm for not full mode
 }
 
 export interface ClusterListResponse extends ResponseType {

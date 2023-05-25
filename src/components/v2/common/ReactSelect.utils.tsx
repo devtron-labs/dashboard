@@ -201,12 +201,12 @@ export const noMatchingPlatformOptions = (): string => {
 }
 
 export function GroupHeading(props) {
-    const {data, hideClusterName, isVirtualEnvironment} = props
+    const {data, hideClusterName} = props
     if (!data.label) return null
     return (
         <components.GroupHeading {...props}>
             <div className="flex dc__no-text-transform flex-justify h-100">
-                {!hideClusterName ? isVirtualEnvironment ? 'Virtual Cluster' :  'Cluster : ' : ''} {data.label}
+                {!hideClusterName && data?.isVirtualEnvironment ? 'Virtual Cluster : ' :  'Cluster : '} {data.label}
             </div>
         </components.GroupHeading>
     )

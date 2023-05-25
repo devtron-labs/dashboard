@@ -8,8 +8,6 @@ import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessagi
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
-import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { useParams } from 'react-router'
 import { Nodes, SourceInfoType } from '../../types'
 import Tippy from '@tippyjs/react'
@@ -19,9 +17,8 @@ import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import { ConditionalWrap, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from './DeploymentStatusCard'
-import { ReactComponent as VirtualCluster } from '../../../../assets/icons/ic-virtual-cluster.svg'
 import { importComponentFromFELibrary} from '../../../common/helpers/Helpers'
-
+import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
 export function SourceInfo({
@@ -85,16 +82,6 @@ export function SourceInfo({
         )
     }
 
-    const renderDeploymentTypeIcon = (): void => {
-      if (appDetails?.deploymentAppType === DeploymentAppType.manifest_download || isVirtualEnvironment) {
-          return <VirtualCluster data-testid="helm-app-logo" className="icon-dim-32 fcb-5 ml-16" />
-      } else if (appDetails?.deploymentAppType === DeploymentAppType.argo_cd) {
-          return <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />
-      } else if (appDetails?.deploymentAppType === DeploymentAppType.helm) {
-          return <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
-      }
-    }
-
     const renderDevtronAppsEnvironmentSelector = (environment) => {
         return (
             <div className="flex left w-100 mb-16">
@@ -113,7 +100,7 @@ export function SourceInfo({
                                 : DeploymentAppTypeNameMapping.Helm
                         }`}
                     >
-                        {renderDeploymentTypeIcon()}
+                       <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
                     </Tippy>
                 )}
                 {appDetails?.deploymentAppDeleteRequest && (

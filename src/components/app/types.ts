@@ -471,3 +471,17 @@ export interface SourceInfoType {
   loadingResourceTree?: boolean
   isVirtualEnvironment?: boolean
 }
+
+export interface EnvironmentListMinType {
+    active?: boolean
+    appCount?: number
+    cluster_name?: string
+    default?: boolean
+    description?: boolean
+    environmentIdentifier?: string
+    environment_name: string
+    id?: number
+    isClusterCdActive?: boolean
+    isVirtualEnvironment?: boolean
+    namespace?: string
+}
