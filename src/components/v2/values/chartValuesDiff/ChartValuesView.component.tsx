@@ -26,7 +26,6 @@ import {
     DeleteApplicationButtonProps,
     DeleteChartDialogProps,
     DeploymentAppSelectorType,
-    DeploymentAppType,
     ErrorScreenWithInfoProps,
     UpdateApplicationButtonProps,
     ValueNameInputType,
@@ -42,6 +41,8 @@ import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.s
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
 import { ReactComponent as Info } from '../../../../assets/icons/appstatus/info-filled.svg'
+import { DeploymentAppTypes } from '../../../../config/constants'
+import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -52,6 +53,7 @@ export const ChartEnvironmentSelector = ({
     handleEnvironmentSelection,
     environments,
     invalidaEnvironment,
+    isVirtualEnvironmentOnSelector,
     isVirtualEnvironment
 }: ChartEnvironmentSelectorType): JSX.Element => {
     const singleOption = (props) => {
@@ -100,7 +102,7 @@ export const ChartEnvironmentSelector = ({
                 formatOptionLabel={handleFormatHighlightedText}
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
-            {isVirtualEnvironment && renderVirtualEnvironmentInfoText()}
+            {isVirtualEnvironmentOnSelector && renderVirtualEnvironmentInfoText()}
         </div>
     )
 }
@@ -118,12 +120,12 @@ export const DeploymentAppSelector = ({
             </h2>
             <div className="flex left">
                 <span className="fs-13 fw-6  cn-9 md-6 " data-testid="deployment-type">
-                    {commonState.installedConfig.deploymentAppType === DeploymentAppType.Helm
+                    {commonState.installedConfig.deploymentAppType === DeploymentAppTypes.HELM
                         ? DeploymentAppTypeNameMapping.Helm
                         : DeploymentAppTypeNameMapping.GitOps}
                 </span>
                 <span>
-                    {commonState.installedConfig.deploymentAppType === DeploymentAppType.GitOps ? (
+                    {commonState.installedConfig.deploymentAppType === DeploymentAppTypes.GITOPS ? (
                         <ArgoCD className="icon-dim-24 ml-6" />
                     ) : (
                         <Helm className="icon-dim-24 ml-6" />
@@ -144,9 +146,9 @@ export const DeploymentAppSelector = ({
                     onChange={handleDeploymentAppTypeSelection}
                     disabled={isUpdate}
                 >
-                    <RadioGroupItem value={DeploymentAppType.Helm}> Helm </RadioGroupItem>
+                    <RadioGroupItem value={DeploymentAppTypes.HELM}> Helm </RadioGroupItem>
 
-                    <RadioGroupItem value={DeploymentAppType.GitOps}> GitOps </RadioGroupItem>
+                    <RadioGroupItem value={DeploymentAppTypes.GITOPS}> GitOps </RadioGroupItem>
                 </RadioGroup>
             </div>
         </div>

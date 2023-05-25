@@ -132,7 +132,7 @@ function ChartValuesView({
     const [isUnlinkedCLIApp, setIsUnlinkedCLIApp] = useState(false)
     const [deploymentVersion, setDeploymentVersion] = useState(1)
     const isGitops = appDetails?.deploymentAppType === DeploymentAppType.argo_cd
-    const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>()
+    const [isVirtualEnvironmentOnSelector, setIsVirtualEnvironmentOnSelector] = useState<boolean>()
 
     const [commonState, dispatch] = useReducer(
         chartValuesReducer,
@@ -1118,7 +1118,7 @@ function ChartValuesView({
 
     const handleEnvironmentSelection = (selected: ChartEnvironmentOptionType) => {
         dispatch({ type: ChartValuesViewActionTypes.selectedEnvironment, payload: selected })
-        setIsVirtualEnvironment(selected.isVirtualEnvironment)
+        setIsVirtualEnvironmentOnSelector(selected.isVirtualEnvironment)
         if (commonState.invalidaEnvironment) {
             dispatch({
                 type: ChartValuesViewActionTypes.invalidaEnvironment,
@@ -1309,7 +1309,7 @@ function ChartValuesView({
 
     const renderGeneratedDownloadManifest = (): JSX.Element => {
         return (
-            isVirtualEnvironment &&
+          isVirtualEnvironmentOnSelector &&
             GeneratedHelmDownload && (
                 <div>
                     <GeneratedHelmDownload />
@@ -1405,13 +1405,14 @@ function ChartValuesView({
                                 handleEnvironmentSelection={handleEnvironmentSelection}
                                 environments={commonState.environments}
                                 invalidaEnvironment={commonState.invalidaEnvironment}
-                                isVirtualEnvironment={isVirtualEnvironment}
+                                isVirtualEnvironmentOnSelector={isVirtualEnvironmentOnSelector}
+                                isVirtualEnvironment={appDetails?.isVirtualEnvironment}
                             />
                         )}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                             !isExternalApp &&
                             !isCreateValueView &&
-                            !isVirtualEnvironment && (
+                            !appDetails.isVirtualEnvironment && (
                                 <DeploymentAppSelector
                                     commonState={commonState}
                                     isUpdate={isUpdate}

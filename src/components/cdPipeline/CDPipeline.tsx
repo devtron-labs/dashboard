@@ -72,6 +72,7 @@ import {
 } from '../../config/constantMessaging'
 
 const ManualApproval = importComponentFromFELibrary('ManualApproval')
+const VirtualEnvSelectionInfoBar = importComponentFromFELibrary('VirtualEnvSelectionInfoBar')
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -1260,7 +1261,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     </label>
                 </div>
                 {this.renderNamespaceInfo(namespaceEditable)}
-                {!this.state.pipelineConfig.isVirtualEnvironment && this.renderTriggerType()}
+                {this.state.pipelineConfig.isVirtualEnvironment
+                    ? VirtualEnvSelectionInfoBar && <VirtualEnvSelectionInfoBar />
+                    : this.renderTriggerType()}
             </>
         )
     }
