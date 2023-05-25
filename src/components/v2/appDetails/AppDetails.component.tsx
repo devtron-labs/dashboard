@@ -112,7 +112,7 @@ const AppDetailsComponent = ({
 
     const renderHelmAppDetails = (): JSX.Element => {
         if (isVirtualEnv.current && VirtualAppDetailsEmptyState) {
-            return <VirtualAppDetailsEmptyState environmentName={''} />
+            return <VirtualAppDetailsEmptyState environmentName={appDetails.environmentName} />
         }
         return (
             <NodeTreeDetailTab

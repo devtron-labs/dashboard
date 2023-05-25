@@ -175,7 +175,7 @@ function ChartValuesView({
                 convertSchemaJsonToMap(commonState.installedConfig.valuesSchemaJson),
                 dispatch,
             )
-           
+
             const _fetchedReadMe = commonState.fetchedReadMe
             _fetchedReadMe.set(0, commonState.installedConfig.readme)
             dispatch({
@@ -386,7 +386,7 @@ function ChartValuesView({
             }
         }
     }, [commonState.chartValues])
-    
+
     useEffect(() => {
         if (commonState.selectedVersionUpdatePage?.id) {
             getChartRelatedReadMe(
@@ -1393,9 +1393,10 @@ function ChartValuesView({
                                 handleEnvironmentSelection={handleEnvironmentSelection}
                                 environments={commonState.environments}
                                 invalidaEnvironment={commonState.invalidaEnvironment}
+                                isVirtualEnvironment={appDetails?.isVirtualEnvironment}
                             />
                         )}
-                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp && !isCreateValueView && (
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp && !isCreateValueView && !appDetails?.isVirtualEnvironment && (
                             <DeploymentAppSelector
                                 commonState={commonState}
                                 isUpdate={isUpdate}
