@@ -1393,6 +1393,7 @@ function ChartValuesView({
                                 handleEnvironmentSelection={handleEnvironmentSelection}
                                 environments={commonState.environments}
                                 invalidaEnvironment={commonState.invalidaEnvironment}
+                                isVirtualEnvironment={appDetails?.isVirtualEnvironment}
                             />
                         )}
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !isExternalApp && !isCreateValueView && !appDetails?.isVirtualEnvironment && (
