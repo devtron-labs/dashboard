@@ -1077,7 +1077,7 @@ export default function ClusterForm({
                                                         selectedUserNameOptions[clusterDetail.cluster_name]
                                                             .errorInConnecting !== 'cluster-already-exists'
                                                             ? 'failed'
-                                                            : 'succeeded'
+                                                            : ''
                                                     }`}
                                                 ></div>
                                             )}
@@ -1085,10 +1085,14 @@ export default function ClusterForm({
                                                 <span className="dc__ellipsis-right">
                                                     {' '}
                                                     {selectedUserNameOptions[clusterDetail.cluster_name]
-                                                        ?.errorInConnecting === 'cluster-already-exists'
+                                                        ?.errorInConnecting === 'cluster-already-exists' &&
+                                                    isClusterSelected[clusterDetail.cluster_name]
                                                         ? 'Cluster already exists. Cluster will be updated.'
                                                         : selectedUserNameOptions[clusterDetail.cluster_name]
-                                                              ?.errorInConnecting || 'No error'}{' '}
+                                                              ?.errorInConnecting === 'cluster-already-exists'
+                                                        ? 'Cluster already exists.'
+                                                        : selectedUserNameOptions[clusterDetail.cluster_name]
+                                                              ?.errorInConnecting || ' '}
                                                 </span>
                                             </div>
                                         </div>
