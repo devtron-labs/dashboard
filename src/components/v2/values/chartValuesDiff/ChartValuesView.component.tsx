@@ -42,7 +42,6 @@ import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
 import { ReactComponent as Info } from '../../../../assets/icons/appstatus/info-filled.svg'
 import { DeploymentAppTypes } from '../../../../config/constants'
-import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 
 export const ChartEnvironmentSelector = ({
     isExternal,
