@@ -52,7 +52,7 @@ import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
-const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null , 'function')
+const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -85,7 +85,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             filteredCIPipelines: [],
             isChangeBranchClicked: false,
             loader: false,
-            downloadManifestLoader: true
+            downloadManifestLoader: true,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -106,8 +106,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getWorkflows()
     }
 
-    setManifestLoader=() => {
-         this.setState({downloadManifestLoader : false})
+    setManifestLoader = () => {
+        this.setState({ downloadManifestLoader: false })
     }
 
     getWorkflows = () => {
@@ -645,10 +645,15 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickManifestDownload = (appId: number, envId: number) => {
-      if (getDeployManifestDownload) {
-          getDeployManifestDownload(appId, envId, this.setManifestLoader)
-      }
+    onClickManifestDownload = (appId: number, envId: number, envName: string) => {
+        const downloadManifetsDownload = {
+            appId: appId,
+            envId: envId,
+            appName: envName,
+        }
+        if (getDeployManifestDownload) {
+            getDeployManifestDownload(downloadManifetsDownload, this.setLoader)
+        }
     }
 
     onClickTriggerCDNode = (
@@ -672,11 +677,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
-                        this.onClickManifestDownload(_appId, node.environmentId)
+                        this.onClickManifestDownload(_appId, node.environmentId, node.environmentName)
                         const msg =
                             this.state.materialType == MATERIAL_TYPE.rollbackMaterialList
                                 ? 'Rollback Initiated'
-                                : 'Deployment Initiated'
+                                : !node.isVirtualEnvironment && 'Deployment Initiated'
                         toast.success(msg)
                         this.setState(
                             {
@@ -796,9 +801,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             material.history.map((hist) => {
                                 if (!hist.excluded) {
                                     if (material.type == SourceTypeMap.WEBHOOK) {
-                                        if(hist?.webhookData && hist.webhookData?.id && hash == hist.webhookData.id) {
+                                        if (hist?.webhookData && hist.webhookData?.id && hash == hist.webhookData.id) {
                                             hist.isSelected = true
-                                        }else {
+                                        } else {
                                             hist.isSelected = false
                                         }
                                     } else {
