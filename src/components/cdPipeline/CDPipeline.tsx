@@ -154,7 +154,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             isAdvanced: false,
             forceDeleteDialogMessage: '',
             forceDeleteDialogTitle: '',
-            isVirtualEnvironmentOnEnvSelection: false
         }
         this.validationRules = new ValidationRules()
         this.handleRunInEnvCheckbox = this.handleRunInEnvCheckbox.bind(this)
@@ -211,7 +210,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 .then((response) => {
                                     let list = response.result || []
                                     list = list.map((env) => {
-                                      this.setState({isVirtualEnvironmentOnEnvSelection: env.isVirtualEnvironment })
                                         return {
                                             id: env.id,
                                             clusterName: env.cluster_name,
@@ -450,7 +448,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     active: item.id == selection.id,
                 }
             })
-            this.setState({isVirtualEnvironmentOnEnvSelection : selection.isVirtualEnvironment})
             pipelineConfig.environmentId = selection.id
             pipelineConfig.namespace = selection.namespace
             pipelineConfig.isVirtualEnvironment = selection.isVirtualEnvironment
@@ -1183,11 +1180,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         const envList = createClusterEnvGroup(this.state.environments, 'clusterName')
 
         const groupHeading = (props) => {
-            return <GroupHeading isVirtualEnvironment={this.state.isVirtualEnvironmentOnEnvSelection} {...props} />
+            return <GroupHeading {...props} />
         }
 
         const getNamespaceplaceholder = (): string => {
-            if (this.state.isVirtualEnvironmentOnEnvSelection) {
+            if (this.state.pipelineConfig.isVirtualEnvironment) {
                 if (this.state.pipelineConfig.namespace) {
                     return 'Will be auto-populated based on environment'
                 } else {
@@ -1254,7 +1251,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         />
 
                         {!this.state.errorForm.nameSpaceError.isValid &&
-                        !this.state.isVirtualEnvironmentOnEnvSelection ? (
+                        !this.state.pipelineConfig.isVirtualEnvironment ? (
                             <span className="form__error">
                                 <img src={error} className="form__icon" />
                                 {this.state.errorForm.nameSpaceError.message}
@@ -1263,7 +1260,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     </label>
                 </div>
                 {this.renderNamespaceInfo(namespaceEditable)}
-                {!this.state.isVirtualEnvironmentOnEnvSelection && this.renderTriggerType()}
+                {!this.state.pipelineConfig.isVirtualEnvironment && this.renderTriggerType()}
             </>
         )
     }
@@ -1408,7 +1405,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 {this.state.showDeploymentStage && (
                     <div className="ml-60">
                         {this.renderEnvNamespaceAndTriggerType()}
-                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && this.renderDeploymentAppType()}
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !this.state.pipelineConfig.isVirtualEnvironment && this.renderDeploymentAppType()}
                         {this.renderDeploymentStrategy()}
                     </div>
                 )}
@@ -1468,7 +1465,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <div className="divider mt-12 mb-12" />
                     </>
                 )}
-                {!this.state.pipelineConfig.isVirtualEnvironment && this.renderDeploymentStage()}
+                { this.renderDeploymentStage()}
                 <div className="divider mt-12 mb-12" />
                 {this.renderPostStage()}
                 <div className="divider mt-12 mb-12" />
@@ -1490,7 +1487,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             <>
                 <p className="fs-14 fw-6 cn-9 mb-12">Deploy to environment</p>
                 {this.renderEnvNamespaceAndTriggerType()}
-                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && this.renderDeploymentAppType()}
+                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !this.state.pipelineConfig.isVirtualEnvironment && this.renderDeploymentAppType()}
                 {!this.noStrategyAvailable && (
                     <>
                         <p className="fs-14 fw-6 cn-9 mb-12">Deployment Strategy</p>
