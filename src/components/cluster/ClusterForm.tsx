@@ -735,7 +735,7 @@ export default function ClusterForm({
                 <div className="code-editor-container">
                     <CodeEditor
                         value={saveYamlData}
-                        height={514}
+                        height= 'calc(100vh - 233px)'
                         diffView={false}
                         onChange={onChangeEditorValue}
                         mode={MODES.YAML}
