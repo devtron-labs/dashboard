@@ -7,7 +7,7 @@ import {
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
-import { useAsync, useInterval, useScrollable, mapByKey, asyncWrap } from '../../../common'
+import { useAsync, useInterval, useScrollable, mapByKey, asyncWrap, importComponentFromFELibrary } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
@@ -28,6 +28,7 @@ import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../c
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { AppEnvironment } from '../../../../services/service.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -352,7 +353,7 @@ export const TriggerOutput: React.FC<{
                                     </NavLink>
                                 </li>
                             )}
-                            {triggerDetails.stage !== 'DEPLOY' && (
+                            {triggerDetails.stage !== 'DEPLOY' || triggerDetails.IsVirtualEnvironment && (
                                 <li className="tab-list__tab" data-testid="deployment-history-artifacts-link">
                                     <NavLink
                                         replace
@@ -417,6 +418,13 @@ const HistoryLogs: React.FC<{
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
 
+    const paramsData = {
+        appId,
+        envId,
+        appName: triggerDetails.artifact,
+        workflowId: triggerDetails.id, 
+    }
+
     return (
         <>
             <div className="trigger-outputs-container">
@@ -440,8 +448,12 @@ const HistoryLogs: React.FC<{
                                     deploymentStatus={triggerDetails.status}
                                     deploymentAppType={deploymentAppType}
                                     userApprovalMetadata={userApprovalMetadata}
-                                    isGitops={deploymentAppType === DeploymentAppType.argo_cd}
+                                    isGitops={
+                                        deploymentAppType === DeploymentAppType.argo_cd ||
+                                        deploymentAppType === DeploymentAppType.manifest_download
+                                    }
                                     isHelmApps={false}
+                                    isVirtualEnvironment={triggerDetails.IsVirtualEnvironment}
                                 />
                             </Route>
                         )}
@@ -474,17 +486,27 @@ const HistoryLogs: React.FC<{
                                 />
                             </Route>
                         )}
-                        {triggerDetails.stage !== 'DEPLOY' && (
-                            <Route path={`${path}/artifacts`}>
-                                <Artifacts
-                                    status={triggerDetails.status}
-                                    artifact={triggerDetails.artifact}
-                                    blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                                    getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
-                                    type={HistoryComponentType.CD}
-                                />
-                            </Route>
-                        )}
+                        {triggerDetails.stage !== 'DEPLOY' ||
+                            (triggerDetails.IsVirtualEnvironment && (
+                                <Route path={`${path}/artifacts`}>
+                                    {triggerDetails.IsVirtualEnvironment ? (
+                                        <VirtualHistoryArtifact
+                                            titleName={triggerDetails.artifact}
+                                            params={paramsData}
+                                        />
+                                    ) : (
+                                        <Artifacts
+                                            status={triggerDetails.status}
+                                            artifact={triggerDetails.artifact}
+                                            blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                                            getArtifactPromise={() =>
+                                                getCDBuildReport(appId, envId, pipelineId, triggerId)
+                                            }
+                                            type={HistoryComponentType.CD}
+                                        />
+                                    )}
+                                </Route>
+                            ))}
                         <Redirect
                             to={`${path}/${
                                 triggerDetails.stage === 'DEPLOY'

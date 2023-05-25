@@ -28,7 +28,10 @@ export default function Artifacts({
     isJobView,
     type,
 }: ArtifactType) {
-    const { buildId, triggerId } = useParams<{ buildId: string; triggerId: string }>()
+    const { triggerId, buildId } = useParams<{
+        triggerId: string
+        buildId: string;
+    }>()
     const [copied, setCopied] = useState(false)
 
     useEffect(() => {

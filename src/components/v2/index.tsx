@@ -37,6 +37,7 @@ function RouterComponent({ envType }) {
     const [loadingDetails, setLoadingDetails] = useState(false)
     const [loadingResourceTree, setLoadingResourceTree] = useState(false)
     const appDetailsRef = useRef({} as AppDetails)
+    const isVirtualRef = useRef(false)
 
     useEffect(() => {
         IndexStore.setEnvDetails(envType, +params.appId, +params.envId)
@@ -103,7 +104,7 @@ function RouterComponent({ envType }) {
             getInstalledChartDetail(+params.appId, +params.envId)
                 .then((response) => {
                     handlePublishAppDetails(response)
-
+                    isVirtualRef.current = response.result?.isVirtualEnvironment
                     if (fetchExternalLinks) {
                         getExternalLinksAndTools(response.result?.clusterId)
                     }
@@ -123,7 +124,7 @@ function RouterComponent({ envType }) {
         } else {
             try {
                 // Revisit this flow
-                const response = await getInstalledAppDetail(+params.appId, +params.envId)
+                const response = await getInstalledAppDetail(+params.appId, +params.envId)    
                 IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
                 setErrorResponseCode(undefined)
             } catch (e: any) {
@@ -199,7 +200,7 @@ function RouterComponent({ envType }) {
                                 <ValuesComponent appId={params.appId} init={_init} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
-                                <ChartDeploymentHistory appId={params.appId} isExternal={false}/>
+                                <ChartDeploymentHistory appId={params.appId} isExternal={false} isVirtualEnvironment={isVirtualRef.current}/>
                             </Route>
                             <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
                         </Switch>

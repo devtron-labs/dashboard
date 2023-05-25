@@ -171,6 +171,7 @@ function EnvironmentStatusComponent({
                     hideDeploymentStatusLeftInfo={hideDeploymentStatusLeftInfo}
                     deploymentTriggerTime={appDetails?.lastDeployedTime}
                     triggeredBy={appDetails?.lastDeployedBy}
+                    isVirtualEnvironment={isVirtualEnvironment}
                 />
             )
         )
