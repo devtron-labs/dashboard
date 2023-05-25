@@ -1067,7 +1067,7 @@ export function createClusterEnvGroup<T>(
     propKey: string,
     isOptionType?: boolean,
     optionName?: string,
-): { label: string; options: T[] }[] {
+): { label: string; options: T[]; isVirtualEnvironment?: boolean }[] {
     const objList: Record<string, T[]> = list.reduce((acc, obj) => {
         const key = obj[propKey]
         if (!acc[key]) {
@@ -1082,6 +1082,7 @@ export function createClusterEnvGroup<T>(
     return Object.entries(objList).map(([key, value]) => ({
         label: key,
         options: value,
+        isVirtualEnvironment: value[0]['isVirtualEnvironment'] // All the values will be having similar isVirtualEnvironment
     }))
 }
 

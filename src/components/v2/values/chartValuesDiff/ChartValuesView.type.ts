@@ -45,6 +45,7 @@ export interface ChartEnvironmentOptionType {
     clusterName?: string
     clusterId?: number
     active?: boolean
+    isVirtualEnvironment?: boolean
 }
 
 export interface ChartEnvironmentListType {
@@ -75,6 +76,7 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
     handleEnvironmentSelection?: (selected: ChartEnvironmentOptionType) => void
     environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[]
     invalidaEnvironment: boolean
+    isVirtualEnvironmentOnSelector?: boolean
     isVirtualEnvironment?: boolean
 }
 
