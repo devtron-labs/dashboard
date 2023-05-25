@@ -246,8 +246,7 @@ function EnvironmentStatusComponent({
                 shimmerLoaderBlocks()
             ) : (
                 <div className="flex left ml-20 mb-16 lh-20">
-                    {!isVirtualEnvironment && renderStatusBlock()}
-                    {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
+                    {isVirtualEnvironment ? renderGeneratedManifestDownloadCard() : renderStatusBlock()}
                     {renderHelmConfigApplyStatusBlock()}
                     {renderLastUpdatedBlock()}
                     {!isVirtualEnvironment && renderChartUsedBlock()}
