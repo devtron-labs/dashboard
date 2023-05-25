@@ -59,7 +59,7 @@ import Tippy from '@tippyjs/react'
 const getInstallationStatusLabel = (installationStatus: ModuleStatus): JSX.Element => {
     if (installationStatus === ModuleStatus.INSTALLING) {
         return (
-            <div className={`module-details__installation-status flex ${installationStatus}`}>
+            <div data-testid={`module-details-card-status-${installationStatus}`} className={`module-details__installation-status flex ${installationStatus}`}>
                 <Progressing size={20} />
                 <span className="fs-13 fw-6 ml-8">Installing</span>
             </div>
@@ -103,7 +103,7 @@ const ModuleDetailsCard = ({
     }
     return (
         <div
-            data-testid={`${moduleDetails.title.toLowerCase().replace(/ /g, '-')}-card`}
+            data-testid="module-details-card"
             className={`module-details__card flex left column br-8 p-16 mr-20 mb-20 ${className || ''}`}
             onClick={handleOnClick}
         >
@@ -271,7 +271,7 @@ export const StackPageHeader = ({
 
     const renderBreadcrumbs = (headerTitleName, detailsMode) => {
         return (
-            <div data-testid={`${selectedModule?.title.toLowerCase().replace(/ /g, '-')}-header`} className="m-0 flex left ">
+            <div data-testid="module-details-header" className="m-0 flex left ">
                 <div onClick={() => handleRedirectToModule(detailsMode)} className="dc__devtron-breadcrumb__item">
                     <span className="cb-5 fs-16 cursor">{headerTitleName} </span>
                 </div>
@@ -803,7 +803,7 @@ export const ModuleDetailsView = ({
                         alt={moduleDetails.title}
                     />
                     <h2
-                        data-testid={`${moduleDetails.title.toLowerCase().replace(/ /g, '-')}-title`}
+                        data-testid={"module-details-title"}
                         className="module-details__feature-heading cn-9 fs-20 fw-6"
                     >
                         {moduleDetails.title}
