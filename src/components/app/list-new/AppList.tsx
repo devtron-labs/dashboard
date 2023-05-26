@@ -158,7 +158,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
         applyFilter(AppListConstants.FilterType.CLUTSER, _filterOptions, currentTab)
     }
 
-    const onRequestUrlChange = (): any => {
+    const onRequestUrlChange = (showExportCsvButton?: boolean): any => {
         let searchQuery = location.search
 
         let params = queryString.parse(searchQuery)
@@ -289,7 +289,7 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
             sortOrder: sortOrder,
             offset: offset,
             hOffset: hOffset,
-            size: +pageSize,
+            size: showExportCsvButton ? appCount : +pageSize,
         }
 
         // check whether to fetch namespaces from backend if any cluster is selected and not same as old
@@ -621,59 +621,61 @@ export default function AppList({ isSuperAdmin, appListCount, isArgoInstalled }:
     }
 
     const getAppListDataToExport = () => {
-        return getAppList(createAppListPayload(onRequestUrlChange(), environmentClusterListRes)).then(({ result }) => {
-            if (result.appContainers) {
-                const _appDataList = []
-                for (let _app of result.appContainers) {
-                    if (_app.environments) {
-                        for (let _env of _app.environments) {
-                            const _clusterId =
-                                _env.clusterName &&
-                                masterFilters.clusters.find((_cluster) => {
-                                    return _cluster.label === _env.clusterName
-                                })?.key
+        return getAppList(createAppListPayload(onRequestUrlChange(true), environmentClusterListRes)).then(
+            ({ result }) => {
+                if (result.appContainers) {
+                    const _appDataList = []
+                    for (let _app of result.appContainers) {
+                        if (_app.environments) {
+                            for (let _env of _app.environments) {
+                                const _clusterId =
+                                    _env.clusterName &&
+                                    masterFilters.clusters.find((_cluster) => {
+                                        return _cluster.label === _env.clusterName
+                                    })?.key
 
+                                _appDataList.push({
+                                    appId: _env.appId,
+                                    appName: _env.appName,
+                                    projectId: _env.teamId,
+                                    projectName: projectMap.get(_env.teamId),
+                                    environmentId: (_env.environmentName && _env.environmentId) || '-',
+                                    environmentName: _env.environmentName || '-',
+                                    clusterId: `${(_clusterId ?? _clusterId) || '-'}`,
+                                    clusterName: _env.clusterName || '-',
+                                    namespaceId: _env.namespace && _clusterId ? `${_clusterId}_${_env.namespace}` : '-',
+                                    namespace: _env.namespace || '-',
+                                    status: _env.status || '-',
+                                    lastDeployedTime: _env.lastDeployedTime
+                                        ? moment(_env.lastDeployedTime).format(Moment12HourFormat)
+                                        : '-',
+                                })
+                            }
+                        } else {
                             _appDataList.push({
-                                appId: _env.appId,
-                                appName: _env.appName,
-                                projectId: _env.teamId,
-                                projectName: projectMap.get(_env.teamId),
-                                environmentId: (_env.environmentName && _env.environmentId) || '-',
-                                environmentName: _env.environmentName || '-',
-                                clusterId: `${(_clusterId ?? _clusterId) || '-'}`,
-                                clusterName: _env.clusterName || '-',
-                                namespaceId: _env.namespace && _clusterId ? `${_clusterId}_${_env.namespace}` : '-',
-                                namespace: _env.namespace || '-',
-                                status: _env.status || '-',
-                                lastDeployedTime: _env.lastDeployedTime
-                                    ? moment(_env.lastDeployedTime).format(Moment12HourFormat)
-                                    : '-',
+                                appId: _app.appId,
+                                appName: _app.appName,
+                                projectId: _app.projectId,
+                                projectName:
+                                    masterFilters.projects.find((_proj) => _proj.id === _app.projectId)?.name || '-',
+                                environmentId: '-',
+                                environmentName: '-',
+                                clusterId: '-',
+                                clusterName: '-',
+                                namespaceId: '-',
+                                namespace: '-',
+                                status: '-',
+                                lastDeployedTime: '-',
                             })
                         }
-                    } else {
-                        _appDataList.push({
-                            appId: _app.appId,
-                            appName: _app.appName,
-                            projectId: _app.projectId,
-                            projectName:
-                                masterFilters.projects.find((_proj) => _proj.id === _app.projectId)?.name || '-',
-                            environmentId: '-',
-                            environmentName: '-',
-                            clusterId: '-',
-                            clusterName: '-',
-                            namespaceId: '-',
-                            namespace: '-',
-                            status: '-',
-                            lastDeployedTime: '-',
-                        })
                     }
+
+                    return _appDataList
                 }
 
-                return _appDataList
-            }
-
-            return []
-        })
+                return []
+            },
+        )
     }
 
     function renderMasterFilters() {
