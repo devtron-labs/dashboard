@@ -295,6 +295,8 @@ function NodeDetailComponent({
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResourceWithContainers}
+                            selectedContainer={selectedContainer}
+                            setSelectedContainer={setSelectedContainer}
                         />
                     </Route>
                     <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
