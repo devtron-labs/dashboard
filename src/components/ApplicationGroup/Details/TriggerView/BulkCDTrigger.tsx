@@ -1,5 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Drawer, noop, Progressing, showError } from '../../../common'
+import {
+    CDMaterialResponseType,
+    DeploymentNodeType,
+    Drawer,
+    noop,
+    Progressing,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as PlayIcon } from '../../../../assets/icons/ic-play-medium.svg'
@@ -9,7 +16,7 @@ import emptyPreDeploy from '../../../../assets/img/empty-pre-deploy.png'
 import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
 import { getCDMaterialList } from '../../../app/service'
 import { CDMaterial } from '../../../app/details/triggerView/cdMaterial'
-import { DeploymentNodeType, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
+import { MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import TriggerResponseModal from './TriggerResponseModal'
@@ -33,11 +40,17 @@ export default function BulkCDTrigger({
         appList.find((app) => !app.warningMessage) || appList[0],
     )
     const [unauthorizedAppList, setUnauthorizedAppList] = useState<Record<number, boolean>>({})
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
+    const closeBulkCDModal = (e): void => {
+        abortControllerRef.current.abort()
+        closePopup(e)
+    }
 
     const escKeyPressHandler = (evt): void => {
         if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
             evt.preventDefault()
-            closePopup(evt)
+            closeBulkCDModal(evt)
         }
     }
     const outsideClickHandler = (evt): void => {
@@ -46,7 +59,7 @@ export default function BulkCDTrigger({
             !ciTriggerDetailRef.current.contains(evt.target) &&
             typeof closePopup === 'function'
         ) {
-            closePopup(evt)
+            closeBulkCDModal(evt)
         }
     }
 
@@ -67,26 +80,34 @@ export default function BulkCDTrigger({
     const getMaterialData = (): void => {
         const _unauthorizedAppList: Record<number, boolean> = {}
         const _CDMaterialPromiseList = []
+        abortControllerRef.current = new AbortController()
         for (const appDetails of appList) {
             if (!appDetails.warningMessage) {
                 _unauthorizedAppList[appDetails.appId] = false
                 _CDMaterialPromiseList.push(
-                    getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType)
-                        .then((r) => {
-                            return { materialList: r, appId: appDetails.appId }
+                    getCDMaterialList(appDetails.cdPipelineId, appDetails.stageType, abortControllerRef.current.signal)
+                        .then((data) => {
+                            return { appId: appDetails.appId, ...data }
                         })
                         .catch((e) => {
-                            throw { response: e?.response, appId: appDetails.appId }
+                            if (!abortControllerRef.current.signal.aborted) {
+                                throw { response: e?.response, appId: appDetails.appId }
+                            }
                         }),
                 )
             }
         }
-        const _materialListMap: Record<string, any[]> = {}
+        const _cdMaterialResponse: Record<string, CDMaterialResponseType> = {}
         Promise.allSettled(_CDMaterialPromiseList)
             .then((responses) => {
                 responses.forEach((response, index) => {
                     if (response.status === 'fulfilled') {
-                        _materialListMap[response.value['appId']] = response.value['materialList']
+                        _cdMaterialResponse[response.value['appId']] = {
+                            approvalUsers: response.value['approvalUsers'],
+                            materials: response.value['materials'],
+                            userApprovalConfig: response.value['userApprovalConfig'],
+                            requestedUserId: response.value['requestedUserId'],
+                        }
                         delete _unauthorizedAppList[response.value['appId']]
                     } else {
                         const errorReason = response.reason
@@ -95,7 +116,7 @@ export default function BulkCDTrigger({
                         }
                     }
                 })
-                updateBulkInputMaterial(_materialListMap)
+                updateBulkInputMaterial(_cdMaterialResponse)
                 setUnauthorizedAppList(_unauthorizedAppList)
                 setLoading(false)
             })
@@ -110,13 +131,13 @@ export default function BulkCDTrigger({
 
     const renderHeaderSection = (): JSX.Element => {
         return (
-            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-17 pr-20 pb-17 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Deploy to {appList[0].envName}</h2>
+            <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">Deploy to {appList[0].envName}</h2>
                 <button
                     type="button"
                     className="dc__transparent flex icon-dim-24"
                     disabled={isLoading}
-                    onClick={closePopup}
+                    onClick={closeBulkCDModal}
                 >
                     <Close className="icon-dim-24" />
                 </button>
@@ -141,8 +162,8 @@ export default function BulkCDTrigger({
         return (
             <EmptyView
                 imgSrc={emptyPreDeploy}
-                title={`${selectedApp.name}  ${BULK_CD_MESSAGING.emptyPreDeploy.title}`}
-                subTitle={BULK_CD_MESSAGING.emptyPreDeploy.subTitle}
+                title={`${selectedApp.name}  ${BULK_CD_MESSAGING[stage].title}`}
+                subTitle={BULK_CD_MESSAGING[stage].subTitle}
             />
         )
     }
@@ -151,7 +172,7 @@ export default function BulkCDTrigger({
         if (isLoading) {
             return <Progressing pageLoader />
         }
-        const _material = appList.find((app) => app.appId === selectedApp.appId)?.material || []
+        const _currentApp = appList.find((app) => app.appId === selectedApp.appId) ?? ({} as BulkCDDetailType)
         return (
             <div className="bulk-ci-trigger">
                 <div className="sidebar bcn-0 dc__height-inherit dc__overflow-auto">
@@ -180,7 +201,7 @@ export default function BulkCDTrigger({
                             {unauthorizedAppList[app.appId] && (
                                 <span className="flex left cy-7 fw-4 fs-12">
                                     <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4" />
-                                    {BULK_CD_MESSAGING.emptyPreDeploy.title}
+                                    {BULK_CD_MESSAGING.unauthorized.title}
                                 </span>
                             )}
                         </div>
@@ -194,19 +215,22 @@ export default function BulkCDTrigger({
                             appId={selectedApp.appId}
                             pipelineId={+selectedApp.cdPipelineId}
                             stageType={selectedApp.stageType}
-                            material={_material}
+                            triggerType={selectedApp.triggerType}
+                            material={_currentApp.material ?? []}
                             materialType={MATERIAL_TYPE.inputMaterialList}
                             envName={selectedApp.envName}
                             isLoading={isLoading}
                             changeTab={changeTab}
                             triggerDeploy={onClickStartDeploy}
                             onClickRollbackMaterial={noop}
-                            closeCDModal={closePopup}
+                            closeCDModal={closeBulkCDModal}
                             selectImage={selectImage}
                             toggleSourceInfo={toggleSourceInfo}
                             parentPipelineId={selectedApp.parentPipelineId}
                             parentPipelineType={selectedApp.parentPipelineType}
                             parentEnvironmentName={selectedApp.parentEnvironmentName}
+                            userApprovalConfig={_currentApp.userApprovalConfig}
+                            requestedUserId={_currentApp.requestedUserId}
                             isFromBulkCD={true}
                         />
                     )}
@@ -226,7 +250,12 @@ export default function BulkCDTrigger({
     const renderFooterSection = (): JSX.Element => {
         return (
             <div className="dc__border-top flex right bcn-0 pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0 env-modal-width">
-                <button className="cta flex h-36" onClick={onClickStartDeploy} disabled={isDeployDisabled()}>
+                <button
+                    className="cta flex h-36"
+                    data-testid="deploy-button"
+                    onClick={onClickStartDeploy}
+                    disabled={isDeployDisabled()}
+                >
                     {isLoading ? (
                         <Progressing />
                     ) : (
@@ -250,7 +279,7 @@ export default function BulkCDTrigger({
                 {renderHeaderSection()}
                 {responseList.length ? (
                     <TriggerResponseModal
-                        closePopup={closePopup}
+                        closePopup={closeBulkCDModal}
                         responseList={responseList}
                         isLoading={isLoading}
                         onClickRetryBuild={onClickTriggerBulkCD}

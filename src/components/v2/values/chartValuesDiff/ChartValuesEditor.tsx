@@ -2,7 +2,7 @@ import moment from 'moment'
 import React, { useEffect, useState } from 'react'
 import { Moment12HourFormat } from '../../../../config'
 import { getChartValues } from '../../../charts/charts.service'
-import { DetailsProgressing, showError } from '../../../common'
+import { showError, DetailsProgressing } from '@devtron-labs/devtron-fe-common-lib'
 import { Option } from '../../common/ReactSelect.utils'
 import { getDeploymentManifestDetails } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import {

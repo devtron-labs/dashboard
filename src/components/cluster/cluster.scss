@@ -2,6 +2,7 @@
     display: grid;
     grid-template-columns: auto 1fr;
 }
+
 .cluster-modal-number {
     border-radius: 50%;
     z-index: 2;
@@ -9,7 +10,7 @@
 
 .cluster-modal-container {
     width: 440px;
-    height: 120px;
+    height: 100px;
 }
 
 .cluster-inner-container {
@@ -17,7 +18,7 @@
 }
 
 .cluster-modal-wrapper:last-child {
-    .cluster-inner-container{
+    .cluster-inner-container {
         border-left: none;
         padding-bottom: 0;
     }
@@ -30,4 +31,17 @@
 
 .cluster-modal-shadow {
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.cluster-env-list_table {
+    display: grid;
+    column-gap: 12px;
+    grid-template-columns: 20px 170px 1fr 1fr 52px
+}
+
+.override-button.cta.delete {
+    &.cluster-delete-icon {
+        margin-left: 20px;
+        margin-right: auto;
+    }
 }

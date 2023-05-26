@@ -1,14 +1,4 @@
-export function sortCallback(key: string, a: any, b: any, isCaseSensitive?: boolean) {
-    let x = a[key];
-    let y = b[key];
-    if (isCaseSensitive) {
-        x = x.toLowerCase();
-        y = y.toLowerCase();
-    }
-    if (x < y) { return -1; }
-    if (x > y) { return 1; }
-    return 0;
-}
+import { sortCallback } from "@devtron-labs/devtron-fe-common-lib";
 
 export function subtractArray(a: any[], b: any[], key: string): any[] {
     if (!(a && a.length && a.length > 0)) return [];

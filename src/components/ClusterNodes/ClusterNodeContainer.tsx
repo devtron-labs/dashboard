@@ -6,7 +6,7 @@ import NodeDetails from './NodeDetails'
 import NodeList from './NodeList'
 import { getHostURLConfiguration } from '../../services/service'
 import { getUserRole } from '../userGroups/userGroup.service'
-import { showError } from '../common'
+import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { clusterNamespaceList } from './clusterNodes.service'
 import { ClusterImageList } from './types'
 

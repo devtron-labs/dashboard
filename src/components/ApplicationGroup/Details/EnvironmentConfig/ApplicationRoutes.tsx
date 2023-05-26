@@ -26,6 +26,7 @@ export default function ApplicationRoute({ envListData }: ApplicationRouteType) 
     return (
         <div className="flex column left environment-route-wrapper top">
             <div
+                data-testid={`app-group-dropdown-${envListData.name}`}
                 className={`env-compose__nav-item flex cursor ${collapsed ? 'fw-4' : 'fw-6 no-hover'}`}
                 onClick={handleNavItemClick}
             >
@@ -37,13 +38,25 @@ export default function ApplicationRoute({ envListData }: ApplicationRouteType) 
             </div>
             {!collapsed && (
                 <div className="environment-routes pl-8 w-100">
-                    <NavLink className="env-compose__nav-item cursor" to={`${basePath}/deployment-template`}>
+                    <NavLink
+                        data-testid={`application-group-deployment-template-${envListData.name}`}
+                        className="env-compose__nav-item cursor"
+                        to={`${basePath}/deployment-template`}
+                    >
                         Deployment template
                     </NavLink>
-                    <NavLink className="env-compose__nav-item cursor" to={`${basePath}/configmap`}>
+                    <NavLink
+                        data-testid={`application-group-config-map-${envListData.name}`}
+                        className="env-compose__nav-item cursor"
+                        to={`${basePath}/configmap`}
+                    >
                         ConfigMaps
                     </NavLink>
-                    <NavLink className="env-compose__nav-item cursor" to={`${basePath}/secrets`}>
+                    <NavLink
+                        data-testid={`application-group-secret-${envListData.name}`}
+                        className="env-compose__nav-item cursor"
+                        to={`${basePath}/secrets`}
+                    >
                         Secrets
                     </NavLink>
                 </div>

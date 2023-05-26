@@ -3,20 +3,18 @@ import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-rou
 import { URLS } from '../../../config'
 import {
     ErrorScreenManager,
-    Filter,
-    FilterOption,
     Progressing,
     showError,
     stopPropagation,
-    useAsync,
-} from '../../common'
+    ServerErrors,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { Filter, FilterOption, useAsync } from '../../common'
 import HeaderWithCreateButton from '../../common/header/HeaderWithCreateButton/HeaderWithCreateButton'
 import { JobListViewType, JobsFilterTypeText, JobsStatusConstants } from '../Constants'
 import JobListContainer from './JobListContainer'
 import * as queryString from 'query-string'
 import { OrderBy } from '../../app/list/types'
 import { onRequestUrlChange, populateQueryString } from '../Utils'
-import { ServerErrors } from '../../../modals/commonTypes'
 import { AddNewApp } from '../../app/create/CreateApp'
 import { getAppListDataToExport, getJobsInitData } from '../Service'
 import { ReactComponent as Search } from '../../../assets/icons/ic-search.svg'
@@ -25,7 +23,7 @@ import { getUserRole } from '../../userGroups/userGroup.service'
 import ExportToCsv from '../../common/ExportToCsv/ExportToCsv'
 import { mainContext } from '../../common/navigation/NavigationRoutes'
 import { FILE_NAMES } from '../../common/ExportToCsv/constants'
-import '../../app/list/list.css'
+import '../../app/list/list.scss'
 
 export default function JobsList() {
     const { path } = useRouteMatch()
@@ -206,6 +204,7 @@ export default function JobsList() {
                     <div className="search">
                         <Search className="search__icon icon-dim-18" />
                         <input
+                            data-testid="Search-by-job-name"
                             type="text"
                             name="app_search_input"
                             autoComplete="off"
@@ -233,6 +232,7 @@ export default function JobsList() {
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
                         isFirstLetterCapitalize={true}
+                        dataTestId="job-status-filter"
                     />
                     <span className="filter-divider" />
                     <Filter
@@ -245,6 +245,7 @@ export default function JobsList() {
                         type={JobsFilterTypeText.PROJECT}
                         applyFilter={applyFilter}
                         onShowHideFilterContent={onShowHideFilterContent}
+                        dataTestId="job-projects-filter"
                     />
                     {showExportCsvButton && (
                         <>
@@ -322,7 +323,7 @@ export default function JobsList() {
             )}
             {dataStateType === JobListViewType.LIST && (
                 <>
-                    <HeaderWithCreateButton headerName="Jobs" />
+                    <HeaderWithCreateButton headerName="Jobs" isSuperAdmin={true} />
                     {renderCreateJobRouter()}
                     <JobListContainer
                         payloadParsedFromUrl={parsedPayloadOnUrlChange}

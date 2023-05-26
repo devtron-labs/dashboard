@@ -8,7 +8,7 @@ import { ReactComponent as EditTaintsIcon } from '../../../assets/icons/ic-spray
 import { ReactComponent as EditFileIcon } from '../../../assets/icons/ic-edit-lines.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
-import { PopupMenu, toastAccessDenied } from '../../common'
+import { PopupMenu, toastAccessDenied } from '@devtron-labs/devtron-fe-common-lib'
 import { NodeActionsMenuProps } from '../types'
 import CordonNodeModal from './CordonNodeModal'
 import DrainNodeModal from './DrainNodeModal'

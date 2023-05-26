@@ -5,13 +5,19 @@ import { TriggerExternalCINode } from './nodes/TriggerExternalCINode'
 import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
-import { Checkbox, CHECKBOX_VALUE, getCIPipelineURL, RectangularEdge as Edge } from '../../../../common'
-import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType } from '../types'
+import { getCIPipelineURL, importComponentFromFELibrary, RectangularEdge as Edge } from '../../../../common'
+import { WorkflowProps, NodeAttr, PipelineType, WorkflowNodeType, TriggerViewContextType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
+import { Checkbox, CHECKBOX_VALUE, DeploymentNodeType, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { TriggerViewContext } from '../config'
+
+const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 
 export class Workflow extends Component<WorkflowProps> {
+    static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
+
     goToWorkFlowEditor = (node: NodeAttr) => {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
             const ciPipelineURL = getCIPipelineURL(
@@ -19,7 +25,7 @@ export class Workflow extends Component<WorkflowProps> {
                 this.props.id,
                 true,
                 node.downstreams[0].split('-')[1],
-                this.props.isJobView
+                this.props.isJobView,
             )
             if (this.props.fromAppGrouping) {
                 window.open(
@@ -165,6 +171,7 @@ export class Workflow extends Component<WorkflowProps> {
                     branch={node.branch}
                     fromAppGrouping={this.props.fromAppGrouping}
                     isJobView={this.props.isJobView}
+                    index={this.props.index}
                 />
             )
         }
@@ -184,6 +191,7 @@ export class Workflow extends Component<WorkflowProps> {
                 id={node.id}
                 title={node.title}
                 environmentName={node.environmentName}
+                description={node.description}
                 environmentId={node.environmentId}
                 triggerType={node.triggerType}
                 colourCode={node.colourCode}
@@ -197,6 +205,7 @@ export class Workflow extends Component<WorkflowProps> {
                 parentPipelineType={node.parentPipelineType}
                 parentEnvironmentName={node.parentEnvironmentName}
                 fromAppGrouping={this.props.fromAppGrouping}
+                index={this.props.index}
             />
         )
     }
@@ -208,6 +217,7 @@ export class Workflow extends Component<WorkflowProps> {
                 x={node.x}
                 y={node.y}
                 environmentId={node.environmentId}
+                description={node.description}
                 type={node.type}
                 stageIndex={node.stageIndex}
                 status={node.status}
@@ -223,6 +233,7 @@ export class Workflow extends Component<WorkflowProps> {
                 location={this.props.location}
                 match={this.props.match}
                 fromAppGrouping={this.props.fromAppGrouping}
+                index={this.props.index}
             />
         )
     }
@@ -240,16 +251,33 @@ export class Workflow extends Component<WorkflowProps> {
         }, [])
     }
 
+    onClickNodeEdge = (nodeId: number) => {
+        this.context.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
+    }
+
     renderEdgeList() {
-        return this.getEdges().map((edgeNode) => {
+        const edges = this.getEdges()
+        return edges.map((edgeNode) => {
+            if (ApprovalNodeEdge) {
+                return (
+                    <ApprovalNodeEdge
+                        key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
+                        startNode={edgeNode.startNode}
+                        endNode={edgeNode.endNode}
+                        onClickEdge={() => this.onClickNodeEdge(edgeNode.endNode.id)}
+                        edges={edges}
+                    />
+                )
+            }
+
             return (
                 <Edge
                     key={`trigger-edge-${edgeNode.startNode.id}-${edgeNode.endNode.id}(${edgeNode.endNode.type})`}
                     startNode={edgeNode.startNode}
                     endNode={edgeNode.endNode}
-                    onClickEdge={() => {}}
-                    deleteEdge={() => {}}
-                    onMouseOverEdge={() => {}}
+                    onClickEdge={noop}
+                    deleteEdge={noop}
+                    onMouseOverEdge={noop}
                 />
             )
         })
@@ -275,11 +303,14 @@ export class Workflow extends Component<WorkflowProps> {
                             isChecked={this.props.isSelected}
                             value={CHECKBOX_VALUE.CHECKED}
                             onChange={this.handleWorkflowSelection}
+                            dataTestId={`app-group-checkbox-${this.props.name}`}
                         >
                             {this.props.name}
                         </Checkbox>
                     ) : (
-                        <span className="workflow__name">{this.props.name}</span>
+                        <span data-testid="workflow-heading" className="workflow__name">
+                            {this.props.name}
+                        </span>
                     )}
                 </div>
                 {isExternalCiWorkflow && <DeprecatedPipelineWarning />}

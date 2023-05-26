@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Switch, Route, Redirect, NavLink, RouteComponentProps } from 'react-router-dom'
 import { SecurityPoliciesTab } from './SecurityPoliciesTab'
 import { SecurityScansTab } from './SecurityScansTab'
-import './security.css'
+import './security.scss'
 import { DOCUMENTATION, SERVER_MODE, SERVER_MODE_TYPE } from '../../config'
 import EAEmptyState, { EAEmptyStateType } from '../common/eaEmptyState/EAEmptyState'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
@@ -35,7 +35,12 @@ export class Security extends Component<SecurityProps> {
                         </NavLink>
                     </li>
                     <li className="tab-list__tab">
-                        <NavLink activeClassName="active" to={`${path}/policies`} className="tab-list__tab-link">
+                        <NavLink
+                            activeClassName="active"
+                            to={`${path}/policies`}
+                            className="tab-list__tab-link"
+                            data-testid="security-policy"
+                        >
                             Security Policies
                         </NavLink>
                     </li>

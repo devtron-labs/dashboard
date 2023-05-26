@@ -14,7 +14,6 @@ import { ReactComponent as SecurityIcon } from '../../../assets/icons/ic-nav-sec
 import { ReactComponent as BulkEditIcon } from '../../../assets/icons/ic-nav-code.svg'
 import { ReactComponent as GlobalConfigIcon } from '../../../assets/icons/ic-nav-gear.svg'
 import { ReactComponent as StackManagerIcon } from '../../../assets/icons/ic-nav-stack.svg'
-import { getLoginInfo } from '../index'
 import NavSprite from '../../../assets/icons/navigation-sprite.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
 import { Command, CommandErrorBoundary } from '../../command'
@@ -26,10 +25,12 @@ import { ReactComponent as CubeIcon } from '../../../assets/icons/ic-cube.svg'
 import { ReactComponent as JobsIcon } from '../../../assets/icons/ic-k8s-job.svg'
 import { ReactComponent as EnvIcon } from '../../../assets/icons/ic-app-group.svg'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
+import { getLoginInfo } from '@devtron-labs/devtron-fe-common-lib'
 
 const NavigationList = [
     {
         title: 'Applications',
+        dataTestId: 'click-on-application',
         type: 'link',
         iconClass: 'nav-short-apps',
         icon: ApplicationsIcon,
@@ -38,6 +39,7 @@ const NavigationList = [
     },
     {
         title: 'Jobs',
+        dataTestId: 'click-on-job',
         type: 'link',
         iconClass: 'nav-short-jobs',
         icon: JobsIcon,
@@ -47,6 +49,7 @@ const NavigationList = [
     },
     {
         title: 'Application Groups',
+        dataTestId: 'click-on-application-groups',
         type: 'link',
         iconClass: 'nav-short-env',
         icon: EnvIcon,
@@ -57,6 +60,7 @@ const NavigationList = [
     },
     {
         title: 'Deployment Groups',
+        dataTestId: 'click-on-deployment-groups',
         type: 'link',
         iconClass: 'nav-short-bulk-actions',
         icon: DeploymentGroupIcon,
@@ -66,6 +70,7 @@ const NavigationList = [
     },
     {
         title: 'Resource Browser',
+        dataTestId: 'click-on-resource-browser',
         type: 'link',
         iconClass: 'nav-short-resource-browser',
         icon: CubeIcon,
@@ -76,6 +81,7 @@ const NavigationList = [
     },
     {
         title: 'Clusters',
+        dataTestId: 'click-on-cluster',
         type: 'link',
         href: URLS.CLUSTER_LIST,
         iconClass: 'nav-short-clusters',
@@ -85,6 +91,7 @@ const NavigationList = [
     },
     {
         title: 'Chart Store',
+        dataTestId: 'click-on-chart-store',
         type: 'link',
         iconClass: 'nav-short-helm',
         icon: ChartStoreIcon,
@@ -93,6 +100,7 @@ const NavigationList = [
     },
     {
         title: 'Security',
+        dataTestId: 'click-on-security',
         type: 'link',
         href: URLS.SECURITY,
         iconClass: 'nav-security',
@@ -101,6 +109,7 @@ const NavigationList = [
     },
     {
         title: 'Bulk Edit',
+        dataTestId: 'click-on-bulk-edit',
         type: 'link',
         href: URLS.BULK_EDITS,
         iconClass: 'nav-bulk-update',
@@ -109,6 +118,7 @@ const NavigationList = [
     },
     {
         title: 'Global Configurations',
+        dataTestId: 'click-on-global-configuration',
         type: 'link',
         href: URLS.GLOBAL_CONFIG,
         iconClass: 'nav-short-global',
@@ -120,6 +130,7 @@ const NavigationList = [
 
 const NavigationStack = {
     title: 'Devtron Stack Manager',
+    dataTestId: 'click-on-stack-manager',
     type: 'link',
     iconClass: 'nav-short-stack',
     icon: StackManagerIcon,
@@ -268,7 +279,7 @@ export default class Navigation extends Component<
             >
                 <div className="short-nav__item-selected" />
                 <div className="short-nav--flex">
-                    <div className={`svg-container flex ${item.iconClass}`}>
+                    <div className={`svg-container flex ${item.iconClass}`} data-testid={item?.dataTestId}>
                         <item.icon className="icon-dim-20" />
                     </div>
                     <div className="expandable-active-nav">
@@ -277,6 +288,22 @@ export default class Navigation extends Component<
                 </div>
             </NavLink>
         )
+    }
+
+    canShowNavOption = (item) => {
+        const allowedUser = !item.markOnlyForSuperAdmin || this.props.isSuperAdmin
+        if (window._env_.K8S_CLIENT) {
+            return item.isAvailableInDesktop
+        } else if (
+            allowedUser &&
+            (!item.forceHideEnvKey || (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey]))
+        ) {
+            return (
+                (this.props.serverMode === SERVER_MODE.FULL && !item.moduleName) ||
+                (this.props.serverMode === SERVER_MODE.EA_ONLY && item.isAvailableInEA) ||
+                this.props.installedModuleMap.current?.[item.moduleName]
+            )
+        }
     }
 
     render() {
@@ -294,7 +321,11 @@ export default class Navigation extends Component<
                             }}
                         >
                             <div className="short-nav--flex">
-                                <svg className="devtron-logo" viewBox="0 0 40 40">
+                                <svg
+                                    className="devtron-logo"
+                                    data-testid="click-on-devtron-app-logo"
+                                    viewBox="0 0 40 40"
+                                >
                                     <use href={`${NavSprite}#nav-short-devtron-logo`}></use>
                                 </svg>
                                 <div className="pl-12 pt-10 pt-0">
@@ -303,18 +334,7 @@ export default class Navigation extends Component<
                             </div>
                         </NavLink>
                         {NavigationList.map((item) => {
-                            if (
-                                (!window._env_.K8S_CLIENT &&
-                                    ((item.markOnlyForSuperAdmin && this.props.isSuperAdmin) ||
-                                        (!item.markOnlyForSuperAdmin &&
-                                            (!item.forceHideEnvKey ||
-                                                (item.forceHideEnvKey && !window?._env_?.[item.forceHideEnvKey])) &&
-                                            ((this.props.serverMode !== SERVER_MODE.EA_ONLY && !item.moduleName) ||
-                                                (this.props.serverMode === SERVER_MODE.EA_ONLY &&
-                                                    item.isAvailableInEA) ||
-                                                this.props.installedModuleMap.current?.[item.moduleName])))) ||
-                                item.isAvailableInDesktop
-                            ) {
+                            if (this.canShowNavOption(item)) {
                                 if (item.type === 'button') {
                                     return this.renderNavButton(item)
                                 } else {

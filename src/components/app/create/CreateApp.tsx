@@ -1,9 +1,23 @@
 import React, { Component } from 'react'
-import { Progressing, showError, sortObjectArrayAlphabetically, multiSelectStyles, Drawer } from '../../common'
+import { sortObjectArrayAlphabetically, importComponentFromFELibrary } from '../../common'
+import {
+    ServerErrors,
+    showError,
+    Progressing,
+    Drawer,
+    TagType,
+    TagLabelSelect,
+    getTeamListMin,
+    DEFAULT_TAG_DATA,
+    multiSelectStyles,
+    Reload,
+    RadioGroup,
+    RadioGroupItem,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { AddNewAppProps, AddNewAppState } from '../types'
 import { ViewType, getAppComposeURL, APP_COMPOSE_STAGE, AppCreationType } from '../../../config'
 import { ValidationRules } from './validationRules'
-import { getHostURLConfiguration, getTeamListMin } from '../../../services/service'
+import { getHostURLConfiguration } from '../../../services/service'
 import { createApp } from './service'
 import { toast } from 'react-toastify'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
@@ -11,17 +25,12 @@ import { ReactComponent as Info } from '../../../assets/icons/ic-info-filled.svg
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import ReactSelect from 'react-select'
 import AsyncSelect from 'react-select/async'
-import { RadioGroup, RadioGroupItem } from '../../common/formFields/RadioGroup'
 import { appListOptions, noOptionsMessage } from '../../AppSelector/AppSelectorUtil'
 import { Option } from '../../v2/common/ReactSelect.utils'
 import { saveHostURLConfiguration } from '../../hostURL/hosturl.service'
-import Reload from '../../Reload/Reload'
-import TagLabelSelect from '../details/TagLabelSelect'
-import { ServerErrors } from '../../../modals/commonTypes'
-import { DEFAULT_TAG_DATA } from '../config'
 import { createJob } from '../../Jobs/Service'
 import './createApp.scss'
-
+const TagsContainer = importComponentFromFELibrary('TagLabelSelect', TagLabelSelect)
 export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     rules = new ValidationRules()
     _inputAppName: HTMLInputElement
@@ -233,7 +242,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
         this.setState({ form, isValid })
     }
 
-    setTags = (tags): void => {
+    setTags = (tags: TagType[]): void => {
         this.setState({ tags })
     }
 
@@ -256,14 +265,19 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
             }
         },
     }
-
+    
     renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">
+                <h2 className="fs-16 fw-6 lh-1-43 m-0">
                     Create {this.props.isJobView ? 'job' : 'application'}
                 </h2>
-                <button type="button" className="dc__transparent flex icon-dim-24" onClick={this.props.close}>
+                <button
+                    type="button"
+                    className="dc__transparent flex icon-dim-24"
+                    onClick={this.props.close}
+                    data-testid={`close-create-custom${this.props.isJobView ? 'job' : 'app'}-wing`}
+                >
                     <Close className="icon-dim-24" />
                 </button>
             </div>
@@ -286,6 +300,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                     <span className="form__label dc__required-field">{this.props.isJobView ? 'Job' : 'App'} Name</span>
                     <input
                         ref={(node) => (this._inputAppName = node)}
+                        data-testid={`${this.props.isJobView ? 'job' : 'app'}-name-textbox`}
                         className="form__input"
                         type="text"
                         name="app-name"
@@ -315,6 +330,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         <>
                             <span className="form__label">Description</span>
                             <textarea
+                                data-testid="description-textbox"
                                 className="form__textarea"
                                 name="job-description"
                                 value={this.state.form.description}
@@ -335,19 +351,31 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                             this.changeTemplate(event.target.value)
                         }}
                     >
-                        <RadioGroupItem value={AppCreationType.Blank}>Create from scratch</RadioGroupItem>
-                        <RadioGroupItem value={AppCreationType.Existing}>
+                        <RadioGroupItem value={AppCreationType.Blank} dataTestId="create-from-scratch-radio-button">
+                            Create from scratch
+                        </RadioGroupItem>
+                        <RadioGroupItem
+                            value={AppCreationType.Existing}
+                            dataTestId={`clone-existing-${this.props.isJobView ? 'job' : 'application'}-radio-button`}
+                        >
                             Clone existing {this.props.isJobView ? 'job' : 'application'}
                         </RadioGroupItem>
                     </RadioGroup>
                 </div>
                 {this.state.form.appCreationType === AppCreationType.Existing && (
                     <>
-                        <div className="form__row clone-apps dc__inline-block">
-                            <span className="form__label dc__required-field">
+                        <div
+                            className="form__row clone-apps dc__inline-block"
+                            data-testid={`clone-existing-${this.props.isJobView ? 'job' : 'application'}-radio-button`}
+                        >
+                            <span
+                                className="form__label dc__required-field"
+                                data-testid={`Clone-${this.props.isJobView ? 'job' : 'app'}-option`}
+                            >
                                 Select an {this.props.isJobView ? 'job' : 'app'} to clone
                             </span>
                             <AsyncSelect
+                                classNamePrefix={`${this.props.isJobView ? 'job' : 'app'}-name-for-clone`}
                                 loadOptions={this.loadAppListOptions}
                                 noOptionsMessage={noOptionsMessage}
                                 onChange={this.handleCloneAppChange}
@@ -385,6 +413,7 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                 <div className="form__row">
                     <span className="form__label dc__required-field">Project</span>
                     <ReactSelect
+                        classNamePrefix="create-app__select-project"
                         className="m-0"
                         tabIndex={4}
                         isMulti={false}
@@ -411,11 +440,12 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
                         ) : null}
                     </span>
                 </div>
-                <TagLabelSelect
+                <TagsContainer
                     isCreateApp={true}
                     labelTags={this.state.tags}
                     setLabelTags={this.setTags}
                     tabIndex={5}
+                    selectedProjectId={this.state.form.projectId}
                 />
             </div>
         )
@@ -424,7 +454,13 @@ export class AddNewApp extends Component<AddNewAppProps, AddNewAppState> {
     renderFooterSection = (): JSX.Element => {
         return (
             <div className="w-800 dc__border-top flex right pt-16 pr-20 pb-16 pl-20 dc__position-fixed dc__bottom-0">
-                <button className="cta flex h-36" onClick={this.createApp}>
+                <button
+                    className="cta flex h-36"
+                    onClick={this.createApp}
+                    data-testid={`${
+                        this.state.form.appCreationType === AppCreationType.Existing ? 'clone' : 'create'
+                    }-${this.props.isJobView ? 'job' : 'app'}-button-on-drawer`}
+                >
                     {`${this.state.form.appCreationType === AppCreationType.Existing ? 'Clone ' : 'Create '}${
                         this.props.isJobView ? 'Job' : 'App'
                     }`}

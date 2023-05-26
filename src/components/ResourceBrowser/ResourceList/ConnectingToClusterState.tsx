@@ -5,8 +5,8 @@ import CouldNotConnectImg from '../../../assets/img/app-not-deployed.png'
 import NoClusterSelectImage from '../../../assets/gif/ic-empty-select-cluster.gif'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import ResourceFilterOptions from './ResourceFilterOptions'
-import EmptyState from '../../EmptyState/EmptyState'
 import { useParams } from 'react-router-dom'
+import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function ConnectingToClusterState({
     loader,
@@ -73,7 +73,9 @@ export default function ConnectingToClusterState({
     const renderInfo = (heading: string, infoText: string) => {
         return (
             <>
-                <h2 className="fs-16 fw-6 lh-24 mt-20 mb-8 w-300">{heading}</h2>
+                <h2 className="fs-16 fw-6 lh-24 mt-20 mb-8 w-300" data-testid="cluster_info_getting_loaded">
+                    {heading}
+                </h2>
                 <p className="fs-13 fw-4 lh-20 w-300 mb-20">{infoText}</p>
             </>
         )

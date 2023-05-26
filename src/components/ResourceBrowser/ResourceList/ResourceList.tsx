@@ -2,13 +2,11 @@ import React, { useState, useEffect, useRef, useContext } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import {
     convertToOptionsList,
-    ErrorScreenManager,
     handleUTCTime,
     processK8SObjects,
-    Progressing,
-    showError,
     sortObjectArrayAlphabetically,
 } from '../../common'
+import { showError, Progressing, ErrorScreenManager, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 import PageHeader from '../../common/header/PageHeader'
 import {
     ApiResourceGroupType,
@@ -51,7 +49,6 @@ import { SelectedResourceType } from '../../v2/appDetails/appDetails.type'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import ConnectingToClusterState from './ConnectingToClusterState'
-import { ServerErrors } from '../../../modals/commonTypes'
 import { SOME_ERROR_MSG } from '../../../config/constantMessaging'
 import searchWorker from '../../../config/searchWorker'
 import WebWorker from '../../app/WebWorker'
@@ -370,24 +367,26 @@ export default function ResourceList() {
             }
         }
 
-        searchWorkerRef.current.postMessage({
-            type: 'start',
-            payload: {
-                searchText: _searchText,
-                list: _resourceList.data,
-                searchInKeys: [
-                    'name',
-                    'namespace',
-                    'status',
-                    'message',
-                    EVENT_LIST.dataKeys.involvedObject,
-                    'source',
-                    'reason',
-                    'type',
-                ],
-                origin: new URL(process.env.PUBLIC_URL, window.location.href).origin,
-            },
-        })
+        if(resourceList) {
+            searchWorkerRef.current.postMessage({
+                type: 'start',
+                payload: {
+                    searchText: _searchText,
+                    list: _resourceList.data,
+                    searchInKeys: [
+                        'name',
+                        'namespace',
+                        'status',
+                        'message',
+                        EVENT_LIST.dataKeys.involvedObject,
+                        'source',
+                        'reason',
+                        'type',
+                    ],
+                    origin: new URL(process.env.PUBLIC_URL, window.location.href).origin,
+                },
+            })
+        }
     }
 
     const getResourceListData = async (retainSearched?: boolean): Promise<void> => {
@@ -696,8 +695,15 @@ export default function ResourceList() {
                                     arrow={false}
                                     placement="top"
                                     content={K8S_RESOURCE_LIST.createResource}
-                                />
-
+                                >
+                                    <div
+                                        className="cursor cb-5 fw-6 fs-13 flexbox"
+                                        data-testid="create-resource"
+                                        onClick={showResourceModal}
+                                    >
+                                        <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
+                                    </div>
+                                </Tippy>
                                 {!node && lastDataSyncTimeString && (
                                     <div className="ml-12 flex pl-12 dc__border-left">
                                         {resourceListLoader ? (

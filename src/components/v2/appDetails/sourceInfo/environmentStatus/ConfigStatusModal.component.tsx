@@ -1,5 +1,5 @@
 import React from 'react';
-import { Drawer, VisibleModal } from '../../../../common';
+import { Drawer } from '@devtron-labs/devtron-fe-common-lib';
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import { ReactComponent as Warning } from '../../../assets/icons/ic-errorInfo.svg';
 

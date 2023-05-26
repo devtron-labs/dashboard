@@ -9,32 +9,30 @@
     }
 
     .global-configuration__navigation {
-        padding: 16px;
-        border-right: solid 1px #d6dbdf;
-        background: white;
+        padding: 16px 12px;
+        border-right: solid 1px var(--N200);
+        background: var(--N0);
         height: 100%;
         overflow: scroll;
 
         a {
             font-size: 13px;
-            line-height: 40px;
+            line-height: 36px;
             color: var(--N700);
             width: 100%;
             border-radius: 4px;
             padding: 0 8px;
-        }
-
-        a {
             text-decoration: none;
 
             &:hover {
                 text-decoration: none;
+                background: var(--N50);
             }
 
             &.active-route {
                 color: var(--B500);
                 font-weight: 600;
-                background: #f0f7ff;
+                background: var(--B100);
             }
         }
     }
@@ -57,12 +55,14 @@
         }
     }
 
-    .form__input.popup-body {
-        max-height: 250px;
-        height: min-content;
+    .form__input {
+        &.popup-body {
+            max-height: 250px;
+            height: min-content;
 
-        &:hover {
-            border: 1px solid transparent;
+            &:hover {
+                border: 1px solid transparent;
+            }
         }
     }
 
@@ -76,6 +76,9 @@
     textarea {
         border-radius: 4px;
         border: solid 1px #d6dbdf;
+        &.form__input--error {
+          border: solid 1px var(--R500);
+        }
     }
 }
 
@@ -164,16 +167,16 @@
     background: white;
     border-radius: 8px;
 
-    & > .list {
+    &>.list {
         border: unset;
         margin-bottom: unset;
-        grid-template-columns: 1fr 24px;
+        grid-template-columns: 1fr 20px;
         align-items: center;
         border-radius: 8px;
     }
 
     &.cluster-list--create {
-        & > .list {
+        &>.list {
             grid-template-columns: 24px 1fr 24px;
         }
 
@@ -229,6 +232,7 @@
 }
 
 .collapsed-list {
+
     &.collapsed-list--git,
     &.collapsed-list--docker {
         border: 1px solid #d6dbdf;
@@ -357,7 +361,7 @@
     padding: 24px;
     margin: 5% auto auto auto;
 
-    .form__title + img {
+    .form__title+img {
         margin-left: auto;
         cursor: pointer;
     }
@@ -386,7 +390,7 @@
             cursor: pointer;
         }
 
-        input:checked + span {
+        input:checked+span {
             color: var(--B500);
         }
 
@@ -421,7 +425,7 @@
 }
 
 .cluster-create-status {
-    padding: 8px 24px;
+    padding: 8px 20px;
     display: grid;
     grid-template-columns: 20px auto 64px;
     column-gap: 16px;
@@ -451,12 +455,16 @@
     color: var(--N900);
 }
 
-.cluster-create-status__status-installing path {
-    fill: var(--orange);
+.cluster-create-status__status-installing {
+    path {
+        fill: var(--orange);
+    }
 }
 
-.cluster-create-status__status-failed path {
-    fill: var(--R500);
+.cluster-create-status__status-failed {
+    path {
+        fill: var(--R500);
+    }
 }
 
 .cluster-create-status__button {
@@ -478,14 +486,14 @@
     padding: 13px 24px;
     padding-right: 0px;
     cursor: pointer;
-}
 
-.cluster-component__list-item:hover {
-    background-color: var(--N100);
-}
+    &:hover {
+        background-color: var(--N100);
 
-.cluster-component__list-item:hover .cluster-component__name {
-    color: var(--B500);
+        .cluster-component__name {
+            color: var(--B500);
+        }
+    }
 }
 
 .cluster-component__name {

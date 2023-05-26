@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Checkbox, DetailsProgressing, Progressing, showError, VisibleModal } from '../../../../common'
+import { showError, Progressing, VisibleModal, DetailsProgressing, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as ScaleDown } from '../../../../../assets/icons/ic-scale-down.svg'
@@ -131,7 +131,9 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
         return (
             <>
                 <div className="modal__heading flex left">
-                    <h1 className="cn-9 fw-6 fs-16 m-0">Scale workloads</h1>
+                    <h1 className="cn-9 fw-6 fs-16 m-0" data-testid="scale-workloads-heading-onclick">
+                        Scale workloads
+                    </h1>
                     <button
                         type="button"
                         className="dc__transparent p-0"
@@ -143,6 +145,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                         }}
                         onClick={() => onClose()}
                         disabled={scalingInProgress || fetchingLatestDetails}
+                        data-testid="scale-workload-close-button"
                     >
                         <Close className="icon-dim-24" />
                     </button>
@@ -193,6 +196,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                             }}
                             key={tab}
                             className="tab-list__tab"
+                            data-testid={`scale-workloads-tab-${index}`}
                         >
                             <div
                                 className={`tab-list__tab-link ${selectedDeploymentTabIndex == index ? 'active' : ''}`}
@@ -439,6 +443,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                 handleWorkloadUpdate(isActiveWorkloadsTab)
                             }
                         }}
+                        data-testid="scale-or-restore-workloads"
                     >
                         {scalingInProgress ? (
                             <Progressing size={24} />

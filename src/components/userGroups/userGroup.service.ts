@@ -1,7 +1,6 @@
-import { getAppListMin, getTeamListMin, getEnvironmentListMin } from '../../services/service'
-import { get, post, put, trash } from '../../services/api'
-import { APIOptions, ResponseType } from '../../services/service.types'
-import { CreateGroup, CreateUser } from './userGroups.types'
+import { getAppListMin, getEnvironmentListMin } from '../../services/service'
+import { get, post, put, trash, ResponseType, getTeamListMin, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
+import { CreateGroup, CreateUser, Custom_Roles } from './userGroups.types'
 import { Routes} from '../../config'
 
 
@@ -171,3 +170,9 @@ export function getUsersDataToExport(): Promise<UsersDataToExportResponse> {
 export function getGroupsDataToExport(): Promise<GroupsDataToExportResponse> {
     return get(Routes.ALL_GROUPS_LIST)
 }
+ export interface customRoles extends ResponseType {
+     result?: Custom_Roles[]
+ }
+ export function getCustomRoles(): Promise<customRoles> {
+     return get(Routes.CUSTOM_ROLES)
+ }

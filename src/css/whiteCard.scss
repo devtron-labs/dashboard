@@ -1,0 +1,34 @@
+.white-card {
+    border-radius: 8px;
+    padding: 16px 20px;
+    border: solid 1px #d6dbdf;
+    background-color: var(--N000);
+
+    &.white-card--no-padding {
+        padding: 0px;
+    }
+}
+
+.white-card__header {
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    color: var(--N900);
+    margin-bottom: 24px;
+}
+
+.white-card__header--form {
+    display: flex;
+    justify-content: space-between;
+}
+
+.white-card--add-new-item {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}

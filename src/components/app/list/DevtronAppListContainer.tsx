@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
-import { buildInitState, appListModal } from './appList.modal';
-import { ServerErrors } from '../../../modals/commonTypes';
+import { ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib';
+import { buildInitState, appListModal, createAppListPayload } from './appList.modal';
 import { AppListProps, AppListState, OrderBy, SortBy } from './types';
 import { URLS, ViewType } from '../../../config';
 import { AppListView } from './AppListView';
 import { getAppList } from '../service';
-import { showError } from '../../common';
 import { AppListViewType } from '../config';
 import * as queryString from 'query-string';
 import { withRouter } from 'react-router-dom';
-import './list.css';
+import './list.scss';
 
 class DevtronAppListContainer extends Component<AppListProps, AppListState>{
     abortController: AbortController;
@@ -49,7 +48,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
                 },
             });
         }).then(() => {
-          this.getAppList(this.props.payloadParsedFromUrl);
+          this.getAppList(createAppListPayload(this.props.payloadParsedFromUrl, this.props.environmentClusterList))
         }).catch((errors: ServerErrors) => {
             showError(errors);
             this.setState({ view: AppListViewType.ERROR, code: errors.code });
@@ -57,8 +56,8 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
     }
 
     componentDidUpdate(prevProps) {
-        if(prevProps.payloadParsedFromUrl !=  this.props.payloadParsedFromUrl){
-            this.getAppList(this.props.payloadParsedFromUrl);
+        if (prevProps.payloadParsedFromUrl != this.props.payloadParsedFromUrl) {
+            this.getAppList(createAppListPayload(this.props.payloadParsedFromUrl, this.props.environmentClusterList))
         }
     }
 
@@ -107,7 +106,7 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
                     _expandedRow[_app.id] = _app.environments.length > 1
                 }
             }
-    
+
             return { expandedRow: _expandedRow, isAllExpanded: !prevState.isAllExpanded }
         })
     }
@@ -138,8 +137,11 @@ class DevtronAppListContainer extends Component<AppListProps, AppListState>{
                 else view = AppListViewType.EMPTY;
             }
             let state = { ...this.state };
-            const apps = (response.result && !!response.result.appContainers) ? appListModal(response.result.appContainers) : []
-            state.code = response.code;
+            const apps =
+                response.result && !!response.result.appContainers
+                    ? appListModal(response.result.appContainers)
+                    : []
+            state.code = response.code
             state.apps = apps;
             state.isAllExpandable = apps.filter((app) => app.environments.length > 1).length > 0
             state.view = view;

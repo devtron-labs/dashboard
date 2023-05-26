@@ -6,7 +6,7 @@ import MultiChartSummary from './MultiChartSummary'
 import AdvancedConfig from './AdvancedConfig'
 import { updateChartGroupEntries, getChartGroups } from './charts.service'
 import useChartGroup from './useChartGroup'
-import { showError, Pencil, Progressing, BreadCrumb, useBreadcrumb } from '../common'
+import { showError, Progressing, BreadCrumb, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
 import CreateChartGroup from './modal/CreateChartGroup'
 import { URLS } from '../../config'
 import { toast } from 'react-toastify'
@@ -193,7 +193,7 @@ export default function ChartGroupUpdate({}) {
                     {loading ? (
                         <Progressing />
                     ) : (
-                        <div className="flex left " style={{ width: '100%' }}>
+                        <div className="flex left " data-testid="save-group-button-navbar" style={{ width: '100%' }}>
                             <SaveIcon className="mr-5" />
                             Save
                         </div>
@@ -327,6 +327,7 @@ function ChartList({ availableCharts, selectedInstances, addChart, subtractChart
                     subtractChart={subtractChart}
                     showCheckBoxOnHoverOnly={false}
                     showDescription={!isGrid}
+                    datatestid={`${idx}`}
                 />
             ))}
         </div>

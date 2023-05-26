@@ -63,9 +63,9 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                     <div className="w-90 flexbox">
                         {selectedChartValue ? (
                             <>
-                                <div className="dc__ellipsis-right">{selectedChartValue.name}</div>&nbsp;
+                                <div className="dc__ellipsis-right" data-testid="name-of-preset-chart">{selectedChartValue.name}</div>&nbsp;
                                 {!this.props.hideVersionFromLabel && selectedChartValue.chartVersion && (
-                                    <span>({selectedChartValue.chartVersion})</span>
+                                    <span data-testid="version-of-preset-chart">({selectedChartValue.chartVersion})</span>
                                 )}
                             </>
                         ) : (

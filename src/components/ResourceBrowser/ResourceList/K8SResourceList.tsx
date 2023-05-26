@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Pagination, Progressing } from '../../common'
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { Pagination } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
     K8S_EMPTY_GROUP,
@@ -143,7 +144,7 @@ export function K8SResourceList({
                                 fixedNodeNameColumn ? ' bcn-0 dc__position-sticky  sticky-column dc__border-right' : ''
                             }`}
                         >
-                            <div className="w-100 flex left">
+                            <div className="w-100 flex left" data-testid="created-resource-name">
                                 <div className="w-303 pr-4">
                                     <div className="dc__w-fit-content dc__mxw-304 pr-4">
                                         <Tippy

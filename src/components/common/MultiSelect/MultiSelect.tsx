@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react'
-import PopupMenu from '../PopupMenu/PopupMenu';
+import { PopupMenu, useEffectAfterMount } from '@devtron-labs/devtron-fe-common-lib';
 import arrowTriangle from '../../../assets/icons/appstatus/ic-sort-down.svg'
-import { useEffectAfterMount } from '../helpers/Helpers';
 
 const MultiSelectContext = React.createContext(null)
 
@@ -59,7 +58,7 @@ const MultiSelect : React.FunctionComponent<multiSelectProps> = (props) => {
     },[props.selected])
 
     const eligibleOptions = props.options.filter(option => (option.label.includes(searchString) && (props.createButtonElement || !selected.hasOwnProperty(option.value)))).map((option, idx) => <Option key={idx} {...option} />)
-    
+
     return <MultiSelectContext.Provider value={{selected, select, togglePopup, popupOpen, searchString, search, options: props.options}}>
         <PopupMenu onToggleCallback={isOpen => togglePopup(isOpen)} autoClose={props.autoClose}>
             <PopupMenu.Button rootClassName={props.rootClassName} tabIndex={props.tabIndex || 0}>
@@ -77,7 +76,7 @@ const MultiSelect : React.FunctionComponent<multiSelectProps> = (props) => {
                 {props.all && <All/>}
                 {eligibleOptions}
                 {eligibleOptions.length === 0 && <div className={`${props.rootClassName} no-option-found flex`}>No results found</div>}
-            </PopupMenu.Body>   
+            </PopupMenu.Body>
         </PopupMenu>
     </MultiSelectContext.Provider>
 }
@@ -123,7 +122,7 @@ function Option({label, value, style={}, ...rest}){
         select(tempSelected)
     }
     return(
-    <div style={{...style}} className={`multi-select-option ${active ? 'selected' : ''}`} 
+    <div style={{...style}} className={`multi-select-option ${active ? 'selected' : ''}`}
         onClick={toggleSelection}>
         <span className="fa fa-check"></span>
         {rest.icon && <img src={rest.icon}/>}

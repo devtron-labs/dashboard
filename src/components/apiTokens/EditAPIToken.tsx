@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
+import { showError, Progressing, InfoColourBar, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import RegeneratedModal from './RegenerateModal'
 import { EditDataType, EditTokenType } from './authorization.type'
@@ -11,7 +11,7 @@ import { useHistory, useRouteMatch } from 'react-router-dom'
 import { useParams } from 'react-router'
 import moment from 'moment'
 import {  MomentDateFormat } from '../../config'
-import { ButtonWithLoader, copyToClipboard, Progressing, showError } from '../common'
+import { ButtonWithLoader, copyToClipboard } from '../common'
 import { deleteGeneratedAPIToken, updateGeneratedAPIToken } from './service'
 import { toast } from 'react-toastify'
 import Tippy from '@tippyjs/react'
@@ -24,7 +24,6 @@ import {
     EntityTypes,
     OptionType,
 } from '../userGroups/userGroups.types'
-import { RadioGroup, RadioGroupItem } from '../common/formFields/RadioGroup'
 import { getUserId, saveUser } from '../userGroups/userGroup.service'
 import { mainContext } from '../common/navigation/NavigationRoutes'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
@@ -230,8 +229,8 @@ function EditAPIToken({
 
     return (
         <div className="fs-13 fw-4 api__token">
-            <div className='flex dc__content-space pt-16 pb-16 dc__gap-8'>
-                <div className='flex row ml-0'>
+            <div className="flex dc__content-space pt-16 pb-16 dc__gap-8">
+                <div className="flex row ml-0">
                     <div className="cn-9 fw-6 fs-16">
                         <span className="cb-5 cursor" onClick={redirectToTokenList}>
                             {API_COMPONENTS.TITLE}
@@ -246,10 +245,11 @@ function EditAPIToken({
                         onClick={handleDeleteButton}
                         disabled={loader}
                         isLoading={false}
+                        dataTestId="delete-token"
                         loaderColor="white"
                     >
-                    <Delete className='icon-dim-16 mr-8'/>
-                    <span>Delete</span>
+                        <Delete className="icon-dim-16 mr-8" />
+                        <span>Delete</span>
                     </ButtonWithLoader>
                 </div>
             </div>
@@ -260,12 +260,19 @@ function EditAPIToken({
                     <div>
                         <label className="form__row w-400">
                             <span className="form__label">Name</span>
-                            <input tabIndex={1} className="form__input" value={editData.name} disabled={true} />
+                            <input
+                                tabIndex={1}
+                                data-testid="api-token-name-textbox"
+                                className="form__input"
+                                value={editData.name}
+                                disabled={true}
+                            />
                         </label>
                         <label className="form__row">
                             <span className="form__label">Description</span>
                             <textarea
                                 tabIndex={1}
+                                data-testid="api-token-description-textbox"
                                 placeholder="Enter a description to remember where you have used this token"
                                 className="form__textarea"
                                 value={editData.description}
@@ -282,7 +289,7 @@ function EditAPIToken({
                         <label className="form__row">
                             <span className="form__label">Token</span>
                             <div className="flex dc__content-space top cn-9">
-                                <span className="mono fs-14 dc__word-break">
+                                <span data-testid="api-token-string" className="mono fs-14 dc__word-break">
                                     {editData.token}
                                 </span>
                                 <Tippy
@@ -324,8 +331,14 @@ function EditAPIToken({
                                 name="permission-type"
                                 onChange={handlePermissionType}
                             >
-                                {PermissionType.map(({ label, value }) => (
-                                    <RadioGroupItem value={value}>
+                                {PermissionType.map(({ label, value }, index) => (
+                                    <RadioGroupItem
+                                        key={`radio-button-${index}`}
+                                        dataTestId={`${
+                                            value === 'SPECIFIC' ? 'specific-user' : 'super-admin'
+                                        }-permission-radio-button`}
+                                        value={value}
+                                    >
                                         <span
                                             className={`dc__no-text-transform ${
                                                 adminPermission === value ? 'fw-6' : 'fw-4'

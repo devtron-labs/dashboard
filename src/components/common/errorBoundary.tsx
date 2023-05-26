@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import * as Sentry from '@sentry/browser'
 import bugFixing from '../../assets/img/bug_fixing.svg'
-import Reload from '../Reload/Reload'
+import { Reload } from '@devtron-labs/devtron-fe-common-lib'
 interface errorBoundaryState {
     eventId: any
     hasError: boolean
