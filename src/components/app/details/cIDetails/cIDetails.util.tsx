@@ -7,6 +7,7 @@ import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forwa
 import { EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib';
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging';
 
+
 export function ScanDisabledView(props) {
   const renderScanedViewButton = () => {
       return (
@@ -37,7 +38,13 @@ export function ImageNotScannedView() {
 }
 
 export function NoVulnerabilityView() {
-    return <GenericEmptyState image={novulnerability} title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND} />
+    return (
+        <GenericEmptyState
+            image={novulnerability}
+            title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND}
+            classname="dc__position-rel-imp"
+        />
+    )
 }
 
 export function CIRunningView(props) {

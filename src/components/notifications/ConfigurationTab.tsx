@@ -99,7 +99,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
 
     renderSlackConfigurations() {
         return (
-            <div key="slack-config" className="white-card white-card--configuration-tab mb-16">
+            <div key="slack-config" className="dc__position-rel white-card white-card--configuration-tab mb-16">
                 <div className="configuration-tab__header">
                     <p data-testid="slack-heading-title" className="configuration-tab__title">
                         <img src={slack} alt="slack" className="icon-dim-24 mr-10" />
@@ -204,7 +204,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
 
     renderSESConfigurations() {
         return (
-            <div key="ses-config" className="white-card white-card--configuration-tab">
+            <div key="ses-config" className="dc__position-rel white-card white-card--configuration-tab">
                 <div className="configuration-tab__header">
                     <p data-testid="ses-heading-title" className="configuration-tab__title">
                         <img alt="ses config" src={ses} className="icon-dim-24 mr-10" />
@@ -229,7 +229,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
 
     renderSMTPConfigurations() {
         return (
-            <div key="smtp-config" className="white-card white-card--configuration-tab">
+            <div key="smtp-config" className="dc__position-rel white-card white-card--configuration-tab">
                 <div className="configuration-tab__header">
                     <p data-testid="smtp-heading-title" className="configuration-tab__title flexbox">
                         <SMTP className="icon-dim-24 mr-10" />
