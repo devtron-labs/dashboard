@@ -22,7 +22,6 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps>{
         if (this.props.fromAppGrouping) {
             return
         }
-        
         this.props.history.push(this.getCDDetailsURL())
     }
 
