@@ -17,7 +17,7 @@ import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import { ConditionalWrap, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from './DeploymentStatusCard'
-import { importComponentFromFELibrary} from '../../../common/helpers/Helpers'
+import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
@@ -32,7 +32,7 @@ export function SourceInfo({
     deploymentStatusDetailsBreakdownData = null,
     loadingDetails = false,
     loadingResourceTree = false,
-    isVirtualEnvironment
+    isVirtualEnvironment,
 }: SourceInfoType) {
     const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
@@ -100,7 +100,7 @@ export function SourceInfo({
                                 : DeploymentAppTypeNameMapping.Helm
                         }`}
                     >
-                       <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
+                        <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
                     </Tippy>
                 )}
                 {appDetails?.deploymentAppDeleteRequest && (
@@ -114,7 +114,7 @@ export function SourceInfo({
                     <>
                         {!appDetails?.deploymentAppDeleteRequest && (
                             <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
-                                {(!isVirtualEnvironment && showUrlInfo) && (
+                                {!isVirtualEnvironment && showUrlInfo && (
                                     <button
                                         className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                         onClick={onClickShowUrlInfo}
@@ -134,7 +134,7 @@ export function SourceInfo({
                                         commit info
                                     </button>
                                 )}
-                                {(!isVirtualEnvironment && showHibernateModal) && (
+                                {!isVirtualEnvironment && showHibernateModal && (
                                     <ConditionalWrap
                                         condition={appDetails?.userApprovalConfig?.length > 0}
                                         wrap={conditionalScalePodsButton}
@@ -197,16 +197,16 @@ export function SourceInfo({
 
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
 
-      const renderGeneratedManifestDownloadCard = (): JSX.Element => {
+    const renderGeneratedManifestDownloadCard = (): JSX.Element => {
         const paramsId = {
             appId: +params.appId,
             envId: +params.envId,
             appName: appDetails?.appName,
         }
-        if ( AppDetailsDownloadCard) {
+        if (AppDetailsDownloadCard) {
             return <AppDetailsDownloadCard params={paramsId} />
         }
-      }
+    }
 
     return (
         <div className="flex left w-100 column source-info-container">
@@ -290,9 +290,7 @@ export function SourceInfo({
                                     </div>
                                 </div>
                             )}
-                            {
-                              isVirtualEnvironment && renderGeneratedManifestDownloadCard()
-                            }
+                            {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
                             <DeploymentStatusCard
                                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                 loadingResourceTree={loadingResourceTree}

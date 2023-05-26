@@ -73,6 +73,7 @@ import {
 
 const ManualApproval = importComponentFromFELibrary('ManualApproval')
 const VirtualEnvSelectionInfoBar = importComponentFromFELibrary('VirtualEnvSelectionInfoBar')
+const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 
 export const SwitchItemValues = {
     Sample: 'sample',
@@ -143,7 +144,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppType.Helm,
                 deploymentAppCreated: false,
                 userApprovalConfig: null,
-                isVirtualEnvironment: false
+                isVirtualEnvironment: false,
             },
             showPreStage: false,
             showDeploymentStage: true,
@@ -219,7 +220,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                             active: false,
                                             isClusterCdActive: env.isClusterCdActive,
                                             description: env.description,
-                                            isVirtualEnvironment: env.isVirtualEnvironment //Virtual environment is valid for virtual cluster on selection of environment
+                                            isVirtualEnvironment: env.isVirtualEnvironment, //Virtual environment is valid for virtual cluster on selection of environment
                                         }
                                     })
                                     sortObjectArrayAlphabetically(list, 'name')
@@ -453,7 +454,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             pipelineConfig.namespace = selection.namespace
             pipelineConfig.isVirtualEnvironment = selection.isVirtualEnvironment
             errorForm.envNameError = this.validationRules.environment(selection.id)
-            errorForm.nameSpaceError = !this.state.pipelineConfig.isVirtualEnvironment && this.validationRules.namespace(selection.namespace)
+            errorForm.nameSpaceError =
+                !this.state.pipelineConfig.isVirtualEnvironment && this.validationRules.namespace(selection.namespace)
 
             pipelineConfig.preStageConfigMapSecretNames = {
                 configMaps: [],
@@ -515,9 +517,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         this.setState({ pipelineConfig })
     }
 
-    handleTriggerTypeChange = (selectedTriggerType: string) => {
+    handleTriggerTypeChange = (event) => {
         let { pipelineConfig } = { ...this.state }
-        pipelineConfig.triggerType = selectedTriggerType
+        pipelineConfig.triggerType = event.target.value
         this.setState({ pipelineConfig })
     }
 
@@ -593,8 +595,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         let valid =
             !!pipelineConfig.environmentId &&
             errorForm.pipelineNameError.isValid &&
-           ( !!pipelineConfig.isVirtualEnvironment ||
-            !!pipelineConfig.namespace) &&
+            (!!pipelineConfig.isVirtualEnvironment || !!pipelineConfig.namespace) &&
             !!pipelineConfig.triggerType &&
             !!(pipelineConfig.deploymentAppType || window._env_.HIDE_GITOPS_OR_HELM_OPTION)
         if (!pipelineConfig.name || (!pipelineConfig.isVirtualEnvironment && !pipelineConfig.namespace)) {
@@ -622,11 +623,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     default: savedStrategy.default,
                 }
             }),
-            userApprovalConfig: this.state.requiredApprovals?.length > 0
-                ? {
-                      requiredCount: +this.state.requiredApprovals,
-                  }
-                : null,
+            userApprovalConfig:
+                this.state.requiredApprovals?.length > 0
+                    ? {
+                          requiredCount: +this.state.requiredApprovals,
+                      }
+                    : null,
         }
         let request = {
             appId: parseInt(this.props.match.params.appId),
@@ -634,8 +636,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         pipeline.preStage.config = pipeline.preStage.config.replace(/^\s+|\s+$/g, '')
         pipeline.postStage.config = pipeline.postStage.config.replace(/^\s+|\s+$/g, '')
 
-        if(this.state.pipelineConfig.isVirtualEnvironment){
-          pipeline.deploymentAppType = DeploymentAppTypes.MANIFEST_DOWNLOAD
+        if (this.state.pipelineConfig.isVirtualEnvironment) {
+            pipeline.deploymentAppType = DeploymentAppTypes.MANIFEST_DOWNLOAD
         }
 
         let msg
@@ -810,36 +812,50 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         )
     }
 
+    renderStrategyOptions = () => {
+        return (
+            <Select
+                rootClassName="deployment-strategy-dropdown mb-16 br-0 bw-0 w-150"
+                onChange={(e) => this.selectStrategy(e.target.value)}
+            >
+                <Select.Button rootClassName="">
+                    <span className="cb-5">
+                        <Add className="icon-dim-24 mr-8 fcb-5 dc__vertical-align-middle" />
+                        Add Strategy
+                    </span>
+                </Select.Button>
+                {this.state.strategies.map((strategy) => {
+                    return (
+                        <Select.Option
+                            rootClassName="select-option--deployment-strategy"
+                            key={strategy.deploymentTemplate}
+                            value={strategy.deploymentTemplate}
+                        >
+                            {strategy.deploymentTemplate}
+                        </Select.Option>
+                    )
+                })}
+            </Select>
+        )
+    }
+
     renderDeploymentStrategy() {
         if (this.noStrategyAvailable) {
             return null
         }
+
         return (
             <div className="form__row">
-                <p className="form__label form__label--caps">Deployment Strategy</p>
+                <p className="form__label form__label--caps">
+                    <div className="flex  dc__content-space">
+                        <div>Deployment Strategy </div>
+                        {this.renderStrategyOptions()}
+                    </div>
+                </p>
                 <p className="deployment-strategy">
                     Add one or more deployment strategies. You can choose from selected strategy while deploying
                     manually to this environment.
                 </p>
-                <Select rootClassName="mb-16" onChange={(e) => this.selectStrategy(e.target.value)}>
-                    <Select.Button rootClassName="select-button--deployment-strategy">
-                        <span>
-                            <Add className="icon-dim-24 mr-16 fcb-5 dc__vertical-align-middle" />
-                            Add Deployment Strategy
-                        </span>
-                    </Select.Button>
-                    {this.state.strategies.map((strategy) => {
-                        return (
-                            <Select.Option
-                                rootClassName="select-option--deployment-strategy"
-                                key={strategy.deploymentTemplate}
-                                value={strategy.deploymentTemplate}
-                            >
-                                {strategy.deploymentTemplate}
-                            </Select.Option>
-                        )
-                    })}
-                </Select>
                 {this.state.pipelineConfig.strategies.map((strategy) => {
                     return (
                         <div key={strategy.deploymentTemplate} className="deployment-strategy__info">
@@ -1055,7 +1071,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     renderDeploymentAppType() {
         return (
-            <div className="form__row">
+            <>
                 <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
                 <RadioGroup
                     value={
@@ -1075,7 +1091,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         GitOps
                     </RadioGroupItem>
                 </RadioGroup>
-            </div>
+            </>
         )
     }
 
@@ -1196,6 +1212,12 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             }
         }
 
+        const renderVirtualEnvironmentInfo = () => {
+            if (this.state.pipelineConfig.isVirtualEnvironment && VirtualEnvSelectionInfoText) {
+                return <VirtualEnvSelectionInfoText />
+            }
+        }
+
         return (
             <>
                 <div className="form__row form__row--flex">
@@ -1231,6 +1253,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 {this.state.errorForm.envNameError.message}
                             </span>
                         ) : null}
+                        {renderVirtualEnvironmentInfo()}
                     </div>
                     <label className="flex-1 ml-8">
                         <span className="form__label">Namespace</span>
@@ -1271,35 +1294,22 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     renderTriggerType() {
         return (
             <>
-                <p className="fs-14 fw-6 cn-9 mb-8">When do you want to deploy</p>
-                <div className="flex mb-20">
-                    <div
-                        className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 mr-8 bw-1${
-                            this.state.pipelineConfig.triggerType === TriggerType.Auto ? ' bcb-1 eb-2' : ' bcn-0 en-2'
-                        }`}
-                        data-testid="cd-auto-mode-button"
-                        onClick={() => this.handleTriggerTypeChange(TriggerType.Auto)}
-                    >
-                        <BotIcon className="icon-dim-20 mr-12" />
-                        <div>
-                            <div>Automatic</div>
-                            <div>Deploy everytime a new image is received</div>
-                        </div>
-                    </div>
-                    <div
-                        className={`flex dc__content-start pointer w-50 pt-8 pr-16 pb-8 pl-16 br-4 ml-8 bw-1${
-                            this.state.pipelineConfig.triggerType === TriggerType.Manual ? ' bcb-1 eb-2' : ' bcn-0 en-2'
-                        }`}
-                        data-testid="cd-manual-mode-button"
-                        onClick={() => this.handleTriggerTypeChange(TriggerType.Manual)}
-                    >
-                        <PersonIcon className="icon-dim-20 mr-12" />
-                        <div>
-                            <div>Manual</div>
-                            <div>Select and deploy from available images</div>
-                        </div>
-                    </div>
-                </div>
+                <label className="form__label form__label--sentence dc__bold">When do you want to deploy</label>
+                <RadioGroup
+                    value={
+                        this.state.pipelineConfig.triggerType ? this.state.pipelineConfig.triggerType : TriggerType.Auto
+                    }
+                    name="trigger-type"
+                    onChange={this.handleTriggerTypeChange}
+                    className="chartrepo-type__radio-group"
+                >
+                    <RadioGroupItem data-testid="cd-auto-mode-button" value={TriggerType.Auto}>
+                        Automatic
+                    </RadioGroupItem>
+                    <RadioGroupItem data-testid="cd-manual-mode-button" value={TriggerType.Manual}>
+                        Manual
+                    </RadioGroupItem>
+                </RadioGroup>
             </>
         )
     }
@@ -1408,7 +1418,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 {this.state.showDeploymentStage && (
                     <div className="ml-60">
                         {this.renderEnvNamespaceAndTriggerType()}
-                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !this.state.pipelineConfig.isVirtualEnvironment && this.renderDeploymentAppType()}
+                        {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
+                            !this.state.pipelineConfig.isVirtualEnvironment &&
+                            this.renderDeploymentAppType()}
                         {this.renderDeploymentStrategy()}
                     </div>
                 )}
@@ -1468,7 +1480,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         <div className="divider mt-12 mb-12" />
                     </>
                 )}
-                { this.renderDeploymentStage()}
+                {this.renderDeploymentStage()}
                 <div className="divider mt-12 mb-12" />
                 {this.renderPostStage()}
                 <div className="divider mt-12 mb-12" />
@@ -1490,7 +1502,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             <>
                 <p className="fs-14 fw-6 cn-9 mb-12">Deploy to environment</p>
                 {this.renderEnvNamespaceAndTriggerType()}
-                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && !this.state.pipelineConfig.isVirtualEnvironment && this.renderDeploymentAppType()}
+                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
+                    !this.state.pipelineConfig.isVirtualEnvironment &&
+                    this.renderDeploymentAppType()}
                 {!this.noStrategyAvailable && (
                     <>
                         <p className="fs-14 fw-6 cn-9 mb-12">Deployment Strategy</p>

@@ -12,7 +12,7 @@ import {
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
-import { Select } from '../../../common'
+import { importComponentFromFELibrary, Select } from '../../../common'
 import { Progressing, DeleteDialog, EmptyState, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
@@ -40,8 +40,9 @@ import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../co
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
-import { ReactComponent as Info } from '../../../../assets/icons/appstatus/info-filled.svg'
 import { DeploymentAppTypes } from '../../../../config/constants'
+
+const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -57,6 +58,12 @@ export const ChartEnvironmentSelector = ({
 }: ChartEnvironmentSelectorType): JSX.Element => {
     const singleOption = (props) => {
         return <EnvFormatOptions {...props} environmentfieldName="label" />
+    }
+
+    const renderVirtualEnvironmentInfoText = (): JSX.Element => {
+        if (isVirtualEnvironmentOnSelector && VirtualEnvSelectionInfoText) {
+            return <VirtualEnvSelectionInfoText />
+        }
     }
 
     const handleFormatHighlightedText = (opt, { inputValue }) => {
@@ -101,7 +108,7 @@ export const ChartEnvironmentSelector = ({
                 formatOptionLabel={handleFormatHighlightedText}
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
-            {isVirtualEnvironmentOnSelector && renderVirtualEnvironmentInfoText()}
+            {renderVirtualEnvironmentInfoText()}
         </div>
     )
 }
@@ -328,14 +335,6 @@ const renderValidationErrorLabel = (message?: string): JSX.Element => {
                 <Error className="icon-dim-16" />
             </div>
             <div className="ml-4 cr-5">{message || REQUIRED_FIELD_MSG}</div>
-        </div>
-    )
-}
-
-const renderVirtualEnvironmentInfoText = (): JSX.Element => {
-    return (
-        <div className="ml-4 cn-7 flex left">
-            <Info className="mr-8 icon-dim-16"/> This is a virtual environment
         </div>
     )
 }

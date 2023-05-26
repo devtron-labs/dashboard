@@ -1311,7 +1311,7 @@ function ChartValuesView({
         return (
           isVirtualEnvironmentOnSelector &&
             GeneratedHelmDownload && (
-                <div>
+                <div className='cursor-not-allowed'>
                     <GeneratedHelmDownload />
                     <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
                 </div>
@@ -1412,7 +1412,7 @@ function ChartValuesView({
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                             !isExternalApp &&
                             !isCreateValueView &&
-                            !appDetails?.isVirtualEnvironment && (
+                            !isVirtualEnvironmentOnSelector && (
                                 <DeploymentAppSelector
                                     commonState={commonState}
                                     isUpdate={isUpdate}

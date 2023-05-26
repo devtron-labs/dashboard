@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { DialogForm, DialogFormSubmit, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { ProjectType, ChartGroupEntry } from '../charts.types';
+import { ProjectType, ChartGroupEntry, EnvironmentType } from '../charts.types';
 import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg';
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg';
 import { styles, smallMenuList, menuList, DropdownIndicator } from '../charts.util';
@@ -12,7 +12,7 @@ import { getEnvironmentListMin } from '../../../services/service';
 interface ChartGroupBasicDeployProps {
     projects: ProjectType[];
     chartGroupEntries: ChartGroupEntry[];
-    environments: { id: number, environment_name: string }[];
+    environments: { id: number, environment_name: string, isVirtualEnvironment?: boolean }[];
     selectedProjectId: number;
     loading: boolean;
     deployChartGroup: () => void;
@@ -22,7 +22,7 @@ interface ChartGroupBasicDeployProps {
     closeDeployModal: () => void;
     redirectToAdvancedOptions: () => void;
     validateData: () => any;
-    setEnvironments: (envList) => void
+    setEnvironments: (envList: EnvironmentType) => void
 }
 
 interface ChartGroupBasicDeployState {
@@ -89,7 +89,14 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
     }
 
     render() {
-        let environments: { label: string, value: string }[] = this.props.environments.map(p => { return { value: String(p.id), label: p.environment_name } });
+        let environments: { label: string; value: string; isVirtualEnvironment?: boolean }[] =
+            this.props.environments.map((p) => {
+                return {
+                   value: String(p.id),
+                    label: p.environment_name,
+                    isVirtualEnvironment: p.isVirtualEnvironment }
+            })
+
         let tempE = this.props.environments.find(env => env.id === this.state.selectedEnvironmentId);
         let selectedEnvironment: { label: string, value: string } = tempE ? {
             label: tempE.environment_name,
@@ -151,7 +158,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                             ...styles,
                         }}
                         onChange={(selected) => { this.handleEnvironmentChange(parseInt((selected as any).value)) }}
-                        options={environments}
+                        options={environments.filter((item) => !item.isVirtualEnvironment)}
                     />
                     <span className="form__error">
                         {!this.state.selectedEnvironmentId && this.state.showError ? <><Error className="form__icon form__icon--error" />
