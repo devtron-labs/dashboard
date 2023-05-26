@@ -44,6 +44,7 @@ function NodeDetailComponent({
     const [fetchingResource, setFetchingResource] = useState(
         isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
     )
+    const [selectedContainer, setSelectedContainer] = useState<Map<string, string>>(new Map())
     const { path, url } = useRouteMatch()
     const toggleManagedFields = (managedFieldsExist: boolean) => {
         if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
@@ -175,7 +176,7 @@ function NodeDetailComponent({
         )
     })
     const isDeleted =
-        (currentTab && currentTab[0] ? currentTab[0].isDeleted : false) ||
+        (currentTab?.[0] ? currentTab[0].isDeleted : false) ||
         (isResourceBrowserView && isResourceDeleted) ||
         (!isResourceBrowserView &&
             (appDetails.resourceTree.nodes?.findIndex(
@@ -189,7 +190,7 @@ function NodeDetailComponent({
     //     selectedResource.containers = resourceContainers
     // }
 
-    const handleChanges = ():void => {
+    const handleChanges = (): void => {
         setHideManagedFields(!hideManagedFields)
     }
 

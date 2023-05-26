@@ -186,26 +186,33 @@ export const ChartVersionSelector = ({
 }: ChartVersionSelectorType) => {
     return (
         <div className="w-100 mb-12">
-            <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-version-heading">Chart Version</span>
+            <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-version-heading">
+                Chart Version
+            </span>
             <Select
                 tabIndex={4}
                 rootClassName="select-button--default chart-values-selector"
-                value={selectedVersionUpdatePage?.id || selectedVersion}
                 onChange={(event) => {
                     handleVersionSelection(event.target.value, {
                         id: event.target.value,
                         version: event.target.innerText,
                     })
                 }}
-                dataTestId='select-chart-version'
+                value={selectedVersionUpdatePage?.id || selectedVersion}
+                dataTestId="select-chart-version"
             >
-                <Select.Button dataTestIdDropdown="chart-version-of-preset">{selectedVersionUpdatePage?.version || chartVersionObj?.version}</Select.Button>
+                <Select.Button dataTestIdDropdown="chart-version-of-preset">
+                    {selectedVersionUpdatePage?.version || chartVersionObj?.version}
+                </Select.Button>
                 {chartVersionsData.map((_chartVersion, index) => (
-                    <Select.Option key={_chartVersion.id} value={_chartVersion.id} dataTestIdMenuList={`chart-select-${index}`}>
+                    <Select.Option
+                        key={_chartVersion.id}
+                        value={_chartVersion.id}
+                        dataTestIdMenuList={`chart-select-${index}`}
+                    >
                         {_chartVersion.version}
                     </Select.Option>
                 ))}
-                
             </Select>
         </div>
     )

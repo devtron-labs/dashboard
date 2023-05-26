@@ -3,7 +3,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { SlackConfigModal } from './SlackConfigModal'
 import { SESConfigModal } from './SESConfigModal'
 import { ReactComponent as Edit } from '../../assets/icons/ic-edit.svg'
-import { showError, Progressing, ErrorScreenNotAuthorized, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenNotAuthorized, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import {
     deleteNotification,
     getSESConfiguration,
@@ -99,7 +99,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
 
     renderSlackConfigurations() {
         return (
-            <div key="slack-config" className="white-card white-card--configuration-tab mb-16">
+            <div key="slack-config" className="dc__position-rel white-card white-card--configuration-tab mb-16">
                 <div className="configuration-tab__header">
                     <p data-testid="slack-heading-title" className="configuration-tab__title">
                         <img src={slack} alt="slack" className="icon-dim-24 mr-10" />
@@ -132,11 +132,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         } else if (this.state.slackConfigurationList.length === 0) {
             return (
                 <div style={{ height: 'calc(100% - 70px)' }}>
-                    <EmptyState>
-                        <EmptyState.Title>
-                            <h3>No Configurations</h3>
-                        </EmptyState.Title>
-                    </EmptyState>
+                    <GenericEmptyState title="No Configurations" noImage={true} />
                 </div>
             )
         } else
@@ -208,7 +204,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
 
     renderSESConfigurations() {
         return (
-            <div key="ses-config" className="white-card white-card--configuration-tab">
+            <div key="ses-config" className="dc__position-rel white-card white-card--configuration-tab">
                 <div className="configuration-tab__header">
                     <p data-testid="ses-heading-title" className="configuration-tab__title">
                         <img alt="ses config" src={ses} className="icon-dim-24 mr-10" />
@@ -233,7 +229,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
 
     renderSMTPConfigurations() {
         return (
-            <div key="smtp-config" className="white-card white-card--configuration-tab">
+            <div key="smtp-config" className="dc__position-rel white-card white-card--configuration-tab">
                 <div className="configuration-tab__header">
                     <p data-testid="smtp-heading-title" className="configuration-tab__title flexbox">
                         <SMTP className="icon-dim-24 mr-10" />
@@ -319,11 +315,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         } else if (this.state.sesConfigurationList.length === 0) {
             return (
                 <div style={{ height: 'calc(100% - 70px)' }}>
-                    <EmptyState>
-                        <EmptyState.Title>
-                            <h3>No Configurations</h3>
-                        </EmptyState.Title>
-                    </EmptyState>
+                   <GenericEmptyState title="No Configurations" noImage={true} />
                 </div>
             )
         } else
@@ -410,11 +402,7 @@ export class ConfigurationTab extends Component<{}, ConfigurationTabState> {
         } else if (this.state.smtpConfigurationList.length === 0) {
             return (
                 <div style={{ height: 'calc(100% - 70px)' }}>
-                    <EmptyState>
-                        <EmptyState.Title>
-                            <h3>No Configurations</h3>
-                        </EmptyState.Title>
-                    </EmptyState>
+                    <GenericEmptyState title="No Configurations" noImage={true} />
                 </div>
             )
         } else

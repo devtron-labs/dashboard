@@ -53,8 +53,7 @@ import {
 import { getUserRole } from '../../../userGroups/userGroup.service'
 import ExternalLinks from '../../../externalLinks/ExternalLinks'
 import { UserRoleType } from '../../../userGroups/userGroups.types'
-import { DeleteComponentsName } from '../../../../config/constantMessaging'
-import { DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE } from '../../../../config/constantMessaging'
+import {DeleteComponentsName, GIT_MATERIAL_IN_USE_MESSAGE} from '../../../../config/constantMessaging'
 
 const MaterialList = lazy(() => import('../../../material/MaterialList'))
 const CIConfig = lazy(() => import('../../../ciConfig/CIConfig'))
@@ -552,9 +551,10 @@ const NextButton: React.FC<NextButtonProps> = ({ isCiPipeline, navItems, current
 }
 
 function renderNavItem(item: CustomNavItemsType) {
+    const linkDataTestName = item.title.toLowerCase().split(' ').join('-')
     return (
         <NavLink
-            data-testid={`${item.title.toLowerCase().split(' ').join('-')}-link`}
+            data-testid={`${linkDataTestName}-link`}
             key={item.title}
             onClick={(event) => {
                 if (item.isLocked) event.preventDefault()
@@ -563,7 +563,12 @@ function renderNavItem(item: CustomNavItemsType) {
             to={item.href}
         >
             <span className="dc__ellipsis-right nav-text">{item.title}</span>
-            {item.isLocked && <Lock className="app-compose__nav-icon icon-dim-20" />}
+            {item.isLocked && (
+                <Lock
+                    className="app-compose__nav-icon icon-dim-20"
+                    data-testid={`${linkDataTestName}-lockicon`}
+                />
+            )}
         </NavLink>
     )
 }
@@ -611,8 +616,8 @@ function Navigation({
                                     visible={showCannotDeleteTooltip}
                                     iconClass="repo-configured-icon"
                                     iconSize={32}
-                                    infoTextHeading={`${DeleteComponentsName.GitRepo} '${getRepo}' is configured as source for Dockerfile`}
-                                    infoText={DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE}
+                                    infoTextHeading={`${DeleteComponentsName.GitRepo} '${getRepo}' is in use`}
+                                    infoText={GIT_MATERIAL_IN_USE_MESSAGE}
                                     showCloseButton={true}
                                     trigger="manual"
                                     interactive={true}
@@ -632,9 +637,15 @@ function Navigation({
                     return <EnvironmentOverrideRouter key={item.title} />
                 }
             })}
+
             {isJobView && <div className="h-100" />}
             <div className="cta-delete-app flex w-100 dc__position-sticky pt-2 pb-16 bcn-0">
-                <button data-testid = "delete-job-app-button" type="button" className="flex cta delete mt-8 w-100 h-36" onClick={deleteApp}>
+                <button
+                    data-testid="delete-job-app-button"
+                    type="button"
+                    className="flex cta delete mt-8 w-100 h-36"
+                    onClick={deleteApp}
+                >
                     Delete {isJobView ? 'Job' : 'Application'}
                 </button>
             </div>

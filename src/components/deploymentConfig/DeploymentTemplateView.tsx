@@ -2,8 +2,16 @@ import React, { useEffect, useRef, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactSelect, { components } from 'react-select'
 import { DEPLOYMENT, DOCUMENTATION, MODES, ROLLOUT_DEPLOYMENT } from '../../config'
-import { RadioGroup, Toggle, versionComparator } from '../common'
-import { Checkbox, CHECKBOX_VALUE, showError, Progressing, ConditionalWrap, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { RadioGroup, versionComparator } from '../common'
+import {
+    Checkbox,
+    CHECKBOX_VALUE,
+    showError,
+    Progressing,
+    ConditionalWrap,
+    InfoColourBar,
+    Toggle,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { DropdownIndicator, Option } from '../v2/common/ReactSelect.utils'
 import { ReactComponent as Arrows } from '../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as File } from '../../assets/icons/ic-file-text.svg'
@@ -1076,6 +1084,7 @@ export const DeploymentConfigFormCTA = ({
                     <div className="form-app-metrics-cta flex top left">
                         {loading ? (
                             <Progressing
+                                data-testid="app-metrics-checkbox-loading"
                                 styles={{
                                     width: 'auto',
                                     marginRight: '16px',
@@ -1089,6 +1098,7 @@ export const DeploymentConfigFormCTA = ({
                                 isChecked={isAppMetricsEnabled}
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={toggleAppMetrics}
+                                dataTestId="app-metrics-checkbox"
                                 disabled={disableCheckbox || !selectedChart.isAppMetricsSupported}
                             />
                         )}
@@ -1098,6 +1108,7 @@ export const DeploymentConfigFormCTA = ({
                                     {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.label}
                                 </b>
                                 <a
+                                    data-testid="app-metrics-learnmore-link"
                                     href={DOCUMENTATION.APP_METRICS}
                                     target="_blank"
                                     className="fw-4 cb-5 dc__underline-onhover"
@@ -1105,7 +1116,10 @@ export const DeploymentConfigFormCTA = ({
                                     {DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.learnMore}
                                 </a>
                             </div>
-                            <div className={`fs-13 fw-4 ${!selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'}`}>
+                            <div
+                                data-testid="app-metrics-info-text"
+                                className={`fs-13 fw-4 ${!selectedChart.isAppMetricsSupported ? 'cr-5' : 'cn-7'}`}
+                            >
                                 {!selectedChart.isAppMetricsSupported
                                     ? DEPLOYMENT_TEMPLATE_LABELS_KEYS.applicationMetrics.notSupported(
                                           selectedChart.name,

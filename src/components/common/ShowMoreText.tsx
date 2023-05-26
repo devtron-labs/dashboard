@@ -20,7 +20,7 @@ export function ShowMoreText({ text }) {
     }
 
     return (
-        <div className="min-w-385">
+        <div className="min-w-385 pr-20">
             <span ref={ellipsisText} className={`${showAllText ? '' : 'dc__truncate '}`}>
                 {text}
             </span>

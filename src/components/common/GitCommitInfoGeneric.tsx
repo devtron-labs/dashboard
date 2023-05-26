@@ -7,10 +7,14 @@ import { ReactComponent as MessageIcon } from '../../assets/icons/ic-message.svg
 import { ReactComponent as BranchIcon } from '../../assets/icons/ic-branch.svg'
 import { ReactComponent as BranchMain } from '../../assets/icons/ic-branch-main.svg'
 import { ReactComponent as Check } from '../../assets/icons/ic-check-circle.svg'
+import { ReactComponent as Abort } from '../../assets/icons/ic-abort.svg'
 import { SourceTypeMap, Moment12HourFormat } from '../../config'
 import { createGitCommitUrl } from '../common/helpers/git'
 import { GitMaterialInfoHeader } from './GitMaterialInfo'
 import moment from 'moment'
+import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import Tippy from '@tippyjs/react'
+import { MATERIAL_EXCLUDE_TIPPY_TEXT } from '../material/constants'
 
 export default function GitCommitInfoGeneric({
     materialSourceType,
@@ -20,7 +24,8 @@ export default function GitCommitInfoGeneric({
     materialUrl,
     showMaterialInfoHeader,
     canTriggerBuild = false,
-    index
+    index,
+    isExcluded = false
 }) {
     const [showSeeMore, setShowSeeMore] = useState(true)
     let _lowerCaseCommitInfo = _lowerCaseObject(commitInfo)
@@ -71,8 +76,8 @@ export default function GitCommitInfoGeneric({
                     </div>
                 ) : null}
                 {_webhookData.data.message ? (
-                    <div className="material-history__text flex left material-history-text--padded">
-                        <MessageIcon className="icon-dim-16 mr-8" />
+                    <div className="material-history__text flex left top material-history-text--padded">
+                        <MessageIcon className="icon-dim-16 mw-16 mr-8 mt-2" />
                         {_webhookData.data.message}
                     </div>
                 ) : null}
@@ -157,6 +162,27 @@ export default function GitCommitInfoGeneric({
         )
     }
 
+    const matSelectionText = (): JSX.Element => {
+        if (isExcluded) {
+            return (
+                <Tippy
+                    className="default-tt w-200 dc__align-left fw-4 fs-12 dc__no-text-transform"
+                    arrow={false}
+                    placement="bottom"
+                    content={MATERIAL_EXCLUDE_TIPPY_TEXT}
+                    interactive={true}
+                >
+                    <span data-testid="excluded-git-commit" className="flex left cr-5 cursor-not-allowed">
+                        <Abort className="mr-4 fcr-5" />
+                        Excluded
+                    </span>
+                </Tippy>
+            )
+        }
+
+        return <span data-testid="valid-git-commit" >Select</span>
+    }
+
     return (
         <>
             {showMaterialInfoHeader && (_isWebhook || _lowerCaseCommitInfo.commit) && (
@@ -178,7 +204,7 @@ export default function GitCommitInfoGeneric({
                                     target="_blank"
                                     rel="noopener"
                                     className="commit-hash"
-                                    onClick={(e) => e.stopPropagation()}
+                                    onClick={stopPropagation}
                                     data-testid={`deployment-history-source-code-material-history${index}`}
                                 >
                                     <div
@@ -191,8 +217,12 @@ export default function GitCommitInfoGeneric({
                                 </a>
                             ) : null}
                             {selectedCommitInfo ? (
-                                <div className="material-history__select-text ">
-                                    {_lowerCaseCommitInfo.isselected ? <Check className="dc__align-right" /> : 'Select'}
+                                <div className="material-history__select-text dc_max-width__max-content">
+                                    {_lowerCaseCommitInfo.isselected ? (
+                                        <Check data-testid="selected-git-commit" className="dc__align-right" />
+                                    ) : (
+                                        matSelectionText()
+                                    )}
                                 </div>
                             ) : null}
                         </div>
@@ -208,8 +238,8 @@ export default function GitCommitInfoGeneric({
                         </div>
                     ) : null}
                     {_lowerCaseCommitInfo.message ? (
-                        <div className="material-history__text material-history-text--padded flex left">
-                            <MessageIcon className="icon-dim-16 mr-8" />
+                        <div data-testid={`${_lowerCaseCommitInfo.message.trim()}-${isExcluded ? "excluded": "included"}`} className="material-history__text flex left top material-history-text--padded">
+                            <MessageIcon className="icon-dim-16 mw-16 mr-8 mt-2" />
                             {_lowerCaseCommitInfo.message}
                         </div>
                     ) : null}
@@ -262,7 +292,7 @@ export default function GitCommitInfoGeneric({
                                                 target="_blank"
                                                 rel="noopener"
                                                 className="commit-hash"
-                                                onClick={(e) => e.stopPropagation()}
+                                                onClick={stopPropagation}
                                             >
                                                 <Commit className="commit-hash__icon" />
                                                 {_webhookData.data['source checkout']}
@@ -295,7 +325,7 @@ export default function GitCommitInfoGeneric({
                                                 target="_blank"
                                                 rel="noopener"
                                                 className="commit-hash"
-                                                onClick={(e) => e.stopPropagation()}
+                                                onClick={stopPropagation}
                                             >
                                                 <Commit className="commit-hash__icon" />
                                                 {_webhookData.data['target checkout']}

@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    Reload,
+    UserApprovalMetadataType,
+    GenericEmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { useAsync, useInterval, useScrollable, mapByKey, asyncWrap } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
@@ -15,12 +21,13 @@ import DeploymentDetailSteps from './DeploymentDetailSteps'
 import { DeploymentAppType } from '../../../v2/appDetails/appDetails.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import Sidebar from '../cicdHistory/Sidebar'
-import { Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
+import { Scroller, LogResizeButton, GitChanges } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
 import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { AppEnvironment } from '../../../../services/service.types'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -204,14 +211,14 @@ export default function CDDetails() {
                             />
                         </Route>
                     ) : !envId ? (
-                        <EmptyView
-                            title="No environment selected"
-                            subTitle="Please select an environment to start seeing CD deployments."
+                        <GenericEmptyState
+                            title={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.TITLE}
+                            subTitle={EMPTY_STATE_STATUS.CD_DETAILS_NO_ENVIRONMENT.SUBTITLE}
                         />
                     ) : (
-                        <EmptyView
-                            title="No deployments"
-                            subTitle={`No deployment history available for the ${selectedEnv?.environmentName} environment.`}
+                        <GenericEmptyState
+                            title={EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.TITLE}
+                            subTitle={`${EMPTY_STATE_STATUS.CD_DETAILS_NO_DEPLOYMENT.SUBTITLE} ${selectedEnv?.environmentName} environment.`}
                         />
                     )}
                     {<LogResizeButton fullScreenView={fullScreenView} setFullScreenView={setFullScreenView} />}
@@ -330,7 +337,7 @@ export const TriggerOutput: React.FC<{
                                     activeClassName="active"
                                     to={`source-code`}
                                 >
-                                    Source code
+                                    Source
                                 </NavLink>
                             </li>
                             {triggerDetails.stage == 'DEPLOY' && (
@@ -365,6 +372,8 @@ export const TriggerOutput: React.FC<{
                 key={triggerDetails.id}
                 triggerDetails={triggerDetails}
                 loading={triggerDetailsLoading && !triggerDetailsResult}
+                userApprovalMetadata={triggerDetailsResult?.result?.userApprovalMetadata}
+                triggeredByEmail={triggerDetailsResult?.result?.triggeredByEmail}
                 setFullScreenView={setFullScreenView}
                 setDeploymentHistoryList={setDeploymentHistoryList}
                 deploymentHistoryList={deploymentHistoryList}
@@ -383,6 +392,8 @@ const HistoryLogs: React.FC<{
     setDeploymentHistoryList: React.Dispatch<React.SetStateAction<DeploymentTemplateList[]>>
     deploymentAppType: DeploymentAppType
     isBlobStorageConfigured: boolean
+    userApprovalMetadata: UserApprovalMetadataType
+    triggeredByEmail: string
 }> = ({
     triggerDetails,
     loading,
@@ -391,6 +402,8 @@ const HistoryLogs: React.FC<{
     setDeploymentHistoryList,
     deploymentAppType,
     isBlobStorageConfigured,
+    userApprovalMetadata,
+    triggeredByEmail,
 }) => {
     let { path } = useRouteMatch()
     const { appId, pipelineId, triggerId, envId } = useParams<{
@@ -426,6 +439,9 @@ const HistoryLogs: React.FC<{
                                 <DeploymentDetailSteps
                                     deploymentStatus={triggerDetails.status}
                                     deploymentAppType={deploymentAppType}
+                                    userApprovalMetadata={userApprovalMetadata}
+                                    isGitops={deploymentAppType === DeploymentAppType.argo_cd}
+                                    isHelmApps={false}
                                 />
                             </Route>
                         )}
@@ -433,6 +449,9 @@ const HistoryLogs: React.FC<{
                             <GitChanges
                                 gitTriggers={triggerDetails.gitTriggers}
                                 ciMaterials={triggerDetails.ciMaterials}
+                                artifact={triggerDetails.artifact}
+                                userApprovalMetadata={userApprovalMetadata}
+                                triggeredByEmail={triggeredByEmail}
                             />
                         </Route>
                         {triggerDetails.stage === 'DEPLOY' && (
