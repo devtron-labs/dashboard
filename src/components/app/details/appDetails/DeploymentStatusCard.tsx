@@ -90,7 +90,7 @@ function DeploymentStatusCard({
         >
             {!hideDeploymentStatusLeftInfo && renderDeploymentStatus()}
             <div className="flex left column mw-140">
-                <div className="fs-12 fw-4 cn-9">
+                <div className="fs-12 fw-4 cn-9" data-testid="last-updated-heading">
                     {hideDeploymentStatusLeftInfo ? 'Last updated' : 'Deployment triggered'}
                 </div>
                 <div className="flexbox" data-testid="last-updated-time">

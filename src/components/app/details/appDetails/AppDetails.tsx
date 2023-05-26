@@ -589,7 +589,7 @@ export const Details: React.FC<DetailsType> = ({
             {urlInfo && <TriggerUrlModal appId={params.appId} envId={params.envId} close={() => setUrlInfo(false)} />}
             {commitInfo && (
                 <TriggerInfoModal
-                    appId={appDetails?.appId}
+                    envId={appDetails?.environmentId}
                     ciArtifactId={appDetails?.ciArtifactId}
                     close={() => showCommitInfo(false)}
                 />

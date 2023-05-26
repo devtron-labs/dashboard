@@ -54,7 +54,7 @@ export default function CIConfigForm({
             : ciConfig?.ciBuildConfig?.gitMaterialId
             ? sourceConfig.material.find((material) => material.id === ciConfig?.ciBuildConfig?.gitMaterialId)
             : sourceConfig.material[0]
-    const currentBuildContextGitMaterial =
+    const buildCtxGitMaterial =
         allowOverride && selectedCIPipeline?.isDockerConfigOverridden
             ? sourceConfig.material.find(
                 (material) => material.id === selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
@@ -62,6 +62,7 @@ export default function CIConfigForm({
             : ciConfig?.ciBuildConfig?.buildContextGitMaterialId
                 ? sourceConfig.material.find((material) => material.id === ciConfig?.ciBuildConfig?.buildContextGitMaterialId)
                 : sourceConfig.material[0]
+    const currentBuildContextGitMaterial = buildCtxGitMaterial ? buildCtxGitMaterial : currentMaterial
     const [selectedMaterial, setSelectedMaterial] = useState(currentMaterial)
     const [selectedBuildContextGitMaterial, setSelectedBuildContextGitMaterial] = useState(currentBuildContextGitMaterial)
     const currentRegistry =

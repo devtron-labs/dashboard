@@ -81,7 +81,10 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                             </div>
                             <div className="workflow-node__title flex">
                                 <div className="workflow-node__full-width-minus-Icon">
-                                    <span className="workflow-node__text-light">
+                                    <span
+                                        data-testid={`${this.props.deploymentStrategy}`}
+                                        className="workflow-node__text-light"
+                                    >
                                         Deploy: {this.props.deploymentStrategy}
                                     </span>
                                     {envDescriptionTippy(this.props.environmentName, this.props.description)}
