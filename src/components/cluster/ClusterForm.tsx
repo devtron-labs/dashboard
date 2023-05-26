@@ -1250,7 +1250,7 @@ export default function ClusterForm({
                         </button>
 
                         <button
-                            className="cta mr-32 ml-20 "
+                            className="cta mr-32 ml-12"
                             type="button"
                             onClick={handleGetClustersClick}
                             disabled={!saveYamlData}
