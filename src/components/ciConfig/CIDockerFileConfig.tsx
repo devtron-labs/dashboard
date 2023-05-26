@@ -252,6 +252,9 @@ export default function CIDockerFileConfig({
         setIsCollapsed(!isCollapsed)
     }
 
+    const getSelectedBuildContextGitMaterial = ():any => {
+        return selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial : currentMaterial
+    }
     const getCheckoutPathValue = (
         selectedMaterial: any,
         currentMaterial: any,
@@ -261,9 +264,7 @@ export default function CIDockerFileConfig({
             ? RootBuildContext
             : configOverrideView && !allowOverride
             ? currentBuildContextGitMaterial?.checkoutPath
-            : selectedBuildContextGitMaterial
-            ? selectedBuildContextGitMaterial.checkoutPath
-            : currentMaterial?.checkoutPath
+            : getSelectedBuildContextGitMaterial()?.checkoutPath
         return { label: val, value: val }
     }
 
@@ -497,9 +498,7 @@ export default function CIDockerFileConfig({
                                     value={
                                         configOverrideView && !allowOverride
                                             ? currentBuildContextGitMaterial
-                                            : selectedBuildContextGitMaterial
-                                            ? selectedBuildContextGitMaterial
-                                            : currentMaterial
+                                            : getSelectedBuildContextGitMaterial()
                                     }
                                     styles={{
                                         ..._multiSelectStyles,

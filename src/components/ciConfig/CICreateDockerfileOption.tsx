@@ -376,6 +376,9 @@ export default function CICreateDockerfileOption({
             })
         }
     }
+    const getSelectedBuildContextGitMaterial = ():any => {
+        return selectedBuildContextGitMaterial ? selectedBuildContextGitMaterial : currentMaterial
+    }
     const toggleCollapse = (e) => {
         setIsCollapsed(!isCollapsed)
     }
@@ -469,9 +472,7 @@ export default function CICreateDockerfileOption({
                                 value={
                                     configOverrideView && !allowOverride
                                         ? currentBuildContextGitMaterial
-                                        : selectedBuildContextGitMaterial
-                                        ? selectedBuildContextGitMaterial
-                                        : currentMaterial
+                                        : getSelectedBuildContextGitMaterial()
                                 }
                                 styles={{
                                     ..._multiSelectStyles,
