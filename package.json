@@ -5,7 +5,6 @@
     "homepage": "/dashboard",
     "dependencies": {
         "@devtron-labs/devtron-fe-common-lib": "0.0.7-beta-39",
-        "@devtron-labs/devtron-fe-lib": "0.0.7-beta-31",
         "@sentry/browser": "^7.3.1",
         "@sentry/integrations": "^7.3.1",
         "@sentry/tracing": "^7.3.1",

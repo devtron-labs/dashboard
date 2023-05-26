@@ -33,7 +33,6 @@ export function PreBuild({
         configurationType,
         setConfigurationType,
         activeStageName,
-        appId,
         formDataErrorObj,
         setFormDataErrorObj,
     }: {
@@ -45,7 +44,6 @@ export function PreBuild({
         configurationType: string
         setConfigurationType: React.Dispatch<React.SetStateAction<string>>
         activeStageName: string
-        appId: number
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
     } = useContext(ciPipelineContext)
