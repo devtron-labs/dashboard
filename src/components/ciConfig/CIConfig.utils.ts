@@ -449,7 +449,8 @@ export const getCIConfigDiffValues = (
         currentBuildContext = ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
     let globalUseRootBuildContext = globalCIConfig.ciBuildConfig ? globalCIConfig.ciBuildConfig.useRootBuildContext : true
     let currentUseRootBuildContext = ciConfigOverride?.ciBuildConfig ? ciConfigOverride?.ciBuildConfig.useRootBuildContext : true
-
+    globalBuildContext = globalBuildContext ? globalBuildContext : ''
+    currentBuildContext = currentBuildContext ? currentBuildContext : ''
     if (
         (globalCIBuildType !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE ||
             ciBuildTypeOverride !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE)
@@ -539,8 +540,8 @@ export const getCIConfigDiffValues = (
             },
             {
                 configName: 'Build context',
-                changeBGColor: (globalUseRootBuildContext ? RootBuildContext : globalBuildContextGitMaterialItem?.checkoutPath + (globalBuildContext ?  globalBuildContext : '')) !== (currentUseRootBuildContext ? RootBuildContext : currentBuildContextGitMaterialItem?.checkoutPath + (currentBuildContext ? currentBuildContext: '')),
-                baseValue: globalUseRootBuildContext ? RootBuildContext : globalBuildContextGitMaterialItem?.checkoutPath + (globalBuildContext ?  globalBuildContext : ''),
+                changeBGColor: (globalUseRootBuildContext ? RootBuildContext : globalBuildContextGitMaterialItem?.checkoutPath + globalBuildContext) !== (currentUseRootBuildContext ? RootBuildContext : currentBuildContextGitMaterialItem?.checkoutPath + currentBuildContext),
+                baseValue: globalUseRootBuildContext ? RootBuildContext : globalBuildContextGitMaterialItem?.checkoutPath + globalBuildContext,
                 overridenValue: currentUseRootBuildContext ? RootBuildContext : currentBuildContextGitMaterialItem?.checkoutPath + (currentBuildContext ? currentBuildContext: ''),
             },
         )
