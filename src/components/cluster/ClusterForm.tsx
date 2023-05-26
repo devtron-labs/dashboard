@@ -1017,9 +1017,9 @@ export default function ClusterForm({
                                         <span>Select the cluster you want to add/update</span>
                                     </>
                                 }
-                                classname="info_bar cn-9 lh-20 dc__no-border-imp"
+                                classname="info_bar cn-9 lh-20 dc__no-border-imp pl-18"
                                 Icon={Info}
-                                iconClass="icon-dim-16"
+                                styles={{borderRadius: '6px 6px 0 0'}}
                             />
                             <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom">
                                 <div data-testid="select_all_cluster_checkbox">
