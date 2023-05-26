@@ -1,5 +1,6 @@
 import { CHECKBOX_VALUE, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Dispatch, SetStateAction } from 'react'
+import { Nodes, NodeType } from '../../../../app/types'
 import {GVKType} from '../../../../ResourceBrowser/Types'
 
 export interface WorkloadCheckType {
@@ -13,7 +14,7 @@ export interface RotatePodsType extends HibernateTargetObject, WorkloadCheckType
 
 export interface HibernateTargetObject {
     group: string
-    kind: string
+    kind: Nodes | NodeType
     version: string
     name: string
     namespace: string

@@ -810,6 +810,6 @@ export enum CONFIGURATION_TYPES {
     DESCRIPTION = 'DESCRIPTION',
 }
 
-export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout', 'Pod']
+export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
 
 export const POD_ROTATION_INITIATED = 'Pod rotation initiated'

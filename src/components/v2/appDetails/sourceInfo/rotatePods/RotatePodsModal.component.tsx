@@ -18,6 +18,7 @@ import { RotatePods } from './rotatePodsModal.service'
 import { toast } from 'react-toastify'
 import RotateResponseModal from './RotateResponseModal'
 import { POD_ROTATION_INITIATED, RequiredKinds } from '../../../../../config'
+import { Nodes } from '../../../../app/types'
 
 export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
     const [nameSelection, setNameSelection] = useState<Record<string, WorkloadCheckType>>({
@@ -122,7 +123,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
 
     const handleWorkloadSelection = (workloadKey: string): void => {
         const _workloadsList = podsToRotate
-
+        
         const selectedWorkload = _workloadsList.get(workloadKey)
         selectedWorkload.value = !selectedWorkload.isChecked ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE
         selectedWorkload.isChecked = !selectedWorkload.isChecked
@@ -189,6 +190,15 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
         handleAllScaleObjectsName()
     }
 
+    const handleRestartWorkloads = (e:any) => {
+        e.preventDefault()
+        const isWorkloadPresent = podsToRotate && podsToRotate.size > 0
+        const isAnySelected = podsToRotate && Array.from(podsToRotate.values()).some((workload) => workload.isChecked)
+        if (!rotatingInProgress && isWorkloadPresent && isAnySelected) {
+            handlePodsRotation()
+        }
+    }
+
     const renderRestartWorkloadsList = (): JSX.Element => {
         const _nameSelection = nameSelection['rotate']
         const isWorkloadPresent = podsToRotate && podsToRotate.size > 0
@@ -243,13 +253,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
                         className={`cta flex h-36 mr-20  ${
                             rotatingInProgress || !isWorkloadPresent || !isAnySelected ? 'not-allowed' : ''
                         }`}
-                        onClick={(e) => {
-                            e.preventDefault()
-
-                            if (!rotatingInProgress || isWorkloadPresent || isAnySelected) {
-                                handlePodsRotation()
-                            }
-                        }}
+                        onClick={handleRestartWorkloads}
                         data-testid="restart-workloads"
                     >
                         {rotatingInProgress ? (
@@ -276,20 +280,31 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
         )
     }
 
+    const renderRotateModal = (): JSX.Element => {
+        if (result) {
+            return <RotateResponseModal onClose={onClose} response={result.responses} setResult={setResult} />
+        } else {
+            return (
+                <>
+                    {renderRestartModalHeader()}
+                    {showHelp && (
+                        <InfoColourBar
+                            message='Pods for selected workloads will be restarted. Configured deployment strategy "Rollout" will be used
+                to restart selected workloads.'
+                            classname="restart-desciription-bg-v100 flex left pt-10 pb-10 pl-20 pr-20 cn-9"
+                            Icon={Help}
+                            iconClass="icon-dim-16 mr-12 fcv-5"
+                        />
+                    )}
+                    {renderRestartWorkloadsList()}
+                </>
+            )
+        }
+    }
+
     return (
         <Drawer position="right" width="1024px">
-            <div className="dc__window-bg h-100 rotate-pods-container">
-                {!result && renderRestartModalHeader()}
-                {showHelp && !result && <InfoColourBar
-                 message='Pods for selected workloads will be restarted. Configured deployment strategy "Rollout" will be used
-                 to restart selected workloads.'
-                 classname="restart-desciription-bg-v100 flex left pt-10 pb-10 pl-20 pr-20 cn-9"
-                 Icon={Help}
-                 iconClass="icon-dim-16 mr-12 fcv-5"
-                />}
-                {!result && renderRestartWorkloadsList()}
-                {result && <RotateResponseModal onClose={onClose} response={result.responses} setResult={setResult} />}
-            </div>
+            <div className="dc__window-bg h-100 rotate-pods-container">{renderRotateModal()}</div>
         </Drawer>
     )
 }
