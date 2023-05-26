@@ -735,7 +735,7 @@ export default function ClusterForm({
                 <div className="code-editor-container">
                     <CodeEditor
                         value={saveYamlData}
-                        height= 'calc(100vh - 233px)'
+                        height="calc(100vh - 233px)"
                         diffView={false}
                         onChange={onChangeEditorValue}
                         mode={MODES.YAML}
@@ -1011,7 +1011,12 @@ export default function ClusterForm({
                         <AddClusterHeader />
                         <div className="api-token__list en-2 bw-1 bcn-0 br-8 mr-20 ml-20 mt-16">
                             <InfoColourBar
-                                message={`${validCluster()} valid cluster. Select the cluster you want to add/update`}
+                                message={
+                                    <>
+                                        <span className="fw-6">{validCluster()} valid cluster. </span>
+                                        <span>Select the cluster you want to add/update</span>
+                                    </>
+                                }
                                 classname="info_bar cn-9 lh-20 dc__no-border-imp"
                                 Icon={Info}
                                 iconClass="icon-dim-18"
@@ -1270,7 +1275,7 @@ export default function ClusterForm({
                         reload={reload}
                     />
                 )}
-            </div>          
+            </div>
         </>
     )
 }
