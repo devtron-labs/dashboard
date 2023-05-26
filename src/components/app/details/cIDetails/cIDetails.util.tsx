@@ -37,7 +37,13 @@ export function ImageNotScannedView() {
 }
 
 export function NoVulnerabilityView() {
-    return <GenericEmptyState image={novulnerability} title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND} classname="dc__position-rel-imp" />
+    return (
+        <GenericEmptyState
+            image={novulnerability}
+            title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND}
+            classname="dc__position-rel-imp"
+        />
+    )
 }
 
 export function CIRunningView(props) {
