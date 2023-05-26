@@ -8,7 +8,6 @@ import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.s
 import CIAdvancedConfig from './CIAdvancedConfig'
 import { CI_BUILDTYPE_ALIAS, _multiSelectStyles } from './CIConfig.utils'
 import { CIBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import CIBuildpackBuildOptions, {
     checkoutPathOption,
     renderOptionIcon,
@@ -17,7 +16,7 @@ import CIBuildpackBuildOptions, {
 } from './CIBuildpackBuildOptions'
 import { getBuildpackMetadata, getDockerfileTemplate } from './service'
 import CICreateDockerfileOption from './CICreateDockerfileOption'
-import { showError, ConditionalWrap, TippyCustomized, TippyTheme } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, ConditionalWrap, TippyCustomized, TippyTheme, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BuildersAndFrameworksType, CIDockerFileConfigProps } from './types'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
@@ -258,18 +257,13 @@ export default function CIDockerFileConfig({
         currentMaterial: any,
         useRootBuildContextFlag: boolean,
     ): OptionType => {
-        const val =
-            configOverrideView && !allowOverride
-                ? useRootBuildContextFlag
-                    ? RootBuildContext
-                    : currentBuildContextGitMaterial.checkoutPath
-                : selectedBuildContextGitMaterial
-                ? useRootBuildContextFlag
-                    ? RootBuildContext
-                    : selectedBuildContextGitMaterial.checkoutPath
-                : useRootBuildContextFlag
-                ? RootBuildContext
-                : currentMaterial.checkoutPath
+        const val = useRootBuildContextFlag
+            ? RootBuildContext
+            : configOverrideView && !allowOverride
+            ? currentBuildContextGitMaterial?.checkoutPath
+            : selectedBuildContextGitMaterial
+            ? selectedBuildContextGitMaterial.checkoutPath
+            : currentMaterial?.checkoutPath
         return { label: val, value: val }
     }
 

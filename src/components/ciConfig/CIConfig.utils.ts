@@ -542,7 +542,7 @@ export const getCIConfigDiffValues = (
                 configName: 'Build context',
                 changeBGColor: (globalUseRootBuildContext ? RootBuildContext : globalBuildContextGitMaterialItem?.checkoutPath + globalBuildContext) !== (currentUseRootBuildContext ? RootBuildContext : currentBuildContextGitMaterialItem?.checkoutPath + currentBuildContext),
                 baseValue: globalUseRootBuildContext ? RootBuildContext : globalBuildContextGitMaterialItem?.checkoutPath + globalBuildContext,
-                overridenValue: currentUseRootBuildContext ? RootBuildContext : currentBuildContextGitMaterialItem?.checkoutPath + (currentBuildContext ? currentBuildContext: ''),
+                overridenValue: currentUseRootBuildContext ? RootBuildContext : currentBuildContextGitMaterialItem?.checkoutPath + currentBuildContext,
             },
         )
     }
