@@ -225,6 +225,7 @@ export const Routes = {
     GROUPS: 'groups',
     GROUP: 'group',
     ROTATE_PODS: 'app/rotate-pods',
+    DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/'
 }
 
 export const ViewType = {

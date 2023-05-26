@@ -14,7 +14,7 @@ import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { ReactComponent as Question } from '../../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Help } from '../../../../../assets/icons/ic-help.svg'
-import { RotatePods } from './rotatePodsModal.service'
+import { GetDeploymentStrategy, RotatePods } from './rotatePodsModal.service'
 import { toast } from 'react-toastify'
 import RotateResponseModal from './RotateResponseModal'
 import { POD_ROTATION_INITIATED, RequiredKinds } from '../../../../../config'
@@ -31,15 +31,29 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
     const [result, setResult] = useState<RotatePodsStatus>(null)
 
     const [rotatingInProgress, setRotatingInProgress] = useState(false)
-    const [fetchingLatestDetails, setFetchingLatestDetails] = useState(false)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showHelp, setShowHelp] = useState(false)
+    const [strategy,setStrategy] = useState('')
 
     useEffect(() => {
-        if (fetchingLatestDetails) {
-            setFetchingLatestDetails(false)
-        }
+        getStrategy()
+        getPodsToRotate()
+    }, [])
 
+    const getStrategy = () => {
+        GetDeploymentStrategy(appDetails.appId, appDetails.environmentId)
+            .then((response) => {
+                if (response.result) {
+                    setStrategy(response.result.deploymentTemplate)
+                }
+            })
+            .catch((error) => {
+                showError(error)
+            })
+            .finally(() => {})
+    }
+
+    const getPodsToRotate = () => {
         if (appDetails.resourceTree?.nodes) {
             const _podsToRotate = podsToRotate || new Map<string, RotatePodsType>()
             appDetails.resourceTree.nodes.forEach((node) => {
@@ -60,7 +74,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
             })
             setPodsToRotate(_podsToRotate)
         }
-    }, [])
+    }
 
     const checkAndUpdateCurrentWorkload = (
         workloadTarget: RotatePodsType,
@@ -269,17 +283,6 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
         )
     }
 
-    const infoBar = () => {
-        return (
-            <div className="restart-desciription-bg-v100 flex left pt-10 pb-10 pl-20 pr-20 cn-9">
-                <Help className="icon-dim-16 mr-12 fcv-5" />
-                <div data-testid="run-scripts-text">
-                    
-                </div>
-            </div>
-        )
-    }
-
     const renderRotateModal = (): JSX.Element => {
         if (result) {
             return <RotateResponseModal onClose={onClose} response={result.responses} setResult={setResult} />
@@ -289,8 +292,8 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
                     {renderRestartModalHeader()}
                     {showHelp && (
                         <InfoColourBar
-                            message='Pods for selected workloads will be restarted. Configured deployment strategy "Rollout" will be used
-                to restart selected workloads.'
+                            message={`Pods for selected workloads will be restarted. Configured deployment strategy "${strategy}" will be used
+                to restart selected workloads.`}
                             classname="restart-desciription-bg-v100 flex left pt-10 pb-10 pl-20 pr-20 cn-9"
                             Icon={Help}
                             iconClass="icon-dim-16 mr-12 fcv-5"
