@@ -19,9 +19,6 @@
         .modal__info-wrapper {
             align-items: flex-start;
         }
-        &.rotate {
-            background-color: var(--V100) !important;
-        }
     }
 
     .scale-worklists-container {
@@ -86,7 +83,7 @@
     }
 }
 
-.restart-desciription{
+.restart-desciription-bg-v100{
     background-color: var(--V100);
 }
 

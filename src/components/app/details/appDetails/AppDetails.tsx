@@ -605,15 +605,11 @@ export const Details: React.FC<DetailsType> = ({
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
             )}
-            {(rotateModal)&&<Drawer position="right" width="1024px">
-                <div className="dc__window-bg h-100 rotate-pods-container">
                     {rotateModal && (
                         <RotatePodsModal
                             onClose={() => setRotateModal(false)}
                         />
                     )}
-                </div>
-            </Drawer>}
         </React.Fragment>
     )
 }

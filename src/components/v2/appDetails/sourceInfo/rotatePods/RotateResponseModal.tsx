@@ -7,7 +7,6 @@ import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.sv
 import { ReactComponent as Success } from '../../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Error } from '../../../../../assets/icons/ic-error-exclamation.svg'
 import {
-    POD_ROTATION_INITIATED,
     RotatePodsRequest,
     RotatePodsResponseTargetObject,
     RotateResponseModalProps,
@@ -18,6 +17,7 @@ import IndexStore from '../../index.store'
 import { ReactComponent as RetryIcon } from '../../../../../assets/icons/ic-arrow-clockwise.svg'
 import { RotatePods } from './rotatePodsModal.service'
 import { toast } from 'react-toastify'
+import { POD_ROTATION_INITIATED } from '../../../../../config'
 
 export default function RotateResponseModal({ onClose, response, setResult}: RotateResponseModalProps) {
     const [isLoading, setIsLoading] = useState(false)
@@ -52,7 +52,7 @@ export default function RotateResponseModal({ onClose, response, setResult}: Rot
                     <div className="fs-12 fw-6 cn-7 ml-16">MESSAGE</div>
                 </div>
                 {response.map((response, index) => (
-                    <div className="response-row pt-8 pb-8" key={`response-`}>
+                    <div className="response-row pt-8 pb-8" key={`response-${response.name}`}>
                         <div className="fs-13 fw-4 cn-9 ml-20">
                             <span className="cn-9 fw-6">{response.groupVersionKind.Kind} / </span>
                             <span>{response.name}</span>
@@ -80,7 +80,7 @@ export default function RotateResponseModal({ onClose, response, setResult}: Rot
                 <button className="cta cancel flex h-36 mr-12" data-testid="close-popup" onClick={onClose}>
                     Close
                 </button>
-                <button className="cta flex h-36" onClick={handleRetryRotate}>
+                <button className="cta flex h-36" onClick={handleRetryRotate} disabled={isLoading}>
                     {isLoading ? (
                         <Progressing />
                     ) : (

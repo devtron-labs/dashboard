@@ -809,3 +809,7 @@ export enum CONFIGURATION_TYPES {
     NAMESPACE = 'NAMESPACE',
     DESCRIPTION = 'DESCRIPTION',
 }
+
+export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout', 'Pod']
+
+export const POD_ROTATION_INITIATED = 'Pod rotation initiated'

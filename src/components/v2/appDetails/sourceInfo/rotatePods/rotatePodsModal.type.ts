@@ -1,9 +1,10 @@
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { CHECKBOX_VALUE, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { Dispatch, SetStateAction } from 'react'
+import {GVKType} from '../../../../ResourceBrowser/Types'
 
 export interface WorkloadCheckType {
     isChecked: boolean
-    value: 'INTERMEDIATE' | 'CHECKED'
+    value: CHECKBOX_VALUE
 }
 
 export interface RotatePodsType extends HibernateTargetObject, WorkloadCheckType {
@@ -31,21 +32,13 @@ export interface RotateResponseModalProps {
 export interface RotatePodsTargetObject {
     name: string
     namespace: string
-    groupVersionKind: {
-        Group: string
-        Kind: string
-        Version: string
-    }
+    groupVersionKind: GVKType
 }
 
 export interface RotatePodsResponseTargetObject {
     name: string
     namespace: string
-    groupVersionKind: {
-        Group: string
-        Kind: string
-        Version: string
-    }
+    groupVersionKind: GVKType
     errorResponse: string
 }
 
@@ -64,4 +57,3 @@ export interface RotatePodsRequest {
     environmentId: number
 }
 
-export const POD_ROTATION_INITIATED = 'Pod rotation initiated'

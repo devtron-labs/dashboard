@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { showError, Progressing, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Checkbox, Drawer, InfoColourBar, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as RotateIcon } from '../../../../../assets/icons/ic-arrows_clockwise.svg'
 import {
-    POD_ROTATION_INITIATED,
     RotatePodsModalProps,
     RotatePodsRequest,
     RotatePodsStatus,
@@ -18,12 +17,13 @@ import { ReactComponent as Help } from '../../../../../assets/icons/ic-help.svg'
 import { RotatePods } from './rotatePodsModal.service'
 import { toast } from 'react-toastify'
 import RotateResponseModal from './RotateResponseModal'
+import { POD_ROTATION_INITIATED, RequiredKinds } from '../../../../../config'
 
 export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
     const [nameSelection, setNameSelection] = useState<Record<string, WorkloadCheckType>>({
         rotate: {
             isChecked: false,
-            value: 'CHECKED',
+            value: CHECKBOX_VALUE.CHECKED,
         },
     })
     const [podsToRotate, setPodsToRotate] = useState<Map<string, RotatePodsType>>()
@@ -32,7 +32,6 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
     const [rotatingInProgress, setRotatingInProgress] = useState(false)
     const [fetchingLatestDetails, setFetchingLatestDetails] = useState(false)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
-    const requiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
     const [showHelp, setShowHelp] = useState(false)
 
     useEffect(() => {
@@ -43,7 +42,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
         if (appDetails.resourceTree?.nodes) {
             const _podsToRotate = podsToRotate || new Map<string, RotatePodsType>()
             appDetails.resourceTree.nodes.forEach((node) => {
-                if (requiredKinds.includes(node.kind)) {
+                if (RequiredKinds.includes(node.kind)) {
                     const workloadKey = `${node.kind}/${node.name}`
                     let _workloadTarget: RotatePodsType = {
                         kind: node.kind,
@@ -53,7 +52,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
                         namespace: node.namespace,
                         errorMessage: '',
                         isChecked: false,
-                        value: 'CHECKED',
+                        value: CHECKBOX_VALUE.CHECKED,
                     }
                     checkAndUpdateCurrentWorkload(_workloadTarget, workloadKey, _podsToRotate)
                 }
@@ -91,7 +90,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
                                 <Question onClick={() => setShowHelp(!showHelp)} />
                             </span>
                         </div>
-                        <button type="button" className="dc__transparent flex icon-dim-24" onClick={() => onClose()}>
+                        <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>
                             <Close className="icon-dim-24 dc__align-right cursor" />
                         </button>
                     </div>
@@ -106,7 +105,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
         const _workloadsList = podsToRotate
 
         for (let [key, value] of _workloadsList) {
-            value.value = !_nameSelection.isChecked ? 'CHECKED' : 'INTERMEDIATE'
+            value.value = !_nameSelection.isChecked ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE
             value.isChecked = !_nameSelection.isChecked ? true : false
             _workloadsList.set(key, value)
         }
@@ -116,7 +115,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
             ...nameSelection,
             [_nameSelectionKey]: {
                 isChecked: !_nameSelection.isChecked,
-                value: _nameSelection.isChecked ? 'INTERMEDIATE' : 'CHECKED',
+                value: _nameSelection.isChecked ? CHECKBOX_VALUE.INTERMEDIATE : CHECKBOX_VALUE.CHECKED,
             },
         })
     }
@@ -125,7 +124,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
         const _workloadsList = podsToRotate
 
         const selectedWorkload = _workloadsList.get(workloadKey)
-        selectedWorkload.value = !selectedWorkload.isChecked ? 'CHECKED' : 'INTERMEDIATE'
+        selectedWorkload.value = !selectedWorkload.isChecked ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE
         selectedWorkload.isChecked = !selectedWorkload.isChecked
 
         setPodsToRotate(_workloadsList)
@@ -139,7 +138,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
             ...nameSelection,
             [_nameSelectionKey]: {
                 isChecked: areAllSelected || isAnySelected ? true : false,
-                value: !areAllSelected && isAnySelected ? 'INTERMEDIATE' : 'CHECKED',
+                value: !areAllSelected && isAnySelected ? CHECKBOX_VALUE.INTERMEDIATE : CHECKBOX_VALUE.CHECKED,
             },
         })
     }
@@ -179,10 +178,15 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
                 ...nameSelection,
                 ['rotate']: {
                     isChecked: false,
-                    value: 'CHECKED',
+                    value: CHECKBOX_VALUE.CHECKED,
                 },
             })
         }
+    }
+
+    const handleSelectAll = (e:any) => {
+        e.stopPropagation()
+        handleAllScaleObjectsName()
     }
 
     const renderRestartWorkloadsList = (): JSX.Element => {
@@ -198,10 +202,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
                                 rootClassName="mb-0 fs-13 cursor bcn-0 p"
                                 isChecked={_nameSelection.isChecked}
                                 value={_nameSelection.value}
-                                onChange={(e) => {
-                                    e.stopPropagation()
-                                    handleAllScaleObjectsName()
-                                }}
+                                onChange={handleSelectAll}
                             >
                                 <div className="pl-8 fw-6">
                                     <span>Select all</span>
@@ -266,28 +267,29 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
 
     const infoBar = () => {
         return (
-            <div className="restart-desciription flex left pt-10 pb-10 pl-20 pr-20 cn-9">
+            <div className="restart-desciription-bg-v100 flex left pt-10 pb-10 pl-20 pr-20 cn-9">
                 <Help className="icon-dim-16 mr-12 fcv-5" />
                 <div data-testid="run-scripts-text">
-                    Pods for selected workloads will be restarted. Configured deployment strategy "Rollout" will be used
-                    to restart selected workloads.
+                    
                 </div>
             </div>
         )
     }
 
     return (
-        <>
-            {!result && renderRestartModalHeader()}
-            {showHelp && !result && infoBar()}
-            {!result && renderRestartWorkloadsList()}
-            {result && (
-                <RotateResponseModal
-                    onClose={onClose}
-                    response={result.responses}
-                    setResult={setResult}
-                />
-            )}
-        </>
+        <Drawer position="right" width="1024px">
+            <div className="dc__window-bg h-100 rotate-pods-container">
+                {!result && renderRestartModalHeader()}
+                {showHelp && !result && <InfoColourBar
+                 message='Pods for selected workloads will be restarted. Configured deployment strategy "Rollout" will be used
+                 to restart selected workloads.'
+                 classname="restart-desciription-bg-v100 flex left pt-10 pb-10 pl-20 pr-20 cn-9"
+                 Icon={Help}
+                 iconClass="icon-dim-16 mr-12 fcv-5"
+                />}
+                {!result && renderRestartWorkloadsList()}
+                {result && <RotateResponseModal onClose={onClose} response={result.responses} setResult={setResult} />}
+            </div>
+        </Drawer>
     )
 }
