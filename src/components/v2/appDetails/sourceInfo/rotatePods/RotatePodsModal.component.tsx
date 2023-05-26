@@ -158,8 +158,8 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
     }
 
     const handlePodsRotation = async (): Promise<void> => {
+        setRotatingInProgress(true)
         try {
-            setRotatingInProgress(true)
             const requestPayload: RotatePodsRequest = {
                 appId: appDetails.appId,
                 environmentId: appDetails.environmentId,
@@ -184,10 +184,10 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
             } else {
                 setResult(result)
             }
-            setRotatingInProgress(false)
         } catch (e) {
             showError(e)
         } finally {
+            setRotatingInProgress(false)
             setNameSelection({
                 ...nameSelection,
                 ['rotate']: {
