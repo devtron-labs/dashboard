@@ -7,6 +7,7 @@ import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.sv
 import { ReactComponent as Success } from '../../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Error } from '../../../../../assets/icons/ic-error-exclamation.svg'
 import {
+    POD_ROTATION_INITIATED,
     RotatePodsRequest,
     RotatePodsResponseTargetObject,
     RotateResponseModalProps,
@@ -112,7 +113,7 @@ export default function RotateResponseModal({ onClose, response, setResult}: Rot
 
             if (!result.containsError) {
                 onClose()
-                toast.success('Pod rotation initiated')
+                toast.success(POD_ROTATION_INITIATED)
             } else {
                 setResult(result)
             }

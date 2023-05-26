@@ -63,3 +63,5 @@ export interface RotatePodsRequest {
     resources: RotatePodsTargetObject[]
     environmentId: number
 }
+
+export const POD_ROTATION_INITIATED = 'Pod rotation initiated'

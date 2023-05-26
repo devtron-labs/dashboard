@@ -3,6 +3,7 @@ import { showError, Progressing, Checkbox } from '@devtron-labs/devtron-fe-commo
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as RotateIcon } from '../../../../../assets/icons/ic-arrows_rotate.svg'
 import {
+    POD_ROTATION_INITIATED,
     RotatePodsModalProps,
     RotatePodsRequest,
     RotatePodsStatus,
@@ -83,7 +84,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
                 <div className="bcn-0">
                     <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12">
                         <div className="lh-1-43 ml-20 flex left">
-                            <h1 className="cn-9 fw-6 fs-16 m-0" data-testid="scale-workloads-heading-onclick">
+                            <h1 className="cn-9 fw-6 fs-16 m-0" data-testid="restart-workload-heading-onclick">
                                 Restart workloads
                             </h1>
                             <span className="icon-dim-24 fcn-6 mr-4 ml-10 fs-10">
@@ -165,7 +166,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
             const { result } = await RotatePods(requestPayload)
 
             if (!result.containsError) {
-                toast.success('Pod rotation initiated')
+                toast.success(POD_ROTATION_INITIATED)
 
                 onClose()
             } else {
@@ -248,7 +249,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
                                 handlePodsRotation()
                             }
                         }}
-                        data-testid="scale-or-restore-workloads"
+                        data-testid="restart-workloads"
                     >
                         {rotatingInProgress ? (
                             <Progressing size={24} />
