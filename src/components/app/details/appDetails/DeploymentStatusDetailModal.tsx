@@ -4,7 +4,6 @@ import DeploymentStatusDetailBreakdown from './DeploymentStatusBreakdown'
 import { DeploymentStatusDetailModalType } from './appDetails.type'
 import { useHistory } from 'react-router-dom'
 import './appDetails.scss'
-import { useHistory } from 'react-router-dom'
 import './appDetails.scss'
 import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
 
