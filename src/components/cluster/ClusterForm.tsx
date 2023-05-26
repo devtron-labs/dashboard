@@ -800,7 +800,7 @@ export default function ClusterForm({
                         </EmptyState.Subtitle>
                     </EmptyState>
                 </div>
-                <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                <div className="w-100 dc__border-top flex right pb-12 pt-12 dc__position-fixed dc__position-abs dc__bottom-0">
                     <button className="cta cancel" type="button" onClick={handleCloseButton} disabled={true}>
                         Cancel
                     </button>
@@ -891,7 +891,7 @@ export default function ClusterForm({
                             )}
                         </div>
                     </div>
-                    <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                    <div className="w-100 dc__border-top flex right pb-12 pt-12 dc__position-fixed dc__position-abs dc__bottom-0">
                         <button
                             className="ml-20 dc_edit_button cb-5"
                             type="button"
@@ -1114,9 +1114,9 @@ export default function ClusterForm({
                 )}
 
                 {isKubeConfigFile && (
-                    <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                    <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs dc__bottom-0">
                         <button
-                            className="ml-20 dc_edit_button cb-5"
+                            className="dc_edit_button cb-5"
                             type="button"
                             onClick={handleEditConfigClick}
                             style={{ marginRight: 'auto' }}
@@ -1131,7 +1131,7 @@ export default function ClusterForm({
                         </button>
                         <button
                             data-testid="save_cluster_list_button_after_selection"
-                            className="cta mr-32 ml-20"
+                            className="cta"
                             type="button"
                             onClick={() => handleClusterDetailCall()}
                             disabled={!saveClusterList || !isAnyCheckboxSelected}
@@ -1214,7 +1214,7 @@ export default function ClusterForm({
                 </div>
 
                 {!isKubeConfigFile && (
-                    <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                    <div className="w-100 dc__border-top flex right pb-12 pt-12 dc__position-fixed dc__position-abs dc__bottom-0">
                         {id && (
                             <button
                                 data-testid="delete_cluster"
@@ -1244,7 +1244,7 @@ export default function ClusterForm({
                     </div>
                 )}
                 {isKubeConfigFile && (
-                    <div className="w-100 dc__border-top flex right pb-8 pt-8 dc__position-fixed dc__position-abs dc__bottom-0">
+                    <div className="w-100 dc__border-top flex right pb-12 pt-12 dc__position-fixed dc__position-abs dc__bottom-0">
                         <button
                             data-testid="cancel_kubeconfig_button"
                             className="cta cancel"
@@ -1255,7 +1255,7 @@ export default function ClusterForm({
                         </button>
 
                         <button
-                            className="cta mr-32 ml-12"
+                            className="cta mr-20 ml-12"
                             type="button"
                             onClick={handleGetClustersClick}
                             disabled={!saveYamlData}
