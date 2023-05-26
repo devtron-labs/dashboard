@@ -1,0 +1,292 @@
+import React, { useEffect, useState } from 'react'
+import { showError, Progressing, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
+import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
+import { ReactComponent as RotateIcon } from '../../../../../assets/icons/ic-arrows_rotate.svg'
+import {
+    RotatePodsModalProps,
+    RotatePodsRequest,
+    RotatePodsStatus,
+    RotatePodsType,
+    WorkloadCheckType,
+} from './rotatePodsModal.type'
+import '../scaleWorkloads/scaleWorkloadsModal.scss'
+import { useSharedState } from '../../../utils/useSharedState'
+import IndexStore from '../../index.store'
+import { ReactComponent as Question } from '../../../../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as Help } from '../../../../../assets/icons/ic-help.svg'
+import { RotatePods } from './rotatePodsModal.service'
+import { toast } from 'react-toastify'
+import RotateResponseModal from './RotateResponseModal'
+
+export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
+    const [nameSelection, setNameSelection] = useState<Record<string, WorkloadCheckType>>({
+        rotate: {
+            isChecked: false,
+            value: 'CHECKED',
+        },
+    })
+    const [podsToRotate, setPodsToRotate] = useState<Map<string, RotatePodsType>>()
+    const [result, setResult] = useState<RotatePodsStatus>(null)
+
+    const [rotatingInProgress, setRotatingInProgress] = useState(false)
+    const [fetchingLatestDetails, setFetchingLatestDetails] = useState(false)
+    const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
+    const requiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
+    const [showHelp, setShowHelp] = useState(false)
+
+    useEffect(() => {
+        if (fetchingLatestDetails) {
+            setFetchingLatestDetails(false)
+        }
+
+        if (appDetails.resourceTree?.nodes) {
+            const _podsToRotate = podsToRotate || new Map<string, RotatePodsType>()
+            appDetails.resourceTree.nodes.forEach((node) => {
+                if (requiredKinds.includes(node.kind)) {
+                    const workloadKey = `${node.kind}/${node.name}`
+                    let _workloadTarget: RotatePodsType = {
+                        kind: node.kind,
+                        name: node.name,
+                        group: node.group,
+                        version: node.version,
+                        namespace: node.namespace,
+                        errorMessage: '',
+                        isChecked: false,
+                        value: 'CHECKED',
+                    }
+                    checkAndUpdateCurrentWorkload(_workloadTarget, workloadKey, _podsToRotate)
+                }
+            })
+            setPodsToRotate(_podsToRotate)
+        }
+    }, [])
+
+    const checkAndUpdateCurrentWorkload = (
+        workloadTarget: RotatePodsType,
+        workloadKey: string,
+        updateWorkloadsList: Map<string, RotatePodsType>,
+    ): void => {
+        const _currentWorkload = updateWorkloadsList.get(workloadKey)
+
+        if (_currentWorkload) {
+            workloadTarget.errorMessage = _currentWorkload.errorMessage
+            workloadTarget.isChecked = _currentWorkload.isChecked
+            workloadTarget.value = _currentWorkload.value
+        }
+
+        updateWorkloadsList.set(workloadKey, workloadTarget)
+    }
+
+    const renderRestartModalHeader = (): JSX.Element => {
+        return (
+            <>
+                <div className="bcn-0">
+                    <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-12 pr-20 pb-12">
+                        <div className="lh-1-43 ml-20 flex left">
+                            <h1 className="cn-9 fw-6 fs-16 m-0" data-testid="scale-workloads-heading-onclick">
+                                Restart workloads
+                            </h1>
+                            <span className="icon-dim-24 fcn-6 mr-4 ml-10 fs-10">
+                                <Question onClick={() => setShowHelp(!showHelp)} />
+                            </span>
+                        </div>
+                        <button type="button" className="dc__transparent flex icon-dim-24" onClick={() => onClose()}>
+                            <Close className="icon-dim-24 dc__align-right cursor" />
+                        </button>
+                    </div>
+                </div>
+            </>
+        )
+    }
+
+    const handleAllScaleObjectsName = (): void => {
+        const _nameSelectionKey = 'rotate'
+        const _nameSelection = nameSelection[_nameSelectionKey]
+        const _workloadsList = podsToRotate
+
+        for (let [key, value] of _workloadsList) {
+            value.value = !_nameSelection.isChecked ? 'CHECKED' : 'INTERMEDIATE'
+            value.isChecked = !_nameSelection.isChecked ? true : false
+            _workloadsList.set(key, value)
+        }
+
+        setPodsToRotate(_workloadsList)
+        setNameSelection({
+            ...nameSelection,
+            [_nameSelectionKey]: {
+                isChecked: !_nameSelection.isChecked,
+                value: _nameSelection.isChecked ? 'INTERMEDIATE' : 'CHECKED',
+            },
+        })
+    }
+
+    const handleWorkloadSelection = (workloadKey: string): void => {
+        const _workloadsList = podsToRotate
+
+        const selectedWorkload = _workloadsList.get(workloadKey)
+        selectedWorkload.value = !selectedWorkload.isChecked ? 'CHECKED' : 'INTERMEDIATE'
+        selectedWorkload.isChecked = !selectedWorkload.isChecked
+
+        setPodsToRotate(_workloadsList)
+
+        const _nameSelectionKey = 'rotate'
+        const updatedWorkloads = Array.from(_workloadsList.values())
+        const isAnySelected = updatedWorkloads.some((workload) => workload.isChecked)
+        const areAllSelected = isAnySelected && updatedWorkloads.every((workload) => workload.isChecked)
+
+        setNameSelection({
+            ...nameSelection,
+            [_nameSelectionKey]: {
+                isChecked: areAllSelected || isAnySelected ? true : false,
+                value: !areAllSelected && isAnySelected ? 'INTERMEDIATE' : 'CHECKED',
+            },
+        })
+    }
+
+    const handlePodsRotation = async (): Promise<void> => {
+        try {
+            setRotatingInProgress(true)
+            const requestPayload: RotatePodsRequest = {
+                appId: appDetails.appId,
+                environmentId: appDetails.environmentId,
+                resources: Array.from(podsToRotate.values())
+                    .filter((workload) => workload.isChecked)
+                    .map((workload) => ({
+                        name: workload.name,
+                        namespace: workload.namespace,
+                        groupVersionKind: {
+                            Group: workload.group,
+                            Version: workload.version,
+                            Kind: workload.kind,
+                        },
+                    })),
+            }
+
+            const { result } = await RotatePods(requestPayload)
+
+            if (!result.containsError) {
+                toast.success('Pod rotation initiated')
+
+                onClose()
+            } else {
+                setResult(result)
+            }
+        } catch (e) {
+            showError(e)
+        } finally {
+            setNameSelection({
+                ...nameSelection,
+                ['rotate']: {
+                    isChecked: false,
+                    value: 'CHECKED',
+                },
+            })
+        }
+    }
+
+    const renderRestartWorkloadsList = (): JSX.Element => {
+        const _nameSelection = nameSelection['rotate']
+        const isWorkloadPresent = podsToRotate && podsToRotate.size > 0
+        const isAnySelected = podsToRotate && Array.from(podsToRotate.values()).some((workload) => workload.isChecked)
+        return (
+            <div className="scale-worklists-container bcn-0 dc__height-inherit dc__overflow-auto">
+                {isWorkloadPresent && (
+                    <div className="dc__overflow-scroll p-20">
+                        <div className="check-all-workloads cn-7 fw-6">
+                            <Checkbox
+                                rootClassName="mb-0 fs-13 cursor bcn-0 p"
+                                isChecked={_nameSelection.isChecked}
+                                value={_nameSelection.value}
+                                onChange={(e) => {
+                                    e.stopPropagation()
+                                    handleAllScaleObjectsName()
+                                }}
+                            >
+                                <div className="pl-8 fw-6">
+                                    <span>Select all</span>
+                                </div>
+                            </Checkbox>
+                        </div>
+                        <div style={{ height: '192px', overflow: 'scroll' }}>
+                            <>
+                                {Array.from(podsToRotate.values()).map((item) => (
+                                    <div key={`${item.kind}/${item.name}`} className="check-single-workload mt-16">
+                                        <Checkbox
+                                            rootClassName={`mb-0 fs-13 cursor bcn-0 p${
+                                                item.errorMessage ? ' dc__align-baseline' : ''
+                                            }`}
+                                            isChecked={item.isChecked}
+                                            value={item.value}
+                                            onChange={(e) => {
+                                                e.stopPropagation()
+                                                handleWorkloadSelection(`${item.kind}/${item.name}`)
+                                            }}
+                                        >
+                                            <div className="pl-8">
+                                                <span className="cn-9 fw-6">{item.kind} / </span>
+                                                <span>{item.name}</span>
+                                            </div>
+                                            {item.errorMessage && (
+                                                <div className="cr-5 fs-11 fw-4 pl-16 mt-4">{item.errorMessage}</div>
+                                            )}
+                                        </Checkbox>
+                                    </div>
+                                ))}
+                            </>
+                        </div>
+                    </div>
+                )}
+                <div className="w-100 dc__border-top flex right pb-16 pt-16 dc__position-fixed dc__position-abs dc__bottom-0 bcn-0 scale-workload-modal ">
+                    <button
+                        className={`cta flex h-36 mr-20  ${
+                            rotatingInProgress || !isWorkloadPresent || !isAnySelected ? 'not-allowed' : ''
+                        }`}
+                        onClick={(e) => {
+                            e.preventDefault()
+
+                            if (!rotatingInProgress || isWorkloadPresent || isAnySelected) {
+                                handlePodsRotation()
+                            }
+                        }}
+                        data-testid="scale-or-restore-workloads"
+                    >
+                        {rotatingInProgress ? (
+                            <Progressing size={24} />
+                        ) : (
+                            <>
+                                <RotateIcon className="icon-dim-16 dc__no-svg-fill scn-0 mr-10" /> Restart workloads
+                            </>
+                        )}
+                    </button>
+                </div>
+            </div>
+        )
+    }
+
+    const infoBar = () => {
+        return (
+            <div className="restart-desciription flex left pt-10 pb-10 pl-20 pr-20 cn-9">
+                <Help className="icon-dim-16 mr-12 fcv-5" />
+                <div data-testid="run-scripts-text">
+                    Pods for selected workloads will be restarted. Configured deployment strategy "Rollout" will be used
+                    to restart selected workloads.
+                </div>
+            </div>
+        )
+    }
+
+    return (
+        <>
+            {!result && renderRestartModalHeader()}
+            {showHelp && !result && infoBar()}
+            {!result && renderRestartWorkloadsList()}
+            {result && (
+                <RotateResponseModal
+                    onClose={onClose}
+                    response={result.responses}
+                    setResult={setResult}
+                />
+            )}
+        </>
+    )
+}

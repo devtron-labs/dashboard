@@ -224,6 +224,7 @@ export const Routes = {
     CUSTOM_ROLES: 'rbac/role',
     GROUPS: 'groups',
     GROUP: 'group',
+    ROTATE_PODS: 'app/rotate-pods',
 }
 
 export const ViewType = {
