@@ -260,9 +260,10 @@ export default function CIDockerFileConfig({
         currentMaterial: any,
         useRootBuildContextFlag: boolean,
     ): OptionType => {
+        const hideOverride = configOverrideView && !allowOverride
         const val = useRootBuildContextFlag
             ? RootBuildContext
-            : configOverrideView && !allowOverride
+            : hideOverride
             ? currentBuildContextGitMaterial?.checkoutPath
             : getSelectedBuildContextGitMaterial()?.checkoutPath
         return { label: val, value: val }
