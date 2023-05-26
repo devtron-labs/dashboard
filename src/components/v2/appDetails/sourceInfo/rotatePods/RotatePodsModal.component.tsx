@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { showError, Progressing, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
-import { ReactComponent as RotateIcon } from '../../../../../assets/icons/ic-arrows_rotate.svg'
+import { ReactComponent as RotateIcon } from '../../../../../assets/icons/ic-arrows_clockwise.svg'
 import {
     POD_ROTATION_INITIATED,
     RotatePodsModalProps,

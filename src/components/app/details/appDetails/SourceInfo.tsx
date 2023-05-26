@@ -19,7 +19,7 @@ import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import { ConditionalWrap, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from './DeploymentStatusCard'
-import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_rotate.svg'
+import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 
 export function SourceInfo({
     appDetails,
@@ -170,7 +170,7 @@ export function SourceInfo({
                                             onClick={setRotateModal}
                                             disabled={appDetails?.userApprovalConfig?.length > 0}
                                         >
-                                            <RotateIcon className="icon-dim-16 mr-6 icon-color-n7" />
+                                            <RotateIcon className="icon-dim-16 mr-6 icon-color-n7 scn-9" />
                                             Restart workloads
                                         </button>
                                     </ConditionalWrap>
