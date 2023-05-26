@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { Pagination } from '../../common'
+import { Pagination, handleUTCTime } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
     K8S_EMPTY_GROUP,
@@ -10,14 +10,20 @@ import {
     RESOURCE_LIST_EMPTY_STATE,
     RESOURCE_PAGE_SIZE_OPTIONS,
     SIDEBAR_KEYS,
+    STALE_DATA_WARNING_TEXT,
 } from '../Constants'
 import { K8SResourceListType } from '../Types'
 import ResourceListEmptyState from './ResourceListEmptyState'
+import { ReactComponent as RefreshIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
+import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import { error } from 'console'
+import { checkIfDataIsStale } from '../Utils'
+
+import moment from 'moment'
 
 export function K8SResourceList({
     selectedResource,
@@ -55,7 +61,11 @@ export function K8SResourceList({
     const [resourceListOffset, setResourceListOffset] = useState(0)
     const [pageSize, setPageSize] = useState(100)
     const resourceListRef = useRef<HTMLDivElement>(null)
+    const isStaleDataRef = useRef<boolean>(false)
+    const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState('')
+    const [lastDataSync, setLastDataSync] = useState(false)
     const showPaginatedView = resourceList?.data?.length >= 100
+    const [syncListData, setSyncListData] = useState<boolean>()
 
     useEffect(() => {
         if (resourceList?.headers.length) {
@@ -75,9 +85,29 @@ export function K8SResourceList({
         resetPaginator()
     }, [nodeType])
 
+    useEffect(() => {
+        const _lastDataSyncTime = Date()
+        const _staleDataCheckTime = moment()
+        isStaleDataRef.current = false
+
+        setLastDataSyncTimeString(`Synced ${handleUTCTime(_lastDataSyncTime, true)}`)
+        const interval = setInterval(() => {
+            checkIfDataIsStale(isStaleDataRef, _staleDataCheckTime)
+            setLastDataSyncTimeString(`Synced ${handleUTCTime(_lastDataSyncTime, true)}`)
+        }, 1000)
+
+        return () => {
+            clearInterval(interval)
+        }
+    }, [lastDataSync])
+
     const resetPaginator = () => {
         setResourceListOffset(0)
         setPageSize(100)
+    }
+
+    const syncNow = (): void => {
+        setSyncListData(!syncListData)
     }
 
     const handleResourceClick = (e) => {
@@ -294,7 +324,21 @@ export function K8SResourceList({
             }`}
         >
             <div>
-                ss
+                {isStaleDataRef.current && (
+                    <Tippy
+                        className="default-tt w-200"
+                        placement="bottom"
+                        arrow={false}
+                        content={STALE_DATA_WARNING_TEXT}
+                    >
+                        <Warning className="icon-dim-16 mr-4" />
+                    </Tippy>
+                )}
+                <span>{lastDataSyncTimeString}</span>
+                <button className="btn btn-link fw-6 cb-5" onClick={syncNow}>
+                    Sync now
+                </button>
+                {/* <RefreshIcon className="icon-dim-16 cb-5s ml-8 cursor" onClick={() => {}} /> */}
             </div>
             <ResourceFilterOptions
                 selectedResource={selectedResource}

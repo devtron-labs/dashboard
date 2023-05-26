@@ -701,10 +701,13 @@ export default function ResourceList() {
                                         data-testid="create-resource"
                                         onClick={showResourceModal}
                                     >
-                                        <Add className="icon-dim-16 fcb-5 mr-5 mt-3" /> Create
+                                        
                                     </div>
                                 </Tippy>
-                                {!node && lastDataSyncTimeString && (
+                                <div className="ml-2 dc__border-left">
+                                    
+                                </div>
+                                {/* {!node && lastDataSyncTimeString && (
                                     <div className="ml-12 flex pl-12 dc__border-left">
                                         {resourceListLoader ? (
                                             <span className="dc__loading-dots">Syncing</span>
@@ -728,7 +731,7 @@ export default function ResourceList() {
                                             </>
                                         )}
                                     </div>
-                                )}
+                                )} */}
                             </>
                         )}
                     </div>
