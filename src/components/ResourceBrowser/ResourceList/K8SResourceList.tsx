@@ -17,7 +17,6 @@ import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
-import InfoColourBar from '../../common/infocolourBar/InfoColourbar'
 import { error } from 'console'
 
 export function K8SResourceList({
