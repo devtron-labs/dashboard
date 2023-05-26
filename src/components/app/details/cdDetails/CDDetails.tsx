@@ -270,7 +270,6 @@ export const TriggerOutput: React.FC<{
     )
     useEffect(() => {
         if (triggerDetailsLoading || triggerDetailsError || !triggerDetailsResult) return
-        
         if (triggerDetailsResult?.result) syncState(+triggerId, triggerDetailsResult?.result)
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
