@@ -1231,7 +1231,7 @@ export default function ClusterForm({
                         </button>
                         <button
                             data-testid="save_cluster_after_entering_cluster_details"
-                            className="cta mr-20 ml-20"
+                            className="cta mr-20 ml-12"
                             onClick={() => saveClusterCall()}
                         >
                             {id ? 'Update cluster' : 'Save cluster'}
