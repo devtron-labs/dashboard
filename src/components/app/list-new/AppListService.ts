@@ -45,8 +45,8 @@ async function commonAppFilters(serverMode) {
     if(serverMode === SERVER_MODE.FULL){
         return getAppFilters()
     } else {
-        return Promise.all([getProjectList(), getClusterList()]).then(([Teams, Clusters]) => {
-            return {result: {Teams: Teams?.result, Clusters: Clusters?.result }}
+        return Promise.all([getProjectList(), getClusterList()]).then(([projectListRes, clusterListResp]) => {
+            return {result: {Teams: projectListRes?.result, Clusters: clusterListResp?.result }}
         })
     } 
 }
