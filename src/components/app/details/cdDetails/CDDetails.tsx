@@ -97,7 +97,6 @@ export default function CDDetails() {
                 }),
             )
         }
-        console.log(history, path)
         setTriggerHistory(new Map(newTriggerHistory))
     }, [deploymentHistoryResult, loading])
 
