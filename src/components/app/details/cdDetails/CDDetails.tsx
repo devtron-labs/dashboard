@@ -10,7 +10,7 @@ import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../
 import { useAsync, useInterval, useScrollable, mapByKey, asyncWrap } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
-import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
+import { useHistory, useRouteMatch, useParams, generatePath, useLocation } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
 import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHistoryConfigList.component'
@@ -33,6 +33,7 @@ const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'f
 let statusSet = new Set(['starting', 'running', 'pending'])
 
 export default function CDDetails() {
+    const location = useLocation()
     const { appId, envId, triggerId, pipelineId } = useParams<{
         appId: string
         envId: string
@@ -63,6 +64,7 @@ export default function CDDetails() {
     const [deploymentAppType, setDeploymentAppType] = useState<DeploymentAppType>(null)
     const { path } = useRouteMatch()
     const { replace } = useHistory()
+    const history = useHistory()
     useInterval(pollHistory, 30000)
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
 
@@ -75,6 +77,12 @@ export default function CDDetails() {
             setHasMore(true)
             setHasMoreLoading(true)
         }
+        let queryString = new URLSearchParams(location.search)
+        let queryParam = queryString.get('type')
+        let deploymentStageType = queryParam === "PRECD" ? "PRE" : "POST"
+        const requiredResult = deploymentHistoryResult.result.filter((obj) => {
+            return obj.stage === deploymentStageType;
+          });
         const newTriggerHistory = (deploymentHistoryResult.result || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
@@ -85,10 +93,11 @@ export default function CDDetails() {
                     appId,
                     envId,
                     pipelineId,
-                    triggerId: deploymentHistoryResult.result[0].id,
+                    triggerId: requiredResult[0].id,
                 }),
             )
         }
+        console.log(history, path)
         setTriggerHistory(new Map(newTriggerHistory))
     }, [deploymentHistoryResult, loading])
 
@@ -260,8 +269,8 @@ export const TriggerOutput: React.FC<{
         !!triggerId && !!pipelineId,
     )
     useEffect(() => {
-        if (triggerDetailsLoading || triggerDetailsError) return
-
+        if (triggerDetailsLoading || triggerDetailsError || !triggerDetailsResult) return
+        
         if (triggerDetailsResult?.result) syncState(+triggerId, triggerDetailsResult?.result)
     }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
 
