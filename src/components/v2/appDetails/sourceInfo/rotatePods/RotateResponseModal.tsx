@@ -18,7 +18,7 @@ import { ReactComponent as RetryIcon } from '../../../../../assets/icons/ic-arro
 import { RotatePods } from './rotatePodsModal.service'
 import { toast } from 'react-toastify'
 import { POD_ROTATION_INITIATED } from '../../../../../config'
-
+import { ReactComponent as BackIcon } from '../../../../../assets/icons/ic-arrow-backward.svg'
 export default function RotateResponseModal({ onClose, response, setResult}: RotateResponseModalProps) {
     const [isLoading, setIsLoading] = useState(false)
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
@@ -26,7 +26,12 @@ export default function RotateResponseModal({ onClose, response, setResult}: Rot
     const renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bcn-0 pt-16 pr-20 pb-16 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0">Restart status</h2>
+                <span className="fs-16 fw-6 flex m-0 lh-20 cn-9">
+                    <button type="button" className="dc__transparent icon-dim-24 mr-16" onClick={() => setResult(null)}>
+                        <BackIcon />
+                    </button>
+                    Restart status
+                </span>
                 <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>
                     <Close className="icon-dim-24" />
                 </button>

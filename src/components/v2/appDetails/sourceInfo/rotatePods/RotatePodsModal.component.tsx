@@ -50,7 +50,6 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
             .catch((error) => {
                 showError(error)
             })
-            .finally(() => {})
     }
 
     const getPodsToRotate = () => {
@@ -181,11 +180,11 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
 
             if (!result.containsError) {
                 toast.success(POD_ROTATION_INITIATED)
-
                 onClose()
             } else {
                 setResult(result)
             }
+            setRotatingInProgress(false)
         } catch (e) {
             showError(e)
         } finally {
