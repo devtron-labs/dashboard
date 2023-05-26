@@ -1019,7 +1019,7 @@ export default function ClusterForm({
                                 }
                                 classname="info_bar cn-9 lh-20 dc__no-border-imp"
                                 Icon={Info}
-                                iconClass="icon-dim-18"
+                                iconClass="icon-dim-16"
                             />
                             <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom">
                                 <div data-testid="select_all_cluster_checkbox">
@@ -1048,7 +1048,12 @@ export default function ClusterForm({
                                             <Checkbox
                                                 key={`app-$${index}`}
                                                 dataTestId={`checkbox_selection_of_cluster-${clusterDetail.cluster_name}`}
-                                                rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
+                                                rootClassName={`form__checkbox-label--ignore-cache mb-0 flex${
+                                                    selectedUserNameOptions[clusterDetail.cluster_name]
+                                                        .errorInConnecting === 'cluster-already-exists'
+                                                        ? ''
+                                                        : ' dc__opacity-0_5'
+                                                }`}
                                                 onChange={() => toggleIsSelected(clusterDetail.cluster_name)}
                                                 isChecked={isClusterSelected[clusterDetail.cluster_name]}
                                                 value={CHECKBOX_VALUE.CHECKED}
