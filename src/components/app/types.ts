@@ -1,10 +1,12 @@
+import { TagType, Teams } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
-import { KEY_VALUE } from '../../config'
-import { Teams } from '../../services/service.types'
+import { AppEnvironment } from '../../services/service.types'
 import { DeploymentAppType } from '../v2/appDetails/appDetails.type'
+import { DeploymentStatusDetailsBreakdownDataType } from './details/appDetails/appDetails.type'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: (e) => void
+    isJobView?: boolean
 }
 
 export interface OptionType {
@@ -23,47 +25,6 @@ export interface LabelTags {
     tagError: string
 }
 
-export interface TagType {
-    key: string
-    value?: string
-    description?: string
-    propagate: boolean
-    isInvalidKey?: boolean
-    isInvalidValue?: boolean
-}
-
-export interface TagErrorType {
-    isValid: boolean
-    messages: string[]
-}
-export interface TagLabelSelectType {
-    isCreateApp?: boolean
-    labelTags: TagType[]
-    setLabelTags: (tagList: TagType[]) => void
-    tabIndex?: number
-}
-
-export interface TagDetailType {
-    index: number
-    tagData: TagType
-    setTagData: (index: number, tagData: TagType) => void
-    removeTag: (index: number) => void
-    tabIndex?: number
-}
-
-export interface TagLabelValueSelectorType {
-    selectedTagIndex: number
-    tagData: TagType
-    setTagData: (index: number, tagData: TagType) => void
-    tagOptions?: OptionType[]
-    isRequired?: boolean
-    tagInputType?: KEY_VALUE
-    placeholder?: string
-    tabIndex?: number
-    refVar?: React.MutableRefObject<any>
-    dependentRef?: React.MutableRefObject<any>
-}
-
 export interface AddNewAppState {
     view: string
     code: number
@@ -73,6 +34,7 @@ export interface AddNewAppState {
     showErrors: boolean
     form: {
         appName: string
+        description: string
         appId: number
         projectId: number
         cloneId: number
@@ -115,10 +77,17 @@ export interface AppMetaInfo {
     appId: number
     appName: string
     createdBy: string
+    description: string
     createdOn: string
     projectId?: number
     projectName?: string
     labels?: TagType[]
+}
+
+export interface AppHeaderType {
+    appName: string
+    appMetaInfo: AppMetaInfo
+    reloadMandatoryProjects: boolean
 }
 
 interface ResourceTree {
@@ -440,17 +409,20 @@ export interface LabelTagsType {
 export interface AppOverviewProps {
     appMetaInfo: AppMetaInfo
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
+    isJobOverview?: boolean
 }
 
 export interface AboutAppInfoModalProps {
     isLoading: boolean
     appId: string
+    description: string
     onClose: (e) => void
     appMetaInfo: AppMetaInfo
     currentLabelTags?: TagType[]
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
     fetchingProjects?: boolean
     projectsList?: Teams[]
+    isJobOverview?: boolean
 }
 
 export interface DeleteComponentProps {
@@ -465,23 +437,35 @@ export interface DeleteComponentProps {
     url?: string
     reload?: () => void
     configuration?: string
+    dataTestid?: string
+    closeCustomComponent?: () => void
 }
 
 export interface AppStatusType {
     appStatus: string
     isDeploymentStatus?: boolean
+    isJobView?: boolean
+}
+export interface JobPipeline {
+    ci_pipeline_id: number
+    ci_pipeline_name: string
+    started_on: string
+    status: string
+    dataTestId?: string
 }
 
-export interface ResizableTagTextAreaProps {
-  className?: string
-  minHeight?: number
-  maxHeight?: number
-  value?: string
-  onChange?: (e) => void
-  onBlur?: (e) => void
-  onFocus?: (e) => void
-  placeholder?: string
-  tabIndex?: number
-  refVar?: React.MutableRefObject<HTMLTextAreaElement>
-  dependentRef?: React.MutableRefObject<HTMLTextAreaElement>
+export interface TagChipsContainerType {
+  labelTags: TagType[]
+}
+export interface SourceInfoType {
+  appDetails
+  setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
+  environment: AppEnvironment
+  environments: AppEnvironment[]
+  showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
+  showUrlInfo?: React.Dispatch<React.SetStateAction<boolean>>
+  showHibernateModal?: React.Dispatch<React.SetStateAction<'' | 'resume' | 'hibernate'>>
+  deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
+  loadingDetails?: boolean
+  loadingResourceTree?: boolean
 }

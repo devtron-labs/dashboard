@@ -29,9 +29,16 @@ interface customEnv {
     EA_APP_DETAILS_POLLING_INTERVAL?: number
     CENTRAL_API_ENDPOINT?: string
     HIDE_DEPLOYMENT_GROUPS?: boolean
-    HIDE_GITOPS_OR_HELM_OPTION ?: boolean
+    HIDE_GITOPS_OR_HELM_OPTION?: boolean
     CONFIGURABLE_TIMEOUT?: string
     HIDE_APPLICATION_GROUPS?: boolean
+    K8S_CLIENT?: boolean
+    USE_V2?: boolean
+    CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL?: number
+    CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT?: number
+    ENABLE_CHART_SEARCH_IN_HELM_DEPLOY?: boolean
+    HIDE_EXCLUDE_INCLUDE_GIT_COMMITS?: boolean
+    ENABLE_BUILD_CONTEXT?: boolean
 }
 declare global {
     interface Window {
@@ -121,7 +128,14 @@ if (!window || !window._env_) {
         CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
         HIDE_DEPLOYMENT_GROUPS: true,
         HIDE_GITOPS_OR_HELM_OPTION: false,
-        HIDE_APPLICATION_GROUPS: true
+        HIDE_APPLICATION_GROUPS: false,
+        K8S_CLIENT: process.env.REACT_APP_K8S_CLIENT === 'true',
+        USE_V2: true,
+        CLUSTER_TERMINAL_CONNECTION_POLLING_INTERVAL: 7000,
+        CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
+        ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
+        HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
+        ENABLE_BUILD_CONTEXT: false
     }
 }
 

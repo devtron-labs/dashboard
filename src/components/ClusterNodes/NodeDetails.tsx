@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
-    BreadCrumb,
     ButtonWithLoader,
     copyToClipboard,
     handleUTCTime,
-    Pagination,
-    Progressing,
-    showError,
-    useBreadcrumb,
     ToastBodyWithButton,
     filterImageList,
-    toastAccessDenied,
 } from '../common'
+import {
+    showError,
+    Progressing,
+    BreadCrumb,
+    useBreadcrumb,
+    toastAccessDenied,
+    ServerErrors,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
@@ -51,7 +53,6 @@ import { MODES } from '../../config'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
 import './clusterNodes.scss'
-import { ServerErrors } from '../../modals/commonTypes'
 import { ReactComponent as TerminalIcon } from '../../assets/icons/ic-terminal-fill.svg'
 import ClusterTerminal from './ClusterTerminal'
 import EditTaintsModal from './NodeActions/EditTaintsModal'

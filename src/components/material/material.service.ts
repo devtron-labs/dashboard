@@ -1,4 +1,4 @@
-import { post, put, trash } from '../../services/api';
+import { post, put, trash } from '@devtron-labs/devtron-fe-common-lib';
 import { Routes } from '../../config';
 
 export function createMaterial(request) {

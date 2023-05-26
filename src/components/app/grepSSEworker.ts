@@ -97,7 +97,6 @@ export default () => {
                     }
                     catch (err) { }
                 })
-                // console.log(urls)
                 for (let index = 0; index < urls.length; index++) {
                     const element = urls[index];
                     wrappers[index] = Object.assign({}, bp)
@@ -132,7 +131,6 @@ export default () => {
     }
 
     function respond() {
-        // console.log(wrapper.filteredArray.length)
         wrappers.forEach( wrapper => {
             if (wrapper.filteredArray.length === 0) return
             self.postMessage({ result: wrapper.filteredArray, readyState: wrapper.eventSrc.readyState }, null);// eslint-disable-line no-restricted-globals

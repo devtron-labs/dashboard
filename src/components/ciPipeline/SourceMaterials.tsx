@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { SourceTypeMap, URLS } from '../../config'
 import { components } from 'react-select'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import ReactSelect from 'react-select'
 import error from '../../assets/icons/misc/errorInfo.svg'
 import git from '../../assets/icons/git/git.svg'
@@ -10,14 +10,17 @@ import { DropdownIndicator } from '../charts/charts.util'
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline-purple.svg'
 import { ConfigureWebhook } from './ConfigureWebhook'
 import { SourceMaterialsProps } from './types'
-import InfoColourBar from '../common/infocolourBar/InfoColourbar'
 import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { reactSelectStyles } from '../CIPipelineN/ciPipeline.utils'
+import { InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { ConditionalWrap } from '../common'
+import Tippy from '@tippyjs/react'
 
 export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) {
     const [isProviderChanged, setProviderChanged] = useState(false)
-    const { ciPipelineId } = useParams<{ ciPipelineId: string }>()
     const isMultiGit = props.materials.length > 1
+    const location = useLocation()
+    const islinkedCI = location.pathname.includes('linked-ci')
     let _materials = props.materials
     let _webhookTypeMaterial = _materials.find((_material) => _material.type == SourceTypeMap.WEBHOOK)
 
@@ -98,7 +101,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                 const isBranchRegex = mat.type === SourceTypeMap.BranchRegex || mat.isRegex
                 const isBranchFixed = mat.type === SourceTypeMap.BranchFixed && !mat.isRegex
                 const _selectedWebhookEvent =
-                    mat.type === SourceTypeMap.WEBHOOK && mat.value && props.webhookData.getSelectedWebhookEvent(mat)
+                    mat.type === SourceTypeMap.WEBHOOK && mat.value && props.webhookData?.getSelectedWebhookEvent(mat)
                 let selectedMaterial
 
                 if (props.includeWebhookEvents && mat.type === SourceTypeMap.WEBHOOK && !_selectedWebhookEvent) {
@@ -108,7 +111,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                         mat.value = ''
                         setProviderChanged(true)
                     }
-                } else if (props.ciPipelineSourceTypeOptions.length == 1) {
+                } else if (props.ciPipelineSourceTypeOptions.length === 1) {
                     selectedMaterial = props.ciPipelineSourceTypeOptions[0]
                 } else {
                     selectedMaterial =
@@ -121,6 +124,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                         ) || props.ciPipelineSourceTypeOptions[0]
                 }
                 let errorObj = props.validationRules?.sourceValue(isBranchRegex ? mat.regex : mat.value)
+                const isMultiGitAndWebhook = isMultiGit && _selectedWebhookEvent
                 return (
                     <div key={`source-material-${index}`}>
                         <div className="mt-20" key={mat.gitMaterialId}>
@@ -131,57 +135,75 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                 </p>
                             </div>
                             <div className="mt-16 flex left">
-                                <div className="w-50 mr-8">
-                                    <label className="form__label mb-6 dc__required-field">
-                                        Source Type
-                                    </label>
-                                    <ReactSelect
-                                        className="workflow-ci__source"
-                                        placeholder="Source Type"
-                                        isSearchable={false}
-                                        menuPortalTarget={document.getElementById('visible-modal')}
-                                        options={props.ciPipelineSourceTypeOptions}
-                                        value={selectedMaterial}
-                                        closeMenuOnSelect={true}
-                                        onChange={(selected) => props?.selectSourceType(selected, mat.gitMaterialId)}
-                                        isClearable={false}
-                                        isDisabled={
-                                            ciPipelineId !== '0' &&
-                                            (props.includeWebhookEvents ? !isProviderChanged : !!mat.id)
-                                        }
-                                        isMulti={false}
-                                        components={{
-                                            DropdownIndicator,
-                                            Option,
-                                            IndicatorSeparator: null,
-                                            ClearIndicator: null,
-                                            MenuList,
-                                        }}
-                                        styles={{
-                                            ...reactSelectStyles,
-                                            menu: (base, state) => ({
-                                                ...base,
-                                                top: 'auto',
-                                            }),
-                                            menuList: (base, state) => ({
-                                                ...base,
-                                                zIndex: '99',
-                                            }),
-                                        }}
-                                    />
-                                    <div className="h-18"></div>
-                                </div>
+                                <ConditionalWrap
+                                    condition={isMultiGitAndWebhook}
+                                    wrap={(children) => (
+                                        <Tippy
+                                            className="default-tt"
+                                            arrow={false}
+                                            placement="top"
+                                            content={`Cannot change source type ${_selectedWebhookEvent.name} for multi-git applications`}
+                                            interactive={true}
+                                        >
+                                            {children}
+                                        </Tippy>
+                                    )}
+                                >
+                                    <div className={'w-50 mr-8 '}>
+                                        <label className="form__label mb-6 dc__required-field">Source Type</label>
+                                        <ReactSelect
+                                            className="workflow-ci__source"
+                                            placeholder="Source Type"
+                                            classNamePrefix={`select-build-pipeline-sourcetype-${index}`}
+                                            isSearchable={false}
+                                            menuPortalTarget={document.getElementById('visible-modal')}
+                                            options={
+                                                !isMultiGit
+                                                    ? props.ciPipelineSourceTypeOptions
+                                                    : props.ciPipelineSourceTypeOptions.slice(0, 2)
+                                            }
+                                            isDisabled={islinkedCI || (isMultiGit && _selectedWebhookEvent)}
+                                            value={selectedMaterial}
+                                            closeMenuOnSelect={true}
+                                            onChange={(selected) =>
+                                                props?.selectSourceType(selected, mat.gitMaterialId)
+                                            }
+                                            isClearable={false}
+                                            isMulti={false}
+                                            components={{
+                                                DropdownIndicator,
+                                                Option,
+                                                IndicatorSeparator: null,
+                                                ClearIndicator: null,
+                                                MenuList,
+                                            }}
+                                            styles={{
+                                                ...reactSelectStyles,
+                                                menu: (base, state) => ({
+                                                    ...base,
+                                                    top: 'auto',
+                                                }),
+                                                menuList: (base, state) => ({
+                                                    ...base,
+                                                    zIndex: '99',
+                                                }),
+                                            }}
+                                        />
+
+                                        <div className="h-18"></div>
+                                    </div>
+                                </ConditionalWrap>
+
                                 {isBranchFixed && (
                                     <div className="w-50 ml-8 left">
                                         <div>
-                                            <label className="form__label mb-6 dc__required-field">
-                                                Branch Name
-                                            </label>
+                                            <label className="form__label mb-6 dc__required-field">Branch Name</label>
                                             <input
                                                 className="form__input"
                                                 autoComplete="off"
                                                 placeholder="Eg. main"
                                                 type="text"
+                                                data-testid={`build-pipeline-branch-name-textbox${index}`}
                                                 disabled={!props.handleSourceChange}
                                                 value={mat.value}
                                                 onChange={(event) => {
@@ -207,14 +229,13 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
 
                                 {isBranchRegex && (
                                     <div className="w-50 ml-8">
-                                        <label className="form__label mb-6 dc__required-field">
-                                            Branch Regex
-                                        </label>
+                                        <label className="form__label mb-6 dc__required-field">Branch Regex</label>
                                         <input
                                             className="form__input"
                                             autoComplete="off"
                                             placeholder="Eg. feature.*"
                                             type="text"
+                                            data-testid={`build-pipeline-branch-name-textbox${index}`}
                                             disabled={!props.handleSourceChange}
                                             value={mat.regex}
                                             onChange={(event) => {
@@ -227,7 +248,10 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                             autoFocus={true}
                                         />
                                         {errorObj && !errorObj.isValid ? (
-                                            <span className="form__error ci-error ">
+                                            <span
+                                                className="form__error ci-error "
+                                                data-testid="build-pipeline-validation-error-message"
+                                            >
                                                 <img src={error} className="form__icon" />
                                                 {props.validationRules?.sourceValue(_materials[index].regex).message}
                                             </span>

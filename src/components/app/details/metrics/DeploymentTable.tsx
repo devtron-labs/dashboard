@@ -5,7 +5,8 @@ import { ReactComponent as SortDown } from '../../../../assets/icons/ic-sort-dow
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg';
 import { ReactComponent as Help } from '../../../../assets/icons/ic-info-outline.svg';
 import { ReactComponent as Fail } from '../../../../assets/icons/ic-error-exclamation.svg';
-import { Pagination, Progressing } from '../../../common';
+import { Pagination } from '../../../common';
+import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../../../config';
 import ReactGA from 'react-ga4';
 

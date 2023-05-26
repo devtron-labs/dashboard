@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { AddWorkflowProps, AddWorkflowState } from './types';
-import { DialogForm, DialogFormSubmit, showError } from '../common';
+import { DialogForm, DialogFormSubmit, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { createWorkflow, updateWorkflow } from './service';
 import { toast } from 'react-toastify';
 import { getWorkflowList } from '../../services/service';
-import { ServerErrors } from '../../modals/commonTypes';
 import error from '../../assets/icons/misc/errorInfo.svg';
 
 export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflowState>  {
@@ -72,7 +71,7 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
     }
 
     isNameValid(): boolean {
-        return !!this.state.name.length;
+        return !!this.state.name?.length;
     }
 
     render() {

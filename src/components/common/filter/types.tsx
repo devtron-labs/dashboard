@@ -28,6 +28,7 @@ export interface FilterProps {
     rootClassName?: string
     position?: 'left' | 'right'
     isFirstLetterCapitalize?: boolean
+    dataTestId?: string
 }
 
 export interface FilterState {

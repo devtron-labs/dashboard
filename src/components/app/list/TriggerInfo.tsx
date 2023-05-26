@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { VisibleModal, showError, Progressing, } from '../../../components/common';
-import { RouteComponentProps } from 'react-router-dom';
+import { showError, Progressing, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 import { getCITriggerInfoModal } from '../service';
 import { ViewType } from '../../../config';
 import close from '../../../assets/icons/ic-close.svg';
@@ -20,7 +19,7 @@ interface TriggerInfoModalState {
 
 interface TriggerInfoModalProps {
     close: () => void;
-    appId: number | string;
+    envId: number | string;
     ciArtifactId: number | string;
     commit?: string;
 }
@@ -45,7 +44,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
 
     componentDidMount() {
         let params = {
-            appId: this.props.appId,
+            envId: this.props.envId,
             ciArtifactId: this.props.ciArtifactId
         }
         getCITriggerInfoModal(params, this.props.commit).then((response) => {
@@ -86,20 +85,27 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
     }
 
     renderWithBackDrop(headerDescription: string, body) {
-        return <VisibleModal className="">
-            <div className={`modal__body modal__body--ci-mat-trigger-info`}>
-                <div className="trigger-modal__header">
-                    <div className="">
-                        <h1 className="modal__title">{this.state.appName}</h1>
-                        <p className="fs-13 cn-7 lh-1-54 m-0">
-                            {headerDescription}
-                        </p>
+        return (
+            <VisibleModal className="">
+                <div data-testid="visible-modal-commit-info" className={`modal__body modal__body--ci-mat-trigger-info`}>
+                    <div className="trigger-modal__header">
+                        <div className="">
+                            <h1 className="modal__title">{this.state.appName}</h1>
+                            <p className="fs-13 cn-7 lh-1-54 m-0">{headerDescription}</p>
+                        </div>
+                        <button
+                            data-testid="visible-modal-close"
+                            type="button"
+                            className="dc__transparent"
+                            onClick={this.props.close}
+                        >
+                            <img src={close} alt="close" />
+                        </button>
                     </div>
-                    <button type="button" className="dc__transparent" onClick={this.props.close}> <img src={close} alt="close" /></button>
+                    {body}
                 </div>
-                {body}
-            </div>
-        </VisibleModal>
+            </VisibleModal>
+        )
     }
 
     render() {
@@ -113,16 +119,29 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
             </div>
         }
         else {
-            let selectedMaterial = this.state.materials.find(mat => mat.isSelected);
-            headerDescription = `Deployed on ${this.state.environmentName} at ${this.state.lastDeployedTime} by ${this.state.triggeredByEmail}`;
-            body = <div className="m-lr-0 flexbox">
-                <div className="material-list">
-                    <MaterialSource material={this.state.materials} selectMaterial={this.selectMaterial} />
+            const selectedMaterial = this.state.materials.find((mat) => mat.isSelected)
+            headerDescription = `Deployed on ${this.state.environmentName} at ${this.state.lastDeployedTime} by ${this.state.triggeredByEmail}`
+            body = (
+                <div className="m-lr-0 flexbox">
+                    <div
+                        className="material-list dc__overflow-hidden dc__bottom-left-radius-8"
+                        style={{ height: 'calc(100vh - 229px)' }}
+                    >
+                        <MaterialSource
+                            material={this.state.materials}
+                            selectMaterial={this.selectMaterial}
+                            fromTriggerInfo={true}
+                        />
+                    </div>
+                    <div className="select-material" style={{ height: 'calc(100vh - 229px)' }}>
+                        <MaterialHistory
+                            material={selectedMaterial}
+                            pipelineName=""
+                            toggleChanges={this.toggleChanges}
+                        />
+                    </div>
                 </div>
-                <div className="select-material select-material--h450">
-                    <MaterialHistory material={selectedMaterial} pipelineName="" toggleChanges={this.toggleChanges} />
-                </div>
-            </div>
+            )
         }
         return this.renderWithBackDrop(headerDescription, body);
     }

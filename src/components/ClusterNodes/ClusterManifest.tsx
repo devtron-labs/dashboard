@@ -20,7 +20,8 @@ export default function ClusterManifest({ terminalAccessId }: { terminalAccessId
                 })
                 .catch((error) => {
                     setResourceMissing(true)
-                }).finally(() => {
+                })
+                .finally(() => {
                     setLoading(false)
                 })
         } else {

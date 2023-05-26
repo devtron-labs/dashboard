@@ -4,10 +4,11 @@ import { AppStatusType } from './types'
 import { ReactComponent as InfoIcon } from '../../assets/icons/ic-info-outlined.svg'
 import Tippy from '@tippyjs/react'
 import { triggerStatus } from './details/cicdHistory/History.components'
+import { YET_TO_RUN } from '../Jobs/Constants'
 
-export default function AppStatus({ appStatus, isDeploymentStatus = false }: AppStatusType) {
+export default function AppStatus({ appStatus, isDeploymentStatus = false, isJobView = false }: AppStatusType) {
     let status = appStatus
-    if(isDeploymentStatus){
+    if (isDeploymentStatus) {
         status = triggerStatus(appStatus)
     }
     const appStatusLowerCase = status?.toLowerCase()
@@ -28,9 +29,9 @@ export default function AppStatus({ appStatus, isDeploymentStatus = false }: App
                     <InfoIcon className="icon-dim-16 mr-6 fcn-6" />
                 </Tippy>
             )}
-            <p className="dc__truncate-text dc__first-letter-capitalize  m-0">
+            <p data-testid={`${status}-app-status`} className="dc__truncate-text dc__first-letter-capitalize  m-0">
                 {isNotDeployed ? (
-                    <span className="cn-6">{StatusConstants.NOT_DEPLOYED.normalCase}</span>
+                    <span className="cn-6">{isJobView ? YET_TO_RUN : StatusConstants.NOT_DEPLOYED.normalCase}</span>
                 ) : (
                     status || '-'
                 )}

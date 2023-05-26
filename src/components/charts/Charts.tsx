@@ -1,11 +1,10 @@
 import React from 'react'
 import { Route, Switch, Redirect } from 'react-router-dom'
-import DeploymentDetail from './deploymentDetail/DeploymentDetail'
 import DiscoverCharts from './list/DiscoverCharts'
 import { NavLink } from 'react-router-dom'
 import './list/list.scss'
 import '../app/details/appDetails/appDetails.scss'
-import './charts.css'
+import './charts.scss'
 import { useRouteMatch } from 'react-router'
 
 export default function Charts() {
@@ -13,7 +12,6 @@ export default function Charts() {
 
     return (
         <Switch>
-            <Route path={`${path}/deployments/:appId(\\d+)/env/:envId(\\d+)`} component={DeploymentDetail} />
             <Route path={`${path}/discover`} component={DiscoverCharts} />
             <Redirect to={`${path}/discover`} />
         </Switch>

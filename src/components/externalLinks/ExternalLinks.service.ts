@@ -1,20 +1,15 @@
 import { Routes } from '../../config'
-import { get, post, put, trash } from '../../services/api'
+import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ExternalLink,
     ExternalLinkIdentifierType,
     ExternalLinkResponse,
     ExternalLinkUpdateResponse,
     GetAllAppResponseType,
-    MonitoringToolResponse,
 } from './ExternalLinks.type'
 
-export const getMonitoringTools = (): Promise<MonitoringToolResponse> => {
-    return get(`${Routes.EXTERNAL_LINKS_API}/tools`)
-}
-
 const getURLWithQueryParams = (clusterId?: number, identifier?: string, type?: ExternalLinkIdentifierType) => {
-    let _url = Routes.EXTERNAL_LINKS_API
+    let _url = `${Routes.EXTERNAL_LINKS_API}/${Routes.APP_LIST_V2}`
     if (clusterId >= 0 || identifier || type) {
         const queryParams = {
             clusterId: clusterId >= 0 ? `${clusterId}` : '',

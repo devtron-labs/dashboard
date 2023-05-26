@@ -1,10 +1,11 @@
 import React, {useState, useMemo} from 'react'
-import {useAsync, Progressing, multiSelectStyles, mapByKey, Td, DropdownIcon, Option, noop, DatePicker} from '../../../common'
+import {useAsync, mapByKey, Td, DropdownIcon, DatePicker} from '../../../common'
+import { Progressing, multiSelectStyles, Option } from '@devtron-labs/devtron-fe-common-lib'
 import {useParams, useRouteMatch, generatePath, useHistory, Route, Switch} from 'react-router'
 import {getCIPipelines } from '../../service'
 import Select, {components} from 'react-select';
 import {getTriggerList, getFilters} from './service'
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import {ReactComponent as EmptyTests} from '../../../../assets/img/ic-empty-tests.svg';
 import {SelectedNames} from './Test.types'
 import './TestRunDetails.scss'

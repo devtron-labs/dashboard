@@ -1,6 +1,6 @@
 import React from 'react'
 import { components } from 'react-select'
-import { multiSelectStyles } from '../../../../common'
+import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
 
 export const styles = {
     ...multiSelectStyles,

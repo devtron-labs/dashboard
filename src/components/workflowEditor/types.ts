@@ -35,6 +35,7 @@ export interface WorkflowEditProps
     isCDPipeline: boolean
     respondOnSuccess: () => void
     getWorkflows: () => void
+    isJobView?: boolean
 }
 
 export interface AddWorkflowState {
@@ -81,6 +82,7 @@ export interface CDNodeProps{
     deploymentAppDeleteRequest: boolean
     deploymentAppCreated?: boolean
     match: RouteComponentProps['match']
+    description: string
 }
 
 export interface WebhookNodeProps {

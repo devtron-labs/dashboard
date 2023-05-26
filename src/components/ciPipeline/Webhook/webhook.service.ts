@@ -1,6 +1,5 @@
 import { Routes } from '../../../config'
-import { get } from '../../../services/api'
-import { ResponseType } from '../../../services/service.types'
+import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { WebhookDetailsResponse, WebhookDetailsType, WebhookListResponse } from './types'
 
 export function getExternalCIList(appId: number | string): Promise<WebhookListResponse> {

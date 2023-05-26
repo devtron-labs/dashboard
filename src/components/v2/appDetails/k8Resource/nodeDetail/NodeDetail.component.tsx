@@ -13,7 +13,7 @@ import AppDetailsStore from '../../appDetails.store'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { getManifestResource } from './nodeDetail.api'
-import { Checkbox, CHECKBOX_VALUE, showError } from '../../../../common'
+import { showError, Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import { Nodes } from '../../../../app/types'
 import './nodeDetail.css'
@@ -39,10 +39,11 @@ function NodeDetailComponent({
     const [resourceContainers, setResourceContainers] = useState([])
     const [isResourceDeleted, setResourceDeleted] = useState(false)
     const [isManagedFields, setManagedFields] = useState(false)
-    const [hideManagedFields, setHideManagedFields] = useState(false)
+    const [hideManagedFields, setHideManagedFields] = useState(true)
     const [fetchingResource, setFetchingResource] = useState(
         isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
     )
+    const [selectedContainer, setSelectedContainer] = useState<Map<string, string>>(new Map())
     const { path, url } = useRouteMatch()
     const toggleManagedFields = (managedFieldsExist: boolean) => {
         if (selectedTabName === NodeDetailTab.MANIFEST && managedFieldsExist) {
@@ -53,7 +54,7 @@ function NodeDetailComponent({
     }
 
     useEffect(() => toggleManagedFields(isManagedFields), [selectedTabName])
-    
+
     useEffect(() => {
         if (params.nodeType) {
             const _tabs = getNodeDetailResourceBrowserTabs(params.nodeType as NodeType)
@@ -169,7 +170,7 @@ function NodeDetailComponent({
         )
     })
     const isDeleted =
-        (currentTab && currentTab[0] ? currentTab[0].isDeleted : false) ||
+        (currentTab?.[0] ? currentTab[0].isDeleted : false) ||
         (isResourceBrowserView && isResourceDeleted) ||
         (!isResourceBrowserView &&
             (appDetails.resourceTree.nodes?.findIndex(
@@ -183,13 +184,13 @@ function NodeDetailComponent({
         selectedResource.containers = resourceContainers
     }
 
-    const handleChanges = ():void => {
+    const handleChanges = (): void => {
         setHideManagedFields(!hideManagedFields)
     }
     
     return (
         <React.Fragment>
-            <div className="pl-20 bcn-0 flex left w-100 pr-20">
+            <div data-testid="app-resource-containor-header" className="pl-20 bcn-0 flex left w-100 pr-20">
                 {tabs &&
                     tabs.length > 0 &&
                     tabs.map((tab: string, index: number) => {
@@ -204,6 +205,7 @@ function NodeDetailComponent({
                             >
                                 <NavLink to={`${url}/${tab.toLowerCase()}`} className=" dc__no-decor flex left">
                                     <span
+                                        data-testid={`${tab.toLowerCase()}-nav-link`}
                                         className={`${
                                             tab.toLowerCase() === selectedTabName.toLowerCase() ? 'cb-5' : 'cn-9'
                                         } default-tab-cell`}
@@ -225,7 +227,9 @@ function NodeDetailComponent({
                                 value={CHECKBOX_VALUE.CHECKED}
                                 onChange={handleChanges}
                             >
-                                <span className="mr-5 cn-9 fs-12">Hide Managed Fields</span>
+                                <span className="mr-5 cn-9 fs-12" data-testid="hide-managed-fields">
+                                    Hide Managed Fields
+                                </span>
                             </Checkbox>
                         </div>
                     </>
@@ -286,6 +290,8 @@ function NodeDetailComponent({
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
+                            selectedContainer={selectedContainer}
+                            setSelectedContainer={setSelectedContainer}
                         />
                     </Route>
                     <Redirect to={`${path}/${NodeDetailTab.MANIFEST.toLowerCase()}`} />
