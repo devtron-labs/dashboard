@@ -137,7 +137,7 @@ if (!window || !window._env_) {
         ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
         HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
         ENABLE_BUILD_CONTEXT: false,
-        ENABLE_RESTART_WORKLOAD: true
+        ENABLE_RESTART_WORKLOAD: false
     }
 }
 
