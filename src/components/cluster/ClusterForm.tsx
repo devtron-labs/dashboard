@@ -1011,7 +1011,7 @@ export default function ClusterForm({
                         <AddClusterHeader />
                         <div className="api-token__list en-2 bw-1 bcn-0 br-8 mr-20 ml-20 mt-16">
                             <InfoColourBar
-                                message={`${validCluster()} valid cluster. Select the cluster you want to Add/Update`}
+                                message={`${validCluster()} valid cluster. Select the cluster you want to add/update`}
                                 classname="info_bar cn-9 lh-20 dc__no-border-imp"
                                 Icon={Info}
                                 iconClass="icon-dim-18"
