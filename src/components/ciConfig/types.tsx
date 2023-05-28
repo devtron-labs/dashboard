@@ -6,6 +6,7 @@ import {
     DockerConfigOverrideType,
     FormType,
     MandatoryPluginDataType,
+    PluginDetailType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
@@ -335,6 +336,7 @@ export interface BuildContextProps {
 export interface CIPipelineSidebarType {
     isJobView?: boolean
     mandatoryPluginData: MandatoryPluginDataType
+    pluginList: PluginDetailType[]
 }
 
 export interface TaskListType {

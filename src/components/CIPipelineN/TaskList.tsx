@@ -91,7 +91,15 @@ export function TaskList({ withWarning }: TaskListType) {
     const deleteTask = (index: number): void => {
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
-        newList.splice(index, 1)
+        const _taskDetail = newList.splice(index, 1)
+        if (_taskDetail[0].required) {
+            for (const task of newList) {
+                if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
+                    task.required = true
+                    break
+                }
+            }
+        }
         _formData[activeStageName].steps = newList
         const newListLength = newList.length
         const newTaskIndex = index >= newListLength ? (newListLength > 1 ? newListLength - 1 : 0) : index
@@ -139,6 +147,9 @@ export function TaskList({ withWarning }: TaskListType) {
                         >
                             <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
                             <span className="w-80 dc__ellipsis-right">{taskDetail.name}</span>
+                            {taskDetail.required && (
+                                <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
+                            )}
                             {formDataErrorObj[activeStageName].steps[index] &&
                                 !formDataErrorObj[activeStageName].steps[index].isValid && (
                                     <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-2" />

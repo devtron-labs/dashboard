@@ -6,6 +6,8 @@ import {
     CiPipelineSourceTypeOption,
     Githost,
     ErrorObj,
+    PluginDetailType,
+    MandatoryPluginDetailType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
@@ -197,15 +199,6 @@ export const PatchAction = {
     DELETE: 2,
 }
 
-export interface PluginDetailType {
-    id: number
-    name: string
-    type: string
-    description: string
-    icon: string
-    tags: string[]
-}
-
 export enum VariableFieldType {
     Input = 'inputVariables',
     Output = 'outputVariables',
@@ -253,4 +246,11 @@ export interface BuildType {
     isSecurityModuleInstalled: boolean
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
     isJobView?: boolean
+}
+
+export interface PreBuildType {
+  presetPlugins: PluginDetailType[]
+  sharedPlugins: PluginDetailType[]
+  mandatoryPluginsMap: Record<number, MandatoryPluginDetailType>
+  isJobView?: boolean
 }

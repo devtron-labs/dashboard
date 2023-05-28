@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext } from 'react'
+import React, { useState, useEffect, createContext, useMemo } from 'react'
 import { NavLink } from 'react-router-dom'
 import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
 import { ButtonWithLoader, importComponentFromFELibrary } from '../common'
@@ -20,6 +20,8 @@ import {
     VariableType,
     MandatoryPluginDataType,
     TaskErrorObj,
+    MandatoryPluginDetailType,
+    PluginDetailType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     BuildStageVariable,
@@ -41,7 +43,7 @@ import {
 } from '../ciPipeline/ciPipeline.service'
 import { toast } from 'react-toastify'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { CIPipelineDataType, CIPipelineType, PluginDetailType } from '../ciPipeline/types'
+import { CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
 import { PreBuild } from './PreBuild'
@@ -144,11 +146,20 @@ export default function CIPipeline({
     const validationRules = new ValidationRules()
     const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
     const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
+    const mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = useMemo(() => {
+        const _mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = {}
+        if (mandatoryPluginData?.pluginData.length) {
+            for (const plugin of mandatoryPluginData.pluginData) {
+                _mandatoryPluginsMap[plugin.id] = plugin
+            }
+        }
+        return _mandatoryPluginsMap
+    }, [mandatoryPluginData])
 
     useEffect(() => {
         getInitialData()
         getGlobalVariables()
-        getAvailablePlugins()
+        //getAvailablePlugins()
     }, [])
 
     useEffect(() => {
@@ -189,7 +200,8 @@ export default function CIPipeline({
                     setCIPipeline(ciResponse.ciPipeline)
                     setIsAdvanced(true)
                     setPageState(ViewType.FORM)
-                    getMandatoryPluginData(ciResponse.form)
+                    //getMandatoryPluginData(ciResponse.form, [...presetPlugins, ...sharedPlugins])
+                    getAvailablePlugins(ciResponse.form)
                 })
                 .catch((error: ServerErrors) => {
                     setPageState(ViewType.ERROR)
@@ -200,7 +212,8 @@ export default function CIPipeline({
                 .then((ciResponse) => {
                     setFormData(ciResponse.result.form)
                     setPageState(ViewType.FORM)
-                    getMandatoryPluginData(ciResponse.form)
+                    //getMandatoryPluginData(ciResponse.form, [...presetPlugins, ...sharedPlugins)
+                    getAvailablePlugins(ciResponse.form)
                 })
                 .catch((error: ServerErrors) => {
                     setPageState(ViewType.ERROR)
@@ -228,7 +241,7 @@ export default function CIPipeline({
             })
     }
 
-    const getAvailablePlugins = (): void => {
+    const getAvailablePlugins = (_formData: FormType): void => {
         getPluginsData(Number(appId))
             .then((response) => {
                 const _presetPlugin = []
@@ -244,6 +257,7 @@ export default function CIPipeline({
                 }
                 setPresetPlugins(_presetPlugin)
                 setSharedPlugins(_sharedPlugin)
+                getMandatoryPluginData(_formData, response.result)
             })
             .catch((error: ServerErrors) => {
                 showError(error)
@@ -259,8 +273,8 @@ export default function CIPipeline({
         } catch (error) {}
     }
 
-    const getMandatoryPluginData = (_formData: FormType): void => {
-        processPluginData(!!ciPipelineId, _formData ?? formData, ciPipelineId ?? appId)
+    const getMandatoryPluginData = (_formData: FormType, pluginList: []): void => {
+        processPluginData(!!ciPipelineId, _formData ?? formData, pluginList, ciPipelineId ?? appId)
             .then((response: MandatoryPluginDataType) => {
                 const _formDataErrorObj = { ...formDataErrorObj }
                 if (!response.isValidPre) {
@@ -619,8 +633,8 @@ export default function CIPipeline({
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
             let isPluginsValid = true
-            if (mandatoryPluginData?.pluginData?.length) {
-                const _mandatoryPluginsData = validatePlugins(formData, mandatoryPluginData.pluginData)
+            if (mandatoryPluginData?.pluginData?.length && (sharedPlugins.length || presetPlugins.length)) {
+                const _mandatoryPluginsData = validatePlugins(formData, mandatoryPluginData.pluginData, [...sharedPlugins, ...presetPlugins])
                 isPluginsValid =
                     stageName === BuildStageVariable.PreBuild
                         ? _mandatoryPluginsData.isValidPre
@@ -843,7 +857,11 @@ export default function CIPipeline({
                     <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
                         {isAdvanced && (
                             <div className="sidebar-container">
-                                <Sidebar isJobView={isJobView} mandatoryPluginData={mandatoryPluginData} />
+                                <Sidebar
+                                    isJobView={isJobView}
+                                    mandatoryPluginData={mandatoryPluginData}
+                                    pluginList={[...presetPlugins, ...sharedPlugins]}
+                                />
                             </div>
                         )}
                         <Switch>
@@ -853,12 +871,17 @@ export default function CIPipeline({
                                         presetPlugins={presetPlugins}
                                         sharedPlugins={sharedPlugins}
                                         isJobView={isJobView}
+                                        mandatoryPluginsMap={mandatoryPluginsMap}
                                     />
                                 </Route>
                             )}
                             {isAdvanced && (
                                 <Route path={`${path}/post-build`}>
-                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
+                                    <PreBuild
+                                        presetPlugins={presetPlugins}
+                                        sharedPlugins={sharedPlugins}
+                                        mandatoryPluginsMap={mandatoryPluginsMap}
+                                    />
                                 </Route>
                             )}
                             <Route path={`${path}/build`}>

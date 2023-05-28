@@ -14,7 +14,7 @@ import { CIPipelineSidebarType } from '../ciConfig/types'
 
 const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarning')
 
-export function Sidebar({ isJobView, mandatoryPluginData }: CIPipelineSidebarType) {
+export function Sidebar({ isJobView, mandatoryPluginData, pluginList }: CIPipelineSidebarType) {
     const {
         formData,
         setFormData,
@@ -76,6 +76,7 @@ export function Sidebar({ isJobView, mandatoryPluginData }: CIPipelineSidebarTyp
                                     setFormData={setFormData}
                                     formDataErrorObj={formDataErrorObj}
                                     setFormDataErrorObj={setFormDataErrorObj}
+                                    allPluginList={pluginList}
                                 />
                             )}
                             <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
