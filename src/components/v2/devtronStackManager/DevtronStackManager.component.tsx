@@ -77,7 +77,7 @@ const getInstallationStatusLabel = (
 ): JSX.Element => {
     if (installationStatus === ModuleStatus.INSTALLING) {
         return (
-            <div className={`module-details__installation-status flex ${installationStatus}`}>
+            <div data-testid={`module-details-card-status-${installationStatus}`} className={`module-details__installation-status flex ${installationStatus}`}>
                 <Progressing size={20} />
                 <span className="fs-13 fw-6 ml-8" data-testid={`status-${dataTestId}`}>
                     Installing
@@ -135,9 +135,10 @@ const ModuleDetailsCard = ({
     }
     return (
         <div
+            data-testid="module-details-card"
             className={`module-details__card flex left column br-8 p-16 mr-20 mb-20 ${className || ''}`}
             onClick={handleOnClick}
-            data-testid={datatestid}
+            // data-testid={datatestid}
         >
             {getInstallationStatusLabel(moduleDetails.installationStatus,moduleDetails?.moduleType===MODULE_TYPE_SECURITY?moduleDetails.enabled:true,datatestid)}
             <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
@@ -243,16 +244,22 @@ export const NavItem = ({
                 <div className="flex left">
                     <route.icon className={`stack-manager__navlink-icon icon-dim-20`} />
                     {route.name !== 'Installed' && route.name !== 'About Devtron' && (
-                        <span className="fs-13 ml-12">{route.name}</span>
+                        <span data-testid={`${route.name.toLowerCase()}-link`} className="fs-13 ml-12">
+                            {route.name}
+                        </span>
                     )}
                     {route.name === 'Installed' && (
-                        <div className="installed-modules-link flex dc__content-space ml-12" style={{ width: '175px' }}>
+                        <div
+                            data-testid="installed-link"
+                            className="installed-modules-link flex dc__content-space ml-12"
+                            style={{ width: '175px' }}
+                        >
                             <span className="fs-13">{route.name}</span>
                             <span className="badge">{installedModulesCount || 0}</span>
                         </div>
                     )}
                     {route.name === 'About Devtron' && (
-                        <div className="about-devtron ml-12">
+                        <div data-testid="about-devtron-link" className="about-devtron ml-12">
                             <span className="fs-13">{route.name}</span>
                             <br />
                             {showVersionInfo && (
@@ -298,7 +305,7 @@ export const StackPageHeader = ({
 
     const renderBreadcrumbs = (headerTitleName, detailsMode) => {
         return (
-            <div className="m-0 flex left ">
+            <div data-testid="module-details-header" className="m-0 flex left ">
                 <div onClick={() => handleRedirectToModule(detailsMode)} className="dc__devtron-breadcrumb__item">
                     <span className="cb-5 fs-16 cursor">{headerTitleName} </span>
                 </div>
@@ -458,7 +465,7 @@ const InstallationStatus = ({
             {(installationStatus === ModuleStatus.INSTALLING || installationStatus === ModuleStatus.UPGRADING) && (
                 <>
                     <Progressing size={24} />
-                    <div className="mt-12 dc__loading-dots">
+                    <div data-testid="module-status-progressing" className="mt-12 dc__loading-dots">
                         {getProgressingLabel(isUpgradeView, canViewLogs, logPodName)}
                     </div>
                 </>
@@ -468,17 +475,21 @@ const InstallationStatus = ({
                 (installationStatus === ModuleStatus.HEALTHY && !latestVersionAvailable)) && (
                 <>
                     {isUpgradeView ? (
-                        <div className="module-details__upgrade-success flex column">
+                        <div
+                            data-testid="module-status-updated"
+                            className="module-details__upgrade-success flex column"
+                        >
                             <img src={LatestVersionCelebration} />
                             <UpToDateIcon className="icon-dim-40" />
                             <span className="mt-12">You're using the latest version of Devtron.</span>
                         </div>
                     ) : (
+
                         <>
                             <div className="flexbox">
                                 <div className="module-details__installtion-success flex left dc__content-space">
                                     <div>
-                                        <span className="flexbox column left">
+                                        <span className="flexbox column left" data-testid="module-status-installed">
                                             <SuccessIcon className="icon-dim-20 mr-12" /> Installed
                                         </span>
                                         {moduleNotEnabled ? (
@@ -524,7 +535,7 @@ const InstallationStatus = ({
                 installationStatus === ModuleStatus.UPGRADE_FAILED ||
                 installationStatus === ModuleStatus.TIMEOUT ||
                 installationStatus === ModuleStatus.UNKNOWN) && (
-                <div className="module-details__installtion-failed flex left">
+                <div data-testid="module-status-failed" className="module-details__installtion-failed flex left">
                     <ErrorIcon className="icon-dim-20 mr-12" />
                     {installationStatus === ModuleStatus.UNKNOWN
                         ? 'Last update status: Unknown'
@@ -863,7 +874,10 @@ export const InstallationWrapper = ({
                                                             `Update to ${upgradeVersion.toLowerCase()}`
                                                         ) : (
                                                             <>
-                                                                <InstallIcon className="module-details__install-icon icon-dim-16 mr-8" />
+                                                                <InstallIcon
+                                                                    data-testid="module-status-not-installed"
+                                                                    className="module-details__install-icon icon-dim-16 mr-8"
+                                                                />
                                                                 Install
                                                             </>
                                                         )}
@@ -975,7 +989,12 @@ export const ModuleDetailsView = ({
                         src={moduleDetails.icon}
                         alt={moduleDetails.title}
                     />
-                    <h2 className="module-details__feature-heading cn-9 fs-20 fw-6">{moduleDetails.title}</h2>
+                    <h2
+                        data-testid="module-details-title"
+                        className="module-details__feature-heading cn-9 fs-20 fw-6"
+                    >
+                        {moduleDetails.title}
+                    </h2>
                     <div className="module-details__divider mt-24 mb-24" />
                     <MarkDown
                         className="module-details__feature-info fs-14 fw-4 cn-9"
