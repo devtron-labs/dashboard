@@ -608,6 +608,7 @@ export const Details: React.FC<DetailsType> = ({
                     {rotateModal && (
                         <RotatePodsModal
                             onClose={() => setRotateModal(false)}
+                            callAppDetailsAPI={callAppDetailsAPI}
                         />
                     )}
         </React.Fragment>

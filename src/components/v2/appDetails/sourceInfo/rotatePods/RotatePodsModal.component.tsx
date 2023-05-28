@@ -18,9 +18,8 @@ import { GetDeploymentStrategy, RotatePods } from './rotatePodsModal.service'
 import { toast } from 'react-toastify'
 import RotateResponseModal from './RotateResponseModal'
 import { POD_ROTATION_INITIATED, RequiredKinds } from '../../../../../config'
-import { Nodes } from '../../../../app/types'
 
-export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
+export default function RotatePodsModal({ onClose, callAppDetailsAPI }: RotatePodsModalProps) {
     const [nameSelection, setNameSelection] = useState<Record<string, WorkloadCheckType>>({
         rotate: {
             isChecked: false,
@@ -177,7 +176,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
             }
 
             const { result } = await RotatePods(requestPayload)
-
+            callAppDetailsAPI()
             if (!result.containsError) {
                 toast.success(POD_ROTATION_INITIATED)
                 onClose()
@@ -284,7 +283,7 @@ export default function RotatePodsModal({ onClose }: RotatePodsModalProps) {
 
     const renderRotateModal = (): JSX.Element => {
         if (result) {
-            return <RotateResponseModal onClose={onClose} response={result.responses} setResult={setResult} />
+            return <RotateResponseModal onClose={onClose} response={result.responses} setResult={setResult} callAppDetailsAPI={callAppDetailsAPI} />
         } else {
             return (
                 <>

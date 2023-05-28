@@ -23,12 +23,14 @@ export interface HibernateTargetObject {
 
 export interface RotatePodsModalProps {
     onClose: () => void
+    callAppDetailsAPI: () => void
 }
 
 export interface RotateResponseModalProps {
     onClose: () => void
     response: RotatePodsResponseTargetObject[]
     setResult: Dispatch<SetStateAction<RotatePodsStatus>>
+    callAppDetailsAPI: () => void
 }
 
 export interface RotatePodsTargetObject {
