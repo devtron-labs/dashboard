@@ -17,6 +17,7 @@ import {
     useBreadcrumb,
     DeleteDialog,
     EmptyState,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { SavedValueType } from './types'
 import {
@@ -170,7 +171,11 @@ export default function SavedValuesList() {
 
     const renderUploadButton = (): JSX.Element => {
         return (
-            <button onClick={() => redirectToChartValuePage(0)} className="add-link cta flex h-32" data-testid="add-preset-values-button">
+            <button
+                onClick={() => redirectToChartValuePage(0)}
+                className="add-link cta flex h-32"
+                data-testid="add-preset-values-button"
+            >
                 <Add className="icon-dim-16 mr-5" />
                 New
             </button>
@@ -200,6 +205,14 @@ export default function SavedValuesList() {
         )
     }
 
+    const renderGenericEmptyStateButton = () => {
+        return (
+            <button onClick={clearSearch} className="add-link cta flex">
+                Clear search
+            </button>
+        )
+    }
+
     const renderEmptyState = (title?: string, subTitle?: string, showClearButton?: boolean): JSX.Element => {
         return (
             <div style={{ height: 'calc(100vh - 235px)' }}>
@@ -213,14 +226,14 @@ export default function SavedValuesList() {
                     <EmptyState.Subtitle>
                         {subTitle || 'Customize, Dry Run and Save values so they’re ready to be used later.'}&nbsp;
                     </EmptyState.Subtitle>
-                    {showClearButton && (
-                        <EmptyState.Button>
-                            <button onClick={clearSearch} className="add-link cta flex">
-                                Clear search
-                            </button>
-                        </EmptyState.Button>
-                    )}
                 </EmptyState>
+                {/* <GenericEmptyState
+                    image={`${emptyCustomChart}`}
+                    classname="title"
+                    title={`${title}` || 'No values saved for this chart'}
+                    subTitle={`${subTitle}` || 'Customize, Dry Run and Save values so they’re ready to be used later.'}
+                    renderButton={showClearButton && renderGenericEmptyStateButton}
+                /> */}
             </div>
         )
     }
@@ -241,7 +254,9 @@ export default function SavedValuesList() {
     const renderSavedValuesList = (): JSX.Element => {
         return (
             <div className="preset-values-container">
-                <div className="cn-9 fw-6 fs-16" data-testid="preset-page-heading">Preset values</div>
+                <div className="cn-9 fw-6 fs-16" data-testid="preset-page-heading">
+                    Preset values
+                </div>
                 {renderSubtitleAndNewButton('Customize, Dry Run and Save values so they’re ready to be used later.')}
                 <div className="mt-16 en-2 bw-1 bcn-0 br-8" style={{ minHeight: 'calc(100vh - 235px)' }}>
                     {savedValueList.length === 0 ? (

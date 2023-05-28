@@ -4,7 +4,7 @@ import { copyToClipboard, importComponentFromFELibrary } from '../../../common'
 import { useParams } from 'react-router'
 import { ReactComponent as CopyIcon } from '../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Download } from '../../../../assets/icons/ic-download.svg'
-import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
+import MechanicalOperation from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help.svg'
 import docker from '../../../../assets/icons/misc/docker.svg'
@@ -154,17 +154,11 @@ export const CopyTippyWithText = ({ copyText, copied, setCopied }: CopyTippyWith
 const CIProgressView = (): JSX.Element => {
    {/* TO replace with genericemptystate after incoporating png support */}
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <MechanicalOperation />
-            </EmptyState.Image>
-            <EmptyState.Title>
-                <h4>Building artifacts</h4>
-            </EmptyState.Title>
-            <EmptyState.Subtitle>
-                Generated artifact(s) will be available here after the pipeline is executed.
-            </EmptyState.Subtitle>
-        </EmptyState>
+        <GenericEmptyState
+            image={MechanicalOperation}
+            title={"Building artifacts"}
+            subTitle={"Generated artifact(s) will be available here after the pipeline is executed."}
+        />
     )
 }
 

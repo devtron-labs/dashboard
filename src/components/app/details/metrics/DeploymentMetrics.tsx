@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { getDeploymentMetrics } from './deploymentMetrics.service';
 import { DatePicker } from '../../../common';
-import { showError, Progressing, ErrorScreenManager, EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, ErrorScreenManager, EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ViewType } from '../../../../config';
 import { generatePath } from 'react-router';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts'
@@ -393,22 +393,32 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
         return <div>
             {this.renderInputs()}
             <div style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
-                <EmptyState >
+                {/* <EmptyState >
                     <EmptyState.Image><img src={AppNotDeployed} alt="" /></EmptyState.Image>
                     <EmptyState.Title><h4>No deployments found</h4></EmptyState.Title>
                     <EmptyState.Subtitle>{`There are no deployments in this period on '${envName}'.`}</EmptyState.Subtitle>
-                </EmptyState>
+                </EmptyState> */}
+                <GenericEmptyState
+                    image={AppNotDeployed}
+                    title={"No deployments found"}
+                    subTitle={`There are no deployments in this period on '${envName}'.`}
+                />
             </div>
         </div>
     }
 
     renderNoEnvironmentView() {
         return <div style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 80px" }}>
-            <EmptyState >
+            {/* <EmptyState >
                 <EmptyState.Image><img src={SelectEnvImage} alt="" /></EmptyState.Image>
                 <EmptyState.Title><h4>Deployment Metrics</h4></EmptyState.Title>
                 <EmptyState.Subtitle>This app is not deployed on any production environment. Deploy on prod to get an overview of your deployment practices.</EmptyState.Subtitle>
-            </EmptyState>
+            </EmptyState> */}
+            <GenericEmptyState
+                image={SelectEnvImage}
+                title={"Deployment Metrics"}
+                subTitle={"This app is not deployed on any production environment. Deploy on prod to get an overview of your deployment practices."}
+            />
         </div >
     }
 
@@ -416,11 +426,16 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
         return <div>
             {this.renderInputs()}
             <div style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
-                <EmptyState >
+                {/* <EmptyState >
                     <EmptyState.Image><img src={SelectEnvImage} alt="" /></EmptyState.Image>
                     <EmptyState.Title><h4>Select an Environment</h4></EmptyState.Title>
                     <EmptyState.Subtitle>Please select an Enviroment to view deployment metrics.</EmptyState.Subtitle>
-                </EmptyState>
+                </EmptyState> */}
+                <GenericEmptyState
+                    image={SelectEnvImage}
+                    title={"Select an Environment"}
+                    subTitle={"Please select an Enviroment to view deployment metrics."}
+                />
             </div>
         </div>
     }
