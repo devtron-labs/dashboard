@@ -4,15 +4,16 @@ import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass
 import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
 import MoreIntegrationsIcon from '../../../assets/img/ic-more-extensions.png'
-import { ModuleNameMap, URLS } from '../../../config'
+import { CLAIR_TOOL_VERSION_V2, CLAIR_TOOL_VERSION_V4, ModuleNameMap, TRIVY_TOOL_VERSION, URLS } from '../../../config'
 import IndexStore from '../appDetails/index.store'
 import { AppDetails, AppType } from '../appDetails/appDetails.type'
 import { handleError } from './DevtronStackManager.component'
-import { executeModuleAction, executeServerAction } from './DevtronStackManager.service'
+import { executeModuleAction, executeModuleEnableAction, executeServerAction } from './DevtronStackManager.service'
 import {
     ModuleActionRequest,
     ModuleActions,
     ModuleDetails,
+    ModuleEnableRequest,
     ModuleResourceStatus,
     ModuleStatus,
     StackManagerNavLinkType,
@@ -81,6 +82,23 @@ export const handleAction = async (
         handleError(e, isUpgradeView)
     } finally {
         updateActionTrigger(false)
+    }
+}
+export const handleEnableAction = async (
+    moduleName: string,
+    setRetryFlag:React.Dispatch<React.SetStateAction<boolean>>,
+    setSuccessState:React.Dispatch<React.SetStateAction<boolean>>
+) => {
+    try {
+        const actionRequest: ModuleEnableRequest = {
+            version: moduleName === ModuleNameMap.SECURITY_TRIVY ? TRIVY_TOOL_VERSION : (window?._env_?.CLAIR_TOOL_VERSION),
+        }
+        const { result } = await executeModuleEnableAction(moduleName, actionRequest)
+        if (result?.success) {
+            setSuccessState(true)
+        }
+    } catch (e) {
+        setRetryFlag(true)
     }
 }
 

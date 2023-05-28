@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
+import { Link, NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
 import {
     InstallationType,
     InstallationWrapperType,
@@ -37,7 +37,10 @@ import {
     CHECKBOX_VALUE,
     EmptyState,
     TippyCustomized, 
-    TippyTheme 
+    TippyTheme, 
+    Toggle,
+    toastAccessDenied,
+    ConfirmationDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
@@ -61,6 +64,12 @@ import './devtronStackManager.component.scss'
 import PageHeader from '../../common/header/PageHeader'
 import Tippy from '@tippyjs/react'
 
+import { SuccessModalType } from "./DevtronStackManager.type";
+import trivy from "../../../assets/icons/ic-clair-to-trivy.svg"
+import clair from "../../../assets/icons/ic-trivy-to-clair.svg"
+import warn  from '../../../assets/icons/ic-error-medium.svg';
+import { ModuleEnableType } from "./DevtronStackManager.type"
+import { handleEnableAction } from "./DevtronStackManager.utils"
 const getInstallationStatusLabel = (
     installationStatus: ModuleStatus,
     enableStatus: boolean,
@@ -326,6 +335,69 @@ const getProgressingLabel = (isUpgradeView: boolean, canViewLogs: boolean, logPo
 
     return 'Initializing'
 }
+export function EnableModuleConfirmation({
+    moduleDetails,
+    setDialog,
+    retryState,
+    setRetryState,
+    setToggled,
+    setSuccessState,
+}: ModuleEnableType) {
+    const [moduleEnabled, setModuleEnabled] = useState<boolean>(false)
+
+    return (
+        <ConfirmationDialog>
+            <ConfirmationDialog.Icon
+                src={retryState ? warn : moduleDetails.name === ModuleNameMap.SECURITY ? clair : trivy}
+                className={retryState ?'w-40 mb-20':`w-50`}
+            />
+            <ConfirmationDialog.Body
+                title={`${retryState ? 'Could not' : ''} Enable ${
+                    moduleDetails.name === ModuleNameMap.SECURITY_TRIVY ? 'Trivy' : 'Clair'
+                } ${retryState ? '' : 'integration'}`}
+            />
+            <p className={`fs-13 cn-7 lh-1-54 ${retryState?'mb-20 mt-12':'mb-30 mt-20'}`}>
+                {retryState
+                    ? 'This integration could not be enabled. Please try again after some time.'
+                    : `Only one Vulnerability scanning integration can be used at a time.`}
+            </p>
+            {!retryState && (
+                <p className="fs-13 cn-7 lh-1-54">
+                    Enabling this integration will automatically disable the other integration. Are you sure you want to
+                    continue?
+                </p>
+            )}
+            <ConfirmationDialog.ButtonGroup>
+                <button
+                    type="button"
+                    className="cta cancel"
+                    onClick={() => {
+                        setDialog(false)
+                        setToggled(false)
+                    }}
+                >
+                    Cancel
+                </button>
+                <button
+                    className="cta form-submit-cta ml-12 dc__no-decor form-submit-cta flex h-36 "
+                    disabled={moduleEnabled}
+                    onClick={() => {
+                        setModuleEnabled(true)
+                        handleEnableAction(moduleDetails.name, setRetryState, setSuccessState)
+                    }}
+                >
+                    {moduleEnabled ? (
+                        <Progressing />
+                    ) : retryState ? (
+                        'Retry'
+                    ) : (
+                        `Enable ${moduleDetails.name === ModuleNameMap.SECURITY_TRIVY ? 'Trivy' : 'Clair'}`
+                    )}
+                </button>
+            </ConfirmationDialog.ButtonGroup>
+        </ConfirmationDialog>
+    )
+}
 
 const InstallationStatus = ({
     installationStatus,
@@ -337,6 +409,10 @@ const InstallationStatus = ({
     isCICDModule,
     moduleDetails,
     setShowResourceStatusModal,
+    isSuperAdmin,
+    setSelectedModule,
+    setStackDetails,
+    stackDetails
 }: ModuleInstallationStatusType): JSX.Element => {
     const openCheckResourceStatusModal = (e) => {
         e.stopPropagation()
@@ -345,13 +421,40 @@ const InstallationStatus = ({
             setShowResourceStatusModal(true)
         }
     }
-    const moduleNotEnabled= moduleDetails &&(moduleDetails.enabled === false && moduleDetails.installationStatus === ModuleStatus.INSTALLED ) && (moduleDetails.moduleType===MODULE_TYPE_SECURITY)
+    const [dialog, setDialog] = useState<boolean>(false)
+    const [toggled, setToggled] = useState<boolean>(false)
+    const [retryState, setRetryState] = useState<boolean>(false)
+    const [successState, setSuccessState] = useState<boolean>(false)
+    const moduleNotEnabled =moduleDetails &&
+        moduleDetails.enabled === false &&
+        moduleDetails.installationStatus === ModuleStatus.INSTALLED &&
+        moduleDetails.moduleType === MODULE_TYPE_SECURITY
+    const renderTransitonToggle = () => {
+        toastAccessDenied()
+        setToggled(true)
+        setTimeout(() => {
+            setToggled(false)
+        }, 1000)
+    }
     return (
         <div
-            className={`module-details__installtion-status cn-9 br-4 fs-13 fw-6 status-${moduleNotEnabled? 'notEnabled mb-6' : `${installationStatus} mb-16`} ${
-                isUpgradeView ? 'upgrade' : ''
-            }`}
+            className={`module-details__installtion-status cn-9 br-4 fs-13 fw-6 mb-16 status-${
+                moduleNotEnabled ? 'notEnabled ' : `${installationStatus} `
+            } ${isUpgradeView ? 'upgrade' : ''}`}
         >
+            {dialog && (
+                <EnableModuleConfirmation
+                    moduleDetails={moduleDetails}
+                    setDialog={setDialog}
+                    retryState={retryState}
+                    setRetryState={setRetryState}
+                    setToggled={setToggled}
+                    setSuccessState={setSuccessState}
+                />
+            )}
+            {successState && (
+                <SuccessModalComponent moduleDetails={moduleDetails} setSuccessState={setSuccessState} setSelectedModule={setSelectedModule} setStackDetails={setStackDetails} stackDetails={stackDetails}/>
+            )}
             {(installationStatus === ModuleStatus.INSTALLING || installationStatus === ModuleStatus.UPGRADING) && (
                 <>
                     <Progressing size={24} />
@@ -371,16 +474,49 @@ const InstallationStatus = ({
                             <span className="mt-12">You're using the latest version of Devtron.</span>
                         </div>
                     ) : (
-                        <div className="module-details__installtion-success flexbox dc__content-space">
-                            <span className="flexbox left">
-                            <SuccessIcon className="icon-dim-20 mr-12" /> Installed
-                            </span>
-                            {moduleNotEnabled ? (
-                                <span className="flex right fs-12 fw-4 cn-7">Not Enabled</span>
-                            ) : (
-                                ''
-                            )}
-                        </div>
+                        <>
+                            <div className="flexbox">
+                                <div className="module-details__installtion-success flex left dc__content-space">
+                                    <div>
+                                        <span className="flexbox column left">
+                                            <SuccessIcon className="icon-dim-20 mr-12" /> Installed
+                                        </span>
+                                        {moduleNotEnabled ? (
+                                            <div className="fs-12 fw-4 cn-7 ml-30 flex left">
+                                                <span>Not Enabled</span>
+                                            </div>
+                                        ) : (
+                                            ''
+                                        )}
+                                    </div>
+                                </div>
+                                {moduleNotEnabled ? (
+                                    <Tippy
+                                        className="default-tt"
+                                        arrow={true}
+                                        placement="top"
+                                        content="Enable Integration"
+                                    >
+                                        <div className="ml-auto" style={{ width: '30px', height: '19px' }}>
+                                            <Toggle
+                                                dataTestId="toggle-button"
+                                                onSelect={() => {
+                                                    if (isSuperAdmin) {
+                                                        setToggled(true)
+                                                        setDialog(true)
+                                                    } else {
+                                                        renderTransitonToggle()
+                                                    }
+                                                }}
+                                                selected={toggled}
+                                            />
+                                        </div>
+                                    </Tippy>
+                                ) : (
+                                    ''
+                                )}
+                            </div>
+                        </>
                     )}
                 </>
             )}
@@ -513,6 +649,10 @@ export const InstallationWrapper = ({
     preRequisiteChecked,
     setPreRequisiteChecked,
     setShowResourceStatusModal,
+    isSuperAdmin,
+    setSelectedModule,
+    setStackDetails,
+    stackDetails
 }: InstallationWrapperType): JSX.Element => {
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
@@ -771,9 +911,12 @@ export const InstallationWrapper = ({
                                 isCICDModule={moduleName === ModuleNameMap.CICD}
                                 moduleDetails={moduleDetails}
                                 setShowResourceStatusModal={setShowResourceStatusModal}
+                                isSuperAdmin={isSuperAdmin}
+                                setSelectedModule={setSelectedModule}
+                                setStackDetails={setStackDetails}
+                                stackDetails={stackDetails}
                             />
                         )}
-                        {moduleDetails && (moduleDetails.moduleType===MODULE_TYPE_SECURITY&& moduleDetails.enabled === false && moduleDetails.installationStatus === ModuleStatus.INSTALLED ) ? <EnablingStepsView /> : ''}
                         {moduleDetails && moduleDetails.isModuleConfigurable && !moduleDetails.isModuleConfigured && (
                             <ModuleNotConfigured moduleName={moduleName} />
                         )}
@@ -807,6 +950,10 @@ export const ModuleDetailsView = ({
     history,
     location,
     setShowResourceStatusModal,
+    isSuperAdmin,
+    setSelectedModule,
+    setStackDetails,
+    stackDetails
 }: ModuleDetailsViewType): JSX.Element | null => {
     const queryParams = new URLSearchParams(location.search)
     useEffect(() => {
@@ -850,6 +997,10 @@ export const ModuleDetailsView = ({
                         handleActionTrigger(`moduleAction-${moduleDetails.name?.toLowerCase()}`, isActionTriggered)
                     }
                     setShowResourceStatusModal={setShowResourceStatusModal}
+                    isSuperAdmin={isSuperAdmin}
+                    setSelectedModule={setSelectedModule}
+                    setStackDetails={setStackDetails}
+                    stackDetails={stackDetails}
                 />
             </div>
         </div>
@@ -888,6 +1039,90 @@ export const EnablingStepsView = (): JSX.Element => {
                 </TippyCustomized>
             </label>
         </div>
+    )
+}
+export function SuccessModalComponent({moduleDetails,setSuccessState,setSelectedModule,setStackDetails,stackDetails}:SuccessModalType){
+
+    const enableModuleState=(modulename:string)=>{
+        
+        let _moduleList = stackDetails.installedModulesList.map((module) => {
+            if (modulename === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY) {
+                return {
+                    ...module,
+                    enabled: false,
+                };
+            } else if (modulename === ModuleNameMap.SECURITY && module.name === ModuleNameMap.SECURITY_TRIVY) {
+                return {
+                    ...module,
+                    enabled: false,
+                };
+            }
+            if (module.name === modulename) {
+                return {
+                    ...module,
+                    enabled: true,
+                };
+            }
+            return module;
+        });
+        let _discovermoduleList = stackDetails.discoverModulesList.map((module) => {
+            if (modulename === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY) {
+                return {
+                    ...module,
+                    enabled: false,
+                };
+            } else if (modulename === ModuleNameMap.SECURITY && module.name === ModuleNameMap.SECURITY_TRIVY) {
+                return {
+                    ...module,
+                    enabled: false,
+                };
+            }
+            if (module.name === modulename) {
+                return {
+                    ...module,
+                    enabled: true,
+                };
+            }
+            return module;
+        });
+        setStackDetails({
+            ...stackDetails,
+            installedModulesList: _moduleList,
+            discoverModulesList:_discovermoduleList
+        })
+    }
+    return (
+        <ConfirmationDialog>
+            <div className='module-details__upgrade-success'>
+                
+            <div className="flex column mb-40 mt-40">
+                    <img src={LatestVersionCelebration}/>
+                    <UpToDateIcon className="icon-dim-40" />
+            </div>
+            <ConfirmationDialog.Body
+                title={`${moduleDetails.name === ModuleNameMap.SECURITY ? 'Clair' : 'Trivy'} is enabled`}
+            />
+            <p className="flex left fs-13 cn-7 lh-1-54 mb-24 mt-16 ml-16 mr-16">
+                {`Devtron will use ${
+                    moduleDetails.name === ModuleNameMap.SECURITY ? 'Clair' : 'Trivy'
+                } to perform vulnerability scans in the future.`}
+            </p>
+            </div>
+            <div className='flex mt-40'>
+
+            <button
+                type="button"
+                className="cta"
+                onClick={() => {
+                    setSuccessState(false)
+                    setSelectedModule({ ...moduleDetails, enabled: true })
+                    enableModuleState(moduleDetails.name)
+                }}
+            >
+                Okay
+            </button>
+            </div>
+        </ConfirmationDialog>
     )
 }
 

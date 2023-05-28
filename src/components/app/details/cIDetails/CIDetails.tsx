@@ -2,13 +2,13 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { showError, Progressing, Reload, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service'
 import { useScrollable, useAsync, useInterval, mapByKey, asyncWrap } from '../../../common'
-import { URLS, ModuleNameMap } from '../../../../config'
+import { URLS, ModuleNameMap, SCAN_TOOL_ID_TRIVY } from '../../../../config'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
-import { ScanDisabledView, ImageNotScannedView, NoVulnerabilityView, CIRunningView } from './cIDetails.util'
+import { ScanDisabledView, ImageNotScannedView, CIRunningView } from './cIDetails.util'
 import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
@@ -20,6 +20,9 @@ import Artifacts from '../cicdHistory/Artifacts'
 import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import { ReactComponent as Clair } from '../../../../assets/icons/ic-clair.svg'
+import { ReactComponent as Trivy } from '../../../../assets/icons/ic-trivy.svg'
+import  novulnerability from '../../../../assets/img/ic-vulnerability-not-found.svg';
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -407,6 +410,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         scanned: false,
         isLoading: !!artifactId,
         isError: false,
+        ScanToolId:0,
     })
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
@@ -421,6 +425,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                 scanned: result.scanned,
                 isLoading: false,
                 isError: false,
+                ScanToolId:result.scanToolId
             })
         } catch (error) {
             // showError(error);
@@ -474,7 +479,13 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
             return <ImageNotScannedView />
         }
     } else if (artifactId && securityData.scanned && !securityData.vulnerabilities.length) {
-        return <NoVulnerabilityView />
+        return (
+            <div className='flex h-100'>
+                <GenericEmptyState image={novulnerability} title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND} children={<span className="flex workflow__header dc__border-radius-24 bcn-0">
+                    Scanned By {securityData.ScanToolId===SCAN_TOOL_ID_TRIVY ? 'Trivy ' : 'Clair '} {securityData.ScanToolId===SCAN_TOOL_ID_TRIVY ? <Trivy className="h-20 w-20" /> : <Clair className="h-20 w-20" />}
+                </span>} />               
+            </div>
+        )
     }
 
     return (
@@ -499,7 +510,10 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                     {severityCount.critical === 0 && severityCount.moderate === 0 && severityCount.low !== 0 ? (
                         <span className="dc__fill-low">{severityCount.low} Low</span>
                     ) : null}
-                    <div className="security-scan__type">post build execution</div>
+                    <div className="security-scan__type flex">
+                        Scanned By {securityData.ScanToolId=== SCAN_TOOL_ID_TRIVY? 'Trivy' : 'Clair'}
+                        {securityData.ScanToolId===SCAN_TOOL_ID_TRIVY ? <Trivy /> : <Clair/>}
+                    </div>
                 </div>
                 {isCollapsed ? (
                     ''

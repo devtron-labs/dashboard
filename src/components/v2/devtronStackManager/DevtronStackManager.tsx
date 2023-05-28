@@ -35,9 +35,11 @@ import { AppStatusClass, buildResourceStatusModalData } from './DevtronStackMana
 export default function DevtronStackManager({
     serverInfo,
     getCurrentServerInfo,
+    isSuperAdmin
 }: {
     serverInfo: ServerInfo
     getCurrentServerInfo: () => Promise<void>
+    isSuperAdmin:boolean
 }) {
     const { serverMode, moduleInInstallingState, setModuleInInstallingState, installedModuleMap } =
         useContext(mainContext)
@@ -403,6 +405,10 @@ export default function DevtronStackManager({
                         history={history}
                         location={location}
                         setShowResourceStatusModal={setShowResourceStatusModal}
+                        isSuperAdmin={isSuperAdmin}
+                        setSelectedModule={setSelectedModule}
+                        setStackDetails={setStackDetails}
+                        stackDetails={stackDetails}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS}>
@@ -418,6 +424,10 @@ export default function DevtronStackManager({
                         history={history}
                         location={location}
                         setShowResourceStatusModal={setShowResourceStatusModal}
+                        setSelectedModule={setSelectedModule}
+                        isSuperAdmin={isSuperAdmin}
+                        setStackDetails={setStackDetails}
+                        stackDetails={stackDetails}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES}>

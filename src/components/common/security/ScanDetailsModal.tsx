@@ -9,10 +9,12 @@ import {
     VulnerabilityType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
-import { ViewType, URLS } from '../../../config';
+import { ViewType, URLS, SCAN_TOOL_ID_TRIVY } from '../../../config';
 import { getLastExecutionByImageScanDeploy } from '../../../services/service';
 import NoVulnerabilities from '../../../assets/img/ic-vulnerability-not-found.svg'
 import { Link } from 'react-router-dom';
+import { ReactComponent as Clair } from '../../../assets/icons/ic-clair.svg';
+import { ReactComponent as Trivy } from '../../../assets/icons/ic-trivy.svg';
 
 interface ScanDetailsModalProps {
     uniqueId: ExecutionId;
@@ -47,6 +49,7 @@ interface ScanDetailsModalState {
         low: number;
     },
     vulnerabilities: VulnerabilityType[];
+    scanToolId?:number
 }
 
 export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetailsModalState>{
@@ -113,7 +116,9 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                 {this.props.showAppInfo ? <div>
                     {this.state.appId ? <>
                         <p className="scanned-object__label">App</p>
-                        <p className="scanned-object__value">{this.state.appName}</p>
+                        <p className="scanned-object__value">{this.props.showAppInfo && this.state.objectType !== "chart" ? <Link to={link} className="dc__no-decor" onClick={(event) => {
+                }}> {this.state.appName}
+                </Link> : null}</p>
                     </> : null}
                     {this.state.envId ? <>
                         <p className="scanned-object__label">Environment</p>
@@ -128,12 +133,15 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                         <p className="scanned-object__value">{this.state.pod}</p>
                     </> : null}
                 </div> : null}
-                {this.props.showAppInfo && this.state.objectType !== "chart" ? <Link to={link} className="cta small cancel dc__no-decor" onClick={(event) => {
-                }}> View Application
-                </Link> : null}
+                {this.props.showAppInfo && this.state.objectType !== "chart" ? <div className='flexbox dc__content-space'>
+                <span className='flex top'>Scanned By {this.state.scanToolId===SCAN_TOOL_ID_TRIVY ?'Trivy':'Clair'}{this.state.scanToolId===SCAN_TOOL_ID_TRIVY? <Trivy/>:<Clair/>} </span>              
+            </div> : null} 
             </div>
             {this.props.showAppInfo ? null : <>
-                <p className="scanned-object__label">Last Scanned</p>
+            <div className='flexbox dc__content-space'>
+                <span className="scanned-object__label flex left">Last Scanned</span>
+                <span className='flex right'>Scanned By {this.state.scanToolId===SCAN_TOOL_ID_TRIVY?'Trivy':'Clair'}{this.state.scanToolId===SCAN_TOOL_ID_TRIVY? <Trivy/>:<Clair/>} </span>              
+            </div>
                 <p className="scanned-object__value">{this.state.lastExecution}</p>
             </>}
             {this.renderCount()}
@@ -190,22 +198,34 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
             </VisibleModal>
         }
         else if (this.state.view === ViewType.FORM && this.state.vulnerabilities.length === 0) {
-            return <VisibleModal className="">
-                <div className="modal-body--scan-details">
-                    {this.renderHeader()}
-                    <div className="trigger-modal__body trigger-modal__body--security-scan">
-                        <EmptyState>
-                            <EmptyState.Image><img src={NoVulnerabilities} alt="" /></EmptyState.Image>
-                            <EmptyState.Title><h4>No vulnerabilities Found</h4></EmptyState.Title>
-                            {this.state.scanEnabled && this.state.scanned && (
+            return (
+                <VisibleModal className="">
+                    <div className="modal-body--scan-details">
+                        {this.renderHeader()}
+                        <div className="trigger-modal__body trigger-modal__body--security-scan">
+                            <EmptyState>
+                                <EmptyState.Image>
+                                    <img src={NoVulnerabilities} alt="" />
+                                </EmptyState.Image>
+                                <EmptyState.Title>
+                                    <h4>No vulnerabilities Found</h4>
+                                </EmptyState.Title>
+                                <EmptyState.Subtitle>
+                                    <span className='flex' >
+                                        Scanned By {this.state.scanToolId===SCAN_TOOL_ID_TRIVY ? 'Trivy' : 'Clair '}{' '}
+                                        {this.state.scanToolId===SCAN_TOOL_ID_TRIVY ? <Trivy className='h-20 w-20'/> : <Clair className='h-20 w-20'/>}
+                                    </span>
+                                </EmptyState.Subtitle>
+                                {this.state.scanEnabled && this.state.scanned && (
                                     <EmptyState.Subtitle>
                                         <span>Last scanned on {this.state.lastExecution}</span>
                                     </EmptyState.Subtitle>
                                 )}
-                        </EmptyState>
+                            </EmptyState>
+                        </div>
                     </div>
-                </div>
-            </VisibleModal>
+                </VisibleModal>
+            )
         }
         else return <VisibleModal className="">
             <div className="modal-body--scan-details">

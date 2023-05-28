@@ -639,6 +639,10 @@ export const EXTERNAL_TYPES = {
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
 export const DEPLOYMENT = 'Deployment'
 export const MODULE_TYPE_SECURITY='security'
+export const SCAN_TOOL_ID_TRIVY=3
+export const TRIVY_TOOL_VERSION='V1'
+export const CLAIR_TOOL_VERSION_V4='V4'
+export const CLAIR_TOOL_VERSION_V2='V2'
 
 export const ModuleNameMap = {
     ARGO_CD: 'argo-cd',

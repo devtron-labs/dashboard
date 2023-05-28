@@ -98,6 +98,7 @@ export interface LastExecutionResponseType {
             low: number;
         },
         vulnerabilities: VulnerabilityType[];
+        scanToolId ?:number
     }
 }
 

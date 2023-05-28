@@ -35,6 +35,29 @@ export interface StackDetailsType {
     releaseNotes: ReleaseNotes[]
     errorStatusCode: number
 }
+export interface ModuleEnableType {
+    moduleDetails: ModuleDetails
+    setDialog?:React.Dispatch<React.SetStateAction<boolean>>
+    retryState?:boolean
+    setRetryState?:React.Dispatch<React.SetStateAction<boolean>>
+    setToggled ?:React.Dispatch<React.SetStateAction<boolean>>
+    setSuccessState ?:React.Dispatch<React.SetStateAction<boolean>>
+    
+}
+export interface ModuleEnableCallType{
+    moduleName:string
+    setModuleEnabled?:React.Dispatch<React.SetStateAction<boolean>>
+    setRetryFlag?:React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export interface SuccessModalType{
+    moduleDetails:ModuleDetails
+    setSuccessState:React.Dispatch<React.SetStateAction<boolean>>
+    setSelectedModule?:React.Dispatch<React.SetStateAction<ModuleDetails>>
+    setStackDetails?:React.Dispatch<React.SetStateAction<StackDetailsType>>
+    stackDetails?:StackDetailsType
+    
+}
 
 export interface StackManagerNavItemType {
     installedModulesCount: number
@@ -106,6 +129,10 @@ export interface ModuleDetailsViewType {
     history: RouteComponentProps['history']
     location: RouteComponentProps['location']
     setShowResourceStatusModal: React.Dispatch<React.SetStateAction<boolean>>
+    isSuperAdmin?:boolean
+    setSelectedModule?:React.Dispatch<React.SetStateAction<ModuleDetails>>
+    setStackDetails?:React.Dispatch<React.SetStateAction<StackDetailsType>>
+    stackDetails?:StackDetailsType
 }
 
 export interface ModuleInstallationStatusType {
@@ -118,6 +145,10 @@ export interface ModuleInstallationStatusType {
     isCICDModule?: boolean
     moduleDetails?: ModuleDetails
     setShowResourceStatusModal?: React.Dispatch<React.SetStateAction<boolean>>
+    isSuperAdmin?:boolean
+    setSelectedModule?:React.Dispatch<React.SetStateAction<ModuleDetails>>
+    setStackDetails?:React.Dispatch<React.SetStateAction<StackDetailsType>>
+    stackDetails?:StackDetailsType
 }
 
 export interface InstallationWrapperType {
@@ -139,6 +170,10 @@ export interface InstallationWrapperType {
     preRequisiteChecked?: boolean
     setPreRequisiteChecked?: React.Dispatch<React.SetStateAction<boolean>>
     setShowResourceStatusModal?: React.Dispatch<React.SetStateAction<boolean>>
+    isSuperAdmin?:boolean
+    setSelectedModule?:React.Dispatch<React.SetStateAction<ModuleDetails>>
+    setStackDetails?:React.Dispatch<React.SetStateAction<StackDetailsType>>
+    stackDetails?:StackDetailsType
 }
 
 export interface ModuleDetailsInfo {
@@ -207,6 +242,9 @@ export interface ModuleActionRequest {
     action: ModuleActions
     version: string
     moduleType:string
+}
+export interface ModuleEnableRequest {
+    version: string
 }
 
 export interface ReleaseNotes {

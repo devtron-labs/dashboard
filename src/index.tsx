@@ -39,6 +39,7 @@ interface customEnv {
     ENABLE_CHART_SEARCH_IN_HELM_DEPLOY?: boolean
     HIDE_EXCLUDE_INCLUDE_GIT_COMMITS?: boolean
     ENABLE_BUILD_CONTEXT?: boolean
+    CLAIR_TOOL_VERSION?: string
 }
 declare global {
     interface Window {
@@ -125,7 +126,7 @@ if (!window || !window._env_) {
         DEVTRON_APP_DETAILS_POLLING_INTERVAL: 30000,
         HELM_APP_DETAILS_POLLING_INTERVAL: 30000,
         EA_APP_DETAILS_POLLING_INTERVAL: 30000,
-        CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.ai',
+        CENTRAL_API_ENDPOINT: 'https://api-stage.devtron.info',//TODO:REMOVE LATER AFTER TESTING
         HIDE_DEPLOYMENT_GROUPS: true,
         HIDE_GITOPS_OR_HELM_OPTION: false,
         HIDE_APPLICATION_GROUPS: false,
@@ -135,7 +136,8 @@ if (!window || !window._env_) {
         CLUSTER_TERMINAL_CONNECTION_RETRY_COUNT: 7,
         ENABLE_CHART_SEARCH_IN_HELM_DEPLOY: false,
         HIDE_EXCLUDE_INCLUDE_GIT_COMMITS: true,
-        ENABLE_BUILD_CONTEXT: false
+        ENABLE_BUILD_CONTEXT: false,
+        CLAIR_TOOL_VERSION:'V4'
     }
 }
 

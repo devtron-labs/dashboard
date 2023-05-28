@@ -5,6 +5,7 @@ import {
     LogPodNameResponse,
     ModuleActionRequest,
     ModuleActionResponse,
+    ModuleEnableRequest,
     ModuleInfo,
     ModuleInfoResponse,
     ModuleStatus,
@@ -64,6 +65,12 @@ export const getModuleInfo = async (moduleName: string): Promise<ModuleInfoRespo
     return Promise.resolve({ status: '', code: 200, result: result })
 }
 
+export const executeModuleEnableAction = (
+    moduleName: string,
+    moduleEnableRequest: ModuleEnableRequest,
+): Promise<ModuleActionResponse> => {
+    return post(`${Routes.MODULE_INFO_API}/enable?name=${moduleName}`, moduleEnableRequest)
+}
 export const executeModuleAction = (
     moduleName: string,
     moduleActionRequest: ModuleActionRequest,

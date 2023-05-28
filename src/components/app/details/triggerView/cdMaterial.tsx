@@ -17,6 +17,8 @@ import { ReactComponent as WarningIcon } from '../../../../assets/icons/ic-warni
 import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
 import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
 import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
+import { ReactComponent as Clair } from '../../../../assets/icons/ic-clair.svg'
+import { ReactComponent as Trivy } from '../../../../assets/icons/ic-trivy.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
@@ -42,7 +44,7 @@ import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } fro
 import { getLatestDeploymentConfig, getRecentDeploymentConfig, getSpecificDeploymentConfig } from '../../service'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap } from '../../../../config'
+import { ModuleNameMap, SCAN_TOOL_ID_TRIVY } from '../../../../config'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
 import {
@@ -222,15 +224,20 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             )
         } else if (!mat.vulnerabilitiesLoading && mat.vulnerabilities.length === 0) {
             return (
-                <div className="security-tab-empty">
-                    <p className="security-tab-empty__title">No vulnerabilities Found</p>
+                <div className="security-tab-empty summary-view__card">
+                    <p className="security-tab-empty__title">You’re secure!</p>
+                    <p className="">No security vulnerability found for this image.</p>
                     <p className="security-tab-empty__subtitle">{mat.lastExecution}</p>
+                    <p className='workflow__header dc__border-radius-24 bcn-0'>Scanned By {mat.scanToolId===SCAN_TOOL_ID_TRIVY ?'Trivy':'Clair'}{mat.scanToolId===SCAN_TOOL_ID_TRIVY? <Trivy  className='h-20 w-20'/>:<Clair  className='h-20 w-20'/>} </p>
                 </div>
             )
         } else
             return (
                 <div className="security-tab">
-                    <p className="security-tab__last-scanned">Scanned on {mat.lastExecution} </p>
+                    <div className='flexbox dc__content-space'>
+                        <span className="flex left security-tab__last-scanned ">Scanned on {mat.lastExecution} </span>
+                        <span className='flex right'>Scanned By {mat.scanToolId===SCAN_TOOL_ID_TRIVY?'Trivy':'Clair'}{mat.scanToolId===SCAN_TOOL_ID_TRIVY? <Trivy  className='h-20 w-20'/>:<Clair  className='h-20 w-20'/>} </span>
+                    </div>
                     <ScanVulnerabilitiesTable vulnerabilities={mat.vulnerabilities} />
                 </div>
             )

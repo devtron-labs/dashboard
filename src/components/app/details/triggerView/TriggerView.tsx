@@ -921,6 +921,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 node[this.state.materialType][materialIndex]['lastExecution'] =
                                     response.result.lastExecution
                                 node[this.state.materialType][materialIndex]['vulnerabilitiesLoading'] = false
+                                node[this.state.materialType][materialIndex]['scanToolId']=response.result.scanToolId
                             }
                             return node
                         })
