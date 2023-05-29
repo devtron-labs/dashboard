@@ -69,6 +69,7 @@ function LogsComponent({
         getInitialPodContainerSelection(isLogAnalyzer, params, location, isResourceBrowserView, selectedResource),
     )
     const[prevContainer, setPrevContainer] = useState(false)
+    const[showNoPrevContainer, setNoPrevContainer] = useState(false)
 
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
@@ -138,7 +139,16 @@ function LogsComponent({
     }
 
     const updateLogsAndReadyState = (event: any) => {
-        event.data.result.forEach((log: string) => subject.publish(log))
+        event.data.result.forEach((log: string) => {
+            subject.publish(log)
+            if (prevContainer) {
+                for (const _co of podContainerOptions.containerOptions) {
+                    if ( log.toString() === `previous terminated container "${_co.name}" in pod "${podContainerOptions.podOptions[0].name}" not found`) {
+                        setNoPrevContainer(true)
+                    }
+                }
+            } 
+        })
         if (event.data.readyState) {
             setReadyState(event.data.readyState)
         }
@@ -595,7 +605,7 @@ function LogsComponent({
                                 </div>
                             )}
                         </div>
-                        {(prevContainer && subject) ? (
+                        {(prevContainer && showNoPrevContainer) ? (
                             <MessageUI
                                 dataTestId="no-prev-container-logs"
                                 msg={"Previous instance of this container or their logs does not exist"}
