@@ -117,6 +117,7 @@ export default function ClusterForm({
     const [isClusterSelected, setClusterSeleceted] = useState<Record<string, boolean>>({})
     const [selectAll, setSelectAll] = useState<boolean>(false)
     const [getClusterVar, setGetClusterState] = useState<boolean>(false)
+    const [areAllCheckboxesDisabled, setAreAllCheckboxesDisabled] = useState(false)
     const { state, disable, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
@@ -941,6 +942,11 @@ export default function ClusterForm({
         } else {
             setSelectAll(false)
         }
+
+        const areAllDisabled = Object.values(selectedUserNameOptions).every(
+            (option) => option.errorInConnecting === 'cluster-already-exists' || !option.errorInConnecting,
+        )
+        setAreAllCheckboxesDisabled(areAllDisabled)
     }
 
     function toggleSelectAll(event) {
@@ -984,7 +990,9 @@ export default function ClusterForm({
     }
 
     const getAllClustersCheckBoxValue = () => {
-        if (Object.values(isClusterSelected).every((_selected) => _selected)) {
+        if (areAllCheckboxesDisabled) {
+            return undefined
+        } else if (Object.values(isClusterSelected).every((_selected) => _selected)) {
             return CHECKBOX_VALUE.CHECKED
         } else if (Object.values(isClusterSelected).some((_selected) => _selected)) {
             return CHECKBOX_VALUE.INTERMEDIATE
@@ -1025,10 +1033,13 @@ export default function ClusterForm({
                                 <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom">
                                     <div data-testid="select_all_cluster_checkbox">
                                         <Checkbox
-                                            rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
+                                            rootClassName={`form__checkbox-label--ignore-cache mb-0 flex ${
+                                                areAllCheckboxesDisabled ? 'dc__opacity-0_5' : ''
+                                            }`}
                                             onChange={toggleSelectAll}
                                             isChecked={selectAll}
                                             value={getAllClustersCheckBoxValue()}
+                                            disabled={areAllCheckboxesDisabled}
                                         />
                                     </div>
                                     <div>CLUSTER</div>
