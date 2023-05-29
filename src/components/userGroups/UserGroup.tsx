@@ -1635,7 +1635,7 @@ function SearchEmpty({ searchString, setSearchString }) {
         )
     }
 
-    const boldSearchString = () => {
+    const BoldSearchString = () => {
         return <b>{searchString}</b>
     }
 
@@ -1661,7 +1661,7 @@ function SearchEmpty({ searchString, setSearchString }) {
             title={'No matching results'}
             subTitle={
                 <>
-                    We couldn’t find any result for {boldSearchString}
+                    We couldn’t find any result for {<BoldSearchString/>}
                 </>
             }
             isButtonAvailable={true}
