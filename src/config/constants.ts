@@ -224,6 +224,8 @@ export const Routes = {
     CUSTOM_ROLES: 'rbac/role',
     GROUPS: 'groups',
     GROUP: 'group',
+    ROTATE_PODS: 'app/rotate-pods',
+    DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/'
 }
 
 export const ViewType = {
@@ -815,3 +817,6 @@ export enum DeploymentAppTypes {
   GITOPS = 'argo_cd',
   MANIFEST_DOWNLOAD = 'manifest_download'
 }
+export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
+
+export const POD_ROTATION_INITIATED = 'Pod rotation initiated'

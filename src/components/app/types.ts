@@ -470,6 +470,7 @@ export interface SourceInfoType {
   loadingDetails?: boolean
   loadingResourceTree?: boolean
   isVirtualEnvironment?: boolean
+  setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface EnvironmentListMinType {
@@ -485,3 +486,4 @@ export interface EnvironmentListMinType {
     isVirtualEnvironment?: boolean
     namespace?: string
 }
+

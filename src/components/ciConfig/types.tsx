@@ -266,6 +266,10 @@ export interface CICreateDockerfileOptionProps {
     handleOnChangeConfig: (e) => void
     renderInfoCard: () => JSX.Element
     isDefaultBuildContext: () => boolean
+    handleBuildContextCheckoutPathChange: (checkoutPath : any) => void
+    getCheckoutPathValue: (selectedBuildContextGitMaterial: any,currentMaterial :any, useRootBuildContextFlag: boolean) => OptionType
+    useRootBuildContextFlag: boolean
+    checkoutPathOptions: OptionType[]
 }
 
 export interface CIBuildpackBuildOptionsProps {
