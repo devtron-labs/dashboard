@@ -158,7 +158,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                             ...styles,
                         }}
                         onChange={(selected) => { this.handleEnvironmentChange(parseInt((selected as any).value)) }}
-                        options={environments.filter((item) => !item.isVirtualEnvironment)}
+                        options={environments?.filter((item) => !item.isVirtualEnvironment)}
                     />
                     <span className="form__error">
                         {!this.state.selectedEnvironmentId && this.state.showError ? <><Error className="form__icon form__icon--error" />
