@@ -81,6 +81,7 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
+const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
 
 let inprogressStatusTimer
 export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultType) {
@@ -773,6 +774,17 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             if (node) break
         }
 
+       const onClickManifestDownload = (appId: number, envId: number, envName: string) => {
+          const downloadManifetsDownload = {
+              appId: appId,
+              envId: envId,
+              appName: envName,
+          }
+          if (getDeployManifestDownload) {
+              getDeployManifestDownload(downloadManifetsDownload, null)
+          }
+      }
+
         const pipelineId = node.id
         const ciArtifact = node[materialType].find((artifact) => artifact.isSelected)
         if (_appId && pipelineId && ciArtifact.id) {
@@ -781,6 +793,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
+                      onClickManifestDownload(_appId, node.environmentId, node.environmentName)
                         const msg =
                             materialType == MATERIAL_TYPE.rollbackMaterialList
                                 ? 'Rollback Initiated'
@@ -1263,7 +1276,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
           return (updatedArray?.length > 0 ? updatedArray : _responseList).sort(sortResponseList);
         });
       };
-      
+
 
     const handleBulkTrigger = (
         promiseList: any[],
@@ -1752,6 +1765,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 parentEnvironmentName={node?.parentEnvironmentName}
                                 userApprovalConfig={node?.userApprovalConfig}
                                 requestedUserId={node?.requestedUserId}
+                                isVirtualEnvironment={isVirtualEnv}
                             />
                         )}
                     </div>

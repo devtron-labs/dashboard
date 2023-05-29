@@ -240,6 +240,7 @@ export interface CIBuildConfigType {
     gitMaterialId: number
     buildContextGitMaterialId: number
     id?: number
+    useRootBuildContext: boolean
 }
 
 export const DockerConfigOverrideKeys = {

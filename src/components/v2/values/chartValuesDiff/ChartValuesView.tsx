@@ -1412,7 +1412,8 @@ function ChartValuesView({
                         {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                             !isExternalApp &&
                             !isCreateValueView &&
-                            !isVirtualEnvironmentOnSelector && (
+                            !isVirtualEnvironmentOnSelector &&
+                            !appDetails?.isVirtualEnvironment && (
                                 <DeploymentAppSelector
                                     commonState={commonState}
                                     isUpdate={isUpdate}

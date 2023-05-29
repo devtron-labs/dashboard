@@ -19,6 +19,8 @@ import { ConditionalWrap, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from './DeploymentStatusCard'
 import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
+import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
 export function SourceInfo({
@@ -33,6 +35,7 @@ export function SourceInfo({
     loadingDetails = false,
     loadingResourceTree = false,
     isVirtualEnvironment,
+    setRotateModal = null,
 }: SourceInfoType) {
     const status = appDetails?.resourceTree?.status || ''
     const params = useParams<{ appId: string; envId?: string }>()
@@ -152,6 +155,22 @@ export function SourceInfo({
                                                 }}
                                             />
                                             {isHibernated ? 'Restore pod count' : 'Scale pods to 0'}
+                                        </button>
+                                    </ConditionalWrap>
+                                )}
+                                {window._env_.ENABLE_RESTART_WORKLOAD && setRotateModal && (
+                                    <ConditionalWrap
+                                        condition={appDetails?.userApprovalConfig?.length > 0}
+                                        wrap={conditionalScalePodsButton}
+                                    >
+                                        <button
+                                            data-testid="app-details-rotate-pods-modal-button"
+                                            className="cta cta-with-img small cancel fs-12 fw-6 ml-6"
+                                            onClick={setRotateModal}
+                                            disabled={appDetails?.userApprovalConfig?.length > 0}
+                                        >
+                                            <RotateIcon className="icon-dim-16 mr-6 icon-color-n7 scn-9" />
+                                            Restart workloads
                                         </button>
                                     </ConditionalWrap>
                                 )}

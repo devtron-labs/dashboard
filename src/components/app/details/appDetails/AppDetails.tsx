@@ -8,6 +8,7 @@ import {
     stopPropagation,
     multiSelectStyles,
     useEffectAfterMount,
+    Drawer,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import {
@@ -91,6 +92,7 @@ import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentS
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
+import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
@@ -194,6 +196,7 @@ export const Details: React.FC<DetailsType> = ({
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<'' | 'resume' | 'hibernate'>('')
+    const [rotateModal, setRotateModal] = useState<boolean>(false)
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showScanDetailsModal, toggleScanDetailsModal] = useState(false)
     const [lastExecutionDetail, setLastExecutionDetail] = useState({
@@ -515,6 +518,7 @@ export const Details: React.FC<DetailsType> = ({
                     showHibernateModal={isAppDeployment ? setHibernateConfirmationModal : null}
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     isVirtualEnvironment={isVirtualEnvRef.current}
+                    setRotateModal={isAppDeployment ? setRotateModal : null}
                 />
             </div>
             <SyncErrorComponent
@@ -646,6 +650,12 @@ export const Details: React.FC<DetailsType> = ({
                     </ConfirmationDialog.ButtonGroup>
                 </ConfirmationDialog>
             )}
+                    {rotateModal && (
+                        <RotatePodsModal
+                            onClose={() => setRotateModal(false)}
+                            callAppDetailsAPI={callAppDetailsAPI}
+                        />
+                    )}
         </React.Fragment>
     )
 }
