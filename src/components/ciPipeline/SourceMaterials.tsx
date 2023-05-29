@@ -94,6 +94,12 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
         )
     }
 
+    function onBlur(e){
+     if( props.handleOnBlur){
+      props.handleOnBlur(e)
+     }
+    }
+
     return (
         <>
             <p className="cn-9 fw-6 fs-14 lh-1-43 mb-18">Select code source</p>
@@ -214,6 +220,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
                                                     )
                                                 }}
                                                 autoFocus={true}
+                                                onBlur={onBlur}
                                             />
                                         </div>
                                         {errorObj && !errorObj.isValid ? (

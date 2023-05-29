@@ -56,6 +56,8 @@ import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 
 const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
 const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
+const prepareFormData = importComponentFromFELibrary('prepareFormData', null, 'function')
+
 export const ciPipelineContext = createContext(null)
 
 export default function CIPipeline({
@@ -200,7 +202,6 @@ export default function CIPipeline({
                     setCIPipeline(ciResponse.ciPipeline)
                     setIsAdvanced(true)
                     setPageState(ViewType.FORM)
-                    //getMandatoryPluginData(ciResponse.form, [...presetPlugins, ...sharedPlugins])
                     getAvailablePlugins(ciResponse.form)
                 })
                 .catch((error: ServerErrors) => {
@@ -212,7 +213,6 @@ export default function CIPipeline({
                 .then((ciResponse) => {
                     setFormData(ciResponse.result.form)
                     setPageState(ViewType.FORM)
-                    //getMandatoryPluginData(ciResponse.form, [...presetPlugins, ...sharedPlugins)
                     getAvailablePlugins(ciResponse.form)
                 })
                 .catch((error: ServerErrors) => {
@@ -257,7 +257,7 @@ export default function CIPipeline({
                 }
                 setPresetPlugins(_presetPlugin)
                 setSharedPlugins(_sharedPlugin)
-                getMandatoryPluginData(_formData, response.result)
+                getMandatoryPluginData(_formData,response.result)
             })
             .catch((error: ServerErrors) => {
                 showError(error)
@@ -273,22 +273,29 @@ export default function CIPipeline({
         } catch (error) {}
     }
 
-    const getMandatoryPluginData = (_formData: FormType, pluginList: []): void => {
-        processPluginData(!!ciPipelineId, _formData ?? formData, pluginList, ciPipelineId ?? appId)
+    const getMandatoryPluginData = (_formData: FormType, pluginList: PluginDetailType[], branchName?: string): void => {
+        processPluginData(!!ciPipelineId, formData, pluginList, ciPipelineId ?? appId, branchName)
             .then((response: MandatoryPluginDataType) => {
-                const _formDataErrorObj = { ...formDataErrorObj }
-                if (!response.isValidPre) {
-                    _formDataErrorObj.preBuildStage.isValid = false
+                if (response?.pluginData?.length) {
+                    const _formDataErrorObj = { ...formDataErrorObj }
+                    setFormData(prepareFormData(_formData, response.pluginData))
+                    if (!response.isValidPre) {
+                        _formDataErrorObj.preBuildStage.isValid = false
+                    }
+                    if (!response.isValidPost) {
+                        _formDataErrorObj.postBuildStage.isValid = false
+                    }
+                    setFormDataErrorObj(_formDataErrorObj)
+                    setMandatoryPluginData(response)
                 }
-                if (!response.isValidPost) {
-                    _formDataErrorObj.postBuildStage.isValid = false
-                }
-                setFormDataErrorObj(_formDataErrorObj)
-                setMandatoryPluginData(response)
             })
             .catch((error: ServerErrors) => {
                 showError(error)
             })
+    }
+
+    const getPluginData = (branchName: string): void => {
+      getMandatoryPluginData(formData, [...presetPlugins, ...sharedPlugins], branchName)
     }
 
     const deletePipeline = (): void => {
@@ -634,7 +641,10 @@ export default function CIPipeline({
             }
             let isPluginsValid = true
             if (mandatoryPluginData?.pluginData?.length && (sharedPlugins.length || presetPlugins.length)) {
-                const _mandatoryPluginsData = validatePlugins(formData, mandatoryPluginData.pluginData, [...sharedPlugins, ...presetPlugins])
+                const _mandatoryPluginsData = validatePlugins(formData, mandatoryPluginData.pluginData, [
+                    ...sharedPlugins,
+                    ...presetPlugins,
+                ])
                 isPluginsValid =
                     stageName === BuildStageVariable.PreBuild
                         ? _mandatoryPluginsData.isValidPre
@@ -893,6 +903,7 @@ export default function CIPipeline({
                                     isSecurityModuleInstalled={isSecurityModuleInstalled}
                                     setDockerConfigOverridden={setDockerConfigOverridden}
                                     isJobView={isJobView}
+                                    getPluginData={getPluginData}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />

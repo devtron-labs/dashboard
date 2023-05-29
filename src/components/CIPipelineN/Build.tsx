@@ -18,6 +18,7 @@ export function Build({
     isSecurityModuleInstalled,
     setDockerConfigOverridden,
     isJobView,
+    getPluginData
 }: BuildType) {
     const {
         formData,
@@ -57,6 +58,11 @@ export function Build({
         _formData.materials = allMaterials
         setFormData(_formData)
     }
+
+    const handleOnBlur = (event): void => {
+      getPluginData(event.target.value)
+    }
+
 
     const selectSourceType = (selectedSource: CiPipelineSourceTypeOption, gitMaterialId: number): void => {
         // update source type in material
@@ -185,6 +191,7 @@ export function Build({
                     webhookData={_webhookData}
                     canEditPipeline={formData.ciPipelineEditable}
                     isAdvanced={isAdvanced}
+                    handleOnBlur={handleOnBlur}
                 />
             </>
         )

@@ -225,6 +225,7 @@ export interface SourceMaterialsProps {
     webhookData?: WebhookCIProps
     isBranchRegex?: (material) => boolean
     isAdvanced?: boolean
+    handleOnBlur?: (event) => void
 }
 
 export interface WebhookCIProps {
@@ -246,6 +247,7 @@ export interface BuildType {
     isSecurityModuleInstalled: boolean
     setDockerConfigOverridden: React.Dispatch<React.SetStateAction<boolean>>
     isJobView?: boolean
+    getPluginData: (branchName: string) => void
 }
 
 export interface PreBuildType {

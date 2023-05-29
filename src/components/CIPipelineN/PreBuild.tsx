@@ -131,7 +131,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         } else {
             _form[activeStageName].steps[selectedTaskIndex].description = pluginDescription
             _form[activeStageName].steps[selectedTaskIndex].name = pluginName
-            _form[activeStageName].steps[selectedTaskIndex].required = isRequired(pluginId)
+            _form[activeStageName].steps[selectedTaskIndex].isMandatory = isRequired(pluginId)
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
                 id: 0,
                 pluginId: pluginId,
