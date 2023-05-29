@@ -1311,7 +1311,7 @@ function ChartValuesView({
         return (
           isVirtualEnvironmentOnSelector &&
             GeneratedHelmDownload && (
-                <div>
+                <div className='cursor-not-allowed'>
                     <GeneratedHelmDownload />
                     <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
                 </div>

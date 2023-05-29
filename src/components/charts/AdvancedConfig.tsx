@@ -19,7 +19,7 @@ interface AdvancedConfig extends AdvancedConfigHelpers {
 
 const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValues, getChartVersionsAndValues, handleEnvironmentChange, handleChartValueChange, handleChartVersionChange, handleValuesYaml, handleNameChange, discardValuesYamlChanges }) => {
     const { environment, loading, chartMetaData: { chartName }, valuesYaml, id, appStoreValuesChartVersion, appStoreApplicationVersionId, appStoreValuesVersionId, appStoreValuesVersionName, kind, name: appName, availableChartVersions, availableChartValues, appStoreApplicationVersion } = chart;
-    const [environments, setEnvironments] = useState(new Map())
+    const [ environments, setEnvironments] = useState(new Map())
     const [showReadme, setReadme] = useState(false)
     const [showDiff, setDiff] = useState(false);
     const [chartValuesLoading, setChartValuesLoading] = useState(false)
@@ -155,7 +155,7 @@ const AdvancedConfig: React.FC<AdvancedConfig> = ({ chart, index, fetchChartValu
                             <label htmlFor="" className="form__label">Deploy to environment*</label>
                             <Select rootClassName={`${environment?.error ? 'popup-button--error' : ''}`} onChange={e => handleEnvironmentChange(index, e.target.value)} value={environment?.id}>
                                 <Select.Button rootClassName="select-button--default">{environments.has(environment?.id) ? environments.get(environment.id).environment_name : 'Select Environment'}</Select.Button>
-                                {Array.from(environments.values()).filter((env => !env?.isVirtualEnvironment)).map(env => <Select.Option value={env.id} key={env.id}>{env.environment_name}</Select.Option>)}
+                                {Array.from(environments.values()).filter((itm) => !itm.isVirtualEnvironment).map(env => <Select.Option value={env.id} key={env.id}>{env.environment_name}</Select.Option>)}
                             </Select>
                             {environment?.error && <span className="form__error flex left"><WarningIcon className="mr-5 icon-dim-16" />{environment?.error || ""}</span>}
                         </div>
