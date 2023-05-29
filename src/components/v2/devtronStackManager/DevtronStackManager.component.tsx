@@ -94,7 +94,7 @@ const getInstallationStatusLabel = (
                     </span>
                 </div>
                 {!enableStatus && (
-                    <span className="fs-12 ml-8 mb-20 fw-400 cn-7" data-testid={`enable-status-${dataTestId}`}>
+                    <span className="fs-12 ml-8 mb-20 fw-400 cn-7 ml-13" data-testid={`enable-status-${dataTestId}`}>
                         Not Enabled
                     </span>
                 )}
