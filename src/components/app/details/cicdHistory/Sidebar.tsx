@@ -162,7 +162,7 @@ const HistorySummaryCard = React.memo(
             scrollToElement()
         }, [targetCardRef])
 
-        const activetriggerId = params['triggerId']
+        const activeTriggerId = params['triggerId']
         const scrollToElement = () => {
             if (targetCardRef?.current) {
                 targetCardRef.current.scrollIntoView({ behavior: "smooth" });
@@ -195,7 +195,7 @@ const HistorySummaryCard = React.memo(
                     className="w-100 ci-details__build-card-container"
                     data-testid={dataTestId}
                     activeClassName="active"
-                    ref={+activetriggerId === +id ? targetCardRef : null}
+                    ref={+activeTriggerId === +id ? targetCardRef : null}
                 >
                     <div className="w-100 ci-details__build-card">
                         <div
