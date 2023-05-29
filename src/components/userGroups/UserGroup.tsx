@@ -1529,21 +1529,6 @@ function NoUsers({ onClick }) {
         )
     }
     return (
-        // <EmptyState>
-        //     <EmptyState.Image>
-        //         <img src={EmptyImage} alt="so empty" />
-        //     </EmptyState.Image>
-        //     <EmptyState.Title>
-        //         <h4>No users</h4>
-        //     </EmptyState.Title>
-        //     <EmptyState.Subtitle>Add users and assign group or direct permissions</EmptyState.Subtitle>
-        //     <EmptyState.Button>
-        //         <button onClick={onClick} className="cta flex">
-        //             <AddIcon className="mr-5" />
-        //             Add user
-        //         </button>
-        //     </EmptyState.Button>
-        // </EmptyState>
         <GenericEmptyState
             image={EmptyImage}
             title={'No users'}
@@ -1564,27 +1549,6 @@ const renderEmptySSOMessage = (): JSX.Element => {
 
 function SSONotConfiguredState() {
     return (
-        // <EmptyState>
-        //     <EmptyState.Image>
-        //         <img src={EmptyImage} alt="so empty" />
-        //     </EmptyState.Image>
-        //     <EmptyState.Title>
-        //         <h4 className="fw-6 fs-16 w-300 dc__align-center lh-24 mb-8-imp mt-20">
-        //             {SSO_NOT_CONFIGURED_STATE_TEXTS.title}
-        //         </h4>
-        //     </EmptyState.Title>
-        //     <EmptyState.Subtitle className="w-300 fw-400 fs-13">
-        //         {SSO_NOT_CONFIGURED_STATE_TEXTS.subTitle}
-        //         <InfoColourBar
-        //             message={renderEmptySSOMessage()}
-        //             classname="error_bar mt-8 dc__align-left info-colour-bar svg p-8 pl-8-imp "
-        //             linkText={SSO_NOT_CONFIGURED_STATE_TEXTS.linkText}
-        //             redirectLink={SSO_NOT_CONFIGURED_STATE_TEXTS.redirectLink}
-        //             internalLink={true}
-        //             Icon={ErrorIcon}
-        //         />
-        //     </EmptyState.Subtitle>
-        // </EmptyState>
         <GenericEmptyState
             image={EmptyImage}
             classname="fs-16 dc__align-center lh-24 mb-8-imp mt-20"
@@ -1640,22 +1604,6 @@ function SearchEmpty({ searchString, setSearchString }) {
     }
 
     return (
-        // <EmptyState>
-        //     <EmptyState.Image>
-        //         <img src={EmptySearch} alt="so empty" />
-        //     </EmptyState.Image>
-        //     <EmptyState.Title>
-        //         <h4>No matching results</h4>
-        //     </EmptyState.Title>
-        //     <EmptyState.Subtitle>
-        //         We couldn’t find any result for ”<b>{searchString}</b>”
-        //     </EmptyState.Subtitle>
-        //     <EmptyState.Button>
-        //         <button onClick={(e) => setSearchString('')} className="cta secondary">
-        //             Clear search
-        //         </button>
-        //     </EmptyState.Button>
-        // </EmptyState>
         <GenericEmptyState
             image={EmptySearch}
             title={'No matching results'}
