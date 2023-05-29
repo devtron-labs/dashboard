@@ -13,7 +13,14 @@ import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
 import { Select } from '../../../common'
-import { Progressing, DeleteDialog, EmptyState, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Progressing,
+    DeleteDialog,
+    EmptyState,
+    RadioGroup,
+    RadioGroupItem,
+    GenericEmptyState,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
     AppNameInputType,
@@ -228,7 +235,9 @@ export const ChartValuesSelector = ({
 }: ChartValuesSelectorType) => {
     return (
         <div className="w-100 mb-12">
-            <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-values-heading">Chart Values</span>
+            <span className="form__label fs-13 fw-4 lh-20 cn-7" data-testid="chart-values-heading">
+                Chart Values
+            </span>
             <ChartValuesSelect
                 className="chart-values-selector"
                 chartValuesList={chartValuesList}
@@ -462,11 +471,12 @@ export const UpdateApplicationButton = ({
 
 export const ErrorScreenWithInfo = ({ info }: ErrorScreenWithInfoProps) => {
     return (
-        <EmptyState>
-            <EmptyState.Image>
-                <ErrorExclamation className="icon-dim-20 mb-10" />
-            </EmptyState.Image>
-            <EmptyState.Subtitle>{info}</EmptyState.Subtitle>
-        </EmptyState>
+        // <EmptyState>
+        //     <EmptyState.Image>
+        //         <ErrorExclamation className="icon-dim-20 mb-10" />
+        //     </EmptyState.Image>
+        //     <EmptyState.Subtitle>{info}</EmptyState.Subtitle>
+        // </EmptyState>
+        <GenericEmptyState image={ErrorExclamation} classname="icon-dim-20 mb-10" title={''} subTitle={info} />
     )
 }

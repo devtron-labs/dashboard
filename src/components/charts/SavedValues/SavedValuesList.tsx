@@ -31,6 +31,7 @@ import PageHeader from '../../common/header/PageHeader'
 import { toast } from 'react-toastify'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
+import { classNames } from 'react-select/dist/declarations/src/utils'
 
 export default function SavedValuesList() {
     const history: RouteComponentProps['history'] = useHistory()
@@ -207,7 +208,7 @@ export default function SavedValuesList() {
 
     const renderGenericEmptyStateButton = () => {
         return (
-            <button onClick={clearSearch} className="add-link cta flex">
+             <button onClick={clearSearch} className="add-link cta flex">
                 Clear search
             </button>
         )
@@ -215,25 +216,14 @@ export default function SavedValuesList() {
 
     const renderEmptyState = (title?: string, subTitle?: string, showClearButton?: boolean): JSX.Element => {
         return (
-            <div style={{ height: 'calc(100vh - 235px)' }}>
-                <EmptyState>
-                    <EmptyState.Image>
-                        <img src={emptyCustomChart} alt={title || 'No values saved for this chart'} />
-                    </EmptyState.Image>
-                    <EmptyState.Title>
-                        <h4 className="title">{title || 'No values saved for this chart'}</h4>
-                    </EmptyState.Title>
-                    <EmptyState.Subtitle>
-                        {subTitle || 'Customize, Dry Run and Save values so they’re ready to be used later.'}&nbsp;
-                    </EmptyState.Subtitle>
-                </EmptyState>
-                {/* <GenericEmptyState
-                    image={`${emptyCustomChart}`}
-                    classname="title"
-                    title={`${title}` || 'No values saved for this chart'}
-                    subTitle={`${subTitle}` || 'Customize, Dry Run and Save values so they’re ready to be used later.'}
-                    renderButton={showClearButton && renderGenericEmptyStateButton}
-                /> */}
+            <div className='dc__position-rel' style={{ height: 'calc(100vh - 235px)' }}>
+                <GenericEmptyState
+                    image={emptyCustomChart}
+                    title={title || 'No values saved for this chart'}
+                    subTitle={subTitle || 'Customize, Dry Run and Save values so they’re ready to be used later.'}
+                    isButtonAvailable={showClearButton}
+                    renderButton={renderGenericEmptyStateButton}
+                />
             </div>
         )
     }

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 import { Pagination } from '../../common'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import {
@@ -12,7 +12,7 @@ import {
     SIDEBAR_KEYS,
 } from '../Constants'
 import { K8SResourceListType } from '../Types'
-import ResourceListEmptyState from './ResourceListEmptyState'
+// import ResourceListEmptyState from './ResourceListEmptyState'
 import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
@@ -190,7 +190,7 @@ export function K8SResourceList({
     const renderEmptyPage = (): JSX.Element => {
         if (noResults) {
             return (
-                <ResourceListEmptyState
+                <GenericEmptyState
                     title={RESOURCE_EMPTY_PAGE_STATE.title(selectedResource?.gvk?.Kind)}
                     subTitle={RESOURCE_EMPTY_PAGE_STATE.subTitle(
                         selectedResource?.gvk?.Kind,
@@ -200,10 +200,10 @@ export function K8SResourceList({
             )
         } else {
             return (
-                <ResourceListEmptyState
+                <GenericEmptyState
                     title={RESOURCE_LIST_EMPTY_STATE.title}
                     subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedResource?.gvk?.Kind)}
-                    actionHandler={clearSearch}
+                    children={clearSearch}
                 />
             )
         }

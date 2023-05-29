@@ -6,6 +6,7 @@ import {
     ServerErrors,
     Host,
     EmptyState,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useLocation, useHistory } from 'react-router'
 import { OrderBy, SortBy } from '../list/types'
@@ -46,6 +47,8 @@ import {
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import AppStatus from '../AppStatus'
+import { styles } from '../../security/security.util'
+import { classNames } from 'react-mde/lib/definitions/util/ClassNames'
 
 export default function HelmAppList({
     serverMode,
@@ -533,20 +536,14 @@ export default function HelmAppList({
 
     function askToSelectClusterId() {
         return (
-            <div style={{ height: 'calc(100vh - 150px)' }}>
-                <EmptyState>
-                    <img
-                        src={NoClusterSelectImage}
-                        width="250"
-                        height="250"
-                        alt={APPLIST_EMPTY_STATE_MESSAGING.altText}
-                    />
-                    <h2 className="fs-16 fw-4 c-9">{APPLIST_EMPTY_STATE_MESSAGING.heading}</h2>
-                    <p className="text-left" style={{ width: '300px' }}>
-                        {APPLIST_EMPTY_STATE_MESSAGING.infoText}
-                    </p>
-                </EmptyState>
+            <div className='dc__position-rel' style={{ height: 'calc(100vh - 150px)' }}>
+                <GenericEmptyState
+                    image={NoClusterSelectImage}
+                    title={APPLIST_EMPTY_STATE_MESSAGING.heading}
+                    subTitle={APPLIST_EMPTY_STATE_MESSAGING.infoText}
+                />
             </div>
+
         )
     }
 

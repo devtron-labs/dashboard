@@ -82,7 +82,12 @@ export const GitChanges = ({
     const [copied, setCopied] = useState(false)
 
     if (!ciMaterials?.length || !Object.keys(gitTriggers ?? {}).length) {
-        return <GenericEmptyState title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE} subTitle={EMPTY_STATE_STATUS.DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE.SUBTITLE} />
+        return (
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.DATA_NOT_AVAILABLE}
+                subTitle={EMPTY_STATE_STATUS.DEVTRON_APP_DEPLOYMENT_HISTORY_SOURCE_CODE.SUBTITLE}
+            />
+        )
     }
     return (
         <div className="flex column left w-100 p-16">
@@ -138,6 +143,14 @@ export const GitChanges = ({
 }
 
 export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyViewType) => {
+    // const EmptyViewButton = () => {
+    //     return (
+    //         <NavLink to={link} className="cta cta--ci-details flex" target="_blank">
+    //             <OpenInNew className="mr-5 mr-5 scn-0 fcb-5 icon-fill-blue-imp" />
+    //             {linkText}
+    //         </NavLink>
+    //     )
+    // }
     return (
         <EmptyState>
             <EmptyState.Image>
@@ -158,6 +171,14 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyView
                 </EmptyState.Button>
             )}
         </EmptyState>
+        // <GenericEmptyState
+        //     image={imgSrc ?? AppNotDeployed}
+        //     classname='w-300 dc__text-center lh-1-4'
+        //     title={title}
+        //     subTitle={subTitle}
+        //     isButtonAvailable={true}
+        //     renderButton={EmptyViewButton}
+        // />
     )
 }
 

@@ -136,7 +136,7 @@ export default function CustomChartList() {
                 image={emptyCustomChart}
                 title="Use custom charts in applications"
                 subTitle={`Import custom charts to use them in apps instead of the default system template.&nbsp;
-          ${renderLearnMoreLink()}`}
+                ${renderLearnMoreLink()}`}
                 isButtonAvailable={true}
                 renderButton={renderUploadButton}
             />

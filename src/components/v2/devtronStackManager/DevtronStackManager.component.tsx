@@ -61,7 +61,10 @@ import { styles } from '../common/ReactSelect.utils'
 const getInstallationStatusLabel = (installationStatus: ModuleStatus): JSX.Element => {
     if (installationStatus === ModuleStatus.INSTALLING) {
         return (
-            <div data-testid={`module-details-card-status-${installationStatus}`} className={`module-details__installation-status flex ${installationStatus}`}>
+            <div
+                data-testid={`module-details-card-status-${installationStatus}`}
+                className={`module-details__installation-status flex ${installationStatus}`}
+            >
                 <Progressing size={20} />
                 <span className="fs-13 fw-6 ml-8">Installing</span>
             </div>
@@ -804,10 +807,7 @@ export const ModuleDetailsView = ({
                         src={moduleDetails.icon}
                         alt={moduleDetails.title}
                     />
-                    <h2
-                        data-testid="module-details-title"
-                        className="module-details__feature-heading cn-9 fs-20 fw-6"
-                    >
+                    <h2 data-testid="module-details-title" className="module-details__feature-heading cn-9 fs-20 fw-6">
                         {moduleDetails.title}
                     </h2>
                     <div className="module-details__divider mt-24 mb-24" />
@@ -837,12 +837,24 @@ export const ModuleDetailsView = ({
     ) : null
 }
 
-export const NoIntegrationsInstalledView = (): JSX.Element => {
+const DiscoverIntegrationsButton = () => {
     const history: RouteComponentProps['history'] = useHistory()
+    return (
+        <button
+            type="button"
+            className="empty-state__discover-btn flex fs-13 fw-6 br-4"
+            onClick={() => history.push(URLS.STACK_MANAGER_DISCOVER_MODULES)}
+        >
+            <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover integrations</span>
+        </button>
+    )
+}
+
+export const NoIntegrationsInstalledView = (): JSX.Element => {
 
     return (
         <div className="no-integrations__installed-view">
-            <EmptyState>
+            {/* <EmptyState>
                 <EmptyState.Image>
                     <img src={NoIntegrations} width="250" height="200" alt="no results" />
                 </EmptyState.Image>
@@ -859,7 +871,15 @@ export const NoIntegrationsInstalledView = (): JSX.Element => {
                         <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover integrations</span>
                     </button>
                 </EmptyState.Button>
-            </EmptyState>
+            </EmptyState> */}
+            <GenericEmptyState
+                image={NoIntegrations}
+                classname='fs-16'
+                title={'No integrations installed'}
+                subTitle={'Installed integrations will be available here'}
+                isButtonAvailable={true}
+                renderButton={DiscoverIntegrationsButton}
+            />
         </div>
     )
 }

@@ -7,7 +7,7 @@ import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-ri
 import { EmptyStateCIMaterialProps } from './types'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
 import { DOCKER_FILE_ERROR_MESSAGE, SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
-import { EmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function EmptyStateCIMaterial({
     isRepoError,
@@ -111,7 +111,15 @@ export default function EmptyStateCIMaterial({
                 ),
                 title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommit}</h1>,
                 subtitle: CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitSubtitle,
-                link: <span data-testid="show-excluded-commits-button" className="dc__link dc__underline dc__block cursor" onClick={toggleExclude}>{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitButtonText}</span>,
+                link: (
+                    <span
+                        data-testid="show-excluded-commits-button"
+                        className="dc__link dc__underline dc__block cursor"
+                        onClick={toggleExclude}
+                    >
+                        {CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommitButtonText}
+                    </span>
+                ),
                 cta: null,
             }
         } else if (!anyCommit) {

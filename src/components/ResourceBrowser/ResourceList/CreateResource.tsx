@@ -6,11 +6,11 @@ import { ReactComponent as Success } from '../../../assets/icons/ic-success.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-pencil.svg'
 import mechanicalOperation from '../../../assets/img/ic-mechanical-operation.svg'
-import { showError, Progressing, Drawer, InfoColourBar } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Drawer, InfoColourBar, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import CodeEditor from '../../CodeEditor/CodeEditor'
 import { CreateResourcePayload, CreateResourceStatus, CreateResourceType, ResourceType } from '../Types'
 import { createNewResource } from '../ResourceBrowser.service'
-import ResourceListEmptyState from './ResourceListEmptyState'
+// import ResourceListEmptyState from './ResourceListEmptyState'
 import { CREATE_RESOURCE_MODAL_MESSAGING } from '../Constants'
 
 export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
@@ -116,8 +116,8 @@ export function CreateResource({ closePopup, clusterId }: CreateResourceType) {
     const renderPageContent = (): JSX.Element => {
         if (loader) {
             return (
-                <ResourceListEmptyState
-                    imgSource={mechanicalOperation}
+                <GenericEmptyState
+                    image={mechanicalOperation}
                     title={CREATE_RESOURCE_MODAL_MESSAGING.creatingObject.title}
                     subTitle={CREATE_RESOURCE_MODAL_MESSAGING.creatingObject.subTitle}
                 />

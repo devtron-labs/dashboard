@@ -392,7 +392,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
         let envName = env ? env.label : "";
         return <div>
             {this.renderInputs()}
-            <div style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
+            <div className='dc__position-rel' style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
                 {/* <EmptyState >
                     <EmptyState.Image><img src={AppNotDeployed} alt="" /></EmptyState.Image>
                     <EmptyState.Title><h4>No deployments found</h4></EmptyState.Title>
@@ -408,7 +408,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     }
 
     renderNoEnvironmentView() {
-        return <div style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 80px" }}>
+        return <div className='dc__position-rel' style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 80px" }}>
             {/* <EmptyState >
                 <EmptyState.Image><img src={SelectEnvImage} alt="" /></EmptyState.Image>
                 <EmptyState.Title><h4>Deployment Metrics</h4></EmptyState.Title>
@@ -425,7 +425,7 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     renderSelectEnvironmentView() {
         return <div>
             {this.renderInputs()}
-            <div style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
+            <div className='dc__position-rel' style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
                 {/* <EmptyState >
                     <EmptyState.Image><img src={SelectEnvImage} alt="" /></EmptyState.Image>
                     <EmptyState.Title><h4>Select an Environment</h4></EmptyState.Title>
