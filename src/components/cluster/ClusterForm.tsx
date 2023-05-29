@@ -1055,7 +1055,9 @@ export default function ClusterForm({
                                                 dataTestId={`checkbox_selection_of_cluster-${clusterDetail.cluster_name}`}
                                                 rootClassName={`form__checkbox-label--ignore-cache mb-0 flex${
                                                     selectedUserNameOptions[clusterDetail.cluster_name]
-                                                        .errorInConnecting === 'cluster-already-exists'
+                                                        .errorInConnecting === 'cluster-already-exists' ||
+                                                    !selectedUserNameOptions[clusterDetail.cluster_name]
+                                                        .errorInConnecting
                                                         ? ''
                                                         : ' dc__opacity-0_5'
                                                 }`}
