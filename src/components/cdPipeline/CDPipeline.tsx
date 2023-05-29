@@ -638,6 +638,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
         if (this.state.pipelineConfig.isVirtualEnvironment) {
             pipeline.deploymentAppType = DeploymentAppTypes.MANIFEST_DOWNLOAD
+            pipeline.triggerType = TriggerType.Auto
         }
 
         let msg
