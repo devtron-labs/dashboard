@@ -76,12 +76,18 @@ export default function CDDetails() {
             setHasMore(true)
             setHasMoreLoading(true)
         }
+        let _triggerId = deploymentHistoryResult.result[0].id
         let queryString = new URLSearchParams(location.search)
         let queryParam = queryString.get('type')
-        let deploymentStageType = queryParam === "PRECD" ? "PRE" : "POST"
-        const requiredResult = deploymentHistoryResult.result.filter((obj) => {
-            return obj.stage === deploymentStageType;
-        });
+        if (queryParam === "PRECD" || queryParam === "POSTCD") {
+            let deploymentStageType = queryParam === "PRECD" ? "PRE" : "POST"
+            const requiredResult = deploymentHistoryResult.result.filter((obj) => {
+                return obj.stage === deploymentStageType;
+            });
+            if(requiredResult?.[0]) {
+                _triggerId = requiredResult[0].id
+            }
+        }
         const newTriggerHistory = (deploymentHistoryResult.result || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
@@ -92,7 +98,7 @@ export default function CDDetails() {
                     appId,
                     envId,
                     pipelineId,
-                    triggerId: requiredResult ? requiredResult[0].id : deploymentHistoryResult.result[0].id,
+                    triggerId: _triggerId,
                 }),
             )
         }
