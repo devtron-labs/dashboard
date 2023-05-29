@@ -1009,111 +1009,115 @@ export default function ClusterForm({
                         className="cluster-form dc__position-rel h-100 bcn-0"
                     >
                         <AddClusterHeader />
-                        <div className="api-token__list en-2 bw-1 bcn-0 br-8 mr-20 ml-20 mt-16">
-                            <InfoColourBar
-                                message={
-                                    <>
-                                        <span className="fw-6">{validCluster()} valid cluster. </span>
-                                        <span>Select the cluster you want to add/update</span>
-                                    </>
-                                }
-                                classname="info_bar cn-9 lh-20 dc__no-border-imp pl-18"
-                                Icon={Info}
-                                styles={{ borderRadius: '6px 6px 0 0' }}
-                            />
-                            <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom">
-                                <div data-testid="select_all_cluster_checkbox">
-                                    <Checkbox
-                                        rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
-                                        onChange={toggleSelectAll}
-                                        isChecked={selectAll}
-                                        value={getAllClustersCheckBoxValue()}
-                                    />
+                        <div className="dc__overflow-scroll" style={{ height: 'calc(100vh-124px)' }}>
+                            <div className="api-token__list en-2 bw-1 bcn-0 br-8 mr-20 ml-20 mt-16">
+                                <InfoColourBar
+                                    message={
+                                        <>
+                                            <span className="fw-6">{validCluster()} valid cluster. </span>
+                                            <span>Select the cluster you want to add/update</span>
+                                        </>
+                                    }
+                                    classname="info_bar cn-9 lh-20 dc__no-border-imp pl-18"
+                                    Icon={Info}
+                                    styles={{ borderRadius: '6px 6px 0 0' }}
+                                />
+                                <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom">
+                                    <div data-testid="select_all_cluster_checkbox">
+                                        <Checkbox
+                                            rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
+                                            onChange={toggleSelectAll}
+                                            isChecked={selectAll}
+                                            value={getAllClustersCheckBoxValue()}
+                                        />
+                                    </div>
+                                    <div>CLUSTER</div>
+                                    <div>USER</div>
+                                    <div>MESSAGE</div>
+                                    <div></div>
                                 </div>
-                                <div>CLUSTER</div>
-                                <div>USER</div>
-                                <div>MESSAGE</div>
-                                <div></div>
-                            </div>
-                            <div className="dc__overflow-scroll" style={{ height: 'auto' }}>
-                                {!dataList || dataList.length === 0 ? (
-                                    <NoMatchingResults />
-                                ) : (
-                                    dataList.map((clusterDetail, index) => (
-                                        <div
-                                            key={`api_${index}`}
-                                            className="cluster-list-row-1 flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
-                                            style={{
-                                                height: 'auto',
-                                                alignItems: 'start',
-                                                marginTop: '8px',
-                                                marginBottom: '8px',
-                                            }}
-                                        >
-                                            <Checkbox
-                                                key={`app-$${index}`}
-                                                dataTestId={`checkbox_selection_of_cluster-${clusterDetail.cluster_name}`}
-                                                rootClassName={`form__checkbox-label--ignore-cache mb-0 flex${
-                                                    selectedUserNameOptions[clusterDetail.cluster_name]
-                                                        .errorInConnecting === 'cluster-already-exists' ||
-                                                    !selectedUserNameOptions[clusterDetail.cluster_name]
-                                                        .errorInConnecting
-                                                        ? ''
-                                                        : ' dc__opacity-0_5'
-                                                }`}
-                                                onChange={() => toggleIsSelected(clusterDetail.cluster_name)}
-                                                isChecked={isClusterSelected[clusterDetail.cluster_name]}
-                                                value={CHECKBOX_VALUE.CHECKED}
-                                                disabled={
-                                                    selectedUserNameOptions[clusterDetail.cluster_name]
-                                                        .errorInConnecting === 'cluster-already-exists'
-                                                        ? false
-                                                        : selectedUserNameOptions[clusterDetail.cluster_name]
-                                                              .errorInConnecting.length > 0
-                                                }
-                                            />
+                                <div style={{ height: 'auto' }}>
+                                    {!dataList || dataList.length === 0 ? (
+                                        <NoMatchingResults />
+                                    ) : (
+                                        dataList.map((clusterDetail, index) => (
                                             <div
-                                                className="flexbox"
-                                                onClick={() => toggleIsSelected(clusterDetail.cluster_name)}
+                                                key={`api_${index}`}
+                                                className="cluster-list-row-1 flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
+                                                style={{
+                                                    height: 'auto',
+                                                    alignItems: 'start',
+                                                    marginTop: '8px',
+                                                    marginBottom: '8px',
+                                                }}
                                             >
-                                                <span className="dc__ellipsis-right">{clusterDetail.cluster_name}</span>
-                                            </div>
-                                            <UserNameDropDownList
-                                                clusterDetail={clusterDetail}
-                                                selectedUserNameOptions={selectedUserNameOptions}
-                                                onChangeUserName={onChangeUserName}
-                                            />
-                                            <div className="flex left top">
-                                                {selectedUserNameOptions[clusterDetail.cluster_name]
-                                                    .errorInConnecting === 'cluster-already-exists' ? (
-                                                    <ErrorIcon className="dc__app-summary__icon icon-dim-16 mr-8 mt-3" />
-                                                ) : (
-                                                    <div
-                                                        className={`dc__app-summary__icon icon-dim-16 mr-8 mt-3 ${
-                                                            selectedUserNameOptions[clusterDetail.cluster_name]
-                                                                .errorInConnecting.length !== 0 &&
-                                                            selectedUserNameOptions[clusterDetail.cluster_name]
-                                                                .errorInConnecting !== 'cluster-already-exists'
-                                                                ? 'failed'
-                                                                : ''
-                                                        }`}
-                                                    />
-                                                )}
-                                                <span>
+                                                <Checkbox
+                                                    key={`app-$${index}`}
+                                                    dataTestId={`checkbox_selection_of_cluster-${clusterDetail.cluster_name}`}
+                                                    rootClassName={`form__checkbox-label--ignore-cache mb-0 flex${
+                                                        selectedUserNameOptions[clusterDetail.cluster_name]
+                                                            .errorInConnecting === 'cluster-already-exists' ||
+                                                        !selectedUserNameOptions[clusterDetail.cluster_name]
+                                                            .errorInConnecting
+                                                            ? ''
+                                                            : ' dc__opacity-0_5'
+                                                    }`}
+                                                    onChange={() => toggleIsSelected(clusterDetail.cluster_name)}
+                                                    isChecked={isClusterSelected[clusterDetail.cluster_name]}
+                                                    value={CHECKBOX_VALUE.CHECKED}
+                                                    disabled={
+                                                        selectedUserNameOptions[clusterDetail.cluster_name]
+                                                            .errorInConnecting === 'cluster-already-exists'
+                                                            ? false
+                                                            : selectedUserNameOptions[clusterDetail.cluster_name]
+                                                                  .errorInConnecting.length > 0
+                                                    }
+                                                />
+                                                <div
+                                                    className="flexbox"
+                                                    onClick={() => toggleIsSelected(clusterDetail.cluster_name)}
+                                                >
+                                                    <span className="dc__ellipsis-right">
+                                                        {clusterDetail.cluster_name}
+                                                    </span>
+                                                </div>
+                                                <UserNameDropDownList
+                                                    clusterDetail={clusterDetail}
+                                                    selectedUserNameOptions={selectedUserNameOptions}
+                                                    onChangeUserName={onChangeUserName}
+                                                />
+                                                <div className="flex left top">
                                                     {selectedUserNameOptions[clusterDetail.cluster_name]
-                                                        ?.errorInConnecting === 'cluster-already-exists' &&
-                                                    isClusterSelected[clusterDetail.cluster_name]
-                                                        ? 'Cluster already exists. Cluster will be updated.'
-                                                        : selectedUserNameOptions[clusterDetail.cluster_name]
-                                                              ?.errorInConnecting === 'cluster-already-exists'
-                                                        ? 'Cluster already exists.'
-                                                        : selectedUserNameOptions[clusterDetail.cluster_name]
-                                                              ?.errorInConnecting || ' '}
-                                                </span>
+                                                        .errorInConnecting === 'cluster-already-exists' ? (
+                                                        <ErrorIcon className="dc__app-summary__icon icon-dim-16 mr-8 mt-3" />
+                                                    ) : (
+                                                        <div
+                                                            className={`dc__app-summary__icon icon-dim-16 mr-8 mt-3 ${
+                                                                selectedUserNameOptions[clusterDetail.cluster_name]
+                                                                    .errorInConnecting.length !== 0 &&
+                                                                selectedUserNameOptions[clusterDetail.cluster_name]
+                                                                    .errorInConnecting !== 'cluster-already-exists'
+                                                                    ? 'failed'
+                                                                    : ''
+                                                            }`}
+                                                        />
+                                                    )}
+                                                    <span>
+                                                        {selectedUserNameOptions[clusterDetail.cluster_name]
+                                                            ?.errorInConnecting === 'cluster-already-exists' &&
+                                                        isClusterSelected[clusterDetail.cluster_name]
+                                                            ? 'Cluster already exists. Cluster will be updated.'
+                                                            : selectedUserNameOptions[clusterDetail.cluster_name]
+                                                                  ?.errorInConnecting === 'cluster-already-exists'
+                                                            ? 'Cluster already exists.'
+                                                            : selectedUserNameOptions[clusterDetail.cluster_name]
+                                                                  ?.errorInConnecting || ' '}
+                                                    </span>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))
-                                )}
+                                        ))
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1194,7 +1198,7 @@ export default function ClusterForm({
             >
                 <AddClusterHeader />
 
-                <div className="p-20" style={{ overflow: 'auto', height: 'calc(100vh - 106px)' }}>
+                <div className="p-20" style={{ overflow: 'auto', height: 'calc(100vh - 124px)' }}>
                     {!id && (
                         <div className="form__row clone-apps dc__inline-block pd-0 pt-0 pb-12">
                             <RadioGroup

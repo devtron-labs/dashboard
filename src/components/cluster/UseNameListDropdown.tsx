@@ -21,7 +21,7 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
 
         return (
             <ReactSelect
-                classNamePrefix="user_name_dropdown_list"
+                classNamePrefix="user_name_dropdown_list dc__ellipsis-right"
                 options={userNameOptions}
                 value={selectedUserNameOptions[clusterDetail.cluster_name]}
                 isSearchable={false}
@@ -41,6 +41,8 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                         cursor: 'pointer',
                         fontWeight: 600,
                         minHeight: 'fit-content',
+                        width: 'fit-content',
+                        maxWidth: '240px',
                     }),
                     option: (base, state) => ({
                         ...base,
@@ -52,11 +54,19 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                         marginTop: '2px',
                         minWidth: '240px',
                     }),
+                    singleValue: (base, state) => {
+                        return {
+                            ...base,
+                            verflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                        }
+                    },
                     menuList: (base) => ({
                         ...base,
                         position: 'relative',
-                        paddingBottom: 0,
-                        paddingTop: 0,
+                        paddingTop: '4px',
+                        paddingBotton: '4px',
                         maxHeight: '250px',
                     }),
                     noOptionsMessage: (base) => ({
