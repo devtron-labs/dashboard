@@ -353,7 +353,7 @@ export const TriggerOutput: React.FC<{
                                     </NavLink>
                                 </li>
                             )}
-                            {triggerDetails.stage !== 'DEPLOY' || triggerDetails.IsVirtualEnvironment && (
+                            {(triggerDetails.stage !== 'DEPLOY' || triggerDetails.IsVirtualEnvironment) && (
                                 <li className="tab-list__tab" data-testid="deployment-history-artifacts-link">
                                     <NavLink
                                         replace
@@ -418,7 +418,7 @@ const HistoryLogs: React.FC<{
         appId,
         envId,
         appName: triggerDetails.artifact,
-        workflowId: triggerId,
+        workflowId: triggerDetails.cdWorkflowId,
     }
 
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
