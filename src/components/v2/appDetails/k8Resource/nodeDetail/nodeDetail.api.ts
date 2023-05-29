@@ -174,6 +174,7 @@ export const getLogsURL = (
     nodeName: string,
     Host: string,
     container: string,
+    prevContainerLogs: boolean,
     isResourceBrowserView?: boolean,
     clusterId?: number,
     namespace?: string,
@@ -191,7 +192,7 @@ export const getLogsURL = (
         ad.deploymentAppType === DeploymentAppType.helm ||
         isResourceBrowserView
     ) {
-        let logsURL = `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}`
+        let logsURL = `${prefix}${Host}/${Routes.LOGS}/${nodeName}?containerName=${container}&prevContainerLogs=${prevContainerLogs}`
 
         if (isResourceBrowserView) {
             logsURL += `&clusterId=${clusterId}&namespace=${namespace}`

@@ -9,7 +9,7 @@ import { getLogsURL } from '../nodeDetail.api'
 import IndexStore from '../../../index.store'
 import WebWorker from '../../../../../app/WebWorker'
 import sseWorker from '../../../../../app/grepSSEworker'
-import { Host } from '@devtron-labs/devtron-fe-common-lib';
+import { CHECKBOX_VALUE, Host } from '@devtron-labs/devtron-fe-common-lib';
 import { Subject } from '../../../../../../util/Subject'
 import LogViewerComponent from './LogViewer.component'
 import { useKeyDown } from '../../../../../common'
@@ -32,6 +32,7 @@ import {
     getSelectedPodList,
 } from '../nodeDetail.util'
 import './nodeDetailTab.scss'
+import { Checkbox } from '@devtron-labs/devtron-fe-common-lib'
 
 const subject: Subject<string> = new Subject()
 const commandLineParser = require('command-line-parser')
@@ -67,7 +68,11 @@ function LogsComponent({
     const [logState, setLogState] = useState(() =>
         getInitialPodContainerSelection(isLogAnalyzer, params, location, isResourceBrowserView, selectedResource),
     )
+    const[prevContainer, setPrevContainer] = useState(false)
 
+    const getPrevContainerLogs = () => {
+        setPrevContainer(!prevContainer)
+    }
     const handlePodSelection = (selectedOption: string) => {
         const pods = getSelectedPodList(selectedOption)
         const containers = new Set(pods[0].containers ?? [])
@@ -194,6 +199,7 @@ function LogsComponent({
                             nodeName,
                             Host,
                             _co.name,
+                            prevContainer,
                             isResourceBrowserView,
                             selectedResource.clusterId,
                             selectedResource.namespace,
@@ -213,7 +219,7 @@ function LogsComponent({
 
             for (const _pwc of podsWithContainers) {
                 pods.push(_pwc[0])
-                urls.push(getLogsURL(appDetails, _pwc[0], Host, _pwc[1]))
+                urls.push(getLogsURL(appDetails, _pwc[0], Host, _pwc[1], prevContainer))
             }
 
             if (urls.length == 0) {
@@ -301,7 +307,7 @@ function LogsComponent({
         fetchLogs()
 
         return () => stopWorker()
-    }, [logState])
+    }, [logState, prevContainer])
 
     const podContainerOptions = getPodContainerOptions(
         isLogAnalyzer,
@@ -496,6 +502,18 @@ function LogsComponent({
                                 </div>
                             </React.Fragment>
                         )}
+                        <div
+                            className="cn-2 ml-8 mr-12 "
+                            style={{ width: '1px', height: '16px', background: '#0b0f22' }}
+                        ></div>
+                        <Checkbox
+                            isChecked={prevContainer}
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={getPrevContainerLogs}
+                            rootClassName="fs-12 cn-9 mt-4"
+                        >
+                            <span className="fs-12">Prev Container</span>                
+                        </Checkbox>
                     </div>
 
                     <form
@@ -577,16 +595,23 @@ function LogsComponent({
                                 </div>
                             )}
                         </div>
-
-                        <div className="log-viewer">
-                            <LogViewerComponent
-                                subject={subject}
-                                highlightString={highlightString}
-                                rootClassName="event-logs__logs"
-                                reset={logsCleared}
+                        {(prevContainer && subject) ? (
+                            <MessageUI
+                                dataTestId="no-prev-container-logs"
+                                msg={"Previous instance of this container or their logs does not exist"}
+                                size={24}
+                                minHeight={isResourceBrowserView ? '200px' : ''}
                             />
-                        </div>
-
+                        ) :
+                            <div className="log-viewer">
+                                <LogViewerComponent
+                                    subject={subject}
+                                    highlightString={highlightString}
+                                    rootClassName="event-logs__logs"
+                                    reset={logsCleared}
+                                />
+                            </div>
+                        }
                         <div
                             className={`pod-readyState pod-readyState--bottom w-100 ${
                                 !logsPaused && [0, 1].includes(readyState) ? 'pod-readyState--show' : ''
