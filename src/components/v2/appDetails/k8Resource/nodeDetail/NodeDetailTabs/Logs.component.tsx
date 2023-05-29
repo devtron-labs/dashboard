@@ -70,6 +70,7 @@ function LogsComponent({
     )
     const[prevContainer, setPrevContainer] = useState(false)
     const[showNoPrevContainer, setNoPrevContainer] = useState(false)
+    const[noPrevContainerMessage, setNoPrevContainerMessage] = useState('')
 
     const getPrevContainerLogs = () => {
         setPrevContainer(!prevContainer)
@@ -94,6 +95,7 @@ function LogsComponent({
             selectedContainerOption: selectedContainer,
             grepTokens: logState.grepTokens,
         })
+        setPrevContainer(false)
     }
 
     const handleSearchTextChange = (searchText: string) => {
@@ -143,11 +145,15 @@ function LogsComponent({
             subject.publish(log)
             if (prevContainer) {
                 for (const _co of podContainerOptions.containerOptions) {
-                    if ( log.toString() === `previous terminated container "${_co.name}" in pod "${podContainerOptions.podOptions[0].name}" not found`) {
+                    if ( _co.selected && log.toString() === `previous terminated container "${_co.name}" in pod "${podContainerOptions.podOptions[0].name}" not found`) {
                         setNoPrevContainer(true)
+                        setNoPrevContainerMessage(log.toString())
                     }
                 }
-            } 
+            } else {
+                setNoPrevContainer(false)
+                setNoPrevContainerMessage('')
+            }
         })
         if (event.data.readyState) {
             setReadyState(event.data.readyState)
@@ -522,7 +528,7 @@ function LogsComponent({
                             onChange={getPrevContainerLogs}
                             rootClassName="fs-12 cn-9 mt-4"
                         >
-                            <span className="fs-12">Prev Container</span>                
+                            <span className="fs-12">Prev. container</span>                
                         </Checkbox>
                     </div>
 
@@ -608,9 +614,10 @@ function LogsComponent({
                         {(prevContainer && showNoPrevContainer) ? (
                             <MessageUI
                                 dataTestId="no-prev-container-logs"
-                                msg={"Previous instance of this container or their logs does not exist"}
+                                msg={noPrevContainerMessage}
                                 size={24}
                                 minHeight={isResourceBrowserView ? '200px' : ''}
+                                msgStyle={{ maxWidth: '300px', margin: '8px auto' }}
                             />
                         ) :
                             <div className="log-viewer">
