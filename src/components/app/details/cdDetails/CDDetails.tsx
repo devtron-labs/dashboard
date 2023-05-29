@@ -24,10 +24,11 @@ import Sidebar from '../cicdHistory/Sidebar'
 import { Scroller, LogResizeButton, GitChanges } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
-import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
+import { CICDSidebarFilterOptionType, DeploymentStageType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { AppEnvironment } from '../../../../services/service.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import { STAGE_TYPE } from '../triggerView/types'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -79,8 +80,8 @@ export default function CDDetails() {
         let _triggerId = deploymentHistoryResult.result[0].id
         let queryString = new URLSearchParams(location.search)
         let queryParam = queryString.get('type')
-        if (queryParam === "PRECD" || queryParam === "POSTCD") {
-            let deploymentStageType = queryParam === "PRECD" ? "PRE" : "POST"
+        if (queryParam === STAGE_TYPE.PRECD || queryParam === STAGE_TYPE.POSTCD) {
+            let deploymentStageType = queryParam === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
             const requiredResult = deploymentHistoryResult.result.filter((obj) => {
                 return obj.stage === deploymentStageType;
             });
