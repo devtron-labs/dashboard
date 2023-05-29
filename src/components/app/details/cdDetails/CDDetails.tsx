@@ -82,7 +82,7 @@ export default function CDDetails() {
         let deploymentStageType = queryParam === "PRECD" ? "PRE" : "POST"
         const requiredResult = deploymentHistoryResult.result.filter((obj) => {
             return obj.stage === deploymentStageType;
-          });
+        });
         const newTriggerHistory = (deploymentHistoryResult.result || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
@@ -255,141 +255,141 @@ export const TriggerOutput: React.FC<{
     deploymentAppType,
     isBlobStorageConfigured,
 }) => {
-    const { appId, triggerId, envId, pipelineId } = useParams<{
-        appId: string
-        triggerId: string
-        envId: string
-        pipelineId: string
-    }>()
-    const triggerDetails = triggerHistory.get(+triggerId)
-    const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails] = useAsync(
-        () => getTriggerDetails({ appId, envId, pipelineId, triggerId }),
-        [triggerId, appId, envId],
-        !!triggerId && !!pipelineId,
-    )
-    useEffect(() => {
-        if (triggerDetailsLoading || triggerDetailsError || !triggerDetailsResult) return
-        if (triggerDetailsResult?.result) syncState(+triggerId, triggerDetailsResult?.result)
-    }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
-
-    const timeout = useMemo(() => {
-        if (
-            !triggerDetails ||
-            terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())
+        const { appId, triggerId, envId, pipelineId } = useParams<{
+            appId: string
+            triggerId: string
+            envId: string
+            pipelineId: string
+        }>()
+        const triggerDetails = triggerHistory.get(+triggerId)
+        const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails] = useAsync(
+            () => getTriggerDetails({ appId, envId, pipelineId, triggerId }),
+            [triggerId, appId, envId],
+            !!triggerId && !!pipelineId,
         )
-            return null // no interval
-        if (statusSet.has(triggerDetails.status?.toLowerCase() || triggerDetails.podStatus?.toLowerCase())) {
-            // 10s because progressing
-            return 10000
+        useEffect(() => {
+            if (triggerDetailsLoading || triggerDetailsError || !triggerDetailsResult) return
+            if (triggerDetailsResult?.result) syncState(+triggerId, triggerDetailsResult?.result)
+        }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
+
+        const timeout = useMemo(() => {
+            if (
+                !triggerDetails ||
+                terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())
+            )
+                return null // no interval
+            if (statusSet.has(triggerDetails.status?.toLowerCase() || triggerDetails.podStatus?.toLowerCase())) {
+                // 10s because progressing
+                return 10000
+            }
+            return 30000 // 30s for normal
+        }, [triggerDetails])
+
+        useInterval(reloadTriggerDetails, timeout)
+
+        if (triggerDetailsLoading && !triggerDetails) return <Progressing pageLoader />
+        if (!triggerDetailsLoading && !triggerDetails) return <Reload />
+        if (triggerDetails?.id !== +triggerId) {
+            return null
         }
-        return 30000 // 30s for normal
-    }, [triggerDetails])
 
-    useInterval(reloadTriggerDetails, timeout)
-
-    if (triggerDetailsLoading && !triggerDetails) return <Progressing pageLoader />
-    if (!triggerDetailsLoading && !triggerDetails) return <Reload />
-    if (triggerDetails?.id !== +triggerId) {
-        return null
+        return (
+            <>
+                <div className="trigger-details-container">
+                    {!fullScreenView && (
+                        <>
+                            <TriggerDetails
+                                type={HistoryComponentType.CD}
+                                status={triggerDetails.status}
+                                startedOn={triggerDetails.startedOn}
+                                finishedOn={triggerDetails.finishedOn}
+                                triggeredBy={triggerDetails.triggeredBy}
+                                triggeredByEmail={triggerDetails.triggeredByEmail}
+                                ciMaterials={triggerDetails.ciMaterials}
+                                gitTriggers={triggerDetails.gitTriggers}
+                                message={triggerDetails.message}
+                                podStatus={triggerDetails.podStatus}
+                                stage={triggerDetails.stage}
+                                artifact={triggerDetails.artifact}
+                            />
+                            <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
+                                {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppType.helm && (
+                                    <li className="tab-list__tab" data-testid="deployment-history-steps-link">
+                                        <NavLink
+                                            replace
+                                            className="tab-list__tab-link"
+                                            activeClassName="active"
+                                            to="deployment-steps"
+                                        >
+                                            Steps
+                                        </NavLink>
+                                    </li>
+                                )}
+                                {triggerDetails.stage !== 'DEPLOY' && (
+                                    <li className="tab-list__tab" data-testid="deployment-history-logs-link">
+                                        <NavLink
+                                            replace
+                                            className="tab-list__tab-link"
+                                            activeClassName="active"
+                                            to={`logs`}
+                                        >
+                                            Logs
+                                        </NavLink>
+                                    </li>
+                                )}
+                                <li className="tab-list__tab" data-testid="deployment-history-source-code-link">
+                                    <NavLink
+                                        replace
+                                        className="tab-list__tab-link"
+                                        activeClassName="active"
+                                        to={`source-code`}
+                                    >
+                                        Source
+                                    </NavLink>
+                                </li>
+                                {triggerDetails.stage == 'DEPLOY' && (
+                                    <li className="tab-list__tab" data-testid="deployment-history-configuration-link">
+                                        <NavLink
+                                            replace
+                                            className="tab-list__tab-link"
+                                            activeClassName="active"
+                                            to={`configuration`}
+                                        >
+                                            Configuration
+                                        </NavLink>
+                                    </li>
+                                )}
+                                {triggerDetails.stage !== 'DEPLOY' && (
+                                    <li className="tab-list__tab" data-testid="deployment-history-artifacts-link">
+                                        <NavLink
+                                            replace
+                                            className="tab-list__tab-link"
+                                            activeClassName="active"
+                                            to={`artifacts`}
+                                        >
+                                            Artifacts
+                                        </NavLink>
+                                    </li>
+                                )}
+                            </ul>
+                        </>
+                    )}
+                </div>
+                <HistoryLogs
+                    key={triggerDetails.id}
+                    triggerDetails={triggerDetails}
+                    loading={triggerDetailsLoading && !triggerDetailsResult}
+                    userApprovalMetadata={triggerDetailsResult?.result?.userApprovalMetadata}
+                    triggeredByEmail={triggerDetailsResult?.result?.triggeredByEmail}
+                    setFullScreenView={setFullScreenView}
+                    setDeploymentHistoryList={setDeploymentHistoryList}
+                    deploymentHistoryList={deploymentHistoryList}
+                    deploymentAppType={deploymentAppType}
+                    isBlobStorageConfigured={isBlobStorageConfigured}
+                />
+            </>
+        )
     }
-
-    return (
-        <>
-            <div className="trigger-details-container">
-                {!fullScreenView && (
-                    <>
-                        <TriggerDetails
-                            type={HistoryComponentType.CD}
-                            status={triggerDetails.status}
-                            startedOn={triggerDetails.startedOn}
-                            finishedOn={triggerDetails.finishedOn}
-                            triggeredBy={triggerDetails.triggeredBy}
-                            triggeredByEmail={triggerDetails.triggeredByEmail}
-                            ciMaterials={triggerDetails.ciMaterials}
-                            gitTriggers={triggerDetails.gitTriggers}
-                            message={triggerDetails.message}
-                            podStatus={triggerDetails.podStatus}
-                            stage={triggerDetails.stage}
-                            artifact={triggerDetails.artifact}
-                        />
-                        <ul className="pl-20 tab-list tab-list--nodes dc__border-bottom">
-                            {triggerDetails.stage === 'DEPLOY' && deploymentAppType !== DeploymentAppType.helm && (
-                                <li className="tab-list__tab" data-testid="deployment-history-steps-link">
-                                    <NavLink
-                                        replace
-                                        className="tab-list__tab-link"
-                                        activeClassName="active"
-                                        to="deployment-steps"
-                                    >
-                                        Steps
-                                    </NavLink>
-                                </li>
-                            )}
-                            {triggerDetails.stage !== 'DEPLOY' && (
-                                <li className="tab-list__tab" data-testid="deployment-history-logs-link">
-                                    <NavLink
-                                        replace
-                                        className="tab-list__tab-link"
-                                        activeClassName="active"
-                                        to={`logs`}
-                                    >
-                                        Logs
-                                    </NavLink>
-                                </li>
-                            )}
-                            <li className="tab-list__tab" data-testid="deployment-history-source-code-link">
-                                <NavLink
-                                    replace
-                                    className="tab-list__tab-link"
-                                    activeClassName="active"
-                                    to={`source-code`}
-                                >
-                                    Source
-                                </NavLink>
-                            </li>
-                            {triggerDetails.stage == 'DEPLOY' && (
-                                <li className="tab-list__tab" data-testid="deployment-history-configuration-link">
-                                    <NavLink
-                                        replace
-                                        className="tab-list__tab-link"
-                                        activeClassName="active"
-                                        to={`configuration`}
-                                    >
-                                        Configuration
-                                    </NavLink>
-                                </li>
-                            )}
-                            {triggerDetails.stage !== 'DEPLOY' && (
-                                <li className="tab-list__tab" data-testid="deployment-history-artifacts-link">
-                                    <NavLink
-                                        replace
-                                        className="tab-list__tab-link"
-                                        activeClassName="active"
-                                        to={`artifacts`}
-                                    >
-                                        Artifacts
-                                    </NavLink>
-                                </li>
-                            )}
-                        </ul>
-                    </>
-                )}
-            </div>
-            <HistoryLogs
-                key={triggerDetails.id}
-                triggerDetails={triggerDetails}
-                loading={triggerDetailsLoading && !triggerDetailsResult}
-                userApprovalMetadata={triggerDetailsResult?.result?.userApprovalMetadata}
-                triggeredByEmail={triggerDetailsResult?.result?.triggeredByEmail}
-                setFullScreenView={setFullScreenView}
-                setDeploymentHistoryList={setDeploymentHistoryList}
-                deploymentHistoryList={deploymentHistoryList}
-                deploymentAppType={deploymentAppType}
-                isBlobStorageConfigured={isBlobStorageConfigured}
-            />
-        </>
-    )
-}
 
 const HistoryLogs: React.FC<{
     triggerDetails: History
@@ -412,104 +412,103 @@ const HistoryLogs: React.FC<{
     userApprovalMetadata,
     triggeredByEmail,
 }) => {
-    let { path } = useRouteMatch()
-    const { appId, pipelineId, triggerId, envId } = useParams<{
-        appId: string
-        pipelineId: string
-        triggerId: string
-        envId: string
-    }>()
+        let { path } = useRouteMatch()
+        const { appId, pipelineId, triggerId, envId } = useParams<{
+            appId: string
+            pipelineId: string
+            triggerId: string
+            envId: string
+        }>()
 
-    const [ref, scrollToTop, scrollToBottom] = useScrollable({
-        autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
-    })
+        const [ref, scrollToTop, scrollToBottom] = useScrollable({
+            autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
+        })
 
-    return (
-        <>
-            <div className="trigger-outputs-container">
-                {loading ? (
-                    <Progressing pageLoader />
-                ) : (
-                    <Switch>
-                        {triggerDetails.stage !== 'DEPLOY' ? (
-                            <Route path={`${path}/logs`}>
-                                <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
-                                    <LogsRenderer
-                                        triggerDetails={triggerDetails}
-                                        isBlobStorageConfigured={isBlobStorageConfigured}
-                                        parentType={HistoryComponentType.CD}
+        return (
+            <>
+                <div className="trigger-outputs-container">
+                    {loading ? (
+                        <Progressing pageLoader />
+                    ) : (
+                        <Switch>
+                            {triggerDetails.stage !== 'DEPLOY' ? (
+                                <Route path={`${path}/logs`}>
+                                    <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
+                                        <LogsRenderer
+                                            triggerDetails={triggerDetails}
+                                            isBlobStorageConfigured={isBlobStorageConfigured}
+                                            parentType={HistoryComponentType.CD}
+                                        />
+                                    </div>
+                                </Route>
+                            ) : (
+                                <Route path={`${path}/deployment-steps`}>
+                                    <DeploymentDetailSteps
+                                        deploymentStatus={triggerDetails.status}
+                                        deploymentAppType={deploymentAppType}
+                                        userApprovalMetadata={userApprovalMetadata}
+                                        isGitops={deploymentAppType === DeploymentAppType.argo_cd}
+                                        isHelmApps={false}
                                     />
-                                </div>
-                            </Route>
-                        ) : (
-                            <Route path={`${path}/deployment-steps`}>
-                                <DeploymentDetailSteps
-                                    deploymentStatus={triggerDetails.status}
-                                    deploymentAppType={deploymentAppType}
-                                    userApprovalMetadata={userApprovalMetadata}
-                                    isGitops={deploymentAppType === DeploymentAppType.argo_cd}
-                                    isHelmApps={false}
-                                />
-                            </Route>
-                        )}
-                        <Route path={`${path}/source-code`}>
-                            <GitChanges
-                                gitTriggers={triggerDetails.gitTriggers}
-                                ciMaterials={triggerDetails.ciMaterials}
-                                artifact={triggerDetails.artifact}
-                                userApprovalMetadata={userApprovalMetadata}
-                                triggeredByEmail={triggeredByEmail}
-                            />
-                        </Route>
-                        {triggerDetails.stage === 'DEPLOY' && (
-                            <Route path={`${path}/configuration`} exact>
-                                <DeploymentHistoryConfigList
-                                    setDeploymentHistoryList={setDeploymentHistoryList}
-                                    deploymentHistoryList={deploymentHistoryList}
-                                    setFullScreenView={setFullScreenView}
-                                />
-                            </Route>
-                        )}
-                        {triggerDetails.stage === 'DEPLOY' && (
-                            <Route
-                                path={`${path}${URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS}/:historyComponent/:baseConfigurationId(\\d+)/:historyComponentName?`}
-                            >
-                                <DeploymentHistoryDetailedView
-                                    setDeploymentHistoryList={setDeploymentHistoryList}
-                                    deploymentHistoryList={deploymentHistoryList}
-                                    setFullScreenView={setFullScreenView}
-                                />
-                            </Route>
-                        )}
-                        {triggerDetails.stage !== 'DEPLOY' && (
-                            <Route path={`${path}/artifacts`}>
-                                <Artifacts
-                                    status={triggerDetails.status}
+                                </Route>
+                            )}
+                            <Route path={`${path}/source-code`}>
+                                <GitChanges
+                                    gitTriggers={triggerDetails.gitTriggers}
+                                    ciMaterials={triggerDetails.ciMaterials}
                                     artifact={triggerDetails.artifact}
-                                    blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                                    getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
-                                    type={HistoryComponentType.CD}
+                                    userApprovalMetadata={userApprovalMetadata}
+                                    triggeredByEmail={triggeredByEmail}
                                 />
                             </Route>
-                        )}
-                        <Redirect
-                            to={`${path}/${
-                                triggerDetails.stage === 'DEPLOY'
-                                    ? `deployment-steps`
-                                    : triggerDetails.status.toLowerCase() === 'succeeded'
-                                    ? `artifacts`
-                                    : `logs`
-                            }`}
-                        />
-                    </Switch>
+                            {triggerDetails.stage === 'DEPLOY' && (
+                                <Route path={`${path}/configuration`} exact>
+                                    <DeploymentHistoryConfigList
+                                        setDeploymentHistoryList={setDeploymentHistoryList}
+                                        deploymentHistoryList={deploymentHistoryList}
+                                        setFullScreenView={setFullScreenView}
+                                    />
+                                </Route>
+                            )}
+                            {triggerDetails.stage === 'DEPLOY' && (
+                                <Route
+                                    path={`${path}${URLS.DEPLOYMENT_HISTORY_CONFIGURATIONS}/:historyComponent/:baseConfigurationId(\\d+)/:historyComponentName?`}
+                                >
+                                    <DeploymentHistoryDetailedView
+                                        setDeploymentHistoryList={setDeploymentHistoryList}
+                                        deploymentHistoryList={deploymentHistoryList}
+                                        setFullScreenView={setFullScreenView}
+                                    />
+                                </Route>
+                            )}
+                            {triggerDetails.stage !== 'DEPLOY' && (
+                                <Route path={`${path}/artifacts`}>
+                                    <Artifacts
+                                        status={triggerDetails.status}
+                                        artifact={triggerDetails.artifact}
+                                        blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                                        getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
+                                        type={HistoryComponentType.CD}
+                                    />
+                                </Route>
+                            )}
+                            <Redirect
+                                to={`${path}/${triggerDetails.stage === 'DEPLOY'
+                                        ? `deployment-steps`
+                                        : triggerDetails.status.toLowerCase() === 'succeeded'
+                                            ? `artifacts`
+                                            : `logs`
+                                    }`}
+                            />
+                        </Switch>
+                    )}
+                </div>
+                {(scrollToTop || scrollToBottom) && (
+                    <Scroller
+                        style={{ position: 'fixed', bottom: '25px', right: '32px' }}
+                        {...{ scrollToTop, scrollToBottom }}
+                    />
                 )}
-            </div>
-            {(scrollToTop || scrollToBottom) && (
-                <Scroller
-                    style={{ position: 'fixed', bottom: '25px', right: '32px' }}
-                    {...{ scrollToTop, scrollToBottom }}
-                />
-            )}
-        </>
-    )
-}
+            </>
+        )
+    }

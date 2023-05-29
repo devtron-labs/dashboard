@@ -22,7 +22,6 @@ import ReactGA from 'react-ga4'
 import DetectBottom from '../../../common/DetectBottom'
 import { FILTER_STYLE, HISTORY_LABEL } from './Constants'
 import { triggerStatus } from './History.components'
-import { classNames } from 'react-mde/lib/definitions/util/ClassNames'
 
 const Sidebar = React.memo(({ type, filterOptions, triggerHistory, hasMore, setPagination }: SidebarType) => {
     const { pipelineId, appId, envId } = useParams<{ appId: string; envId: string; pipelineId: string }>()
@@ -143,7 +142,7 @@ const HistorySummaryCard = React.memo(
         stage,
         dataTestId,
     }: HistorySummaryCardType): JSX.Element => {
-        const { path , params } = useRouteMatch()
+        const { path, params } = useRouteMatch()
         const { pathname } = useLocation()
         const currentTab = pathname.split('/').pop()
         const { triggerId, envId, ...rest } = useParams<{ triggerId: string; envId: string }>()
@@ -159,13 +158,13 @@ const HistorySummaryCard = React.memo(
             return `${generatePath(path, _params)}/${currentTab}`
         }
 
-        useEffect( () => {
+        useEffect(() => {
             scrollToElement()
         }, [])
 
         const activetriggerId = params['triggerId']
         const scrollToElement = () => {
-            if(targetCardRef && targetCardRef.current){
+            if (targetCardRef?.current) {
                 targetCardRef.current.scrollIntoView({ behavior: "smooth" });
             }
         }
@@ -196,7 +195,7 @@ const HistorySummaryCard = React.memo(
                     className="w-100 ci-details__build-card-container"
                     data-testid={dataTestId}
                     activeClassName="active"
-                    ref={ +activetriggerId === +id ? targetCardRef : null}
+                    ref={+activetriggerId === +id ? targetCardRef : null}
                 >
                     <div className="w-100 ci-details__build-card">
                         <div
