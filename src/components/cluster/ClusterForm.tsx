@@ -567,7 +567,7 @@ export default function ClusterForm({
                 {isGrafanaModuleInstalled && (
                     <>
                         <hr />
-                        <div className="dc__position-rel flex left cursor dc__hover mb-20">
+                        <div className="dc__position-rel flex left dc__hover mb-20">
                             <Checkbox
                                 isChecked={isTlsConnection}
                                 rootClassName="form__checkbox-label--ignore-cache mb-0"
