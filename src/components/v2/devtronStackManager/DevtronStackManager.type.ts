@@ -42,6 +42,7 @@ export interface ModuleEnableType {
     setRetryState?:React.Dispatch<React.SetStateAction<boolean>>
     setToggled ?:React.Dispatch<React.SetStateAction<boolean>>
     setSuccessState ?:React.Dispatch<React.SetStateAction<boolean>>
+    moduleNotEnabledState?:React.Dispatch<React.SetStateAction<boolean>>
     
 }
 export interface ModuleEnableCallType{
@@ -56,6 +57,7 @@ export interface SuccessModalType{
     setSelectedModule?:React.Dispatch<React.SetStateAction<ModuleDetails>>
     setStackDetails?:React.Dispatch<React.SetStateAction<StackDetailsType>>
     stackDetails?:StackDetailsType
+    setToggled?:React.Dispatch<React.SetStateAction<boolean>>
     
 }
 
@@ -133,6 +135,14 @@ export interface ModuleDetailsViewType {
     setSelectedModule?:React.Dispatch<React.SetStateAction<ModuleDetails>>
     setStackDetails?:React.Dispatch<React.SetStateAction<StackDetailsType>>
     stackDetails?:StackDetailsType
+    dialog?:boolean,
+    setDialog?:React.Dispatch<React.SetStateAction<boolean>>,
+    retryState?:boolean,
+    setRetryState?:React.Dispatch<React.SetStateAction<boolean>>,
+    successState?:boolean
+    setSuccessState?:React.Dispatch<React.SetStateAction<boolean>>
+    toggled?:boolean
+    setToggled?:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface ModuleInstallationStatusType {
@@ -149,6 +159,14 @@ export interface ModuleInstallationStatusType {
     setSelectedModule?:React.Dispatch<React.SetStateAction<ModuleDetails>>
     setStackDetails?:React.Dispatch<React.SetStateAction<StackDetailsType>>
     stackDetails?:StackDetailsType
+    dialog?:boolean
+    setDialog?:React.Dispatch<React.SetStateAction<boolean>>
+    toggled?:boolean
+    setToggled?:React.Dispatch<React.SetStateAction<boolean>>
+    retryState?:boolean
+    setRetryState?:React.Dispatch<React.SetStateAction<boolean>>
+    successState?:boolean
+    setSuccessState?:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface InstallationWrapperType {
@@ -174,6 +192,14 @@ export interface InstallationWrapperType {
     setSelectedModule?:React.Dispatch<React.SetStateAction<ModuleDetails>>
     setStackDetails?:React.Dispatch<React.SetStateAction<StackDetailsType>>
     stackDetails?:StackDetailsType
+    dialog?:boolean
+    setDialog?:React.Dispatch<React.SetStateAction<boolean>>
+    toggled?:boolean
+    setToggled?:React.Dispatch<React.SetStateAction<boolean>>
+    retryState?:boolean
+    setRetryState?:React.Dispatch<React.SetStateAction<boolean>>
+    successState?:boolean
+    setSuccessState?:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export interface ModuleDetailsInfo {

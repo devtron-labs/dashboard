@@ -67,6 +67,10 @@ export default function DevtronStackManager({
     const [showPreRequisiteConfirmationModal, setShowPreRequisiteConfirmationModal] = useState<boolean>(false)
     const [preRequisiteChecked, setPreRequisiteChecked] = useState<boolean>(false)
     const [showResourceStatusModal, setShowResourceStatusModal] = useState(false)
+    const [dialog, setDialog] = useState<boolean>(false)
+    const [retryState, setRetryState] = useState<boolean>(false)
+    const [successState, setSuccessState] = useState<boolean>(false) 
+    const [toggled, setToggled] = useState<boolean>(false)
     useEffect(() => {
         getModuleDetails()
         getCurrentServerInfo()
@@ -409,6 +413,15 @@ export default function DevtronStackManager({
                         setSelectedModule={setSelectedModule}
                         setStackDetails={setStackDetails}
                         stackDetails={stackDetails}
+                        dialog={dialog}
+                        setDialog={setDialog}
+                        retryState={retryState}
+                        setRetryState={setRetryState}
+                        successState={successState}
+                        setSuccessState={setSuccessState}
+                        setToggled={setToggled}
+                        toggled={toggled}
+                        
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_INSTALLED_MODULES_DETAILS}>
@@ -428,6 +441,14 @@ export default function DevtronStackManager({
                         isSuperAdmin={isSuperAdmin}
                         setStackDetails={setStackDetails}
                         stackDetails={stackDetails}
+                        dialog={dialog}
+                        setDialog={setDialog}
+                        retryState={retryState}
+                        setRetryState={setRetryState}
+                        successState={successState}
+                        setSuccessState={setSuccessState}
+                        setToggled={setToggled}
+                        toggled={toggled}
                     />
                 </Route>
                 <Route path={URLS.STACK_MANAGER_DISCOVER_MODULES}>

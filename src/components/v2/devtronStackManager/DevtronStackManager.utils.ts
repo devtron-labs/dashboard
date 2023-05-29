@@ -87,7 +87,10 @@ export const handleAction = async (
 export const handleEnableAction = async (
     moduleName: string,
     setRetryFlag:React.Dispatch<React.SetStateAction<boolean>>,
-    setSuccessState:React.Dispatch<React.SetStateAction<boolean>>
+    setSuccessState:React.Dispatch<React.SetStateAction<boolean>>,
+    setDialog:React.Dispatch<React.SetStateAction<boolean>>,
+    moduleNotEnabledState:React.Dispatch<React.SetStateAction<boolean>>,
+    setProgressing:React.Dispatch<React.SetStateAction<boolean>>
 ) => {
     try {
         const actionRequest: ModuleEnableRequest = {
@@ -96,10 +99,13 @@ export const handleEnableAction = async (
         const { result } = await executeModuleEnableAction(moduleName, actionRequest)
         if (result?.success) {
             setSuccessState(true)
+            setDialog(false)        
+            moduleNotEnabledState(false)
         }
     } catch (e) {
         setRetryFlag(true)
     }
+    setProgressing(false)
 }
 
 const getVersionLevels = (version: string): number[] => {

@@ -349,8 +349,9 @@ export function EnableModuleConfirmation({
     setRetryState,
     setToggled,
     setSuccessState,
+    moduleNotEnabledState,
 }: ModuleEnableType) {
-    const [moduleEnabled, setModuleEnabled] = useState<boolean>(false)
+    const [progressing, setProgressing] = useState<boolean>(false)
 
     return (
         <ConfirmationDialog>
@@ -387,13 +388,12 @@ export function EnableModuleConfirmation({
                 </button>
                 <button
                     className="cta form-submit-cta ml-12 dc__no-decor form-submit-cta flex h-36 "
-                    disabled={moduleEnabled}
                     onClick={() => {
-                        setModuleEnabled(true)
-                        handleEnableAction(moduleDetails.name, setRetryState, setSuccessState)
+                        setProgressing(true)
+                        handleEnableAction(moduleDetails.name, setRetryState, setSuccessState,setDialog,moduleNotEnabledState,setProgressing)
                     }}
                 >
-                    {moduleEnabled ? (
+                    {progressing ? (
                         <Progressing />
                     ) : retryState ? (
                         'Retry'
@@ -419,7 +419,15 @@ const InstallationStatus = ({
     isSuperAdmin,
     setSelectedModule,
     setStackDetails,
-    stackDetails
+    stackDetails,
+    dialog,
+    setDialog,
+    toggled,
+    setToggled,
+    retryState,
+    setRetryState,
+    successState,
+    setSuccessState
 }: ModuleInstallationStatusType): JSX.Element => {
     const openCheckResourceStatusModal = (e) => {
         e.stopPropagation()
@@ -428,14 +436,10 @@ const InstallationStatus = ({
             setShowResourceStatusModal(true)
         }
     }
-    const [dialog, setDialog] = useState<boolean>(false)
-    const [toggled, setToggled] = useState<boolean>(false)
-    const [retryState, setRetryState] = useState<boolean>(false)
-    const [successState, setSuccessState] = useState<boolean>(false)
-    const moduleNotEnabled =moduleDetails &&
+    const [moduleNotEnabled,moduleNotEnabledState] =useState<boolean>(moduleDetails &&
         moduleDetails.enabled === false &&
         moduleDetails.installationStatus === ModuleStatus.INSTALLED &&
-        moduleDetails.moduleType === MODULE_TYPE_SECURITY
+        moduleDetails.moduleType === MODULE_TYPE_SECURITY)
     const renderTransitonToggle = () => {
         toastAccessDenied()
         setToggled(true)
@@ -457,10 +461,11 @@ const InstallationStatus = ({
                     setRetryState={setRetryState}
                     setToggled={setToggled}
                     setSuccessState={setSuccessState}
+                    moduleNotEnabledState={moduleNotEnabledState}
                 />
             )}
             {successState && (
-                <SuccessModalComponent moduleDetails={moduleDetails} setSuccessState={setSuccessState} setSelectedModule={setSelectedModule} setStackDetails={setStackDetails} stackDetails={stackDetails}/>
+                <SuccessModalComponent moduleDetails={moduleDetails} setSuccessState={setSuccessState} setSelectedModule={setSelectedModule} setStackDetails={setStackDetails} stackDetails={stackDetails} setToggled={setToggled}/>
             )}
             {(installationStatus === ModuleStatus.INSTALLING || installationStatus === ModuleStatus.UPGRADING) && (
                 <>
@@ -663,7 +668,15 @@ export const InstallationWrapper = ({
     isSuperAdmin,
     setSelectedModule,
     setStackDetails,
-    stackDetails
+    stackDetails,
+    dialog,
+    setDialog,
+    toggled,
+    setToggled,
+    retryState,
+    setRetryState,
+    successState,
+    setSuccessState,
 }: InstallationWrapperType): JSX.Element => {
     const history: RouteComponentProps['history'] = useHistory()
     const location: RouteComponentProps['location'] = useLocation()
@@ -929,6 +942,14 @@ export const InstallationWrapper = ({
                                 setSelectedModule={setSelectedModule}
                                 setStackDetails={setStackDetails}
                                 stackDetails={stackDetails}
+                                dialog={dialog}
+                                setDialog={setDialog}
+                                toggled={toggled}
+                                setToggled={setToggled}
+                                retryState={retryState}
+                                setRetryState={setRetryState}
+                                successState={successState}
+                                setSuccessState={setSuccessState}
                             />
                         )}
                         {moduleDetails && moduleDetails.isModuleConfigurable && !moduleDetails.isModuleConfigured && (
@@ -967,7 +988,15 @@ export const ModuleDetailsView = ({
     isSuperAdmin,
     setSelectedModule,
     setStackDetails,
-    stackDetails
+    stackDetails,
+    dialog,
+    setDialog,
+    retryState,
+    setRetryState,
+    successState,
+    setSuccessState,
+    toggled,
+    setToggled
 }: ModuleDetailsViewType): JSX.Element | null => {
     const queryParams = new URLSearchParams(location.search)
     useEffect(() => {
@@ -1020,47 +1049,21 @@ export const ModuleDetailsView = ({
                     setSelectedModule={setSelectedModule}
                     setStackDetails={setStackDetails}
                     stackDetails={stackDetails}
+                    dialog={dialog}
+                    setDialog={setDialog}
+                    toggled={toggled}
+                    setToggled={setToggled}
+                    retryState={retryState}
+                    setRetryState={setRetryState}
+                    successState={successState}
+                    setSuccessState={setSuccessState}
                 />
             </div>
         </div>
     ) : null
 }
 
-export const EnablingStepsView = (): JSX.Element => {
-    return (
-        <div className="form__field fs-12 ml-20 mb-20 color-blue">
-            <label htmlFor="" className="form__label flexbox-imp flex-align-center">
-                <QuestionIcon className="icon-dim-16 ml-4 cursor fcb-5 mr-4 " />
-                <TippyCustomized
-                    theme={TippyTheme.white}
-                    className="w-300"
-                    placement="bottom"
-                    Icon={HelpIcon}
-                    iconClass="fcv-5"
-                    heading={ENABLE_TIPPY_CONTENT.heading}
-                    showCloseButton={true}
-                    trigger="click"
-                    additionalContent={
-                        <div className="fs-13 fw-400 ml-20 mb-20 mr-20 mt-20">
-                            <div> You can enable this integration by: </div>
-                            <div className="mb-30">You can hit an api orchestrator/module/enable?name=security.(NAMEOFMODULE)</div>
-                            <div>
-                                <span className="dc__bold">NOTE: </span>Only one Vulnerability scanning integration can
-                                be enabled at a time.
-                                <span>
-                                    Enabling this integration will automatically disable the other integration.
-                                </span>
-                            </div>
-                        </div>
-                    }
-                >
-                    <span className="fs-12 cb-5 pointer"> How can I enable this integration?</span>
-                </TippyCustomized>
-            </label>
-        </div>
-    )
-}
-export function SuccessModalComponent({moduleDetails,setSuccessState,setSelectedModule,setStackDetails,stackDetails}:SuccessModalType){
+export function SuccessModalComponent({moduleDetails,setSuccessState,setSelectedModule,setStackDetails,stackDetails,setToggled}:SuccessModalType){
 
     const enableModuleState=(modulename:string)=>{
         
@@ -1109,6 +1112,7 @@ export function SuccessModalComponent({moduleDetails,setSuccessState,setSelected
             installedModulesList: _moduleList,
             discoverModulesList:_discovermoduleList
         })
+        setToggled(false)
     }
     return (
         <ConfirmationDialog>
