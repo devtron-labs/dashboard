@@ -92,7 +92,7 @@ export default function CDDetails() {
                     appId,
                     envId,
                     pipelineId,
-                    triggerId: requiredResult[0].id,
+                    triggerId: requiredResult ? requiredResult[0].id : deploymentHistoryResult.result[0].id,
                 }),
             )
         }
