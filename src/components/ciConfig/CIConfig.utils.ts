@@ -173,7 +173,7 @@ export const getCIConfigFormState = (
                 (selectedCIPipeline?.isDockerConfigOverridden
                     ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
                     : ciConfig?.ciBuildConfig?.dockerBuildConfig &&
-                    ciConfig.ciBuildConfig.dockerBuildConfig?.buildContext) || '',
+                    ciConfig.ciBuildConfig.dockerBuildConfig?.buildContext),
             error: '', 
         },
         useRootBuildContext : {
