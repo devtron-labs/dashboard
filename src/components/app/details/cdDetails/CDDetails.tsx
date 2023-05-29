@@ -418,7 +418,7 @@ const HistoryLogs: React.FC<{
         appId,
         envId,
         appName: triggerDetails.artifact,
-        workflowId: triggerId,
+        workflowId: triggerDetails.cdWorkflowId,
     }
 
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
