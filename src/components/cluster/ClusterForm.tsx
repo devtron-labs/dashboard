@@ -1019,7 +1019,7 @@ export default function ClusterForm({
                                 }
                                 classname="info_bar cn-9 lh-20 dc__no-border-imp pl-18"
                                 Icon={Info}
-                                styles={{borderRadius: '6px 6px 0 0'}}
+                                styles={{ borderRadius: '6px 6px 0 0' }}
                             />
                             <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom">
                                 <div data-testid="select_all_cluster_checkbox">
@@ -1035,7 +1035,7 @@ export default function ClusterForm({
                                 <div>MESSAGE</div>
                                 <div></div>
                             </div>
-                            <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 219px)' }}>
+                            <div className="dc__overflow-scroll" style={{ height: 'auto' }}>
                                 {!dataList || dataList.length === 0 ? (
                                     <NoMatchingResults />
                                 ) : (
@@ -1043,7 +1043,12 @@ export default function ClusterForm({
                                         <div
                                             key={`api_${index}`}
                                             className="cluster-list-row-1 flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
-                                            style={{ height: '40px' }}
+                                            style={{
+                                                height: 'auto',
+                                                alignItems: 'start',
+                                                marginTop: '8px',
+                                                marginBottom: '8px',
+                                            }}
                                         >
                                             <Checkbox
                                                 key={`app-$${index}`}
@@ -1076,24 +1081,23 @@ export default function ClusterForm({
                                                 selectedUserNameOptions={selectedUserNameOptions}
                                                 onChangeUserName={onChangeUserName}
                                             />
-                                            {selectedUserNameOptions[clusterDetail.cluster_name].errorInConnecting ===
-                                            'cluster-already-exists' ? (
-                                                <ErrorIcon className="dc__app-summary__icon icon-dim-16 mr-2 " />
-                                            ) : (
-                                                <div
-                                                    className={`dc__app-summary__icon icon-dim-16 mr-2 ${
-                                                        selectedUserNameOptions[clusterDetail.cluster_name]
-                                                            .errorInConnecting.length !== 0 &&
-                                                        selectedUserNameOptions[clusterDetail.cluster_name]
-                                                            .errorInConnecting !== 'cluster-already-exists'
-                                                            ? 'failed'
-                                                            : ''
-                                                    }`}
-                                                ></div>
-                                            )}
-                                            <div className="flexbox">
-                                                <span className="dc__ellipsis-right">
-                                                    {' '}
+                                            <div className="flex left top">
+                                                {selectedUserNameOptions[clusterDetail.cluster_name]
+                                                    .errorInConnecting === 'cluster-already-exists' ? (
+                                                    <ErrorIcon className="dc__app-summary__icon icon-dim-16 mr-8 mt-3" />
+                                                ) : (
+                                                    <div
+                                                        className={`dc__app-summary__icon icon-dim-16 mr-8 mt-3 ${
+                                                            selectedUserNameOptions[clusterDetail.cluster_name]
+                                                                .errorInConnecting.length !== 0 &&
+                                                            selectedUserNameOptions[clusterDetail.cluster_name]
+                                                                .errorInConnecting !== 'cluster-already-exists'
+                                                                ? 'failed'
+                                                                : ''
+                                                        }`}
+                                                    />
+                                                )}
+                                                <span>
                                                     {selectedUserNameOptions[clusterDetail.cluster_name]
                                                         ?.errorInConnecting === 'cluster-already-exists' &&
                                                     isClusterSelected[clusterDetail.cluster_name]

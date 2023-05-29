@@ -25,7 +25,7 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                 options={userNameOptions}
                 value={selectedUserNameOptions[clusterDetail.cluster_name]}
                 isSearchable={false}
-                menuPosition="absolute"
+                menuPortalTarget={document.getElementById('visible-modal')}
                 onChange={handleUserChange}
                 components={{
                     IndicatorSeparator: null,
@@ -38,9 +38,9 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                         backgroundColor: 'white',
                         border: 'none',
                         boxShadow: 'none',
-                        minHeight: '32px',
                         cursor: 'pointer',
                         fontWeight: 600,
+                        minHeight: 'fit-content',
                     }),
                     option: (base, state) => ({
                         ...base,
@@ -51,7 +51,6 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                         ...base,
                         marginTop: '2px',
                         minWidth: '240px',
-                        zIndex: 4,
                     }),
                     menuList: (base) => ({
                         ...base,
@@ -59,12 +58,10 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                         paddingBottom: 0,
                         paddingTop: 0,
                         maxHeight: '250px',
-                        zIndex: 4,
                     }),
                     noOptionsMessage: (base) => ({
                         ...base,
                         color: 'var(--N600)',
-                        zIndex: 4,
                     }),
                     dropdownIndicator: (base, state) => ({
                         ...base,
