@@ -160,7 +160,7 @@ const HistorySummaryCard = React.memo(
 
         useEffect(() => {
             scrollToElement()
-        }, [])
+        }, [targetCardRef])
 
         const activetriggerId = params['triggerId']
         const scrollToElement = () => {
