@@ -1124,7 +1124,7 @@ export default function ClusterForm({
                 )}
 
                 {isKubeConfigFile && (
-                    <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs dc__bottom-0">
+                    <div className="w-100 dc__border-top flex right pb-12 pt-12 pl-20 pr-20 dc__position-fixed dc__position-abs bcn-0 dc__bottom-0">
                         <button
                             className="dc_edit_button cb-5"
                             type="button"
