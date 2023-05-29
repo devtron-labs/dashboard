@@ -64,7 +64,6 @@ export default function CDDetails() {
     const [deploymentAppType, setDeploymentAppType] = useState<DeploymentAppType>(null)
     const { path } = useRouteMatch()
     const { replace } = useHistory()
-    const history = useHistory()
     useInterval(pollHistory, 30000)
     const [deploymentHistoryList, setDeploymentHistoryList] = useState<DeploymentTemplateList[]>()
 
