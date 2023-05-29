@@ -265,6 +265,21 @@ export default function ClusterForm({
         }
     }
 
+    function isCheckboxDisabled() {
+        const clusters = Object.values(selectedUserNameOptions);
+      
+        if (clusters.length === 0) {
+          return true;
+        }
+      
+        return clusters.every((cluster) => {
+          return (
+            cluster.errorInConnecting !== 'cluster-already-exists' &&
+            cluster.errorInConnecting.length > 0
+          )
+        })
+      }
+
     async function validateClusterDetail() {
         try {
             let payload = { config: YAMLtoJSON(saveYamlData) }
@@ -944,6 +959,9 @@ export default function ClusterForm({
     }
 
     function toggleSelectAll(event) {
+        if (isCheckboxDisabled()) {
+            return;
+        }
         const currentSelections = { ...isClusterSelected }
         const _selectAll = event.currentTarget.checked
 
@@ -1025,10 +1043,11 @@ export default function ClusterForm({
                                 <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom">
                                     <div data-testid="select_all_cluster_checkbox">
                                         <Checkbox
-                                            rootClassName="form__checkbox-label--ignore-cache mb-0 flex"
+                                            rootClassName={`form__checkbox-label--ignore-cache mb-0 flex${isCheckboxDisabled() ? ' dc__opacity-0_5' : ''}`}
                                             onChange={toggleSelectAll}
                                             isChecked={selectAll}
                                             value={getAllClustersCheckBoxValue()}
+                                            disabled={isCheckboxDisabled()}
                                         />
                                     </div>
                                     <div>CLUSTER</div>
