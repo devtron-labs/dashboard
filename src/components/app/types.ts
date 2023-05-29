@@ -468,4 +468,5 @@ export interface SourceInfoType {
   deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
   loadingDetails?: boolean
   loadingResourceTree?: boolean
+  setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
 }
