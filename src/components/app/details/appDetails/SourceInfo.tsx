@@ -215,12 +215,11 @@ export function SourceInfo({
     }
 
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
-
     const renderGeneratedManifestDownloadCard = (): JSX.Element => {
         const paramsId = {
             appId: +params.appId,
             envId: +params.envId,
-            appName: appDetails?.appName,
+            appName: `${appDetails?.appName}-${appDetails?.environmentName}-${appDetails?.imageTag}`,
         }
         if (AppDetailsDownloadCard) {
             return <AppDetailsDownloadCard params={paramsId} />

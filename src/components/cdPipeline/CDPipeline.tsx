@@ -638,7 +638,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
         if (this.state.pipelineConfig.isVirtualEnvironment) {
             pipeline.deploymentAppType = DeploymentAppTypes.MANIFEST_DOWNLOAD
-            pipeline.triggerType = TriggerType.Auto
+            pipeline.triggerType = TriggerType.Manual // In case of virtual environment trigger type will always be manual
         }
 
         let msg
@@ -959,23 +959,27 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         className="delete-stage-icon cursor"
                         onClick={(e) => this.deleteStage(key)}
                     />
-                    <label className="form__label form__label--sentence dc__bold">
-                        When do you want this stage to trigger?
-                    </label>
-                    <RadioGroup
-                        value={this.state.pipelineConfig[key].triggerType}
-                        name={`${key}-trigger-type`}
-                        onChange={(event) => {
-                            this.handleStageConfigChange(event.target.value, key, 'triggerType')
-                        }}
-                    >
-                        <RadioGroupItem dataTestId="trigger-automatic-button" value={TriggerType.Auto}>
-                            Automatic
-                        </RadioGroupItem>
-                        <RadioGroupItem dataTestId="trigger-manual-button" value={TriggerType.Manual}>
-                            Manual
-                        </RadioGroupItem>
-                    </RadioGroup>
+                    {!this.state.pipelineConfig.isVirtualEnvironment && (
+                        <>
+                            <label className="form__label form__label--sentence dc__bold">
+                                When do you want this stage to trigger?
+                            </label>
+                            <RadioGroup
+                                value={this.state.pipelineConfig[key].triggerType}
+                                name={`${key}-trigger-type`}
+                                onChange={(event) => {
+                                    this.handleStageConfigChange(event.target.value, key, 'triggerType')
+                                }}
+                            >
+                                <RadioGroupItem dataTestId="trigger-automatic-button" value={TriggerType.Auto}>
+                                    Automatic
+                                </RadioGroupItem>
+                                <RadioGroupItem dataTestId="trigger-manual-button" value={TriggerType.Manual}>
+                                    Manual
+                                </RadioGroupItem>
+                            </RadioGroup>
+                        </>
+                    )}
                 </div>
                 <div className="form__row">
                     <label className="form__label form__label--sentence dc__bold">Select Configmap and Secrets</label>
