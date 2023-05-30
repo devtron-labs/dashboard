@@ -66,26 +66,6 @@ export const NoExternalLinksView = ({
         )
     }
     return (
-        // <EmptyState>
-        //     <EmptyState.Image>
-        //         <img src={EmptyExternalLinks} alt="Empty external links" />
-        //     </EmptyState.Image>
-        //     <EmptyState.Title>
-        //         <h4 className="title">Add external links</h4>
-        //     </EmptyState.Title>
-        //     <EmptyState.Subtitle>
-        //         <>
-        //             Add frequenly visited links (eg. Monitoring dashboards, documents, specs etc.) for
-        //             {isAppConfigView ? ' this ' : ' any '}application. Links will be available on the app details
-        //             page.&nbsp;
-        //             <ExternalLinksLearnMore />
-        //         </>
-        //     </EmptyState.Subtitle>
-        //     <EmptyState.Button>
-        //         <AddLinkButton handleOnClick={handleAddLinkClick} />
-        //     </EmptyState.Button>
-            // {isAppConfigView && <RoleBasedInfoNote userRole={userRole} />}
-        // </EmptyState>
         <GenericEmptyState
             image={EmptyExternalLinks}
             classname="title dc__position-rel"
@@ -126,15 +106,6 @@ export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNotePr
 
 export const NoMatchingResults = (): JSX.Element => {
     return (
-        // <EmptyState>
-        //     <EmptyState.Image>
-        //         <img src={NoResults} width="250" height="200" alt="No matching results" />
-        //     </EmptyState.Image>
-        //     <EmptyState.Title>
-        //         <h2 className="fs-16 fw-4 c-9">No matching results</h2>
-        //     </EmptyState.Title>
-        //     <EmptyState.Subtitle>We couldn't find any matching external link configuration</EmptyState.Subtitle>
-        // </EmptyState>
         <GenericEmptyState
             image={NoResults}
             title={'No matching results'}

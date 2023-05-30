@@ -18,22 +18,6 @@ export default function ResourceListEmptyState({
         )
     }
     return (
-        // <EmptyState>
-        //     <EmptyState.Image>
-        //         <img src={imgSource ?? emptyCustomChart} alt="No resources found" />
-        //     </EmptyState.Image>
-        //     <EmptyState.Title>
-        //         <h4 className="title">{title ?? 'No resources found'}</h4>
-        //     </EmptyState.Title>
-        //     <EmptyState.Subtitle>{subTitle}</EmptyState.Subtitle>
-        //     {actionHandler && (
-        //         <EmptyState.Button>
-        //             <button onClick={actionHandler} className="add-link cta flex">
-        //                 {actionButtonText ?? 'Clear filters'}
-        //             </button>
-        //         </EmptyState.Button>
-        //     )}
-        // </EmptyState>
         <GenericEmptyState
             classname="title"
             image={imgSource ?? emptyCustomChart}

@@ -223,14 +223,6 @@ const renderGUIWidget = (
 
 const SchemaNotAvailable = (): JSX.Element => {
     return (
-        // <EmptyState>
-        //     <EmptyState.Image>
-        //         <Error className="icon-dim-20 mb-10" />
-        //     </EmptyState.Image>
-        //     <EmptyState.Subtitle>
-        //         GUI view is not available as values.schema.json file does not exist for the selected version and values
-        //     </EmptyState.Subtitle>
-        // </EmptyState>
         <GenericEmptyState
             image={Error}
             title={''}

@@ -471,12 +471,6 @@ export const UpdateApplicationButton = ({
 
 export const ErrorScreenWithInfo = ({ info }: ErrorScreenWithInfoProps) => {
     return (
-        // <EmptyState>
-        //     <EmptyState.Image>
-        //         <ErrorExclamation className="icon-dim-20 mb-10" />
-        //     </EmptyState.Image>
-        //     <EmptyState.Subtitle>{info}</EmptyState.Subtitle>
-        // </EmptyState>
         <GenericEmptyState image={ErrorExclamation} classname="icon-dim-20 mb-10" title={''} subTitle={info} />
     )
 }

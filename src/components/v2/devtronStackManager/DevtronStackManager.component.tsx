@@ -854,24 +854,6 @@ export const NoIntegrationsInstalledView = (): JSX.Element => {
 
     return (
         <div className="no-integrations__installed-view">
-            {/* <EmptyState>
-                <EmptyState.Image>
-                    <img src={NoIntegrations} width="250" height="200" alt="no results" />
-                </EmptyState.Image>
-                <EmptyState.Title>
-                    <h2 className="fs-16 fw-4 c-9">No integrations installed</h2>
-                </EmptyState.Title>
-                <EmptyState.Subtitle>Installed integrations will be available here</EmptyState.Subtitle>
-                <EmptyState.Button>
-                    <button
-                        type="button"
-                        className="empty-state__discover-btn flex fs-13 fw-6 br-4"
-                        onClick={() => history.push(URLS.STACK_MANAGER_DISCOVER_MODULES)}
-                    >
-                        <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover integrations</span>
-                    </button>
-                </EmptyState.Button>
-            </EmptyState> */}
             <GenericEmptyState
                 image={NoIntegrations}
                 classname='fs-16'
