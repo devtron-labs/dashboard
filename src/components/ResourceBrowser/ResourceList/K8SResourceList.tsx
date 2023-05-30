@@ -203,7 +203,7 @@ export function K8SResourceList({
                 <ResourceListEmptyState
                     title={RESOURCE_LIST_EMPTY_STATE.title}
                     subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedResource?.gvk?.Kind)}
-                    // children={clearSearch}
+                    actionHandler={clearSearch}
                 />
             )
         }
