@@ -168,29 +168,8 @@ export default function EmptyStateCIMaterial({
 
     const { title, subtitle, img, cta, link } = getData()
     return isMaterialLoading ? (
-        // <EmptyState>
-        //     <EmptyState.Loading text={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />
-        // </EmptyState>
         <GenericEmptyState image={LoadingText} title={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />
     ) : (
-        // <EmptyState>
-        //     <EmptyState.Image>{img}</EmptyState.Image>
-        //     <EmptyState.Title>{title}</EmptyState.Title>
-        //     <EmptyState.Subtitle className="mb-0">
-        //         <>
-        //             {subtitle}
-        //             {link}
-        //         </>
-        //     </EmptyState.Subtitle>
-        //     <EmptyState.Button>{cta}</EmptyState.Button>
-        //     {isWebHook && (
-        //         <EmptyState.Button>
-        //             <span className="dc__link cursor" onClick={toggleWebHookModal}>
-        //                 {CI_MATERIAL_EMPTY_STATE_MESSAGING.WebhookModalCTA}
-        //             </span>
-        //         </EmptyState.Button>
-        //     )}
-        // </EmptyState>
         <GenericEmptyState
             image={img}
             title={title}
