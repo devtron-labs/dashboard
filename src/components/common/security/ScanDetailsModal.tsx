@@ -7,6 +7,7 @@ import {
     Reload,
     ScanVulnerabilitiesTable,
     VulnerabilityType,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import { ViewType, URLS } from '../../../config';
@@ -194,15 +195,11 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                 <div className="modal-body--scan-details">
                     {this.renderHeader()}
                     <div className="trigger-modal__body trigger-modal__body--security-scan">
-                        <EmptyState>
-                            <EmptyState.Image><img src={NoVulnerabilities} alt="" /></EmptyState.Image>
-                            <EmptyState.Title><h4>No vulnerabilities Found</h4></EmptyState.Title>
-                            {this.state.scanEnabled && this.state.scanned && (
-                                    <EmptyState.Subtitle>
-                                        <span>Last scanned on {this.state.lastExecution}</span>
-                                    </EmptyState.Subtitle>
-                                )}
-                        </EmptyState>
+                        <GenericEmptyState
+                            image={NoVulnerabilities}
+                            title={"No vulnerabilities Found"}
+                            subTitle={this.state.scanEnabled && this.state.scanned && `"Last scanned on" ${this.state.lastExecution}`}
+                        />
                     </div>
                 </div>
             </VisibleModal>

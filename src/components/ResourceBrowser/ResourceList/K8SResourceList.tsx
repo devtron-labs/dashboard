@@ -12,7 +12,6 @@ import {
     SIDEBAR_KEYS,
 } from '../Constants'
 import { K8SResourceListType } from '../Types'
-// import ResourceListEmptyState from './ResourceListEmptyState'
 import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'

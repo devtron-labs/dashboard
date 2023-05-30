@@ -393,11 +393,6 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
         return <div>
             {this.renderInputs()}
             <div className='dc__position-rel' style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
-                {/* <EmptyState >
-                    <EmptyState.Image><img src={AppNotDeployed} alt="" /></EmptyState.Image>
-                    <EmptyState.Title><h4>No deployments found</h4></EmptyState.Title>
-                    <EmptyState.Subtitle>{`There are no deployments in this period on '${envName}'.`}</EmptyState.Subtitle>
-                </EmptyState> */}
                 <GenericEmptyState
                     image={AppNotDeployed}
                     title={"No deployments found"}
@@ -409,11 +404,6 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
 
     renderNoEnvironmentView() {
         return <div className='dc__position-rel' style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 80px" }}>
-            {/* <EmptyState >
-                <EmptyState.Image><img src={SelectEnvImage} alt="" /></EmptyState.Image>
-                <EmptyState.Title><h4>Deployment Metrics</h4></EmptyState.Title>
-                <EmptyState.Subtitle>This app is not deployed on any production environment. Deploy on prod to get an overview of your deployment practices.</EmptyState.Subtitle>
-            </EmptyState> */}
             <GenericEmptyState
                 image={SelectEnvImage}
                 title={"Deployment Metrics"}
@@ -426,11 +416,6 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
         return <div>
             {this.renderInputs()}
             <div className='dc__position-rel' style={{ backgroundColor: "var(--N000)", height: "calc(100vh - 150px" }}>
-                {/* <EmptyState >
-                    <EmptyState.Image><img src={SelectEnvImage} alt="" /></EmptyState.Image>
-                    <EmptyState.Title><h4>Select an Environment</h4></EmptyState.Title>
-                    <EmptyState.Subtitle>Please select an Enviroment to view deployment metrics.</EmptyState.Subtitle>
-                </EmptyState> */}
                 <GenericEmptyState
                     image={SelectEnvImage}
                     title={"Select an Environment"}
