@@ -645,14 +645,15 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickManifestDownload = (appId: number, envId: number, envName: string) => {
+    onClickManifestDownload = (appId: number, envId: number, envName: string, cdWorkflowType: string ) => {
         const downloadManifetsDownload = {
             appId: appId,
             envId: envId,
             appName: envName,
+            cdWorkflowType: cdWorkflowType
         }
         if (getDeployManifestDownload) {
-            getDeployManifestDownload(downloadManifetsDownload, this.setLoader)
+            getDeployManifestDownload(downloadManifetsDownload)
         }
     }
 
@@ -677,11 +678,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
-                        this.onClickManifestDownload(_appId, node.environmentId, node.environmentName)
+                        this.onClickManifestDownload(_appId, node.environmentId, node.environmentName, node.type)
                         const msg =
                             this.state.materialType == MATERIAL_TYPE.rollbackMaterialList
                                 ? 'Rollback Initiated'
-                                : !node.isVirtualEnvironment && 'Deployment Initiated'
+                                : 'Deployment Initiated'
                         toast.success(msg)
                         this.setState(
                             {

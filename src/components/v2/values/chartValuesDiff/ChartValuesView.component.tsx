@@ -43,6 +43,7 @@ import { envGroupStyle } from './ChartValuesView.utils'
 import { DeploymentAppTypes } from '../../../../config/constants'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
+const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
 
 export const ChartEnvironmentSelector = ({
     isExternal,
@@ -66,14 +67,25 @@ export const ChartEnvironmentSelector = ({
         }
     }
 
+    const renderVirtualTippy = (): JSX.Element => {
+        if (isVirtualEnvironment && VirtualEnvHelpTippy) {
+            return (
+                <div className='flex left'>
+                    <div className="ml-4 mr-4">(Virtual)</div>
+                    <VirtualEnvHelpTippy isHelmApp={true} />
+                </div>
+            )
+        }
+    }
+
     const handleFormatHighlightedText = (opt, { inputValue }) => {
         return formatHighlightedText(opt, inputValue, 'label')
     }
 
     return !isDeployChartView ? (
         <div className="chart-values__environment-container mb-12">
-            <h2 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7" data-testid="environment-heading">
-                Environment {isVirtualEnvironment && `(Virtual)`}
+            <h2 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7 flex left" data-testid="environment-heading">
+                Environment {renderVirtualTippy()}
             </h2>
             {isExternal ? (
                 <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9">

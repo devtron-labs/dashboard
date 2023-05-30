@@ -185,6 +185,7 @@ export interface AppDetails {
     deploymentAppDeleteRequest?: boolean
     userApprovalConfig?: string
     isVirtualEnvironment?: boolean
+    imageTag?: string
 }
 
 interface MaterialInfo {

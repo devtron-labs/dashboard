@@ -67,6 +67,7 @@ export interface AppDetails {
     clusterId?: number
     deploymentAppType?: DeploymentAppType
     deploymentAppDeleteRequest: boolean
+    imageTag?: string
 }
 
 export interface LabelTag {
@@ -459,7 +460,7 @@ export interface TagChipsContainerType {
   labelTags: TagType[]
 }
 export interface SourceInfoType {
-  appDetails
+  appDetails: AppDetails
   setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
   environment: AppEnvironment
   environments: AppEnvironment[]
