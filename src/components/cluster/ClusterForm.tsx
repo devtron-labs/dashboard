@@ -43,6 +43,7 @@ import TippyHeadless from '@tippyjs/react/headless'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { UPLOAD_STATE } from '../CustomChart/types'
 import UserNameDropDownList from './UseNameListDropdown'
+import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -277,8 +278,7 @@ export default function ClusterForm({
             var obj = YAML.parse(saveYamlData)
             var jsonStr = JSON.stringify(obj)
             return jsonStr
-        } catch (error) {  
-        }
+        } catch (error) {}
     }
 
     function isCheckboxDisabled() {
@@ -566,29 +566,32 @@ export default function ClusterForm({
                         error={state.url.error}
                         onChange={handleOnChange}
                         label={clusterLabel()}
+                        disabled={isDefaultCluster()}
                         placeholder="Enter server URL"
                         dataTestid="enter_server_url_input"
                     />
                 </div>
                 <div className="form__row form__row--bearer-token flex column left top">
-                    <div className="bearer-token">
-                        <ResizableTextarea
-                            className="dc__resizable-textarea__with-max-height dc__required-field"
-                            name="token"
-                            value={
-                                id && id !== 1
-                                    ? DEFAULT_SECRET_PLACEHOLDER
-                                    : config && config.bearer_token
-                                    ? config.bearer_token
-                                    : ''
-                            }
-                            onChange={handleOnChange}
-                            onBlur={handleOnBlur}
-                            onFocus={handleOnFocus}
-                            placeholder="Enter bearer token"
-                            dataTestId="enter_bearer_token_input"
-                        />
-                    </div>
+                    {id !== 1 && (
+                        <div className="bearer-token">
+                            <ResizableTextarea
+                                className="dc__resizable-textarea__with-max-height dc__required-field"
+                                name="token"
+                                value={
+                                    id && id !== 1
+                                        ? DEFAULT_SECRET_PLACEHOLDER
+                                        : config && config.bearer_token
+                                        ? config.bearer_token
+                                        : ''
+                                }
+                                onChange={handleOnChange}
+                                onBlur={handleOnBlur}
+                                onFocus={handleOnFocus}
+                                placeholder="Enter bearer token"
+                                dataTestId="enter_bearer_token_input"
+                            />
+                        </div>
+                    )}
                     {state.token.error && (
                         <label htmlFor="" className="form__error">
                             <FormError className="form__icon form__icon--error" />
@@ -596,7 +599,7 @@ export default function ClusterForm({
                         </label>
                     )}
                 </div>
-                {isGrafanaModuleInstalled && (
+                {isGrafanaModuleInstalled && id !== 1 && (
                     <>
                         <hr />
                         <div className="dc__position-rel flex left dc__hover mb-20">
@@ -696,25 +699,20 @@ export default function ClusterForm({
                                 <hr />
                             </>
                         )}
-
-                        <div
-                            className={`${
-                                prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'
-                            } mt-20`}
-                        >
-                            <div className="dc__content-space flex">
-                                <span className="form__input-header">See metrics for applications in this cluster</span>
-                                <div className="" style={{ width: '32px', height: '20px' }}>
-                                    <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
-                                </div>
-                            </div>
-                            <span className="cn-6 fs-12">
-                                Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications
-                                running in this cluster
-                            </span>
-                        </div>
                     </>
                 )}
+                <div className={`${prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'} mt-20`}>
+                    <div className="dc__content-space flex">
+                        <span className="form__input-header">See metrics for applications in this cluster</span>
+                        <div className="" style={{ width: '32px', height: '20px' }}>
+                            <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
+                        </div>
+                    </div>
+                    <span className="cn-6 fs-12">
+                        Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications running in
+                        this cluster
+                    </span>
+                </div>
                 {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheus_url && <PrometheusWarningInfo />}
                 {isGrafanaModuleInstalled && prometheusToggleEnabled && (
                     <div className="">
@@ -815,9 +813,7 @@ export default function ClusterForm({
                                 />
                             </div>
                         </CodeEditor.Header>
-                        {hasValidationError && (
-                           <CodeEditor.ErrorBar text={errorText} />
-                        )}
+                        {hasValidationError && <CodeEditor.ErrorBar text={errorText} />}
                     </CodeEditor>
                 </div>
             </>
