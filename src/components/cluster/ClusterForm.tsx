@@ -405,6 +405,8 @@ export default function ClusterForm({
             showError(err)
         } finally {
             setLoading(false)
+            toggleShowAddCluster()
+            setTlsConnectionFalse()
         }
     }
 
@@ -1203,21 +1205,11 @@ export default function ClusterForm({
         )
     }
 
-    const saveClusterCall = () => {
-        onValidation()
-        toggleShowAddCluster()
-        setTlsConnectionFalse()
-    }
-
     return getClusterVar ? (
         displayClusterDetails()
     ) : (
         <>
-            <div
-                className="cluster-form dc__position-rel h-100 bcn-0"
-                style={{ padding: 'auto 0' }}
-                onSubmit={handleOnSubmit}
-            >
+            <div className="cluster-form dc__position-rel h-100 bcn-0" style={{ padding: 'auto 0' }}>
                 <AddClusterHeader />
 
                 <div className="p-20" style={{ overflow: 'auto', height: 'calc(100vh - 124px)' }}>
@@ -1269,7 +1261,7 @@ export default function ClusterForm({
                         <button
                             data-testid="save_cluster_after_entering_cluster_details"
                             className="cta mr-20 ml-12"
-                            onClick={() => saveClusterCall()}
+                            onClick={handleOnSubmit}
                         >
                             {id ? 'Update cluster' : 'Save cluster'}
                         </button>
