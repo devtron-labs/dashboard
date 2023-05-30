@@ -46,8 +46,6 @@ import {
 import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import AppStatus from '../AppStatus'
-import { styles } from '../../security/security.util'
-import { classNames } from 'react-mde/lib/definitions/util/ClassNames'
 
 export default function HelmAppList({
     serverMode,

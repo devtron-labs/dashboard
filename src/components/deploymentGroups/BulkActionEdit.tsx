@@ -24,7 +24,6 @@ import {
     getDeploymentGroupDetails,
 } from './service'
 import { useMemo } from 'react'
-import { styles } from '../security/security.util'
 
 export function BulkActionEdit() {
     const { id } = useParams<{ id: string }>()

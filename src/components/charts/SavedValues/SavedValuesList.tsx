@@ -30,7 +30,6 @@ import PageHeader from '../../common/header/PageHeader'
 import { toast } from 'react-toastify'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
-import { classNames } from 'react-select/dist/declarations/src/utils'
 
 export default function SavedValuesList() {
     const history: RouteComponentProps['history'] = useHistory()
