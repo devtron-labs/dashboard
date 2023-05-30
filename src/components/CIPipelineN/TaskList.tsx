@@ -6,7 +6,6 @@ import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactiv
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
 import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
-import { ReactComponent as MoveToPost } from '../../assets/icons/ic-arrow-forward.svg'
 import { ciPipelineContext } from './CIPipeline'
 import {
     PopupMenu,
