@@ -141,6 +141,7 @@ export const getCIConfigFormState = (
     currentRegistry: any,
 ) => {
     return {
+        //when creating app for the first time,ciConfig will be null as CiPipelineResult will be empty,set the default values
         repository: { value: currentMaterial?.name || '', error: '' },
         dockerfile: {
             value:
@@ -178,7 +179,8 @@ export const getCIConfigFormState = (
         useRootBuildContext : {
             value : (selectedCIPipeline?.isDockerConfigOverridden
                 ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.useRootBuildContext
-                : ciConfig.ciBuildConfig?.useRootBuildContext),
+                : ciConfig?.ciBuildConfig ?
+                ciConfig.ciBuildConfig.useRootBuildContext : true),
             error: '',
         }
     }
