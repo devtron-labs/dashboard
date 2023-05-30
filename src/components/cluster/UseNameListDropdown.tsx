@@ -27,6 +27,7 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                 isSearchable={false}
                 menuPortalTarget={document.getElementById('visible-modal')}
                 onChange={handleUserChange}
+                menuPlacement="auto"
                 components={{
                     IndicatorSeparator: null,
                     DropdownIndicator,
@@ -67,7 +68,7 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
                         position: 'relative',
                         paddingTop: '4px',
                         paddingBotton: '4px',
-                        maxHeight: '250px',
+                        maxHeight: '250px',     
                     }),
                     noOptionsMessage: (base) => ({
                         ...base,
