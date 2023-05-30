@@ -70,7 +70,7 @@ export const ChartEnvironmentSelector = ({
     const renderVirtualTippy = (): JSX.Element => {
         if (isVirtualEnvironment && VirtualEnvHelpTippy) {
             return (
-                <div className='flex left'>
+                <div className="flex left">
                     <div className="ml-4 mr-4">(Virtual)</div>
                     <VirtualEnvHelpTippy isHelmApp={true} />
                 </div>
