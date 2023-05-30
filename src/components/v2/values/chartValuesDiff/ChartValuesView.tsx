@@ -785,7 +785,7 @@ function ChartValuesView({
                     valuesOverride: obj,
                     valuesOverrideYaml: commonState.modifiedValuesYaml,
                     appName: appName.trim(),
-                    deploymentAppType: commonState.deploymentAppType,
+                    deploymentAppType: isVirtualEnvironmentOnSelector ? DeploymentAppType.manifest_download : commonState.deploymentAppType,
                 }
                 res = await installChart(payload)
             } else if (isCreateValueView) {
