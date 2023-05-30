@@ -219,6 +219,7 @@ export default function SavedValuesList() {
             <div className='dc__position-rel' style={{ height: 'calc(100vh - 235px)' }}>
                 <GenericEmptyState
                     image={emptyCustomChart}
+                    heightToDeduct={235}
                     title={title || 'No values saved for this chart'}
                     subTitle={subTitle || 'Customize, Dry Run and Save values so they’re ready to be used later.'}
                     isButtonAvailable={showClearButton}
