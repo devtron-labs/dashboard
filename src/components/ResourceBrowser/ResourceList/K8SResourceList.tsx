@@ -16,6 +16,7 @@ import { toast } from 'react-toastify'
 import { EventList } from './EventList'
 import Tippy from '@tippyjs/react'
 import ResourceFilterOptions from './ResourceFilterOptions'
+import ResourceListEmptyState from './ResourceListEmptyState'
 
 export function K8SResourceList({
     selectedResource,
@@ -189,7 +190,7 @@ export function K8SResourceList({
     const renderEmptyPage = (): JSX.Element => {
         if (noResults) {
             return (
-                <GenericEmptyState
+                <ResourceListEmptyState
                     title={RESOURCE_EMPTY_PAGE_STATE.title(selectedResource?.gvk?.Kind)}
                     subTitle={RESOURCE_EMPTY_PAGE_STATE.subTitle(
                         selectedResource?.gvk?.Kind,
@@ -199,10 +200,10 @@ export function K8SResourceList({
             )
         } else {
             return (
-                <GenericEmptyState
+                <ResourceListEmptyState
                     title={RESOURCE_LIST_EMPTY_STATE.title}
                     subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedResource?.gvk?.Kind)}
-                    children={clearSearch}
+                    // children={clearSearch}
                 />
             )
         }
