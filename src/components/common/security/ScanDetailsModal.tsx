@@ -15,6 +15,7 @@ import NoVulnerabilities from '../../../assets/img/ic-vulnerability-not-found.sv
 import { Link } from 'react-router-dom';
 import { ReactComponent as Clair } from '../../../assets/icons/ic-clair.svg';
 import { ReactComponent as Trivy } from '../../../assets/icons/ic-trivy.svg';
+import { IMAGE_SCAN_TOOL } from '../../app/details/triggerView/Constants';
 
 interface ScanDetailsModalProps {
     uniqueId: ExecutionId;
@@ -111,41 +112,70 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
         if (this.state.objectType === 'chart') {
             link = `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${this.state.appId}/env/${this.state.envId}`;
         }
-        return <div className="scanned-object">
-            <div className="flexbox flex-justify">
-                {this.props.showAppInfo ? <div>
-                    {this.state.appId ? <>
-                        <p className="scanned-object__label">App</p>
-                        <p className="scanned-object__value">{this.props.showAppInfo && this.state.objectType !== "chart" ? <Link to={link} className="dc__no-decor" onClick={(event) => {
-                }}> {this.state.appName}
-                </Link> : null}</p>
-                    </> : null}
-                    {this.state.envId ? <>
-                        <p className="scanned-object__label">Environment</p>
-                        <p className="scanned-object__value">{this.state.envName}</p>
-                    </> : null}
-                    {this.state.replicaSet ? <>
-                        <p className="scanned-object__label">Replica Set</p>
-                        <p className="scanned-object__value">{this.state.replicaSet}</p>
-                    </> : null}
-                    {this.state.pod ? <>
-                        <p className="scanned-object__label">Pod</p>
-                        <p className="scanned-object__value">{this.state.pod}</p>
-                    </> : null}
-                </div> : null}
-                {this.props.showAppInfo && this.state.objectType !== "chart" ? <div className='flexbox dc__content-space'>
-                <span className='flex top'>Scanned By {this.state.scanToolId===SCAN_TOOL_ID_TRIVY ?'Trivy':'Clair'}{this.state.scanToolId===SCAN_TOOL_ID_TRIVY? <Trivy/>:<Clair/>} </span>              
-            </div> : null} 
+        return (
+            <div className="scanned-object">
+                <div className="flexbox flex-justify">
+                    {this.props.showAppInfo ? (
+                        <div>
+                            {this.state.appId ? (
+                                <>
+                                    <p className="scanned-object__label">App</p>
+                                    <p className="scanned-object__value">
+                                        {this.props.showAppInfo && this.state.objectType !== 'chart' ? (
+                                            <Link to={link} className="dc__no-decor" onClick={(event) => {}}>
+                                                {this.state.appName}
+                                            </Link>
+                                        ) : null}
+                                    </p>
+                                </>
+                            ) : null}
+                            {this.state.envId ? (
+                                <>
+                                    <p className="scanned-object__label">Environment</p>
+                                    <p className="scanned-object__value">{this.state.envName}</p>
+                                </>
+                            ) : null}
+                            {this.state.replicaSet ? (
+                                <>
+                                    <p className="scanned-object__label">Replica Set</p>
+                                    <p className="scanned-object__value">{this.state.replicaSet}</p>
+                                </>
+                            ) : null}
+                            {this.state.pod ? (
+                                <>
+                                    <p className="scanned-object__label">Pod</p>
+                                    <p className="scanned-object__value">{this.state.pod}</p>
+                                </>
+                            ) : null}
+                        </div>
+                    ) : null}
+                    {this.props.showAppInfo && this.state.objectType !== 'chart' ? (
+                        <div className="flexbox dc__content-space">
+                            <span className="flex top">
+                                Scanned By{' '}
+                                {this.state.scanToolId === SCAN_TOOL_ID_TRIVY
+                                    ? IMAGE_SCAN_TOOL.Trivy
+                                    : IMAGE_SCAN_TOOL.Clair}
+                                {this.state.scanToolId === SCAN_TOOL_ID_TRIVY ? <Trivy /> : <Clair />}{' '}
+                            </span>
+                        </div>
+                    ) : null}
+                </div>
+                {this.props.showAppInfo ? null : (
+                    <>
+                        <div className="flexbox dc__content-space">
+                            <span className="scanned-object__label flex left">Last Scanned</span>
+                            <span className="flex right">
+                                Scanned By {this.state.scanToolId === SCAN_TOOL_ID_TRIVY ? 'Trivy' : 'Clair'}
+                                {this.state.scanToolId === SCAN_TOOL_ID_TRIVY ? <Trivy /> : <Clair />}{' '}
+                            </span>
+                        </div>
+                        <p className="scanned-object__value">{this.state.lastExecution}</p>
+                    </>
+                )}
+                {this.renderCount()}
             </div>
-            {this.props.showAppInfo ? null : <>
-            <div className='flexbox dc__content-space'>
-                <span className="scanned-object__label flex left">Last Scanned</span>
-                <span className='flex right'>Scanned By {this.state.scanToolId===SCAN_TOOL_ID_TRIVY?'Trivy':'Clair'}{this.state.scanToolId===SCAN_TOOL_ID_TRIVY? <Trivy/>:<Clair/>} </span>              
-            </div>
-                <p className="scanned-object__value">{this.state.lastExecution}</p>
-            </>}
-            {this.renderCount()}
-        </div>
+        )
     }
 
 
@@ -211,9 +241,13 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                                     <h4>No vulnerabilities Found</h4>
                                 </EmptyState.Title>
                                 <EmptyState.Subtitle>
-                                    <span className='flex' >
-                                        Scanned By {this.state.scanToolId===SCAN_TOOL_ID_TRIVY ? 'Trivy' : 'Clair '}{' '}
-                                        {this.state.scanToolId===SCAN_TOOL_ID_TRIVY ? <Trivy className='h-20 w-20'/> : <Clair className='h-20 w-20'/>}
+                                    <span className="flex">
+                                        Scanned By {this.state.scanToolId === SCAN_TOOL_ID_TRIVY ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair}
+                                        {this.state.scanToolId === SCAN_TOOL_ID_TRIVY ? (
+                                            <Trivy className="h-20 w-20" />
+                                        ) : (
+                                            <Clair className="h-20 w-20" />
+                                        )}
                                     </span>
                                 </EmptyState.Subtitle>
                                 {this.state.scanEnabled && this.state.scanned && (

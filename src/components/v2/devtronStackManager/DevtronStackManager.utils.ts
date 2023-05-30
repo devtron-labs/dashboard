@@ -86,20 +86,21 @@ export const handleAction = async (
 }
 export const handleEnableAction = async (
     moduleName: string,
-    setRetryFlag:React.Dispatch<React.SetStateAction<boolean>>,
-    setSuccessState:React.Dispatch<React.SetStateAction<boolean>>,
-    setDialog:React.Dispatch<React.SetStateAction<boolean>>,
-    moduleNotEnabledState:React.Dispatch<React.SetStateAction<boolean>>,
-    setProgressing:React.Dispatch<React.SetStateAction<boolean>>
+    setRetryFlag: React.Dispatch<React.SetStateAction<boolean>>,
+    setSuccessState: React.Dispatch<React.SetStateAction<boolean>>,
+    setDialog: React.Dispatch<React.SetStateAction<boolean>>,
+    moduleNotEnabledState: React.Dispatch<React.SetStateAction<boolean>>,
+    setProgressing: React.Dispatch<React.SetStateAction<boolean>>,
 ) => {
     try {
         const actionRequest: ModuleEnableRequest = {
-            version: moduleName === ModuleNameMap.SECURITY_TRIVY ? TRIVY_TOOL_VERSION : (window?._env_?.CLAIR_TOOL_VERSION),
+            version:
+                moduleName === ModuleNameMap.SECURITY_TRIVY ? TRIVY_TOOL_VERSION : window?._env_?.CLAIR_TOOL_VERSION,
         }
         const { result } = await executeModuleEnableAction(moduleName, actionRequest)
         if (result?.success) {
             setSuccessState(true)
-            setDialog(false)        
+            setDialog(false)
             moduleNotEnabledState(false)
         }
     } catch (e) {

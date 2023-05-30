@@ -640,11 +640,11 @@ export const EXTERNAL_TYPES = {
 
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
 export const DEPLOYMENT = 'Deployment'
-export const MODULE_TYPE_SECURITY='security'
-export const SCAN_TOOL_ID_TRIVY=3
-export const TRIVY_TOOL_VERSION='V1'
-export const CLAIR_TOOL_VERSION_V4='V4'
-export const CLAIR_TOOL_VERSION_V2='V2'
+export const MODULE_TYPE_SECURITY = 'security'
+export const SCAN_TOOL_ID_TRIVY = 3
+export const TRIVY_TOOL_VERSION = 'V1'
+export const CLAIR_TOOL_VERSION_V4 = 'V4'
+export const CLAIR_TOOL_VERSION_V2 = 'V2'
 
 export const ModuleNameMap = {
     ARGO_CD: 'argo-cd',
@@ -653,7 +653,7 @@ export const ModuleNameMap = {
     BLOB_STORAGE: 'blob-storage',
     GRAFANA: 'monitoring.grafana',
     NOTIFICATION: 'notifier',
-    SECURITY_TRIVY:'security.trivy'
+    SECURITY_TRIVY: 'security.trivy',
 }
 
 export const BUILD_STATUS = {
@@ -712,6 +712,11 @@ export const MODULE_STATUS_POLLING_INTERVAL = 15000
 export const LOGS_RETRY_COUNT = 3
 export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
 export const MANIFEST_STATUS_HEADERS = ['KIND', 'NAME', 'SYNC STATUS', 'MESSAGE']
+export const MODULE_STATUS = {
+    Installed: 'Installed',
+    Failed: 'Failed',
+    NotEnabled: 'Not Enabled',
+}
 
 export const shellTypes = [
     { label: 'sh', value: 'sh' },

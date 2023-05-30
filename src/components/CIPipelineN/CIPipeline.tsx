@@ -232,12 +232,12 @@ export default function CIPipeline({
 
     const getSecurityModuleStatus = async (): Promise<void> => {
         try {
-            const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
-            const { result:result2 } =await getModuleInfo(ModuleNameMap.SECURITY_TRIVY)
-            if (result?.status === ModuleStatus.INSTALLED || result2?.status === ModuleStatus.INSTALLED  ) {
-                setSecurityModuleInstalled(true)
-            }
-        } catch (error) {}
+            Promise.all([getModuleInfo(ModuleNameMap.SECURITY),getModuleInfo(ModuleNameMap.SECURITY_TRIVY)]).then(([clairResponse,trivyResponse])=>{
+                if (clairResponse?.result?.status === ModuleStatus.INSTALLED || trivyResponse?.result?.status === ModuleStatus.INSTALLED  ) {
+                    setSecurityModuleInstalled(true)
+                }
+            })}catch(error){}
+
     }
 
     function processPluginList(pluginList: PluginDetailType[]): void {

@@ -36,21 +36,18 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     EmptyState,
-    TippyCustomized, 
-    TippyTheme, 
     Toggle,
     toastAccessDenied,
     ConfirmationDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'
 import LatestVersionCelebration from '../../../assets/gif/latest-version-celebration.gif'
-import { DOCUMENTATION, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
+import { DOCUMENTATION, MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
 import { toast } from 'react-toastify'
 import {
     AboutSection,
     DEVTRON_UPGRADE_MESSAGE,
-    ENABLE_TIPPY_CONTENT,
     handleAction,
     isLatestVersionAvailable,
     MODULE_CONFIGURATION_DETAIL_MAP,
@@ -63,13 +60,12 @@ import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import './devtronStackManager.component.scss'
 import PageHeader from '../../common/header/PageHeader'
 import Tippy from '@tippyjs/react'
-
-import { SuccessModalType } from "./DevtronStackManager.type";
 import trivy from "../../../assets/icons/ic-clair-to-trivy.svg"
 import clair from "../../../assets/icons/ic-trivy-to-clair.svg"
 import warn  from '../../../assets/icons/ic-error-medium.svg';
 import { ModuleEnableType } from "./DevtronStackManager.type"
 import { handleEnableAction } from "./DevtronStackManager.utils"
+import { SuccessModalComponent } from './SuccessModalComponent'
 const getInstallationStatusLabel = (
     installationStatus: ModuleStatus,
     enableStatus: boolean,
@@ -90,12 +86,12 @@ const getInstallationStatusLabel = (
                 <div className="flex">
                     <InstalledIcon className="icon-dim-20" />
                     <span className="fs-13 fw-6 ml-8 " data-testid={`status-${dataTestId}`}>
-                        Installed
+                    {MODULE_STATUS.Installed}
                     </span>
                 </div>
                 {!enableStatus && (
                     <span className="fs-12 ml-8 mb-20 fw-400 cn-7 ml-13" data-testid={`enable-status-${dataTestId}`}>
-                        Not Enabled
+                       {MODULE_STATUS.NotEnabled}
                     </span>
                 )}
             </div>
@@ -105,7 +101,7 @@ const getInstallationStatusLabel = (
             <div className={`module-details__installation-status flex installFailed`}>
                 <ErrorIcon className="icon-dim-20" />
                 <span className="fs-13 fw-6 ml-8" data-testid={`status-${dataTestId}`}>
-                    Failed
+                   { MODULE_STATUS.Failed}
                 </span>
             </div>
         )
@@ -119,7 +115,7 @@ const ModuleDetailsCard = ({
     className,
     handleModuleCardClick,
     fromDiscoverModules,
-    datatestid,
+    dataTestId,
 }: ModuleDetailsCardType): JSX.Element => {
     const handleOnClick = (): void => {
         if (moduleDetails.installationStatus === ModuleStatus.UNKNOWN) {
@@ -138,11 +134,16 @@ const ModuleDetailsCard = ({
             data-testid="module-details-card"
             className={`module-details__card flex left column br-8 p-16 mr-20 mb-20 ${className || ''}`}
             onClick={handleOnClick}
-            // data-testid={datatestid}
         >
-            {getInstallationStatusLabel(moduleDetails.installationStatus,moduleDetails?.moduleType===MODULE_TYPE_SECURITY?moduleDetails.enabled:true,datatestid)}
+            {getInstallationStatusLabel(
+                moduleDetails.installationStatus,
+                moduleDetails?.moduleType === MODULE_TYPE_SECURITY ? moduleDetails.enabled : true,
+                dataTestId,
+            )}
             <img className="module-details__card-icon mb-16" src={moduleDetails.icon} alt={moduleDetails.title} />
-            <div className="module-details__card-name fs-16 fw-4 cn-9 mb-4" data-testid={`title-${datatestid}`}>{moduleDetails.title}</div>
+            <div className="module-details__card-name fs-16 fw-4 cn-9 mb-4" data-testid={`title-${dataTestId}`}>
+                {moduleDetails.title}
+            </div>
             <div className="module-details__card-info dc__ellipsis-right__2nd-line fs-13 fw-4 cn-7 lh-20">
                 {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
                     <>
@@ -184,7 +185,7 @@ export const ModulesListingView = ({
                         className="cursor"
                         handleModuleCardClick={handleModuleCardClick}
                         fromDiscoverModules={isDiscoverModulesView}
-                        datatestid = {`module-card-${idx}`}
+                        dataTestId = {`module-card-${idx}`}
                     />
                 )
             })}
@@ -353,6 +354,14 @@ export function EnableModuleConfirmation({
 }: ModuleEnableType) {
     const [progressing, setProgressing] = useState<boolean>(false)
 
+    const handleCancelAction = () => {
+        setDialog(false)
+        setToggled(false)
+    }
+    const handleEnableActionButton =()=>{
+        setProgressing(true)
+        handleEnableAction(moduleDetails.name, setRetryState, setSuccessState,setDialog,moduleNotEnabledState,setProgressing)
+    }
     return (
         <ConfirmationDialog>
             <ConfirmationDialog.Icon
@@ -379,19 +388,13 @@ export function EnableModuleConfirmation({
                 <button
                     type="button"
                     className="cta cancel"
-                    onClick={() => {
-                        setDialog(false)
-                        setToggled(false)
-                    }}
+                    onClick={handleCancelAction}
                 >
                     Cancel
                 </button>
                 <button
                     className="cta form-submit-cta ml-12 dc__no-decor form-submit-cta flex h-36 "
-                    onClick={() => {
-                        setProgressing(true)
-                        handleEnableAction(moduleDetails.name, setRetryState, setSuccessState,setDialog,moduleNotEnabledState,setProgressing)
-                    }}
+                    onClick={handleEnableActionButton}
                 >
                     {progressing ? (
                         <Progressing />
@@ -447,6 +450,14 @@ const InstallationStatus = ({
             setToggled(false)
         }, 1000)
     }
+    const handleToggleButton=()=>{
+        if (isSuperAdmin) {
+            setToggled(true)
+            setDialog(true)
+        } else {
+            renderTransitonToggle()
+        }
+    }
     return (
         <div
             className={`module-details__installtion-status cn-9 br-4 fs-13 fw-6 mb-16 status-${
@@ -465,7 +476,14 @@ const InstallationStatus = ({
                 />
             )}
             {successState && (
-                <SuccessModalComponent moduleDetails={moduleDetails} setSuccessState={setSuccessState} setSelectedModule={setSelectedModule} setStackDetails={setStackDetails} stackDetails={stackDetails} setToggled={setToggled}/>
+                <SuccessModalComponent
+                    moduleDetails={moduleDetails}
+                    setSuccessState={setSuccessState}
+                    setSelectedModule={setSelectedModule}
+                    setStackDetails={setStackDetails}
+                    stackDetails={stackDetails}
+                    setToggled={setToggled}
+                />
             )}
             {(installationStatus === ModuleStatus.INSTALLING || installationStatus === ModuleStatus.UPGRADING) && (
                 <>
@@ -489,7 +507,6 @@ const InstallationStatus = ({
                             <span className="mt-12">You're using the latest version of Devtron.</span>
                         </div>
                     ) : (
-
                         <>
                             <div className="flexbox">
                                 <div className="module-details__installtion-success flex left dc__content-space">
@@ -516,14 +533,7 @@ const InstallationStatus = ({
                                         <div className="ml-auto" style={{ width: '30px', height: '19px' }}>
                                             <Toggle
                                                 dataTestId="toggle-button"
-                                                onSelect={() => {
-                                                    if (isSuperAdmin) {
-                                                        setToggled(true)
-                                                        setDialog(true)
-                                                    } else {
-                                                        renderTransitonToggle()
-                                                    }
-                                                }}
+                                                onSelect={handleToggleButton}
                                                 selected={toggled}
                                             />
                                         </div>
@@ -739,7 +749,7 @@ export const InstallationWrapper = ({
                     updateActionTrigger,
                     history,
                     location,
-                    moduleDetails && (moduleDetails.moduleType ?? moduleDetails.moduleType),
+                    moduleDetails && (moduleDetails.moduleType?moduleDetails.moduleType:undefined),
                 )
             } else {
                 setShowPreRequisiteConfirmationModal(true)
@@ -1061,92 +1071,6 @@ export const ModuleDetailsView = ({
             </div>
         </div>
     ) : null
-}
-
-export function SuccessModalComponent({moduleDetails,setSuccessState,setSelectedModule,setStackDetails,stackDetails,setToggled}:SuccessModalType){
-
-    const enableModuleState=(modulename:string)=>{
-        
-        let _moduleList = stackDetails.installedModulesList.map((module) => {
-            if (modulename === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY) {
-                return {
-                    ...module,
-                    enabled: false,
-                };
-            } else if (modulename === ModuleNameMap.SECURITY && module.name === ModuleNameMap.SECURITY_TRIVY) {
-                return {
-                    ...module,
-                    enabled: false,
-                };
-            }
-            if (module.name === modulename) {
-                return {
-                    ...module,
-                    enabled: true,
-                };
-            }
-            return module;
-        });
-        let _discovermoduleList = stackDetails.discoverModulesList.map((module) => {
-            if (modulename === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY) {
-                return {
-                    ...module,
-                    enabled: false,
-                };
-            } else if (modulename === ModuleNameMap.SECURITY && module.name === ModuleNameMap.SECURITY_TRIVY) {
-                return {
-                    ...module,
-                    enabled: false,
-                };
-            }
-            if (module.name === modulename) {
-                return {
-                    ...module,
-                    enabled: true,
-                };
-            }
-            return module;
-        });
-        setStackDetails({
-            ...stackDetails,
-            installedModulesList: _moduleList,
-            discoverModulesList:_discovermoduleList
-        })
-        setToggled(false)
-    }
-    return (
-        <ConfirmationDialog>
-            <div className='module-details__upgrade-success'>
-                
-            <div className="flex column mb-40 mt-40">
-                    <img src={LatestVersionCelebration}/>
-                    <UpToDateIcon className="icon-dim-40" />
-            </div>
-            <ConfirmationDialog.Body
-                title={`${moduleDetails.name === ModuleNameMap.SECURITY ? 'Clair' : 'Trivy'} is enabled`}
-            />
-            <p className="flex left fs-13 cn-7 lh-1-54 mb-24 mt-16 ml-16 mr-16">
-                {`Devtron will use ${
-                    moduleDetails.name === ModuleNameMap.SECURITY ? 'Clair' : 'Trivy'
-                } to perform vulnerability scans in the future.`}
-            </p>
-            </div>
-            <div className='flex mt-40'>
-
-            <button
-                type="button"
-                className="cta"
-                onClick={() => {
-                    setSuccessState(false)
-                    setSelectedModule({ ...moduleDetails, enabled: true })
-                    enableModuleState(moduleDetails.name)
-                }}
-            >
-                Okay
-            </button>
-            </div>
-        </ConfirmationDialog>
-    )
 }
 
 export const NoIntegrationsInstalledView = (): JSX.Element => {

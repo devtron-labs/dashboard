@@ -104,10 +104,13 @@ export const getCIConfigList = (envID: string, appIds: string): Promise<CIConfig
         getModuleInfo(ModuleNameMap.SECURITY),
         getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
         getModuleInfo(ModuleNameMap.SECURITY_TRIVY),
-    ]).then(([ciConfig, securityInfo, moduleConfig,trivysecurityInfo]) => {
+    ]).then(([ciConfig, securityInfo, moduleConfig, trivySecurityInfo]) => {
+        const installed =
+            securityInfo?.result?.status === ModuleStatus.INSTALLED ||
+            trivySecurityInfo?.result?.status === ModuleStatus.INSTALLED
         return {
             pipelineList: ciConfig.result,
-            securityModuleInstalled: (securityInfo?.result?.status === ModuleStatus.INSTALLED || trivysecurityInfo?.result?.status === ModuleStatus.INSTALLED),
+            securityModuleInstalled: installed,
             blobStorageConfigured: moduleConfig?.result?.enabled,
         }
     })

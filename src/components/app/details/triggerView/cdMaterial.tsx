@@ -56,7 +56,8 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
-import { ARTIFACT_STATUS } from './Constants'
+import { ARTIFACT_STATUS, IMAGE_SCAN_TOOL } from './Constants'
+import { NO_VULNERABILITY_TEXT } from './Constants'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -154,11 +155,16 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     async getSecurityModuleStatus(): Promise<void> {
         try {
-            const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
-            const {result:result2} =await getModuleInfo(ModuleNameMap.SECURITY_TRIVY)
-            if (result?.status === ModuleStatus.INSTALLED|| result2?.status === ModuleStatus.INSTALLED) {
-                this.setState({ isSecurityModuleInstalled: true })
-            }
+            Promise.all([getModuleInfo(ModuleNameMap.SECURITY), getModuleInfo(ModuleNameMap.SECURITY_TRIVY)]).then(
+                ([clairResponse, trivyResponse]) => {
+                    if (
+                        clairResponse?.result?.status === ModuleStatus.INSTALLED ||
+                        trivyResponse?.result?.status === ModuleStatus.INSTALLED
+                    ) {
+                        this.setState({ isSecurityModuleInstalled: true })
+                    }
+                },
+            )
         } catch (error) {}
     }
 
@@ -225,18 +231,34 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
         } else if (!mat.vulnerabilitiesLoading && mat.vulnerabilities.length === 0) {
             return (
                 <div className="security-tab-empty summary-view__card">
-                    <p className="security-tab-empty__title">You’re secure!</p>
-                    <p className="">No security vulnerability found for this image.</p>
+                    <p className="security-tab-empty__title">{NO_VULNERABILITY_TEXT.Secured}</p>
+                    <p>{NO_VULNERABILITY_TEXT.NoVulnerabilityFound}</p>
                     <p className="security-tab-empty__subtitle">{mat.lastExecution}</p>
-                    <p className='workflow__header dc__border-radius-24 bcn-0'>Scanned By {mat.scanToolId===SCAN_TOOL_ID_TRIVY ?'Trivy':'Clair'}{mat.scanToolId===SCAN_TOOL_ID_TRIVY? <Trivy  className='h-20 w-20'/>:<Clair  className='h-20 w-20'/>} </p>
+                    <p className="workflow__header dc__border-radius-24 bcn-0">
+                        Scanned By{' '}
+                        {mat.scanToolId === SCAN_TOOL_ID_TRIVY ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair}
+                        {mat.scanToolId === SCAN_TOOL_ID_TRIVY ? (
+                            <Trivy className="h-20 w-20" />
+                        ) : (
+                            <Clair className="h-20 w-20" />
+                        )}{' '}
+                    </p>
                 </div>
             )
         } else
             return (
                 <div className="security-tab">
-                    <div className='flexbox dc__content-space'>
+                    <div className="flexbox dc__content-space">
                         <span className="flex left security-tab__last-scanned ">Scanned on {mat.lastExecution} </span>
-                        <span className='flex right'>Scanned By {mat.scanToolId===SCAN_TOOL_ID_TRIVY?'Trivy':'Clair'}{mat.scanToolId===SCAN_TOOL_ID_TRIVY? <Trivy  className='h-20 w-20'/>:<Clair  className='h-20 w-20'/>} </span>
+                        <span className="flex right">
+                            Scanned By{' '}
+                            {mat.scanToolId === SCAN_TOOL_ID_TRIVY ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair}
+                            {mat.scanToolId === SCAN_TOOL_ID_TRIVY ? (
+                                <Trivy className="h-20 w-20" />
+                            ) : (
+                                <Clair className="h-20 w-20" />
+                            )}{' '}
+                        </span>
                     </div>
                     <ScanVulnerabilitiesTable vulnerabilities={mat.vulnerabilities} />
                 </div>
