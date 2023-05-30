@@ -123,9 +123,9 @@ export default function ClusterForm({
             url: { value: server_url, error: '' },
             userName: { value: prometheusAuth?.userName, error: '' },
             password: { value: prometheusAuth?.password, error: '' },
-            tlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
-            tlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
-            certificateAuthorityData: { value: prometheusAuth?.certificateAuthorityData, error: '' },
+            tlsClientKey: { value: '', error: '' },
+            tlsClientCert: { value: '', error: '' },
+            certificateAuthorityData: { value: '', error: '' },
             token: { value: config && config.bearer_token ? config.bearer_token : '', error: '' },
             endpoint: { value: prometheus_url || '', error: '' },
             authType: { value: authenTicationType, error: '' },
@@ -163,16 +163,31 @@ export default function ClusterForm({
                 validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
             },
             tlsClientKey: {
-                required: false,
-                validator: { error: 'TLS Key is required', regex: /^(?!\s*$).+/ },
+                required: isTlsConnection ? true : false,
+                validator: isTlsConnection
+                    ? {
+                          error: 'Invalid base64 data',
+                          regex: /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/,
+                      }
+                    : undefined,
             },
             tlsClientCert: {
-                required: false,
-                validator: { error: 'TLS Certificate is required', regex: /^(?!\s*$).+/ },
+                required: isTlsConnection ? true : false,
+                validator: isTlsConnection
+                    ? {
+                          error: 'Invalid base64 data',
+                          regex: /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/,
+                      }
+                    : undefined,
             },
             certificateAuthorityData: {
-                required: false,
-                validator: { error: 'Certificate authority data is required', regex: /^(?!\s*$).+/ },
+                required: isTlsConnection ? true : false,
+                validator: isTlsConnection
+                    ? {
+                          error: 'Invalid base64 data',
+                          regex: /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/,
+                      }
+                    : undefined,
             },
             token:
                 isDefaultCluster() || id
@@ -617,6 +632,12 @@ export default function ClusterForm({
                                         onFocus={handleOnFocus}
                                         placeholder={'Enter CA Data'}
                                     />
+                                    {state.certificateAuthorityData.error && (
+                                        <label htmlFor="" className="form__error">
+                                            <FormError className="form__icon form__icon--error" />
+                                            {state.certificateAuthorityData.error}
+                                        </label>
+                                    )}
                                 </div>
                                 <div className="form__row">
                                     <span data-testid="tls_client_key" className="form__label dc__required-field">
@@ -636,6 +657,12 @@ export default function ClusterForm({
                                         onFocus={handleOnFocus}
                                         placeholder={'Enter tls Key'}
                                     />
+                                    {state.tlsClientKey.error && (
+                                        <label htmlFor="" className="form__error">
+                                            <FormError className="form__icon form__icon--error" />
+                                            {state.tlsClientKey.error}
+                                        </label>
+                                    )}
                                 </div>
                                 <div className="form__row">
                                     <span data-testid="tls_certificate" className="form__label dc__required-field">
@@ -655,6 +682,12 @@ export default function ClusterForm({
                                         onFocus={handleOnFocus}
                                         placeholder={'Enter tls Certificate'}
                                     />
+                                    {state.tlsClientCert.error && (
+                                        <label htmlFor="" className="form__error">
+                                            <FormError className="form__icon form__icon--error" />
+                                            {state.tlsClientCert.error}
+                                        </label>
+                                    )}
                                 </div>
                                 <hr />
                             </>
