@@ -10,7 +10,7 @@ import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../
 import { useAsync, useInterval, useScrollable, mapByKey, asyncWrap, importComponentFromFELibrary } from '../../../common'
 import { ModuleNameMap, URLS } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
-import { useHistory, useRouteMatch, useParams, generatePath } from 'react-router'
+import { useHistory, useRouteMatch, useParams, generatePath, useLocation } from 'react-router'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { getTriggerHistory, getTriggerDetails, getCDBuildReport } from './service'
 import DeploymentHistoryConfigList from './deploymentHistoryDiff/DeploymentHistoryConfigList.component'
@@ -24,16 +24,18 @@ import Sidebar from '../cicdHistory/Sidebar'
 import { Scroller, LogResizeButton, GitChanges } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
-import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
+import { CICDSidebarFilterOptionType, DeploymentStageType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { AppEnvironment } from '../../../../services/service.types'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import { STAGE_TYPE } from '../triggerView/types'
 
 const terminalStatus = new Set(['error', 'healthy', 'succeeded', 'cancelled', 'failed', 'aborted'])
 let statusSet = new Set(['starting', 'running', 'pending'])
 const VirtualHistoryArtifact = importComponentFromFELibrary('VirtualHistoryArtifact')
 
 export default function CDDetails() {
+    const location = useLocation()
     const { appId, envId, triggerId, pipelineId } = useParams<{
         appId: string
         envId: string
@@ -76,6 +78,18 @@ export default function CDDetails() {
             setHasMore(true)
             setHasMoreLoading(true)
         }
+        let _triggerId = deploymentHistoryResult.result[0].id
+        let queryString = new URLSearchParams(location.search)
+        let queryParam = queryString.get('type')
+        if (queryParam === STAGE_TYPE.PRECD || queryParam === STAGE_TYPE.POSTCD) {
+            let deploymentStageType = queryParam === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
+            const requiredResult = deploymentHistoryResult.result.filter((obj) => {
+                return obj.stage === deploymentStageType;
+            });
+            if(requiredResult?.[0]) {
+                _triggerId = requiredResult[0].id
+            }
+        }
         const newTriggerHistory = (deploymentHistoryResult.result || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
@@ -86,7 +100,7 @@ export default function CDDetails() {
                     appId,
                     envId,
                     pipelineId,
-                    triggerId: deploymentHistoryResult.result[0].id,
+                    triggerId: _triggerId,
                 }),
             )
         }
@@ -248,44 +262,43 @@ export const TriggerOutput: React.FC<{
     deploymentAppType,
     isBlobStorageConfigured,
 }) => {
-    const { appId, triggerId, envId, pipelineId } = useParams<{
-        appId: string
-        triggerId: string
-        envId: string
-        pipelineId: string
-    }>()
-    const triggerDetails = triggerHistory.get(+triggerId)
-    const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails] = useAsync(
-        () => getTriggerDetails({ appId, envId, pipelineId, triggerId }),
-        [triggerId, appId, envId],
-        !!triggerId && !!pipelineId,
-    )
-    useEffect(() => {
-        if (triggerDetailsLoading || triggerDetailsError) return
-
-        if (triggerDetailsResult?.result) syncState(+triggerId, triggerDetailsResult?.result)
-    }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
-
-    const timeout = useMemo(() => {
-        if (
-            !triggerDetails ||
-            terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())
+        const { appId, triggerId, envId, pipelineId } = useParams<{
+            appId: string
+            triggerId: string
+            envId: string
+            pipelineId: string
+        }>()
+        const triggerDetails = triggerHistory.get(+triggerId)
+        const [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError, reloadTriggerDetails] = useAsync(
+            () => getTriggerDetails({ appId, envId, pipelineId, triggerId }),
+            [triggerId, appId, envId],
+            !!triggerId && !!pipelineId,
         )
-            return null // no interval
-        if (statusSet.has(triggerDetails.status?.toLowerCase() || triggerDetails.podStatus?.toLowerCase())) {
-            // 10s because progressing
-            return 10000
+        useEffect(() => {
+            if (triggerDetailsLoading || triggerDetailsError || !triggerDetailsResult) return
+            if (triggerDetailsResult?.result) syncState(+triggerId, triggerDetailsResult?.result)
+        }, [triggerDetailsLoading, triggerDetailsResult, triggerDetailsError])
+
+        const timeout = useMemo(() => {
+            if (
+                !triggerDetails ||
+                terminalStatus.has(triggerDetails.podStatus?.toLowerCase() || triggerDetails.status?.toLowerCase())
+            )
+                return null // no interval
+            if (statusSet.has(triggerDetails.status?.toLowerCase() || triggerDetails.podStatus?.toLowerCase())) {
+                // 10s because progressing
+                return 10000
+            }
+            return 30000 // 30s for normal
+        }, [triggerDetails])
+
+        useInterval(reloadTriggerDetails, timeout)
+
+        if (triggerDetailsLoading && !triggerDetails) return <Progressing pageLoader />
+        if (!triggerDetailsLoading && !triggerDetails) return <Reload />
+        if (triggerDetails?.id !== +triggerId) {
+            return null
         }
-        return 30000 // 30s for normal
-    }, [triggerDetails])
-
-    useInterval(reloadTriggerDetails, timeout)
-
-    if (triggerDetailsLoading && !triggerDetails) return <Progressing pageLoader />
-    if (!triggerDetailsLoading && !triggerDetails) return <Reload />
-    if (triggerDetails?.id !== +triggerId) {
-        return null
-    }
 
     return (
         <>
@@ -406,24 +419,24 @@ const HistoryLogs: React.FC<{
     userApprovalMetadata,
     triggeredByEmail,
 }) => {
-    let { path } = useRouteMatch()
-    const { appId, pipelineId, triggerId, envId } = useParams<{
-        appId: string
-        pipelineId: string
-        triggerId: string
-        envId: string
-    }>()
+        let { path } = useRouteMatch()
+        const { appId, pipelineId, triggerId, envId } = useParams<{
+            appId: string
+            pipelineId: string
+            triggerId: string
+            envId: string
+        }>()
 
-    const paramsData = {
+        const paramsData = {
         appId,
         envId,
         appName: triggerDetails.artifact,
-        workflowId: triggerDetails.cdWorkflowId,
+        workflowId: triggerDetails.id,
     }
 
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
-        autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
-    })
+            autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
+        })
 
     return (
         <>
