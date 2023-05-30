@@ -536,14 +536,13 @@ export default function HelmAppList({
 
     function askToSelectClusterId() {
         return (
-            <div className='dc__position-rel' style={{ height: 'calc(100vh - 150px)' }}>
+            <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
                 <GenericEmptyState
                     image={NoClusterSelectImage}
                     title={APPLIST_EMPTY_STATE_MESSAGING.heading}
                     subTitle={APPLIST_EMPTY_STATE_MESSAGING.infoText}
                 />
             </div>
-
         )
     }
 
@@ -581,25 +580,24 @@ export default function HelmAppList({
     }
 
     function askToConnectAClusterForNoResult() {
+        const handleButton = () => {
+            return (
+                <Link to={URLS.GLOBAL_CONFIG_CLUSTER}>
+                    <button type="button" className="cta flex">
+                        {APPLIST_EMPTY_STATE_MESSAGING.connectClusterLabel}
+                    </button>
+                </Link>
+            )
+        }
         return (
-            <div style={{ height: 'calc(100vh - 150px)' }}>
-                <EmptyState>
-                    <img
-                        src={noChartInClusterImage}
-                        width="250"
-                        height="250"
-                        alt={APPLIST_EMPTY_STATE_MESSAGING.connectClusterAltText}
-                    />
-                    <h2 className="fs-16 fw-4 c-9">{APPLIST_EMPTY_STATE_MESSAGING.noHelmChartsFound}</h2>
-                    <p className="text-left" style={{ width: '450px' }}>
-                        {APPLIST_EMPTY_STATE_MESSAGING.connectClusterInfoText}
-                    </p>
-                    <Link to={URLS.GLOBAL_CONFIG_CLUSTER}>
-                        <button type="button" className="cta flex">
-                            {APPLIST_EMPTY_STATE_MESSAGING.connectClusterLabel}
-                        </button>
-                    </Link>
-                </EmptyState>
+            <div className="dc__position-rel" style={{ height: 'calc(100vh - 150px)' }}>
+                <GenericEmptyState
+                    image={noChartInClusterImage}
+                    title={APPLIST_EMPTY_STATE_MESSAGING.noHelmChartsFound}
+                    subTitle={APPLIST_EMPTY_STATE_MESSAGING.connectClusterInfoText}
+                    isButtonAvailable={true}
+                    renderButton={handleButton}
+                />
             </div>
         )
     }
