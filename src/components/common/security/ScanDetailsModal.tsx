@@ -151,7 +151,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                         </div>
                     ) : null}
                     {this.props.showAppInfo && this.state.objectType !== 'chart' ? (
-                        <div className="flexbox dc__content-space">
+                        <div className="flexbox dc__content-space pt-6">
                             <span className="flex top">
                                 <ScannedByToolModal scanToolId={this.state.scanToolId} />
                             </span>

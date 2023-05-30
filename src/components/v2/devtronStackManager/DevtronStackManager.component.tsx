@@ -374,14 +374,14 @@ export function EnableModuleConfirmation({
         <ConfirmationDialog>
             <ConfirmationDialog.Icon
                 src={retryState ? warn : moduleDetails.name === ModuleNameMap.SECURITY_CLAIR ? clair : trivy}
-                className={retryState ? 'w-40 mb-20' : `w-50 mb-35`}
+                className={retryState ? 'w-40 mb-24' : `w-50 mb-24`}
             />
             <ConfirmationDialog.Body
                 title={`${retryState ? 'Could not' : ''} Enable ${
                     moduleDetails.name === ModuleNameMap.SECURITY_TRIVY ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair
                 } ${retryState ? '' : 'integration'}`}
             />
-            <p className="fs-14 cn-7 lh-1-54 mb-20 mt-12">
+            <p className="fs-14 cn-7 lh-1-54 mb-12 ">
                 {retryState
                     ? 'This integration could not be enabled. Please try again after some time.'
                     : `Only one Vulnerability scanning integration can be used at a time.`}
@@ -524,7 +524,7 @@ const InstallationStatus = ({
                                         </span>
                                         {moduleNotEnabled ? (
                                             <div className="fs-12 fw-4 cn-7 ml-30 flex left">
-                                                <span>Not Enabled</span>
+                                                <span>Not enabled</span>
                                             </div>
                                         ) : (
                                             ''
@@ -536,7 +536,7 @@ const InstallationStatus = ({
                                         className="default-tt"
                                         arrow={true}
                                         placement="top"
-                                        content="Enable Integration"
+                                        content="Enable integration"
                                     >
                                         <div className="ml-auto" style={{ width: '30px', height: '19px' }}>
                                             <Toggle
