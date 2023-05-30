@@ -30,7 +30,6 @@ export interface History {
     isArtifactUploaded?: boolean
     userApprovalMetadata?: UserApprovalMetadataType
     IsVirtualEnvironment?: boolean
-    cdWorkflowId: number
 }
 
 export interface CiMaterial {
