@@ -257,7 +257,7 @@ export default function CIPipeline({
                 }
                 setPresetPlugins(_presetPlugin)
                 setSharedPlugins(_sharedPlugin)
-                getMandatoryPluginData(_formData,response.result)
+                getMandatoryPluginData(_formData, response.result)
             })
             .catch((error: ServerErrors) => {
                 showError(error)
@@ -274,28 +274,30 @@ export default function CIPipeline({
     }
 
     const getMandatoryPluginData = (_formData: FormType, pluginList: PluginDetailType[], branchName?: string): void => {
-        processPluginData(!!ciPipelineId, formData, pluginList, ciPipelineId ?? appId, branchName)
-            .then((response: MandatoryPluginDataType) => {
-                if (response?.pluginData?.length) {
-                    const _formDataErrorObj = { ...formDataErrorObj }
-                    setFormData(prepareFormData(_formData, response.pluginData))
-                    if (!response.isValidPre) {
-                        _formDataErrorObj.preBuildStage.isValid = false
+        if (processPluginData && prepareFormData) {
+            processPluginData(!!ciPipelineId, formData, pluginList, ciPipelineId ?? appId, branchName)
+                .then((response: MandatoryPluginDataType) => {
+                    if (response?.pluginData?.length) {
+                        const _formDataErrorObj = { ...formDataErrorObj }
+                        setFormData(prepareFormData(_formData, response.pluginData))
+                        if (!response.isValidPre) {
+                            _formDataErrorObj.preBuildStage.isValid = false
+                        }
+                        if (!response.isValidPost) {
+                            _formDataErrorObj.postBuildStage.isValid = false
+                        }
+                        setFormDataErrorObj(_formDataErrorObj)
+                        setMandatoryPluginData(response)
                     }
-                    if (!response.isValidPost) {
-                        _formDataErrorObj.postBuildStage.isValid = false
-                    }
-                    setFormDataErrorObj(_formDataErrorObj)
-                    setMandatoryPluginData(response)
-                }
-            })
-            .catch((error: ServerErrors) => {
-                showError(error)
-            })
+                })
+                .catch((error: ServerErrors) => {
+                    showError(error)
+                })
+        }
     }
 
     const getPluginData = (branchName: string): void => {
-      getMandatoryPluginData(formData, [...presetPlugins, ...sharedPlugins], branchName)
+        getMandatoryPluginData(formData, [...presetPlugins, ...sharedPlugins], branchName)
     }
 
     const deletePipeline = (): void => {
@@ -640,7 +642,7 @@ export default function CIPipeline({
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
             let isPluginsValid = true
-            if (mandatoryPluginData?.pluginData?.length && (sharedPlugins.length || presetPlugins.length)) {
+            if (mandatoryPluginData?.pluginData?.length && (sharedPlugins.length || presetPlugins.length) && validatePlugins) {
                 const _mandatoryPluginsData = validatePlugins(formData, mandatoryPluginData.pluginData, [
                     ...sharedPlugins,
                     ...presetPlugins,

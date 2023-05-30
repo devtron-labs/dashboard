@@ -106,7 +106,8 @@ export function TaskList({ withWarning }: TaskListType) {
         }
         _formData[activeStageName].steps = newList
         const newListLength = newList.length
-        const newTaskIndex = index >= newListLength ? (newListLength > 1 ? newListLength - 1 : 0) : index
+        const newListIndex = newListLength > 1 ? newListLength - 1 : 0
+        const newTaskIndex = index >= newListLength ? newListIndex : index
         calculateLastStepDetail(false, _formData, activeStageName, newTaskIndex)
         setTimeout(() => {
             setSelectedTaskIndex(newTaskIndex)
@@ -186,10 +187,10 @@ export function TaskList({ withWarning }: TaskListType) {
                             onClick={() => handleSelectedTaskChange(index)}
                         >
                             <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
-                            <span className="w-80 dc__ellipsis-right">{taskDetail.name}</span>
-                            {taskDetail.isMandatory && (
-                                <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
-                            )}
+                            <div className="w-80 flex left">
+                                <span className="dc__ellipsis-right">{taskDetail.name}</span>
+                                {taskDetail.isMandatory && <span className="cr-5 ml-4">*</span>}
+                            </div>
                             {formDataErrorObj[activeStageName].steps[index] &&
                                 !formDataErrorObj[activeStageName].steps[index].isValid && (
                                     <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-2" />
@@ -218,7 +219,10 @@ export function TaskList({ withWarning }: TaskListType) {
                                             >
                                                 {activeStageName === BuildStageVariable.PreBuild ? (
                                                     <>
-                                                        <MoveToPost className="icon-dim-16 mr-10" />
+                                                        <MoveToPre
+                                                            className="rotate icon-dim-16 mr-10"
+                                                            style={{ ['--rotateBy' as any]: '180deg' }}
+                                                        />
                                                         Move to post-build stage
                                                     </>
                                                 ) : (

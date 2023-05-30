@@ -4,7 +4,6 @@ import {
     PluginType,
     ScriptType,
     FormErrorObjectType,
-    PluginRequiredStage,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
@@ -12,7 +11,7 @@ import EmptyPostBuild from '../../assets/img/post-build-empty.png'
 import PreBuildIcon from '../../assets/icons/ic-cd-stage.svg'
 import { PluginCard } from './PluginCard'
 import { PluginCardListContainer } from './PluginCardListContainer'
-import { BuildStageVariable, ConfigurationType, ViewType } from '../../config'
+import { BuildStageVariable, ConfigurationType } from '../../config'
 import CDEmptyState from '../app/details/cdDetails/CDEmptyState'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { TaskDetailComponent } from './TaskDetailComponent'
@@ -20,7 +19,9 @@ import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import { ciPipelineContext } from './CIPipeline'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
+import { importComponentFromFELibrary } from '../common'
 
+const getRequiredAndMovableProp = importComponentFromFELibrary('getRequiredAndMovableProp', null, 'function')
 export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, isJobView }: PreBuildType) {
     const {
         formData,
@@ -57,47 +58,6 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
         setSelectedTaskIndex(0)
     }, [activeStageName])
 
-    const isRequired = (pluginId: number) => {
-        const currentPlugin = mandatoryPluginsMap[pluginId]
-        if (
-            !currentPlugin ||
-            (currentPlugin.requiredIn !== activeStageName &&
-                currentPlugin.requiredIn !== PluginRequiredStage.PRE_OR_POST_CI) ||
-            currentPlugin.applied
-        ) {
-            return false
-        }
-        if (
-            formData.preBuildStage?.steps?.length &&
-            (currentPlugin.requiredIn === PluginRequiredStage.PRE_CI ||
-                currentPlugin.requiredIn === PluginRequiredStage.PRE_OR_POST_CI)
-        ) {
-            for (const stepData of formData.preBuildStage.steps) {
-                if (
-                    stepData.stepType === PluginType.PLUGIN_REF &&
-                    stepData.pluginRefStepDetail?.pluginId === pluginId
-                ) {
-                    return false
-                }
-            }
-        }
-        if (
-            formData.postBuildStage?.steps?.length &&
-            (currentPlugin.requiredIn === PluginRequiredStage.POST_CI ||
-                currentPlugin.requiredIn === PluginRequiredStage.PRE_OR_POST_CI)
-        ) {
-            for (const stepData of formData.postBuildStage.steps) {
-                if (
-                    stepData.stepType === PluginType.PLUGIN_REF &&
-                    stepData.pluginRefStepDetail?.pluginId === pluginId
-                ) {
-                    return false
-                }
-            }
-        }
-        return true
-    }
-
     function setPluginType(
         pluginType: PluginType,
         pluginId: number,
@@ -129,9 +89,13 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
                 inlineStepDetail: { inputVariables: [], outputVariables: [] },
             }
         } else {
+            const requiredAndMovableData = getRequiredAndMovableProp
+                ? getRequiredAndMovableProp(formData, mandatoryPluginsMap, activeStageName, pluginId)
+                : { isRequired: false, canBeMoved: false }
             _form[activeStageName].steps[selectedTaskIndex].description = pluginDescription
             _form[activeStageName].steps[selectedTaskIndex].name = pluginName
-            _form[activeStageName].steps[selectedTaskIndex].isMandatory = isRequired(pluginId)
+            _form[activeStageName].steps[selectedTaskIndex].isMandatory = requiredAndMovableData?.isRequired
+            _form[activeStageName].steps[selectedTaskIndex].canMove = requiredAndMovableData?.canBeMoved
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
                 id: 0,
                 pluginId: pluginId,
