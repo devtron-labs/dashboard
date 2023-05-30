@@ -78,7 +78,7 @@ export default function CDDetails() {
             setHasMore(true)
             setHasMoreLoading(true)
         }
-        let _triggerId = deploymentHistoryResult.result[0].id
+        let _triggerId = deploymentHistoryResult.result[0]?.id
         let queryString = new URLSearchParams(location.search)
         let queryParam = queryString.get('type')
         if (queryParam === STAGE_TYPE.PRECD || queryParam === STAGE_TYPE.POSTCD) {
