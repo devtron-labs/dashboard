@@ -33,7 +33,6 @@ import {
     ToastBody,
     Checkbox,
     CHECKBOX_VALUE,
-    EmptyState,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import NoIntegrations from '../../../assets/img/empty-noresult@2x.png'

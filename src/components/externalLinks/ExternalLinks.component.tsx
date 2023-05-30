@@ -26,7 +26,6 @@ import {
     TippyCustomized,
     TippyTheme,
     InfoColourBar,
-    EmptyState,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConditionalWrap } from '../common'

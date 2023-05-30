@@ -8,7 +8,6 @@ import {
     Progressing,
     OpaqueModal,
     ConfirmationDialog,
-    EmptyState,
     GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect } from 'react'

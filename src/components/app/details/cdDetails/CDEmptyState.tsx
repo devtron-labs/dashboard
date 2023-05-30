@@ -1,4 +1,4 @@
-import { EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import React, { CSSProperties } from 'react'
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.png'
 

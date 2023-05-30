@@ -3,7 +3,6 @@ import {
     showError,
     Progressing,
     VisibleModal,
-    EmptyState,
     Reload,
     ScanVulnerabilitiesTable,
     VulnerabilityType,

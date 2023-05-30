@@ -9,7 +9,7 @@ import {
 import { UpdateApplicationButton } from './ChartValuesView.component'
 import { ChaartValuesGUIFormType, ChartValuesViewAction, ChartValuesViewActionTypes } from './ChartValuesView.type'
 import YAML from 'yaml'
-import { Progressing, CHECKBOX_VALUE, EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, CHECKBOX_VALUE, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { getPathAndValueToSetIn, isRequiredField } from './ChartValuesView.utils'

@@ -11,7 +11,7 @@ import { EmptyViewType, GitChangesType, LogResizeButtonType, ScrollerType } from
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { NavLink } from 'react-router-dom'
 import { TIMELINE_STATUS } from '../../../../config'
-import { EmptyState, not, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { not, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { CIListItem, CopyTippyWithText } from './Artifacts'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
@@ -156,7 +156,7 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyView
     return (
         <GenericEmptyState
             image={imgSrc ?? AppNotDeployed}
-            classname='w-300 dc__text-center lh-1-4'
+            classname="w-300 dc__text-center lh-1-4"
             title={title}
             subTitle={subTitle}
             renderButton={link && EmptyViewButton}

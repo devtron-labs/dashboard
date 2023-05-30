@@ -4,7 +4,7 @@ import novulnerability from '../../../../assets/img/ic-vulnerability-not-found.s
 import React from 'react'
 import MechanicalOperation from '../../../../assets/img/ic-mechanical-operation.svg'
 import { ReactComponent as Arrow } from '../../../../assets/icons/ic-arrow-forward.svg'
-import { EmptyState, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 export function ScanDisabledView(props) {
