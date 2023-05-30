@@ -108,11 +108,13 @@ export default function ClusterForm({
     const inputFileRef = useRef(null)
     const [uploadState, setUploadState] = useState<string>(UPLOAD_STATE.UPLOAD)
     const [saveYamlData, setSaveYamlData] = useState<string>('')
+    const [errorText, setErrorText] = useState('')
     const [dataList, setDataList] = useState<DataListType[]>([])
     const [saveClusterList, setSaveClusterList] = useState<{ clusterName: string; status: string; message: string }[]>(
         [],
     )
     const [loader, setLoadingState] = useState<boolean>(false)
+    const [hasValidationError, setValidationError] = useState<any>(null)
     const [selectedUserNameOptions, setSelectedUserNameOptions] = useState<Record<string, any>>({})
     const [isClusterSelected, setClusterSeleceted] = useState<Record<string, boolean>>({})
     const [selectAll, setSelectAll] = useState<boolean>(false)
@@ -275,8 +277,7 @@ export default function ClusterForm({
             var obj = YAML.parse(saveYamlData)
             var jsonStr = JSON.stringify(obj)
             return jsonStr
-        } catch (error) {
-            showError(error)
+        } catch (error) {  
         }
     }
 
@@ -324,10 +325,13 @@ export default function ClusterForm({
                 setClusterSeleceted(_clusterSelections)
                 setLoadingState(false)
                 toggleGetCluster()
+                setValidationError(false)
             })
-        } catch (err) {
+        } catch (err: any) {
             setLoadingState(false)
-            showError(err)
+            setValidationError(true)
+            const error = err['errors'] && err['errors'][0]
+            setErrorText(`${error.userMessage}`)
         }
     }
 
@@ -810,8 +814,10 @@ export default function ClusterForm({
                                     data-testid="select_code_editor"
                                 />
                             </div>
-                            <CodeEditor.ValidationError />
                         </CodeEditor.Header>
+                        {hasValidationError && (
+                           <CodeEditor.ErrorBar text={errorText} />
+                        )}
                     </CodeEditor>
                 </div>
             </>
@@ -877,11 +883,6 @@ export default function ClusterForm({
 
     if (loader) {
         return <LoadingCluster />
-    }
-
-    const editKubeConfigState = () => {
-        toggleGetCluster()
-        setUploadState(UPLOAD_STATE.UPLOAD)
     }
 
     const saveClusterDetails = (): JSX.Element => {
