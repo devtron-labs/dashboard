@@ -250,7 +250,12 @@ export default function DevtronStackManager({
          * - If in full mode then resolve all modules as INSTALLED which has isIncludedInLegacyFullPackage as true
          * - Else create a promise to fetch the details
          */
-        const _moduleDetailsPromiseList = _modulesList?.map((module: ModuleDetails) => getModuleInfo(module.name))
+        const _moduleDetailsPromiseList = _modulesList?.map((module: ModuleDetails) =>
+            getModuleInfo(
+                module.name,
+                module.name === ModuleNameMap.SECURITY_CLAIR || module.name === ModuleNameMap.SECURITY_TRIVY,
+            ),
+        )
 
         const _discoverModulesList: ModuleDetails[] = []
         const _installedModulesList: ModuleDetails[] = []

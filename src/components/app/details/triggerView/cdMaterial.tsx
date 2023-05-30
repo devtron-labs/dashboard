@@ -43,7 +43,7 @@ import {
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import { getLatestDeploymentConfig, getRecentDeploymentConfig, getSpecificDeploymentConfig } from '../../service'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
-import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import { getSecurityModulesInfoInstalledStatus } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleNameMap, SCAN_TOOL_ID_TRIVY } from '../../../../config'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
@@ -58,6 +58,7 @@ import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff
 import Tippy from '@tippyjs/react'
 import { ARTIFACT_STATUS, IMAGE_SCAN_TOOL } from './Constants'
 import { NO_VULNERABILITY_TEXT } from './Constants'
+import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -155,16 +156,11 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     async getSecurityModuleStatus(): Promise<void> {
         try {
-            Promise.all([getModuleInfo(ModuleNameMap.SECURITY), getModuleInfo(ModuleNameMap.SECURITY_TRIVY)]).then(
-                ([clairResponse, trivyResponse]) => {
-                    if (
-                        clairResponse?.result?.status === ModuleStatus.INSTALLED ||
-                        trivyResponse?.result?.status === ModuleStatus.INSTALLED
-                    ) {
-                        this.setState({ isSecurityModuleInstalled: true })
-                    }
-                },
-            )
+            getSecurityModulesInfoInstalledStatus().then((response) => {
+                if (response?.result?.status === ModuleStatus.INSTALLED) {
+                    this.setState({ isSecurityModuleInstalled: true })
+                }
+            })
         } catch (error) {}
     }
 
@@ -235,13 +231,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <p>{NO_VULNERABILITY_TEXT.NoVulnerabilityFound}</p>
                     <p className="security-tab-empty__subtitle">{mat.lastExecution}</p>
                     <p className="workflow__header dc__border-radius-24 bcn-0">
-                        Scanned By{' '}
-                        {mat.scanToolId === SCAN_TOOL_ID_TRIVY ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair}
-                        {mat.scanToolId === SCAN_TOOL_ID_TRIVY ? (
-                            <Trivy className="h-20 w-20" />
-                        ) : (
-                            <Clair className="h-20 w-20" />
-                        )}{' '}
+                        <ScannedByToolModal scanToolId={mat.scanToolId} />
                     </p>
                 </div>
             )
@@ -251,13 +241,7 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <div className="flexbox dc__content-space">
                         <span className="flex left security-tab__last-scanned ">Scanned on {mat.lastExecution} </span>
                         <span className="flex right">
-                            Scanned By{' '}
-                            {mat.scanToolId === SCAN_TOOL_ID_TRIVY ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair}
-                            {mat.scanToolId === SCAN_TOOL_ID_TRIVY ? (
-                                <Trivy className="h-20 w-20" />
-                            ) : (
-                                <Clair className="h-20 w-20" />
-                            )}{' '}
+                            <ScannedByToolModal scanToolId={mat.scanToolId} />
                         </span>
                     </div>
                     <ScanVulnerabilitiesTable vulnerabilities={mat.vulnerabilities} />

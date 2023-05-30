@@ -238,9 +238,15 @@ export interface ModuleInfo {
     enabled?: boolean
     moduleType?: string
 }
+export interface ModuleInfoInstalled {
+    status: ModuleStatus
+}
 
 export interface ModuleInfoResponse extends ResponseType {
     result?: ModuleInfo
+}
+export interface ModuleInfoInstalledResponse extends ResponseType {
+    result?: ModuleInfoInstalled
 }
 
 export interface AllModuleInfoResponse extends ResponseType {

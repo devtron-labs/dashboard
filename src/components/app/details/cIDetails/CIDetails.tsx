@@ -20,10 +20,9 @@ import Artifacts from '../cicdHistory/Artifacts'
 import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
-import { ReactComponent as Clair } from '../../../../assets/icons/ic-clair.svg'
-import { ReactComponent as Trivy } from '../../../../assets/icons/ic-trivy.svg'
 import  novulnerability from '../../../../assets/img/ic-vulnerability-not-found.svg';
 import { IMAGE_SCAN_TOOL } from '../triggerView/Constants'
+import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -43,7 +42,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
         () =>
             Promise.allSettled([
                 getCIPipelines(+appId),
-                getModuleInfo(ModuleNameMap.SECURITY),
+                getModuleInfo(ModuleNameMap.SECURITY_CLAIR),
                 getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
                 getModuleInfo(ModuleNameMap.SECURITY_TRIVY)
             ]),
@@ -450,12 +449,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                         title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND}
                         children={
                             <span className="flex workflow__header dc__border-radius-24 bcn-0">
-                                Scanned By {securityData.ScanToolId === SCAN_TOOL_ID_TRIVY ? 'Trivy ' : 'Clair '}{' '}
-                                {securityData.ScanToolId === SCAN_TOOL_ID_TRIVY ? (
-                                    <Trivy className="h-20 w-20" />
-                                ) : (
-                                    <Clair className="h-20 w-20" />
-                                )}
+                                <ScannedByToolModal scanToolId={scanToolId} />
                             </span>
                         }
                     />
@@ -503,6 +497,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     } else if (artifactId && securityData.scanned && !securityData.vulnerabilities.length) {
         return <NoVulnerabilityViewWithTool/>   
     }
+    const scanToolId= securityData.ScanToolId
 
     return (
         <>
@@ -527,8 +522,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                         <span className="dc__fill-low">{severityCount.low} Low</span>
                     ) : null}
                     <div className="security-scan__type flex">
-                        Scanned By {securityData.ScanToolId === SCAN_TOOL_ID_TRIVY ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair}
-                        {securityData.ScanToolId === SCAN_TOOL_ID_TRIVY ? <Trivy /> : <Clair />}
+                        <ScannedByToolModal scanToolId={scanToolId}/>
                     </div>
                 </div>
                 {isCollapsed ? (

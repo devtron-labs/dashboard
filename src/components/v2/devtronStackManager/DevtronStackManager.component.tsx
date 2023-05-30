@@ -66,6 +66,7 @@ import warn  from '../../../assets/icons/ic-error-medium.svg';
 import { ModuleEnableType } from "./DevtronStackManager.type"
 import { handleEnableAction } from "./DevtronStackManager.utils"
 import { SuccessModalComponent } from './SuccessModalComponent'
+import { IMAGE_SCAN_TOOL } from '../../app/details/triggerView/Constants'
 const getInstallationStatusLabel = (
     installationStatus: ModuleStatus,
     enableStatus: boolean,
@@ -358,38 +359,41 @@ export function EnableModuleConfirmation({
         setDialog(false)
         setToggled(false)
     }
-    const handleEnableActionButton =()=>{
+    const handleEnableActionButton = () => {
         setProgressing(true)
-        handleEnableAction(moduleDetails.name, setRetryState, setSuccessState,setDialog,moduleNotEnabledState,setProgressing)
+        handleEnableAction(
+            moduleDetails.name,
+            setRetryState,
+            setSuccessState,
+            setDialog,
+            moduleNotEnabledState,
+            setProgressing,
+        )
     }
     return (
         <ConfirmationDialog>
             <ConfirmationDialog.Icon
-                src={retryState ? warn : moduleDetails.name === ModuleNameMap.SECURITY ? clair : trivy}
-                className={retryState ?'w-40 mb-20':`w-50`}
+                src={retryState ? warn : moduleDetails.name === ModuleNameMap.SECURITY_CLAIR ? clair : trivy}
+                className={retryState ? 'w-40 mb-20' : `w-50 mb-35`}
             />
             <ConfirmationDialog.Body
                 title={`${retryState ? 'Could not' : ''} Enable ${
-                    moduleDetails.name === ModuleNameMap.SECURITY_TRIVY ? 'Trivy' : 'Clair'
+                    moduleDetails.name === ModuleNameMap.SECURITY_TRIVY ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair
                 } ${retryState ? '' : 'integration'}`}
             />
-            <p className={`fs-13 cn-7 lh-1-54 ${retryState?'mb-20 mt-12':'mb-30 mt-20'}`}>
+            <p className="fs-14 cn-7 lh-1-54 mb-20 mt-12">
                 {retryState
                     ? 'This integration could not be enabled. Please try again after some time.'
                     : `Only one Vulnerability scanning integration can be used at a time.`}
             </p>
             {!retryState && (
-                <p className="fs-13 cn-7 lh-1-54">
+                <p className="fs-14 cn-7 lh-1-54">
                     Enabling this integration will automatically disable the other integration. Are you sure you want to
                     continue?
                 </p>
             )}
             <ConfirmationDialog.ButtonGroup>
-                <button
-                    type="button"
-                    className="cta cancel"
-                    onClick={handleCancelAction}
-                >
+                <button type="button" className="cta cancel h-36 flex" onClick={handleCancelAction}>
                     Cancel
                 </button>
                 <button
@@ -401,7 +405,11 @@ export function EnableModuleConfirmation({
                     ) : retryState ? (
                         'Retry'
                     ) : (
-                        `Enable ${moduleDetails.name === ModuleNameMap.SECURITY_TRIVY ? 'Trivy' : 'Clair'}`
+                        `Enable ${
+                            moduleDetails.name === ModuleNameMap.SECURITY_TRIVY
+                                ? IMAGE_SCAN_TOOL.Trivy
+                                : IMAGE_SCAN_TOOL.Clair
+                        }`
                     )}
                 </button>
             </ConfirmationDialog.ButtonGroup>

@@ -105,7 +105,7 @@ const NavigationList = [
         href: URLS.SECURITY,
         iconClass: 'nav-security',
         icon: SecurityIcon,
-        moduleName: ModuleNameMap.SECURITY,
+        moduleName: ModuleNameMap.SECURITY_CLAIR,
         moduleNameTrivy: ModuleNameMap.SECURITY_TRIVY,
     },
     {
@@ -182,7 +182,7 @@ export default class Navigation extends Component<
     componentDidUpdate(prevProps) {
         if (
             this.props.moduleInInstallingState !== prevProps.moduleInInstallingState &&
-            this.props.moduleInInstallingState === (ModuleNameMap.SECURITY || ModuleNameMap.SECURITY_TRIVY)
+            this.props.moduleInInstallingState === (ModuleNameMap.SECURITY_CLAIR || ModuleNameMap.SECURITY_TRIVY)
         ) {
             this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
         }
@@ -190,19 +190,19 @@ export default class Navigation extends Component<
 
     async getSecurityModuleStatus(retryOnError: number): Promise<void> {
         if (
-            this.props.installedModuleMap.current?.[ModuleNameMap.SECURITY] ||
+            this.props.installedModuleMap.current?.[ModuleNameMap.SECURITY_CLAIR] ||
             window._env_.K8S_CLIENT ||
             this.props.installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY]
         ) {
             return
         }
         try {
-            Promise.all([getModuleInfo(ModuleNameMap.SECURITY), getModuleInfo(ModuleNameMap.SECURITY_TRIVY)]).then(
+            Promise.all([getModuleInfo(ModuleNameMap.SECURITY_CLAIR), getModuleInfo(ModuleNameMap.SECURITY_TRIVY)]).then(
                 ([clairResponse, trivyResponse]) => {
                     if (clairResponse?.result?.status === ModuleStatus.INSTALLED) {
                         this.props.installedModuleMap.current = {
                             ...this.props.installedModuleMap.current,
-                            [ModuleNameMap.SECURITY]: true,
+                            [ModuleNameMap.SECURITY_CLAIR]: true,
                         }
                         this.setState({ forceUpdateTime: Date.now() })
                     } else if (clairResponse?.result?.status === ModuleStatus.INSTALLING) {

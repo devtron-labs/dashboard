@@ -649,11 +649,12 @@ export const CLAIR_TOOL_VERSION_V2 = 'V2'
 export const ModuleNameMap = {
     ARGO_CD: 'argo-cd',
     CICD: 'cicd',
-    SECURITY: 'security.clair',
+    SECURITY: 'security',
     BLOB_STORAGE: 'blob-storage',
     GRAFANA: 'monitoring.grafana',
     NOTIFICATION: 'notifier',
     SECURITY_TRIVY: 'security.trivy',
+    SECURITY_CLAIR: 'security.clair',
 }
 
 export const BUILD_STATUS = {
@@ -715,7 +716,7 @@ export const MANIFEST_STATUS_HEADERS = ['KIND', 'NAME', 'SYNC STATUS', 'MESSAGE'
 export const MODULE_STATUS = {
     Installed: 'Installed',
     Failed: 'Failed',
-    NotEnabled: 'Not Enabled',
+    NotEnabled: 'Not enabled',
 }
 
 export const shellTypes = [

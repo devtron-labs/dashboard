@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 import { ReactComponent as Clair } from '../../../assets/icons/ic-clair.svg';
 import { ReactComponent as Trivy } from '../../../assets/icons/ic-trivy.svg';
 import { IMAGE_SCAN_TOOL } from '../../app/details/triggerView/Constants';
+import { ScannedByToolModal } from './ScannedByToolModal';
 
 interface ScanDetailsModalProps {
     uniqueId: ExecutionId;
@@ -152,11 +153,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                     {this.props.showAppInfo && this.state.objectType !== 'chart' ? (
                         <div className="flexbox dc__content-space">
                             <span className="flex top">
-                                Scanned By{' '}
-                                {this.state.scanToolId === SCAN_TOOL_ID_TRIVY
-                                    ? IMAGE_SCAN_TOOL.Trivy
-                                    : IMAGE_SCAN_TOOL.Clair}
-                                {this.state.scanToolId === SCAN_TOOL_ID_TRIVY ? <Trivy /> : <Clair />}{' '}
+                                <ScannedByToolModal scanToolId={this.state.scanToolId} />
                             </span>
                         </div>
                     ) : null}
@@ -166,8 +163,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                         <div className="flexbox dc__content-space">
                             <span className="scanned-object__label flex left">Last Scanned</span>
                             <span className="flex right">
-                                Scanned By {this.state.scanToolId === SCAN_TOOL_ID_TRIVY ? 'Trivy' : 'Clair'}
-                                {this.state.scanToolId === SCAN_TOOL_ID_TRIVY ? <Trivy /> : <Clair />}{' '}
+                                <ScannedByToolModal scanToolId={this.state.scanToolId} />
                             </span>
                         </div>
                         <p className="scanned-object__value">{this.state.lastExecution}</p>
@@ -242,12 +238,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                                 </EmptyState.Title>
                                 <EmptyState.Subtitle>
                                     <span className="flex">
-                                        Scanned By {this.state.scanToolId === SCAN_TOOL_ID_TRIVY ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair}
-                                        {this.state.scanToolId === SCAN_TOOL_ID_TRIVY ? (
-                                            <Trivy className="h-20 w-20" />
-                                        ) : (
-                                            <Clair className="h-20 w-20" />
-                                        )}
+                                    <ScannedByToolModal scanToolId={this.state.scanToolId}/>
                                     </span>
                                 </EmptyState.Subtitle>
                                 {this.state.scanEnabled && this.state.scanned && (
