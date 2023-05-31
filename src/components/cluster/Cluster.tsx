@@ -310,7 +310,6 @@ function Cluster({
     const [envDelete, setDeleteEnv] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
     const [prometheusToggleEnabled] = useState(prometheus_url ? true : false)
-    const [] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [clusterId], !window._env_.K8S_CLIENT)
 
     const [prometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
