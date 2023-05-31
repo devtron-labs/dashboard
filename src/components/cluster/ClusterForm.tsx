@@ -488,7 +488,6 @@ export default function ClusterForm({
         const reader = new FileReader()
         reader.onload = () => {
             try {
-                const data = YAML.parseDocument(reader.result.toString())
                 setSaveYamlData(reader.result.toString())
             } catch (e) {}
         }
