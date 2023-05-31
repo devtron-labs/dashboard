@@ -525,7 +525,7 @@ const InstallationStatus = ({
                                         </span>
                                         {moduleNotEnabled ? (
                                             <div className="fs-12 fw-4 cn-7 ml-30 flex left">
-                                                <span data-testId="module-not-enabled">Not enabled</span>
+                                                <span data-testid="module-not-enabled">Not enabled</span>
                                             </div>
                                         ) : (
                                             ''
