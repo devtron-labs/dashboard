@@ -639,6 +639,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         if (this.state.pipelineConfig.isVirtualEnvironment) {
             pipeline.deploymentAppType = DeploymentAppTypes.MANIFEST_DOWNLOAD
             pipeline.triggerType = TriggerType.Manual // In case of virtual environment trigger type will always be manual
+            pipeline.preStage.triggerType = TriggerType.Manual
+            pipeline.postStage.triggerType = TriggerType.Manual
+
         }
 
         let msg

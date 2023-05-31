@@ -101,7 +101,9 @@ import {
     MANIFEST_INFO,
 } from './ChartValuesView.constants'
 import { DeploymentAppType } from '../../appDetails/appDetails.type'
+
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
+const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
 
 function ChartValuesView({
     appId,
@@ -753,6 +755,18 @@ function ChartValuesView({
             })
         }
 
+       const onClickManifestDownload = (appId: number, envId: number, envName: string ) => {
+          const downloadManifetsDownload = {
+              appId: appId,
+              envId: envId,
+              appName: envName,
+              isHelmApp: true
+          }
+          if (getDeployManifestDownload) {
+              getDeployManifestDownload(downloadManifetsDownload)
+          }
+      }
+
         try {
             let res, toastMessage
 
@@ -833,6 +847,7 @@ function ChartValuesView({
                 toast.success(CHART_VALUE_TOAST_MSGS.DeploymentInitiated)
                 history.push(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
             } else if (res?.result && (res.result.success || res.result.appName)) {
+              appDetails?.isVirtualEnvironment && onClickManifestDownload(res.result.installedAppId, +envId, res.result.appName)
                 toast.success(CHART_VALUE_TOAST_MSGS.UpdateInitiated)
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
             } else {

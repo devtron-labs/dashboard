@@ -250,7 +250,7 @@ function EnvironmentStatusComponent({
                     {isVirtualEnvironment ? renderGeneratedManifestDownloadCard() : renderStatusBlock()}
                     {renderHelmConfigApplyStatusBlock()}
                     {renderLastUpdatedBlock()}
-                    {!isVirtualEnvironment && renderChartUsedBlock()}
+                    {renderChartUsedBlock()}
                     {renderUpgraderChartBlock()}
                 </div>
             )}
