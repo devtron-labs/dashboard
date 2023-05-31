@@ -282,7 +282,7 @@ function ChartDeploymentHistory({
                                     <div
                                         className={`dc__app-summary__icon icon-dim-22 ${
                                             deployment?.status &&
-                                            installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS
+                                            installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS || installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
                                                 ? deployment?.status.toLowerCase()
                                                 : ''
                                         } ${
