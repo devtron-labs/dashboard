@@ -9,13 +9,10 @@ import {
     VulnerabilityType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
-import { ViewType, URLS, SCAN_TOOL_ID_TRIVY } from '../../../config';
+import { ViewType, URLS } from '../../../config';
 import { getLastExecutionByImageScanDeploy } from '../../../services/service';
 import NoVulnerabilities from '../../../assets/img/ic-vulnerability-not-found.svg'
 import { Link } from 'react-router-dom';
-import { ReactComponent as Clair } from '../../../assets/icons/ic-clair.svg';
-import { ReactComponent as Trivy } from '../../../assets/icons/ic-trivy.svg';
-import { IMAGE_SCAN_TOOL } from '../../app/details/triggerView/Constants';
 import { ScannedByToolModal } from './ScannedByToolModal';
 
 interface ScanDetailsModalProps {

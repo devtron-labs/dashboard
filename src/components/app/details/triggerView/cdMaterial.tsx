@@ -17,8 +17,6 @@ import { ReactComponent as WarningIcon } from '../../../../assets/icons/ic-warni
 import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
 import { ReactComponent as BotIcon } from '../../../../assets/icons/ic-bot.svg'
 import { ReactComponent as World } from '../../../../assets/icons/ic-world.svg'
-import { ReactComponent as Clair } from '../../../../assets/icons/ic-clair.svg'
-import { ReactComponent as Trivy } from '../../../../assets/icons/ic-trivy.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-rocket-fail.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import play from '../../../../assets/icons/misc/arrow-solid-right.svg'
@@ -43,8 +41,7 @@ import {
 import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } from './config'
 import { getLatestDeploymentConfig, getRecentDeploymentConfig, getSpecificDeploymentConfig } from '../../service'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
-import { getSecurityModulesInfoInstalledStatus } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap, SCAN_TOOL_ID_TRIVY } from '../../../../config'
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
 import {
@@ -56,9 +53,9 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
-import { ARTIFACT_STATUS, IMAGE_SCAN_TOOL } from './Constants'
-import { NO_VULNERABILITY_TEXT } from './Constants'
+import { ARTIFACT_STATUS,NO_VULNERABILITY_TEXT} from './Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
+import { ModuleNameMap } from '../../../../config'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -156,11 +153,10 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
 
     async getSecurityModuleStatus(): Promise<void> {
         try {
-            getSecurityModulesInfoInstalledStatus().then((response) => {
-                if (response?.result?.status === ModuleStatus.INSTALLED) {
-                    this.setState({ isSecurityModuleInstalled: true })
-                }
-            })
+            const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
+            if (result?.status === ModuleStatus.INSTALLED) {
+                this.setState({ isSecurityModuleInstalled: true })
+            }
         } catch (error) {}
     }
 

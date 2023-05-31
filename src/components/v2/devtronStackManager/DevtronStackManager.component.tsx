@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link, NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
+import { NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
 import {
     InstallationType,
     InstallationWrapperType,
@@ -12,6 +12,7 @@ import {
     StackManagerNavItemType,
     StackManagerNavLinkType,
     StackManagerPageHeaderType,
+    ModuleEnableType
 } from './DevtronStackManager.type'
 import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
@@ -25,8 +26,6 @@ import { ReactComponent as Info } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
-import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
-import { ReactComponent as QuestionIcon } from '../../v2/assets/icons/ic-question.svg'
 import {
     showError,
     Progressing,
@@ -55,6 +54,7 @@ import {
     MORE_MODULE_DETAILS,
     OTHER_INSTALLATION_IN_PROGRESS_MESSAGE,
     PENDING_DEPENDENCY_MESSAGE,
+    handleEnableAction
 } from './DevtronStackManager.utils'
 import { MarkDown } from '../../charts/discoverChartDetail/DiscoverChartDetails'
 import './devtronStackManager.component.scss'
@@ -63,8 +63,6 @@ import Tippy from '@tippyjs/react'
 import trivy from "../../../assets/icons/ic-clair-to-trivy.svg"
 import clair from "../../../assets/icons/ic-trivy-to-clair.svg"
 import warn  from '../../../assets/icons/ic-error-medium.svg';
-import { ModuleEnableType } from "./DevtronStackManager.type"
-import { handleEnableAction } from "./DevtronStackManager.utils"
 import { SuccessModalComponent } from './SuccessModalComponent'
 import { IMAGE_SCAN_TOOL } from '../../app/details/triggerView/Constants'
 const getInstallationStatusLabel = (
@@ -370,15 +368,16 @@ export function EnableModuleConfirmation({
             setProgressing,
         )
     }
+    const isModuleTrivy=(moduleDetails.name === ModuleNameMap.SECURITY_TRIVY)
     return (
         <ConfirmationDialog>
             <ConfirmationDialog.Icon
-                src={retryState ? warn : moduleDetails.name === ModuleNameMap.SECURITY_CLAIR ? clair : trivy}
+                src={retryState ? warn : isModuleTrivy? trivy : clair}
                 className={retryState ? 'w-40 mb-24' : `w-50 mb-24`}
             />
             <ConfirmationDialog.Body
                 title={`${retryState ? 'Could not' : ''} Enable ${
-                    moduleDetails.name === ModuleNameMap.SECURITY_TRIVY ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair
+                    isModuleTrivy ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair
                 } ${retryState ? '' : 'integration'}`}
             />
             <p className="fs-14 cn-7 lh-1-54 mb-12 ">
@@ -406,7 +405,7 @@ export function EnableModuleConfirmation({
                         'Retry'
                     ) : (
                         `Enable ${
-                            moduleDetails.name === ModuleNameMap.SECURITY_TRIVY
+                            isModuleTrivy
                                 ? IMAGE_SCAN_TOOL.Trivy
                                 : IMAGE_SCAN_TOOL.Clair
                         }`

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { showError, Progressing, Reload, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service'
 import { useScrollable, useAsync, useInterval, mapByKey, asyncWrap } from '../../../common'
-import { URLS, ModuleNameMap, SCAN_TOOL_ID_TRIVY } from '../../../../config'
+import { URLS, ModuleNameMap } from '../../../../config'
 import { NavLink, Switch, Route, Redirect } from 'react-router-dom'
 import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router'
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
@@ -21,7 +21,6 @@ import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../c
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import  novulnerability from '../../../../assets/img/ic-vulnerability-not-found.svg';
-import { IMAGE_SCAN_TOOL } from '../triggerView/Constants'
 import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
@@ -42,9 +41,8 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
         () =>
             Promise.allSettled([
                 getCIPipelines(+appId),
-                getModuleInfo(ModuleNameMap.SECURITY_CLAIR),
+                getModuleInfo(ModuleNameMap.SECURITY),
                 getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
-                getModuleInfo(ModuleNameMap.SECURITY_TRIVY)
             ]),
         [appId],
     )
@@ -129,10 +127,6 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
             </button>
         )
     }
-    const securityModuleStatus =
-        initDataResults[1]?.['value']?.['result']?.status === ModuleStatus.INSTALLED ||
-        initDataResults[3]?.['value']?.['result']?.status === ModuleStatus.INSTALLED ||
-        false
     return (
         <>
             <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
@@ -169,7 +163,10 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                             fullScreenView={fullScreenView}
                                             synchroniseState={synchroniseState}
                                             triggerHistory={triggerHistory}
-                                            isSecurityModuleInstalled={securityModuleStatus}
+                                            isSecurityModuleInstalled={
+                                                initDataResults[1]?.['value']?.['result']?.status ===
+                                                    ModuleStatus.INSTALLED || false
+                                            }
                                             isBlobStorageConfigured={
                                                 initDataResults[2]?.['value']?.['result']?.enabled || false
                                             }
@@ -395,6 +392,21 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appId
         </div>
     )
 }
+function NoVulnerabilityViewWithTool({scanToolId}:{scanToolId:number}) {
+    return (
+        <div className="flex h-100">
+            <GenericEmptyState
+                image={novulnerability}
+                title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND}
+                children={
+                    <span className="flex workflow__header dc__border-radius-24 bcn-0">
+                        <ScannedByToolModal scanToolId={scanToolId} />
+                    </span>
+                }
+            />
+        </div>
+    )
+}
 
 const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: SecurityTabType) => {
     const [isCollapsed, setIsCollapsed] = useState(false)
@@ -441,21 +453,6 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         setIsCollapsed(!isCollapsed)
     }
 
-        function NoVulnerabilityViewWithTool() {
-            return (
-                <div className="flex h-100">
-                    <GenericEmptyState
-                        image={novulnerability}
-                        title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND}
-                        children={
-                            <span className="flex workflow__header dc__border-radius-24 bcn-0">
-                                <ScannedByToolModal scanToolId={scanToolId} />
-                            </span>
-                        }
-                    />
-                </div>
-            )
-        }
         
     useEffect(() => {
         if (artifactId) {
@@ -495,7 +492,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
             return <ImageNotScannedView />
         }
     } else if (artifactId && securityData.scanned && !securityData.vulnerabilities.length) {
-        return <NoVulnerabilityViewWithTool/>   
+        return <NoVulnerabilityViewWithTool scanToolId={securityData.ScanToolId}/>  
     }
     const scanToolId= securityData.ScanToolId
 

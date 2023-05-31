@@ -14,11 +14,11 @@ import {
     BuildStageVariable,
     BuildTabText,
     JobPipelineTabText,
-    ModuleNameMap,
     TriggerType,
     URLS,
     ViewType,
     SourceTypeMap,
+    ModuleNameMap,
 } from '../../config'
 import {
     deleteCIPipeline,
@@ -51,7 +51,7 @@ import { PreBuild } from './PreBuild'
 import { Sidebar } from './Sidebar'
 import { Build } from './Build'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { getSecurityModulesInfoInstalledStatus } from '../v2/devtronStackManager/DevtronStackManager.service'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
 
@@ -229,16 +229,14 @@ export default function CIPipeline({
             localStorage.removeItem('takeMeThereClicked')
         }
     }, [location.pathname])
-
+  
     const getSecurityModuleStatus = async (): Promise<void> => {
         try {
-            getSecurityModulesInfoInstalledStatus().then((response) => {
-                if (response?.result?.status === ModuleStatus.INSTALLED) {
-                    setSecurityModuleInstalled(true)
-                }
-            })
+            const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
+            if (result?.status === ModuleStatus.INSTALLED) {
+                setSecurityModuleInstalled(true)
+            }
         } catch (error) {}
-
     }
 
     function processPluginList(pluginList: PluginDetailType[]): void {
