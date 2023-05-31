@@ -337,7 +337,7 @@ function Cluster({
             tlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
             tlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
             certificateAuthorityData: { value: prometheusAuth?.certificateAuthorityData, error: '' },
-            token: { value: config && config.bearer_token ? config.bearer_token : '', error: '' },
+            token: { value: config?.bearer_token ? config.bearer_token : '', error: '' },
             endpoint: { value: prometheus_url || '', error: '' },
             authType: { value: authenTicationType, error: '' },
         },

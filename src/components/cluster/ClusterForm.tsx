@@ -99,7 +99,7 @@ export default function ClusterForm({
         type: prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
     })
     let authenTicationType =
-        prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
+        prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
 
     const isDefaultCluster = (): boolean => {
         return id == 1
@@ -129,7 +129,7 @@ export default function ClusterForm({
             tlsClientKey: { value: '', error: '' },
             tlsClientCert: { value: '', error: '' },
             certificateAuthorityData: { value: '', error: '' },
-            token: { value: config && config.bearer_token ? config.bearer_token : '', error: '' },
+            token: { value: config?.bearer_token ? config.bearer_token : '', error: '' },
             endpoint: { value: prometheus_url || '', error: '' },
             authType: { value: authenTicationType, error: '' },
         },
