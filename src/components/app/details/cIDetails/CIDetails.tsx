@@ -392,7 +392,7 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appId
         </div>
     )
 }
-function NoVulnerabilityViewWithTool({scanToolId}:{scanToolId:number}) {
+export function NoVulnerabilityViewWithTool({scanToolId}:{scanToolId:number}) {
     return (
         <div className="flex h-100">
             <GenericEmptyState

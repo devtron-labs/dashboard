@@ -15,43 +15,34 @@ export function SuccessModalComponent({
 }: SuccessModalType) {
     const enableModuleState = (moduleName: string) => {
         let _moduleList = stackDetails.installedModulesList.map((module) => {
-            if (moduleName === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY_CLAIR) {
-                return {
-                    ...module,
-                    enabled: false,
-                }
-            } else if (moduleName === ModuleNameMap.SECURITY_CLAIR && module.name === ModuleNameMap.SECURITY_TRIVY) {
-                return {
-                    ...module,
-                    enabled: false,
-                }
-            }
             if (module.name === moduleName) {
                 return {
                     ...module,
                     enabled: true,
                 }
             }
+            else if ((moduleName === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY_CLAIR) ||(moduleName === ModuleNameMap.SECURITY_CLAIR && module.name === ModuleNameMap.SECURITY_TRIVY)) {
+                return {
+                    ...module,
+                    enabled: false,
+                }
+            } 
+            
             return module
         })
         let _discovermoduleList = stackDetails.discoverModulesList.map((module) => {
-            if (moduleName === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY_CLAIR) {
-                return {
-                    ...module,
-                    enabled: false,
-                }
-            } else if (moduleName === ModuleNameMap.SECURITY_CLAIR && module.name === ModuleNameMap.SECURITY_TRIVY) {
-                return {
-                    ...module,
-                    enabled: false,
-                }
-            }
             if (module.name === moduleName) {
                 return {
                     ...module,
                     enabled: true,
                 }
             }
+            else if ((moduleName === ModuleNameMap.SECURITY_TRIVY && module.name === ModuleNameMap.SECURITY_CLAIR) ||(moduleName === ModuleNameMap.SECURITY_CLAIR && module.name === ModuleNameMap.SECURITY_TRIVY)) {
+                return {
+                    ...module,
+                    enabled: false,
+                }
+            } 
             return module
         })
         setStackDetails({

@@ -182,7 +182,8 @@ export default class Navigation extends Component<
     componentDidUpdate(prevProps) {
         if (
             this.props.moduleInInstallingState !== prevProps.moduleInInstallingState &&
-            this.props.moduleInInstallingState === (ModuleNameMap.SECURITY_CLAIR || ModuleNameMap.SECURITY_TRIVY)
+            (this.props.moduleInInstallingState === ModuleNameMap.SECURITY_CLAIR ||
+                this.props.moduleInInstallingState === ModuleNameMap.SECURITY_TRIVY)
         ) {
             this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
         }

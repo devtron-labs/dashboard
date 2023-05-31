@@ -44,11 +44,6 @@ export interface ModuleEnableType {
     setSuccessState?: React.Dispatch<React.SetStateAction<boolean>>
     moduleNotEnabledState?: React.Dispatch<React.SetStateAction<boolean>>
 }
-export interface ModuleEnableCallType {
-    moduleName: string
-    setModuleEnabled?: React.Dispatch<React.SetStateAction<boolean>>
-    setRetryFlag?: React.Dispatch<React.SetStateAction<boolean>>
-}
 
 export interface SuccessModalType {
     moduleDetails: ModuleDetails
@@ -272,9 +267,6 @@ export interface ModuleActionRequest {
     action: ModuleActions
     version: string
     moduleType: string
-}
-export interface ModuleEnableRequest {
-    version: string
 }
 
 export interface ReleaseNotes {

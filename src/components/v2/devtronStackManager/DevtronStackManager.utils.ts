@@ -13,7 +13,6 @@ import {
     ModuleActionRequest,
     ModuleActions,
     ModuleDetails,
-    ModuleEnableRequest,
     ModuleResourceStatus,
     ModuleStatus,
     StackManagerNavLinkType,
@@ -93,7 +92,9 @@ export const handleEnableAction = async (
     setProgressing: React.Dispatch<React.SetStateAction<boolean>>,
 ) => {
     try {
-        const actionRequest: ModuleEnableRequest = {
+        const actionRequest: {
+            version: string
+        } = {
             version:
                 moduleName === ModuleNameMap.SECURITY_TRIVY ? TRIVY_TOOL_VERSION : window?._env_?.CLAIR_TOOL_VERSION,
         }
@@ -200,9 +201,4 @@ export const AppStatusClass = {
   [ModuleStatus.TIMEOUT]: 'degraded',
   [ModuleStatus.INSTALL_FAILED]: 'degraded',
   [ModuleStatus.INSTALLED]: 'healthy'
-}
-
-export const ENABLE_TIPPY_CONTENT = {
-    label: 'How can i enable this integration?',
-    heading: 'Enable Integration',
 }

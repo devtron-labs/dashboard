@@ -5,9 +5,7 @@ import {
     LogPodNameResponse,
     ModuleActionRequest,
     ModuleActionResponse,
-    ModuleEnableRequest,
     ModuleInfo,
-    ModuleInfoInstalledResponse,
     ModuleInfoResponse,
     ModuleStatus,
     ReleaseNotesResponse,
@@ -49,20 +47,30 @@ export const getAllModulesInfo = async (): Promise<Record<string, ModuleInfo>> =
 
 export const getSecurityModulesInfoInstalledStatus = async (): Promise<ModuleInfoResponse> => {
     // getting Security Module Installation status
-    const [clairResponse, trivyResponse] = await Promise.all([
-        getModuleInfo(ModuleNameMap.SECURITY),
-        getModuleInfo(ModuleNameMap.SECURITY_TRIVY),
-    ])
     const res: ModuleInfo = {
         id: null,
         name: null,
         status: null,
     }
-    if (clairResponse && trivyResponse) {
-        if (
-            clairResponse?.result?.status === ModuleStatus.INSTALLED ||
-            trivyResponse?.result?.status === ModuleStatus.INSTALLED
-        ) {
+    let installedResponseFlag=false
+    try {
+        const [clairResponse, trivyResponse] = await Promise.all([
+            getModuleInfo(ModuleNameMap.SECURITY),
+            getModuleInfo(ModuleNameMap.SECURITY_TRIVY),
+        ])
+        if (clairResponse && trivyResponse) {
+            if (
+                clairResponse?.result?.status === ModuleStatus.INSTALLED ||
+                trivyResponse?.result?.status === ModuleStatus.INSTALLED
+            ) {
+                installedResponseFlag=true
+            }
+        }
+    } catch {
+        installedResponseFlag=false
+    }
+    finally{
+        if (installedResponseFlag){
             return Promise.resolve({ status: '', code: 200, result: { ...res, status: ModuleStatus.INSTALLED } })
         }
         return Promise.resolve({ status: '', code: 200, result: { ...res, status: ModuleStatus.NOT_INSTALLED } })
@@ -95,7 +103,9 @@ export const getModuleInfo = async (moduleName: string, forceReload?: boolean): 
 
 export const executeModuleEnableAction = (
     moduleName: string,
-    moduleEnableRequest: ModuleEnableRequest,
+    moduleEnableRequest: {
+        version: string
+    },
 ): Promise<ModuleActionResponse> => {
     return post(`${Routes.MODULE_INFO_API}/enable?name=${moduleName}`, moduleEnableRequest)
 }

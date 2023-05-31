@@ -14,6 +14,7 @@ import { getLastExecutionByImageScanDeploy } from '../../../services/service';
 import NoVulnerabilities from '../../../assets/img/ic-vulnerability-not-found.svg'
 import { Link } from 'react-router-dom';
 import { ScannedByToolModal } from './ScannedByToolModal';
+import { NoVulnerabilityViewWithTool } from '../../app/details/cIDetails/CIDetails';
 
 interface ScanDetailsModalProps {
     uniqueId: ExecutionId;
@@ -226,24 +227,7 @@ export class ScanDetailsModal extends Component<ScanDetailsModalProps, ScanDetai
                     <div className="modal-body--scan-details">
                         {this.renderHeader()}
                         <div className="trigger-modal__body trigger-modal__body--security-scan">
-                            <EmptyState>
-                                <EmptyState.Image>
-                                    <img src={NoVulnerabilities} alt="" />
-                                </EmptyState.Image>
-                                <EmptyState.Title>
-                                    <h4>No vulnerabilities Found</h4>
-                                </EmptyState.Title>
-                                <EmptyState.Subtitle>
-                                    <span className="flex">
-                                    <ScannedByToolModal scanToolId={this.state.scanToolId}/>
-                                    </span>
-                                </EmptyState.Subtitle>
-                                {this.state.scanEnabled && this.state.scanned && (
-                                    <EmptyState.Subtitle>
-                                        <span>Last scanned on {this.state.lastExecution}</span>
-                                    </EmptyState.Subtitle>
-                                )}
-                            </EmptyState>
+                            <NoVulnerabilityViewWithTool scanToolId={this.state.scanToolId} />
                         </div>
                     </div>
                 </VisibleModal>
