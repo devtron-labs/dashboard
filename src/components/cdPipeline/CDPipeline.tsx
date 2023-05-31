@@ -817,7 +817,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     renderStrategyOptions = () => {
         return (
             <Select
-                rootClassName="deployment-strategy-dropdown mb-16 br-0 bw-0 w-150"
+                rootClassName="deployment-strategy-dropdown br-0 bw-0 w-150"
                 onChange={(e) => this.selectStrategy(e.target.value)}
             >
                 <Select.Button rootClassName="">
@@ -848,15 +848,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
         return (
             <div className="form__row">
-                <p className="form__label form__label--caps">
-                    <div className="flex  dc__content-space">
+                <p className="form__label form__label--caps mb-8-imp">
+                    <div className="flex  dc__content-space mt-16">
                         <div>Deployment Strategy </div>
                         {this.renderStrategyOptions()}
                     </div>
-                </p>
-                <p className="deployment-strategy">
-                    Add one or more deployment strategies. You can choose from selected strategy while deploying
-                    manually to this environment.
                 </p>
                 {this.state.pipelineConfig.strategies.map((strategy) => {
                     return (
@@ -1078,7 +1074,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
     renderTriggerType() {
         return (
             <>
-                <label className="form__label form__label--sentence dc__bold">When do you want to deploy</label>
+                <label className="form__label form__label--sentence dc__bold">When do you want the pipeline to execute?</label>
                 <RadioGroup
                     value={
                         this.state.pipelineConfig.triggerType ? this.state.pipelineConfig.triggerType : TriggerType.Auto
@@ -1100,7 +1096,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     renderDeploymentAppType() {
         return (
-            <div className="cd-pipeline__deployment-type">
+            <div className="cd-pipeline__deployment-type mt-16">
                 <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
                 <RadioGroup
                     value={
@@ -1111,7 +1107,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     name="deployment-app-type"
                     onChange={this.handleDeploymentAppTypeChange}
                     disabled={!!this.props.match.params.cdPipelineId}
-                    className="chartrepo-type__radio-group"
+                    className={`chartrepo-type__radio-group ${!this.props.match.params.cdPipelineId ? "bcb-5" : ""}`}
                 >
                     <RadioGroupItem dataTestId="helm-deployment-type-button" value={DeploymentAppType.Helm}>
                         Helm
@@ -1249,7 +1245,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
         return (
             <>
-                <div className="form__row form__row--flex">
+                <div className="form__row form__row--flex mt-12">
                     <div className="w-50 mr-8">
                         <div className="form__label">Environment*</div>
                         <ReactSelect
@@ -1284,7 +1280,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         ) : null}
                         {renderVirtualEnvironmentInfo()}
                     </div>
-                    <label className="flex-1 ml-8">
+                    <div className="flex-1 ml-8">
                         <span className="form__label">Namespace</span>
                         <input
                             className="form__input"
@@ -1310,7 +1306,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                                 {this.state.errorForm.nameSpaceError.message}
                             </span>
                         ) : null}
-                    </label>
+                    </div>
                 </div>
                 {this.renderNamespaceInfo(namespaceEditable)}
                 {this.state.pipelineConfig.isVirtualEnvironment
@@ -1510,14 +1506,14 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             : undefined
         return (
             <>
-                <p className="fs-14 fw-6 cn-9 mb-12">Deploy to environment</p>
+                <p className="fs-14 fw-6 cn-9">Deploy to environment</p>
                 {this.renderEnvNamespaceAndTriggerType()}
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                     !this.state.pipelineConfig.isVirtualEnvironment &&
                     this.renderDeploymentAppType()}
                 {!this.noStrategyAvailable && (
                     <>
-                        <p className="fs-14 fw-6 cn-9 mb-12">Deployment Strategy</p>
+                        <p className="fs-14 fw-6 cn-9 mb-8 mt-16">Deployment Strategy</p>
                         <p className="fs-13 fw-5 cn-7 mb-8">Configure deployment preferences for this pipeline</p>
                         <ReactSelect
                             menuPortalTarget={document.getElementById('visible-modal')}
