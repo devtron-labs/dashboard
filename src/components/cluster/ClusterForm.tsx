@@ -392,7 +392,7 @@ export default function ClusterForm({
         const api = id ? updateCluster : saveCluster
         try {
             setLoadingState(true)
-            const { result } = await api(payload)
+            await api(payload)
             toast.success(
                 <ToastBody
                     data-testid="validate-toast-for-kubeconfig"

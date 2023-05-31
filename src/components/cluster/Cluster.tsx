@@ -8,7 +8,7 @@ import {
     sortCallback,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ClusterIcon } from '../../assets/icons/ic-cluster.svg'
-import { useForm, useAsync } from '../common'
+import { useForm } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import {
     getClusterList,
@@ -32,14 +32,12 @@ import {
     SERVER_MODE,
     ViewType,
     URLS,
-    ModuleNameMap,
     CONFIGURATION_TYPES,
     AppCreationType,
 } from '../../config'
 import { getEnvName } from './cluster.util'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
-import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import Tippy from '@tippyjs/react/headless'
 import ClusterForm from './ClusterForm'
 import Environment from './Environment'
