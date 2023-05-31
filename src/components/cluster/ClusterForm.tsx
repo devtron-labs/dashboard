@@ -618,7 +618,7 @@ export default function ClusterForm({
                         {!isTlsConnection && <hr />}
                         {isTlsConnection && (
                             <>
-                                <div className="form__row">
+                                <div>
                                     <span
                                         data-testid="certificate_authority_data"
                                         className="form__label dc__required-field"
@@ -646,7 +646,7 @@ export default function ClusterForm({
                                         </label>
                                     )}
                                 </div>
-                                <div className="form__row">
+                                <div>
                                     <span data-testid="tls_client_key" className="form__label dc__required-field">
                                         TLS Key
                                     </span>
@@ -671,7 +671,7 @@ export default function ClusterForm({
                                         </label>
                                     )}
                                 </div>
-                                <div className="form__row">
+                                <div>
                                     <span data-testid="tls_certificate" className="form__label dc__required-field">
                                         TLS Certificate
                                     </span>
