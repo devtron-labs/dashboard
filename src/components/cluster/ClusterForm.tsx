@@ -166,7 +166,7 @@ export default function ClusterForm({
                 validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
             },
             tlsClientKey: {
-                required: isTlsConnection ? true : false,
+                required: id ? false : isTlsConnection,
                 validator: isTlsConnection
                     ? {
                           error: 'Invalid base64 data',
@@ -175,7 +175,7 @@ export default function ClusterForm({
                     : undefined,
             },
             tlsClientCert: {
-                required: isTlsConnection ? true : false,
+                required: id ? false : isTlsConnection,
                 validator: isTlsConnection
                     ? {
                           error: 'Invalid base64 data',
@@ -184,7 +184,7 @@ export default function ClusterForm({
                     : undefined,
             },
             certificateAuthorityData: {
-                required: isTlsConnection ? true : false,
+                required: id ? false : isTlsConnection,
                 validator: isTlsConnection
                     ? {
                           error: 'Invalid base64 data',
