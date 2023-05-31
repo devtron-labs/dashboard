@@ -560,7 +560,7 @@ export default function ClusterForm({
                                 value={
                                     id && id !== 1
                                         ? DEFAULT_SECRET_PLACEHOLDER
-                                        : config && config.bearer_token
+                                        : config?.bearer_token
                                         ? config.bearer_token
                                         : ''
                                 }
