@@ -43,7 +43,7 @@ import TippyHeadless from '@tippyjs/react/headless'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { UPLOAD_STATE } from '../CustomChart/types'
 import UserNameDropDownList from './UseNameListDropdown'
-import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
+
 
 const PrometheusWarningInfo = () => {
     return (
@@ -167,30 +167,12 @@ export default function ClusterForm({
             },
             tlsClientKey: {
                 required: id ? false : isTlsConnection,
-                validator: isTlsConnection
-                    ? {
-                          error: 'Invalid base64 data',
-                          regex: /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/,
-                      }
-                    : undefined,
             },
             tlsClientCert: {
                 required: id ? false : isTlsConnection,
-                validator: isTlsConnection
-                    ? {
-                          error: 'Invalid base64 data',
-                          regex: /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/,
-                      }
-                    : undefined,
             },
             certificateAuthorityData: {
                 required: id ? false : isTlsConnection,
-                validator: isTlsConnection
-                    ? {
-                          error: 'Invalid base64 data',
-                          regex: /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/,
-                      }
-                    : undefined,
             },
             token:
                 isDefaultCluster() || id
