@@ -105,15 +105,6 @@ export interface UserInfos {
     config: ConfigCluster
 }
 
-export interface ClusterInfo {
-    UserInfos: Record<string, UserInfos>
-}
-
-
-export interface ClusterResult {
-    result?: Record<string, ClusterInfo>
-}
-
 export interface ClusterListProps extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE_TYPE
     isSuperAdmin: boolean
