@@ -44,7 +44,6 @@ import CodeEditor from '../CodeEditor/CodeEditor'
 import { UPLOAD_STATE } from '../CustomChart/types'
 import UserNameDropDownList from './UseNameListDropdown'
 
-
 const PrometheusWarningInfo = () => {
     return (
         <div className="pt-10 pb-10 pl-16 pr-16 bcy-1 br-4 bw-1 dc__cluster-error mb-40">
@@ -97,8 +96,7 @@ export default function ClusterForm({
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
     })
-    let authenTicationType =
-        prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
+    let authenTicationType = prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
 
     const isDefaultCluster = (): boolean => {
         return id == 1
@@ -119,15 +117,17 @@ export default function ClusterForm({
     const [isClusterSelected, setClusterSeleceted] = useState<Record<string, boolean>>({})
     const [selectAll, setSelectAll] = useState<boolean>(false)
     const [getClusterVar, setGetClusterState] = useState<boolean>(false)
-    const { state,  handleOnChange, handleOnSubmit } = useForm(
+    const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
             url: { value: server_url, error: '' },
             userName: { value: prometheusAuth?.userName, error: '' },
             password: { value: prometheusAuth?.password, error: '' },
-            tlsClientKey: { value: '', error: '' },
-            tlsClientCert: { value: '', error: '' },
-            certificateAuthorityData: { value: '', error: '' },
+            prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
+            prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
+            tlsClientKey: { value: config?.tls_key, error: '' },
+            tlsClientCert: { value: config?.cert_data, error: '' },
+            certificateAuthorityData: { value: config?.cert_auth_data, error: '' },
             token: { value: config?.bearer_token ? config.bearer_token : '', error: '' },
             endpoint: { value: prometheus_url || '', error: '' },
             authType: { value: authenTicationType, error: '' },
@@ -164,6 +164,12 @@ export default function ClusterForm({
                         : false,
                 validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
             },
+            prometheusTlsClientKey: {
+                required: false,
+            },
+            prometheusTlsClientCert: {
+                required: false ,
+            },
             tlsClientKey: {
                 required: id ? false : isTlsConnection,
             },
@@ -197,6 +203,7 @@ export default function ClusterForm({
         toggleKubeConfigFile(true)
     }
 
+    console.log(state)
     const getSaveClusterPayload = (dataLists: DataListType[]) => {
         const saveClusterPayload: SaveClusterPayloadType[] = []
         for (const _dataList of dataLists) {
@@ -208,7 +215,12 @@ export default function ClusterForm({
                     config: selectedUserNameOptions[_dataList.cluster_name]?.config ?? null,
                     active: true,
                     prometheus_url: '',
-                    prometheusAuth: { userName: '', password: '' },
+                    prometheusAuth: { 
+                        userName: '', 
+                        password: '',  
+                        tlsClientKey: '',  
+                        tlsClientCert: '',  
+                    },
                     server_url: _dataList.server_url,
                 }
                 saveClusterPayload.push(_clusterDetails)
@@ -311,7 +323,7 @@ export default function ClusterForm({
         } catch (err: any) {
             setLoadingState(false)
             setValidationError(true)
-            const error = err?.errors?.[0];
+            const error = err?.errors?.[0]
             setErrorText(`${error.userMessage}`)
         }
     }
@@ -345,6 +357,8 @@ export default function ClusterForm({
             prometheusAuth: {
                 userName: prometheusToggleEnabled ? state.userName.value : '',
                 password: prometheusToggleEnabled ? state.password.value : '',
+                tlsClientKey: prometheusToggleEnabled? state.prometheusTlsClientKey.value : '',
+                tlsClientCert: prometheusToggleEnabled? state.prometheusTlsClientCert.value : '',
             },
         }
     }
@@ -366,12 +380,14 @@ export default function ClusterForm({
             } else {
                 payload.prometheusAuth['userName'] = state.userName.value || ''
                 payload.prometheusAuth['password'] = state.password.value || ''
+                payload.prometheusAuth['tlsClientKey'] = state.prometheusTlsClientKey.value || ''
+                payload.prometheusAuth['tlsClientCert'] = state.prometheusTlsClientCert.value || ''
+                
             }
         }
         if (isTlsConnection) {
             if (
-                (state.tlsClientKey.value || state.tlsClientCert.value || state.certificateAuthorityData.value) &&
-                prometheusToggleEnabled
+                (state.tlsClientKey.value || state.tlsClientCert.value || state.certificateAuthorityData.value)
             ) {
                 let isValid =
                     state.tlsClientKey.value?.length > 0 &&
@@ -382,9 +398,9 @@ export default function ClusterForm({
                     toast.error('Please add TLS Key, Certificate, and Certificate Authority Data')
                     return
                 } else {
-                    payload.prometheusAuth['tlsClientKey'] = state.tlsClientKey.value || ''
-                    payload.prometheusAuth['tlsClientCert'] = state.tlsClientCert.value || ''
-                    payload.prometheusAuth['certificateAuthorityData'] = state.certificateAuthorityData.value || ''
+                    payload.config['tls_key'] = state.tlsClientKey.value || ''
+                    payload.config['cert_data'] = state.tlsClientCert.value || ''
+                    payload.config['cert_auth_data'] = state.certificateAuthorityData.value || ''
                 }
             }
         }
@@ -432,6 +448,8 @@ export default function ClusterForm({
         prometheusAuth: {
             userName: prometheusToggleEnabled ? state.userName.value : '',
             password: prometheusToggleEnabled ? state.password.value : '',
+            tlsClientCert: prometheusToggleEnabled ? state.prometheusTlsClientKey.value : '',
+            tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
         },
         server_url,
         defaultClusterComponent: defaultClusterComponent,
@@ -743,6 +761,24 @@ export default function ClusterForm({
                                 </div>
                             </div>
                         ) : null}
+                        <div className="form__row">
+                            <span className="form__label">TLS Key</span>
+                            <ResizableTextarea
+                                className="dc__resizable-textarea__with-max-height w-100"
+                                name="prometheusTlsClientKey"
+                                value={state.prometheusTlsClientKey.value}
+                                onChange={handleOnChange}
+                            />
+                        </div>
+                        <div className="form__row">
+                            <span className="form__label">TLS Certificate</span>
+                            <ResizableTextarea
+                                className="dc__resizable-textarea__with-max-height w-100"
+                                name="prometheusTlsClientCert"
+                                value={state.prometheusTlsClientCert.value}
+                                onChange={handleOnChange}
+                            />
+                        </div>
                     </div>
                 )}
             </>

@@ -328,9 +328,11 @@ function Cluster({
             url: { value: server_url, error: '' },
             userName: { value: prometheusAuth?.userName, error: '' },
             password: { value: prometheusAuth?.password, error: '' },
-            tlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
-            tlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
-            certificateAuthorityData: { value: prometheusAuth?.certificateAuthorityData, error: '' },
+            prometheusTlsClientKey: { value: prometheusAuth?.tlsClientKey, error: '' },
+            prometheusTlsClientCert: { value: prometheusAuth?.tlsClientCert, error: '' },
+            tlsClientKey: { value: config.tls_key, error: '' },
+            tlsClientCert: { value: config.cert_data, error: '' },
+            certificateAuthorityData: { value: config.cert_auth_data, error: '' },
             token: { value: config?.bearer_token ? config.bearer_token : '', error: '' },
             endpoint: { value: prometheus_url || '', error: '' },
             authType: { value: authenTicationType, error: '' },
@@ -374,6 +376,12 @@ function Cluster({
             tlsClientCert: {
                 required: false,
                 validator: { error: 'TLS Certificate is required', regex: /^(?!\s*$).+/ },
+            },
+            prometheusTlsClientKey: {
+                required: false,
+            },
+            prometheusTlsClientCert: {
+                required: false,
             },
             certificateAuthorityData: {
                 required: false,
@@ -486,7 +494,6 @@ function Cluster({
                 } else {
                     payload.prometheusAuth['tlsClientKey'] = state.tlsClientKey.value || ''
                     payload.prometheusAuth['tlsClientCert'] = state.tlsClientCert.value || ''
-                    payload.prometheusAuth['certificateAuthorityData'] = state.certificateAuthorityData.value || ''
                 }
             }
         }
@@ -505,6 +512,9 @@ function Cluster({
             prometheusAuth: {
                 userName: prometheusToggleEnabled ? state.userName.value : '',
                 password: prometheusToggleEnabled ? state.password.value : '',
+                tlsClientKey: prometheusToggleEnabled ? state.tlsClientKey.value : '',
+                tlsClientCert: prometheusToggleEnabled ? state.tlsClientCert.value : '',
+
             },
             insecureSkipTlsVerify: !isTlsConnection,
         }
