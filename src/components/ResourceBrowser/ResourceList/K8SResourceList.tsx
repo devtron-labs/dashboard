@@ -250,7 +250,6 @@ export function K8SResourceList({
                 {filteredResourceList
                     .slice(resourceListOffset, resourceListOffset + pageSize)
                     .map((clusterData, index) => renderResourceRow(clusterData, index))}
-
             </div>
         )
     }
