@@ -43,8 +43,6 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as PrePostCD } from '../../assets/icons/ic-cd-stage.svg'
 import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg'
-import { ReactComponent as BotIcon } from '../../assets/icons/ic-bot.svg'
-import { ReactComponent as PersonIcon } from '../../assets/icons/ic-person.svg'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import yamlJsParser from 'yaml'
 import settings from '../../assets/icons/ic-settings.svg'
@@ -70,6 +68,7 @@ import {
     TOAST_INFO,
     CONFIGMAPS_SECRETS,
 } from '../../config/constantMessaging'
+import { ReactComponent as Rocket } from '../../assets/icons/ic-paper-rocket.svg'
 
 const ManualApproval = importComponentFromFELibrary('ManualApproval')
 const VirtualEnvSelectionInfoBar = importComponentFromFELibrary('VirtualEnvSelectionInfoBar')
@@ -641,7 +640,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             pipeline.triggerType = TriggerType.Manual // In case of virtual environment trigger type will always be manual
             pipeline.preStage.triggerType = TriggerType.Manual
             pipeline.postStage.triggerType = TriggerType.Manual
-
         }
 
         let msg
@@ -823,8 +821,8 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 onChange={(e) => this.selectStrategy(e.target.value)}
             >
                 <Select.Button rootClassName="">
-                    <span className="cb-5">
-                        <Add className="icon-dim-24 mr-8 fcb-5 dc__vertical-align-middle" />
+                    <span className="flex cb-5 fw-6">
+                        <Add className="icon-dim-20 mr-8 fcb-5 dc__vertical-align-middle" />
                         Add Strategy
                     </span>
                 </Select.Button>
@@ -1077,9 +1075,32 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         } else return null
     }
 
-    renderDeploymentAppType() {
+    renderTriggerType() {
         return (
             <>
+                <label className="form__label form__label--sentence dc__bold">When do you want to deploy</label>
+                <RadioGroup
+                    value={
+                        this.state.pipelineConfig.triggerType ? this.state.pipelineConfig.triggerType : TriggerType.Auto
+                    }
+                    name="trigger-type"
+                    onChange={this.handleTriggerTypeChange}
+                    className="chartrepo-type__radio-group"
+                >
+                    <RadioGroupItem data-testid="cd-auto-mode-button" value={TriggerType.Auto}>
+                        Automatic
+                    </RadioGroupItem>
+                    <RadioGroupItem data-testid="cd-manual-mode-button" value={TriggerType.Manual}>
+                        Manual
+                    </RadioGroupItem>
+                </RadioGroup>
+            </>
+        )
+    }
+
+    renderDeploymentAppType() {
+        return (
+            <div className="cd-pipeline__deployment-type">
                 <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
                 <RadioGroup
                     value={
@@ -1099,7 +1120,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         GitOps
                     </RadioGroupItem>
                 </RadioGroup>
-            </>
+            </div>
         )
     }
 
@@ -1299,29 +1320,6 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
         )
     }
 
-    renderTriggerType() {
-        return (
-            <>
-                <label className="form__label form__label--sentence dc__bold">When do you want to deploy</label>
-                <RadioGroup
-                    value={
-                        this.state.pipelineConfig.triggerType ? this.state.pipelineConfig.triggerType : TriggerType.Auto
-                    }
-                    name="trigger-type"
-                    onChange={this.handleTriggerTypeChange}
-                    className="chartrepo-type__radio-group"
-                >
-                    <RadioGroupItem data-testid="cd-auto-mode-button" value={TriggerType.Auto}>
-                        Automatic
-                    </RadioGroupItem>
-                    <RadioGroupItem data-testid="cd-manual-mode-button" value={TriggerType.Manual}>
-                        Manual
-                    </RadioGroupItem>
-                </RadioGroup>
-            </>
-        )
-    }
-
     renderWebhookWarning() {
         return (
             <InfoColourBar
@@ -1406,7 +1404,11 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                     onClick={this.toggelShowDeploymentStage}
                 >
                     <div className="icon-dim-44 bcn-1 br-8 flex">
-                        <CD className="icon-dim-24" />
+                        {this.state.pipelineConfig.isVirtualEnvironment ? (
+                            <Rocket className="icon-dim-24 dc__flip" />
+                        ) : (
+                            <CD className="icon-dim-24" />
+                        )}
                     </div>
                     <div className="ml-16 mr-16 flex-1">
                         <h4 className="fs-14 fw-6 lh-1-43 cn-9 mb-4">Deployment Stage</h4>

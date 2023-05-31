@@ -142,10 +142,13 @@
     margin-left: 0px;
 }
 
-.form__radio-item-content{
-  .form__radio-item.disabled{
-    background-color: none !important;
+.cd-pipeline__deployment-type{
+  .form__radio-item-content{
+    background-color: var(--N000);
   }
+    .form__radio-item.disabled{
+      background-color: none !important;
+    }
 }
 
 .form__row{

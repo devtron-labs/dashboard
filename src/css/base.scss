@@ -3011,6 +3011,10 @@ textarea,
     transform: rotate(-90deg);
 }
 
+.dc__flip{
+  transform: scaleX(-1)
+}
+
 textarea::-webkit-input-placeholder {
     color: var(--N400);
 }
