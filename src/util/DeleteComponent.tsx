@@ -82,11 +82,7 @@ function DeleteComponent({
             </DeleteDialog>
         )
     }
-    return (
-        <div>
-            {showCannotDeleteDialogModal ? renderCannotDeleteDialogModal():renderDeleteDialog()}
-        </div>
-    )
+    return <div>{showCannotDeleteDialogModal ? renderCannotDeleteDialogModal() : renderDeleteDialog()}</div>
 }
 
 export default DeleteComponent
