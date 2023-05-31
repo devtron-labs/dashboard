@@ -3,7 +3,6 @@ import {
     showError,
     Progressing,
     VisibleModal,
-    EmptyState,
     Reload,
     ScanVulnerabilitiesTable,
     VulnerabilityType,
@@ -11,7 +10,6 @@ import {
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg';
 import { ViewType, URLS } from '../../../config';
 import { getLastExecutionByImageScanDeploy } from '../../../services/service';
-import NoVulnerabilities from '../../../assets/img/ic-vulnerability-not-found.svg'
 import { Link } from 'react-router-dom';
 import { ScannedByToolModal } from './ScannedByToolModal';
 import { NoVulnerabilityViewWithTool } from '../../app/details/cIDetails/CIDetails';
