@@ -1,27 +1,13 @@
-import React, { useState, useMemo, Component, useRef, useEffect } from 'react'
-import {
-    showError,
-    Progressing,
-    stopPropagation,
-} from '@devtron-labs/devtron-fe-common-lib'
-import {
-    useForm,
-} from '../common'
-import { List, CustomInput } from '../globalConfigurations/GlobalConfiguration'
-import {
-    saveEnvironment,
-    updateEnvironment,
-    deleteEnvironment,
-} from './cluster.service'
+import React, { useState } from 'react'
+import { showError, Progressing, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { useForm } from '../common'
+import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
+import { saveEnvironment, updateEnvironment, deleteEnvironment } from './cluster.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as DeleteEnvironment } from '../../assets/icons/ic-delete-interactive.svg'
 import { toast } from 'react-toastify'
 import DeleteComponent from '../../util/DeleteComponent'
-import {
-    DC_ENVIRONMENT_CONFIRMATION_MESSAGE,
-    DeleteComponentsName,
-} from '../../config/constantMessaging'
-
+import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 
 export default function Environment({
     environment_name,
@@ -36,9 +22,9 @@ export default function Environment({
     hideClusterDrawer,
 }) {
     const [loading, setLoading] = useState(false)
-    const [ignore, setIngore] = useState(false)
+    const [ignore ] = useState(false)
     const [ignoreError, setIngoreError] = useState('')
-    const { state, disable, handleOnChange, handleOnSubmit } = useForm(
+    const { state,  handleOnChange, handleOnSubmit } = useForm(
         {
             environment_name: { value: environment_name, error: '' },
             namespace: { value: namespace, error: '' },

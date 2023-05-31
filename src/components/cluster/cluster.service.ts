@@ -1,7 +1,6 @@
-import { request } from 'http';
 import { Routes } from '../../config';
 import { get, post, put, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib';
-import { Route } from 'react-router-dom';
+
 
 export function getClusterList(): Promise<any> {
     const URL = `${Routes.CLUSTER}`;

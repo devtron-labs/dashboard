@@ -14,7 +14,7 @@ import {
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
 import YAML from 'yaml'
-import { Pencil, useForm, CustomPassword, Info } from '../common'
+import { useForm, CustomPassword, Info } from '../common'
 import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
@@ -120,7 +120,7 @@ export default function ClusterForm({
     const [isClusterSelected, setClusterSeleceted] = useState<Record<string, boolean>>({})
     const [selectAll, setSelectAll] = useState<boolean>(false)
     const [getClusterVar, setGetClusterState] = useState<boolean>(false)
-    const { state, disable, handleOnChange, handleOnSubmit } = useForm(
+    const { state,  handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
             url: { value: server_url, error: '' },
@@ -257,8 +257,8 @@ export default function ClusterForm({
 
     function YAMLtoJSON(saveYamlData) {
         try {
-            var obj = YAML.parse(saveYamlData)
-            var jsonStr = JSON.stringify(obj)
+            let obj = YAML.parse(saveYamlData)
+            let jsonStr = JSON.stringify(obj)
             return jsonStr
         } catch (error) {}
     }

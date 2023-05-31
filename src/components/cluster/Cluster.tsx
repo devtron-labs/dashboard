@@ -237,7 +237,7 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                     </p>
                     {this.state.clusters.map(
                         (cluster) =>
-                            cluster.id && ( 
+                            cluster.id && (
                                 <Cluster
                                     {...cluster}
                                     reload={this.initialise}
@@ -312,14 +312,10 @@ function Cluster({
     const [envDelete, setDeleteEnv] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
     const [loading, setLoading] = useState(false)
-    const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false)
-    const [, grafanaModuleStatus] = useAsync(
-        () => getModuleInfo(ModuleNameMap.GRAFANA),
-        [clusterId],
-        !window._env_.K8S_CLIENT,
-    )
+    const [prometheusToggleEnabled] = useState(prometheus_url ? true : false)
+    const [] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [clusterId], !window._env_.K8S_CLIENT)
 
-    const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
+    const [prometheusAuthenticationType] = useState({
         type: prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
     })
     let authenTicationType =
@@ -332,7 +328,7 @@ function Cluster({
         return id == 1
     }
 
-    const { state, disable, handleOnChange, handleOnSubmit } = useForm(
+    const { state } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
             url: { value: server_url, error: '' },
@@ -617,180 +613,175 @@ function Cluster({
                     clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list collapsed-list--create'
                 }`}
             >
-               
-                    <>
-                        <List className="dc__border" key={clusterId} onClick={editModeToggle}>
-                            {!clusterId && (
-                                <List.Logo>
-                                    <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
-                                </List.Logo>
-                            )}
-                            <div className="flex left">
-                                {clusterId ? (
-                                    <ClusterIcon className="cluster-icon icon-dim-24 dc__vertical-align-middle mr-16" />
-                                ) : null}
-                                <List.Title
-                                    title={cluster_name || 'Add cluster'}
-                                    subtitle={server_url}
-                                    className="fw-6"
-                                />
-                                {clusterId && (
-                                    <div className="flex dc__align-right">
-                                        <div
-                                            className="flex mr-16"
-                                            data-testid={`add-environment-button-${cluster_name}`}
-                                            onClick={addCluster}
-                                        >
-                                            <List.Logo>
-                                                <Add className="icon-dim-20 fcb-5 mr-8" />
-                                            </List.Logo>
-                                            <div className="fw-6 fs-13 cb-5">Add Environment</div>
-                                        </div>
-                                        <div className="dc__divider" />
-                                    </div>
-                                )}
-                            </div>
+                <>
+                    <List className="dc__border" key={clusterId} onClick={editModeToggle}>
+                        {!clusterId && (
+                            <List.Logo>
+                                <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />
+                            </List.Logo>
+                        )}
+                        <div className="flex left">
+                            {clusterId ? (
+                                <ClusterIcon className="cluster-icon icon-dim-24 dc__vertical-align-middle mr-16" />
+                            ) : null}
+                            <List.Title title={cluster_name || 'Add cluster'} subtitle={server_url} className="fw-6" />
                             {clusterId && (
-                                <Tippy className="default-tt cursor" arrow={false} content="Edit Cluster">
-                                    <div data-testid={`edit_cluster_pencil-${cluster_name}`}>
-                                        <PencilEdit onClick={handleEdit} />
+                                <div className="flex dc__align-right">
+                                    <div
+                                        className="flex mr-16"
+                                        data-testid={`add-environment-button-${cluster_name}`}
+                                        onClick={addCluster}
+                                    >
+                                        <List.Logo>
+                                            <Add className="icon-dim-20 fcb-5 mr-8" />
+                                        </List.Logo>
+                                        <div className="fw-6 fs-13 cb-5">Add Environment</div>
                                     </div>
-                                </Tippy>
-                            )}
-                        </List>
-                        {serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId ? (
-                            <>
-                                <ClusterInstallStatus
-                                    agentInstallationStage={agentInstallationStage}
-                                    envName={envName}
-                                    onClick={clusterInstallStatusOnclick}
-                                />
-                            </>
-                        ) : null}
-                        {showClusterComponentModal ? (
-                            <ClusterComponentModal
-                                agentInstallationStage={agentInstallationStage}
-                                components={defaultClusterComponent}
-                                environmentName={envName}
-                                callRetryClusterInstall={callRetryClusterInstall}
-                                redirectToChartDeployment={redirectToChartDeployment}
-                                close={(e) => {
-                                    toggleClusterComponentModal(!showClusterComponentModal)
-                                }}
-                            />
-                        ) : null}
-                        {serverMode !== SERVER_MODE.EA_ONLY &&
-                        !window._env_.K8S_CLIENT &&
-                        Array.isArray(newEnvs) &&
-                        newEnvs.length > 1 ? (
-                            <div className="pb-8">
-                                <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
-                                    <div></div>
-                                    <div>{CONFIGURATION_TYPES.ENVIRONMENT}</div>
-                                    <div>{CONFIGURATION_TYPES.NAMESPACE}</div>
-                                    <div>{CONFIGURATION_TYPES.DESCRIPTION}</div>
-                                    <div></div>
+                                    <div className="dc__divider" />
                                 </div>
-                                {newEnvs
-                                    .sort((a, b) => sortCallback('environment_name', a, b))
-                                    .map(
-                                        ({
-                                            id,
-                                            environment_name,
-                                            prometheus_url,
-                                            namespace,
-                                            default: isProduction,
-                                            description,
-                                        }) =>
-                                            environment_name ? (
+                            )}
+                        </div>
+                        {clusterId && (
+                            <Tippy className="default-tt cursor" arrow={false} content="Edit Cluster">
+                                <div data-testid={`edit_cluster_pencil-${cluster_name}`}>
+                                    <PencilEdit onClick={handleEdit} />
+                                </div>
+                            </Tippy>
+                        )}
+                    </List>
+                    {serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId ? (
+                        <>
+                            <ClusterInstallStatus
+                                agentInstallationStage={agentInstallationStage}
+                                envName={envName}
+                                onClick={clusterInstallStatusOnclick}
+                            />
+                        </>
+                    ) : null}
+                    {showClusterComponentModal ? (
+                        <ClusterComponentModal
+                            agentInstallationStage={agentInstallationStage}
+                            components={defaultClusterComponent}
+                            environmentName={envName}
+                            callRetryClusterInstall={callRetryClusterInstall}
+                            redirectToChartDeployment={redirectToChartDeployment}
+                            close={(e) => {
+                                toggleClusterComponentModal(!showClusterComponentModal)
+                            }}
+                        />
+                    ) : null}
+                    {serverMode !== SERVER_MODE.EA_ONLY &&
+                    !window._env_.K8S_CLIENT &&
+                    Array.isArray(newEnvs) &&
+                    newEnvs.length > 1 ? (
+                        <div className="pb-8">
+                            <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
+                                <div></div>
+                                <div>{CONFIGURATION_TYPES.ENVIRONMENT}</div>
+                                <div>{CONFIGURATION_TYPES.NAMESPACE}</div>
+                                <div>{CONFIGURATION_TYPES.DESCRIPTION}</div>
+                                <div></div>
+                            </div>
+                            {newEnvs
+                                .sort((a, b) => sortCallback('environment_name', a, b))
+                                .map(
+                                    ({
+                                        id,
+                                        environment_name,
+                                        prometheus_url,
+                                        namespace,
+                                        default: isProduction,
+                                        description,
+                                    }) =>
+                                        environment_name ? (
+                                            <div
+                                                data-testid={`env-container-${environment_name}`}
+                                                className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-12 pb-12 fs-13 fw-4 pl-20 pr-20 dc__visible-hover dc__visible-hover--parent"
+                                                key={id}
+                                                onClick={() =>
+                                                    setEnvironment({
+                                                        id,
+                                                        environment_name,
+                                                        cluster_id: clusterId,
+                                                        namespace,
+                                                        prometheus_url,
+                                                        isProduction,
+                                                        description,
+                                                    })
+                                                }
+                                            >
+                                                <span className="cursor flex w-100">
+                                                    {environment_name && <Database className="icon-dim-20" />}
+                                                </span>
+
                                                 <div
-                                                    data-testid={`env-container-${environment_name}`}
-                                                    className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-12 pb-12 fs-13 fw-4 pl-20 pr-20 dc__visible-hover dc__visible-hover--parent"
-                                                    key={id}
-                                                    onClick={() =>
-                                                        setEnvironment({
-                                                            id,
-                                                            environment_name,
-                                                            cluster_id: clusterId,
-                                                            namespace,
-                                                            prometheus_url,
-                                                            isProduction,
-                                                            description,
-                                                        })
-                                                    }
+                                                    className="dc__truncate-text flex left cb-5 cursor"
+                                                    onClick={showWindowModal}
+                                                    data-testid={`env-${environment_name}`}
                                                 >
-                                                    <span className="cursor flex w-100">
-                                                        {environment_name && <Database className="icon-dim-20" />}
-                                                    </span>
+                                                    {environment_name}
 
-                                                    <div
-                                                        className="dc__truncate-text flex left cb-5 cursor"
-                                                        onClick={showWindowModal}
-                                                        data-testid={`env-${environment_name}`}
-                                                    >
-                                                        {environment_name}
-
-                                                        {isProduction && (
-                                                            <div className="bc-n50 dc__border pr-6 pl-6 fs-12 h-20 ml-8 flex cn-7 br-4 ">
-                                                                Prod
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                    <div className="dc__truncate-text">{namespace}</div>
-                                                    <div className="cluster-list__description dc__truncate-text">
-                                                        {description}
-                                                    </div>
-                                                    <div className="dc__visible-hover--child">
-                                                        <div className="flex">
+                                                    {isProduction && (
+                                                        <div className="bc-n50 dc__border pr-6 pl-6 fs-12 h-20 ml-8 flex cn-7 br-4 ">
+                                                            Prod
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div className="dc__truncate-text">{namespace}</div>
+                                                <div className="cluster-list__description dc__truncate-text">
+                                                    {description}
+                                                </div>
+                                                <div className="dc__visible-hover--child">
+                                                    <div className="flex">
+                                                        <Tippy
+                                                            className="default-tt cursor"
+                                                            arrow={false}
+                                                            content={'Edit Environment'}
+                                                        >
+                                                            <PencilEdit
+                                                                className="cursor icon-dim-20 mr-12"
+                                                                onClick={showWindowModal}
+                                                            />
+                                                        </Tippy>
+                                                        {envDelete ? (
+                                                            <Progressing size={20} />
+                                                        ) : (
                                                             <Tippy
                                                                 className="default-tt cursor"
                                                                 arrow={false}
-                                                                content={'Edit Environment'}
+                                                                content={'Delete Environment'}
                                                             >
-                                                                <PencilEdit
-                                                                    className="cursor icon-dim-20 mr-12"
-                                                                    onClick={showWindowModal}
+                                                                <DeleteEnvironment
+                                                                    data-testid={`env-delete-button-${environment_name}`}
+                                                                    className="icon-dim-20 cursor"
+                                                                    onClick={showToggleConfirmation}
                                                                 />
                                                             </Tippy>
-                                                            {envDelete ? (
-                                                                <Progressing size={20} />
-                                                            ) : (
-                                                                <Tippy
-                                                                    className="default-tt cursor"
-                                                                    arrow={false}
-                                                                    content={'Delete Environment'}
-                                                                >
-                                                                    <DeleteEnvironment
-                                                                        data-testid={`env-delete-button-${environment_name}`}
-                                                                        className="icon-dim-20 cursor"
-                                                                        onClick={showToggleConfirmation}
-                                                                    />
-                                                                </Tippy>
-                                                            )}
-                                                        </div>
+                                                        )}
                                                     </div>
                                                 </div>
-                                            ) : null,
-                                    )}
-                                {confirmation && (
-                                    <DeleteComponent
-                                        setDeleting={clusterDelete}
-                                        deleteComponent={deleteEnvironment}
-                                        payload={getEnvironmentPayload()}
-                                        title={environment.environment_name}
-                                        toggleConfirmation={toggleConfirmation}
-                                        component={DeleteComponentsName.Environment}
-                                        confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
-                                        reload={reload}
-                                    />
+                                            </div>
+                                        ) : null,
                                 )}
-                            </div>
-                        ) : (
-                            clusterId && renderNoEnvironmentTab()
-                        )}
-                    </>
-                    {editMode &&(
-                        <Drawer position="right" width="1000px" onEscape={DisableEditMode}>
+                            {confirmation && (
+                                <DeleteComponent
+                                    setDeleting={clusterDelete}
+                                    deleteComponent={deleteEnvironment}
+                                    payload={getEnvironmentPayload()}
+                                    title={environment.environment_name}
+                                    toggleConfirmation={toggleConfirmation}
+                                    component={DeleteComponentsName.Environment}
+                                    confirmationDialogDescription={DC_ENVIRONMENT_CONFIRMATION_MESSAGE}
+                                    reload={reload}
+                                />
+                            )}
+                        </div>
+                    ) : (
+                        clusterId && renderNoEnvironmentTab()
+                    )}
+                </>
+                {editMode && (
+                    <Drawer position="right" width="1000px" onEscape={DisableEditMode}>
                         <div className="h-100 bcn-0" ref={drawerRef}>
                             <ClusterForm
                                 id={clusterId}
@@ -815,8 +806,7 @@ function Cluster({
                             />
                         </div>
                     </Drawer>
-                    )}
-           
+                )}
             </article>
             {showWindow && (
                 <Drawer position="right" width="800px" onEscape={hideClusterDrawer}>
