@@ -136,12 +136,12 @@ export interface ClusterTerminalParamsType {
 }
 
 export interface ClusterFormType {
-    id: any
-    cluster_name: any
-    server_url: any
-    active: any
+    id: number
+    cluster_name: string
+    server_url: string
+    active: boolean
     config: any
-    toggleEditMode: any
+    toggleEditMode: boolean
     reload: any
     prometheus_url: any
     prometheusAuth: any
