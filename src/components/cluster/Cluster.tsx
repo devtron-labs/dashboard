@@ -630,16 +630,14 @@ function Cluster({
                             </Tippy>
                         )}
                     </List>
-                    {serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId ? (
-                        <>
-                            <ClusterInstallStatus
-                                agentInstallationStage={agentInstallationStage}
-                                envName={envName}
-                                onClick={clusterInstallStatusOnclick}
-                            />
-                        </>
-                    ) : null}
-                    {showClusterComponentModal ? (
+                    {serverMode !== SERVER_MODE.EA_ONLY && !window._env_.K8S_CLIENT && clusterId && (
+                        <ClusterInstallStatus
+                            agentInstallationStage={agentInstallationStage}
+                            envName={envName}
+                            onClick={clusterInstallStatusOnclick}
+                        />
+                    )}
+                    {showClusterComponentModal && (
                         <ClusterComponentModal
                             agentInstallationStage={agentInstallationStage}
                             components={defaultClusterComponent}
@@ -650,7 +648,7 @@ function Cluster({
                                 toggleClusterComponentModal(!showClusterComponentModal)
                             }}
                         />
-                    ) : null}
+                    )}
                     {serverMode !== SERVER_MODE.EA_ONLY &&
                     !window._env_.K8S_CLIENT &&
                     Array.isArray(newEnvs) &&

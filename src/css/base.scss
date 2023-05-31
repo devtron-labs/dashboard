@@ -3255,7 +3255,7 @@ textarea::placeholder {
     border-radius: 50%;
 }
 
-.dc_edit_button{
+.dc__edit_button {
     height: 40px;
     font-size: 12px;
     font-weight: 600;
@@ -3271,8 +3271,9 @@ textarea::placeholder {
     color: var(--B500);
     border: 1px solid #bbb;
     cursor: pointer;
+
+    &:hover {
+        background: #eee;
+        color: var(--B700);
+    }
 }
-.dc_edit_button:hover {
-    background: #eee;
-    color: var(--B700);
-  }
