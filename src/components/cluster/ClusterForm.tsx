@@ -93,7 +93,6 @@ export default function ClusterForm({
     isClusterDetails,
     toggleClusterDetails,
 }) {
-    const [loading, setLoading] = useState(false)
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
@@ -392,7 +391,7 @@ export default function ClusterForm({
 
         const api = id ? updateCluster : saveCluster
         try {
-            setLoading(true)
+            setLoadingState(true)
             const { result } = await api(payload)
             toast.success(
                 <ToastBody
@@ -400,13 +399,13 @@ export default function ClusterForm({
                     title={`Successfully ${id ? 'updated' : 'saved'}`}
                 />,
             )
+            toggleShowAddCluster()
             reload()
             toggleEditMode((e) => !e)
         } catch (err) {
             showError(err)
         } finally {
-            setLoading(false)
-            toggleShowAddCluster()
+            setLoadingState(false)
             setTlsConnectionFalse()
         }
     }
