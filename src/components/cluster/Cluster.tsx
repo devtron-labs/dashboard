@@ -316,10 +316,10 @@ function Cluster({
     const [] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [clusterId], !window._env_.K8S_CLIENT)
 
     const [prometheusAuthenticationType] = useState({
-        type: prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
+        type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
     })
     let authenTicationType =
-        prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
+         prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
 
     const editLabelRef = useRef(null)
     const drawerRef = useRef(null)
