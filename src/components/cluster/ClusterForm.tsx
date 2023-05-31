@@ -96,7 +96,7 @@ export default function ClusterForm({
     const [loading, setLoading] = useState(false)
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
-        type: prometheusAuth && prometheusAuth.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
+        type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
     })
     let authenTicationType =
         prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
