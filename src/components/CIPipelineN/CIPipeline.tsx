@@ -14,11 +14,11 @@ import {
     BuildStageVariable,
     BuildTabText,
     JobPipelineTabText,
+    ModuleNameMap,
     TriggerType,
     URLS,
     ViewType,
     SourceTypeMap,
-    ModuleNameMap,
 } from '../../config'
 import {
     deleteCIPipeline,
@@ -229,7 +229,7 @@ export default function CIPipeline({
             localStorage.removeItem('takeMeThereClicked')
         }
     }, [location.pathname])
-  
+
     const getSecurityModuleStatus = async (): Promise<void> => {
         try {
             const { result } = await getModuleInfo(ModuleNameMap.SECURITY)

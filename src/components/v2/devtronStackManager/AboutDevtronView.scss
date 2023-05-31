@@ -92,12 +92,12 @@
         border: none;
     }
 }
+
 .pre-requisite-modal__help-chat {
     svg {
         path:first-of-type {
             stroke: var(--B500);
         }
-
         path:not(:first-of-type) {
             fill: var(--B500);
         }

@@ -452,7 +452,6 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     function toggleCollapse() {
         setIsCollapsed(!isCollapsed)
     }
-
         
     useEffect(() => {
         if (artifactId) {
