@@ -12,8 +12,6 @@ import { useForm, useAsync } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import {
     getClusterList,
-    saveCluster,
-    updateCluster,
     getEnvironmentList,
     getCluster,
     retryClusterInstall,
@@ -311,7 +309,7 @@ function Cluster({
     const [showWindow, setShowWindow] = useState(false)
     const [envDelete, setDeleteEnv] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
-    const [loading, setLoading] = useState(false)
+
     const [prometheusToggleEnabled] = useState(prometheus_url ? true : false)
     const [] = useAsync(() => getModuleInfo(ModuleNameMap.GRAFANA), [clusterId], !window._env_.K8S_CLIENT)
 
@@ -495,19 +493,6 @@ function Cluster({
                     payload.prometheusAuth['certificateAuthorityData'] = state.certificateAuthorityData.value || ''
                 }
             }
-        }
-
-        const api = id ? updateCluster : saveCluster
-        try {
-            setLoading(true)
-            const { result } = await api(payload)
-            toast.success(`Successfully ${id ? 'updated' : 'saved'}.`)
-            reload()
-            toggleEditMode((e) => !e)
-        } catch (err) {
-            showError(err)
-        } finally {
-            setLoading(false)
         }
     }
 
