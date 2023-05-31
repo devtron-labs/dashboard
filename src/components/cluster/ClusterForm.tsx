@@ -312,7 +312,7 @@ export default function ClusterForm({
         } catch (err: any) {
             setLoadingState(false)
             setValidationError(true)
-            const error = err['errors'] && err['errors'][0]
+            const error = err?.errors?.[0];
             setErrorText(`${error.userMessage}`)
         }
     }
