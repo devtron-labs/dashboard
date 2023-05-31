@@ -92,13 +92,9 @@ export const handleEnableAction = async (
     setProgressing: React.Dispatch<React.SetStateAction<boolean>>,
 ) => {
     try {
-        const actionRequest: {
-            version: string
-        } = {
-            version:
-                moduleName === ModuleNameMap.SECURITY_TRIVY ? TRIVY_TOOL_VERSION : window?._env_?.CLAIR_TOOL_VERSION,
-        }
-        const { result } = await executeModuleEnableAction(moduleName, actionRequest)
+        const toolVersion =
+            moduleName === ModuleNameMap.SECURITY_TRIVY ? TRIVY_TOOL_VERSION : window?._env_?.CLAIR_TOOL_VERSION
+        const { result } = await executeModuleEnableAction(moduleName, toolVersion)
         if (result?.success) {
             setSuccessState(true)
             setDialog(false)

@@ -72,7 +72,12 @@ export function SuccessModalComponent({
                 </p>
             </div>
             <div className="flex mt-24">
-                <button type="button" className="cta h-36 flex" onClick={handleModuleStatus}>
+                <button
+                    type="button"
+                    className="cta h-36 flex"
+                    onClick={handleModuleStatus}
+                    data-testid="enable-success-okay-button"
+                >
                     Okay
                 </button>
             </div>

@@ -372,7 +372,7 @@ export function EnableModuleConfirmation({
     return (
         <ConfirmationDialog>
             <ConfirmationDialog.Icon
-                src={retryState ? warn : isModuleTrivy? trivy : clair}
+                src={retryState ? warn : isModuleTrivy ? trivy : clair}
                 className={retryState ? 'w-40 mb-24' : `w-50 mb-24`}
             />
             <ConfirmationDialog.Body
@@ -392,23 +392,25 @@ export function EnableModuleConfirmation({
                 </p>
             )}
             <ConfirmationDialog.ButtonGroup>
-                <button type="button" className="cta cancel h-36 flex" onClick={handleCancelAction}>
+                <button
+                    type="button"
+                    className="cta cancel h-36 flex"
+                    onClick={handleCancelAction}
+                    data-testid="module-cancel-button"
+                >
                     Cancel
                 </button>
                 <button
                     className="cta form-submit-cta ml-12 dc__no-decor form-submit-cta flex h-36 "
                     onClick={handleEnableActionButton}
+                    data-testid="enable-button"
                 >
                     {progressing ? (
                         <Progressing />
                     ) : retryState ? (
                         'Retry'
                     ) : (
-                        `Enable ${
-                            isModuleTrivy
-                                ? IMAGE_SCAN_TOOL.Trivy
-                                : IMAGE_SCAN_TOOL.Clair
-                        }`
+                        `Enable ${isModuleTrivy ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair}`
                     )}
                 </button>
             </ConfirmationDialog.ButtonGroup>
@@ -523,7 +525,7 @@ const InstallationStatus = ({
                                         </span>
                                         {moduleNotEnabled ? (
                                             <div className="fs-12 fw-4 cn-7 ml-30 flex left">
-                                                <span>Not enabled</span>
+                                                <span data-testId="module-not-enabled">Not enabled</span>
                                             </div>
                                         ) : (
                                             ''

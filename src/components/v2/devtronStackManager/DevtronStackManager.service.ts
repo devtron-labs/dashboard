@@ -101,13 +101,8 @@ export const getModuleInfo = async (moduleName: string, forceReload?: boolean): 
     return Promise.resolve({ status: '', code: 200, result: result })
 }
 
-export const executeModuleEnableAction = (
-    moduleName: string,
-    moduleEnableRequest: {
-        version: string
-    },
-): Promise<ModuleActionResponse> => {
-    return post(`${Routes.MODULE_INFO_API}/enable?name=${moduleName}`, moduleEnableRequest)
+export const executeModuleEnableAction = (moduleName: string, toolVersion: string): Promise<ModuleActionResponse> => {
+    return post(`${Routes.MODULE_INFO_API}/enable?name=${moduleName}`, { version: toolVersion })
 }
 export const executeModuleAction = (
     moduleName: string,
