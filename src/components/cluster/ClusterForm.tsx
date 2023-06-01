@@ -1072,7 +1072,7 @@ export default function ClusterForm({
                         className="cluster-form dc__position-rel h-100 bcn-0"
                     >
                         <AddClusterHeader />
-                        <div className="dc__overflow-scroll" style={{ height: 'calc(100vh-124px)' }}>
+                        <div className="dc__overflow-scroll" style={{ height: 'calc(100vh-114px)' }}>
                             <div className="api-token__list en-2 bw-1 bcn-0 br-8 mr-20 ml-20 mt-16">
                                 <InfoColourBar
                                     message={
