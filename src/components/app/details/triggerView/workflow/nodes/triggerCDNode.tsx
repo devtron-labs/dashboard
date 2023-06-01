@@ -93,7 +93,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                     className={`workflow-node__icon-common ml-8 ${
                                         this.props.isVirtualEnvironment
                                             ? 'workflow-node__CD-rocket-icon'
-                                            : 'workflow-node__CD-icon'
+                                            : 'workflow-node__CD-icon dc__flip'
                                     }`}
                                 />
                             </div>

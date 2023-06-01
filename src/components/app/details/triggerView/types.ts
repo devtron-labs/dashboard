@@ -55,6 +55,7 @@ export interface CDMaterialProps {
     requestedUserId?: number
     triggerType?: string
     isVirtualEnvironment?: boolean
+    isSaveLoading?: boolean
 }
 
 export enum DeploymentWithConfigType {
@@ -317,7 +318,7 @@ export interface TriggerViewState {
     filteredCIPipelines: any[]
     isChangeBranchClicked: boolean
     loader: boolean
-    downloadManifestLoader?: boolean
+    isSaveLoading?: boolean
 }
 
 //-- begining of response type objects for trigger view

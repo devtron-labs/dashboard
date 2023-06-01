@@ -129,7 +129,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
                                 className={`workflow-node__icon-common ${
                                     this.props.isVirtualEnvironment
                                         ? "workflow-node__CD-rocket-icon"
-                                        : "workflow-node__CD-icon"
+                                        : "workflow-node__CD-icon dc__flip"
                                 }`}
                             ></div>
                         </div>

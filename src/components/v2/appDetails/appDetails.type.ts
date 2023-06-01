@@ -186,6 +186,7 @@ export interface AppDetails {
     userApprovalConfig?: string
     isVirtualEnvironment?: boolean
     imageTag?: string
+    helmPackageName?: string
 }
 
 interface MaterialInfo {

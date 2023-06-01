@@ -1324,9 +1324,9 @@ function ChartValuesView({
 
     const renderGeneratedDownloadManifest = (): JSX.Element => {
         return (
-          isVirtualEnvironmentOnSelector &&
+            isVirtualEnvironmentOnSelector &&
             GeneratedHelmDownload && (
-                <div className='cursor-not-allowed'>
+                <div>
                     <GeneratedHelmDownload />
                     <div className="chart-values-view__hr-divider bcn-1 mt-16 mb-16" />
                 </div>

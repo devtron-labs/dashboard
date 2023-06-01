@@ -156,7 +156,7 @@ function EnvironmentStatusComponent({
             const deploymentManifestParams = {
                 appId: +params.appId,
                 envId: +params.envId,
-                appName: `${appDetails?.appName}-${appDetails?.environmentName}-${appDetails?.imageTag}`,
+                appName: appDetails?.helmPackageName,
                 isHelmApp: true,
             }
             return <AppDetailsDownloadCard params={deploymentManifestParams} />
