@@ -2,12 +2,9 @@ import React from 'react'
 import { ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
 import warningIconSrc from '../../../assets/icons/ic-warning-y5.svg'
 import { BUTTON_TEXT, NONCASCADE_DELETE_DIALOG_INTERNAL_MESSAGE } from '../../../config/constantMessaging'
+import { ClusrerNotReachableDialogType } from './ClusterNotReachableDialog.type'
 
-interface ClusrerNotReachableDialogType {
-    clusterName: string
-    onClickCancel: () => void
-    onClickDelete: () => void
-}
+
 function ClusrerNotReachableDialog({ clusterName, onClickCancel, onClickDelete }: ClusrerNotReachableDialogType) {
     const clusterNameString:string = clusterName ? ` '${clusterName}'` : ''
     return (

@@ -353,7 +353,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
         }
     }
 
-    async function handleDelete(deleteAction: string) {
+    async function handleDelete(deleteAction: DELETE_ACTION) {
         setDeleting(true)
         try {
             let response: ResponseType = await deleteInstalledChart(Number(installedAppId), false, deleteAction)

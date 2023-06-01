@@ -93,7 +93,7 @@ export function DeploymentRow({ installedAppId, appName, status, deploymentAppTy
         }
     }
 
-    async function handleDelete(deleteAction: string) {
+    async function handleDelete(deleteAction: DELETE_ACTION) {
         setDeleting(true)
         try {
             let response: ResponseType = await deleteInstalledChart(Number(installedAppId), deploymentAppType === DeploymentAppType.argo_cd, deleteAction)

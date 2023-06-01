@@ -107,7 +107,7 @@ function EnvironmentSelectorComponent({
         }
     }
 
-    const getDeleteApplicationApi = (deleteAction: string): Promise<any> => {
+    const getDeleteApplicationApi = (deleteAction: DELETE_ACTION): Promise<any> => {
         if (isExternalApp) {
             return deleteApplicationRelease(params.appId)
         } else {
@@ -123,7 +123,7 @@ function EnvironmentSelectorComponent({
         await deleteResourceAction(DELETE_ACTION.NONCASCADE_DELETE)
     }
 
-    async function deleteResourceAction(deleteAction: string) {
+    async function deleteResourceAction(deleteAction: DELETE_ACTION) {
         try {
             const response = await getDeleteApplicationApi(deleteAction)
             if (response.result.deleteResponse?.deleteInitiated) {

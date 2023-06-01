@@ -4,6 +4,7 @@ import { AppDetails } from '../../appDetails/appDetails.type'
 import { ChartDeploymentDetail } from '../../chartDeploymentHistory/chartDeploymentHistory.service'
 import YAML from 'yaml'
 import {AppMetaInfo} from "../../../app/types";
+import { DELETE_ACTION } from '../../../../config'
 
 export enum ChartKind {
     DEFAULT = 'DEFAULT',
@@ -386,7 +387,7 @@ export interface ValuesForDiffStateType {
 
 export interface DeleteChartDialogProps {
     appName: string
-    handleDelete: (deleteAction: string) => void
+    handleDelete: (deleteAction: DELETE_ACTION) => void
     toggleConfirmation: (isDeleteConfirmation:boolean) => void
     isCreateValueView?: boolean
 }

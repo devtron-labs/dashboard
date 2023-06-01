@@ -754,7 +754,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             })
     }
 
-    handleDeletePipeline = (deleteAction: string) => {
+    handleDeletePipeline = (deleteAction: DELETE_ACTION) => {
         switch (deleteAction) {
             case DELETE_ACTION.DELETE:
                 return this.deleteCD(false, true)

@@ -564,7 +564,7 @@ function ChartValuesView({
         }
     }
 
-    const deleteApplication = (deleteAction: string) => {
+    const deleteApplication = (deleteAction: DELETE_ACTION) => {
         if (commonState.isDeleteInProgress) {
             return
         }
@@ -646,7 +646,7 @@ function ChartValuesView({
             })
     }
 
-    const getDeleteApplicationApi = (deleteAction: string): Promise<any> => {
+    const getDeleteApplicationApi = (deleteAction: DELETE_ACTION): Promise<any> => {
         if (isExternalApp && !commonState.installedAppInfo) {
             return deleteApplicationRelease(appId)
         } else if (isCreateValueView) {
