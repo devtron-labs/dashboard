@@ -10,7 +10,6 @@ export const AuthenticationType = {
     IAM: 'IAM',
 }
 
-
 export interface UserDetails{
     userName: string
     errorInConnecting: string,
@@ -20,11 +19,6 @@ export interface UserDetails{
 export interface UserNameList {
     label: string,
     value: string,
-}
-
-export interface ClusterCheckType {
-    isChecked: boolean
-    value: 'INTERMEDIATE' | 'CHECKED'
 }
 
 export interface DataListType{

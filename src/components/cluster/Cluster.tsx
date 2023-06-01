@@ -27,14 +27,7 @@ import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, DEFAULT_SECRET_
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
 
-import {
-    DOCUMENTATION,
-    SERVER_MODE,
-    ViewType,
-    URLS,
-    CONFIGURATION_TYPES,
-    AppCreationType,
-} from '../../config'
+import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, CONFIGURATION_TYPES, AppCreationType } from '../../config'
 import { getEnvName } from './cluster.util'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
@@ -245,7 +238,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                     toggleCheckTlsConnection={this.toggleCheckTlsConnection}
                                     setTlsConnectionFalse={this.setTlsConnectionFalse}
                                     isTlsConnection={this.state.isTlsConnection}
-                                    toggleEditMode={() => {}}
                                 />
                             ),
                     )}
@@ -312,8 +304,7 @@ function Cluster({
     const [prometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
     })
-    let authenTicationType =
-         prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
+    let authenticationType = prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
 
     const editLabelRef = useRef(null)
     const drawerRef = useRef(null)
@@ -335,7 +326,7 @@ function Cluster({
             certificateAuthorityData: { value: config.cert_auth_data, error: '' },
             token: { value: config?.bearer_token ? config.bearer_token : '', error: '' },
             endpoint: { value: prometheus_url || '', error: '' },
-            authType: { value: authenTicationType, error: '' },
+            authType: { value: authenticationType, error: '' },
         },
         {
             cluster_name: {
@@ -479,24 +470,6 @@ function Cluster({
                 payload.prometheusAuth['password'] = state.password.value || ''
             }
         }
-        if (isTlsConnection) {
-            if (
-                (state.tlsClientKey.value || state.tlsClientCert.value || state.certificateAuthorityData.value) &&
-                prometheusToggleEnabled
-            ) {
-                let isValid =
-                    state.tlsClientKey.value?.length &&
-                    state.tlsClientCert.value?.length &&
-                    state.certificateAuthorityData?.length
-                if (!isValid) {
-                    toast.error('Please add TLS Key, Certificate and Certificate Authority Data')
-                    return
-                } else {
-                    payload.prometheusAuth['tlsClientKey'] = state.tlsClientKey.value || ''
-                    payload.prometheusAuth['tlsClientCert'] = state.tlsClientCert.value || ''
-                }
-            }
-        }
     }
 
     const getClusterPayload = () => {
@@ -514,25 +487,10 @@ function Cluster({
                 password: prometheusToggleEnabled ? state.password.value : '',
                 tlsClientKey: prometheusToggleEnabled ? state.tlsClientKey.value : '',
                 tlsClientCert: prometheusToggleEnabled ? state.tlsClientCert.value : '',
-
             },
             insecureSkipTlsVerify: !isTlsConnection,
         }
     }
-
-    useEffect(() => {
-        const handleClickOutsideDrawer = (event) => {
-            if (drawerRef.current && !drawerRef.current.contains(event.target)) {
-                // toggleEditMode(false)
-            }
-        }
-
-        window.addEventListener('click', handleClickOutsideDrawer)
-
-        return () => {
-            window.removeEventListener('click', handleClickOutsideDrawer)
-        }
-    }, [])
 
     const outsideClickHandler = (evt): void => {
         if (editLabelRef.current && !editLabelRef.current.contains(evt.target) && showWindow) {
@@ -725,7 +683,7 @@ function Cluster({
                                                         <Tippy
                                                             className="default-tt cursor"
                                                             arrow={false}
-                                                            content={'Edit Environment'}
+                                                            content="Edit Environment"
                                                         >
                                                             <PencilEdit
                                                                 className="cursor icon-dim-20 mr-12"
@@ -738,7 +696,7 @@ function Cluster({
                                                             <Tippy
                                                                 className="default-tt cursor"
                                                                 arrow={false}
-                                                                content={'Delete Environment'}
+                                                                content="Delete Environment"
                                                             >
                                                                 <DeleteEnvironment
                                                                     data-testid={`env-delete-button-${environment_name}`}

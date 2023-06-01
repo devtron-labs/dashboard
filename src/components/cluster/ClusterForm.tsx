@@ -606,7 +606,6 @@ export default function ClusterForm({
                                 onChange={toggleCheckTlsConnection}
                             >
                                 <div data-testid="use_secure_tls_connection_checkbox" className="mr-4 flex center">
-                                    {' '}
                                     Use secure TLS connection {isTlsConnection}
                                 </div>
                             </Checkbox>
@@ -683,7 +682,7 @@ export default function ClusterForm({
                                         onChange={handleOnChange}
                                         onBlur={handleOnBlur}
                                         onFocus={handleOnFocus}
-                                        placeholder={'Enter tls Certificate'}
+                                        placeholder="Enter tls Certificate"
                                     />
                                     {state.tlsClientCert.error && (
                                         <label htmlFor="" className="form__error">
@@ -700,7 +699,7 @@ export default function ClusterForm({
                 <div className={`${prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'} mt-20`}>
                     <div className="dc__content-space flex">
                         <span className="form__input-header">See metrics for applications in this cluster</span>
-                        <div className="" style={{ width: '32px', height: '20px' }}>
+                        <div className="w-32 h-20" >
                             <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
                         </div>
                     </div>
@@ -730,7 +729,7 @@ export default function ClusterForm({
                             <span className="form__label">Authentication Type*</span>
                             <RadioGroup
                                 value={state.authType.value}
-                                name={`authType`}
+                                name="authType`"
                                 onChange={(e) => OnPrometheusAuthTypeChange(e)}
                             >
                                 <RadioGroupItem value={AuthenticationType.BASIC}> Basic </RadioGroupItem>
@@ -914,10 +913,8 @@ export default function ClusterForm({
                                 saveClusterList.map((clusterListDetail, index) => (
                                     <div
                                         key={`api_${index}`}
-                                        className="saved-cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
-                                        style={{ height: '40px' }}
+                                        className="saved-cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20 h-20" 
                                     >
-                                        <div></div>
                                         <div
                                             data-testid={`validate-cluster-${clusterListDetail.clusterName}`}
                                             className="flexbox"
@@ -935,7 +932,6 @@ export default function ClusterForm({
                                                 data-testid={`validate-cluster-${clusterListDetail.status}`}
                                                 className="dc__ellipsis-right"
                                             >
-                                                {' '}
                                                 {clusterListDetail.status}{' '}
                                             </div>
                                         </div>
@@ -952,7 +948,7 @@ export default function ClusterForm({
                             onClick={handleEditConfigClick}
                             style={{ marginRight: 'auto' }}
                         >
-                            <span style={{ display: 'flex', alignItems: 'center' }}>
+                            <span className="flex dc__align-items-center">
                                 <Edit className="icon-dim-16 scb-5 mr-4" />
                                 Edit Kubeconfig
                             </span>
@@ -979,9 +975,6 @@ export default function ClusterForm({
         toggleClusterDetails(true)
     }
 
-    if (loader) {
-        return <LoadingCluster />
-    }
 
     function toggleIsSelected(clusterName: string, forceUnselect?: boolean) {
         const _currentSelections = {
@@ -1054,6 +1047,10 @@ export default function ClusterForm({
             [clusterDetail.cluster_name]: selectedOption,
         })
         toggleIsSelected(clusterDetail.cluster_name, true)
+    }
+
+    if (loader) {
+        return <LoadingCluster />
     }
 
     const displayClusterDetails = () => {
@@ -1291,7 +1288,7 @@ export default function ClusterForm({
                             <button
                                 data-testid="delete_cluster"
                                 style={{ margin: 'auto', marginLeft: 20 }}
-                                className="flex cta delete scr-5"
+                                className="flex cta delete scr-5 h-36 lh-36"
                                 type="button"
                                 onClick={() => toggleConfirmation(true)}
                             >
