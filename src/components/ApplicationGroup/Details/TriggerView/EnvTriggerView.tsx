@@ -1278,7 +1278,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         })
     }
 
-    const filterStatusType = (type, CIStatus, VirtualStatus, CDStatus): string => {
+    const filterStatusType = (
+        type: WorkflowNodeType,
+        CIStatus: string,
+        VirtualStatus: string,
+        CDStatus: string,
+    ): string => {
         if (type === WorkflowNodeType.CI) {
             return CIStatus
         } else if (isVirtualEnv) {

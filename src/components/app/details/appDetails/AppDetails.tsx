@@ -719,26 +719,32 @@ export function EnvSelector({
         )
     }
 
-    const groupList = sortedEnvironments?.reduce((acc, env) => {
-        const key = env.isVirtualEnvironment ? 'Virtual environments' : '';
-        const found = acc.find(item => item.label === key);
-        
-        if (found) {
-          found.options.push({
-            label: env.environmentName,
-            value: env.environmentId,
-            description: env.description,
-        });
-        } else {
-          acc.push({ label: key, options: [{
-            label: env.environmentName,
-            value: env.environmentId,
-            description: env.description,
-        }] });
-        }
-        
-        return acc;
-      }, []) || []
+    const groupList =
+        sortedEnvironments?.reduce((acc, env) => {
+            const key = env.isVirtualEnvironment ? 'Virtual environments' : ''
+            const found = acc.find((item) => item.label === key)
+
+            if (found) {
+                found.options.push({
+                    label: env.environmentName,
+                    value: env.environmentId,
+                    description: env.description,
+                })
+            } else {
+                acc.push({
+                    label: key,
+                    options: [
+                        {
+                            label: env.environmentName,
+                            value: env.environmentId,
+                            description: env.description,
+                        },
+                    ],
+                })
+            }
+
+            return acc
+        }, []) || []
 
     return (
         <>
