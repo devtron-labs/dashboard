@@ -70,7 +70,7 @@ import {
     TOAST_INFO,
     CONFIGMAPS_SECRETS,
 } from '../../config/constantMessaging'
-import ClusrerNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import ClusterNotReachableDailog from '../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 const ManualApproval = importComponentFromFELibrary('ManualApproval')
 
@@ -1129,7 +1129,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             }
             if (!this.state.showDeleteModal && this.state.showNonCascadeDeleteDialog) {
                 return ( 
-                    <ClusrerNotReachableDailog
+                    <ClusterNotReachableDailog
                         clusterName={this.state.clusterName}
                         onClickCancel={this.onClickHideNonCascadeDeletePopup}
                         onClickDelete={this.onClickNonCascadeDelete}

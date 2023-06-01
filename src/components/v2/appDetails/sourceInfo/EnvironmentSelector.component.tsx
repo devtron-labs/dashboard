@@ -24,7 +24,7 @@ import { DELETE_ACTION, checkIfDevtronOperatorHelmRelease } from '../../../../co
 import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
-import ClusrerNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 function EnvironmentSelectorComponent({
     isExternalApp,
@@ -325,7 +325,7 @@ function EnvironmentSelectorComponent({
                         />
                     )}
                     {nonCascadeDeleteDialog && (
-                        <ClusrerNotReachableDailog
+                        <ClusterNotReachableDailog
                             clusterName={clusterName}
                             onClickCancel={onClickHideNonCascadeDeletePopup}
                             onClickDelete={onClickNonCascadeDelete}

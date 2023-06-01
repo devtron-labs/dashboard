@@ -10,7 +10,7 @@ import { deleteArgoCDAppWithNonCascade, getClusterConnectionStatus } from '../..
 import { ClusterConnectionResponse } from '../../app/details/appDetails/appDetails.type'
 import { toast } from 'react-toastify'
 import { TOAST_INFO } from '../../../config/constantMessaging'
-import ClusrerNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import ClusterNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplicationDetailedModal }) => {
     const [collapsed, toggleCollapsed] = useState<boolean>(true)
@@ -192,7 +192,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ appStreamData, showApplic
                 />
             )}
             {nonCascadeDeleteDialog && (
-                <ClusrerNotReachableDailog
+                <ClusterNotReachableDailog
                     clusterName={clusterName}
                     onClickCancel={onClickHideNonCascadeDeletePopup}
                     onClickDelete={onClickNonCascadeDelete}
