@@ -88,7 +88,11 @@ function DeploymentStatusCard({
                 hideDeploymentStatusLeftInfo || hideDetails ? '' : 'cursor'
             } mr-12`}
         >
-            {!hideDeploymentStatusLeftInfo && (deploymentStatusDetailsBreakdownData?.deploymentStatus === DEPLOYMENT_STATUS.SUCCEEDED || deploymentStatusDetailsBreakdownData?.deploymentStatus === DEPLOYMENT_STATUS.HEALTHY) && renderDeploymentStatus()}
+            {!hideDeploymentStatusLeftInfo &&
+                (deploymentStatusDetailsBreakdownData?.deploymentStatus === DEPLOYMENT_STATUS.SUCCEEDED ||
+                    deploymentStatusDetailsBreakdownData?.deploymentStatus === DEPLOYMENT_STATUS.HEALTHY ||
+                    deploymentStatusDetailsBreakdownData?.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) &&
+                renderDeploymentStatus()}
             <div className="flex left column mw-140">
                 <div className="fs-12 fw-4 cn-9" data-testid="last-updated-heading">
                     {hideDeploymentStatusLeftInfo ? 'Last updated' : 'Deployment triggered'}
