@@ -210,6 +210,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         let state = { ...this.state };
         state.view = ViewType.LOADING;
         state.pagination.pageSize = pageSize;
+        this.changePage(1)
         this.setState(state, () => {
             this.getAllNotifications();
         });
@@ -605,12 +606,21 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             </div>
             {this.renderOptions()}
             {this.renderPipelineList()}
-            {this.state.pagination.size > 0 ? <Pagination offset={this.state.pagination.offset}
+            {this.renderPagination()}
+        </div>
+    }
+
+    renderPagination() {
+        if(this.state.pagination.size) {
+        return (
+            <Pagination offset={this.state.pagination.offset}
                 pageSize={this.state.pagination.pageSize}
                 size={this.state.pagination.size}
                 changePage={this.changePage}
-                changePageSize={this.changePageSize} /> : null}
-        </div>
+                changePageSize={this.changePageSize} />
+        )
+        }
+        else return null
     }
 
     remderModifyRecipients() {
