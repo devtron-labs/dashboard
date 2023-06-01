@@ -36,7 +36,7 @@
         "react-keybind": "^0.9.4",
         "react-mde": "^11.5.0",
         "react-monaco-editor": "^0.33.0",
-        "react-router-dom": "^5.3.0",
+        "react-router-dom": "^5.3.4",
         "react-select": "^5.2.2",
         "react-toastify": "^8.2.0",
         "react-virtualized": "^9.22.3",
