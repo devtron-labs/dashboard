@@ -14,7 +14,7 @@ import {
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
 import YAML from 'yaml'
-import { useForm, CustomPassword, Info } from '../common'
+import { useForm, CustomPassword } from '../common'
 import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
@@ -38,6 +38,7 @@ import { CLUSTER_COMMAND, AppCreationType, MODES } from '../../config'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CLUSTER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
+import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import TippyHeadless from '@tippyjs/react/headless'
 import CodeEditor from '../CodeEditor/CodeEditor'
@@ -168,7 +169,7 @@ export default function ClusterForm({
                 required: false,
             },
             prometheusTlsClientCert: {
-                required: false ,
+                required: false,
             },
             tlsClientKey: {
                 required: id ? false : isTlsConnection,
@@ -215,11 +216,11 @@ export default function ClusterForm({
                     config: selectedUserNameOptions[_dataList.cluster_name]?.config ?? null,
                     active: true,
                     prometheus_url: '',
-                    prometheusAuth: { 
-                        userName: '', 
-                        password: '',  
-                        tlsClientKey: '',  
-                        tlsClientCert: '',  
+                    prometheusAuth: {
+                        userName: '',
+                        password: '',
+                        tlsClientKey: '',
+                        tlsClientCert: '',
                     },
                     server_url: _dataList.server_url,
                 }
@@ -357,8 +358,8 @@ export default function ClusterForm({
             prometheusAuth: {
                 userName: prometheusToggleEnabled ? state.userName.value : '',
                 password: prometheusToggleEnabled ? state.password.value : '',
-                tlsClientKey: prometheusToggleEnabled? state.prometheusTlsClientKey.value : '',
-                tlsClientCert: prometheusToggleEnabled? state.prometheusTlsClientCert.value : '',
+                tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientKey.value : '',
+                tlsClientCert: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
             },
         }
     }
@@ -382,13 +383,10 @@ export default function ClusterForm({
                 payload.prometheusAuth['password'] = state.password.value || ''
                 payload.prometheusAuth['tlsClientKey'] = state.prometheusTlsClientKey.value || ''
                 payload.prometheusAuth['tlsClientCert'] = state.prometheusTlsClientCert.value || ''
-                
             }
         }
         if (isTlsConnection) {
-            if (
-                (state.tlsClientKey.value || state.tlsClientCert.value || state.certificateAuthorityData.value)
-            ) {
+            if (state.tlsClientKey.value || state.tlsClientCert.value || state.certificateAuthorityData.value) {
                 let isValid =
                     state.tlsClientKey.value?.length > 0 &&
                     state.tlsClientCert.value?.length > 0 &&
@@ -616,7 +614,7 @@ export default function ClusterForm({
                         {!isTlsConnection && <hr />}
                         {isTlsConnection && (
                             <>
-                                <div>
+                                <div className="form__row">
                                     <span
                                         data-testid="certificate_authority_data"
                                         className="form__label dc__required-field"
@@ -644,7 +642,7 @@ export default function ClusterForm({
                                         </label>
                                     )}
                                 </div>
-                                <div>
+                                <div className="form__row">
                                     <span data-testid="tls_client_key" className="form__label dc__required-field">
                                         TLS Key
                                     </span>
@@ -669,7 +667,7 @@ export default function ClusterForm({
                                         </label>
                                     )}
                                 </div>
-                                <div>
+                                <div className="form__row">
                                     <span data-testid="tls_certificate" className="form__label dc__required-field">
                                         TLS Certificate
                                     </span>
@@ -800,13 +798,13 @@ export default function ClusterForm({
                 <div className="code-editor-container">
                     <CodeEditor
                         value={saveYamlData}
-                        height="calc(100vh - 233px)"
+                        height="calc(100vh - 236px)"
                         diffView={false}
                         onChange={onChangeEditorValue}
                         mode={MODES.YAML}
                     >
                         <CodeEditor.Header>
-                            <div className="user-list__subtitle flex pt-8 pb-8 pr-12 pl-12 fs-13 lh-20">
+                            <div className="user-list__subtitle flex pt-8 pb-8 pr-12 pl-12 fs-13 lh-20 w-100">
                                 <span className="flex left">Paste the contents of kubeconfig file here</span>
                                 <div className="dc__link ml-auto cursor">
                                     {uploadState !== UPLOAD_STATE.UPLOADING && (
@@ -839,19 +837,15 @@ export default function ClusterForm({
     const LoadingCluster = (): JSX.Element => {
         return (
             <div className="cluster-form dc__position-rel h-100 bcn-0">
-                <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20 ">
+                <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Add Cluster</h2>
-                    <button
-                        type="button"
-                        className="dc__transparent flex icon-dim-24 mr-24"
-                        onClick={handleCloseButton}
-                    >
+                    <button type="button" className="dc__transparent flex icon-dim-24 " onClick={handleCloseButton}>
                         <Close className="icon-dim-24" />
                     </button>
                 </div>
                 <div
-                    className="flex flex-align-center dc__border-bottom w-100 flex-justify bcn-0 pb-12 pt-12 mb-20 pl-20"
-                    style={{ height: 732 }}
+                    className="flex flex-align-center w-100 flex-justify bcn-0 p-20"
+                    style={{ height: 'calc(100vh - 110px)' }}
                 >
                     <EmptyState>
                         <EmptyState.Image>
@@ -865,11 +859,11 @@ export default function ClusterForm({
                         </EmptyState.Subtitle>
                     </EmptyState>
                 </div>
-                <div className="w-100 dc__border-top flex right pb-12 pt-12 dc__position-fixed dc__position-abs dc__bottom-0">
-                    <button className="cta cancel" type="button" onClick={handleCloseButton} disabled={true}>
+                <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs ">
+                    <button className="cta cancel h-36 lh-36" type="button" onClick={handleCloseButton} disabled={true}>
                         Cancel
                     </button>
-                    <button className="cta mr-20 ml-20" disabled={true}>
+                    <button className="cta ml-12 h-36 lh-36" disabled={true}>
                         {<Progressing />}
                     </button>
                 </div>
@@ -951,9 +945,9 @@ export default function ClusterForm({
                             )}
                         </div>
                     </div>
-                    <div className="w-100 dc__border-top flex right pb-12 pt-12 dc__position-fixed dc__position-abs dc__bottom-0">
+                    <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs dc__bottom-0">
                         <button
-                            className="ml-20 dc__edit_button cb-5"
+                            className="dc__edit_button cb-5 h-36 lh-36"
                             type="button"
                             onClick={handleEditConfigClick}
                             style={{ marginRight: 'auto' }}
@@ -965,7 +959,7 @@ export default function ClusterForm({
                         </button>
                         <button
                             data-testid="close_after_cluster_list_display"
-                            className="cta mr-20"
+                            className="cta  h-36 lh-36"
                             type="button"
                             onClick={handleCloseButton}
                             style={{ marginLeft: 'auto' }}
@@ -1072,20 +1066,20 @@ export default function ClusterForm({
                         className="cluster-form dc__position-rel h-100 bcn-0"
                     >
                         <AddClusterHeader />
-                        <div className="dc__overflow-scroll" style={{ height: 'calc(100vh-114px)' }}>
-                            <div className="api-token__list en-2 bw-1 bcn-0 br-8 mr-20 ml-20 mt-16">
+                        <div className="dc__overflow-scroll" style={{ height: 'calc(100vh - 110px)' }}>
+                            <div className="api-token__list en-2 bw-1 bcn-0 br-4 mr-20 ml-20 mt-16">
                                 <InfoColourBar
                                     message={
                                         <>
-                                            <span className="fw-6">{validCluster()} valid cluster. </span>
+                                            <span className="fw-6">{validCluster()} valid cluster(s). </span>
                                             <span>Select the cluster you want to add/update</span>
                                         </>
                                     }
-                                    classname="info_bar cn-9 lh-20 dc__no-border-imp pl-18"
-                                    Icon={Info}
-                                    styles={{ borderRadius: '6px 6px 0 0' }}
+                                    classname="info_bar cn-9 lh-20 dc__no-border-imp pl-16"
+                                    Icon={InfoIcon}
+                                    styles={{ borderRadius: '3px 3px 0 0' }}
                                 />
-                                <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom">
+                                <div className="cluster-list-row-1 cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-16 pr-16 dc__border-top dc__border-bottom">
                                     <div data-testid="select_all_cluster_checkbox">
                                         <Checkbox
                                             rootClassName={`form__checkbox-label--ignore-cache mb-0 flex${
@@ -1109,12 +1103,10 @@ export default function ClusterForm({
                                         dataList.map((clusterDetail, index) => (
                                             <div
                                                 key={`api_${index}`}
-                                                className="cluster-list-row-1 flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20"
+                                                className="cluster-list-row-1 flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
                                                 style={{
                                                     height: 'auto',
                                                     alignItems: 'start',
-                                                    marginTop: '8px',
-                                                    marginBottom: '8px',
                                                 }}
                                             >
                                                 <Checkbox
@@ -1154,8 +1146,13 @@ export default function ClusterForm({
                                                 />
                                                 <div>
                                                     {clusterDetail.id !== 0 && (
-                                                        <div className="flex left top">
-                                                            <ErrorIcon className="dc__app-summary__icon icon-dim-16 mr-8 mt-3" />
+                                                        <div
+                                                            className="flex left top"
+                                                            style={{
+                                                                columnGap: '6px',
+                                                            }}
+                                                        >
+                                                            <ErrorIcon className="dc__app-summary__icon icon-dim-16 m-2" />
                                                             <span>
                                                                 {isClusterSelected[clusterDetail.cluster_name]
                                                                     ? 'Cluster already exists. Cluster will be updated'
@@ -1167,9 +1164,14 @@ export default function ClusterForm({
                                                         .errorInConnecting !== '' &&
                                                         selectedUserNameOptions[clusterDetail.cluster_name]
                                                             .errorInConnecting !== 'cluster-already-exists' && (
-                                                            <div className="flex left top">
+                                                            <div
+                                                                className="flex left top"
+                                                                style={{
+                                                                    columnGap: '6px',
+                                                                }}
+                                                            >
                                                                 <div
-                                                                    className={`dc__app-summary__icon icon-dim-16 mr-8 mt-3 ${
+                                                                    className={`dc__app-summary__icon icon-dim-16 m-2 ${
                                                                         selectedUserNameOptions[
                                                                             clusterDetail.cluster_name
                                                                         ].errorInConnecting.length !== 0
@@ -1205,13 +1207,13 @@ export default function ClusterForm({
                                 data-testid="edit_kubeconfig_button_cluster_checkbox"
                                 style={{ display: 'flex', alignItems: 'center' }}
                             >
-                                <Edit className="icon-dim-16 scb-5 mr-4" />
+                                <Edit className="icon-dim-16 scb-5 mr-4 h-36 lh-36" />
                                 Edit Kubeconfig
                             </span>
                         </button>
                         <button
                             data-testid="save_cluster_list_button_after_selection"
-                            className="cta"
+                            className="cta h-36 lh-36"
                             type="button"
                             onClick={() => handleClusterDetailCall()}
                             disabled={!saveClusterList || !isAnyCheckboxSelected}
@@ -1235,14 +1237,14 @@ export default function ClusterForm({
 
     const AddClusterHeader = () => {
         return (
-            <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12  pl-20 ">
+            <div className="flex flex-align-center dc__border-bottom flex-justify bcn-0 pb-12 pt-12 pl-20 pr-20">
                 <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
                     <span className="fw-6 fs-16 cn-9">{clusterTitle()}</span>
                 </h2>
                 <button
                     data-testid="header_close_icon"
                     type="button"
-                    className="dc__transparent flex icon-dim-24 mr-24"
+                    className="dc__transparent flex icon-dim-24"
                     onClick={handleCloseButton}
                 >
                     <Close className="icon-dim-24" />
@@ -1258,7 +1260,7 @@ export default function ClusterForm({
             <div className="cluster-form dc__position-rel h-100 bcn-0" style={{ padding: 'auto 0' }}>
                 <AddClusterHeader />
 
-                <div className="p-20" style={{ overflow: 'auto', height: 'calc(100vh - 124px)' }}>
+                <div className="p-20" style={{ overflow: 'auto', height: 'calc(100vh - 110px)' }}>
                     {!id && (
                         <div className="form__row clone-apps dc__inline-block pd-0 pt-0 pb-12">
                             <RadioGroup
@@ -1284,7 +1286,7 @@ export default function ClusterForm({
                 </div>
 
                 {!isKubeConfigFile && (
-                    <div className="w-100 dc__border-top flex right pb-12 pt-12 dc__position-fixed dc__position-abs dc__bottom-0">
+                    <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs dc__bottom-0">
                         {id && (
                             <button
                                 data-testid="delete_cluster"
@@ -1298,7 +1300,7 @@ export default function ClusterForm({
                         )}
                         <button
                             data-testid="cancel_button"
-                            className="cta cancel"
+                            className="cta cancel h-36 lh-36"
                             type="button"
                             onClick={handleCloseButton}
                         >
@@ -1306,7 +1308,7 @@ export default function ClusterForm({
                         </button>
                         <button
                             data-testid="save_cluster_after_entering_cluster_details"
-                            className="cta mr-20 ml-12"
+                            className="cta ml-12 h-36 lh-36"
                             onClick={handleOnSubmit}
                         >
                             {id ? 'Update cluster' : 'Save cluster'}
@@ -1314,10 +1316,10 @@ export default function ClusterForm({
                     </div>
                 )}
                 {isKubeConfigFile && (
-                    <div className="w-100 dc__border-top flex right pb-12 pt-12 dc__position-fixed dc__position-abs dc__bottom-0">
+                    <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs dc__bottom-0">
                         <button
                             data-testid="cancel_kubeconfig_button"
-                            className="cta cancel"
+                            className="cta cancel h-36 lh-36"
                             type="button"
                             onClick={handleCloseButton}
                         >
@@ -1325,7 +1327,7 @@ export default function ClusterForm({
                         </button>
 
                         <button
-                            className="cta mr-20 ml-12"
+                            className="cta ml-12 h-36 lh-36"
                             type="button"
                             onClick={handleGetClustersClick}
                             disabled={!saveYamlData}
@@ -1333,7 +1335,7 @@ export default function ClusterForm({
                         >
                             <div className="flex">
                                 Get cluster
-                                <ForwardArrow className="ml-5" />
+                                <ForwardArrow className={`ml-5 ${!saveYamlData? 'scn-4':''}`} />
                             </div>
                         </button>
                     </div>
