@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react'
-import {
-    FormType,
-    PluginType,
-    ScriptType,
-    FormErrorObjectType,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { FormType, PluginType, ScriptType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
 import { PreBuildType } from '../ciPipeline/types'
 import EmptyPreBuild from '../../assets/img/pre-build-empty.png'
 import EmptyPostBuild from '../../assets/img/post-build-empty.png'
@@ -21,7 +16,7 @@ import { ciPipelineContext } from './CIPipeline'
 import nojobs from '../../assets/img/empty-joblist@2x.png'
 import { importComponentFromFELibrary } from '../common'
 
-const getRequiredAndMovableProp = importComponentFromFELibrary('getRequiredAndMovableProp', null, 'function')
+const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
 export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, isJobView }: PreBuildType) {
     const {
         formData,
@@ -89,13 +84,11 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
                 inlineStepDetail: { inputVariables: [], outputVariables: [] },
             }
         } else {
-            const requiredAndMovableData = getRequiredAndMovableProp
-                ? getRequiredAndMovableProp(formData, mandatoryPluginsMap, activeStageName, pluginId)
-                : { isRequired: false, canBeMoved: false }
+            const isPluginRequired =
+                isRequired && isRequired(formData, mandatoryPluginsMap, activeStageName, pluginId)
             _form[activeStageName].steps[selectedTaskIndex].description = pluginDescription
             _form[activeStageName].steps[selectedTaskIndex].name = pluginName
-            _form[activeStageName].steps[selectedTaskIndex].isMandatory = requiredAndMovableData?.isRequired
-            _form[activeStageName].steps[selectedTaskIndex].canBeMoved = requiredAndMovableData?.canBeMoved
+            _form[activeStageName].steps[selectedTaskIndex].isMandatory = isPluginRequired
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
                 id: 0,
                 pluginId: pluginId,

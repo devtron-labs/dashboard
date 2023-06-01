@@ -20,8 +20,8 @@ import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
 
 const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
-
-export function TaskList({ mandatoryPluginData, setInputVariablesListFromPrevStep }: TaskListType) {
+const isRequired = importComponentFromFELibrary('isRequired', null, 'function')
+export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesListFromPrevStep }: TaskListType) {
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState<boolean>(false)
     const {
         formData,
@@ -104,7 +104,6 @@ export function TaskList({ mandatoryPluginData, setInputVariablesListFromPrevSte
             for (const task of newList) {
                 if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
                     task.isMandatory = true
-                    task.canBeMoved = _taskDetail[0].canBeMoved
                     break
                 }
             }
@@ -128,9 +127,26 @@ export function TaskList({ mandatoryPluginData, setInputVariablesListFromPrevSte
 
     const moveTaskToOtherStage = (e): void => {
         const taskIndex = e.currentTarget.dataset.index
+        const moveToStage =
+            activeStageName === BuildStageVariable.PreBuild ? BuildStageVariable.PostBuild : BuildStageVariable.PreBuild
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
         const _taskDetail = newList.splice(taskIndex, 1)
+        const isPluginRequired =
+            isRequired &&
+            isRequired(newList, mandatoryPluginsMap, moveToStage, _taskDetail[0].pluginRefStepDetail.pluginId, true)
+        if (_taskDetail[0].isMandatory && !isPluginRequired) {
+            for (const task of newList) {
+                if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
+                    task.isMandatory = true
+                    break
+                }
+            }
+            _taskDetail[0].isMandatory = false
+        } else {
+            _taskDetail[0].isMandatory = isPluginRequired
+        }
+
         _taskDetail[0].pluginRefStepDetail = {
             id: 0,
             pluginId: _taskDetail[0].pluginRefStepDetail.pluginId,
@@ -138,8 +154,7 @@ export function TaskList({ mandatoryPluginData, setInputVariablesListFromPrevSte
             inputVariables: _taskDetail[0].pluginRefStepDetail.inputVariables || [],
             outputVariables: _taskDetail[0].pluginRefStepDetail.outputVariables || [],
         }
-        const moveToStage =
-            activeStageName === BuildStageVariable.PreBuild ? BuildStageVariable.PostBuild : BuildStageVariable.PreBuild
+
         _formData[moveToStage].steps.push(_taskDetail[0])
         _formData[activeStageName].steps = newList
         const newListLength = newList.length
@@ -209,14 +224,6 @@ export function TaskList({ mandatoryPluginData, setInputVariablesListFromPrevSte
         setSelectedTaskIndex(index)
     }
 
-    const showMandatoryWarning = (): boolean => {
-        return (
-            mandatoryPluginData &&
-            ((activeStageName === BuildStageVariable.PreBuild && !mandatoryPluginData.isValidPre) ||
-                (activeStageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
-        )
-    }
-
     const openDeleteConfirmation = (e): void => {
         setClickedIndex(e.currentTarget.dataset.index)
         setShowDeleteConfirmation(true)
@@ -229,7 +236,7 @@ export function TaskList({ mandatoryPluginData, setInputVariablesListFromPrevSte
 
     return (
         <>
-            <div className={`task-container pr-20 ${showMandatoryWarning() ? 'with-warning' : ''}`}>
+            <div className={`task-container pr-20 ${withWarning ? 'with-warning' : ''}`}>
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
                     <Fragment key={`task-item-${index}`}>
                         <div
@@ -297,8 +304,7 @@ export function TaskList({ mandatoryPluginData, setInputVariablesListFromPrevSte
                                     </div>
                                     {taskDetail.isMandatory && MandatoryPluginMenuOptionTippy && (
                                         <MandatoryPluginMenuOptionTippy
-                                            pluginId={taskDetail.pluginRefStepDetail.pluginId}
-                                            mandatoryPluginList={mandatoryPluginData.pluginData}
+                                            pluginDetail={mandatoryPluginsMap[taskDetail.pluginRefStepDetail.pluginId]}
                                         />
                                     )}
                                 </PopupMenu.Body>

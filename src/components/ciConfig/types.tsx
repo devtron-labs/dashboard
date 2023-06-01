@@ -8,6 +8,7 @@ import {
     MandatoryPluginDataType,
     PluginDetailType,
     VariableType,
+    MandatoryPluginDetailType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CustomNavItemsType } from '../app/details/appConfig/appConfig.type'
@@ -338,6 +339,7 @@ export interface CIPipelineSidebarType {
     isJobView?: boolean
     mandatoryPluginData: MandatoryPluginDataType
     pluginList: PluginDetailType[]
+    mandatoryPluginsMap: Record<number, MandatoryPluginDetailType>
     setInputVariablesListFromPrevStep: React.Dispatch<
         React.SetStateAction<{
             preBuildStage: Map<string, VariableType>[]
@@ -347,7 +349,8 @@ export interface CIPipelineSidebarType {
 }
 
 export interface TaskListType {
-    mandatoryPluginData: MandatoryPluginDataType
+    withWarning: boolean
+    mandatoryPluginsMap: Record<number, MandatoryPluginDetailType>
     setInputVariablesListFromPrevStep: React.Dispatch<
         React.SetStateAction<{
             preBuildStage: Map<string, VariableType>[]

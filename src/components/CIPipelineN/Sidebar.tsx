@@ -18,6 +18,7 @@ export function Sidebar({
     isJobView,
     mandatoryPluginData,
     pluginList,
+    mandatoryPluginsMap,
     setInputVariablesListFromPrevStep,
 }: CIPipelineSidebarType) {
     const {
@@ -116,7 +117,11 @@ export function Sidebar({
                                 />
                             )}
                             <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
-                            <TaskList mandatoryPluginData={mandatoryPluginData} setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}/>
+                            <TaskList
+                                withWarning={showMandatoryWarning()}
+                                mandatoryPluginsMap={mandatoryPluginsMap}
+                                setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
+                            />
                         </>
                     )}
                 </div>

@@ -875,6 +875,7 @@ export default function CIPipeline({
                                     mandatoryPluginData={mandatoryPluginData}
                                     pluginList={[...presetPlugins, ...sharedPlugins]}
                                     setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
+                                    mandatoryPluginsMap={mandatoryPluginsMap}
                                 />
                             </div>
                         )}
