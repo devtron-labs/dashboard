@@ -205,7 +205,6 @@ export default function ClusterForm({
         toggleKubeConfigFile(true)
     }
 
-    console.log(state)
     const getSaveClusterPayload = (dataLists: DataListType[]) => {
         const saveClusterPayload: SaveClusterPayloadType[] = []
         for (const _dataList of dataLists) {
@@ -405,13 +404,13 @@ export default function ClusterForm({
                 />,
             )
             toggleShowAddCluster()
+            setTlsConnectionFalse()
             reload()
             toggleEditMode((e) => !e)
         } catch (err) {
             showError(err)
         } finally {
             setLoadingState(false)
-            setTlsConnectionFalse()
         }
     }
 
@@ -565,11 +564,11 @@ export default function ClusterForm({
                                 className="dc__resizable-textarea__with-max-height dc__required-field"
                                 name="token"
                                 value={
-                                    id && id !== 1
+                                    id ? id !== 1
                                         ? DEFAULT_SECRET_PLACEHOLDER
                                         : config?.bearer_token
                                         ? config.bearer_token
-                                        : ''
+                                        : '' : state.token.value
                                 }
                                 onChange={handleOnChange}
                                 onBlur={handleOnBlur}
