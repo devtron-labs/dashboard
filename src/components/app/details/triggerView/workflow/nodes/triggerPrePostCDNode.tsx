@@ -5,6 +5,7 @@ import { URLS } from './../../../../../../config';
 import { Link } from 'react-router-dom';
 import { DEFAULT_STATUS } from '../../../../../../config';
 import { TriggerViewContext } from '../../config';
+import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib';
 
 export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps>{
 
@@ -14,14 +15,14 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps>{
     }
 
     getCDDetailsURL(): string {
-        return `${this.props.match.url.replace(URLS.APP_TRIGGER, URLS.APP_CD_DETAILS)}/${this.props.environmentId}/${this.props.id}`
+        return `${this.props.match.url.replace(URLS.APP_TRIGGER, URLS.APP_CD_DETAILS)}/${this.props.environmentId}/${this.props.id}?type=${this.props.type}`
     }
 
     redirectToCDDetails(e) {
-      if (this.props.fromAppGrouping) {
-          return
-      }
-      this.props.history.push(this.getCDDetailsURL())
+        if (this.props.fromAppGrouping) {
+            return
+        }
+        this.props.history.push(this.getCDDetailsURL())
     }
 
     renderStatus(isClickable: boolean, status: string,) {
@@ -33,7 +34,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps>{
                     {!this.props.fromAppGrouping && (
                         <>
                             {this.props.status && <span className="mr-5 ml-5">/</span>}
-                            <Link to={url} className="workflow-node__details-link">
+                            <Link onClick={stopPropagation} to={url} className="workflow-node__details-link">
                                 Details
                             </Link>
                         </>

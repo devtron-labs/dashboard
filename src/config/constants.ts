@@ -226,6 +226,8 @@ export const Routes = {
     CUSTOM_ROLES: 'rbac/role',
     GROUPS: 'groups',
     GROUP: 'group',
+    ROTATE_PODS: 'app/rotate-pods',
+    DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/'
 }
 
 export const ViewType = {
@@ -811,6 +813,10 @@ export enum CONFIGURATION_TYPES {
     NAMESPACE = 'NAMESPACE',
     DESCRIPTION = 'DESCRIPTION',
 }
+
+export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
+
+export const POD_ROTATION_INITIATED = 'Pod rotation initiated'
 
 export enum DELETE_ACTION {
     DELETE= 'delete',
