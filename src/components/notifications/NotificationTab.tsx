@@ -735,6 +735,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 />
             )
         }
+        else return null
     }
 
     remderModifyRecipients() {
