@@ -4,7 +4,7 @@ import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass
 import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
 import MoreIntegrationsIcon from '../../../assets/img/ic-more-extensions.png'
-import { ModuleNameMap, TRIVY_TOOL_VERSION, URLS } from '../../../config'
+import { CLAIR_TOOL_VERSION_V2, CLAIR_TOOL_VERSION_V4, ModuleNameMap, TRIVY_TOOL_VERSION, URLS } from '../../../config'
 import IndexStore from '../appDetails/index.store'
 import { AppDetails, AppType } from '../appDetails/appDetails.type'
 import { handleError } from './DevtronStackManager.component'
@@ -93,7 +93,7 @@ export const handleEnableAction = async (
 ) => {
     try {
         const toolVersion =
-            moduleName === ModuleNameMap.SECURITY_TRIVY ? TRIVY_TOOL_VERSION : window?._env_?.CLAIR_TOOL_VERSION
+            moduleName === ModuleNameMap.SECURITY_TRIVY ? TRIVY_TOOL_VERSION : (window._env_.CLAIR_TOOL_VERSION|| CLAIR_TOOL_VERSION_V4)
         const { result } = await executeModuleEnableAction(moduleName, toolVersion)
         if (result?.success) {
             setSuccessState(true)
