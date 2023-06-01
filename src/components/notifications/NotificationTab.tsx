@@ -598,18 +598,6 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     }
 
-    renderBody() {
-        return <div className="notification-tab">
-            <div data-testid="add-new-notification-button" onClick={this.CreateNewNotification} style={{ width: "100px" }}
-                className="cta small flex dc__no-decor">
-                <Add className="icon-dim-16 mr-5" />Add New
-            </div>
-            {this.renderOptions()}
-            {this.renderPipelineList()}
-            {this.renderPagination()}
-        </div>
-    }
-
     renderPagination() {
         if(this.state.pagination.size) {
         return (
@@ -621,6 +609,18 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         )
         }
         else return null
+    }
+
+    renderBody() {
+        return <div className="notification-tab">
+            <div data-testid="add-new-notification-button" onClick={this.CreateNewNotification} style={{ width: "100px" }}
+                className="cta small flex dc__no-decor">
+                <Add className="icon-dim-16 mr-5" />Add New
+            </div>
+            {this.renderOptions()}
+            {this.renderPipelineList()}
+            {this.renderPagination()}
+        </div>
     }
 
     remderModifyRecipients() {
