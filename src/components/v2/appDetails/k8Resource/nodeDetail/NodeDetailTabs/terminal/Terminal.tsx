@@ -1,5 +1,5 @@
-import React, { useEffect, useState,  useContext} from 'react'
-import { elementDidMount, useHeightObserver } from '../../../../../../common/helpers/Helpers'
+import React, { useContext, useEffect, useState } from 'react'
+import { elementDidMount, useHeightObserver } from '../../../../../../common'
 import CopyToast, { handleSelectionChange } from '../CopyToast'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'

@@ -28,7 +28,7 @@ export default class Login extends Component<LoginProps, LoginFormState> {
         this.isFormNotValid = this.isFormNotValid.bind(this)
     }
     componentDidMount() {
-        const queryString = new URLSearchParams(this.props.location.search)
+        let queryString = new URLSearchParams(this.props.location.search)
         let queryParam = queryString.get('continue')
 
         //1. TOKEN_COOKIE_NAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
