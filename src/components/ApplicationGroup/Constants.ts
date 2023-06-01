@@ -47,6 +47,12 @@ export enum BulkResponseStatus {
     'UNAUTHORIZE' = 'unauthorized',
 }
 
+export const BULK_VIRTUAL_RESPONSE_STATUS = {
+    [BulkResponseStatus.PASS]: 'Succeeded',
+    [BulkResponseStatus.FAIL]: 'Failed',
+    [BulkResponseStatus.UNAUTHORIZE]: 'Not authorised',
+}
+
 export const BULK_CI_RESPONSE_STATUS_TEXT = {
     [BulkResponseStatus.PASS]: 'Build triggered',
     [BulkResponseStatus.FAIL]: 'Build not triggered',

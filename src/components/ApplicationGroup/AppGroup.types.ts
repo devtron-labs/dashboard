@@ -126,12 +126,14 @@ export interface TriggerResponseModalType {
     isLoading: boolean
     onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
     isVirtualEnv?: boolean
+    envName?: string
 }
 
 export interface TriggerModalRowType {
     rowData: ResponseRowType
     key: number
     isVirtualEnv?: boolean
+    envName?: string
 }
 
 export interface WorkflowNodeSelectionType {

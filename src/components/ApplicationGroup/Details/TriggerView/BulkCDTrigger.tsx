@@ -285,6 +285,7 @@ export default function BulkCDTrigger({
                         isLoading={isLoading}
                         onClickRetryBuild={onClickTriggerBulkCD}
                         isVirtualEnv={isVirtualEnv}
+                        envName={selectedApp.envName}
                     />
                 ) : (
                     <>

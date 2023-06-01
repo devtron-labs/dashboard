@@ -36,8 +36,12 @@ export class ExpandedRow extends Component<ExpandedRowProps> {
                         </div>
                     )}
                     <div className="app-list__cell app-list__cell--env">{env.name}</div>
-                    <div className="app-list__cell app-list__cell--cluster">{env.clusterName}</div>
-                    <div className="app-list__cell app-list__cell--namespace">{env.namespace}</div>
+                    <div className="app-list__cell app-list__cell--cluster">
+                        <p className="dc__truncate-text">{env.clusterName}</p>
+                    </div>
+                    <div className="app-list__cell app-list__cell--namespace">
+                        <p className="dc__truncate-text">{env.namespace}</p>
+                    </div>
                     <div className="app-list__cell app-list__cell--time">
                         {env.lastDeployedTime && (
                             <Tippy className="default-tt" arrow={true} placement="top" content={env.lastDeployedTime}>
@@ -55,15 +59,15 @@ export class ExpandedRow extends Component<ExpandedRowProps> {
         return (
             <div className="expanded-row">
                 <div className="expanded-row__title">
-                    <div className="cn-9 expanded-row__close flex left pr-20 pl-20 cursor" data-key={this.props.app.id} onClick={this.props.close}>
-                        <Expand className="icon-dim-24 p-2 mr-16 fcn-7" />
-                        <span className='fw-6'>{this.props.app.name}</span>
-                    </div>
-                    <button
-                        type="button"
-                        className="button-edit button-edit--white"
-                        onClick={this.handleEditApp}
+                    <div
+                        className="cn-9 expanded-row__close flex left pr-20 pl-20 cursor"
+                        data-key={this.props.app.id}
+                        onClick={this.props.close}
                     >
+                        <Expand className="icon-dim-24 p-2 mr-16 fcn-7" />
+                        <span className="fw-6">{this.props.app.name}</span>
+                    </div>
+                    <button type="button" className="button-edit button-edit--white" onClick={this.handleEditApp}>
                         <Settings className="button-edit__icon" />
                     </button>
                 </div>

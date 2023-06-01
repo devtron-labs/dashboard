@@ -1065,8 +1065,8 @@ export const processK8SObjects = (
 export function createClusterEnvGroup<T>(
     list: T[],
     propKey: string,
-    isOptionType?: boolean,
-    optionName?: string,
+    optionLabel?: string,
+    optionValue?: string,
 ): { label: string; options: T[]; isVirtualEnvironment?: boolean }[] {
     const objList: Record<string, T[]> = list.reduce((acc, obj) => {
         const key = obj[propKey]
@@ -1074,7 +1074,7 @@ export function createClusterEnvGroup<T>(
             acc[key] = []
         }
         acc[key].push(
-            isOptionType ? { label: obj[optionName], value: obj[optionName], description: obj['description'] } : obj,
+            optionLabel ? { label: obj[optionLabel], value: obj[optionValue ? optionValue : optionLabel], description: obj['description'], isVirtualEnvironment: obj['isVirtualEnvironment'] } : obj,
         )
         return acc
     }, {})
