@@ -874,6 +874,7 @@ export default function CIPipeline({
                                     isJobView={isJobView}
                                     mandatoryPluginData={mandatoryPluginData}
                                     pluginList={[...presetPlugins, ...sharedPlugins]}
+                                    setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
                                 />
                             </div>
                         )}

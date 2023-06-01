@@ -1,6 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { BuildStageVariable, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
-import { RadioGroup, RadioGroupItem, FormType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    RadioGroup,
+    RadioGroupItem,
+    FormType,
+    FormErrorObjectType,
+    VariableType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { TaskList } from './TaskList'
 import { ciPipelineContext } from './CIPipeline'
 import { importComponentFromFELibrary } from '../common'
@@ -8,7 +14,12 @@ import { CIPipelineSidebarType } from '../ciConfig/types'
 
 const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarning')
 
-export function Sidebar({ isJobView, mandatoryPluginData, pluginList }: CIPipelineSidebarType) {
+export function Sidebar({
+    isJobView,
+    mandatoryPluginData,
+    pluginList,
+    setInputVariablesListFromPrevStep,
+}: CIPipelineSidebarType) {
     const {
         formData,
         setFormData,
@@ -17,6 +28,8 @@ export function Sidebar({ isJobView, mandatoryPluginData, pluginList }: CIPipeli
         activeStageName,
         formDataErrorObj,
         setFormDataErrorObj,
+        setSelectedTaskIndex,
+        calculateLastStepDetail,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
@@ -25,6 +38,16 @@ export function Sidebar({ isJobView, mandatoryPluginData, pluginList }: CIPipeli
         activeStageName: string
         formDataErrorObj: FormErrorObjectType
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
+        setSelectedTaskIndex: React.Dispatch<React.SetStateAction<number>>
+        calculateLastStepDetail: (
+            isFromAddNewTask: boolean,
+            _formData: FormType,
+            activeStageName: string,
+            startIndex?: number,
+        ) => {
+            index: number
+            calculatedStageVariables: Map<string, VariableType>[]
+        }
     } = useContext(ciPipelineContext)
     const [helpData, setHelpData] = useState<{ helpText: string; docLink: string }>({
         helpText: 'Docs: Configure build stage',
@@ -56,6 +79,24 @@ export function Sidebar({ isJobView, mandatoryPluginData, pluginList }: CIPipeli
         )
     }
 
+    const handleApplyPlugin = (_formData: FormType): void => {
+        const preBuildVariable = calculateLastStepDetail(
+            false,
+            _formData,
+            BuildStageVariable.PreBuild,
+        ).calculatedStageVariables
+        const postBuildVariable = calculateLastStepDetail(
+            false,
+            _formData,
+            BuildStageVariable.PostBuild,
+        ).calculatedStageVariables
+        setInputVariablesListFromPrevStep({
+            preBuildStage: preBuildVariable,
+            postBuildStage: postBuildVariable,
+        })
+        setSelectedTaskIndex(_formData[activeStageName].steps.length - 1)
+    }
+
     return (
         <div className="dc__position-rel">
             {activeStageName !== BuildStageVariable.Build ? (
@@ -71,10 +112,11 @@ export function Sidebar({ isJobView, mandatoryPluginData, pluginList }: CIPipeli
                                     formDataErrorObj={formDataErrorObj}
                                     setFormDataErrorObj={setFormDataErrorObj}
                                     allPluginList={pluginList}
+                                    handleApplyPlugin={handleApplyPlugin}
                                 />
                             )}
                             <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
-                            <TaskList mandatoryPluginData={mandatoryPluginData} />
+                            <TaskList mandatoryPluginData={mandatoryPluginData} setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}/>
                         </>
                     )}
                 </div>

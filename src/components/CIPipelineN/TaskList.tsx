@@ -13,13 +13,17 @@ import {
     FormErrorObjectType,
     TaskErrorObj,
     BuildStageVariable,
+    DeleteDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
 
 const PolicyEnforcementMenuOptions = importComponentFromFELibrary('PolicyEnforcementMenuOptions')
+const MovePluginConfirmation = importComponentFromFELibrary('MovePluginConfirmation')
 
-export function TaskList({ mandatoryPluginData }: TaskListType) {
+export function TaskList({ mandatoryPluginData, setInputVariablesListFromPrevStep }: TaskListType) {
+    const [showDeleteConfirmation, setShowDeleteConfirmation] = useState<boolean>(false)
+    const [showMoveConfirmation, setShowMoveConfirmation] = useState<boolean>(false)
     const {
         formData,
         setFormData,
@@ -54,6 +58,7 @@ export function TaskList({ mandatoryPluginData }: TaskListType) {
     const [dragItemStartIndex, setDragItemStartIndex] = useState<number>(0)
     const [dragItemIndex, setDragItemIndex] = useState<number>(0)
     const [dragAllowed, setDragAllowed] = useState<boolean>(false)
+    const [clickedIndex, setClickedIndex] = useState<number>(-1)
     const handleDragStart = (index: number): void => {
         setDragItemIndex(index)
         setDragItemStartIndex(index)
@@ -92,14 +97,15 @@ export function TaskList({ mandatoryPluginData }: TaskListType) {
         setDragItemStartIndex(index)
     }
 
-    const deleteTask = (index: number): void => {
+    const deleteTask = (): void => {
         const _formData = { ...formData }
         const newList = [..._formData[activeStageName].steps]
-        const _taskDetail = newList.splice(index, 1)
+        const _taskDetail = newList.splice(clickedIndex, 1)
         if (_taskDetail[0].isMandatory) {
             for (const task of newList) {
                 if (task.pluginRefStepDetail?.pluginId === _taskDetail[0].pluginRefStepDetail.pluginId) {
                     task.isMandatory = true
+                    task.canBeMoved = _taskDetail[0].canBeMoved
                     break
                 }
             }
@@ -107,7 +113,7 @@ export function TaskList({ mandatoryPluginData }: TaskListType) {
         _formData[activeStageName].steps = newList
         const newListLength = newList.length
         const newListIndex = newListLength > 1 ? newListLength - 1 : 0
-        const newTaskIndex = index >= newListLength ? newListIndex : index
+        const newTaskIndex = clickedIndex >= newListLength ? newListIndex : clickedIndex
         calculateLastStepDetail(false, _formData, activeStageName, newTaskIndex)
         setTimeout(() => {
             setSelectedTaskIndex(newTaskIndex)
@@ -115,9 +121,10 @@ export function TaskList({ mandatoryPluginData }: TaskListType) {
         setFormData(_formData)
         const _formDataErrorObj = { ...formDataErrorObj }
         const newErrorList = [...formDataErrorObj[activeStageName].steps]
-        newErrorList.splice(index, 1)
+        newErrorList.splice(clickedIndex, 1)
         _formDataErrorObj[activeStageName].steps = newErrorList
         setFormDataErrorObj(_formDataErrorObj)
+        closeDeleteConfirmation()
     }
 
     function validateCurrentTask(index?: number): void {
@@ -140,6 +147,26 @@ export function TaskList({ mandatoryPluginData }: TaskListType) {
             ((activeStageName === BuildStageVariable.PreBuild && !mandatoryPluginData.isValidPre) ||
                 (activeStageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
         )
+    }
+
+    const openDeleteConfirmation = (e): void => {
+        setClickedIndex(e.currentTarget.dataset.index)
+        setShowDeleteConfirmation(true)
+    }
+
+    const closeDeleteConfirmation = (): void => {
+        setClickedIndex(-1)
+        setShowDeleteConfirmation(false)
+    }
+
+    const openMoveConfirmation = (e): void => {
+        setClickedIndex(e.currentTarget.dataset.index)
+        setShowMoveConfirmation(true)
+    }
+
+    const closeMoveConfirmation = (): void => {
+        setClickedIndex(-1)
+        setShowMoveConfirmation(false)
     }
 
     return (
@@ -184,7 +211,8 @@ export function TaskList({ mandatoryPluginData }: TaskListType) {
                                 <PopupMenu.Body>
                                     <div
                                         className="flex left p-8 pointer dc__hover-n50"
-                                        onClick={(e) => deleteTask(index)}
+                                        data-index={index}
+                                        onClick={openDeleteConfirmation}
                                     >
                                         <Trash className="icon-dim-16 mr-10" />
                                         Remove
@@ -196,12 +224,7 @@ export function TaskList({ mandatoryPluginData }: TaskListType) {
                                             activeStageName={activeStageName}
                                             pluginId={taskDetail.pluginRefStepDetail.pluginId}
                                             mandatoryPluginList={mandatoryPluginData.pluginData}
-                                            formData={formData}
-                                            setFormData={setFormData}
-                                            formDataErrorObj={formDataErrorObj}
-                                            setFormDataErrorObj={setFormDataErrorObj}
-                                            calculateLastStepDetail={calculateLastStepDetail}
-                                            setSelectedTaskIndex={setSelectedTaskIndex}
+                                            moveTask={openMoveConfirmation}
                                         />
                                     )}
                                 </PopupMenu.Body>
@@ -218,6 +241,29 @@ export function TaskList({ mandatoryPluginData }: TaskListType) {
             >
                 <Add className="add-icon" /> Add task
             </div>
+            {showDeleteConfirmation && (
+                <DeleteDialog
+                    title="Remove plugin"
+                    description="It will remove plugin and clear variables if entered.
+                Do you want to continue to remove?"
+                    closeDelete={closeDeleteConfirmation}
+                    delete={deleteTask}
+                />
+            )}
+            {showMoveConfirmation && (
+                <MovePluginConfirmation
+                    closePopup={closeMoveConfirmation}
+                    taskIndex={clickedIndex}
+                    activeStageName={activeStageName}
+                    formData={formData}
+                    setFormData={setFormData}
+                    formDataErrorObj={formDataErrorObj}
+                    setFormDataErrorObj={setFormDataErrorObj}
+                    calculateLastStepDetail={calculateLastStepDetail}
+                    setSelectedTaskIndex={setSelectedTaskIndex}
+                    setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
+                />
+            )}
         </>
     )
 }
