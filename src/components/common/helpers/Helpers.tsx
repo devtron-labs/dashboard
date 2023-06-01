@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo, RefObject, useLayoutEffect } from 'react'
-import { showError, noop, useThrottledEffect } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, useThrottledEffect, OptionType, noop } from '@devtron-labs/devtron-fe-common-lib';
 import YAML from 'yaml'
 import { useWindowSize } from './UseWindowSize'
 import { useLocation } from 'react-router'
 import { Link } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import { getDateInMilliseconds } from '../../apiTokens/authorization.utils'
-import { OptionType } from '../../app/types'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { ApiResourceGroupType, K8SObjectType } from '../../ResourceBrowser/Types'
 import { getAggregator } from '../../app/details/appDetails/utils'
@@ -1119,6 +1118,16 @@ export const handleOnFocus = (e): void => {
     if (e.target.value === DEFAULT_SECRET_PLACEHOLDER) {
         e.target.value = ''
     }
+}
+
+export const highlightSearchedText = (searchText: string, matchString: string): string => {
+    if (!searchText) {
+        return matchString
+    }
+    const highlightText = (highlighted) => `<mark>${highlighted}</mark>`
+
+    const regex = new RegExp(searchText, 'gi')
+    return matchString.replace(regex, highlightText)
 }
 
 export const trackByGAEvent = (category: string, action: string): void => {
