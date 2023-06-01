@@ -116,12 +116,21 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
         }
     }
 
+    const renderstatus = (status: string) => {
+        if (status === 'Not Found') {
+            return 'NOT AVAILABLE'
+        }
+        return status.toUpperCase()
+    }
+
     return (
         <>
             <tr className="deployment-table-row" >
                 <Td to={link} className="app-detail">
                     <div className="deployed-app-name dc__ellipsis-right" >{appName}</div>
-                    <div className={`app-summary__status-name f-${status.toLowerCase()}`}>{status.toUpperCase()}</div>
+                    <div className={`app-summary__status-name f-${status.toLowerCase()}`}>{
+                    renderstatus(status)
+                    }</div>
                 </Td>
                 <Td to={link} className="dc__ellipsis-right">{environmentName}</Td>
                 <Td to={link} className="dc__ellipsis-right">{deployedBy}</Td>

@@ -85,7 +85,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             filteredCIPipelines: [],
             isChangeBranchClicked: false,
             loader: false,
-            downloadManifestLoader: true,
+            isSaveLoading: false
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -104,10 +104,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     componentDidMount() {
         this.getHostURLConfig()
         this.getWorkflows()
-    }
-
-    setManifestLoader = () => {
-        this.setState({ downloadManifestLoader: false })
     }
 
     getWorkflows = () => {
@@ -664,7 +660,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         wfrId?: number,
     ): void => {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
-        this.setState({ isLoading: true })
+        this.setState({ isSaveLoading: true })
         let node: NodeAttr
         for (let i = 0; i < this.state.workflows.length; i++) {
             let workflow = this.state.workflows[i]
@@ -688,7 +684,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             {
                                 code: response.code,
                                 showCDModal: false,
-                                isLoading: false,
+                                isSaveLoading: false,
                             },
                             () => {
                                 preventBodyScroll(false)
@@ -1149,7 +1145,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         }`}
                         onClick={stopPropagation}
                     >
-                        {this.state.isLoading && this.state.downloadManifestLoader ? (
+                        {this.state.isLoading && this.state.isSaveLoading ? (
                             <>
                                 <div className="trigger-modal__header flex right">
                                     <button type="button" className="dc__transparent" onClick={this.closeCDModal}>
@@ -1182,6 +1178,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 userApprovalConfig={node.userApprovalConfig}
                                 requestedUserId={node.requestedUserId}
                                 isVirtualEnvironment={node.isVirtualEnvironment}
+                                isSaveLoading={this.state.isSaveLoading}
                             />
                         )}
                     </div>

@@ -24,6 +24,8 @@ import {
     InfoColourBar,
     RadioGroup,
     RadioGroupItem,
+    TippyCustomized,
+    TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     getDeploymentStrategyList,
@@ -69,6 +71,7 @@ import {
     CONFIGMAPS_SECRETS,
 } from '../../config/constantMessaging'
 import { ReactComponent as Rocket } from '../../assets/icons/ic-paper-rocket.svg'
+import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
 
 const ManualApproval = importComponentFromFELibrary('ManualApproval')
 const VirtualEnvSelectionInfoBar = importComponentFromFELibrary('VirtualEnvSelectionInfoBar')
@@ -846,11 +849,35 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
             return null
         }
 
+     const renderDeploymentStrategyTippy = () => {
+         return (
+             <TippyCustomized
+                 theme={TippyTheme.white}
+                 className="flex w-300 h-100 fcv-5"
+                 placement="right"
+                 Icon={Help}
+                 heading="Deployment strategy"
+                 infoText="Add one or more deployment strategies. You can choose from selected strategy while deploying manually to this environment."
+                 showCloseButton={true}
+                 trigger="click"
+                 interactive={true}
+                 documentationLinkText="View Documentation"
+             >
+                 <div className="icon-dim-16 fcn-9 ml-8 cursor">
+                     <Question />
+                 </div>
+             </TippyCustomized>
+         )
+     }
+
         return (
             <div className="form__row">
                 <p className="form__label form__label--caps mb-8-imp">
                     <div className="flex  dc__content-space mt-16">
-                        <div>Deployment Strategy </div>
+                        <div className="flex left">
+                          <span>Deployment Strategy</span>
+                          {renderDeploymentStrategyTippy()}
+                          </div>
                         {this.renderStrategyOptions()}
                     </div>
                 </p>
