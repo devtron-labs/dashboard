@@ -279,12 +279,8 @@ export default function CIPipeline({
                 .then((response: MandatoryPluginDataType) => {
                     if (response?.pluginData?.length) {
                         const _formDataErrorObj = { ...formDataErrorObj }
-                        setFormData(prepareFormData(_formData, response.pluginData))
-                        if (!response.isValidPre) {
-                            _formDataErrorObj.preBuildStage.isValid = false
-                        }
-                        if (!response.isValidPost) {
-                            _formDataErrorObj.postBuildStage.isValid = false
+                        if (_formData) {
+                            setFormData(prepareFormData(_formData, response.pluginData))
                         }
                         setFormDataErrorObj(_formDataErrorObj)
                         setMandatoryPluginData(response)
@@ -641,20 +637,16 @@ export default function CIPipeline({
                 validateTask(_formData[stageName].steps[i], _formDataErrorObj[stageName].steps[i])
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
-            let isPluginsValid = true
-            if (mandatoryPluginData?.pluginData?.length && (sharedPlugins.length || presetPlugins.length) && validatePlugins) {
-                const _mandatoryPluginsData = validatePlugins(formData, mandatoryPluginData.pluginData, [
-                    ...sharedPlugins,
-                    ...presetPlugins,
-                ])
-                isPluginsValid =
-                    stageName === BuildStageVariable.PreBuild
-                        ? _mandatoryPluginsData.isValidPre
-                        : _mandatoryPluginsData.isValidPost
-
-                setMandatoryPluginData(_mandatoryPluginsData)
+            if (
+                mandatoryPluginData?.pluginData?.length &&
+                (sharedPlugins.length || presetPlugins.length) &&
+                validatePlugins
+            ) {
+                setMandatoryPluginData(
+                    validatePlugins(formData, mandatoryPluginData.pluginData, [...sharedPlugins, ...presetPlugins]),
+                )
             }
-            _formDataErrorObj[stageName].isValid = isStageValid && isPluginsValid
+            _formDataErrorObj[stageName].isValid = isStageValid
         }
         setFormDataErrorObj(_formDataErrorObj)
     }
@@ -786,6 +778,11 @@ export default function CIPipeline({
     }
 
     const getNavLink = (toLink: string, stageName: string) => {
+        const showAlert = !formDataErrorObj[stageName].isValid
+        const showWarning =
+            mandatoryPluginData &&
+            ((stageName === BuildStageVariable.PreBuild && !mandatoryPluginData.isValidPre) ||
+                (stageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
         return (
             <li className="tab-list__tab">
                 <NavLink
@@ -799,8 +796,12 @@ export default function CIPipeline({
                     }}
                 >
                     {isJobView ? JobPipelineTabText[stageName] : BuildTabText[stageName]}
-                    {!formDataErrorObj[stageName].isValid && (
-                        <WarningTriangle className="icon-dim-16 mr-5 ml-5 mt-3 warning-icon-y7-imp" />
+                    {(showAlert || showWarning) && (
+                        <WarningTriangle
+                            className={`icon-dim-16 mr-5 ml-5 mt-3 ${
+                                showAlert ? 'alert-icon-r5-imp' : 'warning-icon-y7-imp'
+                            }`}
+                        />
                     )}
                 </NavLink>
             </li>

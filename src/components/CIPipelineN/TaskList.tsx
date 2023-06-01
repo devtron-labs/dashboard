@@ -4,8 +4,6 @@ import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
 import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as QuestionFilled } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
 import { ciPipelineContext } from './CIPipeline'
 import {
     PopupMenu,
@@ -17,8 +15,11 @@ import {
     BuildStageVariable,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskListType } from '../ciConfig/types'
+import { importComponentFromFELibrary } from '../common'
 
-export function TaskList({ withWarning }: TaskListType) {
+const PolicyEnforcementMenuOptions = importComponentFromFELibrary('PolicyEnforcementMenuOptions')
+
+export function TaskList({ mandatoryPluginData }: TaskListType) {
     const {
         formData,
         setFormData,
@@ -119,42 +120,6 @@ export function TaskList({ withWarning }: TaskListType) {
         setFormDataErrorObj(_formDataErrorObj)
     }
 
-    const moveTask = (e): void => {
-        const index = +e.currentTarget.dataset.index
-        const _formData = { ...formData }
-        const newList = [..._formData[activeStageName].steps]
-        const _taskDetail = newList.splice(index, 1)
-        _taskDetail[0].pluginRefStepDetail = {
-            id: 0,
-            pluginId: _taskDetail[0].pluginRefStepDetail.pluginId,
-            conditionDetails: [],
-            inputVariables: _taskDetail[0].pluginRefStepDetail.inputVariables || [],
-            outputVariables: _taskDetail[0].pluginRefStepDetail.outputVariables || [],
-        }
-        const moveToStage =
-            activeStageName === BuildStageVariable.PreBuild ? BuildStageVariable.PostBuild : BuildStageVariable.PreBuild
-        _formData[moveToStage].steps.push(_taskDetail[0])
-        _formData[activeStageName].steps = newList
-        const newListLength = newList.length
-        const newTaskIndex = index >= newListLength ? (newListLength > 1 ? newListLength - 1 : 0) : index
-        calculateLastStepDetail(false, _formData, activeStageName, newTaskIndex)
-        setTimeout(() => {
-            setSelectedTaskIndex(newTaskIndex)
-        }, 0)
-        setFormData(_formData)
-        const _formDataErrorObj = { ...formDataErrorObj }
-        const newErrorList = [...formDataErrorObj[activeStageName].steps]
-        newErrorList.splice(index, 1)
-        _formDataErrorObj[activeStageName].steps = newErrorList
-
-        _formDataErrorObj[moveToStage].steps.push({
-            name: { isValid: true, message: null },
-            isValid: true,
-            pluginRefStepDetail: { inputVariables: [] },
-        })
-        setFormDataErrorObj(_formDataErrorObj)
-    }
-
     function validateCurrentTask(index?: number): void {
         const _formDataErrorObj = { ...formDataErrorObj }
         validateTask(
@@ -169,9 +134,17 @@ export function TaskList({ withWarning }: TaskListType) {
         setSelectedTaskIndex(index)
     }
 
+    const showMandatoryWarning = (): boolean => {
+        return (
+            mandatoryPluginData &&
+            ((activeStageName === BuildStageVariable.PreBuild && !mandatoryPluginData.isValidPre) ||
+                (activeStageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
+        )
+    }
+
     return (
         <>
-            <div className={`task-container pr-20 ${withWarning ? 'with-warning' : ''}`}>
+            <div className={`task-container pr-20 ${showMandatoryWarning() ? 'with-warning' : ''}`}>
                 {formData[activeStageName].steps?.map((taskDetail, index) => (
                     <Fragment key={`task-item-${index}`}>
                         <div
@@ -185,14 +158,21 @@ export function TaskList({ withWarning }: TaskListType) {
                             onDragOver={(e) => e.preventDefault()}
                             onClick={() => handleSelectedTaskChange(index)}
                         >
-                            <Drag className="drag-icon" onMouseDown={() => setDragAllowed(true)} />
-                            <div className="w-80 flex left">
+                            <Drag className="drag-icon mw-20" onMouseDown={() => setDragAllowed(true)} />
+                            <div
+                                className={`flex left ${
+                                    formDataErrorObj[activeStageName].steps[index] &&
+                                    !formDataErrorObj[activeStageName].steps[index].isValid
+                                        ? 'w-70'
+                                        : 'w-80'
+                                }`}
+                            >
                                 <span className="dc__ellipsis-right">{taskDetail.name}</span>
                                 {taskDetail.isMandatory && <span className="cr-5 ml-4">*</span>}
                             </div>
                             {formDataErrorObj[activeStageName].steps[index] &&
                                 !formDataErrorObj[activeStageName].steps[index].isValid && (
-                                    <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-2" />
+                                    <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-2 mw-16" />
                                 )}
                             <PopupMenu autoClose>
                                 <PopupMenu.Button isKebab>
@@ -209,36 +189,20 @@ export function TaskList({ withWarning }: TaskListType) {
                                         <Trash className="icon-dim-16 mr-10" />
                                         Remove
                                     </div>
-                                    {taskDetail.isMandatory && (
-                                        <>
-                                            <div
-                                                className="flex left p-8 pointer dc__hover-n50"
-                                                data-index={index}
-                                                onClick={moveTask}
-                                            >
-                                                {activeStageName === BuildStageVariable.PreBuild ? (
-                                                    <>
-                                                        <MoveToPre
-                                                            className="rotate icon-dim-16 mr-10"
-                                                            style={{ ['--rotateBy' as any]: '180deg' }}
-                                                        />
-                                                        Move to post-build stage
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <MoveToPre className="icon-dim-16 mr-10" />
-                                                        Move to pre-build stage
-                                                    </>
-                                                )}
-                                            </div>
-                                            <div
-                                                className="flex left p-8 pointer dc__hover-n50"
-                                                onClick={(e) => deleteTask(index)}
-                                            >
-                                                <QuestionFilled className="icon-dim-16 mr-10" />
-                                                Why plugin is mandatory
-                                            </div>
-                                        </>
+                                    {taskDetail.isMandatory && PolicyEnforcementMenuOptions && (
+                                        <PolicyEnforcementMenuOptions
+                                            canBeMoved={taskDetail.canBeMoved}
+                                            taskIndex={index}
+                                            activeStageName={activeStageName}
+                                            pluginId={taskDetail.pluginRefStepDetail.pluginId}
+                                            mandatoryPluginList={mandatoryPluginData.pluginData}
+                                            formData={formData}
+                                            setFormData={setFormData}
+                                            formDataErrorObj={formDataErrorObj}
+                                            setFormDataErrorObj={setFormDataErrorObj}
+                                            calculateLastStepDetail={calculateLastStepDetail}
+                                            setSelectedTaskIndex={setSelectedTaskIndex}
+                                        />
                                     )}
                                 </PopupMenu.Body>
                             </PopupMenu>

@@ -340,5 +340,5 @@ export interface CIPipelineSidebarType {
 }
 
 export interface TaskListType {
-    withWarning: boolean
+    mandatoryPluginData: MandatoryPluginDataType
 }

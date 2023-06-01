@@ -1,11 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { BuildStageVariable, ConfigurationType, DOCUMENTATION, TriggerType } from '../../config'
-import {
-    RadioGroup,
-    RadioGroupItem,
-    FormType,
-    FormErrorObjectType,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { RadioGroup, RadioGroupItem, FormType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskList } from './TaskList'
 import { ciPipelineContext } from './CIPipeline'
 import { importComponentFromFELibrary } from '../common'
@@ -79,7 +74,7 @@ export function Sidebar({ isJobView, mandatoryPluginData, pluginList }: CIPipeli
                                 />
                             )}
                             <div className="dc__uppercase fw-6 fs-12 cn-6 mb-10">Tasks (IN ORDER OF EXECUTION)</div>
-                            <TaskList withWarning={showMandatoryWarning()} />
+                            <TaskList mandatoryPluginData={mandatoryPluginData} />
                         </>
                     )}
                 </div>

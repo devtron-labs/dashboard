@@ -2224,6 +2224,22 @@ textarea,
     }
 }
 
+.alert-icon-r5-imp {
+    path {
+        &:nth-child(1) {
+            fill: transparent !important;
+        }
+
+        &:nth-child(2) {
+            fill: var(--R500) !important;
+        }
+
+        &:nth-child(3) {
+            fill: var(--N0) !important;
+        }
+    }
+}
+
 .icon-color-n9 {
     path:nth-child(2) {
         fill: var(--N900);
@@ -2362,6 +2378,10 @@ textarea,
 
 .mw-18 {
     min-width: 18px !important;
+}
+
+.mw-20 {
+    min-width: 20px !important;
 }
 
 .mw-48 {

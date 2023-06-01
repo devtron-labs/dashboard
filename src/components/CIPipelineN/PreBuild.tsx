@@ -95,7 +95,7 @@ export function PreBuild({ presetPlugins, sharedPlugins, mandatoryPluginsMap, is
             _form[activeStageName].steps[selectedTaskIndex].description = pluginDescription
             _form[activeStageName].steps[selectedTaskIndex].name = pluginName
             _form[activeStageName].steps[selectedTaskIndex].isMandatory = requiredAndMovableData?.isRequired
-            _form[activeStageName].steps[selectedTaskIndex].canMove = requiredAndMovableData?.canBeMoved
+            _form[activeStageName].steps[selectedTaskIndex].canBeMoved = requiredAndMovableData?.canBeMoved
             _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail = {
                 id: 0,
                 pluginId: pluginId,
