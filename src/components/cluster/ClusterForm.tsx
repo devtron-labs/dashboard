@@ -897,7 +897,7 @@ export default function ClusterForm({
                                 saveClusterList.map((clusterListDetail, index) => (
                                     <div
                                         key={`api_${index}`}
-                                        className="saved-cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20 h-20"
+                                        className="saved-cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
                                     >
                                         <div
                                             data-testid={`validate-cluster-${clusterListDetail.clusterName}`}
