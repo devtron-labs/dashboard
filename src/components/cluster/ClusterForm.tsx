@@ -10,6 +10,7 @@ import {
     EmptyState,
     InfoColourBar,
     Toggle,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
@@ -24,7 +25,7 @@ import { ReactComponent as Warning } from '../../assets/icons/ic-alert-triangle.
 import { ReactComponent as FormError } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as ForwardArrow } from '../../assets/icons/ic-arrow-right.svg'
-import { ReactComponent as MechanicalOperation } from '../../assets/img/ic-mechanical-operation.svg'
+import MechanicalOperation from '../../assets/img/ic-mechanical-operation.svg'
 import {
     AuthenticationType,
     DEFAULT_SECRET_PLACEHOLDER,
@@ -836,7 +837,12 @@ export default function ClusterForm({
                     className="flex flex-align-center w-100 flex-justify bcn-0 p-20"
                     style={{ height: 'calc(100vh - 110px)' }}
                 >
-                    <EmptyState>
+                    <GenericEmptyState
+                        image={MechanicalOperation}
+                        title="Trying to connect to Cluster"
+                        subTitle="Please wait while the kubeconfig is verified and cluster details are fetched."
+                    />
+                    {/* <EmptyState>
                         <EmptyState.Image>
                             <MechanicalOperation />
                         </EmptyState.Image>
@@ -846,7 +852,7 @@ export default function ClusterForm({
                         <EmptyState.Subtitle>
                             Please wait while the kubeconfig is verified and cluster details are fetched.
                         </EmptyState.Subtitle>
-                    </EmptyState>
+                    </EmptyState> */}
                 </div>
                 <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs ">
                     <button className="cta cancel h-36 lh-36" type="button" onClick={handleCloseButton} disabled={true}>
