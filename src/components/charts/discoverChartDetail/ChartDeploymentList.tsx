@@ -116,7 +116,7 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
         }
     }
 
-    const renderstatus = (status: string) => {
+    const renderChartStatus = (status: string) => {
         if (status === 'Not Found') {
             return 'NOT AVAILABLE'
         }
@@ -129,7 +129,7 @@ export function DeploymentRow({ installedAppId, appName, status, environmentId, 
                 <Td to={link} className="app-detail">
                     <div className="deployed-app-name dc__ellipsis-right" >{appName}</div>
                     <div className={`app-summary__status-name f-${status.toLowerCase()}`}>{
-                    renderstatus(status)
+                    renderChartStatus(status)
                     }</div>
                 </Td>
                 <Td to={link} className="dc__ellipsis-right">{environmentName}</Td>
