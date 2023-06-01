@@ -92,3 +92,4 @@ export const BUILDER_SELECT_STYLES = {
         minWidth: '226px',
     }),
 }
+export const RootBuildContext = './'
