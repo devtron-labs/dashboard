@@ -35,7 +35,7 @@ import { mainContext } from '../../common/navigation/NavigationRoutes'
 import HyperionEnvironmentSelect from '../../hyperion/EnvironmentSelect'
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import { DeploymentAppType } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
-import ClusrerNotReachableDialog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import ClusrerNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 function mapById(arr) {
     if (!Array.isArray(arr)) {
@@ -762,7 +762,7 @@ const DeployChart: React.FC<DeployChartProps> = ({
                     />
                 )}
                 {nonCascadeDeleteDialog && (
-                    <ClusrerNotReachableDialog
+                    <ClusrerNotReachableDailog
                         clusterName={clusterName}
                         onClickCancel={onClickHideNonCascadeDeletePopup}
                         onClickDelete={onClickNonCascadeDelete}

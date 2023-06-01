@@ -10,7 +10,7 @@ import dots from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import trash from '../../../assets/icons/ic-delete.svg';
 import deleteIcon from '../../../assets/img/warning-medium.svg';
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api';
-import ClusrerNotReachableDialog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog';
+import ClusrerNotReachableDailog from '../../common/ClusterNotReachableDailog/ClusterNotReachableDialog';
 import { DeploymentAppType } from '../../v2/appDetails/appDetails.type';
 import AppStatus from '../../app/AppStatus';
 
@@ -205,7 +205,7 @@ export function DeploymentRow({ installedAppId, appName, status, deploymentAppTy
                 />
             )}
             {nonCascadeDeleteDialog && (
-                <ClusrerNotReachableDialog
+                <ClusrerNotReachableDailog
                     clusterName={clusterName}
                     onClickCancel={onClickHideNonCascadeDeletePopup}
                     onClickDelete={onClickNonCascadeDelete}

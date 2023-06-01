@@ -5,7 +5,7 @@ import { BUTTON_TEXT, NONCASCADE_DELETE_DIALOG_INTERNAL_MESSAGE } from '../../..
 import { ClusrerNotReachableDialogType } from './ClusterNotReachableDialog.type'
 
 
-function ClusrerNotReachableDialog({ clusterName, onClickCancel, onClickDelete }: ClusrerNotReachableDialogType) {
+function ClusrerNotReachableDailog({ clusterName, onClickCancel, onClickDelete }: ClusrerNotReachableDialogType) {
     const clusterNameString:string = clusterName ? ` '${clusterName}'` : ''
     return (
         <ConfirmationDialog>
@@ -28,4 +28,4 @@ function ClusrerNotReachableDialog({ clusterName, onClickCancel, onClickDelete }
     )
 }
 
-export default ClusrerNotReachableDialog
+export default ClusrerNotReachableDailog

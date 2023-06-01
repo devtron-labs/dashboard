@@ -103,7 +103,7 @@ import {
 } from './ChartValuesView.constants'
 import { DeploymentAppType } from '../../appDetails/appDetails.type'
 import ChartValues from '../../../charts/chartValues/ChartValues'
-import ClusrerNotReachableDialog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
+import ClusrerNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 function ChartValuesView({
     appId,
@@ -1592,7 +1592,7 @@ function ChartValuesView({
                     />
                 )}
                 {commonState.nonCascadeDeleteData.nonCascade && (
-                    <ClusrerNotReachableDialog
+                    <ClusrerNotReachableDailog
                     clusterName={commonState.nonCascadeDeleteData.clusterName}
                     onClickCancel={onClickHideNonCascadeDeletePopup}
                     onClickDelete={onClickNonCascadeDelete}
