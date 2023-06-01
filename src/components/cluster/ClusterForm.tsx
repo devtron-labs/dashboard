@@ -803,7 +803,7 @@ export default function ClusterForm({
                         mode={MODES.YAML}
                     >
                         <CodeEditor.Header>
-                            <div className="user-list__subtitle flex pt-8 pb-8 pr-12 pl-12 fs-13 lh-20 w-100">
+                            <div className="user-list__subtitle flex fs-13 lh-20 w-100">
                                 <span className="flex left">Paste the contents of kubeconfig file here</span>
                                 <div className="dc__link ml-auto cursor">
                                     {uploadState !== UPLOAD_STATE.UPLOADING && (
