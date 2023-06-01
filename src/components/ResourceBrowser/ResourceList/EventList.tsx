@@ -38,11 +38,6 @@ export function EventList({ listRef, filteredData, handleResourceClick, paginate
                                     data-origin="event"
                                     onClick={handleResourceClick}
                                 >
-                                    {/* <span
-                                        dangerouslySetInnerHTML={{
-                                            __html: highlightSearchedText(K8SResourceList.searchText ,eventData.name),
-                                        }}
-                                    ></span> */}
                                     {eventData[EVENT_LIST.dataKeys.involvedObject]}
                                 </a>
                             </Tippy>
