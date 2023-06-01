@@ -4,6 +4,7 @@ import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
 import { ReactComponent as Dots } from '../../assets/icons/appstatus/ic-menu-dots.svg'
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
 import { ciPipelineContext } from './CIPipeline'
 import {
     PopupMenu,
@@ -18,12 +19,10 @@ import {
 import { TaskListType } from '../ciConfig/types'
 import { importComponentFromFELibrary } from '../common'
 
-const PolicyEnforcementMenuOptions = importComponentFromFELibrary('PolicyEnforcementMenuOptions')
-const MovePluginConfirmation = importComponentFromFELibrary('MovePluginConfirmation')
+const MandatoryPluginMenuOptionTippy = importComponentFromFELibrary('MandatoryPluginMenuOptionTippy')
 
 export function TaskList({ mandatoryPluginData, setInputVariablesListFromPrevStep }: TaskListType) {
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState<boolean>(false)
-    const [showMoveConfirmation, setShowMoveConfirmation] = useState<boolean>(false)
     const {
         formData,
         setFormData,
@@ -127,6 +126,75 @@ export function TaskList({ mandatoryPluginData, setInputVariablesListFromPrevSte
         closeDeleteConfirmation()
     }
 
+    const moveTaskToOtherStage = (e): void => {
+        const taskIndex = e.currentTarget.dataset.index
+        const _formData = { ...formData }
+        const newList = [..._formData[activeStageName].steps]
+        const _taskDetail = newList.splice(taskIndex, 1)
+        _taskDetail[0].pluginRefStepDetail = {
+            id: 0,
+            pluginId: _taskDetail[0].pluginRefStepDetail.pluginId,
+            conditionDetails: [],
+            inputVariables: _taskDetail[0].pluginRefStepDetail.inputVariables || [],
+            outputVariables: _taskDetail[0].pluginRefStepDetail.outputVariables || [],
+        }
+        const moveToStage =
+            activeStageName === BuildStageVariable.PreBuild ? BuildStageVariable.PostBuild : BuildStageVariable.PreBuild
+        _formData[moveToStage].steps.push(_taskDetail[0])
+        _formData[activeStageName].steps = newList
+        const newListLength = newList.length
+        const newTaskIndex = taskIndex >= newListLength ? (newListLength > 1 ? newListLength - 1 : 0) : taskIndex
+        reCalculatePrevStepVar(_formData, newTaskIndex)
+        setTimeout(() => {
+            setSelectedTaskIndex(newTaskIndex)
+        }, 0)
+        setFormData(_formData)
+        const _formDataErrorObj = { ...formDataErrorObj }
+        const newErrorList = [...formDataErrorObj[activeStageName].steps]
+        newErrorList.splice(taskIndex, 1)
+        _formDataErrorObj[activeStageName].steps = newErrorList
+        _formDataErrorObj[moveToStage].steps.push({
+            name: { isValid: true, message: null },
+            isValid: true,
+            pluginRefStepDetail: { inputVariables: [] },
+        })
+        validateTask(formData[moveToStage].steps[taskIndex], _formDataErrorObj[moveToStage].steps[taskIndex])
+        setFormDataErrorObj(_formDataErrorObj)
+    }
+
+    const reCalculatePrevStepVar = (_formData: FormType, newTaskIndex: number): void => {
+        let preBuildVariable, postBuildVariable
+        if (activeStageName === BuildStageVariable.PreBuild) {
+            preBuildVariable = calculateLastStepDetail(
+                false,
+                _formData,
+                BuildStageVariable.PreBuild,
+                newTaskIndex,
+            ).calculatedStageVariables
+            postBuildVariable = calculateLastStepDetail(
+                true,
+                _formData,
+                BuildStageVariable.PostBuild,
+            ).calculatedStageVariables
+        } else {
+            preBuildVariable = calculateLastStepDetail(
+                true,
+                _formData,
+                BuildStageVariable.PreBuild,
+            ).calculatedStageVariables
+            postBuildVariable = calculateLastStepDetail(
+                false,
+                _formData,
+                BuildStageVariable.PostBuild,
+                newTaskIndex,
+            ).calculatedStageVariables
+        }
+        setInputVariablesListFromPrevStep({
+            preBuildStage: preBuildVariable,
+            postBuildStage: postBuildVariable,
+        })
+    }
+
     function validateCurrentTask(index?: number): void {
         const _formDataErrorObj = { ...formDataErrorObj }
         validateTask(
@@ -157,16 +225,6 @@ export function TaskList({ mandatoryPluginData, setInputVariablesListFromPrevSte
     const closeDeleteConfirmation = (): void => {
         setClickedIndex(-1)
         setShowDeleteConfirmation(false)
-    }
-
-    const openMoveConfirmation = (e): void => {
-        setClickedIndex(e.currentTarget.dataset.index)
-        setShowMoveConfirmation(true)
-    }
-
-    const closeMoveConfirmation = (): void => {
-        setClickedIndex(-1)
-        setShowMoveConfirmation(false)
     }
 
     return (
@@ -217,14 +275,30 @@ export function TaskList({ mandatoryPluginData, setInputVariablesListFromPrevSte
                                         <Trash className="icon-dim-16 mr-10" />
                                         Remove
                                     </div>
-                                    {taskDetail.isMandatory && PolicyEnforcementMenuOptions && (
-                                        <PolicyEnforcementMenuOptions
-                                            canBeMoved={taskDetail.canBeMoved}
-                                            taskIndex={index}
-                                            activeStageName={activeStageName}
+                                    <div
+                                        className="flex left p-8 pointer dc__hover-n50"
+                                        data-index={index}
+                                        onClick={moveTaskToOtherStage}
+                                    >
+                                        {activeStageName === BuildStageVariable.PreBuild ? (
+                                            <>
+                                                <MoveToPre
+                                                    className="rotate icon-dim-16 mr-10"
+                                                    style={{ ['--rotateBy' as any]: '180deg' }}
+                                                />
+                                                Move to post-build stage
+                                            </>
+                                        ) : (
+                                            <>
+                                                <MoveToPre className="icon-dim-16 mr-10" />
+                                                Move to pre-build stage
+                                            </>
+                                        )}
+                                    </div>
+                                    {taskDetail.isMandatory && MandatoryPluginMenuOptionTippy && (
+                                        <MandatoryPluginMenuOptionTippy
                                             pluginId={taskDetail.pluginRefStepDetail.pluginId}
                                             mandatoryPluginList={mandatoryPluginData.pluginData}
-                                            moveTask={openMoveConfirmation}
                                         />
                                     )}
                                 </PopupMenu.Body>
@@ -248,20 +322,6 @@ export function TaskList({ mandatoryPluginData, setInputVariablesListFromPrevSte
                 Do you want to continue to remove?"
                     closeDelete={closeDeleteConfirmation}
                     delete={deleteTask}
-                />
-            )}
-            {showMoveConfirmation && (
-                <MovePluginConfirmation
-                    closePopup={closeMoveConfirmation}
-                    taskIndex={clickedIndex}
-                    activeStageName={activeStageName}
-                    formData={formData}
-                    setFormData={setFormData}
-                    formDataErrorObj={formDataErrorObj}
-                    setFormDataErrorObj={setFormDataErrorObj}
-                    calculateLastStepDetail={calculateLastStepDetail}
-                    setSelectedTaskIndex={setSelectedTaskIndex}
-                    setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
                 />
             )}
         </>
