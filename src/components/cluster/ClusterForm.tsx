@@ -387,19 +387,9 @@ export default function ClusterForm({
         }
         if (isTlsConnection) {
             if (state.tlsClientKey.value || state.tlsClientCert.value || state.certificateAuthorityData.value) {
-                let isValid =
-                    state.tlsClientKey.value?.length > 0 &&
-                    state.tlsClientCert.value?.length > 0 &&
-                    state.certificateAuthorityData.value?.length > 0
-
-                if (!isValid) {
-                    toast.error('Please add TLS Key, Certificate, and Certificate Authority Data')
-                    return
-                } else {
-                    payload.config['tls_key'] = state.tlsClientKey.value || ''
-                    payload.config['cert_data'] = state.tlsClientCert.value || ''
-                    payload.config['cert_auth_data'] = state.certificateAuthorityData.value || ''
-                }
+                payload.config['tls_key'] = state.tlsClientKey.value || ''
+                payload.config['cert_data'] = state.tlsClientCert.value || ''
+                payload.config['cert_auth_data'] = state.certificateAuthorityData.value || ''
             }
         }
 
@@ -699,7 +689,7 @@ export default function ClusterForm({
                 <div className={`${prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'} mt-20`}>
                     <div className="dc__content-space flex">
                         <span className="form__input-header">See metrics for applications in this cluster</span>
-                        <div className="w-32 h-20" >
+                        <div className="w-32 h-20">
                             <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
                         </div>
                     </div>
@@ -913,7 +903,7 @@ export default function ClusterForm({
                                 saveClusterList.map((clusterListDetail, index) => (
                                     <div
                                         key={`api_${index}`}
-                                        className="saved-cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20 h-20" 
+                                        className="saved-cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-20 pl-20 h-20"
                                     >
                                         <div
                                             data-testid={`validate-cluster-${clusterListDetail.clusterName}`}
@@ -974,7 +964,6 @@ export default function ClusterForm({
         toggleKubeConfigFile(false)
         toggleClusterDetails(true)
     }
-
 
     function toggleIsSelected(clusterName: string, forceUnselect?: boolean) {
         const _currentSelections = {
@@ -1332,7 +1321,7 @@ export default function ClusterForm({
                         >
                             <div className="flex">
                                 Get cluster
-                                <ForwardArrow className={`ml-5 ${!saveYamlData? 'scn-4':''}`} />
+                                <ForwardArrow className={`ml-5 ${!saveYamlData ? 'scn-4' : ''}`} />
                             </div>
                         </button>
                     </div>
