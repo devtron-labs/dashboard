@@ -17,7 +17,7 @@ import { DOCUMENTATION, TERMINAL_STATUS_MAP } from '../../../../config'
 import { extractImage } from '../../service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
-const ApprovedArtifact = null//importComponentFromFELibrary('ApprovedArtifact')
+const ApprovedArtifact = importComponentFromFELibrary && importComponentFromFELibrary('ApprovedArtifact')
 
 export default function Artifacts({
     status,
