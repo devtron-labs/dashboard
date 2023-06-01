@@ -205,8 +205,11 @@ export function GroupHeading(props) {
     if (!data.label) return null
     return (
         <components.GroupHeading {...props}>
-            <div className="flex dc__no-text-transform flex-justify h-100">
-                {!hideClusterName && data?.isVirtualEnvironment ? 'Virtual Cluster : ' :  'Cluster : '} {data.label}
+            <div className="flex dc__no-text-transform flex-justify dc__truncate-text h-100">
+                <span className="dc__truncate-text">
+                    {!hideClusterName && (data?.isVirtualEnvironment ? 'Virtual Cluster : ' : 'Cluster : ')}
+                    {data.label}
+                </span>
             </div>
         </components.GroupHeading>
     )
@@ -263,3 +266,20 @@ export function formatHighlightedTextDescription(option: Environment, inputValue
     )
 }
 
+export const groupHeaderStyle = {
+    group: (base) => ({
+        ...base,
+        paddingTop: 0,
+        paddingBottom: 0,
+    }),
+    groupHeading: (base) => ({
+        ...base,
+        fontWeight: 600,
+        fontSize: '12px',
+        textTransform: 'lowercase',
+        height: '28px',
+        color: 'var(--N900)',
+        backgroundColor: 'var(--N100)',
+        marginBottom: 0,
+    }),
+}

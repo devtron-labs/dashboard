@@ -94,7 +94,7 @@ export default function EnvironmentOverview({
                     />
                 )}
                 <AppStatus
-                    appStatus={item.lastDeployed ? item.deploymentStatus : ''}
+                    appStatus={item.lastDeployed ? item.deploymentStatus : StatusConstants.NOT_DEPLOYED.noSpaceLower}
                     isDeploymentStatus={true}
                     isVirtualEnv={isVirtualEnv}
                 />
@@ -112,11 +112,11 @@ export default function EnvironmentOverview({
                 </div>
                 <div className="mb-16">
                     <div className="fs-12 fw-4 lh-20 cn-7">{GROUP_LIST_HEADER.NAMESPACE}</div>
-                    <div className="fs-13 fw-4 lh-20 cn-9">{appListData.namespace} </div>
+                    <div className="fs-13 fw-4 lh-20 cn-9 dc__break-word">{appListData.namespace} </div>
                 </div>
                 <div className="mb-16">
                     <div className="fs-12 fw-4 lh-20 cn-7">{GROUP_LIST_HEADER.CLUSTER}</div>
-                    <div className="fs-13 fw-4 lh-20 cn-9">{appListData.cluster}</div>
+                    <div className="fs-13 fw-4 lh-20 cn-9 dc__break-word">{appListData.cluster}</div>
                 </div>
             </div>
             <div className="dc__overflow-scroll">

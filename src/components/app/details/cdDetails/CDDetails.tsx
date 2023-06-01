@@ -332,7 +332,7 @@ export const TriggerOutput: React.FC<{
                                     </NavLink>
                                 </li>
                             )}
-                            {triggerDetails.stage !== 'DEPLOY' && (
+                            {!(triggerDetails.stage === 'DEPLOY' || triggerDetails.IsVirtualEnvironment) && (
                                 <li className="tab-list__tab" data-testid="deployment-history-logs-link">
                                     <NavLink
                                         replace
@@ -430,7 +430,7 @@ const HistoryLogs: React.FC<{
         const paramsData = {
         appId,
         envId,
-        appName: triggerDetails.artifact,
+        appName: triggerDetails.helmPackageName,
         workflowId: triggerDetails.id,
     }
 
@@ -445,7 +445,7 @@ const HistoryLogs: React.FC<{
                     <Progressing pageLoader />
                 ) : (
                     <Switch>
-                        {triggerDetails.stage !== 'DEPLOY' ? (
+                        {!(triggerDetails.stage === 'DEPLOY' || triggerDetails.IsVirtualEnvironment) ? (
                             <Route path={`${path}/logs`}>
                                 <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
                                     <LogsRenderer
@@ -505,7 +505,7 @@ const HistoryLogs: React.FC<{
                                     {triggerDetails.IsVirtualEnvironment && VirtualHistoryArtifact ? (
                                         <VirtualHistoryArtifact
                                             status={triggerDetails.status}
-                                            titleName={triggerDetails.artifact}
+                                            titleName={triggerDetails.helmPackageName}
                                             params={paramsData}
                                         />
                                     ) : (
@@ -525,7 +525,7 @@ const HistoryLogs: React.FC<{
                             to={`${path}/${
                                 triggerDetails.stage === 'DEPLOY'
                                     ? `deployment-steps`
-                                    : triggerDetails.status.toLowerCase() === 'succeeded'
+                                    : (triggerDetails.status.toLowerCase() === 'succeeded' || triggerDetails.IsVirtualEnvironment)
                                     ? `artifacts`
                                     : `logs`
                             }`}

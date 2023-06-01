@@ -30,7 +30,7 @@ import {
     useAsync,
     ScanDetailsModal,
 } from '../../../common'
-import { CustomValueContainer, Option } from './../../../v2/common/ReactSelect.utils'
+import { CustomValueContainer, groupHeaderStyle, GroupHeading, Option } from './../../../v2/common/ReactSelect.utils'
 import {
     getAppConfigStatus,
     getAppOtherEnvironmentMin,
@@ -93,6 +93,7 @@ import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
 import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
+import { nodeSelect } from '../../../ClusterNodes/constants'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
@@ -686,6 +687,7 @@ export function EnvSelector({
     const environmentName = environmentsMap[+envId]
     const envSelectorStyle = {
         ...multiSelectStyles,
+        ...groupHeaderStyle,
         control: (base, state) => ({
             ...base,
             border: '1px solid var(--B500)',
@@ -705,6 +707,7 @@ export function EnvSelector({
             ? sortObjectArrayAlphabetically(environments, 'environmentName')
             : environments
 
+
     const formatOptionLabel = (option): JSX.Element => {
         return (
             <div>
@@ -715,6 +718,33 @@ export function EnvSelector({
             </div>
         )
     }
+
+    const groupList =
+        sortedEnvironments?.reduce((acc, env) => {
+            const key = env.isVirtualEnvironment ? 'Virtual environments' : ''
+            const found = acc.find((item) => item.label === key)
+
+            if (found) {
+                found.options.push({
+                    label: env.environmentName,
+                    value: env.environmentId,
+                    description: env.description,
+                })
+            } else {
+                acc.push({
+                    label: key,
+                    options: [
+                        {
+                            label: env.environmentName,
+                            value: env.environmentId,
+                            description: env.description,
+                        },
+                    ],
+                })
+            }
+
+            return acc
+        }, []) || []
 
     return (
         <>
@@ -737,21 +767,14 @@ export function EnvSelector({
             <div data-testid="app-deployed-env-name" className="app-details__selector w-200">
                 <Select
                     placeholder="Select Environment"
-                    options={
-                        Array.isArray(sortedEnvironments)
-                            ? sortedEnvironments.map((env) => ({
-                                  label: env.environmentName,
-                                  value: env.environmentId,
-                                  description: env.description,
-                              }))
-                            : []
-                    }
+                    options={groupList}
                     value={envId ? { value: +envId, label: environmentName } : null}
                     onChange={(selected, meta) => selectEnvironment((selected as any).value)}
                     closeMenuOnSelect
                     components={{
                         IndicatorSeparator: null,
                         Option,
+                        GroupHeading: (props) => <GroupHeading {...props} hideClusterName={true} />,
                         DropdownIndicator: disabled ? null : components.DropdownIndicator,
                         ValueContainer: (props) => <CustomValueContainer {...props} valClassName="env-select" />,
                     }}

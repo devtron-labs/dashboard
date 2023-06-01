@@ -10,12 +10,12 @@ import { importComponentFromFELibrary } from '../../../common'
 
 const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifestDownload', null, 'function')
 
-export function TriggerModalRow({ rowData, key, isVirtualEnv }: TriggerModalRowType) {
+export function TriggerModalRow({ rowData, key, isVirtualEnv, envName }: TriggerModalRowType) {
     const [downloader, setDownLoader] = useState(false)
     const params = {
         appId: rowData.appId,
         envId: rowData.envId,
-        appName: rowData.appName
+        appName: `${rowData.appName}-${envName}`
     }
 
     const renderStatusIcon = (rowData: ResponseRowType): JSX.Element => {
@@ -36,7 +36,7 @@ export function TriggerModalRow({ rowData, key, isVirtualEnv }: TriggerModalRowT
     }
 
     return (
-        <div className="response-row pt-8 pb-8" key={`response-${rowData.appId}`}>
+        <div className={`response-row  pt-8 pb-8 ${isVirtualEnv ? 'is-virtual': ''}`} key={`response-${rowData.appId}`}>
             <div className="fs-13 fw-4 cn-9">{rowData.appName}</div>
             <div className="flex left top fs-13 fw-4 cn-9">
                 {renderStatusIcon(rowData)}
@@ -44,12 +44,12 @@ export function TriggerModalRow({ rowData, key, isVirtualEnv }: TriggerModalRowT
             </div>
             <div className="fs-13 fw-4 cn-9">{rowData.message}</div>
             {isVirtualEnv && rowData.status === BulkResponseStatus.PASS && (
-                <div
-                    className="flex cursor"
-                    onClick={downloadPackage}
-                >
+                <div className="flex right cursor" onClick={downloadPackage}>
                     {downloader ? (
-                        <Progressing />
+                        <>
+                            <Progressing />
+                            <span className="fs-13 flex fw-4 ml-6 cn-7">Downloading</span>
+                        </>
                     ) : (
                         <>
                             <Download className="icon-dim-16" />

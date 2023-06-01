@@ -6,6 +6,7 @@ import {
     ConfirmationDialog,
     ServerErrors,
     GenericEmptyState,
+    DetailsProgressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 import docker from '../../../assets/icons/misc/docker.svg'
 import { ReactComponent as DeployButton } from '../../../assets/icons/ic-deploy.svg'
@@ -49,11 +50,15 @@ function ChartDeploymentHistory({
     appName,
     isExternal,
     isVirtualEnvironment,
+    isLoadingDetails,
+    helmAppPackageName
 }: {
     appId: string
     appName?: string
     isExternal: boolean
     isVirtualEnvironment?: boolean
+    isLoadingDetails?: boolean
+    helmAppPackageName?: string
 }) {
     const params = useParams<{ envId: string }>()
     const [isLoading, setIsLoading] = useState(true)
@@ -443,7 +448,7 @@ function ChartDeploymentHistory({
         const paramsData = {
             appId,
             envId: params.envId,
-            appName: chartMetadata.chartName,
+            appName: helmAppPackageName,
             workflowId: deployment.version,
             isHelmApp: true
         }
@@ -540,7 +545,7 @@ function ChartDeploymentHistory({
                     renderCodeEditor()}
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.ARTIFACTS && VirtualHistoryArtifact && (
                     <VirtualHistoryArtifact
-                        titleName={chartMetadata.chartName}
+                        titleName={helmAppPackageName}
                         params={paramsData}
                         status={deployment.status}
                     />
@@ -712,6 +717,10 @@ function ChartDeploymentHistory({
                 {showRollbackConfirmation && <RollbackConfirmationDialog />}
             </div>
         )
+    }
+
+    if(isLoadingDetails){
+        return <DetailsProgressing loadingText="Please wait…" size={24} />
     }
 
     return (

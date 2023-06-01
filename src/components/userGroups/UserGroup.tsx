@@ -12,6 +12,7 @@ import {
     mapByKey,
     sortObjectArrayAlphabetically,
     importComponentFromFELibrary,
+    createClusterEnvGroup,
 } from '../common'
 import {
     showError,
@@ -69,7 +70,7 @@ import EmptyImage from '../../assets/img/empty-applist@2x.png'
 import EmptySearch from '../../assets/img/empty-noresult@2x.png'
 import './UserGroup.scss'
 import { mainContext } from '../common/navigation/NavigationRoutes'
-import { Option as singleOption } from '../v2/common/ReactSelect.utils'
+import { groupHeaderStyle, GroupHeading, Option as singleOption } from '../v2/common/ReactSelect.utils'
 import ApiTokens from '../apiTokens/ApiTokens.component'
 import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 import ExportToCsv from '../common/ExportToCsv/ExportToCsv'
@@ -106,6 +107,7 @@ const UserGroupContext = React.createContext<UserGroup>({
 
 const tempMultiSelectStyles = {
     ...multiSelectStyles,
+    ...groupHeaderStyle,
     menu: (base, state) => ({
         ...base,
         top: 'auto',
@@ -808,7 +810,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             ? projectsList.find((project) => project.name === permission.team.value)?.id
             : null
 
-    const [possibleRoles, setPossibleRoles] = useState([])
+    const [possibleRoles, setPossibleRoles] = useState([])    
     const [openMenu, changeOpenMenu] = useState<'entityName' | 'environment' | ''>('')
     const [environments, setEnvironments] = useState([])
     const [applications, setApplications] = useState([])
@@ -886,11 +888,8 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
     }
 
     useEffect(() => {
-        const envOptions = environmentsList?.map((env) => ({
-            label: env.environment_name,
-            value: env.environmentIdentifier,
-        }))
-        setEnvironments(envOptions)
+        const  envOptions = createClusterEnvGroup(environmentsList,'cluster_name','environment_name','environmentIdentifier')
+        setEnvironments(envOptions)  
     }, [environmentsList])
 
     useEffect(() => {
@@ -927,7 +926,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     clusterName: cluster.clusterName,
                 })),
             ],
+            isVirtualEnvironment: cluster?.isVirtualCluster
         }))
+        
         setEnvClusters(envOptions)
     }, [envClustersList])
 
@@ -950,12 +951,8 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
             return
         }
 
-        const sortedEnvironments =
-            openMenu === 'environment' ? environments : sortBySelected(permission.environment, environments, 'value')
-
         const sortedApplications =
             openMenu === 'entityName' ? applications : sortBySelected(permission.entityName, applications, 'value')
-        setEnvironments(sortedEnvironments)
         setApplications(sortedApplications)
     }, [openMenu, permission.environment, permission.entityName, projectId])
 
@@ -976,14 +973,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             : customRoles.possibleRolesMeta)[value]?.description
                     }
                 </small>
-            </div>
-        )
-    }
-
-    function formatGroupLabel(option) {
-        return (
-            <div>
-                <span>{'Cluster : ' + option.label}</span>
             </div>
         )
     }
@@ -1048,9 +1037,9 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
 
     function customFilter(option, searchText) {
         if (
-            option.data.label.toLowerCase().includes(searchText.toLowerCase()) ||
-            option.data.clusterName.toLowerCase().includes(searchText.toLowerCase()) ||
-            option.data.namespace.toLowerCase().includes(searchText.toLowerCase())
+            option.data.label?.toLowerCase().includes(searchText?.toLowerCase()) ||
+            option.data.clusterName?.toLowerCase().includes(searchText?.toLowerCase()) ||
+            option.data.namespace?.toLowerCase().includes(searchText?.toLowerCase())
         ) {
             return true
         } else {
@@ -1120,7 +1109,6 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         placeholder="Select environments"
                         options={envClusters}
                         formatOptionLabel={formatOptionLabelClusterEnv}
-                        formatGroupLabel={formatGroupLabel}
                         filterOption={customFilter}
                         className="basic-multi-select cluster-select"
                         classNamePrefix="select-helm-app-environment-dropdown"
@@ -1140,6 +1128,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             ValueContainer: clusterValueContainer,
                             IndicatorSeparator: null,
                             Option,
+                            GroupHeading
                         }}
                         isDisabled={!permission.team}
                         onChange={handleDirectPermissionChange}
@@ -1164,7 +1153,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                         onFocus={() => onFocus('environment')}
                         onMenuClose={onMenuClose}
                         placeholder="Select environments"
-                        options={[allEnvironmentsOption, ...environments]}
+                        options={[{label: '', options: [allEnvironmentsOption]}, ...environments]}
                         className="basic-multi-select"
                         menuPlacement="auto"
                         classNamePrefix="select-devtron-app-environment-dropdown"
@@ -1175,6 +1164,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                             ValueContainer,
                             IndicatorSeparator: null,
                             Option,
+                            GroupHeading
                         }}
                         isDisabled={!permission.team}
                         onChange={handleDirectPermissionChange}
@@ -1439,9 +1429,18 @@ export const ChartPermission: React.FC<ChartPermissionRow> = React.memo(
 
 const ValueContainer = (props) => {
     let length = props.getValue().length
+    let optionLength = props.options.length
+    if( props.selectProps.name === 'environment'){
+        let _optionLength = 0
+        props.options.forEach((option) => {
+            _optionLength += option.options?.length
+        })
+        optionLength = _optionLength
+    }
+    
     let count = ''
     if (
-        length === props.options.length &&
+        length === optionLength &&
         (props.selectProps.name === 'entityName' || props.selectProps.name === 'environment')
     ) {
         count = 'All'

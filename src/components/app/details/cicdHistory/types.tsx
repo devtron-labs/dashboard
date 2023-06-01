@@ -30,6 +30,7 @@ export interface History {
     isArtifactUploaded?: boolean
     userApprovalMetadata?: UserApprovalMetadataType
     IsVirtualEnvironment?: boolean
+    helmPackageName?: string
 }
 
 export interface CiMaterial {

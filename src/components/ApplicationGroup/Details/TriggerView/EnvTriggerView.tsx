@@ -58,6 +58,7 @@ import {
     ENV_TRIGGER_VIEW_GA_EVENTS,
     BULK_CD_RESPONSE_STATUS_TEXT,
     responseListOrder,
+    BULK_VIRTUAL_RESPONSE_STATUS,
 } from '../../Constants'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
@@ -774,16 +775,16 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             if (node) break
         }
 
-       const onClickManifestDownload = (appId: number, envId: number, envName: string) => {
-          const downloadManifetsDownload = {
-              appId: appId,
-              envId: envId,
-              appName: envName,
-          }
-          if (getDeployManifestDownload) {
-              getDeployManifestDownload(downloadManifetsDownload, null)
-          }
-      }
+        const onClickManifestDownload = (appId: number, envId: number, envName: string) => {
+            const downloadManifetsDownload = {
+                appId: appId,
+                envId: envId,
+                appName: envName,
+            }
+            if (getDeployManifestDownload) {
+                getDeployManifestDownload(downloadManifetsDownload, null)
+            }
+        }
 
         const pipelineId = node.id
         const ciArtifact = node[materialType].find((artifact) => artifact.isSelected)
@@ -793,7 +794,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
-                      onClickManifestDownload(_appId, node.environmentId, node.environmentName)
+                        onClickManifestDownload(_appId, node.environmentId, node.environmentName)
                         const msg =
                             materialType == MATERIAL_TYPE.rollbackMaterialList
                                 ? 'Rollback Initiated'
@@ -1271,30 +1272,47 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const updateResponseListData = (_responseList) => {
         setResponseList((prevList) => {
-          const resultMap = new Map(_responseList.map((data) => [data.appId, data]));
-          const updatedArray = prevList?.map((prevItem) => resultMap.get(prevItem.appId) || prevItem);
-          return (updatedArray?.length > 0 ? updatedArray : _responseList).sort(sortResponseList);
-        });
-      };
+            const resultMap = new Map(_responseList.map((data) => [data.appId, data]))
+            const updatedArray = prevList?.map((prevItem) => resultMap.get(prevItem.appId) || prevItem)
+            return (updatedArray?.length > 0 ? updatedArray : _responseList).sort(sortResponseList)
+        })
+    }
 
+    const filterStatusType = (
+        type: WorkflowNodeType,
+        CIStatus: string,
+        VirtualStatus: string,
+        CDStatus: string,
+    ): string => {
+        if (type === WorkflowNodeType.CI) {
+            return CIStatus
+        } else if (isVirtualEnv) {
+            return VirtualStatus
+        } else {
+            return CDStatus
+        }
+    }
 
     const handleBulkTrigger = (
         promiseList: any[],
         triggeredAppList: { appId: number; envId?: number; appName: string }[],
         type: WorkflowNodeType,
-    ): void => {
+    ): void => {    
         if (promiseList.length) {
             Promise.allSettled(promiseList).then((responses: any) => {
                 const _responseList = []
                 responses.forEach((response, index) => {
                     if (response.status === 'fulfilled') {
+                        const statusType = filterStatusType(
+                            type,
+                            BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS],
+                            BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.PASS],
+                            BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS],
+                        )
                         _responseList.push({
                             appId: triggeredAppList[index].appId,
                             appName: triggeredAppList[index].appName,
-                            statusText:
-                                type === WorkflowNodeType.CI
-                                    ? BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS]
-                                    : BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS],
+                            statusText: statusType,
                             status: BulkResponseStatus.PASS,
                             envId: triggeredAppList[index].envId,
                             message: '',
@@ -1302,24 +1320,30 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     } else {
                         const errorReason = response.reason
                         if (errorReason.code === 403) {
+                            const statusType = filterStatusType(
+                                type,
+                                BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE],
+                                BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.UNAUTHORIZE],
+                                BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE],
+                            )
                             _responseList.push({
                                 appId: triggeredAppList[index].appId,
                                 appName: triggeredAppList[index].appName,
-                                statusText:
-                                    type === WorkflowNodeType.CI
-                                        ? BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE]
-                                        : BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE],
+                                statusText: statusType,
                                 status: BulkResponseStatus.UNAUTHORIZE,
                                 message: errorReason.errors[0].userMessage,
                             })
                         } else {
+                            const statusType = filterStatusType(
+                                type,
+                                BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
+                                BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.FAIL],
+                                BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
+                            )
                             _responseList.push({
                                 appId: triggeredAppList[index].appId,
                                 appName: triggeredAppList[index].appName,
-                                statusText:
-                                    type === WorkflowNodeType.CI
-                                        ? BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL]
-                                        : BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
+                                statusText: statusType,
                                 status: BulkResponseStatus.FAIL,
                                 message: errorReason.errors[0].userMessage,
                             })
