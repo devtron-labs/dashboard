@@ -15,7 +15,8 @@ import {
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
 import YAML from 'yaml'
-import { useForm, CustomPassword } from '../common'
+import { useForm, CustomPassword, useAsync } from '../common'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
@@ -35,7 +36,7 @@ import {
 } from './cluster.type'
 import { toast } from 'react-toastify'
 
-import { CLUSTER_COMMAND, AppCreationType, MODES } from '../../config'
+import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CLUSTER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
@@ -45,6 +46,8 @@ import TippyHeadless from '@tippyjs/react/headless'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { UPLOAD_STATE } from '../CustomChart/types'
 import UserNameDropDownList from './UseNameListDropdown'
+import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -84,7 +87,6 @@ export default function ClusterForm({
     prometheus_url,
     prometheusAuth,
     defaultClusterComponent,
-    isGrafanaModuleInstalled,
     isTlsConnection,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
@@ -119,6 +121,11 @@ export default function ClusterForm({
     const [isClusterSelected, setClusterSeleceted] = useState<Record<string, boolean>>({})
     const [selectAll, setSelectAll] = useState<boolean>(false)
     const [getClusterVar, setGetClusterState] = useState<boolean>(false)
+    const [, grafanaModuleStatus] = useAsync(
+        () => getModuleInfo(ModuleNameMap.GRAFANA),
+        [clusterId],
+        !window._env_.K8S_CLIENT,
+    )
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
@@ -195,6 +202,8 @@ export default function ClusterForm({
         },
         onValidation,
     )
+
+    const isGrafanaModuleInstalled = grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED
 
     const toggleGetCluster = () => {
         setGetClusterState(!getClusterVar)
@@ -564,11 +573,13 @@ export default function ClusterForm({
                                 className="dc__resizable-textarea__with-max-height dc__required-field"
                                 name="token"
                                 value={
-                                    id ? id !== 1
-                                        ? DEFAULT_SECRET_PLACEHOLDER
-                                        : config?.bearer_token
-                                        ? config.bearer_token
-                                        : '' : state.token.value
+                                    id
+                                        ? id !== 1
+                                            ? DEFAULT_SECRET_PLACEHOLDER
+                                            : config?.bearer_token
+                                            ? config.bearer_token
+                                            : ''
+                                        : state.token.value
                                 }
                                 onChange={handleOnChange}
                                 onBlur={handleOnBlur}
@@ -585,7 +596,7 @@ export default function ClusterForm({
                         </label>
                     )}
                 </div>
-                {isGrafanaModuleInstalled && id !== 1 && (
+                {id !== 1 && (
                     <>
                         <hr />
                         <div className="dc__position-rel flex left dc__hover mb-20">
@@ -686,18 +697,20 @@ export default function ClusterForm({
                         )}
                     </>
                 )}
-                <div className={`${prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'} mt-20`}>
-                    <div className="dc__content-space flex">
-                        <span className="form__input-header">See metrics for applications in this cluster</span>
-                        <div className="w-32 h-20">
-                            <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
+                {isGrafanaModuleInstalled && (
+                    <div className={`${prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'} mt-20`}>
+                        <div className="dc__content-space flex">
+                            <span className="form__input-header">See metrics for applications in this cluster</span>
+                            <div className="w-32 h-20">
+                                <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
+                            </div>
                         </div>
+                        <span className="cn-6 fs-12">
+                            Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications running
+                            in this cluster
+                        </span>
                     </div>
-                    <span className="cn-6 fs-12">
-                        Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications running in
-                        this cluster
-                    </span>
-                </div>
+                )}
                 {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheus_url && <PrometheusWarningInfo />}
                 {isGrafanaModuleInstalled && prometheusToggleEnabled && (
                     <div className="">
@@ -897,11 +910,12 @@ export default function ClusterForm({
                                 saveClusterList.map((clusterListDetail, index) => (
                                     <div
                                         key={`api_${index}`}
-                                        className="saved-cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
+                                        className="saved-cluster-list-row cluster-env-list_table flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
                                     >
+                                        <div></div>
                                         <div
                                             data-testid={`validate-cluster-${clusterListDetail.clusterName}`}
-                                            className="flexbox"
+                                            className="flexbox dc__align-items-center ml-2"
                                         >
                                             <span className="dc__ellipsis-right">{clusterListDetail.clusterName}</span>
                                         </div>
@@ -1274,6 +1288,7 @@ export default function ClusterForm({
                                 className="flex cta delete scr-5 h-36 lh-36"
                                 type="button"
                                 onClick={() => toggleConfirmation(true)}
+                                disabled={isDefaultCluster()}
                             >
                                 {deleting ? <Progressing /> : 'Delete'}
                             </button>
