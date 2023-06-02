@@ -191,6 +191,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             },
             () => {
                 if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return
+                
                 this.setState({ isLoading: true, isChecked: true })
                 let payload = {
                     appId: this.props.appId,
