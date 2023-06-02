@@ -17,7 +17,7 @@ import Tippy from '@tippyjs/react'
 import './clusterNodes.scss'
 import ClusterTerminal from './ClusterTerminal'
 
-export default function ClusterList({ imageList, isSuperAdmin, namespaceList }: ClusterListType) {
+export default function ClusterList({ imageList, isSuperAdmin, namespaceList}: ClusterListType) {
     const match = useRouteMatch()
     const location = useLocation()
     const history = useHistory()

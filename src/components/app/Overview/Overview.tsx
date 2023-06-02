@@ -292,7 +292,9 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     }
 
     const renderDeploymentComponent = () => {
+
         if (otherEnvsResult?.[0]?.result?.length > 0) {
+            otherEnvsResult[0].result.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1))
             return (
                 <div className="env-deployments-info-wrapper w-100">
                     <div
@@ -304,6 +306,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
                         {isArgoInstalled && <span>App status</span>}
                         <span>Last deployed</span>
                     </div>
+
                     <div className="env-deployments-info-body">
                         {otherEnvsResult[0].result.map(
                             (_env, index) =>
