@@ -991,7 +991,7 @@ export const DirectPermission: React.FC<DirectPermissionRow> = ({
                     <>
                         <span>{option.label}</span>
                         <small className={permission.accessType === ACCESS_TYPE_MAP.HELM_APPS && 'light-color'}>
-                            {option.clusterName + (option.clusterName ? '/' : '') + option.namespace}
+                            {option.clusterName + ((option.clusterName && option.namespace) ? '/' : '') + (option.namespace || '')}
                         </small>
                     </>
                 ) : (

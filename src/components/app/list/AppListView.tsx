@@ -52,7 +52,7 @@ export class AppListView extends Component<AppListViewProps> {
                         {isEnvConfigured ? app.defaultEnv.name : 'Not configured'}
                     </p>
                     {len > 1 ? (
-                        <button type="button" className="cell__link fs-13" data-key={app.id} onClick={this.expandEnv}>
+                        <button type="button" className="cell__link fs-13 dc__truncate-text mw-18" data-key={app.id} onClick={this.expandEnv}>
                             +{len - 1} more
                         </button>
                     ) : null}

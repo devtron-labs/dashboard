@@ -15,6 +15,8 @@ function DeploymentTypeIcon({ deploymentAppType }: { deploymentAppType: string }
             return <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />
         } else if (deploymentAppType === DeploymentAppType.helm) {
             return <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
+        } else {
+            return null
         }
     }
 

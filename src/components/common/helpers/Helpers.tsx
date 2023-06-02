@@ -1074,16 +1074,25 @@ export function createClusterEnvGroup<T>(
             acc[key] = []
         }
         acc[key].push(
-            optionLabel ? { label: obj[optionLabel], value: obj[optionValue ? optionValue : optionLabel], description: obj['description'], isVirtualEnvironment: obj['isVirtualEnvironment'] } : obj,
+            optionLabel
+                ? {
+                      label: obj[optionLabel],
+                      value: obj[optionValue ? optionValue : optionLabel],
+                      description: obj['description'],
+                      isVirtualEnvironment: obj['isVirtualEnvironment'],
+                  }
+                : obj,
         )
         return acc
     }, {})
 
-    return Object.entries(objList).map(([key, value]) => ({
-        label: key,
-        options: value,
-        isVirtualEnvironment: value[0]['isVirtualEnvironment'] // All the values will be having similar isVirtualEnvironment
-    }))
+    return Object.entries(objList)
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([key, value]) => ({
+            label: key,
+            options: value,
+            isVirtualEnvironment: value[0]['isVirtualEnvironment'], // All the values will be having similar isVirtualEnvironment
+        }))
 }
 
 export const k8sStyledAgeToSeconds = (duration: string): number => {

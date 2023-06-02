@@ -253,10 +253,10 @@ function EnvironmentSelectorComponent({
                             deployedAppDetail[0],
                         )
                     ) && (
-                        <div data-testid="dot-button-app-details">
+                        <div data-testid="dot-button-app-details" className="flex br-4 en-2 bw-1 bcn-0 p-4 ml-8">
                             <PopupMenu autoClose>
                                 <PopupMenu.Button rootClassName="flex" isKebab={true}>
-                                    <Dots className="pod-info__dots ml-8 icon-dim-20 icon-color-n6" />
+                                    <Dots className="pod-info__dots icon-dim-20 icon-color-n6" />
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
                                     <Popup />

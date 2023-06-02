@@ -604,7 +604,7 @@ function ChartDeploymentHistory({
                             )}
                         </div>
                     </div>
-                    {selectedDeploymentHistoryIndex !== 0 && (
+                    {!(selectedDeploymentHistoryIndex === 0 || isVirtualEnvironment) && (
                         <Tippy className="default-tt" arrow={false} content={'Re-deploy this version'}>
                             <button
                                 className="flex cta deploy-button"

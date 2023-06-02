@@ -28,8 +28,6 @@ import { ReactComponent as Check } from '../../assets/icons/ic-check.svg';
 import { ReactComponent as Play } from '../../assets/icons/ic-play.svg';
 import { ReactComponent as Info } from '../../assets/icons/ic-info-outline.svg';
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg';
-import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
-import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
 import { ViewType, URLS, SourceTypeMap } from '../../config';
 import { ModifyRecipientsModal } from './ModifyRecipientsModal';
 import { toast } from 'react-toastify';
@@ -38,6 +36,7 @@ import { getHostURLConfiguration } from '../../services/service';
 import { HostURLConfig } from '../../services/service.types';
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig';
 import { ReactComponent as Trash } from '../../assets/icons/ic-delete.svg';
+import { renderPipelineTypeIcon } from './notifications.util';
 export interface NotificationConfiguration {
     id: number;
     pipelineId?: number;
@@ -57,6 +56,7 @@ export interface NotificationConfiguration {
         environment: { id: number, name: string }[],
     };
     singleDeletedId: number
+    isVirtualEnvironment?: boolean
 }
 
 export interface NotificationTabState {
@@ -537,8 +537,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         </td>
                         <td className="pipeline-list__pipeline-name">{row?.appName}</td>
                         <td className="pipeline-list__type">
-                            {row.pipelineType === "CI" ? <CI className="icon-dim-20" /> : ''}
-                            {row.pipelineType === "CD" ? <CD className="icon-dim-20" /> : ''}
+                         {renderPipelineTypeIcon(row)}
                         </td>
                         <td className="pipeline-list__environment">
                             {_isCi &&
