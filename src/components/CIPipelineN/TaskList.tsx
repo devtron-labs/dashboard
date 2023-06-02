@@ -151,8 +151,8 @@ export function TaskList({ withWarning, mandatoryPluginsMap, setInputVariablesLi
             id: 0,
             pluginId: _taskDetail[0].pluginRefStepDetail.pluginId,
             conditionDetails: [],
-            inputVariables: _taskDetail[0].pluginRefStepDetail.inputVariables || [],
-            outputVariables: _taskDetail[0].pluginRefStepDetail.outputVariables || [],
+            inputVariables: _taskDetail[0].pluginRefStepDetail.inputVariables ?? [],
+            outputVariables: _taskDetail[0].pluginRefStepDetail.outputVariables ?? [],
         }
 
         _formData[moveToStage].steps.push(_taskDetail[0])
