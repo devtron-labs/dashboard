@@ -368,23 +368,25 @@ export default function ClusterTerminal({
     function closeTerminalModal(e: any, skipRedirection?: boolean): void {
         try {
             if (!isNodeDetailsPage && typeof closeTerminal === 'function') {
-                closeTerminal(skipRedirection);
+                closeTerminal(skipRedirection)
             }
-            setConnectTerminal(false);
+            setConnectTerminal(false)
             if (isPodCreated && terminalAccessIdRef.current) {
-                clusterTerminalDisconnect(terminalAccessIdRef.current).then(() => {
-                    socketDisconnecting();
-                    terminalAccessIdRef.current = null;
-                    toggleOptionChange();
-                    setUpdate(false);
-                }).catch((error) => {
-                    setConnectTerminal(true);
-                    showError(error);
-                })
+                clusterTerminalDisconnect(terminalAccessIdRef.current)
+                    .then(() => {
+                        socketDisconnecting()
+                        terminalAccessIdRef.current = null
+                        toggleOptionChange()
+                        setUpdate(false)
+                    })
+                    .catch((error) => {
+                        setConnectTerminal(true)
+                        showError(error)
+                    })
             }
         } catch (error) {
-            setConnectTerminal(true);
-            showError(error);
+            setConnectTerminal(true)
+            showError(error)
         }
     }
 
@@ -570,7 +572,9 @@ export default function ClusterTerminal({
         return <GroupHeading {...props} hideClusterName={true} />
     }
 
-    const terminalClusterDetailsPageClassWrapper = isFullScreen ? 'cluster-details-full-screen' : 'cluster-details-node-details'
+    const terminalClusterDetailsPageClassWrapper = isFullScreen
+        ? 'cluster-details-full-screen'
+        : 'cluster-details-node-details'
 
     const terminalTabWrapper = (terminalView: () => JSX.Element) => {
         return (
@@ -599,7 +603,11 @@ export default function ClusterTerminal({
     const renderTabs = () => {
         return (
             <ul role="tablist" className="tab-list">
-                <li className="tab-list__tab pointer fs-12" onClick={selectTerminalTab}>
+                <li
+                    className="tab-list__tab pointer fs-12"
+                    data-testid="cluster-terminal-button"
+                    onClick={selectTerminalTab}
+                >
                     <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 0 ? 'active' : ''}`}>
                         {SELECT_TITLE.TERMINAL}
                     </div>
@@ -607,13 +615,17 @@ export default function ClusterTerminal({
                 </li>
                 {terminalAccessIdRef.current && connectTerminal && (
                     <>
-                        <li className="tab-list__tab fs-12" onClick={selectEventsTab}>
+                        <li className="tab-list__tab fs-12" data-testid="pod-events-button" onClick={selectEventsTab}>
                             <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 1 ? 'active' : ''}`}>
                                 {SELECT_TITLE.POD_EVENTS}
                             </div>
                             {selectedTabIndex == 1 && <div className="node-details__active-tab" />}
                         </li>
-                        <li className="tab-list__tab fs-12" onClick={selectManifestTab}>
+                        <li
+                            className="tab-list__tab fs-12"
+                            data-testid="pod-manifests-button"
+                            onClick={selectManifestTab}
+                        >
                             <div className={`tab-hover mb-4 mt-5 cursor ${selectedTabIndex == 2 ? 'active' : ''}`}>
                                 {SELECT_TITLE.POD_MANIFEST}
                             </div>
@@ -677,6 +689,7 @@ export default function ClusterTerminal({
                     Disconnected
                     <span>.&nbsp;</span>
                     <button
+                        data-testid="reconnect-button"
                         type="button"
                         onClick={socketConnecting}
                         className="cursor dc_transparent dc__inline-block dc__underline dc__no-background dc__no-border"
@@ -703,6 +716,7 @@ export default function ClusterTerminal({
                 hideTerminalStripComponent: !clusterName,
                 title: SELECT_TITLE.CLUSTER,
                 value: clusterName,
+                dataTestId: 'cluster-terminal-cluster-name',
             },
             {
                 type: 'connectionButton',
@@ -713,6 +727,7 @@ export default function ClusterTerminal({
             },
             {
                 type: 'reactSelect',
+                classNamePrefix: 'cluster-terminal-node',
                 hideTerminalStripComponent: isNodeDetailsPage,
                 title: SELECT_TITLE.NODE,
                 placeholder: 'Select node',
@@ -730,6 +745,7 @@ export default function ClusterTerminal({
             {
                 type: 'creatableSelect',
                 showInfoTippy: false,
+                classNamePrefix: 'cluster-terminal-name-space',
                 title: SELECT_TITLE.NAMESPACE,
                 placeholder: 'Select Namespace',
                 options: defaultNamespaceList,
@@ -745,6 +761,7 @@ export default function ClusterTerminal({
             {
                 type: 'creatableSelect',
                 title: SELECT_TITLE.IMAGE,
+                classNamePrefix: 'cluster-terminal-select-image',
                 placeholder: 'Select Image',
                 options: imageList,
                 showInfoTippy: true,
@@ -776,6 +793,7 @@ export default function ClusterTerminal({
             {
                 type: 'connectionSwitch',
                 hideTerminalStripComponent: !showShell,
+                classNamePrefix: 'cluster-terminal-select-shell',
                 stopTerminalConnection,
                 resumePodConnection,
                 toggleButton:
@@ -786,9 +804,11 @@ export default function ClusterTerminal({
                 type: 'clearButton',
                 hideTerminalStripComponent: !showShell,
                 setTerminalCleared: clearTerminal,
+                dataTestId: 'clear-logs-button',
             },
             {
                 type: 'creatableSelect',
+                classNamePrefix: 'cluster-terminal-select-shell',
                 hideTerminalStripComponent: !showShell,
                 title: SELECT_TITLE.SHELL,
                 placeholder: 'Select Shell',
@@ -806,6 +826,7 @@ export default function ClusterTerminal({
             terminalTabWrapper: terminalTabWrapper,
             terminalData: {
                 terminalRef: terminalRef,
+                dataTestId: 'cluster-terminal-view',
                 clearTerminal: terminalCleared,
                 terminalMessageData: preFetchData,
                 renderConnectionStrip: renderStripMessage(),
