@@ -329,7 +329,7 @@ export default class Navigation extends Component<
                                     <use href={`${NavSprite}#nav-short-devtron-logo`}></use>
                                 </svg>
                                 <div className="pl-12 pt-10 pt-0">
-                                    <img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text" />
+                                    <img src={TextLogo} alt="devtron" className="devtron-logo devtron-logo--text pt-10" />
                                 </div>
                             </div>
                         </NavLink>
