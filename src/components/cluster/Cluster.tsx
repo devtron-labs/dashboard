@@ -398,14 +398,9 @@ function Cluster({
 
     const history = useHistory()
     const newEnvs = useMemo(() => {
-        let namespacesInAll = true
-        if (Array.isArray(environments)) {
-            namespacesInAll = !environments.some((env) => !env.namespace)
-        }
-        return namespacesInAll && clusterId ? [{ id: null }].concat(environments || []) : environments || []
+        return clusterId ? [{ id: null }].concat(environments || []) : environments || []
     }, [environments])
-    const sortedNewEnvs = newEnvs.sort((a, b) => sortCallback('environment_name', a, b))
-
+    
     async function handleEdit(e) {
         try {
             const { result } = await getCluster(clusterId)
