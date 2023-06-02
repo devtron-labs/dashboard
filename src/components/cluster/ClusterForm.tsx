@@ -897,11 +897,12 @@ export default function ClusterForm({
                                 saveClusterList.map((clusterListDetail, index) => (
                                     <div
                                         key={`api_${index}`}
-                                        className="saved-cluster-list-row flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
+                                        className="saved-cluster-list-row cluster-env-list_table flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
                                     >
+                                        <div></div>
                                         <div
                                             data-testid={`validate-cluster-${clusterListDetail.clusterName}`}
-                                            className="flexbox"
+                                            className="flexbox dc__align-items-center ml-2"
                                         >
                                             <span className="dc__ellipsis-right">{clusterListDetail.clusterName}</span>
                                         </div>
