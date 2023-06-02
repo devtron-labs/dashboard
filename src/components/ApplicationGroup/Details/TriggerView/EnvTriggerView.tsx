@@ -233,6 +233,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
             wf.isSelected = false
             return wf
         })
+        setSelectAll(false)
         setFilteredWorkflows(_workflows)
     }
 
