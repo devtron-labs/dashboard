@@ -45,10 +45,10 @@ export default function ClusterNodeContainer() {
     return (
         <Switch>
             <Route path={URLS.CLUSTER_LIST} exact>
-                <ClusterList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList}  />
+                <ClusterList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList} />
             </Route>
             <Route path={`${URLS.CLUSTER_LIST}/:clusterId`} exact>
-                <NodeList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList}   />
+                <NodeList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList} />
             </Route>
             <Route path={`${URLS.CLUSTER_LIST}/:clusterId/:nodeName`} exact>
                 <NodeDetails imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList} />
