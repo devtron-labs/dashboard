@@ -439,7 +439,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
     const renderClusterSummary = (): JSX.Element => {
         return (
             <>
-                <div className="flex dc__content-space pt-16 pb-16 pl-20 pr-20 mt-16 mb-16 ml-20 mr-20 bcn-0 br-4 en-2 bw-1">
+                <div data-testid="cluster_name_info_page" className="flex dc__content-space pt-16 pb-16 pl-20 pr-20 mt-16 mb-16 ml-20 mr-20 bcn-0 br-4 en-2 bw-1">
                     <div className="flex fw-6 fs-13">
                         <div className="fw-6 fs-14 cn-9 h-20 flex cg-5">
                             <CloudIcon className="icon-dim-16 mr-4" />
@@ -719,7 +719,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
         <>
             <div className={`node-list dc__overflow-scroll ${showTerminal ? 'show-terminal' : ''}`}>
                 {renderClusterSummary()}
-                <div
+                <div 
                     className={`bcn-0 pt-16 list-min-height ${noResults ? 'no-result-container' : ''} ${
                         clusterErrorList?.length ? 'with-error-bar' : ''
                     }`}

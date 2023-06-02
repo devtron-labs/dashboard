@@ -394,7 +394,7 @@ export default function ClusterAbout({ clusterId, isSuperAdmin }: ClusterAboutPr
     }
     return (
         <div className="flexbox dc__overflow-hidden h-100">
-            <div data-testid="cluster_name_info_page" className="cluster-column-container w-250 bcn-0 dc__border-right">
+            <div className="cluster-column-container w-250 bcn-0 dc__border-right">
                 <div className="pr-16 pt-16 pl-16 pb-16">
                     <div className="icon-dim-48 flex br-4 cb-5 bcb-1 scb-5">
                         <ClusterIcon className="flex cluster-icon icon-dim-24" />
