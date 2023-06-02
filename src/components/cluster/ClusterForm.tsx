@@ -1268,13 +1268,14 @@ export default function ClusterForm({
 
                 {!isKubeConfigFile && (
                     <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs dc__bottom-0">
-                        {id && (
+                        {id &&  (
                             <button
                                 data-testid="delete_cluster"
                                 style={{ margin: 'auto', marginLeft: 20 }}
                                 className="flex cta delete scr-5 h-36 lh-36"
                                 type="button"
                                 onClick={() => toggleConfirmation(true)}
+                                disabled = {isDefaultCluster()}
                             >
                                 {deleting ? <Progressing /> : 'Delete'}
                             </button>
