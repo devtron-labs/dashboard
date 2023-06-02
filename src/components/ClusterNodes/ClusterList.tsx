@@ -41,8 +41,7 @@ export default function ClusterList({ imageList, isSuperAdmin, namespaceList}: C
             const { result } = await getClusterListMin()
             setLastDataSync(!lastDataSync)
             if (result) {
-                const sortedResult = result
-                    .sort((a, b) => a['name'].localeCompare(b['name']))
+                const sortedResult = result.sort((a, b) => a['name'].localeCompare(b['name']))
                 if (!completeDataLoadedRef.current) {
                     setClusterList(sortedResult)
                     setFilteredClusterList(sortedResult)

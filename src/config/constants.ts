@@ -22,6 +22,8 @@ export const Routes = {
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',
+    VALIDATE: 'cluster/validate',
+    SAVECLUSTER: 'cluster/saveClusters',
     CLUSTER_DESCRIPTION: 'cluster/description',
     CLUSTER_NOTE: 'cluster/description/note',
 
@@ -225,7 +227,7 @@ export const Routes = {
     GROUPS: 'groups',
     GROUP: 'group',
     ROTATE_PODS: 'app/rotate-pods',
-    DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/'
+    DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/',
 }
 
 export const ViewType = {
