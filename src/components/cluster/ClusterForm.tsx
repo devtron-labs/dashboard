@@ -15,7 +15,8 @@ import {
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
 import YAML from 'yaml'
-import { useForm, CustomPassword } from '../common'
+import { useForm, CustomPassword, useAsync } from '../common'
+import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
 import { saveCluster, updateCluster, deleteCluster, validateCluster, saveClusters } from './cluster.service'
@@ -35,7 +36,7 @@ import {
 } from './cluster.type'
 import { toast } from 'react-toastify'
 
-import { CLUSTER_COMMAND, AppCreationType, MODES } from '../../config'
+import { CLUSTER_COMMAND, AppCreationType, MODES, ModuleNameMap } from '../../config'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_CLUSTER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { ReactComponent as Question } from '../../assets/icons/ic-help-outline.svg'
@@ -45,6 +46,8 @@ import TippyHeadless from '@tippyjs/react/headless'
 import CodeEditor from '../CodeEditor/CodeEditor'
 import { UPLOAD_STATE } from '../CustomChart/types'
 import UserNameDropDownList from './UseNameListDropdown'
+import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 
 const PrometheusWarningInfo = () => {
     return (
@@ -84,7 +87,6 @@ export default function ClusterForm({
     prometheus_url,
     prometheusAuth,
     defaultClusterComponent,
-    isGrafanaModuleInstalled,
     isTlsConnection,
     toggleCheckTlsConnection,
     setTlsConnectionFalse,
@@ -119,6 +121,11 @@ export default function ClusterForm({
     const [isClusterSelected, setClusterSeleceted] = useState<Record<string, boolean>>({})
     const [selectAll, setSelectAll] = useState<boolean>(false)
     const [getClusterVar, setGetClusterState] = useState<boolean>(false)
+    const [, grafanaModuleStatus] = useAsync(
+        () => getModuleInfo(ModuleNameMap.GRAFANA),
+        [clusterId],
+        !window._env_.K8S_CLIENT,
+    )
     const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             cluster_name: { value: cluster_name, error: '' },
@@ -196,6 +203,8 @@ export default function ClusterForm({
         onValidation,
     )
 
+    const isGrafanaModuleInstalled = grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED
+
     const toggleGetCluster = () => {
         setGetClusterState(!getClusterVar)
     }
@@ -204,6 +213,8 @@ export default function ClusterForm({
         toggleGetCluster()
         toggleKubeConfigFile(true)
     }
+
+    
 
     const getSaveClusterPayload = (dataLists: DataListType[]) => {
         const saveClusterPayload: SaveClusterPayloadType[] = []

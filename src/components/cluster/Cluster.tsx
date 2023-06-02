@@ -26,7 +26,6 @@ import { ClusterInstallStatus } from './ClusterInstallStatus'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, DEFAULT_SECRET_PLACEHOLDER } from './cluster.type'
 import { useHistory } from 'react-router'
 import { toast } from 'react-toastify'
-
 import { DOCUMENTATION, SERVER_MODE, ViewType, URLS, CONFIGURATION_TYPES, AppCreationType } from '../../config'
 import { getEnvName } from './cluster.util'
 import DeleteComponent from '../../util/DeleteComponent'
@@ -232,7 +231,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                     reload={this.initialise}
                                     key={cluster.id || Math.random().toString(36).substr(2, 5)}
                                     serverMode={this.props.serverMode}
-                                    isGrafanaModuleInstalled={true}
                                     showEditCluster={this.state.showEditCluster}
                                     toggleShowAddCluster={this.toggleShowEditCluster}
                                     toggleCheckTlsConnection={this.toggleCheckTlsConnection}
@@ -254,7 +252,6 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 prometheus_url=""
                                 prometheusAuth={this.state.prometheus}
                                 defaultClusterComponent={this.state.defaultClusterComponent}
-                                isGrafanaModuleInstalled={true}
                                 isTlsConnection={this.state.isTlsConnection}
                                 isClusterDetails={this.state.isClusterDetails}
                                 toggleCheckTlsConnection={this.toggleCheckTlsConnection}
@@ -740,7 +737,6 @@ function Cluster({
                                 prometheus_url=""
                                 prometheusAuth={state.prometheus}
                                 defaultClusterComponent={state.defaultClusterComponent}
-                                isGrafanaModuleInstalled={true}
                                 isTlsConnection={isTlsConnection}
                                 isClusterDetails={state.isClusterDetails}
                                 toggleCheckTlsConnection={toggleCheckTlsConnection}
