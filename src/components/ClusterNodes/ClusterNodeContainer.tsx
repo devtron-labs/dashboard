@@ -10,7 +10,6 @@ import { showError } from '@devtron-labs/devtron-fe-common-lib'
 import { clusterNamespaceList } from './clusterNodes.service'
 import { ClusterImageList } from './types'
 
-
 export default function ClusterNodeContainer() {
     const [imageList, setImageList] = useState<ClusterImageList[]>(null)
     const [isSuperAdmin, setSuperAdmin] = useState<boolean>(window._env_.K8S_CLIENT ? true : false)
