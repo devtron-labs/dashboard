@@ -823,7 +823,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 rootClassName="deployment-strategy-dropdown br-0 bw-0 w-150"
                 onChange={(e) => this.selectStrategy(e.target.value)}
             >
-                <Select.Button rootClassName="">
+                <Select.Button rootClassName="right" hideArrow={true}>
                     <span className="flex cb-5 fw-6">
                         <Add className="icon-dim-20 mr-8 fcb-5 dc__vertical-align-middle" />
                         Add Strategy
@@ -1100,7 +1100,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     renderTriggerType() {
         return (
-            <>
+            <div className="cd-pipeline__trigger-type">
                 <label className="form__label form__label--sentence dc__bold">When do you want the pipeline to execute?</label>
                 <RadioGroup
                     value={
@@ -1117,7 +1117,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                         Manual
                     </RadioGroupItem>
                 </RadioGroup>
-            </>
+            </div>
         )
     }
 
@@ -1428,9 +1428,9 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 >
                     <div className="icon-dim-44 bcn-1 br-8 flex">
                         {this.state.pipelineConfig.isVirtualEnvironment ? (
-                            <Rocket className="icon-dim-24 dc__flip" />
+                            <Rocket className="icon-dim-24" />
                         ) : (
-                            <CD className="icon-dim-24" />
+                            <CD className="icon-dim-24 dc__flip" />
                         )}
                     </div>
                     <div className="ml-16 mr-16 flex-1">
@@ -1594,7 +1594,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 >
                     {this.renderHeader()}
                     <div
-                        className="p-20"
+                        className="cd-pipeline-body p-20"
                         style={{
                             height:
                                 this.props.match.params.cdPipelineId || this.state.isAdvanced

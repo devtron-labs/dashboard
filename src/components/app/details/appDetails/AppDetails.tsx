@@ -220,7 +220,7 @@ export const Details: React.FC<DetailsType> = ({
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
-            ...(isVirtualEnvRef.current
+            ...((isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData)
                 ? processVirtualEnvironmentDeploymentData()
                 : processDeploymentStatusDetailsData()),
             deploymentStatus: DEFAULT_STATUS,
@@ -254,7 +254,7 @@ export const Details: React.FC<DetailsType> = ({
     }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
-        const processedDeploymentStatusDetailsData = isVirtualEnvRef.current
+        const processedDeploymentStatusDetailsData = (isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData)
             ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
             : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
         clearDeploymentStatusTimer()

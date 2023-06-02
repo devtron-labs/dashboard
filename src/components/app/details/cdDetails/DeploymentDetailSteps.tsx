@@ -34,7 +34,7 @@ export default function DeploymentDetailSteps({
         deploymentStatus?.toUpperCase() !== TIMELINE_STATUS.ABORTED,
     )
     const isVirtualEnv = useRef(isVirtualEnvironment)
-    const processedData = isVirtualEnv.current ? processVirtualEnvironmentDeploymentData() :  processDeploymentStatusDetailsData()
+    const processedData = (isVirtualEnv.current && processVirtualEnvironmentDeploymentData) ? processVirtualEnvironmentDeploymentData() :  processDeploymentStatusDetailsData()
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>(processedData)
 
@@ -75,7 +75,7 @@ export default function DeploymentDetailSteps({
     }
 
     const processDeploymentStatusData = (deploymentStatusDetailRes: DeploymentStatusDetailsType): void => {
-        const processedDeploymentStatusDetailsData = isVirtualEnv.current ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes): processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+        const processedDeploymentStatusDetailsData = (isVirtualEnv.current && processVirtualEnvironmentDeploymentData) ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes): processDeploymentStatusDetailsData(deploymentStatusDetailRes)
         clearDeploymentStatusTimer()
         // If deployment status is in progress then fetch data in every 10 seconds
 

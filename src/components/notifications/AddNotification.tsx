@@ -17,14 +17,12 @@ import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg'
 import { ReactComponent as Folder } from '../../assets/icons/img-folder-empty.svg'
-import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg'
-import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg'
 import { getAddNotificationInitData, getPipelines, saveNotification, getChannelConfigs } from './notifications.service'
 import { ViewType, URLS, SourceTypeMap } from '../../config'
 import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { components } from 'react-select'
-import { multiSelectStyles, DropdownIndicator, Option, MultiValueContainer } from './notifications.util'
+import { multiSelectStyles, DropdownIndicator, Option, MultiValueContainer, renderPipelineTypeIcon } from './notifications.util'
 import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
 import { CiPipelineSourceConfig } from '../ciPipeline/CiPipelineSourceConfig'
@@ -72,6 +70,7 @@ export interface PipelineType {
     trigger: boolean
     failure: boolean
     appliedFilters: Array<{ type: string; value: number | string | undefined; name: string; label: string | undefined }>
+    isVirtualEnvironment?: boolean
 }
 
 interface AddNotificationState {
@@ -663,8 +662,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                     </td>
                                     <th className="pipeline-list__pipeline-name fw-6">{row?.appName}</th>
                                     <td className="pipeline-list__type">
-                                        {row.type === 'CI' ? <CI className="icon-dim-20" /> : ''}
-                                        {row.type === 'CD' ? <CD className="icon-dim-20" /> : ''}
+                                      {renderPipelineTypeIcon(row)}
                                     </td>
                                     <td className="pipeline-list__environment">
                                         {_isCi && (
