@@ -35,6 +35,7 @@ import nojobs from '../../assets/img/empty-joblist@2x.png'
 
 class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     workflowTimer = null
+
     constructor(props) {
         super(props)
         this.state = {
@@ -87,7 +88,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     getWorkflows = () => {
         this.getHostURLConfig()
         this.checkGitOpsConfiguration()
-        getCreateWorkflows(this.props.match.params.appId, this.props.isJobView)
+        getCreateWorkflows(
+            this.props.match.params.appId,
+            this.props.isJobView,
+        )
             .then((result) => {
                 const allCINodeMap = new Map()
                 const allDeploymentNodeMap = new Map()

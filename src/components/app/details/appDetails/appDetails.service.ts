@@ -2,7 +2,6 @@ import { Routes } from '../../../../config'
 import { get } from '@devtron-labs/devtron-fe-common-lib'
 import { fetchWithFullRoute } from '../../../../services/fetchWithFullRoute'
 import { DeploymentStatusDetailsResponse, ModuleConfigResponse } from './appDetails.type'
-import { noop } from '../../../common'
 
 export function isDatasourceConfigured(envName: string) {
     const root = process.env.REACT_APP_ORCHESTRATOR_ROOT.replace('/orchestrator', '')

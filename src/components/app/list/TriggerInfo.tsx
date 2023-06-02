@@ -19,7 +19,7 @@ interface TriggerInfoModalState {
 
 interface TriggerInfoModalProps {
     close: () => void;
-    appId: number | string;
+    envId: number | string;
     ciArtifactId: number | string;
     commit?: string;
 }
@@ -44,7 +44,7 @@ export class TriggerInfoModal extends Component<TriggerInfoModalProps, TriggerIn
 
     componentDidMount() {
         let params = {
-            appId: this.props.appId,
+            envId: this.props.envId,
             ciArtifactId: this.props.ciArtifactId
         }
         getCITriggerInfoModal(params, this.props.commit).then((response) => {

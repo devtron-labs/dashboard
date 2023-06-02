@@ -13,8 +13,9 @@ import { useRouteMatch, useHistory, useParams } from 'react-router'
 import Tippy from '@tippyjs/react'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
+import { useAsync } from '../../../../common'
+import { noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
-import { noop, useAsync } from '../../../../common'
 import { EnvironmentStatusComponentType } from '../environment.type'
 
 function EnvironmentStatusComponent({
@@ -153,6 +154,9 @@ function EnvironmentStatusComponent({
             appDetails?.lastDeployedTime && (
               <DeploymentStatusCard
               deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
+              hideDeploymentStatusLeftInfo={!isGitops}
+              deploymentTriggerTime = {appDetails?.lastDeployedTime}
+              triggeredBy ={appDetails?.lastDeployedBy}
           />
             )
         )
@@ -230,7 +234,7 @@ function EnvironmentStatusComponent({
                 <div className="flex left ml-20 mb-16 lh-20">
                     {renderStatusBlock()}
                     {renderHelmConfigApplyStatusBlock()}
-                    {isGitops && renderLastUpdatedBlock()}
+                    {renderLastUpdatedBlock()}
                     {renderChartUsedBlock()}
                     {renderUpgraderChartBlock()}
                 </div>

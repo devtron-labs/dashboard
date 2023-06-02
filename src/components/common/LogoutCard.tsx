@@ -1,6 +1,6 @@
 import React from 'react'
-import { getRandomColor } from './helpers/Helpers'
 import { useHistory } from 'react-router-dom'
+import { getRandomColor } from '@devtron-labs/devtron-fe-common-lib'
 
 interface LogoutCardType {
     className: string

@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import {
     RadioGroup,
-    not,
     Info,
     ToastBody,
     CustomInput,
@@ -15,6 +14,7 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     InfoColourBar,
+    not,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactSelect from 'react-select'
 import { useParams } from 'react-router'
@@ -57,6 +57,7 @@ import {
 } from './secret.utils'
 import { EsoData, SecretFormProps } from '../deploymentConfig/types'
 import { NavLink } from 'react-router-dom'
+import { INVALID_YAML_MSG } from '../../config/constantMessaging'
 
 const Secret = ({ respondOnSuccess, ...props }) => {
     const [appChartRef, setAppChartRef] = useState<{ id: number; version: string; name: string }>()
@@ -479,6 +480,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
         let dataArray = yamlMode ? tempArray.current : externalValues
         const { isValid, arr } = validateKeyValuePair(dataArray)
         if (!isValid) {
+            toast.error(INVALID_YAML_MSG);
             setKeyValueArray(arr)
             return
         }
@@ -572,7 +574,6 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                 )
                 if (typeof props.update === 'function') {
                     props.update(props.index, result)
-                    props.initialise()
                 }
                 props.collapse()
             } else {
@@ -915,6 +916,7 @@ export const SecretForm: React.FC<SecretFormProps> = function (props) {
                         autoComplete="off"
                         tabIndex={5}
                         label={''}
+                        dataTestid = "configmap-file-permission-textbox"
                         disabled={isChartVersion309OrBelow}
                         placeholder={'eg. 0400 or 400'}
                         error={filePermissionValue.error}

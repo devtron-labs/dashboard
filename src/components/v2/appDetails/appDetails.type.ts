@@ -191,6 +191,7 @@ export interface AppDetails {
     clusterName?: string
     dockerRegistryId?: string
     deploymentAppDeleteRequest?: boolean
+    userApprovalConfig?: string
 }
 
 interface MaterialInfo {
@@ -400,10 +401,12 @@ export interface LogsComponentProps extends NodeDetailPropsType {
 }
 
 export interface TerminalComponentProps {
-    selectedTab: (_tabName: string, _url?: string) => void;
-    isDeleted: boolean;
+    selectedTab: (_tabName: string, _url?: string) => void
+    isDeleted: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
+    selectedContainer: Map<string, string>
+    setSelectedContainer: (containerName: Map<string, string>) => void
 }
 
 export interface NodeTreeTabListProps extends LogSearchTermType {
@@ -457,6 +460,7 @@ export interface SelectedResourceType {
     namespace: string
     name: string
     containers: OptionsBase[]
+    selectedContainer?: string
 }
 
 export interface ResourceInfoActionPropsType {

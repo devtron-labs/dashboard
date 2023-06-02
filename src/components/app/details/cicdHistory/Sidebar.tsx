@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { ConditionalWrap, createGitCommitUrl } from '../../../common'
 import { useRouteMatch, useParams, useHistory, generatePath, useLocation } from 'react-router'
 import ReactSelect from 'react-select'
@@ -140,13 +140,14 @@ const HistorySummaryCard = React.memo(
         artifact,
         type,
         stage,
-        dataTestId
+        dataTestId,
     }: HistorySummaryCardType): JSX.Element => {
-        const { path } = useRouteMatch()
+        const { path, params } = useRouteMatch()
         const { pathname } = useLocation()
         const currentTab = pathname.split('/').pop()
         const { triggerId, envId, ...rest } = useParams<{ triggerId: string; envId: string }>()
-        const isCDType: boolean = (type === HistoryComponentType.CD || type === HistoryComponentType.GROUP_CD)
+        const isCDType: boolean = type === HistoryComponentType.CD || type === HistoryComponentType.GROUP_CD
+        const targetCardRef = useRef(null);
 
         const getPath = (): string => {
             const _params = {
@@ -157,6 +158,16 @@ const HistorySummaryCard = React.memo(
             return `${generatePath(path, _params)}/${currentTab}`
         }
 
+        useEffect(() => {
+            scrollToElement()
+        }, [targetCardRef])
+
+        const activeTriggerId = params['triggerId']
+        const scrollToElement = () => {
+            if (targetCardRef?.current) {
+                targetCardRef.current.scrollIntoView({ behavior: "smooth" });
+            }
+        }
         return (
             <ConditionalWrap
                 condition={Array.isArray(ciMaterials)}
@@ -179,7 +190,13 @@ const HistorySummaryCard = React.memo(
                     </TippyHeadless>
                 )}
             >
-                <NavLink to={getPath} className="w-100 ci-details__build-card-container" data-testid={dataTestId} activeClassName="active">
+                <NavLink
+                    to={getPath}
+                    className="w-100 ci-details__build-card-container"
+                    data-testid={dataTestId}
+                    activeClassName="active"
+                    ref={+activeTriggerId === +id ? targetCardRef : null}
+                >
                     <div className="w-100 ci-details__build-card">
                         <div
                             className={`dc__app-summary__icon icon-dim-20 ${triggerStatus(status)?.toLocaleLowerCase().replace(/\s+/g, '')}`}
@@ -244,14 +261,25 @@ const SummaryTooltipCard = React.memo(
                             ? gitDetail.CiConfigureSourceValue
                             : ciMaterial?.value
                         const gitMaterialUrl = gitDetail?.GitRepoUrl ? gitDetail.GitRepoUrl : ciMaterial?.url
+                        if (sourceType !== SourceTypeMap.WEBHOOK && !gitDetail) {
+                            return null
+                        }
                         return (
                             <div className="mt-22 ci-material-detail" key={ciMaterial.id}>
-                                {sourceType != SourceTypeMap.WEBHOOK && gitDetail?.Commit && (
+                                {sourceType == SourceTypeMap.WEBHOOK ? (
+                                    <div className="flex left column">
+                                        <CiPipelineSourceConfig
+                                            sourceType={sourceType}
+                                            sourceValue={sourceValue}
+                                            showTooltip={false}
+                                        />
+                                    </div>
+                                ) : (
                                     <>
                                         <div className="dc__git-logo"> </div>
                                         <div className="flex left column">
                                             <a
-                                                href={createGitCommitUrl(gitMaterialUrl, gitDetail?.Commit)}
+                                                href={createGitCommitUrl(gitMaterialUrl, gitDetail.Commit)}
                                                 target="_blank"
                                                 rel="noopener noreferer"
                                                 className="fs-12 fw-6 cn-9 pointer"
@@ -261,15 +289,6 @@ const SummaryTooltipCard = React.memo(
                                             <p className="fs-12 cn-7">{gitDetail?.Message}</p>
                                         </div>
                                     </>
-                                )}
-                                {sourceType == SourceTypeMap.WEBHOOK && (
-                                    <div className="flex left column">
-                                        <CiPipelineSourceConfig
-                                            sourceType={sourceType}
-                                            sourceValue={sourceValue}
-                                            showTooltip={false}
-                                        />
-                                    </div>
                                 )}
                             </div>
                         )

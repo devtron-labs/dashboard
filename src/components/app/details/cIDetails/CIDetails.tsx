@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { showError, Progressing, Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, Progressing, Reload, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import { getCIPipelines, getCIHistoricalStatus, getTriggerHistory, getArtifact } from '../../service'
 import { useScrollable, useAsync, useInterval, mapByKey, asyncWrap } from '../../../common'
 import { URLS, ModuleNameMap } from '../../../../config'
@@ -14,11 +14,12 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import Sidebar from '../cicdHistory/Sidebar'
-import { Scroller, LogResizeButton, GitChanges, EmptyView } from '../cicdHistory/History.components'
+import { Scroller, LogResizeButton, GitChanges } from '../cicdHistory/History.components'
 import { TriggerDetails } from '../cicdHistory/TriggerDetails'
 import Artifacts from '../cicdHistory/Artifacts'
 import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
+import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -49,7 +50,7 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
         !!pipelineId,
     )
     const { path } = useRouteMatch()
-    const { replace } = useHistory()
+    const { push, replace } = useHistory()
     useInterval(pollHistory, 30000)
 
     useEffect(() => {
@@ -113,6 +114,17 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
     })
     const pipelinesMap = mapByKey(pipelines, 'id')
     const pipeline = pipelinesMap.get(+pipelineId)
+
+    const redirectToArtifactLogs = () => {
+        push(`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`)
+    }
+    const renderSourcePipelineButton = () => {
+        return (
+            <button className="flex cta h-32" onClick={redirectToArtifactLogs}>
+                View Source Pipeline
+            </button>
+        )
+    }
     return (
         <>
             <div className={`ci-details ${fullScreenView ? 'ci-details--full-screen' : ''}`}>
@@ -129,9 +141,10 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                 )}
                 <div className="ci-details__body">
                     {!pipelineId ? (
-                        <EmptyView
-                            title="No pipeline selected"
-                            subTitle={`Please select a pipeline ${
+                        // Empty state if there is no pipeline
+                        <GenericEmptyState
+                            title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.TITLE}
+                            subTitle={`${EMPTY_STATE_STATUS.CI_BUILD_HISTORY_NO_PIPELINE.SUBTITLE} ${
                                 isJobView ? 'to see execution details' : 'to start seeing CI builds'
                             }.`}
                         />
@@ -159,17 +172,21 @@ export default function CIDetails({ isJobView }: { isJobView?: boolean }) {
                                         />
                                     </Route>
                                 ) : pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED' ? (
-                                    <EmptyView
-                                        title="This is a Linked CI Pipeline"
-                                        subTitle="This is a Linked CI Pipeline"
-                                        link={`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
-                                        linkText="View Source Pipeline"
+                                    // Empty state if there is no linked pipeline
+                                    <GenericEmptyState
+                                        title={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.TITLE}
+                                        subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_LINKED_PIPELINE.SUBTITLE}
+                                        isButtonAvailable={true}
+                                        renderButton={renderSourcePipelineButton}
                                     />
                                 ) : (
                                     !loading && (
-                                        <EmptyView
-                                            title={`${isJobView ? 'Job' : 'Build'} pipeline not triggered`}
-                                            subTitle="Pipeline trigger history, details and logs will be available here."
+                                        // Empty state if there is no pipeline
+                                        <GenericEmptyState
+                                            title={`${isJobView ? 'Job' : 'Build'} ${
+                                                EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.TITLE
+                                            }`}
+                                            subTitle={EMPTY_STATE_STATUS.CI_BUILD_HISTORY_PIPELINE_TRIGGER.SUBTITLE}
                                         />
                                     )
                                 )}
@@ -270,7 +287,7 @@ export const Details = ({
                                     to={`source-code`}
                                     data-testid="source-code-link"
                                 >
-                                    Source code
+                                    Source
                                 </NavLink>
                             </li>
                             <li className="tab-list__tab">
@@ -436,7 +453,12 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     const total = severityCount.critical + severityCount.moderate + severityCount.low
 
     if (['failed', 'cancelled'].includes(status.toLowerCase())) {
-        return <EmptyView title="No artifacts generated" subTitle="Errr..!! We couldn’t build your code." />
+        return (
+            <GenericEmptyState
+                title={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsGenerated}
+                subTitle={EMPTY_STATE_STATUS.ARTIFACTS_EMPTY_STATE_TEXTS.NoArtifactsError}
+            />
+        )
     } else if (['starting', 'running'].includes(status.toLowerCase())) {
         return <CIRunningView isSecurityTab={true} />
     } else if (securityData.isLoading) {

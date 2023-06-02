@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { DeploymentNodeType, TriggerCDNodeProps } from '../../types'
+import { TriggerCDNodeProps } from '../../types'
 import { statusColor, statusIcon } from '../../../../config'
 import { ReactComponent as Rollback } from '../../../../../../assets/icons/ic-rollback.svg'
 import { URLS, DEFAULT_STATUS } from '../../../../../../config'
@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom'
 import { TriggerViewContext } from '../../config'
 import { triggerStatus } from '../../../cicdHistory/History.components'
 import { envDescriptionTippy } from './workflow.utils'
+import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps> {
     constructor(props) {
@@ -36,7 +37,11 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
             status === DEFAULT_STATUS.toLowerCase() || status === 'not triggered' || status === 'not deployed'
         if (hideDetails)
             return (
-                <div data-testid={`cd-trigger-status-${this.props.index}`} className="dc__cd-trigger-status" style={{ color: statusColor[status] }}>
+                <div
+                    data-testid={`cd-trigger-status-${this.props.index}`}
+                    className="dc__cd-trigger-status"
+                    style={{ color: statusColor[status] }}
+                >
                     <span>{statusText}</span>
                 </div>
             )
@@ -47,14 +52,16 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                     className="dc__cd-trigger-status"
                     style={{ color: statusColor[status] }}
                 >
-                    <span>
-                        <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
-                    </span>
+                    <span className={`dc__cd-trigger-status__icon ${statusIcon[status]}`} />
                     <span>{statusText}</span>
                     {!this.props.fromAppGrouping && (
                         <>
                             {statusText && <span className="mr-5 ml-5">/</span>}
-                            <Link data-testid={`cd-trigger-details-${this.props.environmentName}-link`} to={url} className="workflow-node__details-link">
+                            <Link
+                                data-testid={`cd-trigger-details-${this.props.environmentName}-link`}
+                                to={url}
+                                className="workflow-node__details-link"
+                            >
                                 Details
                             </Link>
                         </>
@@ -75,7 +82,10 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                             <div className="workflow-node__title flex">
                                 {/* <img src={pipelineDeploy} className="icon-dim-24 mr-16" /> */}
                                 <div className="workflow-node__full-width-minus-Icon">
-                                    <span className="workflow-node__text-light">
+                                    <span
+                                        data-testid={`${this.props.deploymentStrategy}`}
+                                        className="workflow-node__text-light"
+                                    >
                                         Deploy: {this.props.deploymentStrategy}
                                     </span>
                                     {envDescriptionTippy(this.props.environmentName, this.props.description)}
