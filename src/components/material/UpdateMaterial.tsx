@@ -191,7 +191,6 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
             },
             () => {
                 if (this.state.isError.url || this.state.isError.gitProvider || this.state.isError.checkoutPath) return
-
                 this.setState({ isLoading: true, isChecked: true })
                 let payload = {
                     appId: this.props.appId,
@@ -199,7 +198,7 @@ export class UpdateMaterial extends Component<UpdateMaterialProps, UpdateMateria
                         id: this.state.material.id,
                         url: this.state.material.url,
                         checkoutPath: this.state.material.checkoutPath,
-                        filterPattern: !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS ? this.state.material.includeExcludeFilePath 
+                        filterPattern: ( !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && this.state.material.isExcludeRepoChecked ) ? this.state.material.includeExcludeFilePath 
                             .trim()
                             .split(/\r?\n/)
                             .filter((path) => path.trim()) : [],
