@@ -435,8 +435,8 @@ const HistoryLogs: React.FC<{
     }
 
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
-            autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
-        })
+        autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
+    })
 
     return (
         <>
@@ -445,7 +445,7 @@ const HistoryLogs: React.FC<{
                     <Progressing pageLoader />
                 ) : (
                     <Switch>
-                        {!(triggerDetails.stage === 'DEPLOY' || triggerDetails.IsVirtualEnvironment) ? (
+                        {triggerDetails.stage !== 'DEPLOY' ? (!triggerDetails.IsVirtualEnvironment &&
                             <Route path={`${path}/logs`}>
                                 <div ref={ref} style={{ height: '100%', overflow: 'auto', background: '#0b0f22' }}>
                                     <LogsRenderer
@@ -499,28 +499,25 @@ const HistoryLogs: React.FC<{
                                 />
                             </Route>
                         )}
-                        {(triggerDetails.stage !== 'DEPLOY' ||
-                            triggerDetails.IsVirtualEnvironment) && (
-                                <Route path={`${path}/artifacts`}>
-                                    {triggerDetails.IsVirtualEnvironment && VirtualHistoryArtifact ? (
-                                        <VirtualHistoryArtifact
-                                            status={triggerDetails.status}
-                                            titleName={triggerDetails.helmPackageName}
-                                            params={paramsData}
-                                        />
-                                    ) : (
-                                        <Artifacts
-                                            status={triggerDetails.status}
-                                            artifact={triggerDetails.artifact}
-                                            blobStorageEnabled={triggerDetails.blobStorageEnabled}
-                                            getArtifactPromise={() =>
-                                                getCDBuildReport(appId, envId, pipelineId, triggerId)
-                                            }
-                                            type={HistoryComponentType.CD}
-                                        />
-                                    )}
-                                </Route>
-                            )}
+                        {(triggerDetails.stage !== 'DEPLOY' || triggerDetails.IsVirtualEnvironment) && (
+                            <Route path={`${path}/artifacts`}>
+                                {triggerDetails.IsVirtualEnvironment && VirtualHistoryArtifact ? (
+                                    <VirtualHistoryArtifact
+                                        status={triggerDetails.status}
+                                        titleName={triggerDetails.helmPackageName}
+                                        params={paramsData}
+                                    />
+                                ) : (
+                                    <Artifacts
+                                        status={triggerDetails.status}
+                                        artifact={triggerDetails.artifact}
+                                        blobStorageEnabled={triggerDetails.blobStorageEnabled}
+                                        getArtifactPromise={() => getCDBuildReport(appId, envId, pipelineId, triggerId)}
+                                        type={HistoryComponentType.CD}
+                                    />
+                                )}
+                            </Route>
+                        )}
                         <Redirect
                             to={`${path}/${
                                 triggerDetails.stage === 'DEPLOY'
