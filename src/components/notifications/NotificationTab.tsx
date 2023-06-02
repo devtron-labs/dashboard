@@ -537,7 +537,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         </td>
                         <td className="pipeline-list__pipeline-name">{row?.appName}</td>
                         <td className="pipeline-list__type">
-                         { renderPipelineTypeIcon(row)}
+                         {renderPipelineTypeIcon(row)}
                         </td>
                         <td className="pipeline-list__environment">
                             {_isCi &&

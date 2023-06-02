@@ -1100,7 +1100,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
 
     renderTriggerType() {
         return (
-            <div className='cd-pipeline__trigger-type'>
+            <div className="cd-pipeline__trigger-type">
                 <label className="form__label form__label--sentence dc__bold">When do you want the pipeline to execute?</label>
                 <RadioGroup
                     value={
