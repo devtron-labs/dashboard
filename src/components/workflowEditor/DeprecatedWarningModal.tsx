@@ -22,8 +22,8 @@ export default function DeprecatedWarningModal({ closePopup }: DeprecatedWarning
                 </div>
             </ConfirmationDialog.Body>
             <ConfirmationDialog.ButtonGroup>
-                <div className="flex right">
-                    <button type="button" className="cta cancel" onClick={close}>
+                <div data-testid="delete_popup_box" className="flex right">
+                    <button data-testid="okay_button_popup_box" type="button" className="cta cancel" onClick={close}>
                         Okay
                     </button>
                 </div>

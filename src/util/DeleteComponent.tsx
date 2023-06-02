@@ -60,7 +60,7 @@ function DeleteComponent({
                 <ConfirmationDialog.Body title={`Cannot delete ${component} '${title}'`} />
                 <p className="fs-13 cn-7 ">{confirmationDialogDescription}</p>
                 <ConfirmationDialog.ButtonGroup>
-                    <button type="button" className="cta" onClick={handleConfirmation}>
+                    <button data-testid="delete_warning_popup" type="button" className="cta" onClick={handleConfirmation}>
                         Okay
                     </button>
                 </ConfirmationDialog.ButtonGroup>
@@ -82,12 +82,7 @@ function DeleteComponent({
             </DeleteDialog>
         )
     }
-    return (
-        <div>
-            {!showCannotDeleteDialogModal && renderDeleteDialog()}
-            {showCannotDeleteDialogModal && renderCannotDeleteDialogModal()}
-        </div>
-    )
+    return <div>{showCannotDeleteDialogModal ? renderCannotDeleteDialogModal() : renderDeleteDialog()}</div>
 }
 
 export default DeleteComponent

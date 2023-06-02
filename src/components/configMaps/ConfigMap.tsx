@@ -257,6 +257,7 @@ interface ResizableTextareaProps {
     padding?: number
     disabled?: boolean
     name?: string
+    dataTestId?: string
 }
 
 export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
@@ -271,6 +272,7 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
     lineHeight = 14,
     padding = 12,
     disabled = false,
+    dataTestId,
     ...props
 }) => {
     const [text, setText] = useState('')
@@ -312,6 +314,7 @@ export const ResizableTextarea: React.FC<ResizableTextareaProps> = ({
 
     return (
         <textarea
+            data-testid={dataTestId}
             ref={(el) => (_textRef.current = el)}
             value={text}
             placeholder={placeholder}
