@@ -631,7 +631,6 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
             return '-'
         }
     }
-console.log(match.url)
     const renderNodeList = (nodeData: Object): JSX.Element => {
         return (
             <div
