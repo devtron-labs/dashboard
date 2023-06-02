@@ -352,7 +352,9 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     _selectedMaterial.isMaterialLoading = false
                     _selectedMaterial.showAllCommits = false
                     _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded
-                    _selectedMaterial.materialSelectionErrorMsg =_selectedMaterial.history[0].excluded ? NO_COMMIT_SELECTED : ''
+                    _selectedMaterial.materialSelectionErrorMsg = _selectedMaterial.history[0].excluded
+                        ? NO_COMMIT_SELECTED
+                        : ''
                 } else {
                     _selectedMaterial.history = []
                     _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
@@ -894,9 +896,9 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             material.history.map((hist) => {
                                 if (!hist.excluded) {
                                     if (material.type == SourceTypeMap.WEBHOOK) {
-                                        if(hist?.webhookData && hist.webhookData?.id && hash == hist.webhookData.id) {
+                                        if (hist?.webhookData && hist.webhookData?.id && hash == hist.webhookData.id) {
                                             hist.isSelected = true
-                                        }else {
+                                        } else {
                                             hist.isSelected = false
                                         }
                                     } else {
@@ -1242,8 +1244,8 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                 _CDTriggerPromiseList.push(
                     triggerCDNode(node.id, ciArtifact.id, _appIdMap.get(node.id), bulkTriggerType),
                 )
-            } else{
-              triggeredAppList.splice(index,1)
+            } else {
+                triggeredAppList.splice(index, 1)
             }
         })
         handleBulkTrigger(_CDTriggerPromiseList, triggeredAppList, WorkflowNodeType.CD)
