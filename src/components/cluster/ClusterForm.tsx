@@ -214,8 +214,6 @@ export default function ClusterForm({
         toggleKubeConfigFile(true)
     }
 
-    
-
     const getSaveClusterPayload = (dataLists: DataListType[]) => {
         const saveClusterPayload: SaveClusterPayloadType[] = []
         for (const _dataList of dataLists) {
@@ -575,11 +573,13 @@ export default function ClusterForm({
                                 className="dc__resizable-textarea__with-max-height dc__required-field"
                                 name="token"
                                 value={
-                                    id ? id !== 1
-                                        ? DEFAULT_SECRET_PLACEHOLDER
-                                        : config?.bearer_token
-                                        ? config.bearer_token
-                                        : '' : state.token.value
+                                    id
+                                        ? id !== 1
+                                            ? DEFAULT_SECRET_PLACEHOLDER
+                                            : config?.bearer_token
+                                            ? config.bearer_token
+                                            : ''
+                                        : state.token.value
                                 }
                                 onChange={handleOnChange}
                                 onBlur={handleOnBlur}
@@ -596,7 +596,7 @@ export default function ClusterForm({
                         </label>
                     )}
                 </div>
-                {isGrafanaModuleInstalled && id !== 1 && (
+                {id !== 1 && (
                     <>
                         <hr />
                         <div className="dc__position-rel flex left dc__hover mb-20">
@@ -697,18 +697,20 @@ export default function ClusterForm({
                         )}
                     </>
                 )}
-                <div className={`${prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'} mt-20`}>
-                    <div className="dc__content-space flex">
-                        <span className="form__input-header">See metrics for applications in this cluster</span>
-                        <div className="w-32 h-20">
-                            <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
+                {isGrafanaModuleInstalled && (
+                    <div className={`${prometheusToggleEnabled ? 'mb-20' : prometheus_url ? 'mb-20' : 'mb-40'} mt-20`}>
+                        <div className="dc__content-space flex">
+                            <span className="form__input-header">See metrics for applications in this cluster</span>
+                            <div className="w-32 h-20">
+                                <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
+                            </div>
                         </div>
+                        <span className="cn-6 fs-12">
+                            Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications running
+                            in this cluster
+                        </span>
                     </div>
-                    <span className="cn-6 fs-12">
-                        Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications running in
-                        this cluster
-                    </span>
-                </div>
+                )}
                 {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheus_url && <PrometheusWarningInfo />}
                 {isGrafanaModuleInstalled && prometheusToggleEnabled && (
                     <div className="">
@@ -1279,14 +1281,14 @@ export default function ClusterForm({
 
                 {!isKubeConfigFile && (
                     <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs dc__bottom-0">
-                        {id &&  (
+                        {id && (
                             <button
                                 data-testid="delete_cluster"
                                 style={{ margin: 'auto', marginLeft: 20 }}
                                 className="flex cta delete scr-5 h-36 lh-36"
                                 type="button"
                                 onClick={() => toggleConfirmation(true)}
-                                disabled = {isDefaultCluster()}
+                                disabled={isDefaultCluster()}
                             >
                                 {deleting ? <Progressing /> : 'Delete'}
                             </button>
