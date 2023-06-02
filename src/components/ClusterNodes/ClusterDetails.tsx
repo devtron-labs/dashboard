@@ -453,7 +453,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
                     <div className="flex fw-6 fs-13">
                         <div className="fw-6 fs-14 cn-9 h-20 flex cg-5">
                             <CloudIcon className="icon-dim-16 mr-4" />
-                            <span className="h-20 flex">Connected</span>
+                            <span data-testid="cluster_connected" className="h-20 flex">Connected</span>
                         </div>
                         {isSuperAdmin && (
                             <>
