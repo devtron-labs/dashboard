@@ -55,7 +55,7 @@ export const getSecurityModulesInfoInstalledStatus = async (): Promise<ModuleInf
     let installedResponseFlag=false
     try {
         const [clairResponse, trivyResponse] = await Promise.all([
-            getModuleInfo(ModuleNameMap.SECURITY),
+            getModuleInfo(ModuleNameMap.SECURITY_CLAIR),
             getModuleInfo(ModuleNameMap.SECURITY_TRIVY),
         ])
         if (clairResponse && trivyResponse) {
