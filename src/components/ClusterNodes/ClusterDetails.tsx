@@ -68,7 +68,7 @@ export default function ClusterDetails({ imageList, isSuperAdmin, namespaceList,
     const [nodeImageList, setNodeImageList] = useState<ImageList[]>([])
     const [selectedNode, setSelectedNode] = useState<string>()
     
-    const pageSize = 2
+    const pageSize = 15
 
     useEffect(() => {
         if (appliedColumns.length > 0) {
