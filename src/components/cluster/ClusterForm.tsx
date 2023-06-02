@@ -1127,7 +1127,17 @@ export default function ClusterForm({
                                                 />
                                                 <div
                                                     className="flexbox"
-                                                    onClick={() => toggleIsSelected(clusterDetail.cluster_name)}
+                                                    onClick={() => {
+                                                        if (
+                                                            selectedUserNameOptions[clusterDetail.cluster_name]
+                                                                .errorInConnecting !== 'cluster-already-exists' &&
+                                                            selectedUserNameOptions[clusterDetail.cluster_name]
+                                                                .errorInConnecting.length > 0
+                                                        ) {
+                                                            return
+                                                        }
+                                                        toggleIsSelected(clusterDetail.cluster_name)
+                                                    }}
                                                 >
                                                     <span className="dc__ellipsis-right">
                                                         {clusterDetail.cluster_name}
