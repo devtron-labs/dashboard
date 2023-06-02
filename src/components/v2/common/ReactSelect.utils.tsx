@@ -231,14 +231,7 @@ export function formatHighlightedText(option: Environment, inputValue: string, e
                     __html: option[environmentfieldName].replace(regex, highLightText),
                 }}
             />
-            {option.clusterName && option.namespace && (
-                <small
-                    className="cn-6"
-                    dangerouslySetInnerHTML={{
-                        __html: (option.clusterName + '/' + option.namespace).replace(regex, highLightText),
-                    }}
-                ></small>
-            )}
+            <small className="w-100 dc__truncate-text fs-12 cn-7">{option.description}</small>
         </div>
     )
 }
