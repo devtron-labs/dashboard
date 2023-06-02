@@ -351,8 +351,10 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     ]
                     _selectedMaterial.isMaterialLoading = false
                     _selectedMaterial.showAllCommits = false
-                    _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded 
-                    _selectedMaterial.materialSelectionErrorMsg =_selectedMaterial.history[0].excluded ? NO_COMMIT_SELECTED : ''
+                    _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded
+                    _selectedMaterial.materialSelectionErrorMsg = _selectedMaterial.history[0].excluded
+                        ? NO_COMMIT_SELECTED
+                        : ''
                 } else {
                     _selectedMaterial.history = []
                     _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
@@ -894,9 +896,9 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                             material.history.map((hist) => {
                                 if (!hist.excluded) {
                                     if (material.type == SourceTypeMap.WEBHOOK) {
-                                        if(hist?.webhookData && hist.webhookData?.id && hash == hist.webhookData.id) {
+                                        if (hist?.webhookData && hist.webhookData?.id && hash == hist.webhookData.id) {
                                             hist.isSelected = true
-                                        }else {
+                                        } else {
                                             hist.isSelected = false
                                         }
                                     } else {
@@ -1228,7 +1230,7 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
                     _selectedNode = _cdNode.postNode
                 }
 
-                if (_selectedNode && _selectedNode[materialType]) {
+                if (_selectedNode?.[materialType]?.length) {
                     nodeList.push(_selectedNode)
                     _appIdMap.set(_selectedNode.id, _wf.appId.toString())
                     triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
@@ -1236,12 +1238,14 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
             }
         }
         const _CDTriggerPromiseList = []
-        nodeList.forEach((node) => {
+        nodeList.forEach((node, index) => {
             const ciArtifact = node[materialType].find((artifact) => artifact.isSelected == true)
             if (ciArtifact) {
                 _CDTriggerPromiseList.push(
                     triggerCDNode(node.id, ciArtifact.id, _appIdMap.get(node.id), bulkTriggerType),
                 )
+            } else {
+                triggeredAppList.splice(index, 1)
             }
         })
         handleBulkTrigger(_CDTriggerPromiseList, triggeredAppList, WorkflowNodeType.CD)
@@ -1330,11 +1334,11 @@ export default function EnvTriggerView({ filteredAppIds }: AppGroupDetailDefault
             triggeredAppList: { appId: number; appName: string }[] = []
         for (const _wf of filteredWorkflows) {
             if (_wf.isSelected && (!appsToRetry || appsToRetry[_wf.appId])) {
-                triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
                 node = _wf.nodes.find((node) => {
                     return node.type === WorkflowNodeType.CI
                 })
                 if (node && !node.isLinkedCI) {
+                    triggeredAppList.push({ appId: _wf.appId, appName: _wf.name })
                     nodeList.push(node)
                 }
             }

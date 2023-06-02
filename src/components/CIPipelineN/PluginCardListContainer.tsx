@@ -1,5 +1,5 @@
 import React from 'react'
-import { PluginDetailType, PluginType } from '../ciPipeline/types'
+import { PluginType, PluginDetailType } from '@devtron-labs/devtron-fe-common-lib'
 import { PluginCard } from './PluginCard'
 
 export function PluginCardListContainer({
