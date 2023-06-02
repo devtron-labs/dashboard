@@ -823,7 +823,7 @@ export default class CDPipeline extends Component<CDPipelineProps, CDPipelineSta
                 rootClassName="deployment-strategy-dropdown br-0 bw-0 w-150"
                 onChange={(e) => this.selectStrategy(e.target.value)}
             >
-                <Select.Button rootClassName="">
+                <Select.Button rootClassName="right" hideArrow={true}>
                     <span className="flex cb-5 fw-6">
                         <Add className="icon-dim-20 mr-8 fcb-5 dc__vertical-align-middle" />
                         Add Strategy
