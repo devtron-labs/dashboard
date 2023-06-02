@@ -94,10 +94,10 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = function (props) 
         )
     }
 
-    function onBlur(e){
-     if( props.handleOnBlur){
-      props.handleOnBlur(e)
-     }
+    function onBlur(e) {
+        if (props.handleOnBlur) {
+            props.handleOnBlur(e)
+        }
     }
 
     return (
