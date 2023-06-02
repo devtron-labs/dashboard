@@ -129,7 +129,7 @@ const LogViewerComponent: React.FunctionComponent<logViewerInterface> = ({
         <>
             <AutoSizer>
                 {({ height, width }) => (
-                    <div style={{ height, width }} id="xterm-logs">
+                    <div style={{ height, width }} data-testid="logs" id="xterm-logs">
                         <CopyToast showCopyToast={popupText} />
                     </div>
                 )}

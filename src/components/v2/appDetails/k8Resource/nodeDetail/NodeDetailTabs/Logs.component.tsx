@@ -517,6 +517,7 @@ function LogsComponent({
                             style={{ width: '1px', height: '16px', background: '#0b0f22' }}
                         ></div>
                         <Checkbox
+                            dataTestId="prev-container-logs"
                             isChecked={prevContainer}
                             value={CHECKBOX_VALUE.CHECKED}
                             onChange={getPrevContainerLogs}
