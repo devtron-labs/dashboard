@@ -771,7 +771,7 @@ export const DeploymentTemplateEditorView = ({
         setBasicFieldValues(_basicFieldValues)
     }
 
-    const displayCodeEditor = (): JSX.Element => {
+    const renderCodeEditor = (): JSX.Element => {
         return (
             <div className="form__row--code-editor-container dc__border-top dc__border-bottom">
                 <CodeEditor
@@ -832,11 +832,11 @@ export const DeploymentTemplateEditorView = ({
                         <MarkDown markdown={readme} className="dt-readme-markdown" />
                     )}
                 </div>
-                {displayCodeEditor()}
+                {renderCodeEditor()}
                 </>
             )
                 :
-                displayCodeEditor()
+                renderCodeEditor()
             }
             
         </>

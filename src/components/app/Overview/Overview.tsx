@@ -284,7 +284,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, isJobOverv
     const renderDeploymentComponent = () => {
 
         if (otherEnvsResult?.[0]?.result?.length > 0) {
-            otherEnvsResult[0].result.sort((a,b)=>(a.environmentName>b.environmentName)?1:-1)
+            otherEnvsResult[0].result.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1))
             return (
                 <div className="env-deployments-info-wrapper w-100">
                     <div

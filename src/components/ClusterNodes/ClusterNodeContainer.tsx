@@ -48,7 +48,7 @@ export default function ClusterNodeContainer() {
             <Route path={URLS.CLUSTER_LIST} exact>
                 <ClusterList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList}  />
             </Route>
-            <Route path={`${URLS.CLUSTER_LIST}/:clusterId`}exact>
+            <Route path={`${URLS.CLUSTER_LIST}/:clusterId`} exact>
                 <NodeList imageList={imageList} isSuperAdmin={isSuperAdmin} namespaceList={namespaceDefaultList}   />
             </Route>
             <Route path={`${URLS.CLUSTER_LIST}/:clusterId/:nodeName`} exact>
