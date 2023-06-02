@@ -2215,11 +2215,27 @@ textarea,
 .warning-icon-y7-imp {
     path {
         &:nth-child(1) {
-            fill: var(--N0) !important;
+            fill: transparent !important;
         }
 
         &:nth-child(2) {
             fill: var(--Y700) !important;
+        }
+
+        &:nth-child(3) {
+            fill: var(--N0) !important;
+        }
+    }
+}
+
+.alert-icon-r5-imp {
+    path {
+        &:nth-child(1) {
+            fill: transparent !important;
+        }
+
+        &:nth-child(2) {
+            fill: var(--R500) !important;
         }
 
         &:nth-child(3) {
@@ -2368,6 +2384,10 @@ textarea,
     min-width: 18px !important;
 }
 
+.mw-20 {
+    min-width: 20px !important;
+}
+
 .mw-48 {
     min-width: 48px;
 }
@@ -2498,6 +2518,10 @@ textarea,
 
 .w-476 {
     width: 476px;
+}
+
+.w-480 {
+    width: 480px;
 }
 
 .w-505 {

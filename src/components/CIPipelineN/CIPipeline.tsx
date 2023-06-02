@@ -1,6 +1,7 @@
-import React, { useState, useEffect, createContext } from 'react'
+import React, { useState, useEffect, createContext, useMemo } from 'react'
 import { NavLink } from 'react-router-dom'
-import { ButtonWithLoader } from '../common'
+import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
+import { ButtonWithLoader, importComponentFromFELibrary } from '../common'
 import {
     ServerErrors,
     showError,
@@ -8,8 +9,20 @@ import {
     VisibleModal,
     Drawer,
     DeleteDialog,
+    ConditionType,
+    DockerConfigOverrideType,
+    FormType,
+    PluginType,
+    RefVariableStageType,
+    RefVariableType,
+    ScriptType,
+    StepType,
+    VariableType,
+    MandatoryPluginDataType,
+    TaskErrorObj,
+    MandatoryPluginDetailType,
+    PluginDetailType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router'
 import {
     BuildStageVariable,
     BuildTabText,
@@ -30,30 +43,20 @@ import {
 } from '../ciPipeline/ciPipeline.service'
 import { toast } from 'react-toastify'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import {
-    CIPipelineDataType,
-    CIPipelineType,
-    ConditionType,
-    DockerConfigOverrideType,
-    FormType,
-    PluginDetailType,
-    PluginType,
-    RefVariableStageType,
-    RefVariableType,
-    ScriptType,
-    StepType,
-    TaskErrorObj,
-    VariableType,
-} from '../ciPipeline/types'
+import { CIPipelineDataType, CIPipelineType } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import Tippy from '@tippyjs/react'
 import { PreBuild } from './PreBuild'
 import { Sidebar } from './Sidebar'
 import { Build } from './Build'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { MULTI_REQUIRED_FIELDS_MSG } from '../../config/constantMessaging'
+
+const processPluginData = importComponentFromFELibrary('processPluginData', null, 'function')
+const validatePlugins = importComponentFromFELibrary('validatePlugins', null, 'function')
+const prepareFormData = importComponentFromFELibrary('prepareFormData', null, 'function')
 
 export const ciPipelineContext = createContext(null)
 
@@ -144,34 +147,62 @@ export default function CIPipeline({
     })
     const validationRules = new ValidationRules()
     const [isDockerConfigOverridden, setDockerConfigOverridden] = useState(false)
+    const [mandatoryPluginData, setMandatoryPluginData] = useState<MandatoryPluginDataType>(null)
+    const mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = useMemo(() => {
+        const _mandatoryPluginsMap: Record<number, MandatoryPluginDetailType> = {}
+        if (mandatoryPluginData?.pluginData.length) {
+            for (const plugin of mandatoryPluginData.pluginData) {
+                _mandatoryPluginsMap[plugin.id] = plugin
+            }
+        }
+        return _mandatoryPluginsMap
+    }, [mandatoryPluginData])
 
     useEffect(() => {
+        getInitialData()
+        getGlobalVariables()
+        //getAvailablePlugins()
+    }, [])
+
+    useEffect(() => {
+        if (
+            location.pathname.includes(`/${URLS.APP_CI_CONFIG}/`) &&
+            ciPipelineId &&
+            typeof Storage !== 'undefined' &&
+            localStorage.getItem('takeMeThereClicked')
+        ) {
+            localStorage.removeItem('takeMeThereClicked')
+        }
+    }, [location.pathname])
+
+    const getInitialData = (): void => {
         setPageState(ViewType.LOADING)
         getSecurityModuleStatus()
         if (ciPipelineId) {
             getInitDataWithCIPipeline(appId, ciPipelineId, true)
-                .then((response) => {
+                .then((ciResponse) => {
                     const preBuildVariable = calculateLastStepDetail(
                         false,
-                        response.form,
+                        ciResponse.form,
                         BuildStageVariable.PreBuild,
                     ).calculatedStageVariables
                     const postBuildVariable = calculateLastStepDetail(
                         false,
-                        response.form,
+                        ciResponse.form,
                         BuildStageVariable.PostBuild,
                     ).calculatedStageVariables
                     setInputVariablesListFromPrevStep({
                         preBuildStage: preBuildVariable,
                         postBuildStage: postBuildVariable,
                     })
-                    validateStage(BuildStageVariable.PreBuild, response.form)
-                    validateStage(BuildStageVariable.Build, response.form)
-                    validateStage(BuildStageVariable.PostBuild, response.form)
-                    setFormData(response.form)
-                    setCIPipeline(response.ciPipeline)
+                    validateStage(BuildStageVariable.PreBuild, ciResponse.form)
+                    validateStage(BuildStageVariable.Build, ciResponse.form)
+                    validateStage(BuildStageVariable.PostBuild, ciResponse.form)
+                    setFormData(ciResponse.form)
+                    setCIPipeline(ciResponse.ciPipeline)
                     setIsAdvanced(true)
                     setPageState(ViewType.FORM)
+                    getAvailablePlugins(ciResponse.form)
                 })
                 .catch((error: ServerErrors) => {
                     setPageState(ViewType.ERROR)
@@ -179,18 +210,19 @@ export default function CIPipeline({
                 })
         } else {
             getInitData(appId, true, !isJobView)
-                .then((response) => {
-                    setFormData(response.result.form)
+                .then((ciResponse) => {
+                    setFormData(ciResponse.result.form)
                     setPageState(ViewType.FORM)
+                    getAvailablePlugins(ciResponse.form)
                 })
                 .catch((error: ServerErrors) => {
                     setPageState(ViewType.ERROR)
                     showError(error)
                 })
         }
-    }, [])
+    }
 
-    useEffect(() => {
+    const getGlobalVariables = (): void => {
         getGlobalVariable(Number(appId))
             .then((response) => {
                 const _globalVariableOptions = response.result.map((variable) => {
@@ -207,28 +239,30 @@ export default function CIPipeline({
             .catch((error: ServerErrors) => {
                 showError(error)
             })
-    }, [])
+    }
 
-    useEffect(() => {
+    const getAvailablePlugins = (_formData: FormType): void => {
         getPluginsData(Number(appId))
             .then((response) => {
-                processPluginList(response?.result || [])
+                const _presetPlugin = []
+                const _sharedPlugin = []
+                const pluginListLength = response?.result?.length || 0
+                for (let i = 0; i < pluginListLength; i++) {
+                    const pluginData = response.result[i]
+                    if (pluginData.type === 'PRESET') {
+                        _presetPlugin.push(pluginData)
+                    } else {
+                        _sharedPlugin.push(pluginData)
+                    }
+                }
+                setPresetPlugins(_presetPlugin)
+                setSharedPlugins(_sharedPlugin)
+                getMandatoryPluginData(_formData, response.result)
             })
             .catch((error: ServerErrors) => {
                 showError(error)
             })
-    }, [])
-
-    useEffect(() => {
-        if (
-            location.pathname.includes(`/${URLS.APP_CI_CONFIG}/`) &&
-            ciPipelineId &&
-            typeof Storage !== 'undefined' &&
-            localStorage.getItem('takeMeThereClicked')
-        ) {
-            localStorage.removeItem('takeMeThereClicked')
-        }
-    }, [location.pathname])
+    }
 
     const getSecurityModuleStatus = async (): Promise<void> => {
         try {
@@ -239,19 +273,27 @@ export default function CIPipeline({
         } catch (error) {}
     }
 
-    function processPluginList(pluginList: PluginDetailType[]): void {
-        const _presetPlugin = []
-        const _sharedPlugin = []
-        const pluginListLength = pluginList.length
-        for (let i = 0; i < pluginListLength; i++) {
-            if (pluginList[i].type === 'PRESET') {
-                _presetPlugin.push(pluginList[i])
-            } else {
-                _sharedPlugin.push(pluginList[i])
-            }
+    const getMandatoryPluginData = (_formData: FormType, pluginList: PluginDetailType[], branchName?: string): void => {
+        if (processPluginData && prepareFormData) {
+            processPluginData(!!ciPipelineId, _formData, pluginList, ciPipelineId ?? appId, branchName)
+                .then((response: MandatoryPluginDataType) => {
+                    if (response?.pluginData?.length) {
+                        const _formDataErrorObj = { ...formDataErrorObj }
+                        if (_formData) {
+                            setFormData(prepareFormData(_formData, response.pluginData))
+                        }
+                        setFormDataErrorObj(_formDataErrorObj)
+                        setMandatoryPluginData(response)
+                    }
+                })
+                .catch((error: ServerErrors) => {
+                    showError(error)
+                })
         }
-        setPresetPlugins(_presetPlugin)
-        setSharedPlugins(_sharedPlugin)
+    }
+
+    const getPluginData = (branchName: string): void => {
+        getMandatoryPluginData(formData, [...presetPlugins, ...sharedPlugins], branchName)
     }
 
     const deletePipeline = (): void => {
@@ -293,7 +335,7 @@ export default function CIPipeline({
         )
     }
 
-    const renderSecondaryButtton = () => {
+    const renderSecondaryButton = () => {
         if (ciPipelineId) {
             const canDeletePipeline = connectCDPipelines === 0 && ciPipeline.linkedCount === 0
             const message =
@@ -327,12 +369,15 @@ export default function CIPipeline({
                 <button
                     type="button"
                     data-testid="create-build-pipeline-advanced-options-button"
-                    className={`cta cta--workflow cancel mr-16`}
+                    className="cta cta--workflow cancel mr-16 flex"
                     onClick={() => {
                         setIsAdvanced(true)
                     }}
                 >
                     Advanced options
+                    {mandatoryPluginData && (!mandatoryPluginData.isValidPre || !mandatoryPluginData.isValidPost) && (
+                        <WarningTriangle className="ml-6 icon-dim-16 warning-icon-y7-imp" />
+                    )}
                 </button>
             )
         }
@@ -592,6 +637,15 @@ export default function CIPipeline({
                 validateTask(_formData[stageName].steps[i], _formDataErrorObj[stageName].steps[i])
                 isStageValid = isStageValid && _formDataErrorObj[stageName].steps[i].isValid
             }
+            if (
+                mandatoryPluginData?.pluginData?.length &&
+                (sharedPlugins.length || presetPlugins.length) &&
+                validatePlugins
+            ) {
+                setMandatoryPluginData(
+                    validatePlugins(formData, mandatoryPluginData.pluginData, [...sharedPlugins, ...presetPlugins]),
+                )
+            }
             _formDataErrorObj[stageName].isValid = isStageValid
         }
         setFormDataErrorObj(_formDataErrorObj)
@@ -724,6 +778,11 @@ export default function CIPipeline({
     }
 
     const getNavLink = (toLink: string, stageName: string) => {
+        const showAlert = !formDataErrorObj[stageName].isValid
+        const showWarning =
+            mandatoryPluginData &&
+            ((stageName === BuildStageVariable.PreBuild && !mandatoryPluginData.isValidPre) ||
+                (stageName === BuildStageVariable.PostBuild && !mandatoryPluginData.isValidPost))
         return (
             <li className="tab-list__tab">
                 <NavLink
@@ -737,7 +796,13 @@ export default function CIPipeline({
                     }}
                 >
                     {isJobView ? JobPipelineTabText[stageName] : BuildTabText[stageName]}
-                    {!formDataErrorObj[stageName].isValid && <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-3" />}
+                    {(showAlert || showWarning) && (
+                        <WarningTriangle
+                            className={`icon-dim-16 mr-5 ml-5 mt-3 ${
+                                showAlert ? 'alert-icon-r5-imp' : 'warning-icon-y7-imp'
+                            }`}
+                        />
+                    )}
                 </NavLink>
             </li>
         )
@@ -805,7 +870,13 @@ export default function CIPipeline({
                     <div className={`ci-pipeline-advance ${isAdvanced ? 'pipeline-container' : ''}`}>
                         {isAdvanced && (
                             <div className="sidebar-container">
-                                <Sidebar isJobView={isJobView} />
+                                <Sidebar
+                                    isJobView={isJobView}
+                                    mandatoryPluginData={mandatoryPluginData}
+                                    pluginList={[...presetPlugins, ...sharedPlugins]}
+                                    setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep}
+                                    mandatoryPluginsMap={mandatoryPluginsMap}
+                                />
                             </div>
                         )}
                         <Switch>
@@ -815,12 +886,17 @@ export default function CIPipeline({
                                         presetPlugins={presetPlugins}
                                         sharedPlugins={sharedPlugins}
                                         isJobView={isJobView}
+                                        mandatoryPluginsMap={mandatoryPluginsMap}
                                     />
                                 </Route>
                             )}
                             {isAdvanced && (
                                 <Route path={`${path}/post-build`}>
-                                    <PreBuild presetPlugins={presetPlugins} sharedPlugins={sharedPlugins} />
+                                    <PreBuild
+                                        presetPlugins={presetPlugins}
+                                        sharedPlugins={sharedPlugins}
+                                        mandatoryPluginsMap={mandatoryPluginsMap}
+                                    />
                                 </Route>
                             )}
                             <Route path={`${path}/build`}>
@@ -832,6 +908,7 @@ export default function CIPipeline({
                                     isSecurityModuleInstalled={isSecurityModuleInstalled}
                                     setDockerConfigOverridden={setDockerConfigOverridden}
                                     isJobView={isJobView}
+                                    getPluginData={getPluginData}
                                 />
                             </Route>
                             <Redirect to={`${path}/build`} />
@@ -845,7 +922,7 @@ export default function CIPipeline({
                                 ciPipelineId || !isAdvanced ? 'flex-justify' : 'justify-right'
                             } `}
                         >
-                            {renderSecondaryButtton()}
+                            {renderSecondaryButton()}
                             {formData.ciPipelineEditable && (
                                 <ButtonWithLoader
                                     rootClassName="cta cta--workflow"

@@ -1,9 +1,9 @@
 import { PATTERNS } from '../../config'
 import { CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
-import { CIBuildType, CIPipelineDataType, DockerConfigOverrideType } from '../ciPipeline/types'
+import { CIPipelineDataType } from '../ciPipeline/types'
 import { deepEqual } from '../common'
-import { multiSelectStyles } from '@devtron-labs/devtron-fe-common-lib'
+import { multiSelectStyles, CIBuildType, DockerConfigOverrideType } from '@devtron-labs/devtron-fe-common-lib'
 import { CIBuildArgType, CIConfigDiffType } from './types'
 
 export const _customStyles = {
@@ -130,7 +130,7 @@ export const CI_CONFIG_FORM_VALIDATION = {
     },
     buildContext: {
         required: false,
-    }
+    },
 }
 
 export const getCIConfigFormState = (
@@ -167,13 +167,11 @@ export const getCIConfigFormState = (
             error: '',
         },
         buildContext: {
-            value:
-                (selectedCIPipeline?.isDockerConfigOverridden
-                    ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
-                    : ciConfig?.ciBuildConfig?.dockerBuildConfig &&
-                    ciConfig.ciBuildConfig.dockerBuildConfig?.buildContext),
-            error: '', 
-        }
+            value: selectedCIPipeline?.isDockerConfigOverridden
+                ? selectedCIPipeline.dockerConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
+                : ciConfig?.ciBuildConfig?.dockerBuildConfig && ciConfig.ciBuildConfig.dockerBuildConfig?.buildContext,
+            error: '',
+        },
     }
 }
 
@@ -184,7 +182,7 @@ export const initCurrentCIBuildConfig = (
     selectedMaterial: any,
     selectedBuildContextGitMaterial: any,
     dockerfileValue: string,
-    buildContextValue: string
+    buildContextValue: string,
 ) => {
     if (
         allowOverride &&
@@ -433,14 +431,14 @@ export const getCIConfigDiffValues = (
     const globalCIBuildType = globalCIConfig.ciBuildConfig?.ciBuildType
     const ciBuildTypeOverride = ciConfigOverride?.ciBuildConfig?.ciBuildType
     let globalGitMaterialName, currentMaterialName
-    let globalBuildContextGitMaterialItem,currentBuildContextGitMaterialItem
+    let globalBuildContextGitMaterialItem, currentBuildContextGitMaterialItem
     let globalBuildContext = globalCIConfig.ciBuildConfig?.dockerBuildConfig?.buildContext,
         currentBuildContext = ciConfigOverride?.ciBuildConfig?.dockerBuildConfig?.buildContext
     if (
-        (globalCIBuildType !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE ||
-            ciBuildTypeOverride !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE)
+        globalCIBuildType !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE ||
+        ciBuildTypeOverride !== CIBuildType.MANAGED_DOCKERFILE_BUILD_TYPE
     ) {
-        if(materials) {
+        if (materials) {
             for (const gitMaterial of materials) {
                 if (gitMaterial.gitMaterialId === globalCIConfig.ciBuildConfig?.gitMaterialId) {
                     globalGitMaterialName = gitMaterial.materialName
@@ -519,15 +517,21 @@ export const getCIConfigDiffValues = (
         ciConfigDiffValues.push(
             {
                 configName: 'Repo containing build context',
-                changeBGColor: globalCIConfig.ciBuildConfig?.buildContextGitMaterialId !== ciConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
+                changeBGColor:
+                    globalCIConfig.ciBuildConfig?.buildContextGitMaterialId !==
+                    ciConfigOverride?.ciBuildConfig?.buildContextGitMaterialId,
                 baseValue: globalBuildContextGitMaterialItem?.name,
                 overridenValue: currentBuildContextGitMaterialItem?.name,
             },
             {
                 configName: 'Build context',
-                changeBGColor: (globalBuildContextGitMaterialItem?.checkoutPath + (globalBuildContext ?  globalBuildContext : '')) !== (currentBuildContextGitMaterialItem?.checkoutPath + (currentBuildContext ? currentBuildContext: '')),
-                baseValue: globalBuildContextGitMaterialItem?.checkoutPath + (globalBuildContext ?  globalBuildContext : ''),
-                overridenValue: currentBuildContextGitMaterialItem?.checkoutPath + (currentBuildContext ? currentBuildContext: ''),
+                changeBGColor:
+                    globalBuildContextGitMaterialItem?.checkoutPath + (globalBuildContext ? globalBuildContext : '') !==
+                    currentBuildContextGitMaterialItem?.checkoutPath + (currentBuildContext ? currentBuildContext : ''),
+                baseValue:
+                    globalBuildContextGitMaterialItem?.checkoutPath + (globalBuildContext ? globalBuildContext : ''),
+                overridenValue:
+                    currentBuildContextGitMaterialItem?.checkoutPath + (currentBuildContext ? currentBuildContext : ''),
             },
         )
     }
