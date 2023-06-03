@@ -165,7 +165,7 @@ function EnvironmentStatusComponent({
 
     const renderLastUpdatedBlock = () => {
         return (
-            appDetails?.lastDeployedTime && (
+            appDetails?.lastDeployedTime && appDetails?.appType !== "external_helm_chart" && (
                 <DeploymentStatusCard
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     hideDeploymentStatusLeftInfo={hideDeploymentStatusLeftInfo}
