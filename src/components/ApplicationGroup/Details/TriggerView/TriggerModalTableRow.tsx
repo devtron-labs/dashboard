@@ -12,6 +12,7 @@ const getDeployManifestDownload = importComponentFromFELibrary('getDeployManifes
 
 export function TriggerModalRow({ rowData, key, isVirtualEnv, envName }: TriggerModalRowType) {
     const [downloader, setDownLoader] = useState(false)
+    const [isDownloaded, setIsDownLoad] = useState(false)
     const params = {
         appId: rowData.appId,
         envId: rowData.envId,
@@ -30,8 +31,9 @@ export function TriggerModalRow({ rowData, key, isVirtualEnv, envName }: Trigger
 
     const downloadPackage = (e) => {
         e.stopPropagation()
+        setIsDownLoad(true)
         if (getDeployManifestDownload) {
-            getDeployManifestDownload(params, setDownLoader)
+            getDeployManifestDownload(params, setDownLoader,true)
         }
     }
 
@@ -46,15 +48,15 @@ export function TriggerModalRow({ rowData, key, isVirtualEnv, envName }: Trigger
             {isVirtualEnv && rowData.status === BulkResponseStatus.PASS && (
                 <div className="flex right cursor" onClick={downloadPackage}>
                     {downloader ? (
-                        <>
+                        <span className="flex">
                             <Progressing />
                             <span className="fs-13 flex fw-4 ml-6 cn-7">Downloading</span>
-                        </>
+                        </span>
                     ) : (
-                        <>
+                        <span className={`flex ${isDownloaded ? 'cn-5 scn-5' : 'cb-5'} `}>
                             <Download className="icon-dim-16" />
-                            <span className="ml-6 fw-6 fs-13 cb-5">Download</span>
-                        </>
+                            <span className="ml-6 fw-6 fs-13">Download</span>
+                        </span>
                     )}
                 </div>
             )}
