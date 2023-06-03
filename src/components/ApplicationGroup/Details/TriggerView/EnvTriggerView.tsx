@@ -1249,7 +1249,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     _selectedNode = _cdNode.postNode
                 }
 
-                if (_selectedNode && _selectedNode?.[materialType]?.length) {
+                if (_selectedNode && _selectedNode[materialType]?.length) {
                     nodeList.push(_selectedNode)
                     _appIdMap.set(_selectedNode.id, _wf.appId.toString())
                     triggeredAppList.push({ appId: _wf.appId, appName: _wf.name, envId: _selectedNode.environmentId })
