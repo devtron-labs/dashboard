@@ -252,7 +252,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
                         <div className="fw-4 fs-11 lh-16 flex">
                             <World className="icon-dim-16 mr-4 scg-5" />
-                            Active on <span className="fw-6 ml-4">{this.props.envName} </span>
+                            {this.props.isVirtualEnvironment ? 'Last deployed ' : 'Active '} on
+                            <span className="fw-6 ml-4">{this.props.envName} </span>
                         </div>
                     </span>
                 )}
@@ -260,7 +261,8 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                     <span className="bcg-1 br-4 eg-2 cn-9 pt-3 pb-3 pl-6 pr-6 bw-1 mr-6">
                         <div className="fw-4 fs-11 lh-16 flex">
                             <World className="icon-dim-16 mr-4 scg-5" />
-                            Active on <span className="fw-6 ml-4">{this.props.parentEnvironmentName}</span>
+                            {this.props.isVirtualEnvironment ? 'Last deployed ' : 'Active '} on
+                            <span className="fw-6 ml-4">{this.props.parentEnvironmentName}</span>
                         </div>
                     </span>
                 )}
@@ -1024,12 +1026,12 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
                         className={`cta flex ml-auto h-36 ${disableDeployButton ? 'disabled-opacity' : ''}`}
                         onClick={disableDeployButton ? noop : this.deployTrigger}
                     >
-                        {this.props.isLoading ? (
+                        {this.props.isSaveLoading ? (
                             <Progressing />
                         ) : (
                             <>
                                 {this.getDeployButtonIcon()}
-                                {buttonLabel}
+                                {buttonLabel} {this.props.isVirtualEnvironment && 'to virtual env'}
                             </>
                         )}
                     </button>

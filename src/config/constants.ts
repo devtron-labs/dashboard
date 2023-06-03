@@ -22,6 +22,8 @@ export const Routes = {
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',
+    VALIDATE: 'cluster/validate',
+    SAVECLUSTER: 'cluster/saveClusters',
     CLUSTER_DESCRIPTION: 'cluster/description',
     CLUSTER_NOTE: 'cluster/description/note',
 
@@ -225,7 +227,7 @@ export const Routes = {
     GROUPS: 'groups',
     GROUP: 'group',
     ROTATE_PODS: 'app/rotate-pods',
-    DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/'
+    DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/',
 }
 
 export const ViewType = {
@@ -778,7 +780,8 @@ export enum TIMELINE_STATUS {
     DEGRADED = 'DEGRADED',
     DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
     ABORTED = 'ABORTED',
-    INPROGRESS= 'INPROGRESS'
+    INPROGRESS= 'INPROGRESS',
+    HELM_PACKAGE_GENERATED= 'HELM_PACKAGE_GENERATED'
 }
 
 export const DEPLOYMENT_STATUS = {
@@ -823,6 +826,11 @@ export enum CONFIGURATION_TYPES {
     DESCRIPTION = 'DESCRIPTION',
 }
 
+export enum DeploymentAppTypes {
+  HELM = 'helm',
+  GITOPS = 'argo_cd',
+  MANIFEST_DOWNLOAD = 'manifest_download'
+}
 export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
 
 export const POD_ROTATION_INITIATED = 'Pod rotation initiated'

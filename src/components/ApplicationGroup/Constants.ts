@@ -47,6 +47,12 @@ export enum BulkResponseStatus {
     'UNAUTHORIZE' = 'unauthorized',
 }
 
+export const BULK_VIRTUAL_RESPONSE_STATUS = {
+    [BulkResponseStatus.PASS]: 'Succeeded',
+    [BulkResponseStatus.FAIL]: 'Failed',
+    [BulkResponseStatus.UNAUTHORIZE]: 'Not authorised',
+}
+
 export const BULK_CI_RESPONSE_STATUS_TEXT = {
     [BulkResponseStatus.PASS]: 'Build triggered',
     [BulkResponseStatus.FAIL]: 'Build not triggered',
@@ -57,6 +63,12 @@ export const BULK_CD_RESPONSE_STATUS_TEXT = {
     [BulkResponseStatus.PASS]: 'Deployment triggered',
     [BulkResponseStatus.FAIL]: 'Deployment not triggered',
     [BulkResponseStatus.UNAUTHORIZE]: 'Not authorized',
+}
+
+export const responseListOrder = {
+    [BulkResponseStatus.FAIL]: 0,
+    [BulkResponseStatus.UNAUTHORIZE]: 1,
+    [BulkResponseStatus.PASS]: 2,
 }
 
 export const BULK_CI_MESSAGING = {

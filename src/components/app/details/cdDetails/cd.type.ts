@@ -48,4 +48,5 @@ export interface DeploymentDetailStepsType{
   installedAppVersionHistoryId?: number
   isGitops?: boolean
   userApprovalMetadata?: UserApprovalMetadataType
+  isVirtualEnvironment?: boolean
 }

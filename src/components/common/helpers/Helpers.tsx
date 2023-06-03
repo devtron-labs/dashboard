@@ -965,9 +965,12 @@ export const convertToOptionsList = (
     })
 }
 
-export const importComponentFromFELibrary = (componentName: string, defaultComponent?) => {
+export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: string) => {
     try {
         const module = require('@devtron-labs/devtron-fe-lib')
+        if (type === 'function') {
+            return module[componentName] || defaultComponent || null
+        }
         return module[componentName]?.default || defaultComponent || null
     } catch (e) {
         if (e['code'] !== 'MODULE_NOT_FOUND') {
@@ -1062,24 +1065,34 @@ export const processK8SObjects = (
 export function createClusterEnvGroup<T>(
     list: T[],
     propKey: string,
-    isOptionType?: boolean,
-    optionName?: string,
-): { label: string; options: T[] }[] {
+    optionLabel?: string,
+    optionValue?: string,
+): { label: string; options: T[]; isVirtualEnvironment?: boolean }[] {
     const objList: Record<string, T[]> = list.reduce((acc, obj) => {
         const key = obj[propKey]
         if (!acc[key]) {
             acc[key] = []
         }
         acc[key].push(
-            isOptionType ? { label: obj[optionName], value: obj[optionName], description: obj['description'] } : obj,
+            optionLabel
+                ? {
+                      label: obj[optionLabel],
+                      value: obj[optionValue ? optionValue : optionLabel],
+                      description: obj['description'],
+                      isVirtualEnvironment: obj['isVirtualEnvironment'],
+                  }
+                : obj,
         )
         return acc
     }, {})
 
-    return Object.entries(objList).map(([key, value]) => ({
-        label: key,
-        options: value,
-    }))
+    return Object.entries(objList)
+        .sort((a, b) => a[0].localeCompare(b[0]))
+        .map(([key, value]) => ({
+            label: key,
+            options: value,
+            isVirtualEnvironment: value[0]['isVirtualEnvironment'], // All the values will be having similar isVirtualEnvironment
+        }))
 }
 
 export const k8sStyledAgeToSeconds = (duration: string): number => {

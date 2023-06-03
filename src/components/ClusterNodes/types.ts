@@ -62,6 +62,7 @@ export interface ClusterDetail {
     serverVersion: string
     nodeNames?: string[]
     nodeDetails?: NodeDetailsType[]
+    isVirtualCluster?: boolean
 }
 export interface ClusterDescriptionType {
     clusterId: number
