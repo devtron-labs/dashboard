@@ -15,7 +15,7 @@ import {
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/icons/ic-warning-y6.svg'
 import YAML from 'yaml'
-import { useForm, CustomPassword, useAsync } from '../common'
+import { useForm, CustomPassword, useAsync, importComponentFromFELibrary } from '../common'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import NoResults from '../../assets/img/empty-noresult@2x.png'
@@ -48,6 +48,7 @@ import { UPLOAD_STATE } from '../CustomChart/types'
 import UserNameDropDownList from './UseNameListDropdown'
 import { clusterId } from '../ClusterNodes/__mocks__/clusterAbout.mock'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
+const VirtualClusterSelectionTab = importComponentFromFELibrary('VirtualClusterSelectionTab')
 
 const PrometheusWarningInfo = () => {
     return (
@@ -95,6 +96,7 @@ export default function ClusterForm({
     isKubeConfigFile,
     isClusterDetails,
     toggleClusterDetails,
+    isVirtualCluster,
 }) {
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(prometheus_url ? true : false)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
@@ -121,6 +123,7 @@ export default function ClusterForm({
     const [isClusterSelected, setClusterSeleceted] = useState<Record<string, boolean>>({})
     const [selectAll, setSelectAll] = useState<boolean>(false)
     const [getClusterVar, setGetClusterState] = useState<boolean>(false)
+    const [isVirtual, setIsVirtual] = useState(isVirtualCluster)
     const [, grafanaModuleStatus] = useAsync(
         () => getModuleInfo(ModuleNameMap.GRAFANA),
         [clusterId],
@@ -1257,107 +1260,127 @@ export default function ClusterForm({
         )
     }
 
+    const handleVirtualCloseButton = (e) => {
+        toggleEditMode(e)
+        setLoadingState(false)
+        reload()
+        toggleShowAddCluster()
+    }
+
     return getClusterVar ? (
         displayClusterDetails()
     ) : (
-        <>
-            <div className="cluster-form dc__position-rel h-100 bcn-0" style={{ padding: 'auto 0' }}>
-                <AddClusterHeader />
-
-                <div className="p-20" style={{ overflow: 'auto', height: 'calc(100vh - 110px)' }}>
-                    {!id && (
-                        <div className="form__row clone-apps dc__inline-block pd-0 pt-0 pb-12">
-                            <RadioGroup
-                                className="radio-group-no-border"
-                                value={isKubeConfigFile ? 'EXISTING' : 'BLANK'}
-                                name="trigger-type"
-                                onChange={() => toggleKubeConfigFile(!isKubeConfigFile)}
-                            >
-                                <RadioGroupItem value={AppCreationType.Blank}>
-                                    Use Server URL & Bearer token
-                                </RadioGroupItem>
-                                <RadioGroupItem
-                                    dataTestId="add_cluster_from_kubeconfig_file"
-                                    value={AppCreationType.Existing}
-                                >
-                                    From kubeconfig
-                                </RadioGroupItem>
-                            </RadioGroup>
-                        </div>
-                    )}
-
-                    {isKubeConfigFile ? codeEditor() : renderUrlAndBearerToken()}
-                </div>
-
-                {!isKubeConfigFile && (
-                    <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs dc__bottom-0">
-                        {id && (
-                            <button
-                                data-testid="delete_cluster"
-                                style={{ margin: 'auto', marginLeft: 20 }}
-                                className="flex cta delete scr-5 h-36 lh-36"
-                                type="button"
-                                onClick={() => toggleConfirmation(true)}
-                                disabled={isDefaultCluster()}
-                            >
-                                {deleting ? <Progressing /> : 'Delete'}
-                            </button>
-                        )}
-                        <button
-                            data-testid="cancel_button"
-                            className="cta cancel h-36 lh-36"
-                            type="button"
-                            onClick={handleCloseButton}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            data-testid="save_cluster_after_entering_cluster_details"
-                            className="cta ml-12 h-36 lh-36"
-                            onClick={handleOnSubmit}
-                        >
-                            {id ? 'Update cluster' : 'Save cluster'}
-                        </button>
-                    </div>
-                )}
-                {isKubeConfigFile && (
-                    <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs dc__bottom-0">
-                        <button
-                            data-testid="cancel_kubeconfig_button"
-                            className="cta cancel h-36 lh-36"
-                            type="button"
-                            onClick={handleCloseButton}
-                        >
-                            Cancel
-                        </button>
-
-                        <button
-                            className="cta ml-12 h-36 lh-36"
-                            type="button"
-                            onClick={handleGetClustersClick}
-                            disabled={!saveYamlData}
-                            data-testId="get_cluster_button"
-                        >
-                            <div className="flex">
-                                Get cluster
-                                <ForwardArrow className={`ml-5 ${!saveYamlData ? 'scn-4' : ''}`} />
-                            </div>
-                        </button>
-                    </div>
-                )}
-                {confirmation && (
-                    <DeleteComponent
-                        setDeleting={setDeleting}
-                        deleteComponent={deleteCluster}
-                        payload={payload}
-                        title={cluster_name}
-                        toggleConfirmation={toggleConfirmation}
-                        component={DeleteComponentsName.Cluster}
-                        confirmationDialogDescription={DC_CLUSTER_CONFIRMATION_MESSAGE}
+        <div className="cluster-form dc__position-rel h-100 bcn-0" style={{ padding: 'auto 0' }}>
+            <AddClusterHeader />
+            <div style={{ overflow: 'auto', height: 'calc(100vh - 110px)' }}>
+                {VirtualClusterSelectionTab && (
+                    <VirtualClusterSelectionTab
+                        id={id}
+                        clusterName={cluster_name}
+                        isVirtual={isVirtual}
+                        setIsVirtual={setIsVirtual}
                         reload={reload}
+                        toggleEditMode={handleVirtualCloseButton}
                     />
                 )}
+                {!isVirtual && (
+                    <>
+                        <div className="p-20">
+                            {!id && (
+                                <div className="form__row clone-apps dc__inline-block pd-0 pt-0 pb-12">
+                                    <RadioGroup
+                                        className="radio-group-no-border"
+                                        value={isKubeConfigFile ? 'EXISTING' : 'BLANK'}
+                                        name="trigger-type"
+                                        onChange={() => toggleKubeConfigFile(!isKubeConfigFile)}
+                                    >
+                                        <RadioGroupItem value={AppCreationType.Blank}>
+                                            Use Server URL & Bearer token
+                                        </RadioGroupItem>
+                                        <RadioGroupItem
+                                            dataTestId="add_cluster_from_kubeconfig_file"
+                                            value={AppCreationType.Existing}
+                                        >
+                                            From kubeconfig
+                                        </RadioGroupItem>
+                                    </RadioGroup>
+                                </div>
+                            )}
+
+                            {isKubeConfigFile ? codeEditor() : renderUrlAndBearerToken()}
+                        </div>
+
+                        {!isKubeConfigFile && (
+                            <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs dc__bottom-0">
+                                {id && (
+                                    <button
+                                        data-testid="delete_cluster"
+                                        style={{ margin: 'auto', marginLeft: 20 }}
+                                        className="flex cta delete scr-5 h-36 lh-36"
+                                        type="button"
+                                        onClick={() => toggleConfirmation(true)}
+                                        disabled={isDefaultCluster()}
+                                    >
+                                        {deleting ? <Progressing /> : 'Delete'}
+                                    </button>
+                                )}
+                                <button
+                                    data-testid="cancel_button"
+                                    className="cta cancel h-36 lh-36"
+                                    type="button"
+                                    onClick={handleCloseButton}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    data-testid="save_cluster_after_entering_cluster_details"
+                                    className="cta ml-12 h-36 lh-36"
+                                    onClick={handleOnSubmit}
+                                >
+                                    {id ? 'Update cluster' : 'Save cluster'}
+                                </button>
+                            </div>
+                        )}
+                        {isKubeConfigFile && (
+                            <div className="w-100 dc__border-top flex right pb-12 pt-12 pr-20 pl-20 dc__position-fixed dc__position-abs dc__bottom-0">
+                                <button
+                                    data-testid="cancel_kubeconfig_button"
+                                    className="cta cancel h-36 lh-36"
+                                    type="button"
+                                    onClick={handleCloseButton}
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    className="cta ml-12 h-36 lh-36"
+                                    type="button"
+                                    onClick={handleGetClustersClick}
+                                    disabled={!saveYamlData}
+                                    data-testId="get_cluster_button"
+                                >
+                                    <div className="flex">
+                                        Get cluster
+                                        <ForwardArrow className={`ml-5 ${!saveYamlData ? 'scn-4' : ''}`} />
+                                    </div>
+                                </button>
+                            </div>
+                        )}
+                        {confirmation && (
+                            <DeleteComponent
+                                setDeleting={setDeleting}
+                                deleteComponent={deleteCluster}
+                                payload={payload}
+                                title={cluster_name}
+                                toggleConfirmation={toggleConfirmation}
+                                component={DeleteComponentsName.Cluster}
+                                confirmationDialogDescription={DC_CLUSTER_CONFIRMATION_MESSAGE}
+                                reload={reload}
+                            />
+                        )}
+                    </>
+                )}
             </div>
-        </>
+        </div>
     )
 }

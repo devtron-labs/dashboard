@@ -98,15 +98,17 @@ export interface DeploymentStatusDetailsBreakdownDataType {
     nonDeploymentError: string
     deploymentStatusBreakdown: {
         DEPLOYMENT_INITIATED: DeploymentStatusDetailRow
-        GIT_COMMIT: DeploymentStatusDetailRow
-        KUBECTL_APPLY: DeploymentStatusDetailRow
-        APP_HEALTH: DeploymentStatusDetailRow
+        GIT_COMMIT?: DeploymentStatusDetailRow
+        KUBECTL_APPLY?: DeploymentStatusDetailRow
+        APP_HEALTH?: DeploymentStatusDetailRow
+        HELM_PACKAGE_GENERATED?: DeploymentStatusDetailRow
     }
 }
 
 export interface DeploymentStatusDetailBreakdownType {
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
     streamData?: AppStreamData
+    isVirtualEnvironment?: boolean
 }
 
 export interface DeploymentStatusDetailModalType{
@@ -114,6 +116,7 @@ export interface DeploymentStatusDetailModalType{
   environmentName: string
   deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
   streamData: AppStreamData
+  isVirtualEnvironment: boolean
 }
 
 export interface ModuleConfigResponse extends ResponseType {
@@ -173,6 +176,7 @@ export interface DetailsType {
     commitInfo?: boolean
     isAppDeleted?: boolean
     showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
+    isVirtualEnvRef?: React.MutableRefObject<boolean>
 }
 
 export interface DeploymentStatusCardType {
@@ -182,4 +186,5 @@ export interface DeploymentStatusCardType {
   hideDetails?: boolean
   deploymentTriggerTime?: string
   triggeredBy?: string
+  isVirtualEnvironment?: boolean
 }

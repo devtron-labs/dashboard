@@ -205,8 +205,11 @@ export function GroupHeading(props) {
     if (!data.label) return null
     return (
         <components.GroupHeading {...props}>
-            <div className="flex dc__no-text-transform flex-justify h-100">
-                {!hideClusterName ? 'Cluster : ' : ''} {data.label}
+            <div className="flex dc__no-text-transform flex-justify dc__truncate-text h-100">
+                <span className="dc__truncate-text">
+                    {!hideClusterName && (data?.isVirtualEnvironment ? 'Virtual Cluster : ' : 'Cluster : ')}
+                    {data.label}
+                </span>
             </div>
         </components.GroupHeading>
     )
@@ -228,14 +231,7 @@ export function formatHighlightedText(option: Environment, inputValue: string, e
                     __html: option[environmentfieldName].replace(regex, highLightText),
                 }}
             />
-            {option.clusterName && option.namespace && (
-                <small
-                    className="cn-6"
-                    dangerouslySetInnerHTML={{
-                        __html: (option.clusterName + '/' + option.namespace).replace(regex, highLightText),
-                    }}
-                ></small>
-            )}
+            <small className="w-100 dc__truncate-text fs-12 cn-7">{option.description}</small>
         </div>
     )
 }
@@ -263,3 +259,20 @@ export function formatHighlightedTextDescription(option: Environment, inputValue
     )
 }
 
+export const groupHeaderStyle = {
+    group: (base) => ({
+        ...base,
+        paddingTop: 0,
+        paddingBottom: 0,
+    }),
+    groupHeading: (base) => ({
+        ...base,
+        fontWeight: 600,
+        fontSize: '12px',
+        textTransform: 'lowercase',
+        height: '28px',
+        color: 'var(--N900)',
+        backgroundColor: 'var(--N100)',
+        marginBottom: 0,
+    }),
+}

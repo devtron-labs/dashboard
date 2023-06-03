@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { showError, Progressing, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
-import { useForm } from '../common'
+import { importComponentFromFELibrary, useForm } from '../common'
 import { CustomInput } from '../globalConfigurations/GlobalConfiguration'
 import { saveEnvironment, updateEnvironment, deleteEnvironment } from './cluster.service'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -8,6 +8,7 @@ import { ReactComponent as DeleteEnvironment } from '../../assets/icons/ic-delet
 import { toast } from 'react-toastify'
 import DeleteComponent from '../../util/DeleteComponent'
 import { DC_ENVIRONMENT_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
+const virtualClusterSaveUpdateApi = importComponentFromFELibrary('virtualClusterSaveUpdateApi', null, 'function')
 
 export default function Environment({
     environment_name,
@@ -20,11 +21,12 @@ export default function Environment({
     isNamespaceMandatory = true,
     reload,
     hideClusterDrawer,
+    isVirtual,
 }) {
     const [loading, setLoading] = useState(false)
-    const [ignore ] = useState(false)
+    const [ignore] = useState(false)
     const [ignoreError, setIngoreError] = useState('')
-    const { state,  handleOnChange, handleOnSubmit } = useForm(
+    const { state, handleOnChange, handleOnSubmit } = useForm(
         {
             environment_name: { value: environment_name, error: '' },
             namespace: { value: namespace, error: '' },
@@ -77,13 +79,27 @@ export default function Environment({
         }
     }
     async function onValidation() {
-        if (!state.namespace.value && !ignore) {
-            setIngoreError('Enter a namespace or select ignore namespace')
-            return
+        let payload
+        let api
+        if (isVirtual) {
+            payload = {
+                id: id,
+                environment_name: state.environment_name.value,
+                namespace: state.namespace.value || '',
+                IsVirtualEnvironment: true,
+                cluster_id: cluster_id,
+                description: state.description.value || '',
+            }
+            api = virtualClusterSaveUpdateApi(id)
+        } else {
+            if (!state.namespace.value && !ignore) {
+                setIngoreError('Enter a namespace or select ignore namespace')
+                return
+            }
+            payload = getEnvironmentPayload()
+            api = id ? updateEnvironment : saveEnvironment
         }
-        let payload = getEnvironmentPayload()
 
-        const api = id ? updateEnvironment : saveEnvironment
         try {
             setLoading(true)
             await api(payload, id)
@@ -135,7 +151,7 @@ export default function Environment({
                     <div className="mb-16">
                         <CustomInput
                             dataTestid="enter-namespace"
-                            labelClassName="dc__required-field"
+                            labelClassName={isVirtual ? '' : 'dc__required-field'}
                             disabled={!!namespace}
                             name="namespace"
                             placeholder={id ? 'sample-namespace' : 'Eg. prod'}
@@ -145,7 +161,7 @@ export default function Environment({
                             label="Namespace"
                         />
                     </div>
-                    <div className="mb-16 flex left">
+                    {!isVirtual && <div className="mb-16 flex left">
                         <label className="pr-16 flex cursor">
                             <input
                                 data-testid="production"
@@ -168,7 +184,7 @@ export default function Environment({
                             />
                             <span className="ml-10 fw-4 mt-4 fs-13">Non - Production</span>
                         </label>
-                    </div>
+                    </div>}
                     <div className="mb-16">
                         <CustomInput
                             autoComplete="off"

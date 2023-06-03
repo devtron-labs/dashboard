@@ -1988,6 +1988,10 @@ button.anchor {
     max-width: 400px;
 }
 
+.dc__mxw-800 {
+    max-width: 800px;
+}
+
 .dc__mxw-1000 {
     max-width: 1000px;
 }
@@ -3007,6 +3011,10 @@ textarea,
     transform: rotate(-90deg);
 }
 
+.dc__flip{
+  transform: scaleX(-1)
+}
+
 textarea::-webkit-input-placeholder {
     color: var(--N400);
 }
@@ -3050,6 +3058,7 @@ textarea::placeholder {
     display: -webkit-box;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
+    word-break: break-all;
 }
 
 // opacity

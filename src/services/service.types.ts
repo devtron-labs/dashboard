@@ -70,6 +70,7 @@ export interface AppEnvironment {
     lastDeployed?: string
     appStatus?: string
     deploymentAppDeleteRequest?: boolean
+    isVirtualEnvironment?: boolean
 }
 
 export interface AppOtherEnvironment extends ResponseType {
@@ -154,6 +155,7 @@ export interface EnvironmentHelmResult {
     environmentName: string,
     namespace: string,
     environmentIdentifier: string
+    isVirtualEnvironment?: boolean // Need to confirm for not full mode
 }
 
 export interface ClusterListResponse extends ResponseType {
@@ -165,6 +167,7 @@ export interface Cluster {
     cluster_name: string
     active: boolean
     errorInConnecting?: string
+    isVirtualCluster?: boolean
 }
 export interface LoginCountType extends ResponseType {
   result?: LoginCount

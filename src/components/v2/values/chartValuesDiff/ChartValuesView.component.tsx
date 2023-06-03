@@ -12,7 +12,7 @@ import {
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ErrorExclamation } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ChartValuesSelect } from '../../../charts/util/ChartValueSelect'
-import { Select } from '../../../common'
+import { importComponentFromFELibrary, Select } from '../../../common'
 import { Progressing, DeleteDialog, EmptyState, RadioGroup, RadioGroupItem } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ActiveReadmeColumnProps,
@@ -26,7 +26,6 @@ import {
     DeleteApplicationButtonProps,
     DeleteChartDialogProps,
     DeploymentAppSelectorType,
-    DeploymentAppType,
     ErrorScreenWithInfoProps,
     UpdateApplicationButtonProps,
     ValueNameInputType,
@@ -41,20 +40,42 @@ import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../co
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { envGroupStyle } from './ChartValuesView.utils'
+import { DeploymentAppTypes } from '../../../../config/constants'
+
+const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
+const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
 
 export const ChartEnvironmentSelector = ({
     isExternal,
     isDeployChartView,
     installedAppInfo,
     releaseInfo,
-    isUpdate,
     selectedEnvironment,
     handleEnvironmentSelection,
     environments,
     invalidaEnvironment,
+    isVirtualEnvironmentOnSelector,
+    isVirtualEnvironment
 }: ChartEnvironmentSelectorType): JSX.Element => {
     const singleOption = (props) => {
         return <EnvFormatOptions {...props} environmentfieldName="label" />
+    }
+
+    const renderVirtualEnvironmentInfoText = (): JSX.Element => {
+        if (isVirtualEnvironmentOnSelector && VirtualEnvSelectionInfoText) {
+            return <VirtualEnvSelectionInfoText />
+        }
+    }
+
+    const renderVirtualTippy = (): JSX.Element => {
+        if (isVirtualEnvironment && VirtualEnvHelpTippy) {
+            return (
+                <div className="flex left">
+                    <div className="ml-4 mr-4">(Virtual)</div>
+                    <VirtualEnvHelpTippy showVirtualText={true}/>
+                </div>
+            )
+        }
     }
 
     const handleFormatHighlightedText = (opt, { inputValue }) => {
@@ -63,8 +84,8 @@ export const ChartEnvironmentSelector = ({
 
     return !isDeployChartView ? (
         <div className="chart-values__environment-container mb-12">
-            <h2 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7" data-testid="environment-heading">
-                Environment
+            <h2 className="chart-values__environment-label fs-13 fw-4 lh-20 cn-7 flex left" data-testid="environment-heading">
+                Environment {renderVirtualTippy()}
             </h2>
             {isExternal ? (
                 <span className="chart-values__environment fs-13 fw-6 lh-20 cn-9">
@@ -99,6 +120,7 @@ export const ChartEnvironmentSelector = ({
                 formatOptionLabel={handleFormatHighlightedText}
             />
             {invalidaEnvironment && renderValidationErrorLabel()}
+            {renderVirtualEnvironmentInfoText()}
         </div>
     )
 }
@@ -116,12 +138,12 @@ export const DeploymentAppSelector = ({
             </h2>
             <div className="flex left">
                 <span className="fs-13 fw-6  cn-9 md-6 " data-testid="deployment-type">
-                    {commonState.installedConfig.deploymentAppType === DeploymentAppType.Helm
+                    {commonState.installedConfig.deploymentAppType === DeploymentAppTypes.HELM
                         ? DeploymentAppTypeNameMapping.Helm
                         : DeploymentAppTypeNameMapping.GitOps}
                 </span>
                 <span>
-                    {commonState.installedConfig.deploymentAppType === DeploymentAppType.GitOps ? (
+                    {commonState.installedConfig.deploymentAppType === DeploymentAppTypes.GITOPS ? (
                         <ArgoCD className="icon-dim-24 ml-6" />
                     ) : (
                         <Helm className="icon-dim-24 ml-6" />
@@ -142,9 +164,9 @@ export const DeploymentAppSelector = ({
                     onChange={handleDeploymentAppTypeSelection}
                     disabled={isUpdate}
                 >
-                    <RadioGroupItem value={DeploymentAppType.Helm}> Helm </RadioGroupItem>
+                    <RadioGroupItem value={DeploymentAppTypes.HELM}> Helm </RadioGroupItem>
 
-                    <RadioGroupItem value={DeploymentAppType.GitOps}> GitOps </RadioGroupItem>
+                    <RadioGroupItem value={DeploymentAppTypes.GITOPS}> GitOps </RadioGroupItem>
                 </RadioGroup>
             </div>
         </div>

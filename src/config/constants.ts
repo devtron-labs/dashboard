@@ -768,7 +768,8 @@ export enum TIMELINE_STATUS {
     DEGRADED = 'DEGRADED',
     DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
     ABORTED = 'ABORTED',
-    INPROGRESS= 'INPROGRESS'
+    INPROGRESS= 'INPROGRESS',
+    HELM_PACKAGE_GENERATED= 'HELM_PACKAGE_GENERATED'
 }
 
 export const DEPLOYMENT_STATUS = {
@@ -813,6 +814,11 @@ export enum CONFIGURATION_TYPES {
     DESCRIPTION = 'DESCRIPTION',
 }
 
+export enum DeploymentAppTypes {
+  HELM = 'helm',
+  GITOPS = 'argo_cd',
+  MANIFEST_DOWNLOAD = 'manifest_download'
+}
 export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
 
 export const POD_ROTATION_INITIATED = 'Pod rotation initiated'
