@@ -1157,7 +1157,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         }`}
                         onClick={stopPropagation}
                     >
-                        {this.state.isLoading && this.state.isSaveLoading ? (
+                        {this.state.isLoading ? (
                             <>
                                 <div className="trigger-modal__header flex right">
                                     <button type="button" className="dc__transparent" onClick={this.closeCDModal}>
