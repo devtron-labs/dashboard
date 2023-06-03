@@ -33,7 +33,7 @@ export function TriggerModalRow({ rowData, key, isVirtualEnv, envName }: Trigger
         e.stopPropagation()
         setIsDownLoad(true)
         if (getDeployManifestDownload) {
-            getDeployManifestDownload(params, setDownLoader)
+            getDeployManifestDownload(params, setDownLoader,true)
         }
     }
 
