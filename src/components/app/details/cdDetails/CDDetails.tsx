@@ -441,7 +441,7 @@ const HistoryLogs: React.FC<{
         appName: triggerDetails.helmPackageName,
         workflowId: triggerDetails.id,
     }
-
+        
     const [ref, scrollToTop, scrollToBottom] = useScrollable({
         autoBottomScroll: triggerDetails.status.toLowerCase() !== 'succeeded',
     })
