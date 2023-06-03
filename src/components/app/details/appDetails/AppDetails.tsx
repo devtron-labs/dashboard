@@ -93,7 +93,6 @@ import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
 import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
-import { nodeSelect } from '../../../ClusterNodes/constants'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
