@@ -263,7 +263,8 @@ export default class ClusterList extends Component<ClusterListProps, any> {
                                 toggleShowAddCluster={this.toggleShowAddCluster}
                                 toggleKubeConfigFile={this.toggleKubeConfigFile}
                                 isKubeConfigFile={this.state.isKubeConfigFile}
-                                toggleClusterDetails={this.toggleClusterDetails}
+                                toggleClusterDetails={this.toggleClusterDetails} 
+                                isVirtualCluster={false}                                
                             />
                         </Drawer>
                     )}
@@ -302,7 +303,7 @@ function Cluster({
     const [envDelete, setDeleteEnv] = useState(false)
     const [confirmation, toggleConfirmation] = useState(false)
     const [prometheusToggleEnabled] = useState(prometheus_url ? true : false)
-
+    
     const [prometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
     })
@@ -399,7 +400,7 @@ function Cluster({
     const newEnvs = useMemo(() => {
         return clusterId ? [{ id: null }].concat(environments || []) : environments || []
     }, [environments])
-
+    
     async function handleEdit(e) {
         try {
             const { result } = await getCluster(clusterId)
@@ -762,6 +763,7 @@ function Cluster({
                                 isKubeConfigFile={state.isKubeConfigFile}
                                 toggleEditMode={toggleEditMode}
                                 toggleClusterDetails={true}
+                                isVirtualCluster={isVirtualCluster}
                             />
                         </div>
                     </Drawer>
