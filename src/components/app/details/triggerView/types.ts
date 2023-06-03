@@ -526,6 +526,7 @@ export interface CdPipeline {
     deploymentAppCreated?: boolean
     userApprovalConfig?: UserApprovalConfigType
     isVirtualEnvironment?: boolean
+    helmPackageName?: string
 }
 
 export interface CdPipelineResult {

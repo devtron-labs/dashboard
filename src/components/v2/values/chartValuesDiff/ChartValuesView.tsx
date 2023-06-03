@@ -755,11 +755,11 @@ function ChartValuesView({
             })
         }
 
-       const onClickManifestDownload = (appId: number, envId: number, envName: string ) => {
+       const onClickManifestDownload = (appId: number, envId: number, appName: string, helmPackageName: string) => {
           const downloadManifetsDownload = {
               appId: appId,
               envId: envId,
-              appName: envName,
+              appName: helmPackageName ?? appName,
               isHelmApp: true
           }
           if (getDeployManifestDownload) {
@@ -847,7 +847,7 @@ function ChartValuesView({
                 toast.success(CHART_VALUE_TOAST_MSGS.DeploymentInitiated)
                 history.push(_buildAppDetailUrl(newInstalledAppId, newEnvironmentId))
             } else if (res?.result && (res.result.success || res.result.appName)) {
-              appDetails?.isVirtualEnvironment && onClickManifestDownload(res.result.installedAppId, +envId, res.result.appName)
+              appDetails?.isVirtualEnvironment && onClickManifestDownload(res.result.installedAppId, +envId, res.result.appName, res.result?.helmPackageName)
                 toast.success(CHART_VALUE_TOAST_MSGS.UpdateInitiated)
                 history.push(`${url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}?refetchData=true`)
             } else {

@@ -22,7 +22,7 @@ import {
 import { createGitCommitUrl, importComponentFromFELibrary, ISTTimeModal, preventBodyScroll } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowType } from './types'
+import { MATERIAL_TYPE, NodeAttr, TriggerViewProps, TriggerViewState, WorkflowNodeType, WorkflowType } from './types'
 import { CIMaterial } from './ciMaterial'
 import { CDMaterial } from './cdMaterial'
 import {
@@ -85,7 +85,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             filteredCIPipelines: [],
             isChangeBranchClicked: false,
             loader: false,
-            isSaveLoading: false
+            isSaveLoading: false,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -641,12 +641,23 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    onClickManifestDownload = (appId: number, envId: number, envName: string, cdWorkflowType: string ) => {
+    getHelmPackageName = (helmPackageName: string, cdWorkflowType: string) => {
+        if (cdWorkflowType === WorkflowNodeType.PRE_CD) {
+            return `${helmPackageName} (Pre)`
+        } else if (cdWorkflowType === WorkflowNodeType.POST_CD) {
+            return `${helmPackageName} (Post)`
+        } else {
+            return helmPackageName
+        }
+    }
+
+    onClickManifestDownload = (appId: number, envId: number, helmPackageName: string, cdWorkflowType: string) => {
+        console.log(cdWorkflowType)
         const downloadManifetsDownload = {
             appId: appId,
             envId: envId,
-            appName: envName,
-            cdWorkflowType: cdWorkflowType
+            appName: this.getHelmPackageName(helmPackageName, cdWorkflowType),
+            cdWorkflowType: cdWorkflowType,
         }
         if (getDeployManifestDownload) {
             getDeployManifestDownload(downloadManifetsDownload)
@@ -660,7 +671,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         wfrId?: number,
     ): void => {
         ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
-        this.setState({ isSaveLoading: true })
+        this.setState({ isSaveLoading: true, isLoading: true })
         let node: NodeAttr
         for (let i = 0; i < this.state.workflows.length; i++) {
             let workflow = this.state.workflows[i]
@@ -674,7 +685,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             triggerCDNode(pipelineId, ciArtifact.id, _appId.toString(), nodeType, deploymentWithConfig, wfrId)
                 .then((response: any) => {
                     if (response.result) {
-                        this.onClickManifestDownload(_appId, node.environmentId, node.environmentName, node.type)
+                        this.onClickManifestDownload(_appId, node.environmentId, node.helmPackageName, node.type)
                         const msg =
                             this.state.materialType == MATERIAL_TYPE.rollbackMaterialList
                                 ? 'Rollback Initiated'
@@ -685,6 +696,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 code: response.code,
                                 showCDModal: false,
                                 isSaveLoading: false,
+                                isLoading: false,
                             },
                             () => {
                                 preventBodyScroll(false)
@@ -695,7 +707,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 })
                 .catch((errors: ServerErrors) => {
                     showError(errors)
-                    this.setState({ code: errors.code, isLoading: false })
+                    this.setState({ code: errors.code, isLoading: false, isSaveLoading: false })
                 })
         } else {
             let message = _appId ? '' : 'app id missing '

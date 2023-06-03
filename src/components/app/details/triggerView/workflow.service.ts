@@ -529,6 +529,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             x: 0,
             y: 0,
             isRoot: false,
+            helmPackageName:  cdPipeline?.helmPackageName || '',
         } as NodeAttr
         stageIndex++
     }
@@ -569,7 +570,8 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
         parentPipelineType: cdPipeline.parentPipelineType,
         deploymentAppDeleteRequest: cdPipeline.deploymentAppDeleteRequest,
         userApprovalConfig: cdPipeline.userApprovalConfig,
-        isVirtualEnvironment: cdPipeline.isVirtualEnvironment
+        isVirtualEnvironment: cdPipeline.isVirtualEnvironment,
+        helmPackageName:  cdPipeline?.helmPackageName || ''
     } as NodeAttr
     stageIndex++
 
@@ -599,6 +601,7 @@ function cdPipelineToNode(cdPipeline: CdPipeline, dimensions: WorkflowDimensions
             x: 0,
             y: 0,
             isRoot: false,
+            helmPackageName:  cdPipeline?.helmPackageName || ''
         } as NodeAttr
     }
     if (dimensions.type === WorkflowDimensionType.TRIGGER) {
