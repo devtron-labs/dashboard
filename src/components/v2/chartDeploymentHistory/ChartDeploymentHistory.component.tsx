@@ -87,7 +87,6 @@ function ChartDeploymentHistory({
             tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
         } else if (installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD) {
             tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
-            tabs.pop()
             tabs.push(DEPLOYMENT_HISTORY_TAB.ARTIFACTS)
         }
         return tabs
