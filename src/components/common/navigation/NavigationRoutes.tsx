@@ -370,6 +370,7 @@ export default function NavigationRoutes() {
                                                 <DevtronStackManager
                                                     serverInfo={currentServerInfo.serverInfo}
                                                     getCurrentServerInfo={getCurrentServerInfo}
+                                                    isSuperAdmin={isSuperAdmin}
                                                 />
                                             </Route>,
                                             <Route key={URLS.GETTING_STARTED} exact path={`/${URLS.GETTING_STARTED}`}>

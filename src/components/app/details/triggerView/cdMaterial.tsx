@@ -42,7 +42,6 @@ import { CDButtonLabelMap, getCommonConfigSelectStyles, TriggerViewContext } fro
 import { getLatestDeploymentConfig, getRecentDeploymentConfig, getSpecificDeploymentConfig } from '../../service'
 import GitCommitInfoGeneric from '../../../common/GitCommitInfoGeneric'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { ModuleNameMap } from '../../../../config'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { DropdownIndicator, Option } from '../../../v2/common/ReactSelect.utils'
 import {
@@ -54,7 +53,9 @@ import {
 } from './TriggerView.utils'
 import TriggerViewConfigDiff from './triggerViewConfigDiff/TriggerViewConfigDiff'
 import Tippy from '@tippyjs/react'
-import { ARTIFACT_STATUS } from './Constants'
+import { ARTIFACT_STATUS,NO_VULNERABILITY_TEXT} from './Constants'
+import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
+import { ModuleNameMap } from '../../../../config'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -221,15 +222,24 @@ export class CDMaterial extends Component<CDMaterialProps, CDMaterialState> {
             )
         } else if (!mat.vulnerabilitiesLoading && mat.vulnerabilities.length === 0) {
             return (
-                <div className="security-tab-empty">
-                    <p className="security-tab-empty__title">No vulnerabilities Found</p>
+                <div className="security-tab-empty summary-view__card">
+                    <p className="security-tab-empty__title">{NO_VULNERABILITY_TEXT.Secured}</p>
+                    <p>{NO_VULNERABILITY_TEXT.NoVulnerabilityFound}</p>
                     <p className="security-tab-empty__subtitle">{mat.lastExecution}</p>
+                    <p className="workflow__header dc__border-radius-24 bcn-0">
+                        <ScannedByToolModal scanToolId={mat.scanToolId} />
+                    </p>
                 </div>
             )
         } else
             return (
                 <div className="security-tab">
-                    <p className="security-tab__last-scanned">Scanned on {mat.lastExecution} </p>
+                    <div className="flexbox dc__content-space">
+                        <span className="flex left security-tab__last-scanned ">Scanned on {mat.lastExecution} </span>
+                        <span className="flex right">
+                            <ScannedByToolModal scanToolId={mat.scanToolId} />
+                        </span>
+                    </div>
                     <ScanVulnerabilitiesTable vulnerabilities={mat.vulnerabilities} />
                 </div>
             )
