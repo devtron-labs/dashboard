@@ -186,7 +186,7 @@ export function K8SResourceList({
                         >
                             <span
                                 dangerouslySetInnerHTML={{
-                                    __html: highlightSearchedText(searchText, resourceData.name),
+                                    __html: highlightSearchedText(searchText, resourceData[columnName].toString()),
                                 }}
                             ></span>
                         </div>
