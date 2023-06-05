@@ -53,6 +53,7 @@ export interface Environment {
     active: boolean
     clusterName: string
     isClusterCdActive: boolean
+    isVirtualEnvironment?: boolean
 }
 export interface CommonError {
     isValid: boolean
@@ -68,6 +69,7 @@ export interface CDPipelineState {
         environmentName?: string
         deploymentAppType: string
         deploymentAppCreated: boolean
+        isVirtualEnvironment?: boolean
     }
     showDeleteModal: boolean
     shouldDeleteApp: boolean
@@ -85,8 +87,9 @@ export interface CDPipelineState {
     isAdvanced: boolean
     forceDeleteDialogMessage: string
     forceDeleteDialogTitle: string
-    showNonCascadeDeleteDialog: boolean,
-    clusterName: string,
+    isVirtualEnvironmentOnEnvSelection?: boolean
+    showNonCascadeDeleteDialog: boolean
+    clusterName: string
 }
 
 export interface PipelineConfig {

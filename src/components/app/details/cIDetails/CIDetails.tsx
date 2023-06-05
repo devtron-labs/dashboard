@@ -8,7 +8,7 @@ import { useRouteMatch, useParams, useHistory, generatePath } from 'react-router
 import { BuildDetails, CIPipeline, HistoryLogsType, SecurityTabType } from './types'
 import { ReactComponent as Down } from '../../../../assets/icons/ic-dropdown-filled.svg'
 import { getLastExecutionByArtifactId } from '../../../../services/service'
-import { ScanDisabledView, ImageNotScannedView, NoVulnerabilityView, CIRunningView } from './cIDetails.util'
+import { ScanDisabledView, ImageNotScannedView, CIRunningView } from './cIDetails.util'
 import './ciDetails.scss'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
@@ -20,6 +20,8 @@ import Artifacts from '../cicdHistory/Artifacts'
 import { CICDSidebarFilterOptionType, History, HistoryComponentType } from '../cicdHistory/types'
 import LogsRenderer from '../cicdHistory/LogsRenderer'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import  novulnerability from '../../../../assets/img/ic-vulnerability-not-found.svg';
+import { ScannedByToolModal } from '../../../common/security/ScannedByToolModal'
 
 const terminalStatus = new Set(['succeeded', 'failed', 'error', 'cancelled', 'nottriggered', 'notbuilt'])
 let statusSet = new Set(['starting', 'running', 'pending'])
@@ -390,6 +392,21 @@ const HistoryLogs = ({ triggerDetails, isBlobStorageConfigured, isJobView, appId
         </div>
     )
 }
+export function NoVulnerabilityViewWithTool({scanToolId}:{scanToolId:number}) {
+    return (
+        <div className="flex h-100">
+            <GenericEmptyState
+                image={novulnerability}
+                title={EMPTY_STATE_STATUS.CI_DEATILS_NO_VULNERABILITY_FOUND}
+                children={
+                    <span className="flex workflow__header dc__border-radius-24 bcn-0">
+                        <ScannedByToolModal scanToolId={scanToolId} />
+                    </span>
+                }
+            />
+        </div>
+    )
+}
 
 const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: SecurityTabType) => {
     const [isCollapsed, setIsCollapsed] = useState(false)
@@ -405,6 +422,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
         scanned: false,
         isLoading: !!artifactId,
         isError: false,
+        ScanToolId: null,
     })
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
@@ -419,6 +437,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                 scanned: result.scanned,
                 isLoading: false,
                 isError: false,
+                ScanToolId: result.scanToolId,
             })
         } catch (error) {
             // showError(error);
@@ -433,7 +452,7 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
     function toggleCollapse() {
         setIsCollapsed(!isCollapsed)
     }
-
+        
     useEffect(() => {
         if (artifactId) {
             callGetSecurityIssues()
@@ -472,8 +491,9 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
             return <ImageNotScannedView />
         }
     } else if (artifactId && securityData.scanned && !securityData.vulnerabilities.length) {
-        return <NoVulnerabilityView />
+        return <NoVulnerabilityViewWithTool scanToolId={securityData.ScanToolId}/>  
     }
+    const scanToolId= securityData.ScanToolId
 
     return (
         <>
@@ -497,7 +517,9 @@ const SecurityTab = ({ ciPipelineId, artifactId, status, appIdFromParent }: Secu
                     {severityCount.critical === 0 && severityCount.moderate === 0 && severityCount.low !== 0 ? (
                         <span className="dc__fill-low">{severityCount.low} Low</span>
                     ) : null}
-                    <div className="security-scan__type">post build execution</div>
+                    <div className="security-scan__type flex">
+                        <ScannedByToolModal scanToolId={scanToolId}/>
+                    </div>
                 </div>
                 {isCollapsed ? (
                     ''

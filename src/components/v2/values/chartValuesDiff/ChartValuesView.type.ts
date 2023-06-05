@@ -46,6 +46,7 @@ export interface ChartEnvironmentOptionType {
     clusterName?: string
     clusterId?: number
     active?: boolean
+    isVirtualEnvironment?: boolean
 }
 
 export interface ChartEnvironmentListType {
@@ -76,6 +77,8 @@ export interface ChartEnvironmentSelectorType extends ChartSelectorType {
     handleEnvironmentSelection?: (selected: ChartEnvironmentOptionType) => void
     environments?: ChartEnvironmentOptionType[] | ChartEnvironmentListType[]
     invalidaEnvironment: boolean
+    isVirtualEnvironmentOnSelector?: boolean
+    isVirtualEnvironment?: boolean
 }
 
 export interface DeploymentAppSelectorType {
@@ -318,6 +321,7 @@ export enum ChartValuesViewActionTypes {
     selectedDeploymentApp = 'selectedDeploymentApp',
 }
 
+// TOdo replace this with the common
 export enum DeploymentAppType {
     Helm = 'helm',
     GitOps = 'argo_cd',

@@ -8,8 +8,6 @@ import { useParams, useHistory, useRouteMatch } from 'react-router'
 import { useSharedState } from '../../utils/useSharedState'
 import { AppType, DeploymentAppType } from '../appDetails.type'
 import { ReactComponent as ScaleObjects } from '../../../../assets/icons/ic-scale-objects.svg'
-import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
-import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import ScaleWorkloadsModal from './scaleWorkloads/ScaleWorkloadsModal.component'
 import Tippy from '@tippyjs/react'
 import { TriggerUrlModal } from '../../../app/list/TriggerUrl'
@@ -24,16 +22,19 @@ import { DELETE_ACTION, checkIfDevtronOperatorHelmRelease } from '../../../../co
 import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
+import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 import ClusterNotReachableDailog from '../../../common/ClusterNotReachableDailog/ClusterNotReachableDialog'
 
 function EnvironmentSelectorComponent({
     isExternalApp,
     _init,
     loadingResourceTree,
+    isVirtualEnvironment,
 }: {
     isExternalApp: boolean
     _init?: () => void
     loadingResourceTree: boolean
+    isVirtualEnvironment?: boolean
 }) {
     const params = useParams<{ appId: string; envId?: string }>()
     const { url } = useRouteMatch()
@@ -243,16 +244,13 @@ function EnvironmentSelectorComponent({
                         <Tippy
                             className="default-tt"
                             arrow={false}
+                            disabled={isVirtualEnvironment}
                             placement="top"
                             content={`Deployed using ${
                                 isGitops ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
                             }`}
                         >
-                            {isGitops ? (
-                                <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16 mr-8" />
-                            ) : (
-                                <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
-                            )}
+                            <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
                         </Tippy>
                     )}
                     {appDetails?.deploymentAppDeleteRequest && (
@@ -267,7 +265,7 @@ function EnvironmentSelectorComponent({
 
             {!loadingResourceTree && (
                 <div className="flex">
-                    {!appDetails.deploymentAppDeleteRequest && (
+                    {!appDetails.deploymentAppDeleteRequest && !isVirtualEnvironment && (
                         <button
                             className="flex left small cta cancel pb-6 pt-6 pl-12 pr-12 en-2"
                             onClick={showInfoUrl}
@@ -277,7 +275,7 @@ function EnvironmentSelectorComponent({
                             Urls
                         </button>
                     )}
-                    {!showWorkloadsModal && (
+                    {!showWorkloadsModal && !isVirtualEnvironment && (
                         <button
                             className="scale-workload__btn flex left cta cancel pb-6 pt-6 pl-12 pr-12 en-2 ml-6"
                             onClick={() => setWorkloadsModal(true)}
@@ -295,10 +293,10 @@ function EnvironmentSelectorComponent({
                             deployedAppDetail[0],
                         )
                     ) && (
-                        <div data-testid="dot-button-app-details">
+                        <div data-testid="dot-button-app-details" className="flex br-4 en-2 bw-1 bcn-0 p-4 ml-8">
                             <PopupMenu autoClose>
                                 <PopupMenu.Button rootClassName="flex" isKebab={true}>
-                                    <Dots className="pod-info__dots ml-8 icon-dim-20 icon-color-n6" />
+                                    <Dots className="pod-info__dots icon-dim-20 icon-color-n6" />
                                 </PopupMenu.Button>
                                 <PopupMenu.Body>
                                     <Popup />

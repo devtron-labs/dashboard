@@ -8,8 +8,6 @@ import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessagi
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
 import { ReactComponent as Question } from '../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
-import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
 import { useParams } from 'react-router'
 import { Nodes, SourceInfoType } from '../../types'
 import Tippy from '@tippyjs/react'
@@ -19,7 +17,11 @@ import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
 import { ConditionalWrap, noop } from '@devtron-labs/devtron-fe-common-lib'
 import DeploymentStatusCard from './DeploymentStatusCard'
+import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
+import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+
+const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 
 export function SourceInfo({
     appDetails,
@@ -32,6 +34,7 @@ export function SourceInfo({
     deploymentStatusDetailsBreakdownData = null,
     loadingDetails = false,
     loadingResourceTree = false,
+    isVirtualEnvironment,
     setRotateModal = null,
 }: SourceInfoType) {
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
@@ -102,11 +105,7 @@ export function SourceInfo({
                                 : DeploymentAppTypeNameMapping.Helm
                         }`}
                     >
-                        {isArgoCdApp ? (
-                            <ArgoCD data-testid="argo-cd-app-logo" className="icon-dim-32 ml-16" />
-                        ) : (
-                            <Helm data-testid="helm-app-logo" className="icon-dim-32 ml-16" />
-                        )}
+                        <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} />
                     </Tippy>
                 )}
                 {isdeploymentAppDeleting && (
@@ -120,7 +119,7 @@ export function SourceInfo({
                     <>
                         {!isdeploymentAppDeleting && (
                             <div style={{ marginLeft: 'auto' }} className="flex right fs-12 cn-9">
-                                {showUrlInfo && (
+                                {!isVirtualEnvironment && showUrlInfo && (
                                     <button
                                         className="cta cta-with-img small cancel fs-12 fw-6 mr-6"
                                         onClick={onClickShowUrlInfo}
@@ -140,7 +139,7 @@ export function SourceInfo({
                                         commit info
                                     </button>
                                 )}
-                                {showHibernateModal && (
+                                {!isVirtualEnvironment && showHibernateModal && (
                                     <ConditionalWrap
                                         condition={appDetails?.userApprovalConfig?.length > 0}
                                         wrap={conditionalScalePodsButton}
@@ -218,6 +217,17 @@ export function SourceInfo({
     }
 
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
+    const renderGeneratedManifestDownloadCard = (): JSX.Element => {
+        const paramsId = {
+            appId: +params.appId,
+            envId: +params.envId,
+            appName: `${appDetails?.appName}-${appDetails?.environmentName}-${appDetails?.imageTag}`,
+        }
+        if (AppDetailsDownloadCard) {
+            return <AppDetailsDownloadCard params={paramsId} />
+        }
+    }
+
     return (
         <div className="flex left w-100 column source-info-container">
             {renderDevtronAppsEnvironmentSelector(environment)}
@@ -227,81 +237,87 @@ export function SourceInfo({
                 <>
                     {!isdeploymentAppDeleting && environment && (
                         <div className="flex left w-100">
-                            <div
-                                data-testid="app-status-card"
-                                onClick={loadingResourceTree ? noop : showApplicationDetailedModal}
-                                className="pointer flex left bcn-0 p-16 br-8 mw-340 mr-12 lh-20"
-                            >
-                                <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
-                                    {loadingResourceTree ? (
-                                        <div className="icon-dim-32 shimmer-loading" />
-                                    ) : (
-                                        <figure
-                                            className={`${status.toLowerCase()} dc__app-summary__icon mr-8 h-32 w-32`}
-                                            style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
-                                        ></figure>
-                                    )}
-                                </div>
-                                <div className="flex left column">
-                                    <div className="flexbox">
-                                        <span className="fs-12 mr-5 fw-4 cn-9">Application status</span>
-
-                                        <Tippy
-                                            className="default-tt"
-                                            arrow={false}
-                                            placement="top"
-                                            content="The health status of your app"
-                                        >
-                                            <Question className="icon-dim-16 mt-2" />
-                                        </Tippy>
+                            {!isVirtualEnvironment && (
+                                <div
+                                    data-testid="app-status-card"
+                                    onClick={loadingResourceTree ? noop : showApplicationDetailedModal}
+                                    className="pointer flex left bcn-0 p-16 br-8 mw-340 mr-12 lh-20"
+                                >
+                                    <div className="mw-48 mh-48 bcn-1 flex br-4 mr-16">
+                                        {loadingResourceTree ? (
+                                            <div className="icon-dim-32 shimmer-loading" />
+                                        ) : (
+                                            <figure
+                                                className={`${status.toLowerCase()} dc__app-summary__icon mr-8 h-32 w-32`}
+                                                style={{ margin: 'auto', backgroundSize: 'contain, contain' }}
+                                            ></figure>
+                                        )}
                                     </div>
-                                    {loadingResourceTree ? (
-                                        <div className="flex left column mt-6">
-                                            <div className="shimmer-loading w-120 h-16 br-2 mb-6" />
-                                            <div className="shimmer-loading w-54 h-12 br-2" />
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <div
-                                                data-testid="app-status-name"
-                                                className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}
+                                    <div className="flex left column">
+                                        <div className="flexbox">
+                                            <span className="fs-12 mr-5 fw-4 cn-9">Application status</span>
+
+                                            <Tippy
+                                                className="default-tt"
+                                                arrow={false}
+                                                placement="top"
+                                                content="The health status of your app"
                                             >
-                                                {isHibernated ? 'Hibernating' : status}
+                                                <Question className="icon-dim-16 mt-2" />
+                                            </Tippy>
+                                        </div>
+                                        {loadingResourceTree ? (
+                                            <div className="flex left column mt-6">
+                                                <div className="shimmer-loading w-120 h-16 br-2 mb-6" />
+                                                <div className="shimmer-loading w-54 h-12 br-2" />
                                             </div>
-                                            <div className="flex left">
-                                                {appDetails?.deploymentAppType === DeploymentAppType.helm ? (
-                                                    <span data-testid="app-status-card-details" className="cb-5 fw-6">
-                                                        Details
-                                                    </span>
-                                                ) : (
-                                                    <>
-                                                        {message && (
-                                                            <span className="select-material-message">
-                                                                {message.slice(0, 30)}
-                                                            </span>
-                                                        )}
+                                        ) : (
+                                            <>
+                                                <div
+                                                    data-testid="app-status-name"
+                                                    className={`app-summary__status-name fs-14 mr-8 fw-6 f-${status.toLowerCase()}`}
+                                                >
+                                                    {isHibernated ? 'Hibernating' : status}
+                                                </div>
+                                                <div className="flex left">
+                                                    {appDetails?.deploymentAppType === DeploymentAppType.helm ? (
                                                         <span
                                                             data-testid="app-status-card-details"
-                                                            className={`${
-                                                                message?.length > 30 ? 'more-message' : ''
-                                                            } cb-5 fw-6`}
+                                                            className="cb-5 fw-6"
                                                         >
                                                             Details
                                                         </span>
-                                                    </>
-                                                )}
-                                            </div>
-                                        </>
-                                    )}
+                                                    ) : (
+                                                        <>
+                                                            {message && (
+                                                                <span className="select-material-message">
+                                                                    {message.slice(0, 30)}
+                                                                </span>
+                                                            )}
+                                                            <span
+                                                                data-testid="app-status-card-details"
+                                                                className={`${
+                                                                    message?.length > 30 ? 'more-message' : ''
+                                                                } cb-5 fw-6`}
+                                                            >
+                                                                Details
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-
+                            )}
+                            {isVirtualEnvironment && renderGeneratedManifestDownloadCard()}
                             <DeploymentStatusCard
                                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                 loadingResourceTree={loadingResourceTree}
                                 hideDetails={appDetails?.deploymentAppType === DeploymentAppType.helm}
+                                isVirtualEnvironment={isVirtualEnvironment}
                             />
-                             <div className="flex right ml-auto">
+                            <div className="flex right ml-auto">
                                 {appDetails?.appStoreChartId && (
                                     <>
                                         <span className="mr-8 fs-12 cn-7">Chart:</span>

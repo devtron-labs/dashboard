@@ -23,7 +23,7 @@ export default function NodeList({ imageList, isSuperAdmin, namespaceList }: Clu
         label: '',
         value: '',
     })
-    const [selectedTabName, setSelectedTabName] = useState<CLUSTER_PAGE_TAB_TYPE>(CLUSTER_PAGE_TAB.ABOUT)
+    const [selectedTabName, setSelectedTabName] = useState<CLUSTER_PAGE_TAB_TYPE>(CLUSTER_PAGE_TAB.DETAILS)
 
     useEffect(() => {
         getClusterListMin()

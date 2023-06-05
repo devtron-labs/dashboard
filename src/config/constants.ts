@@ -22,6 +22,8 @@ export const Routes = {
 
     CI_PIPELINE_TRIGGER: 'app/ci-pipeline/trigger',
     CLUSTER: 'cluster',
+    VALIDATE: 'cluster/validate',
+    SAVECLUSTER: 'cluster/saveClusters',
     CLUSTER_DESCRIPTION: 'cluster/description',
     CLUSTER_NOTE: 'cluster/description/note',
 
@@ -227,7 +229,7 @@ export const Routes = {
     GROUPS: 'groups',
     GROUP: 'group',
     ROTATE_PODS: 'app/rotate-pods',
-    DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/'
+    DEFAULT_STRATEGY: 'app/cd-pipeline/defaultStrategy/',
 }
 
 export const ViewType = {
@@ -642,14 +644,21 @@ export const EXTERNAL_TYPES = {
 
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
 export const DEPLOYMENT = 'Deployment'
+export const MODULE_TYPE_SECURITY = 'security'
+export const SCAN_TOOL_ID_TRIVY = 3
+export const TRIVY_TOOL_VERSION = 'V1'
+export const CLAIR_TOOL_VERSION_V4 = 'V4'
+export const CLAIR_TOOL_VERSION_V2 = 'V2'
 
 export const ModuleNameMap = {
     ARGO_CD: 'argo-cd',
     CICD: 'cicd',
-    SECURITY: 'security.clair',
+    SECURITY: 'security',
     BLOB_STORAGE: 'blob-storage',
     GRAFANA: 'monitoring.grafana',
     NOTIFICATION: 'notifier',
+    SECURITY_TRIVY: 'security.trivy',
+    SECURITY_CLAIR: 'security.clair',
 }
 
 export const BUILD_STATUS = {
@@ -708,6 +717,11 @@ export const MODULE_STATUS_POLLING_INTERVAL = 15000
 export const LOGS_RETRY_COUNT = 3
 export const APP_STATUS_HEADERS = ['KIND', 'NAME', 'STATUS', 'MESSAGE']
 export const MANIFEST_STATUS_HEADERS = ['KIND', 'NAME', 'SYNC STATUS', 'MESSAGE']
+export const MODULE_STATUS = {
+    Installed: 'Installed',
+    Failed: 'Failed',
+    NotEnabled: 'Not enabled',
+}
 
 export const shellTypes = [
     { label: 'sh', value: 'sh' },
@@ -768,7 +782,8 @@ export enum TIMELINE_STATUS {
     DEGRADED = 'DEGRADED',
     DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
     ABORTED = 'ABORTED',
-    INPROGRESS= 'INPROGRESS'
+    INPROGRESS= 'INPROGRESS',
+    HELM_PACKAGE_GENERATED= 'HELM_PACKAGE_GENERATED'
 }
 
 export const DEPLOYMENT_STATUS = {
@@ -814,6 +829,11 @@ export enum CONFIGURATION_TYPES {
     DESCRIPTION = 'DESCRIPTION',
 }
 
+export enum DeploymentAppTypes {
+  HELM = 'helm',
+  GITOPS = 'argo_cd',
+  MANIFEST_DOWNLOAD = 'manifest_download'
+}
 export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
 
 export const POD_ROTATION_INITIATED = 'Pod rotation initiated'

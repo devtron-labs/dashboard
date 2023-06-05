@@ -137,6 +137,13 @@ export function DeploymentRow({ installedAppId, appName, status, deploymentAppTy
     const handleForceDelete = () => {handleDelete(DELETE_ACTION.FORCE_DELETE)}
     const handleCascadeDelete = () => {handleDelete(DELETE_ACTION.DELETE)}
 
+    const renderChartStatus = (status: string) => {
+        if (status === 'Not Found') {
+            return 'NOT AVAILABLE'
+        }
+        return status.toUpperCase()
+    }
+
     return (
         <>
             <tr className="deployment-table-row">
