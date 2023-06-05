@@ -1,4 +1,3 @@
-import { DeploymentAppType } from "../../../../v2/appDetails/appDetails.type"
 import { DeploymentHistoryDetail, DeploymentTemplateList } from "../cd.type"
 
 export interface DeploymentHistorySingleValue {

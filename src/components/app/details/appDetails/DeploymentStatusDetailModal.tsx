@@ -11,6 +11,7 @@ export default function DeploymentStatusDetailModal({
     environmentName,
     streamData,
     deploymentStatusDetailsBreakdownData,
+    isVirtualEnvironment
 }: DeploymentStatusDetailModalType) {
     const history = useHistory()
     const appStatusDetailRef = useRef<HTMLDivElement>(null)
@@ -76,6 +77,7 @@ export default function DeploymentStatusDetailModal({
                     <DeploymentStatusDetailBreakdown
                         deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                         streamData={streamData}
+                        isVirtualEnvironment={isVirtualEnvironment}
                     />
                 </div>
             </div>

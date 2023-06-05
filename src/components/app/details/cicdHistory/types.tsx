@@ -29,6 +29,8 @@ export interface History {
     blobStorageEnabled?: boolean
     isArtifactUploaded?: boolean
     userApprovalMetadata?: UserApprovalMetadataType
+    IsVirtualEnvironment?: boolean
+    helmPackageName?: string
 }
 
 export interface CiMaterial {
