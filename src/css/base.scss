@@ -1988,6 +1988,10 @@ button.anchor {
     max-width: 400px;
 }
 
+.dc__mxw-800 {
+    max-width: 800px;
+}
+
 .dc__mxw-1000 {
     max-width: 1000px;
 }
@@ -2750,6 +2754,10 @@ textarea,
     min-height: 66px;
 }
 
+.mh-88 {
+    min-height: 88px;
+}
+
 .mh-92 {
     min-height: 92px;
 }
@@ -2995,6 +3003,10 @@ textarea,
     }
 }
 
+.dc__column-gap-16 {
+    column-gap: 16px;
+}
+
 .dc__column-gap-24 {
     column-gap: 24px;
 }
@@ -3030,6 +3042,11 @@ textarea,
 .dc__flip-90 {
     transform: rotate(-90deg);
 }
+
+.dc__flip-270 {
+    transform: rotate(270deg);
+}
+
 
 textarea::-webkit-input-placeholder {
     color: var(--N400);
