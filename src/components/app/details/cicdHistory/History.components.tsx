@@ -146,7 +146,6 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyView
     const EmptyViewButton = () => {
         return (
             <NavLink to={link} className="cta cta--ci-details flex" target="_blank">
-                {console.log(link)}
                 <OpenInNew className="mr-5 mr-5 scn-0 fcb-5 icon-fill-blue-imp" />
                 {linkText}
             </NavLink>

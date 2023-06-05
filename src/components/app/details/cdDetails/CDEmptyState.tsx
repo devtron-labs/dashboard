@@ -41,7 +41,7 @@ export default function CDEmptyState({
         )
     }
     return (
-        <div style={{ backgroundColor: 'var(--window-bg)' }}>
+        <div className='dc__position-rel' style={{ backgroundColor: 'var(--window-bg)' }}>
           {/* TO replace with genericemptystate after incoporating png support */}
             <GenericEmptyState
                 image={imgSource || AppNotDeployed}

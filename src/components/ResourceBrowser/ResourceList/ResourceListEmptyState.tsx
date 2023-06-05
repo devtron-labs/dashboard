@@ -20,7 +20,6 @@ export default function ResourceListEmptyState({
     return (
         <GenericEmptyState
             classname="title"
-            heightToDeduct={92}
             image={imgSource ?? emptyCustomChart}
             title={title ?? 'No resources found'}
             subTitle={subTitle}

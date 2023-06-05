@@ -80,7 +80,7 @@ export const NoExternalLinksView = ({
             }
             isButtonAvailable={true}
             renderButton={handleButton}
-            // children={isAppConfigView && <RoleBasedInfoNote userRole={userRole}}
+            children={isAppConfigView && <RoleBasedInfoNote userRole={userRole}/>}
         />
     )
 }
