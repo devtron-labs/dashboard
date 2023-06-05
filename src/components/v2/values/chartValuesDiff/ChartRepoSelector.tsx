@@ -154,6 +154,7 @@ export function ChartRepoSelector({
                 </div>
                 <div className="repo-chart-selector flex">
                     <AsyncSelect
+                        classNamePrefix="helm-chart"
                         cacheOptions
                         defaultOptions={repoChartOptions}
                         isSearchable={window._env_.ENABLE_CHART_SEARCH_IN_HELM_DEPLOY}

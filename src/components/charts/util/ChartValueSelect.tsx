@@ -59,7 +59,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                 value={this.props.chartValues}
                 onChange={this.onChange}
             >
-                <Select.Button>
+                <Select.Button dataTestIdDropdown={"chart-value-dialog"}>
                     <div className="w-90 flexbox">
                         {selectedChartValue ? (
                             <>
@@ -78,7 +78,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                         ? chartValues.deployedChartValues.map((chartValue) => {
                               let env = chartValue.environmentName || ''
                               return (
-                                  <Select.Option key={chartValue.id} value={chartValue}>
+                                  <Select.Option key={chartValue.id} value={chartValue} dataTestIdMenuList={`${chartValue.name}-${chartValue.chartVersion}`}>
                                       <div>
                                           <div className="w-100 flexbox">
                                               <div className="dc__ellipsis-right">{chartValue.name}</div>&nbsp;(
@@ -95,7 +95,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                     {chartValues.savedChartValues.length
                         ? chartValues.savedChartValues.map((chartValue) => {
                               return (
-                                  <Select.Option key={chartValue.id} value={chartValue}>
+                                  <Select.Option key={chartValue.id} value={chartValue} dataTestIdMenuList={`${chartValue.name}-${chartValue.chartVersion}`}>
                                       <div className="w-100 flexbox">
                                           <div className="dc__ellipsis-right">{chartValue.name}</div>&nbsp;(
                                           {chartValue.chartVersion})
@@ -109,7 +109,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                     {chartValues.existingChartValues.length
                         ? chartValues.existingChartValues.map((chartValue) => {
                               return (
-                                  <Select.Option key={chartValue.id} value={chartValue}>
+                                  <Select.Option key={chartValue.id} value={chartValue}  dataTestIdMenuList={`${chartValue.name}-${chartValue.chartVersion}`}>
                                       {this.getChartValueLabel(chartValue.name, chartValue.chartVersion)}
                                   </Select.Option>
                               )
@@ -120,7 +120,7 @@ export class ChartValuesSelect extends Component<ChartValuesSelectProps> {
                     {chartValues.defaultChartValues.length
                         ? chartValues.defaultChartValues.map((chartValue) => {
                               return (
-                                  <Select.Option key={chartValue.id} value={chartValue}>
+                                  <Select.Option key={chartValue.id} value={chartValue} dataTestIdMenuList={`${chartValue.name}-${chartValue.chartVersion}`}>
                                       <div className="w-100 flexbox">
                                           <div className="dc__ellipsis-right">{chartValue.name}</div>&nbsp;(
                                           {chartValue.chartVersion})
