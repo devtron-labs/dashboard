@@ -5,6 +5,9 @@ import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.
 import { ReactComponent as Slack } from '../../assets/img/slack-logo.svg';
 import { ReactComponent as Email } from '../../assets/icons/ic-mail.svg';
 import { ReactComponent as RedWarning } from '../../assets/icons/ic-error-medium.svg';
+import { ReactComponent as CI } from '../../assets/icons/ic-CI.svg';
+import { ReactComponent as CD } from '../../assets/icons/ic-CD.svg';
+import { ReactComponent as Rocket } from '../../assets/icons/ic-paper-rocket.svg'
 
 export const multiSelectStyles = {
     control: (base, state) => ({
@@ -110,3 +113,13 @@ export function Option(props) {
         {props.children}
     </components.Option>
 }
+
+  export const renderPipelineTypeIcon = (row) => {
+      if (row.isVirtualEnvironment) {
+          return <Rocket className="icon-dim-24" />
+      } else if (row.type === 'CI') {
+          return <CI className="icon-dim-20 dc__flip" />
+      } else {
+          return <CD className="icon-dim-20 dc__flip" />
+      }
+  }

@@ -106,15 +106,7 @@ export default function CIConfigForm({
     })
     const configOverridenPipelines = ciConfig?.ciPipelines?.filter((_ci) => _ci.isDockerConfigOverridden)
     const [currentCIBuildConfig, setCurrentCIBuildConfig] = useState<CIBuildConfigType>(
-        initCurrentCIBuildConfig(
-            allowOverride,
-            ciConfig,
-            selectedCIPipeline,
-            selectedMaterial,
-            selectedBuildContextGitMaterial,
-            state.dockerfile.value,
-            state.buildContext.value,
-        ),
+        initCurrentCIBuildConfig(allowOverride, ciConfig, selectedCIPipeline, selectedMaterial, selectedBuildContextGitMaterial, state.dockerfile.value, state.buildContext.value, state.useRootBuildContext.value),
     )
 
     useEffect(() => {

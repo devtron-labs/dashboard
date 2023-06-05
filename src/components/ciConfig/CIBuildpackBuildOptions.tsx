@@ -65,6 +65,14 @@ export const repositoryOption = (props): JSX.Element => {
     )
 }
 
+export const checkoutPathOption = (props) : JSX.Element => {
+    props.selectProps.styles.option = getCustomOptionSelectionStyle()
+    return (
+        <components.Option {...props}>
+            {props.value}
+        </components.Option>
+    )
+}
 export const repositoryControls = (props): JSX.Element => {
     let value = ''
     if (props.hasValue) {

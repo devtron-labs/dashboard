@@ -106,11 +106,11 @@ const OptionGroup: React.SFC<OptionGroupProps> = function ({ children, label, ro
     </div>
 }
 
-function Button({ dataTestIdDropdown, children, style = {}, rootClassName = "", arrowAsset = "" }) {
+function Button({ dataTestIdDropdown, children, style = {}, rootClassName = "", arrowAsset = "", hideArrow = false }) {
     const { popupOpen, loading } = useSelectContext()
     return <div data-testid={dataTestIdDropdown} className={`select-button flex ${rootClassName} ${popupOpen ? 'focused' : ''}`} style={{ ...style }}>
         {children}
-        {loading ? <div><Progressing /></div> : <img src={arrowAsset || arrowTriangle} className="rotate select-button-sort-image" style={{ ['--rotateBy' as any]: popupOpen ? '180deg' : '0deg' }} />}
+        {!hideArrow && (loading ? <div><Progressing /></div> : <img src={arrowAsset || arrowTriangle} className="rotate select-button-sort-image" style={{ ['--rotateBy' as any]: popupOpen ? '180deg' : '0deg' }} />)}
     </div>
 }
  

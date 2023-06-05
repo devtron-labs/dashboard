@@ -75,8 +75,9 @@ export default function K8sListItemCard({
         try {
             const { result } = await getClusterList()
             if (result) {
+              const filteredClusterList = result.filter((item) => !item?.isVirtualCluster)
                 const _clusterOptions = convertToOptionsList(
-                    sortObjectArrayAlphabetically(result, 'cluster_name'),
+                    sortObjectArrayAlphabetically(filteredClusterList, 'cluster_name'),
                     'cluster_name',
                     'id',
                 )
@@ -309,10 +310,10 @@ export default function K8sListItemCard({
         })
         return isAllSelected
     }
-   
+
     const k8sOptions = ParseData(customRoles.customRoles, EntityTypes.CLUSTER).map((role) => {
         return { label: role.roleDisplayName, value: role.roleName, infoText: role.roleDescription }
-    }) 
+    })
     return (
         <div className="mt-16 mb-16 dc__border br-4 p-16 bcn-0">
             <div className="cn-6 mb-6 flex dc__content-space">

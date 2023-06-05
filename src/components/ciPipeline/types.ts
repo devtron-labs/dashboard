@@ -8,6 +8,9 @@ import {
     ErrorObj,
     PluginDetailType,
     MandatoryPluginDetailType,
+    RefVariableType,
+    ScriptType,
+    PluginType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps } from 'react-router'
 import { HostURLConfig } from '../../services/service.types'
@@ -101,6 +104,139 @@ export const MountPathMap = {
 export const PortMap = {
     PORTONLOCAL: 'portOnLocal',
     PORTONCONTAINER: 'portOnContainer',
+}
+
+export enum MountPath {
+    TRUE = 'Yes',
+    FALSE = 'No',
+}
+
+export enum ConditionType {
+    SKIP = 'SKIP',
+    TRIGGER = 'TRIGGER',
+    PASS = 'PASS',
+    FAIL = 'FAIL',
+}
+
+export enum RefVariableStageType {
+    PRE_CI = 'PRE_CI',
+    POST_CI = 'POST_CI',
+}
+
+export interface VariableType {
+    id: number
+    name: string
+    value: string
+    format: string
+    description: string
+    defaultValue: string
+    variableType: RefVariableType
+    refVariableStepIndex: number
+    refVariableName: string
+    refVariableStage?: RefVariableStageType
+    variableStepIndexInPlugin?: number
+}
+
+interface CommandArgsMap {
+    command: string
+    args: string[]
+}
+
+export interface PortMapType {
+    portOnLocal: number
+    portOnContainer: number
+}
+interface ConditionDetails {
+    id: number
+    conditionOnVariable: string
+    conditionOperator: string
+    conditionType: ConditionType
+    conditionalValue: string
+}
+
+interface InlineStepDetailType {
+    scriptType: ScriptType
+    isMountCustomScript?: boolean
+    script?: string
+    dockerFileExists?: boolean
+    mountPath?: string
+    mountCodeToContainer?: boolean
+    mountDirectoryFromHost?: boolean
+    containerImagePath?: string
+    imagePullSecret?: string
+    commandArgsMap?: CommandArgsMap[]
+    portMap?: PortMapType[]
+    mountPathMap?: {
+        filePathOnDisk: string
+        filePathOnContainer: string
+    }[]
+    inputVariables?: VariableType[]
+    outputVariables?: VariableType[]
+    conditionDetails: ConditionDetails[]
+}
+
+interface PluginRefStepDetailType {
+    id: number
+    pluginId: number
+    inputVariables?: VariableType[]
+    outputVariables?: VariableType[]
+    conditionDetails?: ConditionDetails[]
+}
+
+export interface StepType {
+    id: number
+    index: number
+    name: string
+    description: string
+    stepType: PluginType
+    outputDirectoryPath: string[]
+    inlineStepDetail?: InlineStepDetailType
+    pluginRefStepDetail?: PluginRefStepDetailType
+    triggerIfParentStageFail: boolean
+}
+
+export interface BuildStageType {
+    id: number
+    steps: StepType[]
+}
+
+export enum CIBuildType {
+    SELF_DOCKERFILE_BUILD_TYPE = 'self-dockerfile-build',
+    MANAGED_DOCKERFILE_BUILD_TYPE = 'managed-dockerfile-build',
+    BUILDPACK_BUILD_TYPE = 'buildpack-build',
+}
+
+export interface BuildPackConfigType {
+    builderId: string
+    language: string
+    languageVersion: string
+    projectPath: string
+    builderLangEnvParam?: string
+    currentBuilderLangEnvParam?: string
+    buildPacks?: any
+    args?: Record<string, string>
+}
+
+export interface DockerBuildConfigType {
+    dockerfileContent: string
+    dockerfileRelativePath: string
+    buildContext: string
+    dockerfilePath?: string
+    dockerfileRepository?: string
+    args?: Record<string, string>
+    targetPlatform?: any
+    language?: string
+    languageFramework?: string
+}
+
+export interface CIBuildConfigType {
+    buildPackConfig: BuildPackConfigType
+    ciBuildType: CIBuildType
+    dockerBuildConfig: DockerBuildConfigType
+    gitMaterialId: number
+    buildContextGitMaterialId: number
+    id?: number
+    useRootBuildContext: boolean
 }
 
 export const DockerConfigOverrideKeys = {

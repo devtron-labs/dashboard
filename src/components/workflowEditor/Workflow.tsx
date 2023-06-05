@@ -357,6 +357,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 hideWebhookTippy={this.props.hideWebhookTippy}
                 deploymentAppDeleteRequest={node.deploymentAppDeleteRequest}
                 match={this.props.match}
+                isVirtualEnvironment={node.isVirtualEnvironment}
             />
         )
     }

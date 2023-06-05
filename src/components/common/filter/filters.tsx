@@ -28,7 +28,7 @@ export class Filter extends Component<FilterProps, FilterState>{
     componentWillReceiveProps(nextProps) {
         let _searchKey = this._getSearchKey();
         let list = JSON.parse(JSON.stringify(nextProps.list));
-        let filteredList = list.filter(item => item[_searchKey].search(replaceLastOddBackslash(this.state.searchStr).toLocaleLowerCase()) != -1);
+        let filteredList = list.filter(item => item[_searchKey]?.search(replaceLastOddBackslash(this.state.searchStr).toLocaleLowerCase()) != -1);
         this.setState({ list, filteredList });
     }
 
