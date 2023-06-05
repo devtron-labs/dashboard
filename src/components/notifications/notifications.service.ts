@@ -206,6 +206,7 @@ export function getNotificationConfigurations(offset: number, pageSize: number):
                     application: config.app || [],
                     environment: config.environment || [],
                 },
+                isVirtualEnvironment: config?.pipeline?.isVirtualEnvironment
             }
         })
         return {
