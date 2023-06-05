@@ -69,10 +69,12 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [showDeleteGroup, setShowDeleteGroup] = useState<boolean>(false)
     const [clickedGroup, setClickedGroup] = useState<GroupOptionType>(null)
     const [allAppsList, setAllAppsList] = useState<CreateGroupAppListType[]>([])
+    const [isVirtualEnv, setIsVirtualEnv] = useState<boolean>(false)
 
     useEffect(() => {
         if (envList?.result) {
             const environment = envList.result.envList?.find((env) => env.id === +envId)
+            setIsVirtualEnv(environment?.isVirtualEnvironment)
             setEnvName(environment.environment_name)
             setShowEmpty(!environment.appCount)
         }
@@ -258,10 +260,11 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                                 <EnvironmentOverview
                                     filteredAppIds={_filteredAppsIds}
                                     appGroupListData={filteredAppListData}
+                                    isVirtualEnv={isVirtualEnv}
                                 />
                             </Route>
                             <Route path={`${path}/${URLS.APP_TRIGGER}`}>
-                                <EnvTriggerView filteredAppIds={_filteredAppsIds} />
+                                <EnvTriggerView filteredAppIds={_filteredAppsIds} isVirtualEnv={isVirtualEnv} />
                             </Route>
                             <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
                                 <EnvCIDetails filteredAppIds={_filteredAppsIds} />

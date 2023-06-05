@@ -80,7 +80,6 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                 {this.props.triggerType}
                             </div>
                             <div className="workflow-node__title flex">
-                                {/* <img src={pipelineDeploy} className="icon-dim-24 mr-16" /> */}
                                 <div className="workflow-node__full-width-minus-Icon">
                                     <span
                                         data-testid={`${this.props.deploymentStrategy}`}
@@ -90,19 +89,27 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps> {
                                     </span>
                                     {envDescriptionTippy(this.props.environmentName, this.props.description)}
                                 </div>
-                                <div className="workflow-node__icon-common ml-8 workflow-node__CD-icon" />
+                                <div
+                                    className={`workflow-node__icon-common ml-8 ${
+                                        this.props.isVirtualEnvironment
+                                            ? 'workflow-node__CD-rocket-icon'
+                                            : 'workflow-node__CD-icon dc__flip'
+                                    }`}
+                                />
                             </div>
                             {this.renderStatus(this.props.title)}
                             <div className="workflow-node__btn-grp">
-                                <Tippy className="default-tt" arrow={true} placement="bottom" content={'Rollback'}>
-                                    <button
-                                        data-testid={`cd-trigger-deploy-roll-back-${this.props.index}`}
-                                        className="workflow-node__rollback-btn"
-                                        onClick={(event) => context.onClickRollbackMaterial(+this.props.id)}
-                                    >
-                                        <Rollback className="icon-dim-20 dc__vertical-align-middle" />
-                                    </button>
-                                </Tippy>
+                                {!this.props.isVirtualEnvironment && (
+                                    <Tippy className="default-tt" arrow={true} placement="bottom" content={'Rollback'}>
+                                        <button
+                                            data-testid={`cd-trigger-deploy-roll-back-${this.props.index}`}
+                                            className="workflow-node__rollback-btn"
+                                            onClick={(event) => context.onClickRollbackMaterial(+this.props.id)}
+                                        >
+                                            <Rollback className="icon-dim-20 dc__vertical-align-middle" />
+                                        </button>
+                                    </Tippy>
+                                )}
                                 <button
                                     data-testid={`${this.props.type}-trigger-select-image-${this.props.index}`}
                                     className="workflow-node__deploy-btn"
