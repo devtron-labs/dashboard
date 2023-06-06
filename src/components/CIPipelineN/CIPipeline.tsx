@@ -250,14 +250,22 @@ export default function CIPipeline({
                 for (let i = 0; i < pluginListLength; i++) {
                     const pluginData = response.result[i]
                     if (pluginData.type === 'PRESET') {
-                        _presetPlugin.push(pluginData)
+                        _presetPlugin.push({
+                            ...pluginData.metadata,
+                            inputVariables: pluginData.inputVariables,
+                            outputVariables: pluginData.outputVariables,
+                        })
                     } else {
-                        _sharedPlugin.push(pluginData)
+                        _sharedPlugin.push({
+                            ...pluginData.metadata,
+                            inputVariables: pluginData.inputVariables,
+                            outputVariables: pluginData.outputVariables,
+                        })
                     }
                 }
                 setPresetPlugins(_presetPlugin)
                 setSharedPlugins(_sharedPlugin)
-                getMandatoryPluginData(_formData, response.result)
+                getMandatoryPluginData(_formData, [..._presetPlugin, ..._sharedPlugin])
             })
             .catch((error: ServerErrors) => {
                 showError(error)
@@ -275,7 +283,7 @@ export default function CIPipeline({
 
     const getMandatoryPluginData = (_formData: FormType, pluginList: PluginDetailType[], branchName?: string): void => {
         if (processPluginData && prepareFormData) {
-            processPluginData(!!ciPipelineId, _formData, pluginList, ciPipelineId ?? appId, branchName)
+            processPluginData(!ciPipelineId, _formData, pluginList, ciPipelineId ?? appId, branchName)
                 .then((response: MandatoryPluginDataType) => {
                     if (response?.pluginData?.length) {
                         const _formDataErrorObj = { ...formDataErrorObj }

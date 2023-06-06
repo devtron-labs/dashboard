@@ -1,20 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { ConfigurationType, ViewType, BuildStageVariable } from '../../config'
+import React, { useState, useContext } from 'react'
+import { ConfigurationType, BuildStageVariable } from '../../config'
 import { RadioGroup } from '../common'
 import { ConditionContainerType, PluginVariableType } from '../ciPipeline/types'
 import { VariableContainer } from './VariableContainer'
 import { ConditionContainer } from './ConditionContainer'
-import { getPluginDetail } from '../ciPipeline/ciPipeline.service'
-import {
-    ServerErrors,
-    Progressing,
-    showError,
-    FormType,
-    PluginType,
-    ScriptType,
-    VariableType,
-    FormErrorObjectType,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { FormType, PluginType, ScriptType, FormErrorObjectType } from '@devtron-labs/devtron-fe-common-lib'
 import { YAMLScriptComponent } from './YAMLScriptComponent'
 import YAML from 'yaml'
 import CustomInputOutputVariables from './CustomInputOutputVariables'
@@ -29,29 +19,16 @@ export function TaskDetailComponent() {
         setFormData,
         selectedTaskIndex,
         activeStageName,
-        appId,
         formDataErrorObj,
-        calculateLastStepDetail,
         setFormDataErrorObj,
     }: {
         formData: FormType
         setFormData: React.Dispatch<React.SetStateAction<FormType>>
         selectedTaskIndex: number
         activeStageName: string
-        appId: number
         formDataErrorObj: FormErrorObjectType
-        calculateLastStepDetail: (
-            isFromAddNewTask: boolean,
-            _formData: FormType,
-            activeStageName: string,
-            startIndex?: number,
-        ) => {
-            index: number
-            calculatedStageVariables: Map<string, VariableType>[]
-        }
         setFormDataErrorObj: React.Dispatch<React.SetStateAction<FormErrorObjectType>>
     } = useContext(ciPipelineContext)
-    const [pageState, setPageState] = useState(ViewType.FORM)
     const validationRules = new ValidationRules()
     const [configurationType, setConfigurationType] = useState<string>('GUI')
     const [editorValue, setEditorValue] = useState<string>('')
@@ -61,42 +38,6 @@ export function TaskDetailComponent() {
             ? 'inlineStepDetail'
             : 'pluginRefStepDetail'
 
-    useEffect(() => {
-        if (formData[activeStageName].steps[selectedTaskIndex].stepType === PluginType.PLUGIN_REF) {
-            setPageState(ViewType.LOADING)
-            getPluginDetail(formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.pluginId, appId)
-                .then((response) => {
-                    setPageState(ViewType.FORM)
-                    processPluginData(response.result)
-                })
-                .catch((error: ServerErrors) => {
-                    setPageState(ViewType.ERROR)
-                    showError(error)
-                })
-        }
-    }, [])
-
-    const setVariableStepIndexInPlugin = (variable): VariableType => {
-        variable.variableStepIndexInPlugin = variable.variableStepIndex
-        delete variable.variableStepIndex
-        return variable
-    }
-
-    const processPluginData = (pluginData) => {
-        const _form = { ...formData }
-        if (_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables?.length === 0) {
-            _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.outputVariables =
-                pluginData.outputVariables?.map(setVariableStepIndexInPlugin)
-            if (_form[activeStageName].steps.length > selectedTaskIndex) {
-                calculateLastStepDetail(false, _form, activeStageName, selectedTaskIndex)
-            }
-        }
-        if (_form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables?.length === 0) {
-            _form[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.inputVariables =
-                pluginData.inputVariables?.map(setVariableStepIndexInPlugin)
-        }
-        setFormData(_form)
-    }
     const handleNameChange = (e: any): void => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].name = e.target.value
@@ -159,11 +100,7 @@ export function TaskDetailComponent() {
         setFormData(_formData)
     }
 
-    return pageState === ViewType.LOADING.toString() ? (
-        <div style={{ minHeight: '200px' }} className="flex">
-            <Progressing pageLoader />
-        </div>
-    ) : (
+    return (
         <div>
             <div>
                 <div className="row-container mb-12">
